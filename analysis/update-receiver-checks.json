@@ -1,0 +1,154 @@
+{
+  "passed": true,
+  "image_sha256": "342d2f35405e8daf1797dfe431d2e4aa70f4b52a2c242a29df48206672f1dfb4",
+  "count": 9,
+  "scope": "Original ARM prefix from52c275f8 through530ed03c, stopped before525b76dc. Synthetic registers/RAM; four helper entry points stubbed; not full-function or syscall execution.",
+  "ranges": [
+    {
+      "start": "0x52c275f8",
+      "end": "0x52c2768c",
+      "sha256": "695d1bee36a23fbd41bfc59d3d4b0157b9879f3c16c9673754fa0df184f49289"
+    },
+    {
+      "start": "0x530ed03c",
+      "end": "0x530ed0f4",
+      "sha256": "5802d7618827c796dfd5d876239d0cf256fc8cb8e9611b107877a9f9110d7204"
+    }
+  ],
+  "stubs": [
+    {
+      "address": "0x526ac148",
+      "purpose": "format string",
+      "return_value": 0
+    },
+    {
+      "address": "0x526ac9c0",
+      "purpose": "string length (Thumb entry)",
+      "return_value": 0
+    },
+    {
+      "address": "0x533c0a6c",
+      "purpose": "string assignment",
+      "return_value": 0
+    },
+    {
+      "address": "0x530feb20",
+      "purpose": "assertion/log helper",
+      "return_value": 0
+    }
+  ],
+  "stop_before": "0x525b76dc",
+  "cases": [
+    {
+      "high": 0,
+      "low": 0,
+      "expected_mask": 8,
+      "event_handle": 324478056,
+      "actual_mask": 8,
+      "stubs_called": [
+        "0x530feb20"
+      ],
+      "passed": true
+    },
+    {
+      "high": 0,
+      "low": 1,
+      "expected_mask": 8,
+      "event_handle": 324478056,
+      "actual_mask": 8,
+      "stubs_called": [
+        "0x530feb20"
+      ],
+      "passed": true
+    },
+    {
+      "high": 0,
+      "low": 65535,
+      "expected_mask": 8,
+      "event_handle": 324478056,
+      "actual_mask": 8,
+      "stubs_called": [
+        "0x530feb20"
+      ],
+      "passed": true
+    },
+    {
+      "high": 1,
+      "low": 0,
+      "expected_mask": 8,
+      "event_handle": 324478056,
+      "actual_mask": 8,
+      "stubs_called": [
+        "0x530feb20"
+      ],
+      "passed": true
+    },
+    {
+      "high": 1,
+      "low": 1,
+      "expected_mask": 4,
+      "event_handle": 324478056,
+      "actual_mask": 4,
+      "stubs_called": [
+        "0x526ac148",
+        "0x526ac9c0",
+        "0x533c0a6c",
+        "0x530feb20"
+      ],
+      "passed": true
+    },
+    {
+      "high": 1,
+      "low": 65535,
+      "expected_mask": 4,
+      "event_handle": 324478056,
+      "actual_mask": 4,
+      "stubs_called": [
+        "0x526ac148",
+        "0x526ac9c0",
+        "0x533c0a6c",
+        "0x530feb20"
+      ],
+      "passed": true
+    },
+    {
+      "high": 65535,
+      "low": 0,
+      "expected_mask": 8,
+      "event_handle": 324478056,
+      "actual_mask": 8,
+      "stubs_called": [
+        "0x530feb20"
+      ],
+      "passed": true
+    },
+    {
+      "high": 65535,
+      "low": 1,
+      "expected_mask": 4,
+      "event_handle": 324478056,
+      "actual_mask": 4,
+      "stubs_called": [
+        "0x526ac148",
+        "0x526ac9c0",
+        "0x533c0a6c",
+        "0x530feb20"
+      ],
+      "passed": true
+    },
+    {
+      "high": 65535,
+      "low": 65535,
+      "expected_mask": 4,
+      "event_handle": 324478056,
+      "actual_mask": 4,
+      "stubs_called": [
+        "0x526ac148",
+        "0x526ac9c0",
+        "0x533c0a6c",
+        "0x530feb20"
+      ],
+      "passed": true
+    }
+  ]
+}

@@ -4,6 +4,7 @@
 
 - [전체 안내·펌웨어 구조·재현 절차](index.html)
 - [JPEG·ISP·WB·색공간·클리핑 최신 보고서](analysis/pipeline-report.html)
+- [업데이트 메시지·저장소·BOOT 최신 분석](analysis/startup-storage.html)
 - [업데이트 검사·ICONBIN 적재 최신 분석](analysis/update-resources.html)
 - [수정 펌웨어·UI 이식 선행 연구](analysis/research-roadmap.html)
 - [RTOS 명령 957개](analysis/index.html) · [셔터·AF](analysis/dispatch-af.html)

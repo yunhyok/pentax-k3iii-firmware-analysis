@@ -1,0 +1,1026 @@
+{
+  "scope": "Static source-backed paths; generic message delivery and live storage/boot success remain conditional. No patch, build or flash.",
+  "rtos_sha256": "342d2f35405e8daf1797dfe431d2e4aa70f4b52a2c242a29df48206672f1dfb4",
+  "receiver": {
+    "confirmed_paths": [
+      {
+        "request": "0x4642010c",
+        "receiver": "0x533161e8",
+        "compare": "0x53316230",
+        "branch": "0x53316234",
+        "handler": "0x53316304",
+        "steps": [
+          {
+            "site": "0x533163c4",
+            "target": "0x52fef240",
+            "meaning": "select kind2; zero -> reply with zero version halves"
+          },
+          {
+            "site": "0x53316790",
+            "target": "0x52fee900",
+            "meaning": "load selected input; zero -> reset/reply"
+          },
+          {
+            "site": "0x53316840",
+            "target": "0x52fefb84",
+            "meaning": "package validation and decode; zero -> reset/reply"
+          },
+          {
+            "site": "0x53316894",
+            "target": "0x52fee9b4",
+            "meaning": "extract version fields only after previous nonzero results"
+          }
+        ]
+      },
+      {
+        "reply": "0x27408410",
+        "producer_sites": [
+          "0x53316428",
+          "0x5331676c"
+        ],
+        "publish": "0x53315494",
+        "consumer_compare": "0x52c18088",
+        "consumer_branch": "0x52c1808c",
+        "consumer_call": "0x52c18810",
+        "consumer": "0x52c16240",
+        "event_producer": "0x52c275f8",
+        "predicate": "reply payload u16+2 and u16+4 both nonzero -> flag0x4; either zero -> flag0x8",
+        "event_set_site": "0x52c27638",
+        "event_wrapper": "0x530ed03c",
+        "event_api_site": "0x530ed0a4",
+        "event_api": "0x525b76dc"
+      },
+      {
+        "message": "0x4c410101",
+        "message_compare": "0x53318bdc",
+        "message_branch": "0x53318be0",
+        "message_branch_target": "0x53318d94",
+        "version_gate": "0x52feef34",
+        "callsite": "0x533192c8",
+        "state_pointer_predicate": "updater+0x9c == 0x53cc2b94 (UPDATE_WAITING_MESSAGE)",
+        "state_predicate_site": "0x53318da0",
+        "kind_predicate_site": "0x53318dc0",
+        "kind": 2,
+        "scope": "Separate state event; not invoked by CheckUpdateFirmware query handler"
+      }
+    ],
+    "relationships": [
+      "53315018 initializes object vptr53cc3370 and object+4 secondary vptr53cc3390; primary slot+14 word53cc3384=53319314, secondary slot+c word53cc339c=533196e4 thunk subtracts4 then jumps53319314.",
+      "Generic dispatcher53319314 reconstructs message from arguments; byte3 group0x46 reaches tableword5331951c->53319690->533161e8.",
+      "Request receiver allocates22 bytes and zeroes payload byte0 and all u16 offsets0x02,0x04,0x06,0x08,0x0a,0x0c,0x0e,0x10,0x12,0x14 before validation. Version extraction writes reply+2/+4 and other halves only on successful load/validation.",
+      "Reply publisher writes msg+14=payload pointer, msg+18=shared owner;52c16240 reads these fields, then passes payload u16+2/+4 to52c275f8.",
+      "52c275f8 formats ver.%d.%02d into caller object+54 only for both nonzero halves, then sets caller event at object+40 to4; otherwise sets8.",
+      "Sender52c28cc4 waits object+40 mask0xc, clears returned bits, and returns true iff0x4 set;0x8 alone returns false; neither triggers assertion.",
+      "Request hub+0xc and reply updater+3c (initialized from hub+4) use wrappers ending53309c10. For these message IDs router selects group1; lower transport enqueue/dequeue/registration not fully resolved.",
+      "After query,52feec18(state,1) frees/clears loaded input when successful, resets kind8, filename/size0, and zeros component input descriptors through setters. This does not execute update write operations."
+    ],
+    "unknowns": [
+      "Full subscription/queue registration connecting sender hub+0xc to this initialized dispatcher, and reply group1 to52c17e14, remains unproved. Matching message ID branches and producer/consumer data layout are proven; delivery is conditional.",
+      "Controller singleton+4 object equality with the active sender instance is not established by this bounded pass.",
+      "No complete update state machine or malformed reply bounds proof; selected request, result and version-gate states only.",
+      "No target IO, firmware update, flash, or original full receiver execution was performed. Package validator semantics remain in prior update-validation evidence."
+    ],
+    "search_metadata": {
+      "image_sha256": "342d2f35405e8daf1797dfe431d2e4aa70f4b52a2c242a29df48206672f1dfb4",
+      "method": "Aligned MOVT immediate 0x4642 encoding candidates, contextual review required",
+      "start": "0x52500000",
+      "end": "0x53d4d7c0",
+      "hits": [
+        "0x52544e7c",
+        "0x529d26f0",
+        "0x529d271c",
+        "0x52c17e80",
+        "0x52c28bc0",
+        "0x52c28ce4",
+        "0x52c28efc",
+        "0x52c29ee4",
+        "0x52c2baec",
+        "0x52c4ee04",
+        "0x52c729e0",
+        "0x52d02e7c",
+        "0x52d0c4ec",
+        "0x52d1bd3c",
+        "0x52d1e768",
+        "0x52d1e7a8",
+        "0x52d4b768",
+        "0x52d4ba30",
+        "0x52d53e70",
+        "0x52dd4464",
+        "0x52de1324",
+        "0x52de50dc",
+        "0x52e30c80",
+        "0x52ea3e24",
+        "0x52f57d60",
+        "0x53304330",
+        "0x53316208",
+        "0x5331622c",
+        "0x5331623c",
+        "0x5331624c"
+      ]
+    },
+    "numerical_execution": {
+      "file": "numerical-checks.json",
+      "sha256": "5b6323d7e0561ba997e1f09313368aa9ca3016327d8778e37d5dd29521c17f3e",
+      "count": 9,
+      "scope": "Original result-producer prefix, helper stubs, stop before event syscall; synthetic RAM only"
+    }
+  },
+  "storage": {
+    "relations": [
+      {
+        "name": "Closed registry binding",
+        "proven": "5327f954 allocates0x48;5327f97c calls53297454; constructor5329747c installs53cb1638 from532974a4.5327f9e0 passes same object andID0x18d to52f13774;52f13864 stores pointer at registry+12*id+8.52f1390c reads same slot.52ff51f8 obtainsID0x18d,52ff5218 casts Driver RTTI538f37c0 to Emmc RTTI53cb16b8;52ff5228 stores pointer at FwPartition+8.",
+        "condition": "Allocation, initialization, registration and cast succeed; actual runtime success is not observed."
+      },
+      {
+        "name": "RTTI identity distinction",
+        "proven": "53cb16b8+4 points53cb1628 string4Emmc. The distinct13EmmcPartition name53cb16cc belongsRTTI53cb16c4.",
+        "limitation": "Casttarget53cb16b8 identifies Emmc; this evidence makes no claim that prior public reports misnamed it."
+      },
+      {
+        "name": "Read and write driver",
+        "proven": "Emmc vtable+30=53297938 and+2c=53297a84; blocksize+4c=532971dc returns512. Read wrapper uses destination alignment64, write wrapper source alignment4; unaligned operations chunk via object scratch buffers. Read calls53297510; write calls53297640. These reject object.byte30==0; otherwise try lower operation up to3 times; lower return0 means success, upper returns1.",
+        "limitation": "Emmc.byte30 is readiness-like gate in these methods, distinct from FwPartition.byte10 bank selector; no hardware I/O executed."
+      },
+      {
+        "name": "Lower read/write boundary",
+        "proven": "53297554->5331b9e8->53320014->533597c4.53297680->5331b99c->5331fff8->533598d8.5331b9e8 and5331b99c first call5332b2e0(0x1fff0000), return1 if nonzero; otherwise tail-call lower wrappers. Lower wrappers normalize nonzero result to1.",
+        "limitation": "Lower controller implementation and real media contents are outside this bounded pass."
+      },
+      {
+        "name": "FwPartition bank producer",
+        "proven": "Constructor52ff52d4 sets FwPartition.byte10=0 at52ff52f4, table pointer+14=0, size+18=0x10e00.52fee260 allocates0x1c,52fee26c invokes constructor,52fee278 stores object in manager+8.",
+        "limitation": "Only default0 is proved. Every-word immediate STRB+0x10 scan52ff5194..52ff8de4 finds only52ff52f4; this excludes neither indirect aliases, wider stores, memcpy nor writes outside the bounded region. Do not assert bank always0."
+      },
+      {
+        "name": "Slot2 table binding",
+        "proven": "52ff528c loops readygetter52ff8ed0(resource,2), yields530f3e1c(1) whilefalse, then basegetter52ff8de4(resource,2) result\u2192FwPartition+14 at52ff52c8. Initial slot2 record is length0x10f00,base50b70100,markerpointer50adf000.",
+        "dependency": "boot section of this document",
+        "limitation": "BOOT population and marker producer are owned by HQ and not revalidated here. FwPartition.byte10 is distinct from BOOT per-record halfword+4 bank choice and device-header table-copy selector."
+      },
+      {
+        "name": "Rejected table producers",
+        "proven": "5332417c and53324574 read fixed50b70100+10 and sum32 capacities at table+870*i shifted9; results go to caller output pointersr3 andr0. These retained slices do not access table record+4 bank.",
+        "limitation": "No caller-output alias audit; these candidates provide no direct fixed-table bank producer evidence."
+      }
+    ],
+    "limitations": [
+      "No patch, build, flash, camera execution or device I/O. Static source evidence only; no new numerical execution tests.",
+      "Runtime registry population and call success remain conditional.",
+      "FwPartition bank default is known; nondefault bank selection producer remains unresolved.",
+      "BOOT resource-specific bank selectors and table-copy selector are distinct, coordinated as external evidence.",
+      "Raw angr C is retained without correction; ARM controls interpretation of conditional instructions and return polarity."
+    ],
+    "searches": [
+      {
+        "start": "0x52ff5194",
+        "end": "0x52ff8de4",
+        "method": "Every aligned word disassembled independently; immediate STRB +0x10 only, not alias/memcpy/STM proof",
+        "matches": [
+          {
+            "site": "0x52ff52f4",
+            "instruction": "strb r2, [r0, #0x10]"
+          }
+        ]
+      }
+    ]
+  },
+  "boot": {
+    "record": "BOOT",
+    "payload_offset": 93388,
+    "payload_size": 21696,
+    "image_sha256": "0a9c086818b9d6e7531b93710c2cab2782c7f2c32bb5b1c26e3b5b5b69695900",
+    "base": "0x50b00000",
+    "base_evidence": "Vector at offset0 uses PC-relative LDR; word at offset0x20 is0x50b0003c. Internal absolute literals/strings agree with base0x50b00000. Not an observed load.",
+    "relations": [
+      {
+        "name": "entry_to_loader",
+        "sites": [
+          "0x50b001cc",
+          "0x50b001d0",
+          "0x50b00294",
+          "0x50b00890",
+          "0x50b01208"
+        ],
+        "path": "Indirect startup target0x50b00888 ->0x50b011c4 ->0x50b00a48 when boot-mode word at0x0100fffc !=2. Mode2 takes warm path and skips this loader."
+      },
+      {
+        "name": "partition_copy_selection",
+        "sites": [
+          "0x50b00ba0",
+          "0x50b00bd4",
+          "0x50b00be8",
+          "0x50b00bf0",
+          "0x50b0101c",
+          "0x50b00fbc"
+        ],
+        "path": "Read start block0,count2,to0x18004000. Fields+40 selector,+44 copyA block,+48 copyB block copied to0x50b70000/04/08. Selector0 tries A thenB; selector1 tries B thenA; other selector returns failure. Candidate0xffff skips to next. This is partition-table copy order, distinct from per-resource bank."
+      },
+      {
+        "name": "slot2_producer",
+        "sites": [
+          "0x50b00b2c",
+          "0x50b00c58",
+          "0x50b00c64",
+          "0x50b00c68",
+          "0x50b00c7c"
+        ],
+        "path": "Cold loader clears0x50adf000. Read0x87 blocks to0x50b70100 via0x50b03f04. Return0 leads to ready marker0xa55a5aa5. 135*512=69120 bytes; RTOS slot2 reserves69376 bytes, not the read length."
+      },
+      {
+        "name": "rtos_bank_load_release",
+        "sites": [
+          "0x50b00c70",
+          "0x50b00c88",
+          "0x50b00c9c",
+          "0x50b00ccc",
+          "0x50b00ce8",
+          "0x50b00cf0",
+          "0x50b00d04",
+          "0x50b00d08"
+        ],
+        "path": "Descriptor index1 at table+0x870; low16 at+0x874 selects bank stride0x434. Selected+0x878 destination,+0x87c entry,+0x880 blockstart,+0x884 byte_length,+0x888 block_count. If block_count0 use ceil(bytes/512). Read failure takes copy fallback. On selected success write entry to0x50b054c4 and0x4fffff20; write0xd1c3b5a7 to0x50b810f0 and SEV."
+      },
+      {
+        "name": "secondary_entry",
+        "sites": [
+          "0x50b001f4",
+          "0x50b00208",
+          "0x50b00214"
+        ],
+        "path": "Secondary waits shared marker then loads0x50b054c4; if nonzero BX r1. The data-derived target is not a statically fixed RTOS entry."
+      },
+      {
+        "name": "read_command",
+        "sites": [
+          "0x50b03f98",
+          "0x50b043d4",
+          "0x50b01f78",
+          "0x50b01fd4",
+          "0x50b01fb0",
+          "0x50b01fc4"
+        ],
+        "path": "Read wrapper -> transfer setup -> command builder. Direction2 chooses command0x11 for one block or0x12 for multiple; command submission50b01558 and wait50b01774 remain lower I/O boundary."
+      }
+    ],
+    "authentication_boundary": "Selected CPU path tests storage return status and descriptor availability before writing the shared marker and SEV. After wake, the secondary entry branch is conditional on a nonzero entry. No cryptographic verification identified in these recorded windows. This is not absence proof for full BOOT, lower driver, Boot ROM, other stages or hardware policy.",
+    "limitations": [
+      "Static windows and bounded synthetic fragments only. No camera, device I/O, update, patch, firmware build or flash.",
+      "Storage contents, boot mode, copy selector, bank values and actual execution not observed.",
+      "No conclusion that modified firmware is accepted."
+    ],
+    "code": {
+      "ranges": [
+        {
+          "label": "boot_entry",
+          "start": "0x50b00888",
+          "end": "0x50b0089c",
+          "sha256": "efd35aff31598cf0d20419c5b79aafd4fae7c5f32b60fd23e3275bd4d64fd4a0",
+          "method": "decompiled-window",
+          "pseudocode_sha256": "5e9cd384d98a4ca4ff9a937c385a941f45668c4d379caf227f2206a2d2ed7fe6"
+        },
+        {
+          "label": "boot_resources_load",
+          "start": "0x50b00a48",
+          "end": "0x50b011b0",
+          "sha256": "7ec972fa419b410280d27299e672ad106de504851450c1911a929cf434091965",
+          "method": "decompiled-window",
+          "pseudocode_sha256": "a799a1fde7ab310f03dcbd52bdca43b73327a65d9b7fe1d244409153330c2b4c"
+        },
+        {
+          "label": "boot_main",
+          "start": "0x50b011c4",
+          "end": "0x50b01388",
+          "sha256": "c78ecdbe46a0ad8d1d31bac2bee11f09fd2660a108e0e8c4c654d7678a530fb5",
+          "method": "decompiled-window",
+          "pseudocode_sha256": "42fd559e68a6b39f037135d9f94c8471415c297871efd26b0cb25b5735de7648"
+        },
+        {
+          "label": "boot_block_read",
+          "start": "0x50b03f04",
+          "end": "0x50b03fdc",
+          "sha256": "1b4eb434271d655b5e053e2786308645246fcdf4f205aa2033982ea093f0c2ee",
+          "method": "decompiled-window",
+          "pseudocode_sha256": "74a92b60e7dfefd80e93f85aa071aa7b529346c0a46c163594ffff3236baf07c"
+        },
+        {
+          "label": "boot_transfer_setup",
+          "start": "0x50b042e0",
+          "end": "0x50b043ec",
+          "sha256": "b86c55e58f8e4033916582843fc278277c8776160cdd65555d14897b0541c012",
+          "method": "decompiled-window",
+          "pseudocode_sha256": "c257961b3d1b6bc1d959dc2ab4c5ba6264a473fd52e9f58bfa675c9e7efcb4f0"
+        },
+        {
+          "label": "boot_transfer_command",
+          "start": "0x50b01f18",
+          "end": "0x50b01fe4",
+          "sha256": "bd7087973d2f563e4fdb888f1047002286f95fe3e84eaca0208dde6ff58fefd2",
+          "method": "decompiled-window",
+          "pseudocode_sha256": "36156941d36e5f6a363ac26a1b90269e1bfee2debb1e3d1690d9a2bbabc178dc"
+        },
+        {
+          "label": "secondary_core_release",
+          "start": "0x50b001d8",
+          "end": "0x50b00238",
+          "sha256": "2f4438cf392b907ec67b18ff8f27d919cba146fe27010eebcd2596757495f7af",
+          "method": "instruction-range"
+        }
+      ],
+      "transfers": [
+        {
+          "site": "0x50b0088c",
+          "kind": "call",
+          "target": "0x50b0089c"
+        },
+        {
+          "site": "0x50b00890",
+          "kind": "call",
+          "target": "0x50b011c4"
+        },
+        {
+          "site": "0x50b00898",
+          "kind": "branch",
+          "target": "0x50b00220"
+        },
+        {
+          "site": "0x50b00a7c",
+          "kind": "call",
+          "target": "0x50b01538"
+        },
+        {
+          "site": "0x50b00a88",
+          "kind": "call",
+          "target": "0x50b01538"
+        },
+        {
+          "site": "0x50b00a94",
+          "kind": "call",
+          "target": "0x50b01538"
+        },
+        {
+          "site": "0x50b00b58",
+          "kind": "call",
+          "target": "0x50b03cd4"
+        },
+        {
+          "site": "0x50b00b60",
+          "kind": "branch",
+          "target": "0x50b01038"
+        },
+        {
+          "site": "0x50b00b64",
+          "kind": "call",
+          "target": "0x50b03e68"
+        },
+        {
+          "site": "0x50b00b6c",
+          "kind": "branch",
+          "target": "0x50b01198"
+        },
+        {
+          "site": "0x50b00b7c",
+          "kind": "call",
+          "target": "0x50b01538"
+        },
+        {
+          "site": "0x50b00b84",
+          "kind": "call",
+          "target": "0x50b03d90"
+        },
+        {
+          "site": "0x50b00b8c",
+          "kind": "branch",
+          "target": "0x50b0118c"
+        },
+        {
+          "site": "0x50b00ba0",
+          "kind": "call",
+          "target": "0x50b03f04"
+        },
+        {
+          "site": "0x50b00ba8",
+          "kind": "branch",
+          "target": "0x50b0118c"
+        },
+        {
+          "site": "0x50b00bc0",
+          "kind": "call",
+          "target": "0x50b04400"
+        },
+        {
+          "site": "0x50b00bc8",
+          "kind": "call",
+          "target": "0x50b03d90"
+        },
+        {
+          "site": "0x50b00bd0",
+          "kind": "branch",
+          "target": "0x50b0118c"
+        },
+        {
+          "site": "0x50b00bf8",
+          "kind": "branch",
+          "target": "0x50b0101c"
+        },
+        {
+          "site": "0x50b00c54",
+          "kind": "branch",
+          "target": "0x50b00fbc"
+        },
+        {
+          "site": "0x50b00c64",
+          "kind": "call",
+          "target": "0x50b03f04"
+        },
+        {
+          "site": "0x50b00c6c",
+          "kind": "branch",
+          "target": "0x50b00fbc"
+        },
+        {
+          "site": "0x50b00c80",
+          "kind": "branch",
+          "target": "0x50b00cf4"
+        },
+        {
+          "site": "0x50b00c94",
+          "kind": "branch",
+          "target": "0x50b00cdc"
+        },
+        {
+          "site": "0x50b00cb0",
+          "kind": "branch",
+          "target": "0x50b00cc8"
+        },
+        {
+          "site": "0x50b00ccc",
+          "kind": "call",
+          "target": "0x50b03f04"
+        },
+        {
+          "site": "0x50b00cd8",
+          "kind": "branch",
+          "target": "0x50b01160"
+        },
+        {
+          "site": "0x50b00cfc",
+          "kind": "call",
+          "target": "0x50b014b0"
+        },
+        {
+          "site": "0x50b00d20",
+          "kind": "branch",
+          "target": "0x50b00db0"
+        },
+        {
+          "site": "0x50b00d34",
+          "kind": "branch",
+          "target": "0x50b010d0"
+        },
+        {
+          "site": "0x50b00d5c",
+          "kind": "branch",
+          "target": "0x50b01170"
+        },
+        {
+          "site": "0x50b00d74",
+          "kind": "branch",
+          "target": "0x50b01170"
+        },
+        {
+          "site": "0x50b00d88",
+          "kind": "call",
+          "target": "0x50b03f04"
+        },
+        {
+          "site": "0x50b00d98",
+          "kind": "branch",
+          "target": "0x50b0117c"
+        },
+        {
+          "site": "0x50b00da4",
+          "kind": "branch",
+          "target": "0x50b00db0"
+        },
+        {
+          "site": "0x50b00dbc",
+          "kind": "branch",
+          "target": "0x50b00e34"
+        },
+        {
+          "site": "0x50b00dc8",
+          "kind": "branch",
+          "target": "0x50b01124"
+        },
+        {
+          "site": "0x50b00df0",
+          "kind": "branch",
+          "target": "0x50b01144"
+        },
+        {
+          "site": "0x50b00e08",
+          "kind": "branch",
+          "target": "0x50b01144"
+        },
+        {
+          "site": "0x50b00e14",
+          "kind": "call",
+          "target": "0x50b03f04"
+        },
+        {
+          "site": "0x50b00e20",
+          "kind": "branch",
+          "target": "0x50b01150"
+        },
+        {
+          "site": "0x50b00e28",
+          "kind": "branch",
+          "target": "0x50b00e30"
+        },
+        {
+          "site": "0x50b00e40",
+          "kind": "branch",
+          "target": "0x50b00ebc"
+        },
+        {
+          "site": "0x50b00e4c",
+          "kind": "branch",
+          "target": "0x50b010fc"
+        },
+        {
+          "site": "0x50b00e74",
+          "kind": "branch",
+          "target": "0x50b00fa4"
+        },
+        {
+          "site": "0x50b00e8c",
+          "kind": "branch",
+          "target": "0x50b00fa4"
+        },
+        {
+          "site": "0x50b00e98",
+          "kind": "call",
+          "target": "0x50b03f04"
+        },
+        {
+          "site": "0x50b00ea4",
+          "kind": "branch",
+          "target": "0x50b00fb0"
+        },
+        {
+          "site": "0x50b00eac",
+          "kind": "branch",
+          "target": "0x50b00eb8"
+        },
+        {
+          "site": "0x50b00ec0",
+          "kind": "branch",
+          "target": "0x50b0110c"
+        },
+        {
+          "site": "0x50b00ed0",
+          "kind": "branch",
+          "target": "0x50b00f58"
+        },
+        {
+          "site": "0x50b00f04",
+          "kind": "branch",
+          "target": "0x50b00f1c"
+        },
+        {
+          "site": "0x50b00f20",
+          "kind": "call",
+          "target": "0x50b03f04"
+        },
+        {
+          "site": "0x50b00f2c",
+          "kind": "branch",
+          "target": "0x50b010b0"
+        },
+        {
+          "site": "0x50b00f64",
+          "kind": "branch",
+          "target": "0x50b01050"
+        },
+        {
+          "site": "0x50b00f74",
+          "kind": "call",
+          "target": "0x50b01538"
+        },
+        {
+          "site": "0x50b00f84",
+          "kind": "branch",
+          "target": "0x50b01048"
+        },
+        {
+          "site": "0x50b00fa4",
+          "kind": "call",
+          "target": "0x50b03f04"
+        },
+        {
+          "site": "0x50b00fac",
+          "kind": "branch",
+          "target": "0x50b00eb0"
+        },
+        {
+          "site": "0x50b00fb8",
+          "kind": "call",
+          "target": "0x50b014b0"
+        },
+        {
+          "site": "0x50b00fc8",
+          "kind": "branch",
+          "target": "0x50b00fe0"
+        },
+        {
+          "site": "0x50b00fdc",
+          "kind": "branch",
+          "target": "0x50b00c4c"
+        },
+        {
+          "site": "0x50b00fe8",
+          "kind": "call",
+          "target": "0x50b014b0"
+        },
+        {
+          "site": "0x50b01018",
+          "kind": "branch",
+          "target": "0x50b01018"
+        },
+        {
+          "site": "0x50b01020",
+          "kind": "branch",
+          "target": "0x50b0118c"
+        },
+        {
+          "site": "0x50b01034",
+          "kind": "branch",
+          "target": "0x50b00c0c"
+        },
+        {
+          "site": "0x50b01040",
+          "kind": "call",
+          "target": "0x50b014b0"
+        },
+        {
+          "site": "0x50b01078",
+          "kind": "branch",
+          "target": "0x50b01090"
+        },
+        {
+          "site": "0x50b01090",
+          "kind": "call",
+          "target": "0x50b03f04"
+        },
+        {
+          "site": "0x50b01098",
+          "kind": "branch",
+          "target": "0x50b010c0"
+        },
+        {
+          "site": "0x50b010ac",
+          "kind": "branch",
+          "target": "0x50b00f68"
+        },
+        {
+          "site": "0x50b010b8",
+          "kind": "call",
+          "target": "0x50b014b0"
+        },
+        {
+          "site": "0x50b010bc",
+          "kind": "branch",
+          "target": "0x50b00fbc"
+        },
+        {
+          "site": "0x50b010c8",
+          "kind": "call",
+          "target": "0x50b014b0"
+        },
+        {
+          "site": "0x50b010cc",
+          "kind": "branch",
+          "target": "0x50b00fbc"
+        },
+        {
+          "site": "0x50b010e8",
+          "kind": "branch",
+          "target": "0x50b01124"
+        },
+        {
+          "site": "0x50b010f8",
+          "kind": "branch",
+          "target": "0x50b0110c"
+        },
+        {
+          "site": "0x50b01120",
+          "kind": "branch",
+          "target": "0x50b00f68"
+        },
+        {
+          "site": "0x50b0113c",
+          "kind": "branch",
+          "target": "0x50b010fc"
+        },
+        {
+          "site": "0x50b01140",
+          "kind": "branch",
+          "target": "0x50b0110c"
+        },
+        {
+          "site": "0x50b01144",
+          "kind": "call",
+          "target": "0x50b03f04"
+        },
+        {
+          "site": "0x50b0114c",
+          "kind": "branch",
+          "target": "0x50b00e2c"
+        },
+        {
+          "site": "0x50b01158",
+          "kind": "call",
+          "target": "0x50b014b0"
+        },
+        {
+          "site": "0x50b0115c",
+          "kind": "branch",
+          "target": "0x50b00fbc"
+        },
+        {
+          "site": "0x50b01168",
+          "kind": "call",
+          "target": "0x50b014b0"
+        },
+        {
+          "site": "0x50b0116c",
+          "kind": "branch",
+          "target": "0x50b00fbc"
+        },
+        {
+          "site": "0x50b01170",
+          "kind": "call",
+          "target": "0x50b03f04"
+        },
+        {
+          "site": "0x50b01178",
+          "kind": "branch",
+          "target": "0x50b00da8"
+        },
+        {
+          "site": "0x50b01184",
+          "kind": "call",
+          "target": "0x50b014b0"
+        },
+        {
+          "site": "0x50b01188",
+          "kind": "branch",
+          "target": "0x50b00fbc"
+        },
+        {
+          "site": "0x50b011a0",
+          "kind": "call",
+          "target": "0x50b014b0"
+        },
+        {
+          "site": "0x50b011d0",
+          "kind": "call",
+          "target": "0x50b014b0"
+        },
+        {
+          "site": "0x50b011e4",
+          "kind": "branch",
+          "target": "0x50b01218"
+        },
+        {
+          "site": "0x50b01208",
+          "kind": "call",
+          "target": "0x50b00a48"
+        },
+        {
+          "site": "0x50b01210",
+          "kind": "branch",
+          "target": "0x50b012a4"
+        },
+        {
+          "site": "0x50b01228",
+          "kind": "call",
+          "target": "0x50b014b0"
+        },
+        {
+          "site": "0x50b01254",
+          "kind": "call",
+          "target": "0x50b01538"
+        },
+        {
+          "site": "0x50b01264",
+          "kind": "call",
+          "target": "0x50b01538"
+        },
+        {
+          "site": "0x50b01290",
+          "kind": "branch",
+          "target": "0x50b01284"
+        },
+        {
+          "site": "0x50b012b8",
+          "kind": "call",
+          "target": "0x50b014b0"
+        },
+        {
+          "site": "0x50b03f20",
+          "kind": "branch",
+          "target": "0x50b03f44"
+        },
+        {
+          "site": "0x50b03f40",
+          "kind": "branch",
+          "target": "0x50b03f4c"
+        },
+        {
+          "site": "0x50b03f5c",
+          "kind": "branch",
+          "target": "0x50b03f44"
+        },
+        {
+          "site": "0x50b03f98",
+          "kind": "call",
+          "target": "0x50b042e0"
+        },
+        {
+          "site": "0x50b03fac",
+          "kind": "branch",
+          "target": "0x50b03f44"
+        },
+        {
+          "site": "0x50b03fb8",
+          "kind": "branch",
+          "target": "0x50b03fd4"
+        },
+        {
+          "site": "0x50b03fd0",
+          "kind": "branch",
+          "target": "0x50b03f80"
+        },
+        {
+          "site": "0x50b03fd8",
+          "kind": "branch",
+          "target": "0x50b03f44"
+        },
+        {
+          "site": "0x50b04300",
+          "kind": "branch",
+          "target": "0x50b04318"
+        },
+        {
+          "site": "0x50b04314",
+          "kind": "branch",
+          "target": "0x50b04324"
+        },
+        {
+          "site": "0x50b04334",
+          "kind": "branch",
+          "target": "0x50b04318"
+        },
+        {
+          "site": "0x50b0433c",
+          "kind": "branch",
+          "target": "0x50b04318"
+        },
+        {
+          "site": "0x50b0434c",
+          "kind": "branch",
+          "target": "0x50b0436c"
+        },
+        {
+          "site": "0x50b04358",
+          "kind": "call",
+          "target": "0x50b0427c"
+        },
+        {
+          "site": "0x50b04368",
+          "kind": "branch",
+          "target": "0x50b043e4"
+        },
+        {
+          "site": "0x50b0437c",
+          "kind": "call",
+          "target": "0x50b01b0c"
+        },
+        {
+          "site": "0x50b04384",
+          "kind": "branch",
+          "target": "0x50b043e4"
+        },
+        {
+          "site": "0x50b043b0",
+          "kind": "call",
+          "target": "0x50b04a40"
+        },
+        {
+          "site": "0x50b043d4",
+          "kind": "call",
+          "target": "0x50b01f18"
+        },
+        {
+          "site": "0x50b043e0",
+          "kind": "branch",
+          "target": "0x50b04318"
+        },
+        {
+          "site": "0x50b043e8",
+          "kind": "branch",
+          "target": "0x50b04318"
+        },
+        {
+          "site": "0x50b01f48",
+          "kind": "call",
+          "target": "0x50b04840"
+        },
+        {
+          "site": "0x50b01f6c",
+          "kind": "branch",
+          "target": "0x50b01fcc"
+        },
+        {
+          "site": "0x50b01f74",
+          "kind": "branch",
+          "target": "0x50b01fd4"
+        },
+        {
+          "site": "0x50b01fb0",
+          "kind": "call",
+          "target": "0x50b01558"
+        },
+        {
+          "site": "0x50b01fc4",
+          "kind": "call",
+          "target": "0x50b01774"
+        },
+        {
+          "site": "0x50b01fe0",
+          "kind": "branch",
+          "target": "0x50b01f84"
+        },
+        {
+          "site": "0x50b001fc",
+          "kind": "branch",
+          "target": "0x50b001f4"
+        },
+        {
+          "site": "0x50b00204",
+          "kind": "call",
+          "target": "0x50b0056c"
+        },
+        {
+          "site": "0x50b00214",
+          "kind": "branch-reg",
+          "target": null
+        },
+        {
+          "site": "0x50b0021c",
+          "kind": "branch",
+          "target": "0x50b00218"
+        },
+        {
+          "site": "0x50b0022c",
+          "kind": "branch-reg",
+          "target": null
+        },
+        {
+          "site": "0x50b00234",
+          "kind": "branch",
+          "target": "0x50b00230"
+        }
+      ],
+      "words": [
+        {
+          "address": "0x50b00020",
+          "value": "0x50b0003c"
+        },
+        {
+          "address": "0x50b00294",
+          "value": "0x50b00888"
+        },
+        {
+          "address": "0x50b00298",
+          "value": "0x50b810f0"
+        },
+        {
+          "address": "0x50b0029c",
+          "value": "0xd1c3b5a7"
+        },
+        {
+          "address": "0x50b002a0",
+          "value": "0x50b054c4"
+        },
+        {
+          "address": "0x50b002a4",
+          "value": "0x50b054c8"
+        }
+      ],
+      "conditional_bindings": []
+    }
+  }
+}

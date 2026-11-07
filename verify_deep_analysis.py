@@ -14,10 +14,10 @@ from verify_command_analysis import arm_transfer
 TABLES = Path(__file__).resolve().parent / "analysis"
 
 
-def verify_code(image, evidence):
+def verify_code(image, evidence, base=BASE):
     def section(start, size):
-        require(BASE <= start and 0 < size <= BASE + len(image) - start, "Range outside RTOS")
-        return image[start - BASE:start - BASE + size]
+        require(base <= start and 0 < size <= base + len(image) - start, "Range outside image")
+        return image[start - base:start - base + size]
 
     ranges = evidence["ranges"]
     for record in ranges:
