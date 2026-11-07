@@ -4,6 +4,7 @@ import argparse
 import csv
 import hashlib
 import io
+import json
 import sys
 from pathlib import Path
 
@@ -24,6 +25,11 @@ def analysis_range(decoded, selection):
         with table.open(encoding="utf-8") as stream:
             for row in csv.DictReader(stream, delimiter="\t"):
                 if row["method"] == "decompiled" and int(row["start"], 16) == address:
+                    return address, int(row["end"], 16)
+        evidence = table.with_name("deep-evidence.json")
+        with evidence.open(encoding="utf-8") as stream:
+            for row in json.load(stream)["ranges"]:
+                if row["method"] == "decompiled-window" and int(row["start"], 16) == address:
                     return address, int(row["end"], 16)
         raise ValueError("Address is outside the reviewed function list.")
     from rtos_catalog import catalog
@@ -72,7 +78,8 @@ def main():
     cfg = project.analyses.CFGFast(
         regions=[(start, end)], function_starts=[start], normalize=True,
         start_at_entry=False, symbols=False, function_prologues=False,
-        force_smart_scan=False, force_complete_scan=False, resolve_indirect_jumps=False, **options,
+        force_smart_scan=False, force_complete_scan=False,
+        resolve_indirect_jumps=args.sample.startswith("0x"), **options,
     )
     function = cfg.kb.functions.get(start)
     if function is None:
