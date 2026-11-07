@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>K-3 Mark III v2.20 RTOS 명령과 호출 관계</title><style>
+:root{color-scheme:light dark;--bg:#f7f8fa;--paper:#fff;--ink:#182332;--muted:#48596b;--line:#d2dbe5;--accent:#124b8e;--soft:#edf3fa;--focus:#d75f00}
+@media(prefers-color-scheme:dark){:root{--bg:#111821;--paper:#18222d;--ink:#e8edf4;--muted:#b4c2d2;--line:#405369;--accent:#98c8ff;--soft:#223348;--focus:#ffb374}}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.85 system-ui,-apple-system,"Malgun Gothic",sans-serif;word-break:keep-all;overflow-wrap:anywhere}
+a{color:var(--accent);text-underline-offset:.18em}a:hover{text-decoration-thickness:2px}:focus-visible{outline:3px solid var(--focus);outline-offset:4px}
+header,main,footer{max-width:1120px;margin:auto;padding:36px clamp(18px,4vw,56px)}header{padding-top:56px;padding-bottom:24px}main{background:var(--paper);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.eyebrow{color:var(--muted);font-size:.84rem;letter-spacing:.06em}h1{font-size:clamp(1.85rem,4.5vw,3rem);line-height:1.35;letter-spacing:-.025em;margin:12px 0 18px}h2{font-size:1.5rem;line-height:1.5;margin:3.6rem 0 1rem;padding-top:1.2rem;border-top:1px solid var(--line)}h2:first-child{margin-top:0}h3{font-size:1.12rem;margin-top:2rem}p{margin:1rem 0}strong{font-weight:650}.intro{max-width:55em;color:var(--muted)}
+nav{margin-top:25px}nav ul{display:flex;flex-wrap:wrap;gap:8px 22px;list-style:none;padding:0;margin:0}nav ul ul{display:none}nav a{font-size:.9rem}code{font: .88em/1.6 ui-monospace,Consolas,monospace;overflow-wrap:anywhere}pre{background:var(--soft);padding:18px;overflow-x:auto;white-space:pre-wrap;border-radius:5px}pre code{font-size:.82rem}
+.table-scroll{overflow-x:auto;margin:24px 0}table{border-collapse:collapse;width:100%;font-size:.92rem;min-width:530px}th,td{text-align:left;vertical-align:top;padding:14px 16px;border-bottom:1px solid var(--line)}th{background:var(--soft);font-weight:650}td:first-child{min-width:125px}details{border-block:1px solid var(--line);margin-top:24px;padding:16px 0}summary{cursor:pointer;font-weight:650;padding:6px 0}.caption,.meta{font-size:.86rem;color:var(--muted)}
+figure{margin:32px 0;padding:24px 0;border-block:1px solid var(--line)}figcaption{font-size:.95rem;font-weight:650;margin-bottom:20px}.flow{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:32px;list-style:none;padding:0;margin:18px 0}.flow li{position:relative;padding:18px;background:var(--soft);border-radius:6px;line-height:1.6}.flow strong{display:block;font-size:1rem}.flow span{display:block;color:var(--muted);font-size:.86rem;margin-top:9px}.flow li:not(:last-child)::after{content:"→";position:absolute;right:-27px;top:40%;font-size:22px;color:var(--muted)}.second{margin-top:24px}footer{font-size:.88rem;color:var(--muted)}
+@media(max-width:620px){body{font-size:16px}header,main,footer{padding-inline:20px}.flow{grid-template-columns:1fr;gap:26px}.flow li:not(:last-child)::after{content:"↓";right:auto;left:calc(50% - 8px);top:auto;bottom:-28px}.flow li{padding:15px 18px}h2{font-size:1.3rem}nav ul{gap:10px 18px}table{font-size:.87rem}th,td{padding:12px}header{padding-top:30px}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+@media print{body{background:white;color:black;font-size:10pt}header,main,footer{max-width:none;padding:12pt}nav{display:none}a{color:inherit}h2,figure,table{break-inside:avoid}h2{break-after:avoid}main{border:0}.flow li{background:#f1f3f5}.table-scroll{overflow:visible}table{min-width:0}details>*{display:block!important}}
+
+.site-nav{border-block:1px solid var(--line);padding:14px 0;margin:20px 0}.site-nav a{display:inline-block;margin:4px 16px 4px 0}
+.review-note{background:var(--soft);padding:16px 20px;margin:24px 0}.toc{font-size:.92rem}.toc ul{list-style:none;padding-left:0}.toc ul ul{padding-left:20px}
+.branch{margin:18px 0;padding:0 0 0 24px;border-left:3px solid var(--line)}.branch p{margin:8px 0}.diagram-line{padding:12px 16px;background:var(--soft);border-radius:4px}
+</style></head>
+<body><header><div class="eyebrow">PENTAX K-3 MARK III · FIRMWARE 2.20 · 2026-11-07</div><h1>K-3 Mark III v2.20 RTOS 명령과 호출 관계</h1>
+<nav class="site-nav" aria-label="분석 문서"><a href="../index.html">개요·재현</a><a href="index.html" aria-current="page">RTOS 957개</a><a href="dispatch-af.html">셔터·AF</a><a href="color-lightroom.html">컬러모드·Lightroom</a><a href="color-algorithms.html">색 처리 수식</a><a href="pipeline-report.html">JPEG·ISP 최신 분석</a></nav><p class="review-note">기존 조사 범위를 보존하고 후속 분석으로 해소된 항목을 갱신했다. 현재의 WB·색공간·클리핑 경계는 <a href="pipeline-report.html">JPEG·ISP 최신 보고서</a>에서 확인할 수 있다.</p><details><summary>이 문서의 목차</summary><div class="toc">
+<ul>
+<li><a href="#957개-명령의-분류">957개 명령의 분류</a></li>
+<li><a href="#촬영-제어">촬영 제어</a></li>
+<li><a href="#af">AF</a></li>
+<li><a href="#영상처리">영상처리</a></li>
+<li><a href="#호출표를-읽는-방법">호출표를 읽는 방법</a></li>
+<li><a href="#재현">재현</a></li>
+</ul>
+</div>
+</details></header><main>
+<p>최신 분석은 <a href="pipeline-report.html">JPEG·ISP·색공간·WB와 Lightroom 이전 조건을 정리한 HTML 보고서</a>에 있다. 아래 내용은 최초 명령 분류 당시의 조사 범위를 기록한다.</p>
+<p>후속 분석은 <a href="dispatch-af.html">디스패처·셔터·AF 연산</a>과 <a href="color-lightroom.html">RAW 현상·컬러모드·Lightroom</a>에 있다. 이 문서는 최초 957개 명령 분류와 첫 상세 추적 범위를 기록한다.</p>
+<p>명령표의 957개 항목을 17개 기능군으로 분류하고 각 진입점에서 C 형태의 의사코드를 생성했다. 촬영·AF·영상처리에서는 명령 처리기 11개와 하위 함수 25개, <strong>서로 다른 함수 36개</strong>를 골라 기계어와 대조했다. 가장 구체적으로 복원한 연산은 두 디포커스 결과를 합치는 조건과 영상 진단 코드의 256항 톤 변환표다.</p>
+<h2 id="957개-명령의-분류">957개 명령의 분류</h2>
+<p>각 명령에는 주 기능 하나를 지정했다. 예를 들어 AF 측거점 선택 스위치는 사용자 입력, AF 모드 설정은 AF, 화이트밸런스는 영상처리로 세었다. 명령 이름과 소속 계열을 기준으로 나누고 약칭이 모호한 곳은 처리기가 참조하는 도움말과 인수도 대조했다. 예를 들어 ID 717·718의 도움말은 스위치 <strong>입력 에뮬레이션</strong>을 명시한다. 이 표에서 UI에 분류된 명령이 실제 스위치를 폴링한다고 단정할 수는 없다.</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th scope="col">주 기능</th>
+<th scope="col" style="text-align: right;">수</th>
+<th scope="col">주 기능</th>
+<th scope="col" style="text-align: right;">수</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>영상처리·화질</td>
+<td style="text-align: right;">189</td>
+<td>촬영 제어·노출</td>
+<td style="text-align: right;">130</td>
+</tr>
+<tr>
+<td>저장매체·파일</td>
+<td style="text-align: right;">121</td>
+<td>통신·테더링·GPS</td>
+<td style="text-align: right;">80</td>
+</tr>
+<tr>
+<td>스위치·조작계·표시등</td>
+<td style="text-align: right;">78</td>
+<td>하드웨어·버스</td>
+<td style="text-align: right;">76</td>
+</tr>
+<tr>
+<td>표시·라이브뷰·재생</td>
+<td style="text-align: right;">49</td>
+<td>AF·초점</td>
+<td style="text-align: right;">45</td>
+</tr>
+<tr>
+<td>손떨림 보정·구도</td>
+<td style="text-align: right;">36</td>
+<td>시스템 관리</td>
+<td style="text-align: right;">35</td>
+</tr>
+<tr>
+<td>프로세서 간 통신</td>
+<td style="text-align: right;">27</td>
+<td>RTOS 태스크·동기화</td>
+<td style="text-align: right;">22</td>
+</tr>
+<tr>
+<td>전원·온도</td>
+<td style="text-align: right;">21</td>
+<td>사용자 설정·도메인 데이터</td>
+<td style="text-align: right;">20</td>
+</tr>
+<tr>
+<td>진단·로그</td>
+<td style="text-align: right;">11</td>
+<td>오디오</td>
+<td style="text-align: right;">9</td>
+</tr>
+<tr>
+<td>동영상 제어</td>
+<td style="text-align: right;">8</td>
+<td><strong>합계</strong></td>
+<td style="text-align: right;"><strong>957</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p>세 우선 분야를 주 기능으로 가진 명령은 364개다. PPU 인터페이스, AF 스위치처럼 보조적으로 관련된 54개를 더하면 <strong>촬영 142개, AF 61개, 영상처리 215개로 총 418개</strong>다. 나머지 539개까지 자동 디컴파일했다. <code>primary</code>는 주 기능, <code>also</code>는 보조 기능, <code>topic</code>은 세부 용도다. 분류를 재현할 때는 원래 명령표의 철자와 오타도 보존한다. <a href="command-analysis.tsv">957행 분류·처리 결과</a> · <a href="command-groups.tsv">분류 근거가 되는 항목별 그룹</a></p>
+<h2 id="촬영-제어">촬영 제어</h2>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th scope="col">진입점</th>
+<th scope="col">직접 확인한 호출 경로와 동작</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ID 30 <code>camctl_control_capture</code> · <code>0x525118e8</code></td>
+<td>요청 ID는 3, 인수 슬롯 0은 1이다. 슬롯 1에는 시작 0 또는 정지 1을 넣는다. <code>0x52511c0c</code>에서 공통 제출 함수 <code>0x52c1e4a8</code>을 호출한다. 제출 함수는 <code>0x52c1cc18</code>에 요청을 넘긴다. 후자는 요청 데이터를 복사하고 메시지 <code>0x46020102</code>를 구성해 디스패처로 전달한다. 성공 응답의 두 워드는 캡처 ID 상·하위 값으로 표시된다.</td>
+</tr>
+<tr>
+<td>ID 391 <code>AE_Capture</code> · <code>0x52559558</code></td>
+<td><code>0x5255956c → 0x52d93290 → 0x52d91ccc</code>. 상태에 따라 기본 프레임 수 1 또는 10을 선택하며 별도 조건에서는 설정값을 사용한다. 두 16비트 치수의 곱에 2를 곱해 프레임 간격을 계산하고, 여기에 프레임 수를 곱한 크기의 버퍼를 요청한다. 할당 실패 문자열은 대상이 <strong>측광 프레임 덤프</strong>임을 뒷받침한다.</td>
+</tr>
+<tr>
+<td>ID 710 <code>shtrctrl_bulb</code> · <code>0x52591978</code></td>
+<td>별도의 벌브 진단 경로다. 타이밍 설정 <code>0x530e565c</code>, 시작 요청 <code>0x530e3dc8</code>, 완료 표시 폴링, 정지 <code>0x530e48ec</code> 순서가 보인다. 정지 경로가 <code>0x530e480c</code>에 도달한 뒤의 드라이버 호출 세 곳은 가상 함수 포인터를 거친다. 후속 분석은 조건부 가상 호출을 GPIO MMIO 쓰기까지 연결했다. ID 30에서 이 벌브 경로까지의 전체 상태 전이와 실제 셔터 구동은 미확인이다. <a href="dispatch-af.html">후속 셔터 분석</a></td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="af">AF</h2>
+<p><strong>명령과 결과 조회.</strong> ID 39 <code>camctl_control_auto_focus</code>도 촬영과 같은 제출 함수 <code>0x52c1e4a8</code>을 호출한다. 요청 ID 3은 같지만 첫 슬롯이 <strong>2</strong>다. 뒤에는 <code>cam/area</code>, <code>start/stop</code>, 숫자 인수 두 개가 따른다. 마지막 두 숫자는 도움말의 폭·높이 표기와 진단 메시지의 x·y 표기가 달라 해석을 보류했다. 반면 ID 242의 뷰파인더 AF 모드 설정은 요청 ID 0, 설정 항목 <code>0x57</code>에 single=1 또는 continuous=2를 넣는다. ID 336의 PAF 플래그 설정은 유효한 하위 객체의 <code>+0x89</code> 바이트에 0 또는 1을 직접 기록한다.</p>
+<p><strong>디포커스 값이 만들어지는 단계와 읽히는 단계.</strong> ID 335 <code>GetDefocus</code>는 저장 레코드의 유효 바이트를 검사한다. 무효이면 <code>0x7fffffff</code>를 반환하고 유효하면 마지막 분기 <code>0x52553fd4 → 0x52caa160</code>에서 부호 있는 기존 디포커스 값을 읽는다.</p>
+<p>별도 함수 <code>0x52cd1d20</code>에서는 유효성 조건을 통과한 두 측거 결과를 실제로 계산에 사용한다. <code>0x52cd1f4c</code>와 <code>0x52cd1f64</code>에서 슬롯 0과 1의 값을 읽고, 두 값의 차이 크기가 <strong>60을 초과하면 결합을 건너뛴다</strong>. 통과하면 두 값의 합을 2로 나눠 0 방향으로 절삭한 뒤 <code>0x52cd1fdc</code>에서 슬롯 2에 쓴다. 이 설명은 32비트 덧셈·뺄셈이 넘치지 않는 입력 범위에서 성립한다. 60의 광학 단위는 미확인이다. 이 함수는 측거점별 모드를 사용하고 <code>GetDefocus</code>는 집계 모드를 사용하므로, 두 함수가 같은 슬롯 번호를 쓴다는 사실만으로 직접 생산·소비 관계를 연결하지 않았다. 센서의 원시 위상차로부터 첫 두 값을 얻는 계산도 이번 경로 밖에 있다.</p>
+<h2 id="영상처리">영상처리</h2>
+<p><strong>톤 변환표.</strong> ID 698 <code>IQ_tone</code>은 진단 파일을 처리하는 명령이다. <code>0x5258efd4</code>와 <code>0x5258effc</code>에서 작업 공간 조회와 처리에 같은 하위 함수 <code>0x530b6810</code>을 호출한다. 이 함수는 16비트 항목 256개를 만들고 동일 테이블 포인터를 세 설정 필드에 넣는다. 중간 구간의 연산을 ARM/VFP 명령과 리터럴 상수에서 복원했다. 아래 식은 코드가 사용하는 유효한 입력 순서 <code>lo &lt; mid &lt; hi</code>의 진단 예를 설명한다.</p>
+<ul>
+<li><code>left = mid - lo</code>, <code>right = hi - mid</code>, <code>q = min(left, right) / (hi - lo)</code>.</li>
+<li><code>p = 2.5q² + 0.55q + 0.1</code>. <code>left ≤ right</code>이면 지수는 <code>p</code>, 반대면 <code>1/p</code>다.</li>
+<li>입력 <code>i ≤ lo</code>에는 0, <code>i ≥ hi</code>에는 255를 기록한다. 그 사이는 <code>trunc(0.5 + 255 × ((i-lo)/(hi-lo))^지수)</code>다. 정규화와 지수 계산은 단정밀도 반올림을 거치고, <code>pow</code> 계열 호출 결과의 배율·가산은 배정밀도 명령에서 확인했다.</li>
+</ul>
+<p>진단 기본값 <code>lo=15, hi=240, mid=128</code>에서는 지수가 <strong>1.0068115</strong>다. 호스트에서 반올림을 재현하면 입력 <code>15, 64, 128, 200, 240</code>은 각각 <code>0, 55, 127, 209, 255</code>가 된다. 카메라의 일반 JPEG 촬영에 적용되는 기본 톤 곡선인지는 확인하지 않았다. 디컴파일러의 C 출력에는 부동소수점 반환값을 놓친 표현이 있어 수식 검증에는 역어셈블 명령을 사용했다.</p>
+<p><strong>노이즈 감소.</strong> ID 692 <code>IQ_nr</code>는 <code>0x5258e1b4 → 0x530bc14c</code>에서 다중 스케일 작업 버퍼를 배치하고 용량을 확인하는 경로에 들어간다. 네 개의 하위 경로와 톤 경로가 완료 처리 함수 <code>0x530be7dc</code>를 공유한다. 이 함수는 <code>0x530be7f8 → 0x530bcb74</code>에서 상태를 기다리며 IIP, CNR0, CNR1, DSP 오류를 구분한다. 공통으로 확인된 부분은 완료·오류 처리까지다. 픽셀별 노이즈 필터나 가상 호출 뒤 ISP/DSP 내부의 산술은 미확인이다.</p>
+<h2 id="호출표를-읽는-방법">호출표를 읽는 방법</h2>
+<p>일괄 분석에서 찾은 <strong>직접 호출 위치 17,346곳, 대상 미확정 레지스터 호출 350곳, 분석 창 밖으로 향하는 분기 15곳</strong>을 기록했다. 한 함수가 여러 곳에서 같은 대상을 호출하면 각 호출 위치를 센다. 상세 추적에서 추가한 위치까지 합친 표는 17,914행이다. 각 행에서 호출자 주소, 명령 위치, 종류, 목적지를 읽을 수 있다. <code>call-thumb</code>는 Thumb 상태로 전환하는 직접 호출, <code>call-reg</code>의 <code>-</code>는 미확정 목적지다. <code>branch</code>는 일반 분기이며 호출 수에서 제외했다. <code>evidence</code>는 일괄 CFG, 상세 추적 또는 양쪽에서 얻은 행인지 구분한다. <a href="transfers.tsv">호출·분기 표</a></p>
+<p>상세 대조 범위는 <strong>경계 주소가 서로 다른 디컴파일 함수 36개와 추가 역어셈블 구간 6개</strong>다. 구간 일부만 조사한 경우 호출표의 <code>caller</code>는 조사 구간의 시작을 뜻한다. 각 구간에는 시작·끝 주소와 원본 바이트의 SHA-256을 붙였다. 하위 함수의 영문 설명 이름은 분석용이다. <a href="priority-functions.tsv">검증 구간과 해시</a></p>
+<p>957개 일괄 분석은 각 명령 진입점에서 제어흐름 그래프(CFG)를 만들고, 다음 진입점 주소를 탐색 상한으로 사용했다. 마지막 명령의 상한은 다음 별도 프롤로그 <code>0x525b2cd8</code>이다. 탐색 창에는 리터럴과 다른 코드도 있을 수 있어 <code>cfg_bytes / window_bytes</code>를 소스 복원율로 사용하면 안 된다. 간접 호출은 반환할 수 있다고 모델링했고 스택 보호 실패 함수 <code>0x532fb9c8</code>은 종료점으로 취급했다. 생성한 C에는 타입·호출 규약 오인과 분기 누락이 있다. 예를 들어 상세 추적에서 요청 전송 함수는 484바이트 중 432바이트, 셔터 드라이버 호출 구간은 180바이트 중 60바이트만 해당 디컴파일 CFG에 나타났다. 나머지 동작 설명은 전체 ARM 목록과 직접 대조했다.</p>
+<p><code>c_sha256</code>은 이번 일괄 실행으로 저장한 C 텍스트의 해시다. 같은 버전의 angr로 촬영 명령을 다시 분석해도 지역 구조체와 포인터 표현이 달라지는 경우를 확인했다. 재현 시에는 입력 바이트·명령 주소·호출 목적지를 우선 대조한다.</p>
+<h2 id="재현">재현</h2>
+<p>먼저 <a href="../index.html#재현">기본 분석 절차</a>로 이 버전의 <code>decoded.bin</code>을 만든다. 다음 두 명령은 Python 표준 라이브러리만 사용한다.</p>
+<pre><code class="language-console">python rtos_catalog.py .private/my-decode/decoded.bin --output .private/my-commands.tsv
+python verify_command_analysis.py .private/my-decode/decoded.bin
+</code></pre>
+<p>첫 명령은 원래 이름·주소·분류를 결합한 957행 TSV를 만든다. 공개 표에는 명령 ID별 분석 결과를 담고, 원본 명령표 전문과 생성한 C는 작업 폴더에 보관한다. 두 번째 명령은 분류, 상세 구간 해시 및 17,914개 위치의 ARM 명령 유형과 직접 분기 목적지를 바이너리에서 독립적으로 확인한다. 이 검증은 기계어와 기록의 일치를 검사하며, 모든 함수의 의미를 판정하는 검사는 아니다.</p>
+<p>개별 명령은 <code>angr==10.0.5</code>를 설치한 Python 환경에서 ID로 재현한다. 상세 조사한 함수는 주소로도 지정할 수 있다. 출력은 C 형태의 의사코드다.</p>
+<pre><code class="language-console">python decompile_sample.py .private/my-decode/decoded.bin 39
+python decompile_sample.py .private/my-decode/decoded.bin 0x530b6810
+</code></pre>
+<p>REA의 원시 RTOS 이미지 열기 결과는 <code>unsupported binary format</code>이었다. 이 분석에서는 확인된 적재 주소 <code>0x52500000</code>에서 angr와 Capstone으로 ARM 코드를 읽고, 공개 검증기는 분기 인코딩을 별도로 해석했다. 카메라 실행이나 플래싱은 수행하지 않았다. <a href="../verify_command_analysis.py">분기 검증 코드</a> · <a href="https://docs.angr.io/en/latest/analyses/decompiler.html">angr 디컴파일러</a></p></main>
+<footer><p>원본 펌웨어·추출 계수·디컴파일 C 원문은 로컬에 보관한다. 정적 분석과 합성 실행 결과를 실제 카메라의 픽셀 출력 검증과 구분한다.</p></footer></body></html>

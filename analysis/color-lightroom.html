@@ -1,0 +1,270 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>K-3 Mark III v2.20 컬러모드와 Lightroom 활용 연구</title><style>
+:root{color-scheme:light dark;--bg:#f7f8fa;--paper:#fff;--ink:#182332;--muted:#48596b;--line:#d2dbe5;--accent:#124b8e;--soft:#edf3fa;--focus:#d75f00}
+@media(prefers-color-scheme:dark){:root{--bg:#111821;--paper:#18222d;--ink:#e8edf4;--muted:#b4c2d2;--line:#405369;--accent:#98c8ff;--soft:#223348;--focus:#ffb374}}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.85 system-ui,-apple-system,"Malgun Gothic",sans-serif;word-break:keep-all;overflow-wrap:anywhere}
+a{color:var(--accent);text-underline-offset:.18em}a:hover{text-decoration-thickness:2px}:focus-visible{outline:3px solid var(--focus);outline-offset:4px}
+header,main,footer{max-width:1120px;margin:auto;padding:36px clamp(18px,4vw,56px)}header{padding-top:56px;padding-bottom:24px}main{background:var(--paper);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.eyebrow{color:var(--muted);font-size:.84rem;letter-spacing:.06em}h1{font-size:clamp(1.85rem,4.5vw,3rem);line-height:1.35;letter-spacing:-.025em;margin:12px 0 18px}h2{font-size:1.5rem;line-height:1.5;margin:3.6rem 0 1rem;padding-top:1.2rem;border-top:1px solid var(--line)}h2:first-child{margin-top:0}h3{font-size:1.12rem;margin-top:2rem}p{margin:1rem 0}strong{font-weight:650}.intro{max-width:55em;color:var(--muted)}
+nav{margin-top:25px}nav ul{display:flex;flex-wrap:wrap;gap:8px 22px;list-style:none;padding:0;margin:0}nav ul ul{display:none}nav a{font-size:.9rem}code{font: .88em/1.6 ui-monospace,Consolas,monospace;overflow-wrap:anywhere}pre{background:var(--soft);padding:18px;overflow-x:auto;white-space:pre-wrap;border-radius:5px}pre code{font-size:.82rem}
+.table-scroll{overflow-x:auto;margin:24px 0}table{border-collapse:collapse;width:100%;font-size:.92rem;min-width:530px}th,td{text-align:left;vertical-align:top;padding:14px 16px;border-bottom:1px solid var(--line)}th{background:var(--soft);font-weight:650}td:first-child{min-width:125px}details{border-block:1px solid var(--line);margin-top:24px;padding:16px 0}summary{cursor:pointer;font-weight:650;padding:6px 0}.caption,.meta{font-size:.86rem;color:var(--muted)}
+figure{margin:32px 0;padding:24px 0;border-block:1px solid var(--line)}figcaption{font-size:.95rem;font-weight:650;margin-bottom:20px}.flow{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:32px;list-style:none;padding:0;margin:18px 0}.flow li{position:relative;padding:18px;background:var(--soft);border-radius:6px;line-height:1.6}.flow strong{display:block;font-size:1rem}.flow span{display:block;color:var(--muted);font-size:.86rem;margin-top:9px}.flow li:not(:last-child)::after{content:"→";position:absolute;right:-27px;top:40%;font-size:22px;color:var(--muted)}.second{margin-top:24px}footer{font-size:.88rem;color:var(--muted)}
+@media(max-width:620px){body{font-size:16px}header,main,footer{padding-inline:20px}.flow{grid-template-columns:1fr;gap:26px}.flow li:not(:last-child)::after{content:"↓";right:auto;left:calc(50% - 8px);top:auto;bottom:-28px}.flow li{padding:15px 18px}h2{font-size:1.3rem}nav ul{gap:10px 18px}table{font-size:.87rem}th,td{padding:12px}header{padding-top:30px}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+@media print{body{background:white;color:black;font-size:10pt}header,main,footer{max-width:none;padding:12pt}nav{display:none}a{color:inherit}h2,figure,table{break-inside:avoid}h2{break-after:avoid}main{border:0}.flow li{background:#f1f3f5}.table-scroll{overflow:visible}table{min-width:0}details>*{display:block!important}}
+
+.site-nav{border-block:1px solid var(--line);padding:14px 0;margin:20px 0}.site-nav a{display:inline-block;margin:4px 16px 4px 0}
+.review-note{background:var(--soft);padding:16px 20px;margin:24px 0}.toc{font-size:.92rem}.toc ul{list-style:none;padding-left:0}.toc ul ul{padding-left:20px}
+.branch{margin:18px 0;padding:0 0 0 24px;border-left:3px solid var(--line)}.branch p{margin:8px 0}.diagram-line{padding:12px 16px;background:var(--soft);border-radius:4px}
+</style></head>
+<body><header><div class="eyebrow">PENTAX K-3 MARK III · FIRMWARE 2.20 · 2026-11-07</div><h1>K-3 Mark III v2.20 컬러모드와 Lightroom 활용 연구</h1>
+<nav class="site-nav" aria-label="분석 문서"><a href="../index.html">개요·재현</a><a href="index.html">RTOS 957개</a><a href="dispatch-af.html">셔터·AF</a><a href="color-lightroom.html" aria-current="page">컬러모드·Lightroom</a><a href="color-algorithms.html">색 처리 수식</a><a href="pipeline-report.html">JPEG·ISP 최신 분석</a></nav><p class="review-note">기존 조사 범위를 보존하고 후속 분석으로 해소된 항목을 갱신했다. 현재의 WB·색공간·클리핑 경계는 <a href="pipeline-report.html">JPEG·ISP 최신 보고서</a>에서 확인할 수 있다.</p><details><summary>이 문서의 목차</summary><div class="toc">
+<ul>
+<li><a href="#컬러모드-목록">컬러모드 목록</a></li>
+<li><a href="#raw-현상에서-jpeg-모듈까지">RAW 현상에서 JPEG 모듈까지</a></li>
+<li><a href="#펌웨어-색-변환-데이터">펌웨어 색 변환 데이터</a></li>
+<li><a href="#adobe에서-이미-제공하는-다섯-모드">Adobe에서 이미 제공하는 다섯 모드</a></li>
+<li><a href="#추가-모드를-옮길-수-있는-조건">추가 모드를 옮길 수 있는 조건</a></li>
+<li><a href="#adobe-파일-구조-재확인">Adobe 파일 구조 재확인</a></li>
+</ul>
+</div>
+</details></header><main>
+<p>조사일은 2026-11-07이다. 대상은 이 저장소에서 해시를 검증한 K-3 Mark III v2.20이다. 제조사의 색 표현 설명, 펌웨어에서 확인한 선택값·처리 경로, Adobe 파일에서 측정한 구조를 각각 출처와 함께 기록한다.</p>
+<h2 id="컬러모드-목록">컬러모드 목록</h2>
+<p>실제 셸 선택 테이블 <code>0x5387a414</code>의 22개 레코드와, 공통 모드 값을 리소스 인덱스로 바꾸는 <code>0x53a767d8</code>의 32바이트를 대조했다. 일부 도움말에는 SATOBI 등을 연속 번호로 적어 놓았으나 실제 처리기는 아래 번호를 사용한다. 아래의 enum은 공통 설정의 내부 값이며 EXIF 태그 값으로 해석하면 안 된다. 색 표현은 제조사 설명의 요약이다. <a href="color-resources.json">선택값·리소스 주소·해시</a> · <a href="https://www.ricoh-imaging.co.jp/english/products/custom_image/">리코 일반 모드 설명</a> · <a href="https://www.ricoh-imaging.co.jp/english/products/custom_image/special/index.html">계절 모드 설명</a></p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th scope="col">모드</th>
+<th scope="col">내부 enum → 리소스 인덱스</th>
+<th scope="col">색·톤 특성</th>
+<th scope="col">이 PC의 Adobe Camera Matching</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Auto Select</td>
+<td>0 → 0</td>
+<td>장면에 따라 실제 모드 선택</td>
+<td>고정 프로파일 대응에 하위 선택 필요</td>
+</tr>
+<tr>
+<td>Bright</td>
+<td>2 → 2</td>
+<td>청색·녹색과 선명한 색 표현</td>
+<td>설치 확인</td>
+</tr>
+<tr>
+<td>Natural</td>
+<td>1 → 1</td>
+<td>균형 잡힌 채도·계조</td>
+<td>설치 확인</td>
+</tr>
+<tr>
+<td>Portrait</td>
+<td>3 → 3</td>
+<td>피부의 분홍·마젠타 표현</td>
+<td>설치 확인</td>
+</tr>
+<tr>
+<td>Landscape</td>
+<td>4 → 4</td>
+<td>청색·녹색·노랑 강조</td>
+<td>설치 확인</td>
+</tr>
+<tr>
+<td>Vibrant · miyabi</td>
+<td>5 → 5</td>
+<td>선명한 적·녹·청, 마젠타 계열</td>
+<td>설치 확인</td>
+</tr>
+<tr>
+<td>Radiant · pop</td>
+<td>6 → 6</td>
+<td>높은 채도·대비·키</td>
+<td>추가 매칭 필요</td>
+</tr>
+<tr>
+<td>Muted · honoka</td>
+<td>7 → 7</td>
+<td>낮은 채도·대비, 높은 키</td>
+<td>추가 매칭 필요</td>
+</tr>
+<tr>
+<td>Flat</td>
+<td>8 → 8</td>
+<td>후처리용 낮은 대비</td>
+<td>추가 매칭 필요</td>
+</tr>
+<tr>
+<td>Bleach Bypass</td>
+<td>9 → 9</td>
+<td>낮은 채도·키, 높은 대비</td>
+<td>추가 매칭 필요</td>
+</tr>
+<tr>
+<td>Reversal Film</td>
+<td>10 → 10</td>
+<td>깊은 검정과 고유한 톤 곡선</td>
+<td>추가 매칭 필요</td>
+</tr>
+<tr>
+<td>Monochrome</td>
+<td>11 → 11</td>
+<td>흑백, 색 필터·토닝 조절</td>
+<td>필터·토닝별 매칭 필요</td>
+</tr>
+<tr>
+<td>Cross Processing</td>
+<td>12 → 12</td>
+<td>선택·랜덤 결과에 따른 색 이동</td>
+<td>하위 선택별 매칭 필요</td>
+</tr>
+<tr>
+<td>SATOBI</td>
+<td>23 → 26</td>
+<td>시안 청색, 탁한 노랑, 바랜 빨강</td>
+<td>추가 매칭 필요</td>
+</tr>
+<tr>
+<td>HARUBENI</td>
+<td>24 → 27</td>
+<td>봄의 분홍·빨강 강조</td>
+<td>추가 매칭 필요</td>
+</tr>
+<tr>
+<td>KATEN</td>
+<td>25 → 28</td>
+<td>여름 하늘의 풍부한 청색</td>
+<td>추가 매칭 필요</td>
+</tr>
+<tr>
+<td>KYUSHU</td>
+<td>26 → 29</td>
+<td>절제된 주홍·황색과 깊은 청록</td>
+<td>추가 매칭 필요</td>
+</tr>
+<tr>
+<td>FUYUNO</td>
+<td>27 → 30</td>
+<td>낮은 채도, 푸른 흰색과 높은 키</td>
+<td>추가 매칭 필요</td>
+</tr>
+<tr>
+<td>Gold</td>
+<td>31 → 31</td>
+<td>밝은 영역의 노랑과 어두운 영역의 청색</td>
+<td>추가 매칭 필요</td>
+</tr>
+</tbody>
+</table></div>
+<p>내부 테이블에는 enum 28·29·30을 각각 인덱스 32·33·34로 보내는 Monochrome Standard·Hard·Soft도 있다. 테이블 존재만으로 컬러 센서 K-3 Mark III에서 이 세 항목을 메뉴로 선택할 수 있다고 판단할 수는 없다. Auto Select와 Cross Processing은 선택값을 바꾸는 경로가 있어 위에 보인 직접 인덱스의 기본 레코드만으로 최종 결과를 정할 수 없다. <a href="color-resources.json">모드별 관측 범위</a></p>
+<p>SATOBI는 v1.31, KATEN은 v1.50, KYUSHU는 v1.60, FUYUNO는 v1.70, HARUBENI는 v1.80, Gold는 v2.10에서 추가됐다. 대상 v2.20은 이전 기능을 포함한다. 계절 모드의 카메라 선택에는 렌즈 조건이 있다. KATEN은 HD D FA 21 또는 HD DA 15, KYUSHU는 FA 43·DA 21·40·70, FUYUNO는 FA 31·DA 35 Macro, HARUBENI는 FA 77·DA 20–40 계열이 공식 목록에 있다. 정확한 렌즈 버전은 해당 버전의 제조사 목록을 따른다. <a href="https://www.ricoh-imaging.co.jp/english/support/digital/k-3-3.html">공식 변경 이력과 호환 렌즈</a></p>
+<h2 id="raw-현상에서-jpeg-모듈까지">RAW 현상에서 JPEG 모듈까지</h2>
+<p>RAW 현상 함수 <code>0x52e74574</code>는 진단 문자열로 <code>CreateRawDevelopRecipeSequence</code>에 대응한다. 여기서 <code>0x52e73044</code>를 통해 종류·연산 번호·추가 인수를 갖는 레시피 항목을 쌓는다. RAW 현상의 UI 선택값은 <code>0x529cb350</code>에서 공통 설정값으로 변환된다. 예를 들어 UI 값 6이 SATOBI의 공통 enum 23으로 바뀌고, UI 값 0은 촬영 당시 공통 설정을 읽는다. <a href="deep-evidence.json">추가 분석 구간과 호출 위치</a></p>
+<p><a href="pipeline-report.html">최신 JPEG·ISP 보고서</a>에는 하위 압축기, WB gain 레지스터와 색공간 수신부의 후속 결과가 있다.</p>
+<p>후속 분석에서는 레시피 소비자·모듈 큐·가상 호출을 연결하고, 레시피 operation 4/5가 Develop1/2, 7이 JPEG, 8이 StoreImage임을 확인했다. Develop은 파생 ImageTuning 구현을 거쳐 앞서 찾은 색·감마·톤 함수를 호출한다. 팩토리 번호는 이보다 1 크므로 서로 혼용하면 안 된다. <a href="color-algorithms.html">정확한 번호·레시피·호출 관계</a></p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th scope="col">추적 단계</th>
+<th scope="col">확인한 코드·데이터</th>
+<th scope="col">남은 연결</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RAW 현상 레시피 구성</td>
+<td><code>0x52e74574 → 0x52e73044</code>, 소비자 <code>0x52e9e520</code>와 모듈 제출, 네 입력의 246개 항목 확인</td>
+<td>나머지 연산의 의미와 전체 실동작</td>
+</tr>
+<tr>
+<td>Custom Image 선택값 변환</td>
+<td><code>0x529cb350</code>, 공통 설정 <code>+0x264e</code></td>
+<td>현상 상태에 따른 모든 파라미터 전달</td>
+</tr>
+<tr>
+<td>ImageTuning 설정</td>
+<td><code>0x53127b28</code>에서 모드 읽기, <code>0x53129e78</code>에서 리소스 선택</td>
+<td>WB·센서 보정과의 수치 조합</td>
+</tr>
+<tr>
+<td>색·톤 파라미터 계산</td>
+<td><code>0x5312a8fc</code>에서 색 행렬·감마·톤 등의 설정 함수 호출</td>
+<td>하드웨어 픽셀 처리 순서와 각 단계의 비트 폭</td>
+</tr>
+<tr>
+<td>JPEG 처리 모듈 생성·실행</td>
+<td>팩토리 8번 <code>0x52e615fc → 0x52e5eea0</code>, 레시피 operation 7이 <code>0x52e5eca0</code> 실행 및 하위 객체 제출에 연결</td>
+<td>하위 JPEG 드라이버·Y/CbCr 주소·완료 콜백은 후속 확인. 모든 픽셀 형식·서브샘플링은 미확정</td>
+</tr>
+</tbody>
+</table></div>
+<p><code>0x5312a8fc</code>의 설정 호출에서는 ColorMatrix, MultiAxial, 휘도 노이즈 감소, YCbCrMatrix, ColorReference, 좌표 스케일, 색 LPF, 에지 강조, YCbCr 연산, Gamma, ToneControl, 리사이즈·필터 설정을 확인했다. 팩토리에는 PixelCorrect, WbCalc, RawWbCalc, Develop1·2, BackResize, RawCodec 등의 생성 경로도 있다. 이 증거는 생산용 RAW 현상·영상 설정·JPEG 모듈의 위치를 특정한다. 설정 함수의 호출 순서를 센서 픽셀이 하드웨어를 통과하는 순서로 그대로 해석할 수는 없다. 전체 RAW→JPEG 버퍼 흐름과 완료 콜백 연결은 일부 미해결이다. <a href="deep-evidence.json">바이트 해시와 직접 호출 증거</a></p>
+<h2 id="펌웨어-색-변환-데이터">펌웨어 색 변환 데이터</h2>
+<p>부팅 코드의 리터럴 <code>RTOS+0x450</code>은 원본 <code>0x53ce7d40</code>에서 RAM <code>0x54500000</code>으로 <code>0x65a80</code>바이트를 옮기도록 지정한다. 이 대응으로 초기화된 RAM의 리소스 포인터를 BIN의 원본 바이트까지 역추적했다. ColorMatrix·MultiAxial·YCbCrMatrix의 포인터 배열은 각각 3행×35항이며 조사한 세 행의 값은 동일했다. 다만 실행 후 RAM이 변경되는지는 별도 관측이 필요하다. <a href="color-resources.json">원본 오프셋과 83개 관측 구간</a> · <a href="../verify_deep_analysis.py">독립 검증기</a></p>
+<p><strong>후속 추적에 따른 명칭 정정:</strong> 이전에 ColorReference라고 기록한 <code>0x54561b58</code> 표는 <code>0x5313f5c8 → 파라미터 +0x18 → 0x53132698</code>로 이어지며, 할당 시 진단 이름은 <code>m_YCbCrMatrixTuning</code>이다. 실제 ColorReference는 파라미터 <code>+0x28</code>을 사용한다. 기존 주소·해시·모드 매핑은 유지하고 공개 JSON의 해당 키를 <code>ycbcrmatrix</code>·<code>ycbcrmatrix_pointer</code>로 바로잡았다. <a href="color-algorithms.html">상세 알고리즘과 호출 근거</a></p>
+<p>ImageTuning의 선택 함수 <code>0x53129e78</code>은 모드 인덱스를 계산하고 <code>0x5313f570</code>, <code>0x5313f59c</code>, <code>0x5313f5c8</code>에서 세 종류의 리소스 포인터를 얻는다. ColorMatrix 디스크립터의 선두 필드는 공통 행렬, 모드별 행렬, 필터별 행렬 포인터 배열을 가리킨다. 3×3 행렬의 각 원소는 signed 16-bit이고 곱셈 함수 <code>0x5312cd40</code>은 내적에 <code>4096</code>을 더한 뒤 13비트를 이동하고 하위 16비트를 저장한다. 따라서 단위 계수는 <code>8192</code>인 Q13이다. 자연색 모드의 개별 행렬은 단위행렬이지만 앞에 공통 행렬과 다른 색 처리 단계가 있다. <a href="color-resources.json">선택 레코드와 피연산자 해시</a></p>
+<p>위 행렬 함수의 실제 ARM 바이트를 Unicorn 2.1.4의 Cortex-A7 모델에서 실행했다. 단위행렬, 부호 혼합, 0, int16 최댓값·최솟값과 난수 행렬을 포함한 21개 사례에서 독립 계산과 일치했다. 32비트 누산의 wraparound, 반올림 상수, 논리 우측 이동과 16비트 저장을 반영했다. 이 실험은 행렬 산술을 검증하며 센서 RGB·XYZ·작업 RGB 중 어느 좌표계인지까지 증명하지 않는다. <a href="numerical-checks.json">실행 결과</a> · <a href="../verify_numeric_kernels.py">재현 코드</a></p>
+<p>Gold는 별도의 R·G·B 곡선 <code>0x53c1557c</code>, <code>0x53c1598c</code>, <code>0x53c15d8c</code>를 고르며 각 곡선의 확인된 구간은 uint16 256항이다. Reversal Film은 일반 감마 생성 경로와 다른 분기를 사용한다. 로컬 저장 자료에는 실제 모드별 행렬과 이 곡선들의 원본 바이트가 포함된다. 공개 자료에는 주소·크기·해시를 기록했다. 전 단계의 보정값, 보간 규칙, 좌표계와 출력 단계가 함께 확인되어야 정확한 Adobe 변환으로 이어질 수 있다. <a href="color-resources.json">곡선과 모드별 리소스 색인</a></p>
+<h2 id="adobe에서-이미-제공하는-다섯-모드">Adobe에서 이미 제공하는 다섯 모드</h2>
+<p>조사 PC의 Adobe 공용 CameraProfiles 폴더에서 K-3 Mark III 전용 <strong>Camera Bright, Camera Natural, Camera Portrait, Camera Landscape, Camera Vibrant</strong> DCP를 확인했다. 각 파일의 <code>UniqueCameraModel</code>은 <code>PENTAX K-3 Mark III</code>다. Adobe 공식 지원표에도 이 모델의 DNG·PEF 및 Camera Matching 지원이 명시되어 있다. 최소 지원 버전은 Camera Raw 13.3, Lightroom 4.3, Lightroom Classic 10.3이다. <a href="https://helpx.adobe.com/camera-raw/desktop/dng-and-file-formats/camera-raw-plug-supported-cameras.html">Adobe 카메라 지원표</a></p>
+<p>이 다섯 파일은 각각 다음 구조를 갖는다. 수치는 설치된 파일의 IFD를 직접 읽어 확인했다. 배열의 실제 계수는 공개 자료에서 제외했다. <a href="adobe-profiles.json">파일별 크기·태그·SHA-256</a> · <a href="../inspect_adobe_profiles.py">읽기 전용 검사 도구</a></p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th scope="col">항목</th>
+<th scope="col">측정 결과</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ColorMatrix1·2</td>
+<td>각 3×3, 다섯 모드 간 동일</td>
+</tr>
+<tr>
+<td>ForwardMatrix1·2</td>
+<td>각 3×3, 다섯 모드가 서로 다른 값</td>
+</tr>
+<tr>
+<td>CalibrationIlluminant1·2</td>
+<td>17, 21</td>
+</tr>
+<tr>
+<td>ProfileToneCurve</td>
+<td>FLOAT 128개, 입력·출력 64쌍</td>
+</tr>
+<tr>
+<td>ProfileLookTableDims</td>
+<td>색상 36 × 채도 8 × 명도 16</td>
+</tr>
+<tr>
+<td>ProfileLookTableData</td>
+<td>FLOAT 13,824개 = 4,608격자 × 3성분</td>
+</tr>
+<tr>
+<td>ProfileLookTableEncoding</td>
+<td>1</td>
+</tr>
+</tbody>
+</table></div>
+<p>톤 곡선과 LookTable은 각각 Bright·Landscape가 같은 바이트를 쓰고, Natural·Portrait·Vibrant가 또 다른 같은 바이트를 쓴다. 그러나 ForwardMatrix는 다섯 모드 모두 다르다. 따라서 이 파일들의 차이를 톤 곡선이나 LUT 하나만으로 설명할 수 없다. Adobe Standard DCP도 별도로 확인했으며, 그 파일의 HueSatMap 크기는 90×30×1이고 두 조명용 데이터가 들어 있다. <a href="adobe-profiles.json">태그별 해시</a></p>
+<p>Lightroom에서 K-3 Mark III의 원본 DNG 또는 PEF를 열고 프로파일 브라우저의 Camera Matching 그룹에서 위 모드를 선택하는 경로를 사용할 수 있다. Adobe는 Camera Matching을 카메라 JPEG의 색·톤에 대응시키는 프로파일로 설명한다. 설치 파일의 존재와 구조는 확인했으며, 실제 RAW를 열어 각 프로파일을 적용하는 UI·픽셀 비교는 수행하지 않았다. <a href="https://helpx.adobe.com/camera-raw/desktop/edit-and-enhance-images/tone-and-color/adjust-color-rendering-camera-camera.html">Adobe 프로파일 설명</a></p>
+<h2 id="추가-모드를-옮길-수-있는-조건">추가 모드를 옮길 수 있는 조건</h2>
+<p>DCP는 카메라 모델별 센서 색 변환, 조명, HSV 보정표, 톤 곡선을 기술한다. Adobe 규격의 LookTable은 노출 보정 이후, 톤 곡선 이전에 적용하는 HSV 변환이며, 펌웨어의 ISP용 배열을 그대로 넣으려면 좌표계·정규화·적용 순서가 모두 대응해야 한다. 이번 파일 검사에서 발견한 Adobe의 36×8×16 크기는 Adobe 파일의 구조를 뜻한다. 펌웨어의 표 크기에 대한 근거로 사용할 수는 없다. <a href="https://helpx.adobe.com/content/dam/help/en/camera-raw/digital-negative/jcr_content/root/content/flex/items/position/position-par/download_section_733958301/download-1/DNG_Spec_1_7_1_0.pdf">DNG 1.7.1 규격, 49–57·100–104쪽</a></p>
+<p>추가적인 색 표현은 <strong>기준 DCP를 고정한 XMP Enhanced Profile</strong>로 구성할 수 있다. Adobe SDK는 DCP 이후의 HSV LookTable과 처리 후반부의 RGB→RGB LUT를 구별한다. SDK의 생성 절차에서는 <code>.cube</code> LUT를 Camera Raw의 새 프로파일에 넣을 수 있으며, 2018 SDK가 설명하는 최대 크기는 32³이다. SATOBI·Gold처럼 색조를 바꾸는 효과에 적용할 수 있는 형식이다. 효과별 실제 계수와 카메라 출력 대조가 있어야 해당 모드와의 일치도를 판단할 수 있다. <a href="https://helpx.adobe.com/camera-raw/desktop/dng-and-file-formats/digital-negative.html">Adobe Profiles SDK 안내</a> · <a href="https://download.adobe.com/pub/adobe/lightroom/profile-sdk/ACR_and_Lightroom_Profile_SDK.zip">SDK ZIP의 Enhanced Profiles.pdf, 1–3·8–10·18–20쪽</a></p>
+<p>실제 매칭 프로파일 제작에는 다음 자료가 필요하다. 아래 절차는 후속 실험 설계이며 색차 측정 결과는 아직 없다.</p>
+<ol>
+<li>같은 RAW를 카메라의 RAW 현상으로 각 Custom Image의 JPEG 또는 TIFF로 출력한다. 모드, 세부 파라미터, 화이트밸런스, 노출 보정, 색공간, 렌즈 보정, 명료도와 노이즈 감소 설정을 기록한다. 리코는 RAW 현상에서 Custom Image와 이러한 설정을 변경할 수 있다고 명시한다. <a href="https://www.ricoh-imaging.co.jp/english/products/k-3-3/spec/">K-3 Mark III 사양의 RAW Development</a></li>
+<li>동일 RAW를 Adobe에서 고정한 기준 DCP, 화이트밸런스, 노출과 자동 보정 설정으로 현상한다. 두 결과를 같은 색공간으로 변환하고, 계조 차트·색 패치·피부·식생·고채도 장면을 확보한다. 두 조명 이상과 노출 변화, 별도 검증 장면을 사용해 특정 사진에만 맞는 변환을 피한다.</li>
+<li>색·톤 변환을 추정해 XMP의 HSV 표 또는 RGB LUT로 표현한다. Adobe의 처리 단계에 맞춰 표의 입력·출력 색공간을 고정하고, 기준 DCP에 이미 들어 있는 톤·색 변환의 중복 적용을 확인한다.</li>
+<li>제작에 쓰지 않은 장면에서 평균·상위 분위 색차, 중성축·피부색 오차, 하이라이트 클리핑과 계조를 비교한다. 위치에 따라 달라지는 샤프닝·노이즈 감소·렌즈 보정과 장면 적응형 처리는 LUT만으로 일치시킬 수 없어 따로 평가한다.</li>
+</ol>
+<p>Auto Select는 장면별 모드 선택을 포함하고, Cross Processing은 랜덤·프리셋·저장된 선택에 따라 결과가 달라진다. 고정 프로파일 제작 시에는 실제 선택된 하위 모드나 특정 결과를 대상으로 삼아야 한다. Monochrome은 필터·토닝 설정별로 목표가 달라진다. <a href="https://www.ricoh-imaging.co.jp/english/products/k-3-3/spec/">리코 제품 사양</a> · <a href="https://www.ricoh-imaging.co.jp/english/products/custom_image/">리코 Custom Image 설명</a></p>
+<p>현재 확인된 다섯 Adobe 프로파일은 바로 활용할 수 있는 기존 후보이고, 추가 모드는 검증용 RAW와 목표 출력, 색 처리 계수의 연결을 더 확보해야 한다. 이번 연구에서 새 <code>.dcp</code>·<code>.xmp</code>의 카메라 매칭 정확도나 RAW→JPEG 전체 픽셀 일치도를 입증한 결과는 없다.</p>
+<h2 id="adobe-파일-구조-재확인">Adobe 파일 구조 재확인</h2>
+<p>사용자가 설치한 프로파일을 입력으로 지정한다. 검사기는 모델명, 프로파일명, 표 크기와 데이터 해시만 출력한다.</p>
+<pre><code class="language-powershell">python inspect_adobe_profiles.py --self-test
+python inspect_adobe_profiles.py "C:\ProgramData\Adobe\CameraRaw\CameraProfiles\Camera\Pentax K-3 Mark III\PENTAX K-3 Mark III Camera Bright.dcp"
+</code></pre></main>
+<footer><p>원본 펌웨어·추출 계수·디컴파일 C 원문은 로컬에 보관한다. 정적 분석과 합성 실행 결과를 실제 카메라의 픽셀 출력 검증과 구분한다.</p></footer></body></html>
