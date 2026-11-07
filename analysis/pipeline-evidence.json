@@ -1,0 +1,770 @@
+{
+  "rtos_sha256": "342d2f35405e8daf1797dfe431d2e4aa70f4b52a2c242a29df48206672f1dfb4",
+  "scope": "Authored semantic metadata; addresses are covered by deep-evidence.json. Static indirect bindings depend on stated initialization. Numeric checks do not execute physical peripherals.",
+  "jpeg": {
+    "relationships": [
+      {
+        "label": "pipe lower driver",
+        "caller": "0x5304c488",
+        "factory_call": "0x5304c4e0",
+        "factory": "0x5320bb24",
+        "factory_child_offset": "0x4",
+        "child_store_site": "0x5304c4ec",
+        "child_offset": "0x54",
+        "constructor_call": "0x5320ba88",
+        "constructor": "0x5320a790"
+      },
+      {
+        "label": "driver register object",
+        "factory": "0x5320e720",
+        "constructor_call": "0x5320e748",
+        "constructor": "0x5320bbfc",
+        "register_id": "0x15e",
+        "register_call": "0x5320e780",
+        "lookup_call": "0x5320a6f8",
+        "consumer_store": "0x5320a704",
+        "consumer_offset": "0x24",
+        "status": "registration and lookup ID match; order/runtime registry contents not observed"
+      },
+      {
+        "label": "image IRQ register object",
+        "register_id": "0x14e",
+        "constructor": "0x53205b34",
+        "constructor_call_variants": [
+          "0x532046e8",
+          "0x53204e18"
+        ],
+        "register_calls": [
+          "0x5320471c",
+          "0x53204e4c"
+        ],
+        "lookup_call": "0x531fc3c4",
+        "consumer_store": "0x531fc3d0",
+        "consumer_offset": "0x34",
+        "status": "alternative source factory fragments; runtime variant unobserved"
+      },
+      {
+        "label": "image IRQ JPEG branch",
+        "input": "0xd5",
+        "dispatch": "0x53201c24",
+        "table_slot": "0x53201ec0",
+        "case": "0x53202000",
+        "tail_site": "0x53202008",
+        "target": "0x53201640",
+        "limit": "Input ID to this dispatcher; physical CPU vector and external IRQ number are not proved."
+      },
+      {
+        "label": "encode completion",
+        "source": "0x64",
+        "predicate": "status bit 31 and driver+0x50 == 0",
+        "code_length_call": "0x5320abf4",
+        "code_length_register": "0x298c0020",
+        "event": "0x00e00001",
+        "invoke_site": "0x5320ac08",
+        "pipe_length_store": "0x5304c718",
+        "pipe_event_set": "0x5304c724",
+        "wait_call": "0x5304c8c4",
+        "output_length_store": "0x5304c8dc",
+        "macro_done_call": "0x5304cffc"
+      }
+    ],
+    "descriptor_fields": {
+      "input": {
+        "0x4": "Y buffer address",
+        "0x8": "CbCr buffer address",
+        "0x10": "u16 width",
+        "0x12": "u16 height",
+        "0x14": "u16 stride bytes"
+      },
+      "output": {
+        "0x0": "code buffer address",
+        "0x4": "target code bytes for quality policy",
+        "0x8": "buffer capacity bytes",
+        "0xc": "actual length written after completion",
+        "0x10": "u8 format enum 1 or 2",
+        "0x12": "u16 copied to register +0x14; semantic unresolved",
+        "0x14": "quality + 1000*retry count, stored by quality policy"
+      },
+      "driver_parameter": {
+        "0x0": "Y address",
+        "0x4": "CbCr address",
+        "0x8": "code address",
+        "0xc": "u16 stride",
+        "0xe": "u16 width",
+        "0x10": "u16 height",
+        "0x12": "u16 unknown register field",
+        "0x14": "capacity bytes",
+        "0x1c": "quality argument, Q/10 is percentage input to quantization",
+        "0x20": "u8 prepass/scaling flag",
+        "0x21": "u8 scale selector; 2/4/8 cases",
+        "0x22": "u8 format enum 1/2",
+        "0x23": "u8 control to register +0x24 bit 1"
+      },
+      "evidence": "pipe_submit_compression.asm.txt and driver_encode.asm.txt; semantic Y/CbCr/Code names also retained in register helper diagnostic strings"
+    },
+    "mmio": [
+      {
+        "base": "0x298c0000",
+        "offset": "0x0",
+        "address": "0x298c0000",
+        "sites": [
+          "0x5320bc48"
+        ],
+        "width": 32,
+        "operation": "RMW low 3 bits = parameter+0x22, 1 or 2",
+        "meaning": "format enum; 4:2:2/4:2:0 names not proved"
+      },
+      {
+        "base": "0x298c0000",
+        "offset": "0x4",
+        "address": "0x298c0004",
+        "sites": [
+          "0x5320bd78",
+          "0x5320bd90"
+        ],
+        "width": 32,
+        "operation": "OR bit0 to start; OR bit31 to reset",
+        "meaning": "hardware control"
+      },
+      {
+        "base": "0x298c0000",
+        "offset": "0x430",
+        "address": "0x298c0430",
+        "sites": [
+          "0x5320c420"
+        ],
+        "width": 32,
+        "operation": "store input descriptor+4; assert 8-byte aligned",
+        "meaning": "Y DMA address"
+      },
+      {
+        "base": "0x298c0000",
+        "offset": "0x434",
+        "address": "0x298c0434",
+        "sites": [
+          "0x5320c478"
+        ],
+        "width": 32,
+        "operation": "store input descriptor+8; assert 8-byte aligned",
+        "meaning": "CbCr DMA address"
+      },
+      {
+        "base": "0x298c0000",
+        "offset": "0x440",
+        "address": "0x298c0440",
+        "sites": [
+          "0x5320c4d0"
+        ],
+        "width": 32,
+        "operation": "store output descriptor+0; assert 8-byte aligned",
+        "meaning": "coded-output DMA address"
+      },
+      {
+        "base": "0x298c0000",
+        "offset": "0x458",
+        "address": "0x298c0458",
+        "sites": [
+          "0x5320c4e4"
+        ],
+        "width": 32,
+        "operation": "store capacity >> 9 for full-resolution path, zero for prepass",
+        "meaning": "output limit in 512-byte units"
+      },
+      {
+        "base": "0x298c0000",
+        "offset": "0x410",
+        "address": "0x298c0410",
+        "sites": [
+          "0x5320c1f8"
+        ],
+        "width": 32,
+        "operation": "RMW low20 bits from stride",
+        "meaning": "Y stride; byte-unit input"
+      },
+      {
+        "base": "0x298c0000",
+        "offset": "0x414",
+        "address": "0x298c0414",
+        "sites": [
+          "0x5320c264"
+        ],
+        "width": 32,
+        "operation": "RMW low20 bits from stride",
+        "meaning": "CbCr stride; byte-unit input"
+      },
+      {
+        "base": "0x298c0000",
+        "offset": "0x418",
+        "address": "0x298c0418",
+        "sites": [
+          "0x5320c290"
+        ],
+        "width": 32,
+        "operation": "RMW low16 bits from working width",
+        "meaning": "input width"
+      },
+      {
+        "base": "0x298c0000",
+        "offset": "0x41c",
+        "address": "0x298c041c",
+        "sites": [
+          "0x5320c2a4"
+        ],
+        "width": 32,
+        "operation": "RMW low16 bits from working height",
+        "meaning": "input height"
+      },
+      {
+        "base": "0x298c0000",
+        "offset": "0x14",
+        "address": "0x298c0014",
+        "sites": [
+          "0x5320becc"
+        ],
+        "width": 32,
+        "operation": "RMW low16 bits from parameter+0x12",
+        "meaning": "semantic unresolved"
+      },
+      {
+        "base": "0x298c0000",
+        "offset": "0x18",
+        "address": "0x298c0018",
+        "sites": [
+          "0x5320bef4"
+        ],
+        "width": 32,
+        "operation": "RMW low16 bits from adjusted height",
+        "meaning": "coded height"
+      },
+      {
+        "base": "0x298c0000",
+        "offset": "0x1c",
+        "address": "0x298c001c",
+        "sites": [
+          "0x5320bf08"
+        ],
+        "width": 32,
+        "operation": "RMW low16 bits from adjusted width",
+        "meaning": "coded width"
+      },
+      {
+        "base": "0x298c0000",
+        "offset": "0x400",
+        "address": "0x298c0400",
+        "sites": [
+          "0x5320c064",
+          "0x5320c024"
+        ],
+        "width": 32,
+        "operation": "RMW bits4..5 scale code 0/1/2/3; bits14..15=1 for start",
+        "meaning": "scale/control"
+      },
+      {
+        "base": "0x298c0000",
+        "offset": "0x404",
+        "address": "0x298c0404",
+        "sites": [
+          "0x5320c104",
+          "0x5320c0a4"
+        ],
+        "width": 32,
+        "operation": "RMW bit1 prepass flag; bits14..15=1 for start",
+        "meaning": "DMA/control"
+      },
+      {
+        "base": "0x298c0000",
+        "offset": "0x100",
+        "address": "0x298c0100",
+        "sites": [
+          "0x5320ad6c"
+        ],
+        "width": 32,
+        "operation": "16 sequential words: q0<<24|q1<<16|q2<<8|q3",
+        "meaning": "first quantization bank, 64 coefficients"
+      },
+      {
+        "base": "0x298c0000",
+        "offset": "0x140",
+        "address": "0x298c0140",
+        "sites": [
+          "0x5320adfc"
+        ],
+        "width": 32,
+        "operation": "16 sequential words: q0<<24|q1<<16|q2<<8|q3",
+        "meaning": "second quantization bank, 64 coefficients"
+      },
+      {
+        "base": "0x298c0000",
+        "offset": "0x20",
+        "address": "0x298c0020",
+        "sites": [
+          "0x5320bf3c"
+        ],
+        "width": 32,
+        "operation": "load u32",
+        "meaning": "actual coded length returned to pipe"
+      },
+      {
+        "base": "0x298c0000",
+        "offset": "0x480",
+        "address": "0x298c0480",
+        "sites": [
+          "0x53205bb0",
+          "0x53205bd0"
+        ],
+        "width": 32,
+        "operation": "read &0xafc7d000; acknowledge by writing masked status",
+        "meaning": "source 0x63 status"
+      },
+      {
+        "base": "0x298c0000",
+        "offset": "0x2c",
+        "address": "0x298c002c",
+        "sites": [
+          "0x53205c14",
+          "0x53205c2c"
+        ],
+        "width": 32,
+        "operation": "read &0xc000071f; acknowledge by writing ~status",
+        "meaning": "source 0x64 status"
+      },
+      {
+        "base": "0x298c0000",
+        "offset": "0x484",
+        "address": "0x298c0484",
+        "sites": [
+          "0x53205b7c"
+        ],
+        "width": 32,
+        "operation": "write mask &0x00c7d000",
+        "meaning": "source 0x63 mask"
+      },
+      {
+        "base": "0x298c0000",
+        "offset": "0x28",
+        "address": "0x298c0028",
+        "sites": [
+          "0x53205bec"
+        ],
+        "width": 32,
+        "operation": "write mask &0x8000071f",
+        "meaning": "source 0x64 mask"
+      }
+    ],
+    "quantization": {
+      "function": "0x5320ac78",
+      "quality_domain_tested": [
+        1,
+        1000
+      ],
+      "definition": "q=float32(Q/10); if q<=50 scale=trunc_u32(float32(float32(50/q)*1000)); else scale=trunc_u32(float32(float32(float32(100-q)/50)*1000)); coefficient=clamp((((uint32)(scale*T+500))*uint64(0x10624dd3))>>38,1,255). Every floating operation rounds to float32.",
+      "mirror_addresses": [
+        "0x547bd374",
+        "0x547bd3b4"
+      ],
+      "tables": [
+        "0x53c92f94",
+        "0x53c91a40"
+      ],
+      "test_file": "jpeg-quantization-checks.json",
+      "test_script": "../verify_jpeg_quantization.py",
+      "test_cases": 4000,
+      "test_entries": 512000,
+      "test_words": 128000,
+      "test_scope": "Whole original ARM quantization routine and register helpers, synthetic table replacements, inert MMIO RAM; no firmware call stubs or hardware execution."
+    },
+    "coverage_notes": [
+      "All function jobs have genuine bounded angr C. The separate fragments explicitly have no full-function C claim. Inline literal/jump-table words are excluded from instruction coverage.",
+      "Unedited C may contain inferred types, undefined helper prototypes and incorrect structure names; source instructions remain authoritative.",
+      "Logical graph is source-backed and class/registration-conditional. It is not a physical camera trace or proof of boot-time object/order selection."
+    ],
+    "limitations": [
+      "Actual hardware DCT, quantized-block production and entropy coder internals are not recovered. This path programs a JPEG hardware engine; no CPU DCT/Huffman loop was reached.",
+      "No vendor register specification was available; format values 1/2, stride, addresses and alignment are proved from code but precise chroma-subsampling names are not.",
+      "Physical interrupt vector upstream of ImageInterruptService input 0xd5 is untraced.",
+      "No DMA cache/coherency/peripheral timing or output JPEG file correctness test. MMIO numeric test uses inert RAM.",
+      "Quality search/retry policy is statically traced, not numerically replayed end to end. Zero/out-of-domain quality values are untested.",
+      "Full RTOS registration/boot paths and runtime object contents are not executed. Original tables/raw C stay local."
+    ]
+  },
+  "isp": {
+    "registry_binding": {
+      "factory": "0x53260824",
+      "constructor": "0x53260538",
+      "register_call": "0x52f13774",
+      "registry_store": "0x52f138f0",
+      "lookup": "0x52f1390c",
+      "lookup_load": "0x52f13944",
+      "driver_lookup_call": "0x5324e5ec",
+      "driver_object_store": "0x5324e614",
+      "condition": "registration and hardware initialization succeeded, lookup returns the same RTTI-compatible object",
+      "instances": [
+        {
+          "index": 0,
+          "id": "0x163",
+          "register_base": "0x28418000",
+          "table_aperture": "0x294a0000",
+          "constructor_call": "0x5326085c",
+          "registration_call": "0x53260894"
+        },
+        {
+          "index": 1,
+          "id": "0x164",
+          "register_base": "0x28518000",
+          "table_aperture": "0x295a0000",
+          "constructor_call": "0x532608c8",
+          "registration_call": "0x532608f8"
+        },
+        {
+          "index": 2,
+          "id": "0x165",
+          "register_base": "0x28618000",
+          "table_aperture": "0x296a0000",
+          "constructor_call": "0x5326092c",
+          "registration_call": "0x5326095c"
+        }
+      ]
+    },
+    "field_flow": [
+      {
+        "from": "Develop macro",
+        "field": "0x9984",
+        "to": "R2y parameter P",
+        "sites": [
+          "0x52e5a9dc",
+          "0x52e5a9fc",
+          "0x52e5aa10"
+        ]
+      },
+      {
+        "from": "macro+0x44",
+        "to": "P+0x94",
+        "sites": [
+          "0x52e597cc",
+          "0x52e597d4",
+          "0x52e599c0",
+          "0x52e599c8"
+        ]
+      },
+      {
+        "from": "settings+0x120",
+        "to": "packed CustomImage C",
+        "sites": [
+          "0x5312b330",
+          "0x5312b460"
+        ]
+      },
+      {
+        "from": "P+0x94 -> settings+0x120",
+        "to": "lower config+0x644",
+        "length": "0x5d24",
+        "copy_call": "0x5307fe20"
+      },
+      {
+        "from": "P+0x98..0x9e",
+        "to": "lower config+0..6",
+        "sites": [
+          "0x5307fe38",
+          "0x5307fe44",
+          "0x5307fe4c",
+          "0x5307fe50"
+        ]
+      },
+      {
+        "from": "lower config+0x644",
+        "to": "532512cc input r2",
+        "sites": [
+          "0x53253fe4",
+          "0x53253fec",
+          "0x53253ffc"
+        ],
+        "condition": "config update flag+6 and earlier selected configuration operations succeed"
+      },
+      {
+        "from": "C+0x20..0x30",
+        "to": "register base+0xa0..0xb0, low/high12-bit fields",
+        "sites": [
+          "0x53251314",
+          "0x53251324",
+          "0x5325132c",
+          "0x53256a60",
+          "0x53256ce8",
+          "0x53256d00"
+        ],
+        "meaning": "packed matrix coefficient bits, not pixel clamp"
+      },
+      {
+        "from": "C+0x1080/82/84/86",
+        "to": "register base+0x2000/+0x2004, low/high10-bit fields",
+        "sites": [
+          "0x53251c98",
+          "0x53251ca8",
+          "0x53256a88",
+          "0x5325e964"
+        ],
+        "meaning": "ToneControl packed parameters; precise hardware interpretation unproved"
+      },
+      {
+        "from": "C+0x10c0 flags",
+        "to": "register base+0x2040",
+        "sites": [
+          "0x53251ce0",
+          "0x53251cec",
+          "0x53256a90",
+          "0x5325e9e0"
+        ]
+      },
+      {
+        "from": "C+0x10e0 bits0,1,4,5 and C+0x10e1 bit0",
+        "to": "register base+0x2060 bits0,1,4,5,8",
+        "sites": [
+          "0x53251e34",
+          "0x53251e44",
+          "0x53251e88",
+          "0x53256a50",
+          "0x5325ec70",
+          "0x5325ece0"
+        ]
+      }
+    ],
+    "table_copies": [
+      {
+        "label": "ToneControl generated LUT",
+        "packed_offset": "0x1568",
+        "bytes": 2048,
+        "aperture_offset": "0x0",
+        "producer_call": "0x5313795c",
+        "consumer_call": "0x53253d04",
+        "address_getter": "0x53260594"
+      },
+      {
+        "label": "unassigned table",
+        "packed_offset": "0x1d68",
+        "bytes": 2048,
+        "aperture_offset": "0x8000",
+        "consumer_call": "0x53253d1c",
+        "address_getter": "0x5326059c"
+      },
+      {
+        "label": "Gamma generated buffer 0",
+        "object_offset": "0xa08",
+        "packed_offset": "0x2568",
+        "bytes": 2048,
+        "aperture_offset": "0x8800",
+        "producer_call": "0x53135cf0",
+        "consumer_call": "0x53253d34",
+        "address_getter": "0x532605a8"
+      },
+      {
+        "label": "Gamma generated buffer 1",
+        "object_offset": "0x1208",
+        "packed_offset": "0x2d68",
+        "bytes": 2048,
+        "aperture_offset": "0x9000",
+        "producer_call": "0x53135d08",
+        "consumer_call": "0x53253d4c",
+        "address_getter": "0x532605b4"
+      },
+      {
+        "label": "Gamma generated buffer 2",
+        "object_offset": "0x1a08",
+        "packed_offset": "0x3568",
+        "bytes": 2048,
+        "aperture_offset": "0x9800",
+        "producer_call": "0x53135d20",
+        "consumer_call": "0x53253d64",
+        "address_getter": "0x532605c0"
+      },
+      {
+        "label": "Gamma generated buffer 3",
+        "object_offset": "0x2208",
+        "packed_offset": "0x3d68",
+        "bytes": 2048,
+        "aperture_offset": "0xa000",
+        "producer_call": "0x53135d38",
+        "consumer_call": "0x53253d7c",
+        "address_getter": "0x532605cc"
+      },
+      {
+        "label": "unassigned table",
+        "packed_offset": "0x4568",
+        "bytes": 512,
+        "aperture_offset": "0xa800",
+        "consumer_call": "0x53253d94",
+        "address_getter": "0x532605d8"
+      },
+      {
+        "label": "Gamma auxiliary buffer 0",
+        "packed_offset": "0x4768",
+        "bytes": 512,
+        "aperture_offset": "0xaa00",
+        "consumer_call": "0x53253dac",
+        "address_getter": "0x532605e4",
+        "object_offset": "0x204",
+        "producer_call": "0x53135d4c"
+      },
+      {
+        "label": "Gamma auxiliary buffer 1",
+        "packed_offset": "0x4968",
+        "bytes": 512,
+        "aperture_offset": "0xac00",
+        "consumer_call": "0x53253dc4",
+        "address_getter": "0x532605f0",
+        "object_offset": "0x404",
+        "producer_call": "0x53135d64"
+      },
+      {
+        "label": "Gamma auxiliary buffer 2",
+        "packed_offset": "0x4b68",
+        "bytes": 512,
+        "aperture_offset": "0xae00",
+        "consumer_call": "0x53253ddc",
+        "address_getter": "0x532605fc",
+        "object_offset": "0x604",
+        "producer_call": "0x53135d7c"
+      },
+      {
+        "label": "Gamma auxiliary buffer 3",
+        "packed_offset": "0x4d68",
+        "bytes": 512,
+        "aperture_offset": "0xb000",
+        "consumer_call": "0x53253df4",
+        "address_getter": "0x53260608",
+        "object_offset": "0x804",
+        "producer_call": "0x53135d9c"
+      },
+      {
+        "label": "unassigned table",
+        "packed_offset": "0x4f68",
+        "bytes": 512,
+        "aperture_offset": "0xc000",
+        "consumer_call": "0x53253e0c",
+        "address_getter": "0x53260614"
+      },
+      {
+        "label": "unassigned table",
+        "packed_offset": "0x5168",
+        "bytes": 512,
+        "aperture_offset": "0xc200",
+        "consumer_call": "0x53253e24",
+        "address_getter": "0x53260620"
+      },
+      {
+        "label": "unassigned table",
+        "packed_offset": "0x5368",
+        "bytes": 512,
+        "aperture_offset": "0xc400",
+        "consumer_call": "0x53253e3c",
+        "address_getter": "0x5326062c"
+      },
+      {
+        "label": "unassigned table",
+        "packed_offset": "0x5568",
+        "bytes": 512,
+        "aperture_offset": "0xc600",
+        "consumer_call": "0x53253e54",
+        "address_getter": "0x53260638"
+      },
+      {
+        "label": "unassigned table",
+        "packed_offset": "0x5768",
+        "bytes": 512,
+        "aperture_offset": "0xc800",
+        "consumer_call": "0x53253e6c",
+        "address_getter": "0x53260644"
+      },
+      {
+        "label": "unassigned table",
+        "packed_offset": "0x5968",
+        "bytes": 512,
+        "aperture_offset": "0xca00",
+        "consumer_call": "0x53253e84",
+        "address_getter": "0x53260650"
+      },
+      {
+        "label": "unassigned table",
+        "packed_offset": "0x5b68",
+        "bytes": 444,
+        "aperture_offset": "0xcc00",
+        "consumer_call": "0x53253e9c",
+        "address_getter": "0x5326065c"
+      }
+    ],
+    "start_writes": [
+      {
+        "callsite": "0x5324eefc",
+        "target": "0x53260c9c",
+        "address": "register_base+0x4100",
+        "operation": "replace bits0..1 with1"
+      },
+      {
+        "callsite": "0x5324ef04",
+        "target": "0x53256b14",
+        "address": "register_base",
+        "operation": "replace bits8..9 with1"
+      },
+      {
+        "callsite": "0x5324ef0c",
+        "target": "0x53260a44",
+        "address": "register_base+0x40c0",
+        "operation": "replace bits0..1 with1"
+      }
+    ],
+    "known_limits": [
+      "Only selected initialization paths were statically reconstructed; no live factory order, transport or IRQ completion observed.",
+      "Register and aperture writes do not reveal ISP internal interpolation, matrix fractional scale, clamp placement, pixel depth or exact hardware stage order.",
+      "WB common+0x30c10 quartet lies outside the proven R2y CustomImage copy; its lower consumption remains unproved here.",
+      "Callback handler53081188 sets service event bits, but the full interrupt-vector-to-service chain was not resolved in this bounded pass.",
+      "No firmware coefficient/curve arrays are intended for publication."
+    ]
+  },
+  "colorspace_wb": {
+    "controls": [
+      {
+        "name": "ColorSpace label",
+        "proven": "ASCII parser literal sRGB passes0; AdobeRGB passes1 to52954be0, stores activeuserdata+35b. Callback5290e520 copies it to userdataobject+3b7 then postsmessage0x145 if record+2c==0.",
+        "gap": "Receiving message0x145 to common+26b5 was not closed. Commonsetter52eef408 also reportsid0x145 and stores suppliedenum; rawmodel1/2 mapscommon0/1. These corroborate identity but do not replace a receiver edge."
+      },
+      {
+        "name": "ColorSpace effective flag",
+        "proven": "P52=1 exactly whencommon+26b5==1. It selects optional matrixA, changes YCbCr coefficients, and gates gamma remapping.",
+        "gap": "Exact physical input/output color basis remains unproved; cannot label all matrix coefficients sensorRGB/XYZ merely from UI name."
+      },
+      {
+        "name": "WB fine adjustment",
+        "GM_common_offset": "0x261a",
+        "BA_common_offset": "0x261b",
+        "name_assertions": [
+          "0x529c6b90",
+          "0x529c6c88"
+        ],
+        "read_sites": [
+          "0x5314e130",
+          "0x5314e134"
+        ],
+        "tables": [
+          "0x53c5ac30",
+          "0x53c5ad04",
+          "0x53c5acc0",
+          "0x53c59ff8"
+        ],
+        "element_type": "u16",
+        "table_length": "not established"
+      }
+    ],
+    "formulas": {
+      "gamma": "For i0..255: y=min((flag?u16(L+2*u16(input[i])):u16(input[i]))>>4,1023). Storeu16y. For i0..254 d=clamp(y[i+1]-y[i],0,240); copy8bytes fromT+8*d. Lastslot copiesT+0.",
+      "wb_selected": "At5314e0d0..e110, C+30c10/12/14/16=u16(selectedWBobject+4/6/8/a)>>5. Identity branch sets256; source identity elsewhere8192. This is storage scale conversion, not pixel multiplication.",
+      "wb_fine": "GM=C.u8[261a], BA=C.u8[261b]; k0=(u32(u16(Tgm0[GM])*u16(Tba0[BA]))>>13)&65535; k3 similarlyTgm3/Tba3. C.u16[30c10]=low16(ASR13(s32(u32(oldChannel0*k0)))); C.u16[30c16] similarlyChannel3. Then5314b914 may normalize/update; alternateWBmode1 branch can overwrite channels0/3 with selectedautoresult*k0/k3 ASR18. Exact fixed-point shifts, no pixel-stage ordering inferred.",
+      "black_combine": "530d5028 returns u32(1000*GetBlackBase_530d4f60() +GetBlackBaseOffset_530d4dd8(mode,channel)-GetBlackDummyBaseValue_530d4bec(mode,channel)); getter returns are runtime calibration-dependent. Absolute pixel units and consumer-to-WB ordering remain unproved."
+    },
+    "unknowns": [
+      "ColorSpace message0x145 receiver and exact initialized runtime objects",
+      "WB four-channel label order has not been independently named R/Gr/Gb/B; R/B for fine-adjust endpoints is suggested by algorithm but report uses channels0/3 unless resource names prove it",
+      "WB common result to Develop B2b/hardware configuration and actual per-pixel multiplication/clipping",
+      "Sensor/ISP color basis, calibration state and demosaic ordering",
+      "Output JPEG ICC/Exif tags and outputformat enum effects",
+      "Lightroom equivalent adaptation, stage placement, range and inverse/fit require additional evidence; firmware resources alone are not DCP transforms"
+    ]
+  }
+}

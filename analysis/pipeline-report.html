@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="PENTAX K-3 Mark III 펌웨어의 JPEG·ISP·색공간·화이트밸런스 경로와 Lightroom 프로파일 이전 조건 분석">
+<title>K-3 Mark III — JPEG·ISP와 색 재현 분석</title><style>
+:root{color-scheme:light dark;--bg:#f7f8fa;--paper:#fff;--ink:#182332;--muted:#48596b;--line:#d2dbe5;--accent:#124b8e;--soft:#edf3fa;--focus:#d75f00}
+@media(prefers-color-scheme:dark){:root{--bg:#111821;--paper:#18222d;--ink:#e8edf4;--muted:#b4c2d2;--line:#405369;--accent:#98c8ff;--soft:#223348;--focus:#ffb374}}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.85 system-ui,-apple-system,"Malgun Gothic",sans-serif;word-break:keep-all;overflow-wrap:anywhere}
+a{color:var(--accent);text-underline-offset:.18em}a:hover{text-decoration-thickness:2px}:focus-visible{outline:3px solid var(--focus);outline-offset:4px}
+header,main,footer{max-width:1120px;margin:auto;padding:36px clamp(18px,4vw,56px)}header{padding-top:56px;padding-bottom:24px}main{background:var(--paper);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.eyebrow{color:var(--muted);font-size:.84rem;letter-spacing:.06em}h1{font-size:clamp(1.85rem,4.5vw,3rem);line-height:1.35;letter-spacing:-.025em;margin:12px 0 18px}h2{font-size:1.5rem;line-height:1.5;margin:3.6rem 0 1rem;padding-top:1.2rem;border-top:1px solid var(--line)}h2:first-child{margin-top:0}h3{font-size:1.12rem;margin-top:2rem}p{margin:1rem 0}strong{font-weight:650}.intro{max-width:55em;color:var(--muted)}
+nav{margin-top:25px}nav ul{display:flex;flex-wrap:wrap;gap:8px 22px;list-style:none;padding:0;margin:0}nav ul ul{display:none}nav a{font-size:.9rem}code{font: .88em/1.6 ui-monospace,Consolas,monospace;overflow-wrap:anywhere}pre{background:var(--soft);padding:18px;overflow-x:auto;white-space:pre-wrap;border-radius:5px}pre code{font-size:.82rem}
+.table-scroll{overflow-x:auto;margin:24px 0}table{border-collapse:collapse;width:100%;font-size:.92rem;min-width:530px}th,td{text-align:left;vertical-align:top;padding:14px 16px;border-bottom:1px solid var(--line)}th{background:var(--soft);font-weight:650}td:first-child{min-width:125px}details{border-block:1px solid var(--line);margin-top:24px;padding:16px 0}summary{cursor:pointer;font-weight:650;padding:6px 0}.caption,.meta{font-size:.86rem;color:var(--muted)}
+figure{margin:32px 0;padding:24px 0;border-block:1px solid var(--line)}figcaption{font-size:.95rem;font-weight:650;margin-bottom:20px}.flow{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:32px;list-style:none;padding:0;margin:18px 0}.flow li{position:relative;padding:18px;background:var(--soft);border-radius:6px;line-height:1.6}.flow strong{display:block;font-size:1rem}.flow span{display:block;color:var(--muted);font-size:.86rem;margin-top:9px}.flow li:not(:last-child)::after{content:"→";position:absolute;right:-27px;top:40%;font-size:22px;color:var(--muted)}.second{margin-top:24px}footer{font-size:.88rem;color:var(--muted)}
+@media(max-width:620px){body{font-size:16px}header,main,footer{padding-inline:20px}.flow{grid-template-columns:1fr;gap:26px}.flow li:not(:last-child)::after{content:"↓";right:auto;left:calc(50% - 8px);top:auto;bottom:-28px}.flow li{padding:15px 18px}h2{font-size:1.3rem}nav ul{gap:10px 18px}table{font-size:.87rem}th,td{padding:12px}header{padding-top:30px}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+@media print{body{background:white;color:black;font-size:10pt}header,main,footer{max-width:none;padding:12pt}nav{display:none}a{color:inherit}h2,figure,table{break-inside:avoid}h2{break-after:avoid}main{border:0}.flow li{background:#f1f3f5}.table-scroll{overflow:visible}table{min-width:0}details>*{display:block!important}}
+</style></head>
+<body><header><div class="eyebrow">PENTAX K-3 MARK III · FIRMWARE 2.20 · 2026-11-07</div>
+<h1>JPEG·ISP와 색 재현 경로</h1>
+<p class="intro">원본 ARM 코드에서 확인한 제어·설정 경로, 수치 시험 결과와 Lightroom 프로파일로 옮기기 위한 조건을 정리한 분석 보고서.</p>
+<p class="meta">정적 분석 · 원본 명령 에뮬레이션 · 하드웨어 실측 미수행</p>
+<nav aria-label="보고서 목차"><div class="toc">
+<ul>
+<li><a href="#_1">이번 분석에서 연결한 범위</a></li>
+<li><a href="#jpeg">하위 JPEG 압축기</a><ul>
+<li><a href="#_2">양자화 표의 품질 배율</a></li>
+<li><a href="#_3">압축 크기와 완료 처리</a></li>
+</ul>
+</li>
+<li><a href="#_4">컬러모드에서 하드웨어 설정으로</a><ul>
+<li><a href="#_5">감마·톤 테이블의 전달 위치</a></li>
+</ul>
+</li>
+<li><a href="#_6">색공간과 화이트밸런스</a></li>
+<li><a href="#_7">클리핑은 대상별로 구분해야 한다</a></li>
+<li><a href="#lightroom">Lightroom으로 옮기기 위한 조건</a><ul>
+<li><a href="#_8">변환 전에 고정할 항목</a></li>
+<li><a href="#rawjpeg">RAW·JPEG 예제가 제공된 뒤의 검증</a></li>
+</ul>
+</li>
+<li><a href="#_9">검증과 보관</a></li>
+<li><a href="#_10">근거 색인과 문서 검토</a></li>
+</ul>
+</div>
+</nav></header><main><h2 id="_1">이번 분석에서 연결한 범위</h2>
+<p>PENTAX K-3 Mark III v2.20의 RAW 현상 경로를 하위 JPEG 드라이버와 R2y 레지스터 설정까지 추적했다. 컬러모드가 만든 행렬·곡선 설정이 하드웨어에 전달되는 위치와 JPEG 양자화 계산을 확인했다. 실제 픽셀을 처리하는 ISP 내부 산술, 카메라 출력과 Lightroom의 색 일치는 아직 검증하지 않았다.</p>
+<p>분석 대상은 <code>fwdc233b.bin</code>에서 추출한 ARM RTOS다. 적재 기준 주소는 <code>0x52500000</code>, RTOS SHA-256은 <code>342d2f35405e8daf1797dfe431d2e4aa70f4b52a2c242a29df48206672f1dfb4</code>다. 함수명 일부는 분석용 이름이다. 호출 관계의 간접 연결은 기록한 생성자·vtable·객체 초기화가 유지된다는 조건 아래 성립한다. <a href="deep-evidence.json">검증 주소와 바이트 해시</a></p>
+<figure aria-labelledby="flow-caption">
+<figcaption id="flow-caption">확인한 설정·제어 경로 — 픽셀의 물리적 통과 순서와 구분</figcaption>
+<ol class="flow">
+<li><strong>RAW 현상 레시피</strong><span>Develop1 / Develop2<br>설정과 버퍼 준비</span></li>
+<li><strong>Custom Image 설정</strong><span>행렬 · 감마 · 톤<br>고정소수점 계산</span></li>
+<li><strong>R2y 드라이버</strong><span>설정 복사 → 레지스터·LUT<br>ISP 내부 픽셀 산술 미확정</span></li>
+</ol>
+<ol class="flow second">
+<li><strong>JPEG 매크로</strong><span>큐 → 서비스 → 드라이버<br>Y · CbCr 버퍼 설정</span></li>
+<li><strong>JPEG 하드웨어</strong><span>양자화 표 · 시작 비트<br>내부 DCT·엔트로피 미실행</span></li>
+<li><strong>완료 처리</strong><span>인터럽트 → 이벤트<br>상위 완료 메시지</span></li>
+</ol>
+<p class="caption">실선 화살표는 각 행에서 조사한 설정·제어의 연결을 뜻한다. 두 행 사이의 전체 영상 버퍼 계보와 ISP 내부 연산 순서는 별도 검증 대상이다.</p>
+</figure>
+
+<h2 id="jpeg">하위 JPEG 압축기</h2>
+<p>상위 JPEG 매크로는 작업을 큐에 제출한다. <code>JpegCodecPipeService</code>의 생성자 <code>0x5304c74c</code>는 vtable을 설치한다. 이 vtable의 어댑터 <code>0x5304d538</code>은 실행 함수 <code>0x5304cd4c</code>로 연결된다. 이후 <code>0x5304c7e8</code>이 하위 드라이버의 <code>0x5320b18c</code>를 호출한다. 이 경로는 서비스 객체 초기화와 메시지 전달이 성공한 경우를 설명한다. <a href="deep-evidence.json">호출·vtable 근거</a></p>
+<p>하위 드라이버는 JPEG 블록의 MMIO 기준 주소 <code>0x298c0000</code>을 사용한다. Y 주소는 <code>+0x430</code>, CbCr 주소는 <code>+0x434</code>, 압축 결과를 담는 code 주소는 <code>+0x440</code>에 설정한다. 시작 함수 <code>0x5320bd68</code>은 <code>+0x4</code>의 bit 0을 세운다. 버퍼 주소가 확인되었다고 해서 모든 입력 모드의 크로마 서브샘플링과 메모리 배치까지 확정되는 것은 아니다. <a href="deep-evidence.json">드라이버 근거</a></p>
+<h3 id="_2">양자화 표의 품질 배율</h3>
+<p><code>0x5320ac78</code>은 두 개의 64항 표에 품질 배율을 적용한다. 함수 인수 Q를 10으로 나눈 값을 q로 사용하며, 계산 중간마다 float32 반올림을 거친다. q가 50 이하이면 배율은 <code>trunc(1000 × 50 / q)</code>, 그보다 크면 <code>trunc(1000 × (100 − q) / 50)</code>에 해당한다. 각 항목 t는 정수 연산 <code>(t × 배율 + 500) / 1000</code>으로 바꾸고 1~255로 제한한다. 간결한 수식의 연산 결합 순서만 바꾸어도 float32 경계값이 달라질 수 있으므로 공개 검증기는 원래 명령의 순서를 따른다.</p>
+<p>결과는 RAM의 <code>0x547bd374</code>와 <code>0x547bd3b4</code>에 보관하고 4항씩 묶어 MMIO <code>0x298c0100</code>과 <code>0x298c0140</code>에 기록한다. 합성 표 4쌍과 Q=1~1000을 사용해 원래 ARM 함수 및 하위 레지스터 함수를 실행했다. 4,000개 조건에서 표 항목 512,000개와 MMIO 워드 128,000개가 독립 계산식과 일치했다. MMIO는 에뮬레이터의 일반 RAM으로 대체했으며 카메라나 압축 엔진은 실행하지 않았다. <a href="../verify_jpeg_quantization.py">실행 검증기</a> · <a href="jpeg-quantization-checks.json">검증 결과</a></p>
+<p>이 시험은 양자화 표 생성과 전달을 검증한다. DCT, 실제 영상의 양자화 결과, 엔트로피 코딩은 시험 범위 밖이다. Q=0과 범위를 벗어난 인수도 시험하지 않았다. 카메라의 JPEG 품질 메뉴와 이 Q 값 사이의 전체 매핑은 별도 확인이 필요하다.</p>
+<h3 id="_3">압축 크기와 완료 처리</h3>
+<p><code>0x5304ca20</code>의 정책 경로는 Q=950으로 예비 압축한 뒤 실제 크기와 목표 크기로 품질을 추정하고 본 압축을 요청한다. 결과가 0이거나 용량을 넘으면 품질을 낮춰 재시도하는 분기가 있다. 기준 크기를 얻는 런타임 가상 호출은 미해결이며 이 정책 전체를 수치 재현하지는 않았다.</p>
+<p>ImageInterruptService의 입력 <code>0xd5</code>는 JPEG 처리기 <code>0x53201640</code>으로 분기한다. 이 번호를 물리 CPU IRQ 번호로 확정하지 않았다. 처리기는 MMIO의 <code>+0x480</code>과 <code>+0x2c</code>에서 상태를 읽고 확인 응답을 기록한 뒤 관찰자 source <code>0x63</code> 또는 <code>0x64</code>에 통지한다. source <code>0x64</code>, 상태 bit 31, 드라이버 mode 0 조건에서는 <code>+0x20</code>의 압축 길이를 읽어 이벤트 <code>0x00e00001</code>로 전달한다.</p>
+<p>파이프 콜백은 그 길이를 <code>pipe+0x44</code>에 저장하고 event bit 1을 깨운다. 압축 헬퍼는 길이를 출력 descriptor의 <code>+0xc</code>로 복사한다. 마지막 <code>0x00c00003</code> 콜백은 상위 JPEG 매크로의 event bit 2를 설정한다. 다른 오류·디코드 분기도 있으므로 모든 인터럽트를 압축 성공으로 해석하지 않았다. <a href="deep-evidence.json">조건부 콜백·상태 근거</a></p>
+<h2 id="_4">컬러모드에서 하드웨어 설정으로</h2>
+<p>Develop의 반복 처리 <code>0x52e5c088</code>은 준비, 설정, 시작·대기, 종료 처리를 호출한다. 초기화 함수 <code>0x52e5739c</code>는 B2b·B2r·R2y 서비스를 매크로의 <code>+0x9820</code>, <code>+0x9824</code>, <code>+0x9828</code>에 연결한다. 시작 명령은 R2y, B2r, B2b 순서로 제출된다. 이것은 CPU가 시작을 요청하는 순서다. 센서 픽셀이 하드웨어 블록을 통과하는 순서로 해석하지 않았다. <a href="deep-evidence.json">Develop·서비스 근거</a></p>
+<p>R2y 매개변수 준비 함수 <code>0x52e597c0</code>은 설정 포인터를 P의 <code>+0x94</code>에 기록하고 갱신 플래그 7개를 세운다. 변환 함수 <code>0x5307fdec</code>은 설정의 <code>+0x120</code>에서 시작하는 <code>0x5d24</code>바이트를 드라이버 설정의 <code>+0x644</code>로 복사한다. 이 영역에는 이전 분석에서 계산한 Custom Image 행렬과 곡선이 들어 있다. 갱신 플래그와 선행 처리의 성공 조건을 통과하면 <code>0x53253eac</code>이 <code>0x532512cc</code>를 호출해 해당 설정을 적용한다.</p>
+<p>하드웨어 생성자와 등록 테이블을 따라가면 R2y 레지스터 기준 주소는 <code>0x28418000</code>, <code>0x28518000</code>, <code>0x28618000</code>이다. 데이터 영역은 각각 <code>0x294a0000</code>, <code>0x295a0000</code>, <code>0x296a0000</code>으로 설정된다. <code>0x532512cc</code>는 행렬 필드 <code>+0x20..+0x30</code>에서 signed 12-bit 계수를 꺼낸다. 첫 두 계수는 레지스터 기준 주소의 <code>+0xa0</code>에 각각 bits 0..11과 16..27로 기록된다. <a href="deep-evidence.json">초기화·필드 복사·레지스터 근거</a></p>
+<p>이 연결로 모드별 행렬이 하드웨어 설정에 도달하는 지점까지 확인했다. 레지스터 기록 함수 자체는 픽셀별 행렬 곱을 계산하지 않는다. 내부 누산기의 비트 수, 행렬의 픽셀 연산 배율, 포화 시점과 출력 비트 깊이는 별도 근거가 필요하다.</p>
+<h3 id="_5">감마·톤 테이블의 전달 위치</h3>
+<p>톤 포장 함수 <code>0x5313775c</code>는 16비트 항목 1024개를 설정의 <code>+0x1568</code>에 넣으며 하위 적용 함수는 이를 데이터 영역의 <code>+0x0000</code>으로 복사한다. 감마 포장 함수 <code>0x53135c60</code>이 만든 네 개의 <code>0x800</code>바이트 버퍼는 <code>+0x8800</code>, <code>+0x9000</code>, <code>+0x9800</code>, <code>+0xa000</code>으로 전달된다. 네 개의 <code>0x200</code>바이트 버퍼는 <code>+0xaa00</code>, <code>+0xac00</code>, <code>+0xae00</code>, <code>+0xb000</code>으로 전달된다. 이는 테이블의 저장·전달 위치를 확정한 결과이며 하드웨어 보간식까지 복원한 결과는 아니다. <a href="deep-evidence.json">설정 복사 근거</a></p>
+<p>합성 설정 8개로 전체 적용 함수 <code>0x532512cc</code>와 실제 레지스터 함수, NEON memcpy를 실행했다. 원래 wrapper 생성자도 사용했다. 9개 행렬 필드, 4개 톤 필드, 감마 플래그 묶음, 18개 테이블 복사를 조건별로 대조해 지정 필드 외 비트의 보존도 확인해 총 312개 검사가 통과했다. 첫 번째 하드웨어 인스턴스의 레지스터와 데이터 영역을 일반 RAM으로 모델링한 시험이다. 센서 입력과 ISP의 픽셀 출력을 에뮬레이션하지 않았다. <a href="../verify_isp_configuration.py">ISP 설정 검증기</a> · <a href="isp-configuration-checks.json">검증 결과</a></p>
+<h2 id="_6">색공간과 화이트밸런스</h2>
+<p>색공간 파서 <code>0x52aed898</code>은 <code>sRGB</code>와 <code>AdobeRGB</code> 문자열을 각각 선택값 0과 1로 변환한다. <code>0x52954be0 → 0x52954afc</code>를 거쳐 UserData의 <code>+0x35b</code>에 저장하고 변경 알림에서 메시지 <code>0x145</code>를 보낸다. 같은 속성 ID를 쓰는 common setter와 RAW 모델의 0/1 변환도 확인했다. 다만 해당 메시지의 수신부에서 <code>common+0x26b5</code>로 기록하는 연결은 미확정이다. <a href="deep-evidence.json">색공간 설정 근거</a></p>
+<p><code>common+0x26b5 == 1</code>이면 P52가 1이 된다. 이 플래그는 모드 행렬에 추가 행렬을 곱하고 YCbCr 계수 조정과 감마 준비에도 영향을 준다. 따라서 색공간 선택을 행렬 하나의 교체로만 재현할 수는 없다. 각 행렬의 물리적인 입력·출력 좌표계는 아직 확정하지 않았다. <a href="deep-evidence.json">설정 분기 근거</a> · <a href="color-algorithms.md">이전 수치 분석</a></p>
+<p>감마 변환 <code>0x53136f4c</code>는 입력 곡선 256항에 대해 <code>y = min((flag ? L[x] : x) &gt;&gt; 4, 1023)</code>을 계산한다. 인접 출력 차이는 0~240으로 제한한 뒤 8바이트 레코드를 고르는 인덱스로 사용한다. 마지막 항목에는 차이 0의 레코드를 넣는다. L은 펌웨어 lookup이며 표준 감마 지수로 단정하지 않았다. flag가 켜졌을 때 함수 내부에는 x의 lookup 범위를 확인하는 검사가 없다. 이번 시험 범위는 x=0~16384다. 두 flag 조건의 해당 입력을 모두 포함한 151개 전체 함수 시험과 WB 부분 구간 34개 시험이 통과했다. <a href="../verify_colorspace_wb.py">색공간·WB 검증기</a> · <a href="colorspace-wb-checks.json">185개 검증 결과</a></p>
+<p>화이트밸런스 서비스의 선택 경로 <code>0x5314db1c</code>는 선택한 객체의 16비트 값 4개를 오른쪽으로 5비트 이동해 common의 <code>+0x30c10..+0x30c16</code>에 기록한다. 별도 항등 분기는 256을 직접 저장한다. 다른 내부 항등값 8192와 <code>&gt;&gt;5</code> 변환은 두 표현 사이의 배율을 뒷받침하지만 채널 순서와 하드웨어에 적용되는 최종 gain이라는 해석은 소비 경로까지 확인한 뒤 판단해야 한다.</p>
+<p>선택 이후의 GM/BA 미세 조정은 채널 0과 3에 lookup 곱과 13비트 이동을 적용한다. 뒤의 <code>0x5314b914</code> 호출과 대체 WB 분기가 결과를 바꿀 수 있으므로 앞의 <code>&gt;&gt;5</code> 결과를 모든 분기의 최종 gain으로 부르지 않았다. 네 채널을 R/Gr/Gb/B로 명명할 근거도 아직 부족하다.</p>
+<p>Develop 공통 준비 <code>0x52e608d8</code>은 ImageConfig의 <code>+0x82e0</code>에 common 포인터를 기록하고 보정값 4개를 <code>+0x82ce..+0x82d4</code>에 복사한다. WB 초기화도 같은 보정 레코드를 사용한다. 초기 수동 WB 값을 담는 <code>common+0x30c78</code>은 선택 결과와 별도다. 선택 결과 <code>common+0x30c10</code>에서 B2b나 하드웨어 gain 필드로 읽어 가는 소비 경로는 이번에 연결하지 못했다. 따라서 WB가 디모자이킹이나 모드 행렬보다 먼저 적용된다고 단정하지 않는다. <a href="deep-evidence.json">WB·보정 데이터 흐름 근거</a></p>
+<h2 id="_7">클리핑은 대상별로 구분해야 한다</h2>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>위치</th>
+<th>확인한 제한</th>
+<th>해석 범위</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>모드 행렬 준비</td>
+<td>계수를 −2048~2047로 제한한 뒤 12비트 필드에 저장</td>
+<td>계수 포화다. 픽셀 RGB를 이 범위로 제한한다는 뜻이 아니다.</td>
+</tr>
+<tr>
+<td>일반 감마 준비</td>
+<td>정규화 결과의 상한 16384</td>
+<td>테이블 생성 과정의 제한이다. 모든 ISP 중간 픽셀의 상한으로 일반화하지 않는다.</td>
+</tr>
+<tr>
+<td>Gold/Cross 곡선 보간</td>
+<td>입력 16320 이상에서 마지막 항목 선택</td>
+<td>곡선 주소 계산의 경계 처리다. 뒤에서 런타임 설정이 결과를 바꿀 수 있다.</td>
+</tr>
+<tr>
+<td>색공간별 감마 변환</td>
+<td>출력 샘플 상한 1023, 인접 차이 인덱스 0~240</td>
+<td>하드웨어에 보낼 테이블과 레코드의 생성 규칙이다. 픽셀 클리핑 순서는 확정하지 않았다.</td>
+</tr>
+<tr>
+<td>JPEG 양자화</td>
+<td>표 항목을 1~255로 제한</td>
+<td>양자화 표의 제한이다. 출력 RGB나 YCbCr 값의 범위를 뜻하지 않는다.</td>
+</tr>
+<tr>
+<td>ISP 픽셀 경로</td>
+<td>내부 포화·음수·하이라이트 처리 미확정</td>
+<td>하드웨어 출력 또는 레지스터 규격과의 대조가 필요하다.</td>
+</tr>
+</tbody>
+</table></div>
+<p>앞의 세 항목은 이전의 원본 ARM 수치 시험에서 확인했고 색공간별 감마와 JPEG 항목은 이번에 별도로 시험했다. 모드 행렬, 감마 곡선, WB를 옮길 때 이 제한들을 하나의 최종 RGB clamp로 합치면 원래 동작과 달라질 수 있다. <a href="color-math-checks.json">행렬 검증</a> · <a href="gamma-tone-checks.json">감마·톤 검증</a> · <a href="colorspace-wb-checks.json">색공간·WB 검증</a> · <a href="jpeg-quantization-checks.json">JPEG 검증</a></p>
+<h2 id="lightroom">Lightroom으로 옮기기 위한 조건</h2>
+<p>펌웨어의 컬러모드 행렬과 곡선을 DCP에 그대로 넣는 방식은 아직 성립하지 않는다. 입력 색좌표, 화이트밸런스 적용 상태, 고정소수점 배율과 클리핑 위치가 일치해야 같은 연산이 된다. 현재 복원한 자료는 모드별 변환을 재현할 때 사용할 연산 모델과 피연산자 목록이다. 카메라 JPEG와의 색 일치를 검증한 Lightroom 프로파일은 아직 만들지 않았다.</p>
+<p>DNG의 ColorMatrix는 XYZ에서 기준 카메라 색공간으로, ForwardMatrix는 화이트밸런스를 적용한 카메라 색에서 XYZ D50으로 변환한다. 펌웨어에서 발견한 3×3 행렬에는 ColorMatrix라는 이름이 붙어 있다. 이 이름만으로 두 행렬을 같은 것으로 볼 수 없다. Adobe의 LookTable 역시 정해진 색공간과 적용 순서를 사용한다. 변환 방향과 좌표계를 먼저 맞춰야 한다. <a href="https://helpx.adobe.com/content/dam/help/en/camera-raw/digital-negative/jcr_content/root/content/flex/items/position/position-par/download_section_733958301/download-1/DNG_Spec_1_7_1_0.pdf">Adobe DNG 규격 1.7.1.0, pp.33, 52–53, 57, 63–64</a></p>
+<p>제안하는 구현은 카메라 보정용 DCP와 모드별 look을 분리한다. DCP가 센서 색과 화이트밸런스 해석을 담당하고 look은 확인된 모드별 변환을 Adobe가 기대하는 입력 좌표계에서 표현한다. Enhanced XMP의 RGB LUT는 더 자유로운 색 변환을 담지만 적용 위치가 다르다. 2018년 Profile SDK는 RGB LUT의 최대 크기를 32×32×32로 설명한다. 이 수치는 해당 SDK의 규격이며 모든 후속 버전의 한계로 일반화하지 않는다. <a href="https://download.adobe.com/pub/adobe/lightroom/profile-sdk/ACR_and_Lightroom_Profile_SDK.zip">Adobe Profile SDK</a></p>
+<h3 id="_8">변환 전에 고정할 항목</h3>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>항목</th>
+<th>필요한 조건</th>
+<th>확인 방법</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RAW 정규화</td>
+<td>센서 black level·white level, 유효 비트, 채널 순서, 노출 배율</td>
+<td>RAW 메타데이터와 펌웨어 입력 설정을 대조하고 회색 패치로 확인</td>
+</tr>
+<tr>
+<td>화이트밸런스</td>
+<td>카메라 gain의 순서·배율, 적용 전후 좌표, Adobe WB와의 관계</td>
+<td>수동 WB를 고정하고 중성 패치 및 조명별 gain을 비교</td>
+</tr>
+<tr>
+<td>색공간</td>
+<td>각 행렬의 입력·출력 원색, 백색점, 선형성, RGB/YCbCr 구간</td>
+<td>데이터 경로와 레지스터 설정을 대조한 뒤 색 패치로 검증</td>
+</tr>
+<tr>
+<td>계수와 범위</td>
+<td>Q 형식, 반올림, 계수 포화, 음수 처리, 픽셀 포화 위치</td>
+<td>원본 ARM 수치 시험과 하드웨어 출력의 경계값 시험</td>
+</tr>
+<tr>
+<td>모드 설정</td>
+<td>컬러모드, 채도·색상·콘트라스트, 감마, 출력 sRGB/AdobeRGB</td>
+<td>같은 RAW를 설정만 바꿔 카메라에서 현상하고 기록</td>
+</tr>
+<tr>
+<td>Adobe 기준</td>
+<td>Lightroom/Camera Raw 버전, Process Version, 기준 DCP, 노출·톤 설정</td>
+<td>고정된 현상 설정을 보관하고 검증 이미지에도 동일하게 적용</td>
+</tr>
+</tbody>
+</table></div>
+<p>정적인 색 변환은 LookTable이나 RGB LUT의 후보가 된다. 영상 통계에 따라 달라지는 톤 보정, 공간적인 노이즈 감소와 샤프닝, 디모자이킹까지 하나의 전역 LUT로 재현할 수는 없다. 이런 처리는 별도 구현 또는 일치 범위의 제한이 필요하다. 화이트밸런스와 감마를 양쪽 파이프라인에서 중복 적용하지 않도록 입력 상태도 기록해야 한다.</p>
+<h3 id="rawjpeg">RAW·JPEG 예제가 제공된 뒤의 검증</h3>
+<p>같은 RAW에서 모드별 카메라 JPEG를 만들고 가능한 설정을 고정한다. 촬영 때의 WB와 노출, 렌즈, 카메라 펌웨어, 출력 색공간, JPEG 품질, 노이즈 감소, 샤프닝과 자동 톤 설정을 함께 기록한다. 비교에 쓰는 모드가 해당 렌즈와 촬영 조건에서 실제로 선택되는지도 확인한다.</p>
+<p>색상표만으로 평가를 끝내지 않는다. 회색 계조, 피부색, 잎과 강한 원색, 하이라이트가 포함된 장면을 준비하고 특성이 알려진 조명 조건을 나누어 비교한다. 프로파일을 맞출 때 사용하지 않은 이미지로 다시 검사한다. 평가 항목은 패치별 색차와 중성축 오차, 계조의 단조성, 노출 변화에 따른 오차, 채널별 클리핑 비율이다. 허용 오차는 사용 목적에 맞춰 정하고 측정 결과와 함께 공개한다.</p>
+<p>JPEG 압축과 크로마 처리 때문에 파일 바이트의 완전한 일치를 색 재현의 합격 조건으로 삼기는 어렵다. 디코딩한 이미지에서 동일한 색관리와 출력 크기를 적용하고 패치 내부의 색과 경계 부근의 공간 오차를 구분해 평가한다. 현재 단계에서는 실제 RAW·JPEG 쌍, 카메라 하드웨어 출력, Lightroom 적용 결과를 시험하지 않았다.</p>
+<h2 id="_9">검증과 보관</h2>
+<p>이번 보고서의 주소·분기·vtable 및 설정 필드는 원본 ARM 목록과 대조했다. 공개한 <code>deep-evidence.json</code>과 검증기는 해당 기록의 바이트 일치와 연결 조건을 검사한다. 바이트 검증이 모든 함수 의미나 실제 카메라 실행을 입증하는 것은 아니다.</p>
+<p>추가 angr 의사코드와 전체 조사 구간의 ARM 목록, 원본 계수·테이블은 로컬 <code>.private/jpeg-lowlevel/</code>, <code>.private/isp-pixel-path/</code>, <code>.private/wb-colorspace/</code>에 보관한다. 공개 저장소에는 분석 문서, 주소·해시·조건부 연결과 재현용 검증 코드를 담는다. 디컴파일된 C는 원래 소스코드가 아니며, 타입·부동소수점·간접 호출 해석에서 ARM 목록과 차이가 날 수 있다.</p>
+<details>
+<p><summary>검증 재현 명령</summary></p>
+<pre><code class="language-console">python verify_deep_analysis.py path/to/decoded.bin
+python verify_jpeg_quantization.py path/to/decoded.bin --output jpeg-checks.json
+python verify_isp_configuration.py path/to/decoded.bin --output isp-checks.json
+python verify_colorspace_wb.py path/to/decoded.bin --output colorspace-wb-checks.json
+python decompile_sample.py path/to/decoded.bin 0x5320ac78
+</code></pre>
+<p>첫 명령은 Python 표준 라이브러리를 사용한다. JPEG·ISP 수치 검증은 Unicorn 2.1.4, 개별 함수 디컴파일은 angr 10.0.5를 사용했다. 입력 펌웨어의 준비 방법은 <a href="../README.md">저장소 안내</a>에 있다.</p>
+</details>
+<h2 id="_10">근거 색인과 문서 검토</h2>
+<p><a href="deep-evidence.json">주소·분기·vtable 바이트 근거</a>와 <a href="pipeline-evidence.json">필드·MMIO·테이블 복사·미해결 연결</a>을 함께 공개했다. 현재 통합 목록은 분석 구간 608개, 분기 위치 5,262곳, 데이터 워드 180개와 조건부 간접 연결 37개다. 이전 기록을 모두 보존했으며 새 수치 검증기 세 개도 원본 명령으로 다시 실행했다.</p>
+<details>
+<p><summary>문장 검토 기록</summary></p>
+<p>humanize-korean light 경로, 변경률 0.1%, 언어 검토 등급 B, 자체검증 6/6. 결정적 검사는 수치·인용·서법의 소실 없이 통과했다. 긴 관형절 2→0, 연결어미 뒤 쉼표 7→0으로 정리했다. 예를 들어 “보관하고, 4항씩”을 “보관하고 4항씩”으로 바꿨다. 낮은 변경률은 원문을 대부분 보존한 결과다. 이 등급은 펌웨어 분석의 신뢰도 점수가 아니다.</p>
+<p>기술 교차 검토에서는 WB 항등 분기의 직접 저장과 미확정 후속 호출을 구분하도록 두 문구를 수정했다. 최종 ISP 시험에는 지정 필드 외 비트의 보존 검사도 포함했다.</p>
+</details></main>
+<footer><a href="https://github.com/yunhyok/pentax-k3iii-firmware-analysis">공개 분석 저장소</a> · <a href="../README.md">분석 이력과 재현 안내</a><p>오프라인에서 읽을 수 있는 단일 문서다. 펌웨어·추출 계수·디컴파일 C 원문은 포함하지 않는다.</p></footer></body></html>

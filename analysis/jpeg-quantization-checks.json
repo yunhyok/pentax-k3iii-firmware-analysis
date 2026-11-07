@@ -1,0 +1,69 @@
+{
+  "source_sha256": "342d2f35405e8daf1797dfe431d2e4aa70f4b52a2c242a29df48206672f1dfb4",
+  "engine": "Unicorn 2.1.4",
+  "cpu": "Cortex-A7",
+  "method": "Whole original quantization function and original register helpers; synthetic input table contents; MMIO addresses mapped to inert RAM. No firmware call stubs.",
+  "function": "0x5320ac78",
+  "cases": 4000,
+  "table_entries_compared": 512000,
+  "packed_mmio_words_compared": 128000,
+  "rows": [
+    {
+      "label": "zero_and_max",
+      "q_first": 1,
+      "q_last": 1000,
+      "cases": 1000,
+      "synthetic_table_sha256": [
+        "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b",
+        "8667e718294e9e0df1d30600ba3eeb201f764aad2dad72748643e4a285e1d1f7"
+      ],
+      "output_sha256": "d95be7659abfa9076786215b82b339f184a32dc8d61899772b758727c72e4740",
+      "scale_sha256": "f44f5e61ddde2e8d5a7f66738ccf2eb9a006fe998eef4dbf8e4c5acba2a2bec8",
+      "passed": true
+    },
+    {
+      "label": "ramp_and_reverse",
+      "q_first": 1,
+      "q_last": 1000,
+      "cases": 1000,
+      "synthetic_table_sha256": [
+        "fdeab9acf3710362bd2658cdc9a29e8f9c757fcf9811603a8c447cd1d9151108",
+        "bf86051d941bc496b3a75d2229962c216e614e8e67b4b73e293aa6960db28aba"
+      ],
+      "output_sha256": "72dbb830a370cc5cf308bff0d911ccb25103c35fcc7efec856406ac49c8be2bd",
+      "scale_sha256": "f44f5e61ddde2e8d5a7f66738ccf2eb9a006fe998eef4dbf8e4c5acba2a2bec8",
+      "passed": true
+    },
+    {
+      "label": "alternating",
+      "q_first": 1,
+      "q_last": 1000,
+      "cases": 1000,
+      "synthetic_table_sha256": [
+        "aefd6168b636ab121e9fdd8e449d248ccbc36a7f2d75d4bcc8a42ca74a8d4ca7",
+        "e4ab2d30633c6bde4e1b5eddbbd378990c0ff673d095136e14a896d63ee8910a"
+      ],
+      "output_sha256": "1335a336883c4f38aa2d13cff50de282247dda946cf44c60009f0f369ad36940",
+      "scale_sha256": "f44f5e61ddde2e8d5a7f66738ccf2eb9a006fe998eef4dbf8e4c5acba2a2bec8",
+      "passed": true
+    },
+    {
+      "label": "seeded",
+      "q_first": 1,
+      "q_last": 1000,
+      "cases": 1000,
+      "synthetic_table_sha256": [
+        "9b1a7847146eb4057c1c4c58de421bf320a3ba234d5eb36b2cafbeedc9ce8ace",
+        "2bf7b3721bbaaf9cbd76cf7aacd51e2ea0a36d2252af5b529763b48971133515"
+      ],
+      "output_sha256": "ac54f8148d5a80b6394c3330be9b7df2e616a14724d6a2c834bc6d03764b4bb3",
+      "scale_sha256": "f44f5e61ddde2e8d5a7f66738ccf2eb9a006fe998eef4dbf8e4c5acba2a2bec8",
+      "passed": true
+    }
+  ],
+  "limits": [
+    "No hardware, quantized DCT coefficients, entropy encoder or actual camera image executed.",
+    "Only quality arguments 1..1000; zero and out-of-domain arguments not tested.",
+    "Public-suitable results include synthetic-table hashes only; original tables remain private."
+  ]
+}
