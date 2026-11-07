@@ -42,10 +42,18 @@ def verify_code(image, evidence):
         site = int(binding["callsite"], 16)
         slot = int(binding["table_slot"], 16)
         target = int(binding["target"], 16)
-        require(arm_transfer(struct.unpack("<I", section(site, 4))[0], site)[0]
-                in ("call-reg", "branch-reg"), "Binding site is not a register transfer")
+        instruction = struct.unpack("<I", section(site, 4))[0]
+        if binding.get("dispatch") == "pc-indexed-ldr":
+            # These four recorded switches use LDRLS pc,[pc,r1,lsl #2].
+            require(instruction == 0x979FF101, "Binding site is not the recorded table-load instruction")
+            index = binding["table_index"]
+            require(isinstance(index, int) and index >= 0 and slot == site + 8 + 4 * index,
+                    "Computed table slot does not match the selected index")
+        else:
+            require(arm_transfer(instruction, site)[0] in ("call-reg", "branch-reg"),
+                    "Binding site is not a register transfer")
         require(struct.unpack("<I", section(slot, 4))[0] == target,
-                f"Conditional vtable target mismatch at {slot:#x}")
+                f"Conditional table target mismatch at {slot:#x}")
     return len(ranges), len(seen), len(evidence["words"])
 
 

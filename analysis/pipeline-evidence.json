@@ -713,9 +713,9 @@
     "known_limits": [
       "Only selected initialization paths were statically reconstructed; no live factory order, transport or IRQ completion observed.",
       "Register and aperture writes do not reveal ISP internal interpolation, matrix fractional scale, clamp placement, pixel depth or exact hardware stage order.",
-      "WB common+0x30c10 quartet lies outside the proven R2y CustomImage copy; its lower consumption remains unproved here.",
       "Callback handler53081188 sets service event bits, but the full interrupt-vector-to-service chain was not resolved in this bounded pass.",
-      "No firmware coefficient/curve arrays are intended for publication."
+      "No firmware coefficient/curve arrays are intended for publication.",
+      "WB B2r register consumption is now linked separately; R2y upper-limit meaning and internal pixel arithmetic/order remain unproved."
     ]
   },
   "colorspace_wb": {
@@ -723,7 +723,7 @@
       {
         "name": "ColorSpace label",
         "proven": "ASCII parser literal sRGB passes0; AdobeRGB passes1 to52954be0, stores activeuserdata+35b. Callback5290e520 copies it to userdataobject+3b7 then postsmessage0x145 if record+2c==0.",
-        "gap": "Receiving message0x145 to common+26b5 was not closed. Commonsetter52eef408 also reportsid0x145 and stores suppliedenum; rawmodel1/2 mapscommon0/1. These corroborate identity but do not replace a receiver edge."
+        "gap": "Receiver resolved by colorspace_message; startup, queue scheduling and live object lifetime remain unobserved."
       },
       {
         "name": "ColorSpace effective flag",
@@ -755,16 +755,461 @@
     "formulas": {
       "gamma": "For i0..255: y=min((flag?u16(L+2*u16(input[i])):u16(input[i]))>>4,1023). Storeu16y. For i0..254 d=clamp(y[i+1]-y[i],0,240); copy8bytes fromT+8*d. Lastslot copiesT+0.",
       "wb_selected": "At5314e0d0..e110, C+30c10/12/14/16=u16(selectedWBobject+4/6/8/a)>>5. Identity branch sets256; source identity elsewhere8192. This is storage scale conversion, not pixel multiplication.",
-      "wb_fine": "GM=C.u8[261a], BA=C.u8[261b]; k0=(u32(u16(Tgm0[GM])*u16(Tba0[BA]))>>13)&65535; k3 similarlyTgm3/Tba3. C.u16[30c10]=low16(ASR13(s32(u32(oldChannel0*k0)))); C.u16[30c16] similarlyChannel3. Then5314b914 may normalize/update; alternateWBmode1 branch can overwrite channels0/3 with selectedautoresult*k0/k3 ASR18. Exact fixed-point shifts, no pixel-stage ordering inferred.",
+      "wb_fine": "GM=C.u8[261a], BA=C.u8[261b]; k0=(u32(u16(Tgm0[GM])*u16(Tba0[BA]))>>13)&65535; k3 similarlyTgm3/Tba3. C.u16[30c10]=low16(ASR13(s32(u32(oldChannel0*k0)))); C.u16[30c16] similarlyChannel3. Then5314b914 rescales a derived quartet; see wb_gain_hardware; alternateWBmode1 branch can overwrite channels0/3 with selectedautoresult*k0/k3 ASR18. Exact fixed-point shifts, no pixel-stage ordering inferred.",
       "black_combine": "530d5028 returns u32(1000*GetBlackBase_530d4f60() +GetBlackBaseOffset_530d4dd8(mode,channel)-GetBlackDummyBaseValue_530d4bec(mode,channel)); getter returns are runtime calibration-dependent. Absolute pixel units and consumer-to-WB ordering remain unproved."
     },
     "unknowns": [
-      "ColorSpace message0x145 receiver and exact initialized runtime objects",
-      "WB four-channel label order has not been independently named R/Gr/Gb/B; R/B for fine-adjust endpoints is suggested by algorithm but report uses channels0/3 unless resource names prove it",
-      "WB common result to Develop B2b/hardware configuration and actual per-pixel multiplication/clipping",
-      "Sensor/ISP color basis, calibration state and demosaic ordering",
-      "Output JPEG ICC/Exif tags and outputformat enum effects",
-      "Lightroom equivalent adaptation, stage placement, range and inverse/fit require additional evidence; firmware resources alone are not DCP transforms"
+      "Live runtime objects, queue concurrency and synchronization with other common writers are unobserved.",
+      "Four WB channel color names, actual pixel gain scale, black-level relation, color basis and demosaic order remain unproved.",
+      "The derived quartet30c18 is consumed by B2r; alternate WB branches may overwrite30c10/16 afterward without refreshing it.",
+      "The G+18 upper-limit/clip interpretation is inferred; only M2PCLIP is directly named by a firmware register dump.",
+      "Output JPEG ICC/Exif tags, Lightroom coordinate adaptation and pixel-stage placement need further evidence."
+    ]
+  },
+  "wb_gain_hardware": {
+    "relations": [
+      {
+        "name": "WB to B2r",
+        "chain": [
+          "common+30c10..16 adjusted quartet",
+          "5314b914 => common+30c18..1e scaled and limited quartet",
+          "52e6f7ec P+48=common+30c10",
+          "52e594f0 readsP48+8/a/c/e <<5 into G=M[9fc4]",
+          "52e596c4 M+9970=G, equivalentlyB2rParams(M+994c)+24",
+          "52e5aa28 plan+14=M+994c",
+          "52e5b9c8 setup submission withcommand00610002 andserviceM9824",
+          "5300b608 convertsmessage+8 parameterobject",
+          "5300a7c0 config+70=params+24",
+          "531bc9c4 calls531bc180 whenconfig+5 andotherprerequisitespermit",
+          "531bc180 readsG0/3/1/2 >>5 andpacks11bits atbase+4c/+50"
+        ]
+      },
+      {
+        "name": "Update flag",
+        "proof": "Develop ctor52e57fbc r7=1 retained through52e58344 writes M+9980=1 (params+34). Converter5300a64c..658 copiesparams+30..35 toconfig+1..6. Lower531bc8f8 requiresowner+1c==0xa andsuccessfulpriorenabledupdates; config+5 gatesgainapply."
+      },
+      {
+        "name": "Physical bases",
+        "proof": "531be3a8 initializes hardware register bases28412000/28512000/28612000 with registryIDs160/161/162;531bb144 mapslowerinstance0/1/2 toIDs andstoresresolvedhardware+14;531be0fc createsgainwrapperfromH+14. Developservice table538e2af0 values0,1 routesnormaltwoinstances."
+      },
+      {
+        "name": "Independent fields",
+        "proof": "Develop5314b914 computescoefficientlimit2047, notpixels. Prepare52e594f0 setsG+10 fourzerooffsets andG+18 fourffffG+18parameters. Consumerpacks low10 signedoffsetbits, low12G+18bits4095. G+18 upper-limit/clip meaning is inferred, not a firmware-named field; no hardware pixel equation proven."
+      },
+      {
+        "name": "5314b248 expansion",
+        "proof": "5314b694..6ac writescommon+3e01c+8j=256,+3e020+8j=u16(common30c10+2j),+3e03c+8j=256,+3e040+8j=256;j0..3.5314b6d0/e0copies3df60\u21923e06c. B2r gain path above does not consume these copied fields; furtherconsumer unresolved."
+      }
+    ],
+    "formulas": {
+      "wb_rescale": "q[j]=u16(C+30c10+2j); m=min(256,q0,q1,q2,q3); t=min(4096,u16ROM143entries@53c19930,u16ROM143entries@53c19370). g=C.u32[3df5c]. F=u32((((g & 0x7ffff)<<8)//m)<<12)//t. out[j]=min((u32(q[j]*F)>>13)&65535,2047), storeu16C30c18+2j; C3df7c=F. Divisorsmustbenonzero fornormalpath.",
+      "recompute": "If C2a79==0: N=low16(ARM_LSL(1,C.u16[2986])); s=min4u32@29f0; n=max4u32@29c0; b=max4signedlow16@2a00; L=u16@2a7c; d=max4u32@3e05c; K=UBFX6,16(high32(u32(n+500)*0x10624dd3)); a=s32(u32(low16(N-2)-K)); E=min_unsigned(u32(b-L+low32((a*s)>>13)),low16(N-1)); numerator=u32(low16(N-1)<<13); g=low16(UDIV(numerator,u32(E-d))). Ifarg2!=0 andg<low16(oldC3df5c), setg=oldlow16andE=u32(SDIV(numerator,g)+d). StoreC3df60=E,C3df5c=g, thenrescale.",
+      "packing": "Gainregisterfields=low11(u32G[j]>>5);offsetfields=low10(s16G10[j]);G18_parameter_fields=low12(u16G18[j]). Eachpairlow/high16-lane order0,3then1,2; allunselectedregisterbits preserved."
+    },
+    "limitations": [
+      "No camera execution, DMA observation, ISP pixel model, real RAW/JPEG or full boot/service emulation.",
+      "Unicorn Cortex-A15 model chosen for ARM integer-division support; not identification of camera CPU.",
+      "Four channel indices remain unnamed; neither Bayer CFA order nor sensorRGB/XYZ basis is inferred from register packing.",
+      "Common control fields29c0/29f0/2a00/2a7c/3e05c have exact arithmetic roles but physical meanings and upstream calibrationproducers not closed here.",
+      "G+18 clip/upper-limit semantics are not directly named by firmware in this evidence; clip_* artifact labels are analyst hypotheses.",
+      "Coefficient clamp2047, bitmask limits and zerooffset preparation are distinct from black-level subtraction/pixel clipping.",
+      "Alternate WB branch may overwriteC30c10/16 afterfirstrescale; proof isbasedonactualC30c18 consumed,notassumedalllatestselectedquads.",
+      "5314b248 expanded common records consumerunresolved.",
+      "Runtime service/vtable/registry identity and live flags unobserved; static initializedgraphconditions explicit.",
+      "DCP/XMP transferstillneedsphysicalgainunits,pixelinput/outputbasis,stageorder,demosaic/blacklevelandAdobeoperationplacement; thisworkdoesnotproveexactLightroomequivalence."
+    ]
+  },
+  "colorspace_message": {
+    "initialized_data": {
+      "copy_fragment": "initialized_data_copy",
+      "source": "0x53ce7d40",
+      "destination": "0x54500000",
+      "size": "0x65a80",
+      "source_sha256": "741f144beceec6184e1a569d043bdd363902e9366515c68400b5c576fc9fd1e6",
+      "literal_addresses": [
+        "0x52500450",
+        "0x52500454",
+        "0x52500458"
+      ],
+      "condition": "Firmware initialization copy ran successfully and this initialized data was not subsequently altered."
+    },
+    "conditional_bindings": [
+      {
+        "label": "CommonPropertyIf worker to OnMessage",
+        "callsite": "0x530eeec4",
+        "table_slot": "0x538ef48c",
+        "target": "0x52ede7cc",
+        "constructor": "0x52ed0844",
+        "init_site": "0x52ed0874",
+        "load_site": "0x530eee38",
+        "condition": "Factory selector1 constructs the service at singleton[0]; the queue worker runs on that service and its installed vtable remains unchanged.",
+        "evidence_sites": [
+          "0x52eaad98",
+          "0x52eaada4",
+          "0x52ed092c"
+        ]
+      },
+      {
+        "label": "OnSetSync property 0x145 member record",
+        "callsite": "0x52ede6e8",
+        "table_slot": "0x53d0c934",
+        "runtime_table_slot": "0x54524bf4",
+        "table_base": "0x545241cc",
+        "table_index": "0x145",
+        "stride": 8,
+        "target": "0x52ecf4a8",
+        "adjustment_word_address": "0x53d0c938",
+        "adjustment_word_runtime": "0x54524bf8",
+        "adjustment_word_value": 0,
+        "init_site": "0x5250039c",
+        "load_site": "0x52ede6d0",
+        "condition": "Startup copied the initialized-data image; property ID low16 is0x145; record second word0 selects direct member target with zero this adjustment. Other records may use ARM pointer-to-member virtual encoding.",
+        "evidence_sites": [
+          "0x52ede6a4",
+          "0x52ede6a8",
+          "0x52ede6ac",
+          "0x52ede6b4",
+          "0x52ede6bc",
+          "0x52ede6c0",
+          "0x52ede6c4",
+          "0x52ede6d0"
+        ]
+      }
+    ],
+    "resolved_dynamic_edges": [
+      {
+        "label": "UserData callback-list invocation",
+        "callsite": "0x52928e84",
+        "target": "0x52915ecc",
+        "slot_expression": "copied callback record +0xc",
+        "init_sites": [
+          "0x52954b68",
+          "0x52954b70",
+          "0x52954b84"
+        ],
+        "copy_sites": [
+          "0x5292e87c",
+          "0x5292e884",
+          "0x52928e68",
+          "0x52928e6c"
+        ],
+        "condition": "The callback vector element created by this colorspace setter reaches the generic invoker. This is a heap slot, not a fixed vtable address."
+      },
+      {
+        "label": "UserData member callback",
+        "callsite": "0x52915eec",
+        "target": "0x5290e520",
+        "slot_expression": "heap member record +0",
+        "adjustment_expression": "heap member record +4 == 0",
+        "object_expression": "heap member record +8 == UserData this",
+        "init_sites": [
+          "0x52954b58",
+          "0x52954b5c",
+          "0x52954b64",
+          "0x52954b6c",
+          "0x52954b74"
+        ],
+        "condition": "Callback record created by52954afc survives vector append/copy and has recorded zero adjustment."
+      }
+    ],
+    "relations": [
+      {
+        "label": "text enum",
+        "parser": "0x52aed898",
+        "strings": {
+          "sRGB": "0x5361a1d0",
+          "AdobeRGB": "0x5361a1d8"
+        },
+        "sRGB_value": 0,
+        "AdobeRGB_value": 1,
+        "setter": "0x52954be0",
+        "sites": [
+          "0x52aed8e0",
+          "0x52aed8e4",
+          "0x52aed8f8",
+          "0x52aed8fc"
+        ]
+      },
+      {
+        "label": "UserData callback condition",
+        "function": "0x5290e520",
+        "record_value_offset": "0x35b",
+        "cache_offset": "0x3b7",
+        "suppression_field": "active_record+0x2c",
+        "condition": "active_record+0x2c == 0",
+        "call": "0x5290e55c",
+        "factory": "0x52eaacf4",
+        "receiver_load": "0x5290e560",
+        "tail": "0x5290e570",
+        "target": "0x52edd820",
+        "note": "Cache is updated when different before suppression test. This callback does not validate common update by same ID alone."
+      },
+      {
+        "label": "synchronous property command",
+        "function": "0x52edd820",
+        "opcode": 1,
+        "property": "0x145",
+        "payload": "pointer to stack u8 value",
+        "free_payload": 0,
+        "callsite": "0x52edd848",
+        "target": "0x52edbdcc",
+        "send_call": "0x52edbe5c",
+        "send_target": "0x530ef074",
+        "wait_site": "0x52edbe94",
+        "wait_event": "service+0x54 mask0x1",
+        "condition": "queue send returns nonzero before waiting; stack payload remains live until this synchronous wait finishes"
+      },
+      {
+        "label": "queue record",
+        "constructor": "0x530edc60",
+        "fields": {
+          "0x8": "opcode1",
+          "0xc": "property0x145",
+          "0x10": "payload byte pointer",
+          "0x14": "free_payload0",
+          "0x18": "0",
+          "0x4": "queue flag2"
+        },
+        "queue_handle": "service+0x24 -> +4",
+        "enqueue_site": "0x530ede1c",
+        "enqueue_target": "0x525b7820",
+        "dequeue_site": "0x530ee07c",
+        "dequeue_target": "0x525b73a0",
+        "worker_receive": "0x530eee20",
+        "worker_call": "0x530eeec4",
+        "limit": "Transport record construction/decoding and same queue handle traced statically; RTOS scheduling and allocator not replayed."
+      },
+      {
+        "label": "OnMessage command direction",
+        "function": "0x52ede7cc",
+        "opcode1_branch": "0x52ede7d4",
+        "opcode1_case": "0x52ede82c",
+        "tail": "0x52ede838",
+        "target": "0x52ede66c",
+        "firmware_name": "OnSetSync",
+        "conclusion": "Opcode1 is synchronous property-set dispatch, not merely a notification about an already-updated common value."
+      },
+      {
+        "label": "property handler writes manager",
+        "handler": "0x52ecf4a8",
+        "manager_load": "0x52ecf4a8",
+        "manager_offset": "0x518",
+        "payload_load": "0x52ecf4c0",
+        "callsite": "0x52ecf4c4",
+        "target": "0x52eef4c0",
+        "setter_call": "0x52eef4d4",
+        "setter": "0x52eef408",
+        "field_store": "0x52eef438",
+        "field": "manager[1]+0x26b5",
+        "auxiliary_store": "0x52eef428",
+        "auxiliary_field": "manager[1]+0x4e1d",
+        "note": "Wrapper passes input value as both setter r1/r2. Byte+0x4e1d meaning is not inferred."
+      },
+      {
+        "label": "buffer commit",
+        "function": "0x52edfa40",
+        "callsite": "0x52eef4e4",
+        "size": "0x4ed0",
+        "swap_sites": [
+          "0x52edfa64",
+          "0x52edfa68"
+        ],
+        "copy_site": "0x52edfa74",
+        "copy_target": "0x526aac80",
+        "semantics": "On success, old write buffer becomes manager[0], old current becomes manager[1], and full new current is copied into the old current buffer. Both contain updated color byte; subsequent current snapshot getter reads manager[0].",
+        "getter": "0x52ede920"
+      },
+      {
+        "label": "changed-property notification after commit",
+        "record_id": "0x145",
+        "descriptor": "0x28101f01",
+        "record_sites": [
+          "0x52eef468",
+          "0x52eef46c",
+          "0x52eef470"
+        ],
+        "condition": "old color byte != new color byte and manager+8 change tracker nonnull",
+        "emit_function": "0x52ede4d8",
+        "emit_call": "0x52ede54c",
+        "emit_target": "0x5330b1b0",
+        "descriptor_offset0": "0x28101f01",
+        "descriptor_offset4": "property ID0x145",
+        "wake_site": "0x52ede720",
+        "wake_target": "0x530ed03c",
+        "wake_event": "service+0x54 mask0x1",
+        "note": "This is the distinct downstream change notification; ultimate subscribers are outside current scope."
+      },
+      {
+        "label": "RAW model independent entry",
+        "site": "0x529cf844",
+        "target": "0x52eef4c0",
+        "condition": "RAW model apply obtains own manager pointer at+0x1c and converted common enum; does not traverse UserData queue/OnSetSync."
+      },
+      {
+        "label": "synthetic replay",
+        "result": "numeric-checks.json",
+        "cases": 1536,
+        "full_handler": 768,
+        "dispatch_fragment": 768,
+        "old_values": [
+          0,
+          1,
+          255
+        ],
+        "new_value_range": [
+          0,
+          255
+        ],
+        "menu_cross_cases_per_group": 4,
+        "observed": "new color and auxiliary bytes, full-buffer equality, pointer swap, conditional change record and return1",
+        "excluded": "RTOS/locks/full UserData observer/full OnSetSync/notification transport/camera"
+      }
+    ],
+    "unknowns": [
+      "Actual startup order and live object lifetimes are not observed; static bindings require recorded constructors and initialized table copy.",
+      "RTOS queue/locks/memory allocation, downstream notification subscriber and complete firmware execution are not emulated.",
+      "Common synchronization with every RAW snapshot and other writers is not established. The independently recorded RAW model path is separate.",
+      "The auxiliary common+0x4e1d byte has no assigned semantic name.",
+      "Only enums0/1 have proved sRGB/AdobeRGB names. Out-of-domain bytes in replay are arithmetic/transport cases, not supported menu options.",
+      "No pixel processing, colorimetry, camera output or Lightroom profile is executed."
+    ],
+    "coverage_notes": [
+      "All listed functions have genuine unedited bounded angr C; every source word is in full ARM listings. Explicit literal/jump-table words are marked data.",
+      "Fragments include source snippets and initialized data, not complete-function C. Machine checks establish byte consistency, not all semantics.",
+      "table_slot for property binding names ROM source address; runtime_table_slot names relocated initialized RAM. Both are verified via the startup copy mapping."
+    ]
+  },
+  "isp_clipping": {
+    "relationships": [
+      {
+        "name": "M2PCLIP named register",
+        "proof": [
+          "53242904/08 materializes53c9f368=M2PCLIP",
+          "53242910 reads unit-register-base+1c",
+          "532426dc writes high16;532426f4 writes low16"
+        ],
+        "claim": "A register explicitly named M2PCLIP has two16-bit fields; configuration+6 and+8 feed them. High/low refer to bit positions; hardware bound orientation and signedness remain unproved."
+      },
+      {
+        "name": "B2b DRAM input clip settings",
+        "proof": [
+          "53006f24 constructor sets common object+10=3",
+          "53006ff8 common apply passes+10 to53022bc8 at5300722c, conditional path mask0x2",
+          "53022bc8 defaults clip record+6=ffff,+8=0 and calls53222b90",
+          "kind3 jump routes53211140/532111c4",
+          "SetupB2bRead0/1 asserts valid Path_InputDram bit1 and calls532249e8"
+        ],
+        "claim": "This B2b common-service path configures M2PCLIP high16=ffff,low16=0. Descriptor formats2/5/8 change format/shift, not these defaults."
+      },
+      {
+        "name": "ProReadUnit physical bases",
+        "proof": [
+          "53229dd4 installs vtable53ca2348 whose+8=53227df8",
+          "factory initializer stores ReadUnit objects into F+2e0+30*p+4*n",
+          "53228e48=28868800; units n0..3 increment100; p0..2 increment100000",
+          "5322a150 retrieves F+2e0+30*p+4*n",
+          "5320f4bc obtains singleton F=547bd570 and stores selected Read0/1 into service+13c/+140"
+        ],
+        "claim": "Conditional on this factory initializer having run, B2b Read0/1 M2PCLIP addresses are2886881c/2886891c plus100000*p, p0..2. The runtime virtual initializer callsite is outside this bounded trace."
+      },
+      {
+        "name": "R2y limit-candidate fields",
+        "proof": [
+          "52e597c0 sets gain8192,offset0,third-field4095 for enum4/5/6 in G=*(M+9fc8)",
+          "52e599c4 storesG in M+9994=R2yP+10",
+          "530802c8/d0 copiesP+10 to config+240",
+          "5324ff2c readsG offsets+0,+10,+18",
+          "53256a18 binds wrapper+10=R+20",
+          "53256c6c/8c/ac pack low12 into R+30 low/high andR+34 low"
+        ],
+        "claim": "Exact parameter and register flow, distinct from signed12 matrix coefficients. The third field is called clip-candidate/limit-like here; explicit R2y CLIP register naming and physical saturating arithmetic are not proved."
+      },
+      {
+        "name": "R2y gain/offset/limit mathematical write model",
+        "formula": "For enum4,5,6 use array index0,1,2. Gain stored=((G[i]>>5)&0x7ff); offset stored=G.s16[+10+2*i]&0x3ff; limit-candidate stored=G.u16[+18+2*i]&0xfff. These are field masks/truncation, not CPU saturation. Preserve all other register bits."
+      },
+      {
+        "name": "R2y input address consumer",
+        "proof": [
+          "when P+1==0, converter copies descriptor atP+a0,+4/+8/+c to config+24/+28/+2c",
+          "SetupParamReadUnit5324f450 forwards those words to53260b78/84/90",
+          "read-wrapper atHW+28 constructed5326050c withR+40c0",
+          "setters store to wrapper-base+10/+14/+18"
+        ],
+        "claim": "Conditional converter/apply path stores descriptor addresses in R+40d0/+40d4/+40d8. This proves read-unit address setup, not actual DMA completion."
+      },
+      {
+        "name": "Ordering boundary",
+        "claim": "53253eac invokes gain-offset-limit setup(flag4), second parameter setup(flag5), CustomImage table/register application(flag6) in CPU call order. That is not proof that pixels visit gain/limit before gamma/matrix/tone, or of internal clipping precision."
+      }
+    ],
+    "unknowns": [
+      "Exact M2PCLIP high/low comparison semantics, signedness, position relative to input offset/shift, and enable conditions.",
+      "R2y third-field physical CLIP name, threshold behavior, and whether physical pipeline clamps at that point.",
+      "R2y hardware order among gain, matrix, gamma, tone, saturation and any internal clipping.",
+      "Factory runtime virtual-initializer callsite is not resolved here; allocation-to-getter-to-service binding is conditional on initialization.",
+      "Physical DMA, interrupts, caches, throughput and sensor precision are unexecuted.",
+      "PSR and AFFINE clipping strings were not connected to the ordinary Develop path in this bounded scope."
+    ]
+  },
+  "isp_buffers": {
+    "relationships": [
+      {
+        "role": "separate_opcodes",
+        "detail": "Develop message0x200005 dispatches to52e5b4cc (B2r four iterations); message0x200006 to52e5b148 (R2y four iterations). These are distinct messages, not proof of queue order.",
+        "sites": [
+          "0x52e5c264",
+          "0x52e5c288",
+          "0x52e5c28c",
+          "0x52e5c2a8",
+          "0x52e5c344"
+        ]
+      },
+      {
+        "role": "b2r_buffer_builder",
+        "detail": "52e5b4cc loops indices0..3 through52e5ac24. Wrapper sets arg5=1 and calls52e5a500. plan+14 selects macro+994c; params+14 descriptor addresses+4/+8/+c = P+60/+64/+68 plus(table538e2b68[index]+0x26)*formatFactor.",
+        "sites": [
+          "0x52e5b530",
+          "0x52e5ace0",
+          "0x52e5ace8",
+          "0x52e5a5d0",
+          "0x52e5a614"
+        ]
+      },
+      {
+        "role": "r2y_buffer_builder",
+        "detail": "52e5b148 loops indices0..3 through52e5acf8. Wrapper sets arg6=1 and calls52e5a62c. plan+18 selects macro+9984; params+a0 descriptor receives the same address formula.",
+        "sites": [
+          "0x52e5b1ac",
+          "0x52e5adbc",
+          "0x52e5adc4",
+          "0x52e5a700",
+          "0x52e5a738"
+        ]
+      },
+      {
+        "role": "conditional_shared_buffers",
+        "condition": "same P, same index0..3, both mode flags1, same descriptor format (0 or8)",
+        "detail": "B2r params+14 and R2y params+a0 address triples agree. factor=1(format0),2(format8). Numeric test also includes mismatched formats and mode0. Do not infer pixel arithmetic from address equality."
+      },
+      {
+        "role": "normal_plan",
+        "detail": "52e5a99c passes both mode flags0; corresponding descriptor address triples are zero. This branch does not prove DRAM buffer handoff.",
+        "sites": [
+          "0x52e5aab0",
+          "0x52e5aacc"
+        ]
+      },
+      {
+        "role": "lower_buffer_direction",
+        "detail": "B2r converter5300a5e0 reads params+14 into config+40/+44/+48, then531bbf74 SetupParamWriteUnit consumes its write-unit record. R2y converter5307fdec reads params+a0 into config+24/+28/+2c whenparams+1==0, and5324f450 sends these fields to read-wrapper setters53260b78/84/90. Supporting full ranges are in wb-gain-hardware and isp-clipping-order evidence."
+      }
+    ],
+    "limitations": [
+      "No pixel samples or ISP execution.",
+      "No proven event ordering between opcodes0x200005 and0x200006.",
+      "Shared buffer relation is conditional; not a universal per-pixel stage order.",
+      "Higher-level branch and geometry modes beyond synthetic baseline not exhaustively executed."
     ]
   }
 }

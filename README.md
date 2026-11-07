@@ -2,7 +2,7 @@
 
 최신 결과는 **[JPEG·ISP와 색 재현 경로 — HTML 보고서](analysis/pipeline-report.html)**에 정리했다. 파일을 내려받아 브라우저에서 열면 다이어그램과 표를 오프라인으로 읽을 수 있다. JPEG 서비스→레지스터→완료 콜백, Custom Image→R2y 행렬·감마·톤 설정, 색공간별 감마와 WB 데이터 흐름을 추적했다. Lightroom 이전 조건과 미해결 연결도 명시했다.
 
-현재 심층 분석은 **273개 고유 디컴파일 진입점**을 포함한다. 새 검증에서는 JPEG 양자화 4,000조건, ISP 설정 8그룹·312검사, 색공간·WB 185사례가 원본 ARM 실행과 일치했다. 이 시험은 실제 ISP 픽셀 처리나 카메라 JPEG·Lightroom의 색 일치를 입증하지 않는다. [검증 결과](analysis/pipeline-report.html#_9) · [필드·레지스터 근거](analysis/pipeline-evidence.json)
+현재 심층 분석은 **379개 고유 디컴파일 진입점**을 포함한다. 이번에는 WB 결과→B2r gain 레지스터, 색공간 메시지 `0x145`→수신 처리기→common 버퍼 반영을 연결했다. 입력 M2PCLIP, R2y 상한 후보 필드와 조건부 B2r·R2y 버퍼 공유도 추적했다. WB 260사례, 메시지 1,536사례, ISP 설정 65그룹·450검사, 버퍼 32조건이 원본 ARM 합성 실행에서 통과했다. 실제 픽셀의 클리핑·처리 순서와 카메라 JPEG·Lightroom의 색 일치는 미확정이다. [검증 범위](analysis/pipeline-report.html#verification) · [필드·레지스터 근거](analysis/pipeline-evidence.json)
 
 **이 펌웨어에서 Linux 셸 스크립트 원문을 꺼낼 수 있고, 컴파일된 함수는 기계어에서 동작을 추적할 수 있다.** Linux UART 함수 한 개는 제조사가 배포한 C 소스와 대응시켰다. 촬영·영상처리 RTOS에서는 HDMI 명령 처리기의 흐름을 복원했다. 카메라 전체를 다시 빌드하는 데 필요한 비공개 C/C++ 소스, 원래의 타입·주석·빌드 프로젝트는 확보하지 못했다.
 

@@ -1,0 +1,99 @@
+{
+  "image_sha256": "342d2f35405e8daf1797dfe431d2e4aa70f4b52a2c242a29df48206672f1dfb4",
+  "engine": "Unicorn 2.1.4",
+  "cpu": "Cortex-A7",
+  "cases": 1536,
+  "rows": [
+    {
+      "group": "full_property_handler",
+      "cases": 768,
+      "old_values": [
+        0,
+        1,
+        255
+      ],
+      "payload_range": [
+        0,
+        255
+      ],
+      "valid_menu_cases": 4,
+      "passed": true,
+      "output_sha256": "56b9a72b4b275a20372d35394ae9e47b36de67a285bbd9f16c4727d84377bdf8"
+    },
+    {
+      "group": "original_member_dispatch_fragment",
+      "cases": 768,
+      "old_values": [
+        0,
+        1,
+        255
+      ],
+      "payload_range": [
+        0,
+        255
+      ],
+      "valid_menu_cases": 4,
+      "passed": true,
+      "output_sha256": "56b9a72b4b275a20372d35394ae9e47b36de67a285bbd9f16c4727d84377bdf8"
+    }
+  ],
+  "synthetic_baseline_sha256": "aa6c1259da91871f6e126554619c323189d6e5fa297ab8ecbb2c450853a85980",
+  "executed_ranges": [
+    {
+      "start": "0x526aac80",
+      "end": "0x526aac8c",
+      "sha256": "5586d39d554cc6906a43004b2fcee1a1546c83a672a5e738f59de547a48b8e08"
+    },
+    {
+      "start": "0x526aacf4",
+      "end": "0x526aad14",
+      "sha256": "11e7dca4bbdb1a54c8629f92edc685bb1549b406bba2dba779673383cf4f3991"
+    },
+    {
+      "start": "0x526aad38",
+      "end": "0x526aadb4",
+      "sha256": "4e022fc14bf856b38e258141b504639a7f563c87d04a796a59b99375c91d6a84"
+    },
+    {
+      "start": "0x526aaddc",
+      "end": "0x526ab0d0",
+      "sha256": "f16dcf363d466acd1eff0205fb8bb378aa135632f1c5421b9d4a834cab9a3ef8"
+    },
+    {
+      "start": "0x52ecf4a8",
+      "end": "0x52ecf4d4",
+      "sha256": "b142d8f2b7473e4bc741c6a5df054b891a32d69f860615ff4e374f0daa7ee907"
+    },
+    {
+      "start": "0x52ecf4dc",
+      "end": "0x52ecf4e4",
+      "sha256": "2e0f33ba3c7c0a45df2a55e3b47c4f01d07e15efdcecca6165a72c327a253292"
+    },
+    {
+      "start": "0x52ede6a4",
+      "end": "0x52ede6ec",
+      "sha256": "4d64311285c546ebc4c75efa7a85c2f385c8fe769f27eeb9ba4910bd02b4f46a"
+    },
+    {
+      "start": "0x52edfa40",
+      "end": "0x52edfa78",
+      "sha256": "32a6a71e028a319b363aea43a2b6a86de2b72e9c22c58115c9df8be77c53890a"
+    },
+    {
+      "start": "0x52eef408",
+      "end": "0x52eef484",
+      "sha256": "c75d39002f0ba2d2280b2a50ea4507f79c5e0148c33b904d4ddf0740ae16b8dd"
+    },
+    {
+      "start": "0x52eef4c0",
+      "end": "0x52eef4f0",
+      "sha256": "49681a9ea7b65743a9b278ed669074e9260628a1f75fd1fdc8b639c77a5c0ae2"
+    }
+  ],
+  "scope": "Complete original property handler and a separate original pointer-to-member dispatch slice, both calling the real setter, commit and memcpy. No call stubs.",
+  "limits": [
+    "Synthetic CommonPropertyInfo objects and initialized table mapping; constructor, RTOS queue, locks and notification continuation not executed.",
+    "Only values 0/1 are established sRGB/AdobeRGB enums; other byte cases validate transport/arithmetic, not valid camera choices.",
+    "No live camera, pixel calculation, color output or concurrency/lifetime proof."
+  ]
+}
