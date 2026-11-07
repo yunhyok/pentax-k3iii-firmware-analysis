@@ -1,0 +1,487 @@
+{
+  "scope": "Static evidence and bounded synthetic execution. No camera, storage I/O, hardware transform, patch, build or flash.",
+  "rtos_sha256": "342d2f35405e8daf1797dfe431d2e4aa70f4b52a2c242a29df48206672f1dfb4",
+  "update": {
+    "predicates": [
+      {
+        "function": "0x52ff4d80",
+        "condition": "u32(input+0x30) == expected_project",
+        "failure": 0,
+        "site": "0x52ff4da8"
+      },
+      {
+        "function": "0x52ff4d80",
+        "condition": "u32(input+0x78) == (project | project<<16) modulo32 and u32(input+0x7c)==0xa55a5aa5",
+        "failure": 0,
+        "sites": [
+          "0x52ff4df8",
+          "0x52ff4e0c"
+        ]
+      },
+      {
+        "function": "0x52ff4d80",
+        "condition": "footer=input+length-0x18; footer words0/4 equal header78/7c; footer+8 equals expected_type",
+        "failure": 0,
+        "sites": [
+          "0x52ff4e50",
+          "0x52ff4e5c",
+          "0x52ff4e6c"
+        ]
+      },
+      {
+        "function": "0x52ff4d08",
+        "condition": "footer+0x14==0xffffffff OR length==0 OR sum_le_u32(input,ceil(length/4)) modulo2^32 == 0",
+        "success": 1,
+        "failure": 0
+      },
+      {
+        "function": "0x52ff4ee8",
+        "condition": "last4 bytes little-endian == 0 or 0xffffffff OR floor(length/4)==0 OR sum_le_u32(decoded,floor(length/4)) modulo2^32 == 0",
+        "success": 1,
+        "failure": 0,
+        "limits": "last4 read precedes length/4 check; supported synthetic lengths >=4"
+      },
+      {
+        "function": "0x52ff4f88",
+        "condition": "decode return !=0, actual output length == footer+0x10, then inner checksum ==1",
+        "failure": 0,
+        "sites": [
+          "0x52ff5058",
+          "0x52ff5064",
+          "0x52ff50f4"
+        ]
+      },
+      {
+        "function": "0x52feef34",
+        "condition": "kind2/3/4: reject if any of three unsigned32 header version pairs is less than current corresponding value; equal allowed",
+        "failure": 0,
+        "sites": [
+          "0x52fef024",
+          "0x52fef038",
+          "0x52fef04c"
+        ]
+      }
+    ],
+    "relationships": [
+      "Filename model is *(547bb198)+18 via5310b748; project validation uses different field *(547bb198)+8 via5310b7f0.",
+      "52fee804/808 stores project in state+34; kind2 dispatch passes it through52ff2dec object+48, then52ff4b0c validator+18; expected fwtype2 passes to validator+1c.",
+      "52fee900 calls52ff7160(filename,length) and stores returned input buffer in state+48; file loading implementation below52ff7160 not resolved in this bounded pass.",
+      "52ff5168 first header/outer-sum then52ff4f88 decode/length/inner-sum. Decoder wrapper530fa6b4 calls5327f04c; no algorithm identification claimed.",
+      "CPU context52ff1a44 after validation uses52ff4c44 to copy decoded validator+10/+14 to CPU ctx+24/+28. Setter52ff1a18 has a separate true-flag branch that directly stores input r1/r2 to ctx+24/+28.",
+      "Observed controller53318dc0/4 calls version gate only for kind2; not a universal claim for every update entry point."
+    ],
+    "unknowns": [
+      "No cryptographic signature verification resolved on this path. This is not proof that all firmware components lack authentication.",
+      "The 256-byte region before the 24-byte footer is consumed as two 128-byte version records by52ff4b3c when header+3c==2. Record word0 selects the matching entry; +8/+a are BE16 version halves. Remaining record fields and any additional authentication semantics remain uninterpreted.",
+      "CPU setup and result handling is linked to MMIO 0x1b030000 in hardware_transform. Internal hardware algorithm and authentication remain unresolved.",
+      "No general malformed-package bounds-safety proof. Outer checksum nonmultiple lengths read padded bytes; header accesses assume sufficient input.",
+      "No camera, updater, file-write, patch, build, or flash execution. Numerical checks execute only two checksum functions in synthetic memory."
+    ],
+    "search_metadata": {
+      "method": "Aligned A32 B/BL encoding candidate scan, condition != 15; data/Thumb false negatives possible. Context reviewed for selected paths.",
+      "start": "0x52500000",
+      "end": "0x53d4d7c0",
+      "targets": [
+        "0x52ff3474",
+        "0x52ff34d0",
+        "0x52ff3438",
+        "0x52feef34",
+        "0x52ff5168",
+        "0x52ff4d08",
+        "0x52ff4d80",
+        "0x52fefb84"
+      ],
+      "hits": [
+        {
+          "site": "0x52feedc8",
+          "target": "0x52ff34d0"
+        },
+        {
+          "site": "0x52feedf8",
+          "target": "0x52ff34d0"
+        },
+        {
+          "site": "0x52feee04",
+          "target": "0x52ff3474"
+        },
+        {
+          "site": "0x52feee28",
+          "target": "0x52ff34d0"
+        },
+        {
+          "site": "0x52fef2f0",
+          "target": "0x52ff3438"
+        },
+        {
+          "site": "0x52fef318",
+          "target": "0x52ff3438"
+        },
+        {
+          "site": "0x52fef330",
+          "target": "0x52ff3474"
+        },
+        {
+          "site": "0x52fef358",
+          "target": "0x52ff3474"
+        },
+        {
+          "site": "0x52fefd38",
+          "target": "0x52fefb84"
+        },
+        {
+          "site": "0x52fefdb4",
+          "target": "0x52ff34d0"
+        },
+        {
+          "site": "0x52fefe5c",
+          "target": "0x52ff3438"
+        },
+        {
+          "site": "0x52fefe6c",
+          "target": "0x52ff3474"
+        },
+        {
+          "site": "0x52ff1a74",
+          "target": "0x52ff5168"
+        },
+        {
+          "site": "0x52ff2e38",
+          "target": "0x52ff5168"
+        },
+        {
+          "site": "0x52ff4ea8",
+          "target": "0x52ff4d08"
+        },
+        {
+          "site": "0x52ff5178",
+          "target": "0x52ff4d80"
+        },
+        {
+          "site": "0x533031f8",
+          "target": "0x52fefb84"
+        },
+        {
+          "site": "0x53316840",
+          "target": "0x52fefb84"
+        },
+        {
+          "site": "0x533192c8",
+          "target": "0x52feef34"
+        }
+      ]
+    },
+    "original_package_version_table": {
+      "passed": true,
+      "image_sha256": "3c9d466b8160689867af2f58ff2cf0bf3363bc3b42daff43685a33171b91eb1a",
+      "image_size": 35106716,
+      "consumer": "0x52ff4b3c",
+      "count_field_offset": 60,
+      "count": 2,
+      "record_stride": 128,
+      "table_start": 35106436,
+      "table_end": 35106692,
+      "table_size": 256,
+      "table_sha256": "3f62b59bdf5dfd2a8b7666fed6c1dc4f9485aab9599a9c1e0dd04b92ab0167c1",
+      "stream_end": 35106436,
+      "stream_end_evidence": "Existing verified decompression inventory; this script does not repeat decompression.",
+      "records": [
+        {
+          "index": 0,
+          "offset": 35106436,
+          "selector": "0x246",
+          "version_high": 532,
+          "version_low": 2842,
+          "record_sha256": "8bf9a8e6f3052429e4d756e7de23f1d5dd280252ed9e73959d8949fbc9630a4e"
+        },
+        {
+          "index": 1,
+          "offset": 35106564,
+          "selector": "0x26e",
+          "version_high": 532,
+          "version_low": 2824,
+          "record_sha256": "2459bc6696f25e88600d30ba957f960d8823660fac736cbcba7c34ec4d51a6fa"
+        }
+      ],
+      "scope": "Original bytes and source-backed record addressing/fields; no dotted version interpretation or signature inference. Remaining record fields uninterpreted."
+    }
+  },
+  "iconbin": {
+    "slots": [
+      {
+        "slot": 0,
+        "record_address": "0x54525578",
+        "name": "PafSensor",
+        "name_pointer": "0x53912b78",
+        "length": 18432,
+        "base": "0x1000400",
+        "marker_pointer": "0x0"
+      },
+      {
+        "slot": 1,
+        "record_address": "0x54525588",
+        "name": "M0A7CommunicationBuffer",
+        "name_pointer": "0x53912b84",
+        "length": 1048576,
+        "base": "0x509df000",
+        "marker_pointer": "0x0"
+      },
+      {
+        "slot": 2,
+        "record_address": "0x54525598",
+        "name": "PartitionTable",
+        "name_pointer": "0x53912b9c",
+        "length": 69376,
+        "base": "0x50b70100",
+        "marker_pointer": "0x50adf000"
+      },
+      {
+        "slot": 3,
+        "record_address": "0x545255a8",
+        "name": "DspFw",
+        "name_pointer": "0x53912bac",
+        "length": 4194304,
+        "base": "0x52100000",
+        "marker_pointer": "0x50adf004"
+      },
+      {
+        "slot": 4,
+        "record_address": "0x545255b8",
+        "name": "ShellCmdList",
+        "name_pointer": "0x53912bb4",
+        "length": 65536,
+        "base": "0x520f0000",
+        "marker_pointer": "0x50adf008"
+      },
+      {
+        "slot": 5,
+        "record_address": "0x545255c8",
+        "name": "IconBinaryData",
+        "name_pointer": "0x53912bc4",
+        "length": 0,
+        "base": "0xffffffff",
+        "marker_pointer": "0x50adf00c"
+      },
+      {
+        "slot": 6,
+        "record_address": "0x545255d8",
+        "name": "CameraLog",
+        "name_pointer": "0x53912bd4",
+        "length": 4096,
+        "base": "0x50b81100",
+        "marker_pointer": "0x50adf028"
+      },
+      {
+        "slot": 7,
+        "record_address": "0x545255e8",
+        "name": "BootAdjustWork",
+        "name_pointer": "0x53912be0",
+        "length": 131072,
+        "base": "0x50b82100",
+        "marker_pointer": "0x50adf010"
+      },
+      {
+        "slot": 8,
+        "record_address": "0x545255f8",
+        "name": "CaptureAdjustWork",
+        "name_pointer": "0x53912bf0",
+        "length": 2031616,
+        "base": "0x50ba2100",
+        "marker_pointer": "0x50adf014"
+      },
+      {
+        "slot": 9,
+        "record_address": "0x54525608",
+        "name": "ImageAdjustWork",
+        "name_pointer": "0x53912c04",
+        "length": 18939904,
+        "base": "0x50d92100",
+        "marker_pointer": "0x50adf018"
+      },
+      {
+        "slot": 10,
+        "record_address": "0x54525618",
+        "name": "ModifiableAdjustWork",
+        "name_pointer": "0x53912c14",
+        "length": 1179648,
+        "base": "0x51fa2100",
+        "marker_pointer": "0x50adf01c"
+      },
+      {
+        "slot": 11,
+        "record_address": "0x54525628",
+        "name": "ExceptionLog",
+        "name_pointer": "0x53912c2c",
+        "length": 131072,
+        "base": "0x50ae0000",
+        "marker_pointer": "0x0"
+      },
+      {
+        "slot": 12,
+        "record_address": "0x54525638",
+        "name": "LinuxKernel",
+        "name_pointer": "0x53912c3c",
+        "length": 0,
+        "base": "0x0",
+        "marker_pointer": "0x50adf020"
+      },
+      {
+        "slot": 13,
+        "record_address": "0x54525648",
+        "name": "LinuxRootFs",
+        "name_pointer": "0x53912c48",
+        "length": 0,
+        "base": "0x0",
+        "marker_pointer": "0x50adf024"
+      }
+    ],
+    "relations": [
+      {
+        "name": "Decoded buffer to record walker",
+        "proven": "52ff29c8 loads context+24/+28. 52ff1a44 calls validator52ff5168; 52ff1a88..9c supplies context+24/+28 destinations to52ff4c44. Upstream validator decoded buffer+10/+14 handoff is retained by update-validation worker. An alternate true-flag52ff1a18 directly sets context+24/+28.",
+        "dependency": "update predicates/relationships in this document; ranges in deep-evidence.json",
+        "limitation": "No decoder/full update execution; all success preconditions remain conditional."
+      },
+      {
+        "name": "ICONBIN record to storage index4",
+        "proven": "Actual decoded record kind4,index4,length26219192. Walker reads kind at+8, index at+a, size at+c, payload+10. Jump table52ff2a4c targets52ff2b68 for kind4. If index<context+48,52ff2c28 calls52ff225c(context,index,size,payload), then52ff232c calls52ff586c(storage,index,size,payload).",
+        "condition": "record is reached on accepted input branch and index is within layout count; write driver returns success"
+      },
+      {
+        "name": "PARTPARA kind2 to descriptor layout",
+        "proven": "Kind2 tableword52ff2a44 targets52ff2bbc: payload\u2192ctx+40, (length-4)>>4\u2192ctx+48, calls52ff1ea8. That clamps count32, converts capacities to block counts and cumulative offsets, then writes storage table+0x870*i, active bank+0x434*bank fields.",
+        "formula": "record=i; bank=storage.u8[0x10]; descriptor=storage.ptr[0x14]+0x870*i+0x434*bank; +0x10 is block start, +0x14 written byte length, +0x18 block count"
+      },
+      {
+        "name": "Storage write/read correspondence",
+        "proven": "52ff586c writes descriptor-selected block range through52ff5708; successful write updates descriptor+14 byte length,+18 block count. 52ff568c reads same index and bank descriptor+10, clamps requested byte length to common capacity table+0x870*i, then52ff553c calls storage-driver vtable+30. Low driver target remains unresolved."
+      },
+      {
+        "name": "Storage index4 to runtime slot5",
+        "proven": "5330279c checks ready5, obtains base5, rounds descriptor4.byte_length via52ff5314, calls52ff568c(storage,4,rounded_size,base5), then52ff8f04(resource,5,result). 0x21c0 = 4*0x870; length field is table+0x21d4+bank*0x434.",
+        "condition": "ready false and base getter returns nonzero; read driver result supplies marker status"
+      },
+      {
+        "name": "Base and marker producers",
+        "proven": "Base getter52ff8de4 tests slot+8 for ffffffff, uses descriptor4 rounded length, requires length<=0x08000000, and calls allocator virtual+8. Nonzero allocation writes slot+8 pointer and+4 length. Ready setter52ff8f04 dereferences slot+c if nonnull, writes a55a5aa5 when result nonzero and ffffffff otherwise.",
+        "limitation": "Marker is readiness state, not a cryptographic signature. Table initializes slot5 marker pointer50adf00c, not the marker memory content."
+      },
+      {
+        "name": "Storage descriptor table origin",
+        "proven": "52ff528c waits ready resource slot2 then stores basegetter2 into storage+14. Initial slot2 is namedPartitionTable, base50b70100,length10f00,marker pointer50adf000.",
+        "limitation": "Boot producer of slot2 ready status and actual device sector contents are not established here."
+      }
+    ],
+    "limitations": [
+      "No firmware modification, build, flashing, camera execution or real storage I/O occurred.",
+      "Structural conditional chain is established; deployed partition contents and runtime success not observed.",
+      "Low-level storage-driver vtable targets, active bank selection producer, allocation target and boot PartitionTable population remain unresolved.",
+      "No icon pixel format, compression, palette or descriptor-table bounds are inferred from loader evidence."
+    ],
+    "package": {
+      "sha256": "7ff301d585ef7adcd620a15575faa39b4227cc5a27eaa8d754efe50f667a30f9",
+      "size": 78683892,
+      "records": [
+        {
+          "name": "PARTPARA",
+          "header_offset": 660,
+          "kind": 2,
+          "index": 65535,
+          "payload_offset": 676,
+          "size": 516,
+          "sha256": "2c202527871d2ef6677c2daf52a12f9c701c29296727fb5d4ee9d05e298e44bb",
+          "header_sha256": "73c85237af50f217a6d742ce9b93d1cfc1c458cf8276a8241ceedbb394746bbc"
+        },
+        {
+          "name": "ICONBIN",
+          "header_offset": 47623484,
+          "kind": 4,
+          "index": 4,
+          "payload_offset": 47623500,
+          "size": 26219192,
+          "sha256": "9895330cd5d8c52231e96e1d39e883ae22ab35906eaf39d11476d852280b5808",
+          "header_sha256": "3268c9dd305b8a3603b174af9afbb7da14624616894164506d81e59edabab9ad"
+        }
+      ]
+    }
+  },
+  "hardware_transform": [
+    {
+      "entry": "0x5327f04c",
+      "caller": "0x530fa714",
+      "caller_scope": "Verified in update-validation/decode_service_wrapper",
+      "config_call": "0x5327f134",
+      "config_target": "0x53339b5c",
+      "start_call": "0x5327f140",
+      "start_target": "0x533399d8",
+      "mmio_base": "0x1b030000",
+      "source_register": "0x18",
+      "source_end_register": "0x1c",
+      "destination_register": "0x20",
+      "fourth_word_register": "0x24 (zero in selected caller; hardware meaning unresolved)",
+      "start_bit": "register+4 bit0",
+      "error_field": "register+0x38 low16",
+      "completion_copy": "RAM0x547c304c fields+8/+c copied to result; caller result+0xc gives output count",
+      "limits": "Only CPU setup/start/result handling confirmed. Hardware transform algorithm and authentication behavior not inferred; no MMIO or camera executed."
+    }
+  ],
+  "linux_stubby": {
+    "record": "LINUX",
+    "payload_offset": 29792636,
+    "payload_size": 3062784,
+    "payload_sha256": "fcb11ce850f22420ddd6a29d63ef9074ad6322bc021d0ba101e1354d1277b9c2",
+    "scope": "Position-independent packaged Linux Stubby Thumb code; offsets are relative to LINUX payload, not RTOS or observed runtime addresses.",
+    "regions": [
+      {
+        "label": "info_thumb_code",
+        "offset": "0x894",
+        "end": "0x8b4",
+        "sha256": "4e0644af0e985c2b53644fbb9ae2a5c1736b7262c3d0c987073853c1853700fe"
+      },
+      {
+        "label": "relative_literal_pool",
+        "offset": "0x8b4",
+        "end": "0x8bc",
+        "sha256": "e4130f4aed5ff74db8042ec27fb827b69a786830926813b147d2372eedf7d1c3"
+      },
+      {
+        "label": "no_security_banner",
+        "offset": "0x2b04",
+        "end": "0x2b15",
+        "sha256": "f05f414390ddbb0e4dbf9ccd54d5c4172e97c239feb9d4effbffd2f9e43cd28d"
+      }
+    ],
+    "pic_references": [
+      {
+        "load": "0x8a8",
+        "literal": "0x8b8",
+        "add_pc": "0x8ae",
+        "target": "0x2b04",
+        "tail_call": "0x8b0",
+        "target_function": "0xc84"
+      }
+    ],
+    "source_files": [
+      {
+        "file": "stubby-1.60.1/src/boot-sequence.c",
+        "sha256": "2bf90d249aab5a6e9b8a2dbcbe30b9a2f1565c91a8980491d604b70c642c6f43"
+      },
+      {
+        "file": "stubby-1.60.1/src/load_image.c",
+        "sha256": "5f26fb7f8b48dcf0eb80748d08f244e79e266d36febaee570c2343184bff0fd0"
+      }
+    ],
+    "conclusion": "Binary info function references the banner corresponding to the public source CONFIG_RSA_SIGNATURE-disabled branch. This is local evidence for that Stubby component, not proof of camera update authentication or all boot stages.",
+    "not_proven": [
+      "Exact source-build equivalence",
+      "Whole package signature policy",
+      "Absence of all other signature checking code",
+      "Acceptance of modified firmware",
+      "Actual boot execution"
+    ],
+    "source_url": "https://www.ricoh-imaging.co.jp/japan/products/oss/k-3-3/K3mkIII_220.tar.gz",
+    "source_lines": {
+      "boot-sequence.c": "72-87",
+      "load_image.c": "151-207"
+    }
+  }
+}

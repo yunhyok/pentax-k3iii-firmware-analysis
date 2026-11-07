@@ -1,0 +1,122 @@
+{
+  "passed": true,
+  "layout_sha256": "f6fba3c2f83e454403781504a11bdf0c0ebccf8faac7c4e9a50bf454e305d707",
+  "original_sha256": "3c9d466b8160689867af2f58ff2cf0bf3363bc3b42daff43685a33171b91eb1a",
+  "decoded_sha256": "7ff301d585ef7adcd620a15575faa39b4227cc5a27eaa8d754efe50f667a30f9",
+  "package": {
+    "header": {
+      "project": 582,
+      "count": 2,
+      "project_repeat": 38142534,
+      "magic": 2774162085
+    },
+    "footer": {
+      "type": 2,
+      "compressed_length": 35106308,
+      "decoded_length": 78683892,
+      "checksum_word": 2953380011
+    },
+    "footer_offset": 35106692,
+    "compressed_stream_end": 35106436,
+    "compressed_block_count": 3202,
+    "original_u32le_sum_mod_2_32": 0,
+    "decoded_u32le_sum_mod_2_32": 0,
+    "decoded_checksum_word": 1803449087
+  },
+  "version_table": {
+    "count": 2,
+    "record_stride": 128,
+    "table_start": 35106436,
+    "table_end": 35106692,
+    "table_size": 256,
+    "table_sha256": "3f62b59bdf5dfd2a8b7666fed6c1dc4f9485aab9599a9c1e0dd04b92ab0167c1",
+    "records": [
+      {
+        "index": 0,
+        "offset": 35106436,
+        "selector": "0x246",
+        "version_high": 532,
+        "version_low": 2842,
+        "record_sha256": "8bf9a8e6f3052429e4d756e7de23f1d5dd280252ed9e73959d8949fbc9630a4e"
+      },
+      {
+        "index": 1,
+        "offset": 35106564,
+        "selector": "0x26e",
+        "version_high": 532,
+        "version_low": 2824,
+        "record_sha256": "2459bc6696f25e88600d30ba957f960d8823660fac736cbcba7c34ec4d51a6fa"
+      }
+    ]
+  },
+  "named_record_count": 15,
+  "selected_records": [
+    {
+      "name": "PARTPARA",
+      "header_offset": 660,
+      "kind": 2,
+      "index": 65535,
+      "payload_offset": 676,
+      "size": 516,
+      "sha256": "2c202527871d2ef6677c2daf52a12f9c701c29296727fb5d4ee9d05e298e44bb"
+    },
+    {
+      "name": "LINUX",
+      "header_offset": 29792620,
+      "kind": 4,
+      "index": 5,
+      "payload_offset": 29792636,
+      "size": 3062784,
+      "sha256": "fcb11ce850f22420ddd6a29d63ef9074ad6322bc021d0ba101e1354d1277b9c2"
+    },
+    {
+      "name": "ICONBIN",
+      "header_offset": 47623484,
+      "kind": 4,
+      "index": 4,
+      "payload_offset": 47623500,
+      "size": 26219192,
+      "sha256": "9895330cd5d8c52231e96e1d39e883ae22ab35906eaf39d11476d852280b5808"
+    }
+  ],
+  "linux_regions": [
+    {
+      "label": "info_thumb_code",
+      "offset": 2196,
+      "end": 2228,
+      "sha256": "4e0644af0e985c2b53644fbb9ae2a5c1736b7262c3d0c987073853c1853700fe"
+    },
+    {
+      "label": "relative_literal_pool",
+      "offset": 2228,
+      "end": 2236,
+      "sha256": "e4130f4aed5ff74db8042ec27fb827b69a786830926813b147d2372eedf7d1c3"
+    },
+    {
+      "label": "no_security_banner",
+      "offset": 11012,
+      "end": 11029,
+      "sha256": "f05f414390ddbb0e4dbf9ccd54d5c4172e97c239feb9d4effbffd2f9e43cd28d"
+    }
+  ],
+  "linux_pic_references": [
+    {
+      "load": 2216,
+      "literal": 2232,
+      "relative_value": 8786,
+      "add_pc": 2222,
+      "target": 11012,
+      "register": 0,
+      "tail_call": 2224,
+      "transfer_kind": "b.w",
+      "target_function": 3204
+    }
+  ],
+  "limitations": [
+    "Static byte and metadata verification only; no updater or boot execution.",
+    "Compressed block boundaries are checked without repeating decompression.",
+    "No package acceptance or cryptographic authenticity claim.",
+    "The LINUX banner reference is component-specific; it does not establish absence of other signature checks.",
+    "Remaining version-record fields and dotted version interpretation remain unresolved."
+  ]
+}
