@@ -102,7 +102,7 @@ def verify_color(image, evidence):
         filters = struct.unpack("<9I", section(operands[2], 36))
         require(list(filters) == [int(resources[key]["address"], 16) for key in mode["filter_matrices"]],
                 "Filter matrix links mismatch")
-        for name in ("multiaxial", "colorreference"):
+        for name in ("multiaxial", "ycbcrmatrix"):
             require(arrays[name][resource_index] == int(mode[name + "_pointer"], 16),
                     "Auxiliary tuning pointer mismatch")
     cross_table = resources[evidence["cross_curve_pointers"]]

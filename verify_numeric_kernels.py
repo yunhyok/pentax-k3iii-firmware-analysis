@@ -1,4 +1,4 @@
-"""Check isolated v2.20 AF and Q13 matrix kernels with synthetic ARM inputs."""
+"""Check isolated v2.20 numerical kernels and setting packers with synthetic ARM inputs."""
 
 import argparse
 import hashlib
@@ -22,10 +22,11 @@ def verify(decoded):
     cpu = unicorn.Uc(unicorn.UC_ARCH_ARM, unicorn.UC_MODE_ARM)
     cpu.ctl_set_cpu_model(arm.UC_CPU_ARM_CORTEX_A7)
     # Only the numerical code and its mask page are mapped from the firmware.
-    for address in (0x52c73000, 0x53885000, 0x5312c000):
+    for address in (0x52c73000, 0x53885000, 0x5312c000, *range(0x5312d000, 0x53133000, 4096)):
         cpu.mem_map(address, 4096, unicorn.UC_PROT_READ | unicorn.UC_PROT_EXEC)
         cpu.mem_write(address, image[address - BASE:address - BASE + 4096])
     cpu.mem_map(0x60000000, 0x4000)
+    cpu.mem_map(0x61000000, 0x40000)
     cpu.mem_map(0x70000000, 0x20000)
     cpu.reg_write(arm.UC_ARM_REG_FPEXC, 0x40000000)
     results = []
@@ -97,6 +98,51 @@ def verify(decoded):
             raise ValueError("Q13 matrix result mismatch.")
         matrix_results.append({"input_sha256": hashlib.sha256(left_bytes + right_bytes).hexdigest(),
                                "output": actual})
+    packing_results = []
+    sources = [0x61001000 + 0x3000 * i for i in range(6)]
+    cpu.mem_write(0x61000000, struct.pack("<6I", *sources))
+    for name, entry, end in (("multiaxial", 0x5312d4b4, 0x531323c8),
+                             ("color_reference", 0x53132874, 0x53132bf8)):
+        for case in ("zero", "ones", "ramp", "mixed"):
+            operands = []
+            for i, address in enumerate(sources):
+                values = [0 if case == "zero" else 65535 if case == "ones"
+                          else (j * 113 + i * 7919) & 65535 if case == "ramp"
+                          else rng.randrange(65536) for j in range(4096)]
+                payload = struct.pack("<4096H", *values)
+                operands.append(payload)
+                cpu.mem_write(address, payload)
+            before = bytes([0xa5]) * 0x4000
+            cpu.mem_write(0x61020000, before)
+            for register, value in ((arm.UC_ARM_REG_R0, 0x61000000),
+                                    (arm.UC_ARM_REG_R1, 0x61020000),
+                                    (arm.UC_ARM_REG_SP, 0x70010000),
+                                    (arm.UC_ARM_REG_LR, 0x70000000)):
+                cpu.reg_write(register, value)
+            cpu.emu_start(entry, 0x70000000, timeout=2_000_000, count=100_000)
+            if cpu.reg_read(arm.UC_ARM_REG_PC) != 0x70000000:
+                raise ValueError("Setting packer did not return within the execution bound.")
+            after = bytes(cpu.mem_read(0x61020000, len(before)))
+            if name == "multiaxial":
+                actual = struct.unpack_from("<9H", after, 0x80)
+                expected = tuple((0xa5a5 & ~511) | (value & 511)
+                                 for value in struct.unpack_from("<9H", operands[5]))
+                if actual != expected:
+                    raise ValueError("MultiAxial nine 9-bit fields mismatch.")
+            else:
+                src = operands[2]
+                checks = (after[0x1420:0x1428] == operands[0][:8],
+                          after[0x1428] == ((0xa5 & ~0x11) | (src[0] & 1) | ((src[1] & 1) << 4)),
+                          after[0x1429] == ((0xa5 & ~3) | (src[2] & 3)),
+                          after[0x142c] == src[3],
+                          struct.unpack_from("<2H", after, 0x1430) == tuple(
+                              (0xa5a5 & ~2047) | (v & 2047) for v in struct.unpack_from("<2H", src, 4)))
+                if not all(checks):
+                    raise ValueError("ColorReference selected packed fields mismatch.")
+            packing_results.append({"kernel": name, "case": case, "entry": hex(entry), "end": hex(end),
+                                    "range_sha256": hashlib.sha256(image[entry-BASE:end-BASE]).hexdigest(),
+                                    "input_sha256": hashlib.sha256(b"".join(operands)).hexdigest(),
+                                    "output_sha256": hashlib.sha256(after).hexdigest()})
     return {"engine": f"unicorn {unicorn.__version__}", "cpu": "Cortex-A7",
             "rtos_sha256": RTOS_SHA256, "seed": 233,
             "scope": "Isolated numerical kernels with synthetic buffers; no camera or peripheral execution.",
@@ -107,7 +153,10 @@ def verify(decoded):
             "matrix": {"entry": "0x5312cd40", "end": "0x5312cdb4",
                        "range_sha256": hashlib.sha256(image[0xc2cd40:0xc2cdb4]).hexdigest(),
                        "reference": "Signed 3x3 multiply, modulo32 sum+4096, logical shift13, low16",
-                       "passed": len(matrix_results), "cases": matrix_results}}
+                       "passed": len(matrix_results), "cases": matrix_results},
+            "packing": {"passed": len(packing_results),
+                        "scope": "Full setting-packer execution; assertions cover selected fields and preserved upper bits, not every packed field or pixel processing.",
+                        "cases": packing_results}}
 
 
 if __name__ == "__main__":

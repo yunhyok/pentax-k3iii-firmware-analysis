@@ -36,19 +36,23 @@ SATOBI는 v1.31, KATEN은 v1.50, KYUSHU는 v1.60, FUYUNO는 v1.70, HARUBENI는 v
 
 RAW 현상 함수 `0x52e74574`는 진단 문자열로 `CreateRawDevelopRecipeSequence`에 대응한다. 여기서 `0x52e73044`를 통해 종류·연산 번호·추가 인수를 갖는 레시피 항목을 쌓는다. RAW 현상의 UI 선택값은 `0x529cb350`에서 공통 설정값으로 변환된다. 예를 들어 UI 값 6이 SATOBI의 공통 enum 23으로 바뀌고, UI 값 0은 촬영 당시 공통 설정을 읽는다. [추가 분석 구간과 호출 위치](deep-evidence.json)
 
+후속 분석에서는 레시피 소비자·모듈 큐·가상 호출을 연결하고, 레시피 operation 4/5가 Develop1/2, 7이 JPEG, 8이 StoreImage임을 확인했다. Develop은 파생 ImageTuning 구현을 거쳐 앞서 찾은 색·감마·톤 함수를 호출한다. 팩토리 번호는 이보다 1 크므로 서로 혼용하면 안 된다. [정확한 번호·레시피·호출 관계](color-algorithms.md)
+
 | 추적 단계 | 확인한 코드·데이터 | 남은 연결 |
 |---|---|---|
-| RAW 현상 레시피 구성 | `0x52e74574 → 0x52e73044`가 비동기 처리 항목 구성 | 모든 연산 번호와 실행 핸들러의 대응 |
+| RAW 현상 레시피 구성 | `0x52e74574 → 0x52e73044`, 소비자 `0x52e9e520`와 모듈 제출, 네 입력의 246개 항목 확인 | 나머지 연산의 의미와 전체 실동작 |
 | Custom Image 선택값 변환 | `0x529cb350`, 공통 설정 `+0x264e` | 현상 상태에 따른 모든 파라미터 전달 |
 | ImageTuning 설정 | `0x53127b28`에서 모드 읽기, `0x53129e78`에서 리소스 선택 | WB·센서 보정과의 수치 조합 |
 | 색·톤 파라미터 계산 | `0x5312a8fc`에서 색 행렬·감마·톤 등의 설정 함수 호출 | 하드웨어 픽셀 처리 순서와 각 단계의 비트 폭 |
-| JPEG 처리 모듈 생성 | 팩토리 `0x52e61214`의 ID 8 분기 `0x52e615fc → 0x52e5eea0`, 이름 `JpegEncodeMacroProcess` | 앞선 비동기 결과 버퍼와 인코더 입력의 완전한 연결 |
+| JPEG 처리 모듈 생성·실행 | 팩토리 8번 `0x52e615fc → 0x52e5eea0`, 레시피 operation 7이 `0x52e5eca0` 실행 및 하위 객체 제출에 연결 | 버퍼 평면·픽셀 형식과 하위 압축 드라이버 |
 
 `0x5312a8fc`의 설정 호출에서는 ColorMatrix, MultiAxial, 휘도 노이즈 감소, YCbCrMatrix, ColorReference, 좌표 스케일, 색 LPF, 에지 강조, YCbCr 연산, Gamma, ToneControl, 리사이즈·필터 설정을 확인했다. 팩토리에는 PixelCorrect, WbCalc, RawWbCalc, Develop1·2, BackResize, RawCodec 등의 생성 경로도 있다. 이 증거는 생산용 RAW 현상·영상 설정·JPEG 모듈의 위치를 특정한다. 설정 함수의 호출 순서를 센서 픽셀이 하드웨어를 통과하는 순서로 그대로 해석할 수는 없다. 전체 RAW→JPEG 버퍼 흐름과 완료 콜백 연결은 일부 미해결이다. [바이트 해시와 직접 호출 증거](deep-evidence.json)
 
 ## 펌웨어 색 변환 데이터
 
-부팅 코드의 리터럴 `RTOS+0x450`은 원본 `0x53ce7d40`에서 RAM `0x54500000`으로 `0x65a80`바이트를 옮기도록 지정한다. 이 대응으로 초기화된 RAM의 리소스 포인터를 BIN의 원본 바이트까지 역추적했다. ColorMatrix·MultiAxial·ColorReference의 포인터 배열은 각각 3행×35항이며 조사한 세 행의 값은 동일했다. 다만 실행 후 RAM이 변경되는지는 별도 관측이 필요하다. [원본 오프셋과 83개 관측 구간](color-resources.json) · [독립 검증기](../verify_deep_analysis.py)
+부팅 코드의 리터럴 `RTOS+0x450`은 원본 `0x53ce7d40`에서 RAM `0x54500000`으로 `0x65a80`바이트를 옮기도록 지정한다. 이 대응으로 초기화된 RAM의 리소스 포인터를 BIN의 원본 바이트까지 역추적했다. ColorMatrix·MultiAxial·YCbCrMatrix의 포인터 배열은 각각 3행×35항이며 조사한 세 행의 값은 동일했다. 다만 실행 후 RAM이 변경되는지는 별도 관측이 필요하다. [원본 오프셋과 83개 관측 구간](color-resources.json) · [독립 검증기](../verify_deep_analysis.py)
+
+**후속 추적에 따른 명칭 정정:** 이전에 ColorReference라고 기록한 `0x54561b58` 표는 `0x5313f5c8 → 파라미터 +0x18 → 0x53132698`로 이어지며, 할당 시 진단 이름은 `m_YCbCrMatrixTuning`이다. 실제 ColorReference는 파라미터 `+0x28`을 사용한다. 기존 주소·해시·모드 매핑은 유지하고 공개 JSON의 해당 키를 `ycbcrmatrix`·`ycbcrmatrix_pointer`로 바로잡았다. [상세 알고리즘과 호출 근거](color-algorithms.md)
 
 ImageTuning의 선택 함수 `0x53129e78`은 모드 인덱스를 계산하고 `0x5313f570`, `0x5313f59c`, `0x5313f5c8`에서 세 종류의 리소스 포인터를 얻는다. ColorMatrix 디스크립터의 선두 필드는 공통 행렬, 모드별 행렬, 필터별 행렬 포인터 배열을 가리킨다. 3×3 행렬의 각 원소는 signed 16-bit이고 곱셈 함수 `0x5312cd40`은 내적에 `4096`을 더한 뒤 13비트를 이동하고 하위 16비트를 저장한다. 따라서 단위 계수는 `8192`인 Q13이다. 자연색 모드의 개별 행렬은 단위행렬이지만 앞에 공통 행렬과 다른 색 처리 단계가 있다. [선택 레코드와 피연산자 해시](color-resources.json)
 

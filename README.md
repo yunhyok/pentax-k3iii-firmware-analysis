@@ -4,7 +4,9 @@
 
 **[RTOS 명령 957개의 분류와 촬영·AF·영상처리 분석](analysis/README.md)**에는 명령별 디컴파일 결과 색인, 호출 관계, 촬영 요청과 측광 덤프의 차이, AF 디포커스 결합 조건, 영상처리 진단용 톤 곡선의 수식과 재현 방법이 있다.
 
-**[디스패처·셔터 GPIO·AF 상관 연산](analysis/dispatch-af.md)**에서는 추가 수신 분기, 조건부 가상 함수 대상과 실제 수치 커널을 추적했다. **[RAW 현상·컬러모드·Lightroom 연구](analysis/color-lightroom.md)**에는 모드별 생산용 리소스, Q13 행렬·Gold RGB 곡선, 기존 Adobe Camera Matching 5종의 구조와 추가 프로파일 제작 조건을 정리했다. 추가 의사코드 115개 진입점은 로컬에 저장했고, 공개 근거의 바이트 대조 및 격리된 ARM 수치 커널 93개 실행 사례를 검증했다. 미해결 전송·상태 전이 구간과 실기 검증 범위는 각 보고서에 명시했다.
+**[디스패처·셔터 GPIO·AF 상관 연산](analysis/dispatch-af.md)**에서는 추가 수신 분기, 조건부 가상 함수 대상과 실제 수치 커널을 추적했다. **[RAW 현상·컬러모드·Lightroom 연구](analysis/color-lightroom.md)**에는 모드별 생산용 리소스와 기존 Adobe Camera Matching 5종을 정리했다.
+
+**[후속 색 처리 알고리즘 분석](analysis/color-algorithms.md)**은 행렬 합성·채도·Hue, Gold/Cross 보간, 일반/Reversal 감마, 자동 ToneControl과 RAW 레시피→Develop→ImageTuning·JPEG 경로를 다룬다. 심층 분석 목록은 기존 115개에서 **162개 고유 디컴파일 진입점**으로 늘었으며 의사코드는 로컬에 저장했다. 행렬 942개, 감마·톤 498개 검사 그룹과 RAW 레시피 246개 항목을 원본 ARM/VEX 실행으로 대조했다. 기존 분석의 `ColorReference` 표 명칭을 실제 소비자인 `YCbCrMatrix`로 정정했다. 미해결 하드웨어 연산·상태 전이 및 실기 검증 범위는 각 보고서에 명시했다.
 
 ## 확보한 코드
 
