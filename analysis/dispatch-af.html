@@ -1,5 +1,6 @@
-<!doctype html>
-<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>공통 요청 이후의 디스패처·셔터·AF</title><style>
+<!DOCTYPE html>
+
+<html lang="ko"><head><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/><title>공통 요청 이후의 디스패처·셔터·AF</title><style>
 :root{color-scheme:light dark;--bg:#f7f8fa;--paper:#fff;--ink:#182332;--muted:#48596b;--line:#d2dbe5;--accent:#124b8e;--soft:#edf3fa;--focus:#d75f00}
 @media(prefers-color-scheme:dark){:root{--bg:#111821;--paper:#18222d;--ink:#e8edf4;--muted:#b4c2d2;--line:#405369;--accent:#98c8ff;--soft:#223348;--focus:#ffb374}}
 *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.85 system-ui,-apple-system,"Malgun Gothic",sans-serif;word-break:keep-all;overflow-wrap:anywhere}
@@ -17,8 +18,8 @@ figure{margin:32px 0;padding:24px 0;border-block:1px solid var(--line)}figcaptio
 .review-note{background:var(--soft);padding:16px 20px;margin:24px 0}.toc{font-size:.92rem}.toc ul{list-style:none;padding-left:0}.toc ul ul{padding-left:20px}
 .branch{margin:18px 0;padding:0 0 0 24px;border-left:3px solid var(--line)}.branch p{margin:8px 0}.diagram-line{padding:12px 16px;background:var(--soft);border-radius:4px}
 </style></head>
-<body><header><div class="eyebrow">PENTAX K-3 MARK III · FIRMWARE 2.20 · 2026-11-07</div><h1>공통 요청 이후의 디스패처·셔터·AF</h1>
-<nav class="site-nav" aria-label="분석 문서"><a href="../index.html">개요·재현</a><a href="index.html">RTOS 957개</a><a href="dispatch-af.html" aria-current="page">셔터·AF</a><a href="color-lightroom.html">컬러모드·Lightroom</a><a href="color-algorithms.html">색 처리 수식</a><a href="pipeline-report.html">JPEG·ISP 최신 분석</a></nav><p class="review-note">기존 조사 범위를 보존하고 후속 분석으로 해소된 항목을 갱신했다. 현재의 WB·색공간·클리핑 경계는 <a href="pipeline-report.html">JPEG·ISP 최신 보고서</a>에서 확인할 수 있다.</p><details><summary>이 문서의 목차</summary><div class="toc">
+<body><header><div class="eyebrow">PENTAX K-3 MARK III · FIRMWARE 2.20 · 2026-11-07</div><h1>공통 요청 이후의 디스패처·셔터·AF</h1><nav aria-label="분석 문서" class="site-nav"><a href="../index.html">개요·재현</a><a href="index.html">RTOS 957개</a><a aria-current="page" href="dispatch-af.html">셔터·AF</a><a href="color-lightroom.html">컬러모드·Lightroom</a><a href="color-algorithms.html">색 처리 수식</a><a href="pipeline-report.html">JPEG·ISP 최신 분석</a><a href="research-roadmap.html">수정·이식 선행 연구</a></nav>
+<p class="review-note">기존 조사 범위를 보존하고 후속 분석으로 해소된 항목을 갱신했다. 현재의 WB·색공간·클리핑 경계는 <a href="pipeline-report.html">JPEG·ISP 최신 보고서</a>에서 확인할 수 있다.</p><details><summary>이 문서의 목차</summary><div class="toc">
 <ul>
 <li><a href="#공통-메시지에서-촬영af-이벤트로">공통 메시지에서 촬영·AF 이벤트로</a></li>
 <li><a href="#셔터-제어-객체에서-gpio-쓰기까지">셔터 제어 객체에서 GPIO 쓰기까지</a></li>

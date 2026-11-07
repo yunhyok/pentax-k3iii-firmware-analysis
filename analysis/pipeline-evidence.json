@@ -798,7 +798,7 @@
       },
       {
         "name": "5314b248 expansion",
-        "proof": "5314b694..6ac writescommon+3e01c+8j=256,+3e020+8j=u16(common30c10+2j),+3e03c+8j=256,+3e040+8j=256;j0..3.5314b6d0/e0copies3df60\u21923e06c. B2r gain path above does not consume these copied fields; furtherconsumer unresolved."
+        "proof": "5314b694..6ac writescommon+3e01c+8j=256,+3e020+8j=u16(common30c10+2j),+3e03c+8j=256,+3e040+8j=256;j0..3.5314b6d0/e0copies3df60→3e06c. B2r gain path above does not consume these copied fields; furtherconsumer unresolved."
       }
     ],
     "formulas": {
@@ -1217,5 +1217,18 @@
     "reproduction": "../verify_isp_semantics.py",
     "result": "isp-semantics-checks.json",
     "pixel_comparator_or_order_verified": false
+  },
+  "control_producers_followup": {
+    "evidence": "control-followup-evidence.json",
+    "numeric_checks": "r2y-control-checks.json",
+    "new_local_pseudocode_windows": 17,
+    "resolved_wblv_register_read_edges": 0,
+    "physical_pixel_order": "unresolved",
+    "bypass_semantics": "unresolved"
+  },
+  "firmware_readiness_followup": {
+    "evidence": "readiness-evidence.json",
+    "report": "research-roadmap.html",
+    "phase": "analysis only; build, modification, flash and UI port deferred"
   }
 }

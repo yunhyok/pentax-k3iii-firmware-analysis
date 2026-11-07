@@ -21,45 +21,11 @@ figure{margin:32px 0;padding:24px 0;border-block:1px solid var(--line)}figcaptio
 .branch{margin:18px 0;padding:0 0 0 24px;border-left:3px solid var(--line)}.branch p{margin:8px 0}.diagram-line{padding:12px 16px;background:var(--soft);border-radius:4px}
 </style></head>
 <body><header><div class="eyebrow">PENTAX K-3 MARK III · FIRMWARE 2.20 · 2026-11-07</div>
-<h1>JPEG·ISP와 색 재현 경로</h1><nav aria-label="분석 문서" class="site-nav"><a href="../index.html">개요·재현</a><a href="index.html">RTOS 957개</a><a href="dispatch-af.html">셔터·AF</a><a href="color-lightroom.html">컬러모드·Lightroom</a><a href="color-algorithms.html">색 처리 수식</a><a aria-current="page" href="pipeline-report.html">JPEG·ISP 최신 분석</a></nav>
+<h1>JPEG·ISP와 색 재현 경로</h1><nav aria-label="분석 문서" class="site-nav"><a href="../index.html">개요·재현</a><a href="index.html">RTOS 957개</a><a href="dispatch-af.html">셔터·AF</a><a href="color-lightroom.html">컬러모드·Lightroom</a><a href="color-algorithms.html">색 처리 수식</a><a aria-current="page" href="pipeline-report.html">JPEG·ISP 최신 분석</a><a href="research-roadmap.html">수정·이식 선행 연구</a></nav>
 <p class="intro">원본 ARM 코드에서 확인한 제어·설정 경로, 수치 시험 결과와 Lightroom 프로파일로 옮기기 위한 조건을 정리한 분석 보고서.</p>
 <p class="meta">정적 분석 · 원본 명령 에뮬레이션 · 하드웨어 실측 미수행</p>
-<nav aria-label="보고서 목차"><div class="toc">
-<ul>
-<li><a href="#_1">현재 확인한 범위</a></li>
-<li><a href="#jpeg">하위 JPEG 압축기</a><ul>
-<li><a href="#_2">양자화 표의 품질 배율</a></li>
-<li><a href="#_3">압축 크기와 완료 처리</a></li>
-</ul>
-</li>
-<li><a href="#_4">컬러모드에서 하드웨어 설정으로</a><ul>
-<li><a href="#_5">감마·톤 테이블의 전달 위치</a></li>
-</ul>
-</li>
-<li><a href="#_6">색공간과 화이트밸런스</a><ul>
-<li><a href="#0x145">메시지 0x145의 수신과 반영</a></li>
-<li><a href="#wb-b2r-gain">WB 결과에서 B2r gain 레지스터까지</a></li>
-<li><a href="#_7">버퍼 연결로 확인한 처리 관계</a></li>
-</ul>
-</li>
-<li><a href="#_8">클리핑 설정과 남은 픽셀 연산</a></li>
-<li><a href="#m2pclip">M2PCLIP 비교식과 처리 순서의 추가 추적</a><ul>
-<li><a href="#r2y">R2y의 세 번째 필드와 제어 조건</a></li>
-<li><a href="#wb">WB·행렬·감마·톤·클리핑을 한 줄로 배열할 수 있는가</a></li>
-<li><a href="#lightroom">Lightroom 이전에 남는 구체 조건</a></li>
-</ul>
-</li>
-<li><a href="#lightroom_1">Lightroom으로 옮기기 위한 조건</a><ul>
-<li><a href="#_9">변환 전에 고정할 항목</a></li>
-<li><a href="#rawjpeg">RAW·JPEG 예제가 제공된 뒤의 검증</a></li>
-</ul>
-</li>
-<li><a href="#_10">검증과 보관</a></li>
-<li><a href="#_11">누적 검증 범위와 이번 추가 조사</a></li>
-</ul>
-</div>
-</nav></header><main><h2 id="_1">현재 확인한 범위</h2>
-<p>M2PCLIP 비교식과 R2y 상한 후보를 추가 추적했다. 설정 호출자와 제어 비트의 전달은 더 확인했지만 실제 픽셀 비교식과 WB·행렬·감마·톤·클리핑의 전체 처리 순서는 미확정이다. <a href="#clip-semantics">이번 추가 추적</a>에 새 근거와 검색 한계를 모았다.</p>
+<nav aria-label="보고서 목차"><ul><li><a href="#_1">현재 확인한 범위</a></li><li><a href="#jpeg">하위 JPEG 압축기</a></li><li><a href="#_4">컬러모드에서 하드웨어 설정으로</a></li><li><a href="#_6">색공간과 화이트밸런스</a></li><li><a href="#_8">클리핑 설정과 남은 픽셀 연산</a></li><li><a href="#control-producers">R2y 제어 바이트의 생산자</a></li><li><a href="#wblv-followup">WBLV 문자열 후보를 다시 검증한 결과</a></li><li><a href="#m2pclip">M2PCLIP 비교식과 처리 순서의 추가 추적</a></li><li><a href="#lightroom_1">Lightroom으로 옮기기 위한 조건</a></li><li><a href="#_10">검증과 보관</a></li><li><a href="#_11">누적 검증 범위와 이번 추가 조사</a></li></ul></nav></header><main><h2 id="_1">현재 확인한 범위</h2>
+<p>R2y 제어 바이트 8개의 생산자와 원본 비트 조건을 확인했다. WBLV 문자열의 실제 레지스터 참조와 bypass·픽셀 순서는 미확정이다. <a href="#control-producers">새 생산자 분석</a> · <a href="#wblv-followup">WBLV 후보 검증</a> · <a href="research-roadmap.html">수정 펌웨어·UI 이식 선행 연구</a></p>
 <p>PENTAX K-3 Mark III v2.20의 WB 선택 결과를 B2r gain 레지스터까지 연결했다. 색공간 메시지 <code>0x145</code>의 수신부와 common 버퍼 반영 경로도 확인했다. ISP에서는 입력 스트림의 클리핑 설정과 R2y의 상한 후보 필드를 찾고 B2r·R2y의 조건부 버퍼 연결을 검증했다. 이전에 확인한 JPEG 압축기와 컬러모드 행렬·곡선 전달 경로를 함께 정리한다. 실제 픽셀을 처리하는 ISP 내부 산술, 카메라 출력과 Lightroom의 색 일치는 아직 검증하지 않았다.</p>
 <p>분석 대상은 <code>fwdc233b.bin</code>에서 추출한 ARM RTOS다. 적재 기준 주소는 <code>0x52500000</code>, RTOS SHA-256은 <code>342d2f35405e8daf1797dfe431d2e4aa70f4b52a2c242a29df48206672f1dfb4</code>다. 함수명 일부는 분석용 이름이다. 호출 관계의 간접 연결은 기록한 생성자·vtable·객체 초기화가 유지된다는 조건 아래 성립한다. <a href="deep-evidence.json">검증 주소와 바이트 해시</a></p>
 <figure aria-labelledby="flow-caption">
@@ -185,7 +151,126 @@ figure{margin:32px 0;padding:24px 0;border-block:1px solid var(--line)}figcaptio
 </tbody>
 </table></div>
 <p>앞의 세 항목은 이전의 원본 ARM 수치 시험에서 확인했고 색공간별 감마와 JPEG 항목은 이번에 별도로 시험했다. 모드 행렬, 감마 곡선, WB를 옮길 때 이 제한들을 하나의 최종 RGB clamp로 합치면 원래 동작과 달라질 수 있다. <a href="color-math-checks.json">행렬 검증</a> · <a href="gamma-tone-checks.json">감마·톤 검증</a> · <a href="colorspace-wb-checks.json">색공간·WB 검증</a> · <a href="jpeg-quantization-checks.json">JPEG 검증</a></p>
-<p><span id="clip-semantics"></span></p>
+<h2 id="control-producers">R2y 제어 바이트의 생산자</h2>
+<p>여덟 제어 바이트를 만드는 함수를 찾았다. 출처는 EdgeEnhancement 4개, CoordinateScale 1개, ColorReference 2개, ColorLpf 1개다. 모듈 이름은 assertion 문자열과 객체 멤버·호출의 대응으로 확인했다. 이 결과는 각 기능의 설정이 하위 제어 비트에 모이는 경로를 설명한다. 하드웨어 bypass나 전체 픽셀 처리 순서를 확정한 결과는 아니다. <a href="control-followup-evidence.json">주소·필드 대응 근거</a></p>
+<p>변환 함수의 <code>0x5307fe20</code>은 <code>settings+0x120</code>부터 <code>0x5d24</code>바이트를 <code>config+0x644</code>로 복사한다. 따라서 <code>C=settings+0x120</code>으로 두면 <code>C offset=config offset−0x644</code>다. 표의 주소와 오프셋은 16진수다.</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>config 오프셋</th>
+<th>C 오프셋</th>
+<th>생산 모듈</th>
+<th>패커 진입 주소</th>
+<th>검사 마스크</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0x1864</td>
+<td>0x1220</td>
+<td>EdgeEnhancement 0</td>
+<td>0x5313432c</td>
+<td>0x01</td>
+</tr>
+<tr>
+<td>0x18e4</td>
+<td>0x12a0</td>
+<td>EdgeEnhancement 1</td>
+<td>0x531347c8</td>
+<td>0x01</td>
+</tr>
+<tr>
+<td>0x1964</td>
+<td>0x1320</td>
+<td>EdgeEnhancement 2</td>
+<td>0x53134c64</td>
+<td>0x01</td>
+</tr>
+<tr>
+<td>0x19e4</td>
+<td>0x13a0</td>
+<td>EdgeEnhancement 공통</td>
+<td>0x53134210</td>
+<td>0x11</td>
+</tr>
+<tr>
+<td>0x1a04</td>
+<td>0x13c0</td>
+<td>CoordinateScale</td>
+<td>0x53132cec</td>
+<td>0x01</td>
+</tr>
+<tr>
+<td>0x1a6c</td>
+<td>0x1428</td>
+<td>ColorReference 0</td>
+<td>0x53132874</td>
+<td>0x11</td>
+</tr>
+<tr>
+<td>0x1aac</td>
+<td>0x1468</td>
+<td>ColorReference 1</td>
+<td>0x53132874</td>
+<td>0x11</td>
+</tr>
+<tr>
+<td>0x1aec</td>
+<td>0x14a8</td>
+<td>ColorLpf</td>
+<td>0x53132ec4</td>
+<td>0x11</td>
+</tr>
+</tbody>
+</table></div>
+<p><code>0x11</code>은 bit 0과 bit 4를 검사한다. 패커는 서로 다른 원본 바이트의 하위 비트를 이 두 위치에 넣는다. 첫 세 Edge 바이트에는 bit 1·2도 있지만 합성 조건은 bit 0만 사용한다. 특히 bit 1의 원본은 세 패커 모두 첫 번째 descriptor의 byte 1이다. 각 바이트의 원본 포인터 식은 <a href="control-followup-evidence.json">필드 대응표의 source_formula</a>에 기록했다.</p>
+<figure aria-labelledby="control-flow-caption"><figcaption id="control-flow-caption">여덟 제어 바이트가 하위 제어값이 되는 경로</figcaption><ol class="flow"><li><strong>자원·런타임 설정</strong><span>Edge · CoordinateScale<br/>ColorReference · ColorLpf</span></li><li><strong>패킹과 OR 검사</strong><span>8개 바이트 → 0 또는 1<br/>0x01 / 0x11 마스크</span></li><li><strong>R2y 제어 비트</strong><span>조건부 적용 → R+0x10 bit 0<br/>실리콘 내부 의미 미확정</span></li></ol><p class="caption">화살표는 CPU가 설정값을 만드는 경로다. WB·행렬·감마·톤·클리핑의 픽셀 통과 순서를 나타내지 않는다.</p></figure>
+<h3 id="bypass">활성화 조건과 bypass 해석</h3>
+<p><code>0x5313399c</code>는 Edge descriptor의 byte 0이 정확히 1일 때 계수·테이블 준비 작업을 수행한다. 다른 상태와 캐시 조건도 관여한다. 이 바이트가 CPU 준비 작업의 활성화 조건이라는 근거는 생겼지만 패커의 <code>&amp;1</code> 연산과 같은 조건은 아니다. 예를 들어 3은 하위 비트가 1이어도 <code>==1</code>을 만족하지 않는다. 하위 <code>R+0x10 bit 0</code>이 bypass, 클럭 제어 또는 처리 활성화 중 무엇인지는 여전히 알 수 없다. <a href="deep-evidence.json">원본 명령 구간·전이 해시</a></p>
+<p>일반 자원 선택 분기에서 Edge는 객체의 <code>u16+0x204</code> 값 2·3·그 밖의 값에 따라 서로 다른 getter를 사용한다. 이 getter는 project index와 별도의 6칸 sub-index를 참조한다. ColorReference에는 내부 Custom Image enum 10의 별도 자원 선택이 있다. 다른 runtime 분기도 존재하므로 여덟 바이트를 사용자 컬러모드 하나에 대응하는 고정 서명으로 볼 수는 없다. <a href="control-followup-evidence.json">선택 분기 근거</a></p>
+<p>새 생산자 ARM 구간 8개를 합성 버퍼에서 실행했다. 각 구간에 첫 제어 바이트의 256개 값을 넣고 다른 입력 바이트와 기존 목적지 비트도 고정 seed로 변화시켰다. 총 2,048건에서 제어 비트와 비대상 비트 보존이 독립 계산식과 일치했다. 전체 패커·자원 선택기·MMIO·픽셀 엔진은 실행하지 않았다. <a href="../verify_r2y_controls.py">검증기</a> · <a href="r2y-control-checks.json">구간별 해시와 결과</a></p>
+<p>상한 후보 <code>G+0x18</code>에서 R2y <code>R+0x30/+0x34</code>의 12비트 필드까지 가는 연결은 유지된다. 그러나 WBLV의 정확한 레지스터 대응과 비교식을 증명하지 못한 상태에서 이를 확정된 픽셀 상한이라고 부르지 않는다. 기존의 조건부 B2r→R2y 버퍼 연결도 R2y 내부 연산 순서를 결정하지 않는다. Lightroom 재현에는 이 순서와 포화·반올림, 입력 색상 기저를 별도로 검증해야 한다. <a href="#clip-semantics">상한 후보와 버퍼 분석</a></p>
+<h2 id="wblv-followup">WBLV 문자열 후보를 다시 검증한 결과</h2>
+<p>WBLV 문자열과 실제 레지스터 읽기의 연결은 이번에도 확인하지 못했다. 이전의 정확 포인터·짧은 MOVW/MOVT 검색과 구분해 PC 상대 ADD/SUB와 LDR, 상대값 word, 97~1024바이트 떨어진 MOVW/MOVT, 선택한 저수준 코드 창의 상수 계산을 조사했다. <a href="control-followup-evidence.json">검색 범위·후보 판정</a> <a href="../verify_wblv_references.py">추가 검색 검증기</a> · <a href="wblv-reference-checks.json">재현 결과</a></p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>검색 방법</th>
+<th>관측</th>
+<th>판단</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>전체 이미지의 정렬된 A32 PC 상대 ADD/SUB</td>
+<td>대상 문자열 묶음 후보 0건</td>
+<td>임의의 다중 명령·Thumb 참조까지 배제하지 않음</td>
+</tr>
+<tr>
+<td>PC 상대 LDR</td>
+<td>넓은 B2r 주변 구간 5건</td>
+<td>모두 객체·factory vtable 주소. WBLV 읽기 아님</td>
+</tr>
+<tr>
+<td>97~1024바이트 간격 MOVW/MOVT</td>
+<td>문자열 묶음 후보 656건 중 정확 WBLV 주소 3건</td>
+<td>3건 모두 중간·직전의 레지스터 재정의로 탈락</td>
+</tr>
+<tr>
+<td>자기 주소·+4·+8 기준 상대값 word</td>
+<td>문자열 묶음 후보 1,031건 중 정확 WBLV 주소 1건</td>
+<td>주소 산술만 일치. 해당 word를 소비하는 코드 미확인</td>
+</tr>
+<tr>
+<td>선택한 두 코드 창의 로컬 상수 계산</td>
+<td>해석한 word 24,561개, 문자열 묶음 후보 0건</td>
+<td>분기·호출에서 상태를 버리는 제한된 추적</td>
+</tr>
+</tbody>
+</table></div>
+<p>예를 들어 <code>0x525b07b4 → 0x525b08b0</code>을 기계적으로 조합하면 WBLV 주소가 나오지만 직전 <code>0x525b08ac</code>가 하위 16비트를 다시 쓴다. 실제 최종 값은 <code>0x53cad46c</code>다. 상대값 후보 <code>0x53a330cc+4+0x00270028=0x53ca30f8</code>도 실제 load·add 경로가 확인되지 않아 문자열 참조로 채택하지 않았다. 전체 656개·1,031개 후보를 모두 분류한 결과는 아니다. <a href="deep-evidence.json">후보별 반증 명령의 범위 해시</a></p>
+<p>R2y 생성자 <code>0x53254790</code>과 B2r 생성자 <code>0x531bd0a4</code>는 레지스터 기준 주소 인수를 객체 <code>+4</code>에 저장하고 각각 채널 vtable을 설치한다. 문자열 주변 메타데이터와 클래스의 관계를 더 확인한 결과다. 이 사실만으로 WBLV 필드명과 특정 MMIO 오프셋을 연결하지 않는다. 진단 코드가 제거됐거나 문자열이 미사용이라는 결론도 유보했다.</p>
+<p>신규 의사코드는 제어 생산자·준비 함수 10개, WBLV 주변 생성자 2개, UI·업데이트 접근 함수 5개를 로컬에 보관했다. 공개 자료에는 자체 해석, 주소·해시, 검증 도구와 결과를 반영했다. 수정 펌웨어와 UI 이식에 필요한 추가 조사는 <a href="research-roadmap.html">후속 연구 문서</a>에 정리했다.</p><p><span id="clip-semantics"></span></p>
 <h2 id="m2pclip">M2PCLIP 비교식과 처리 순서의 추가 추적</h2>
 <p>추가 조사에서도 <strong>M2PCLIP의 실제 픽셀 비교식은 확인하지 못했다.</strong> 대신 설정값을 만드는 경로를 넓혀, 어느 관측까지 같은 해석으로 설명되는지 점검했다. 아래의 high·low는 레지스터의 상위·하위 16비트 위치를 뜻한다. 각각을 수치 상한·하한으로 확정한 이름은 아니다. <a href="isp-semantics-evidence.json">추가 검색 범위·필드 근거</a></p>
 <p>전체 RTOS에서 4바이트 정렬 A32 즉시 B/BL을 검색하면 두 setter <code>0x532426dc</code>, <code>0x532426f4</code>를 향하는 위치가 각각 한 곳씩 나온다. 둘 다 공통 설정 함수 <code>0x532249e8</code> 안에 있다. 이 공통 함수로 향하는 직접 호출 위치 14곳 중 7곳은 호출자에게 받은 레코드를 전달하고 나머지 7곳은 네 함수에서 로컬 레코드를 구성한다. 새로 해석한 <code>SetupPlaneShadingCorrect</code>, 두 Lite 경로와 <code>SetupFrameFilterForChromatic</code>의 로컬 레코드는 모두 offset=0, high=<code>0xffff</code>, low=0을 사용한다. 간접 호출·Thumb 코드·실행 중 변경된 포인터까지 전수 확인한 결과는 아니다. <a href="../verify_isp_semantics.py">호출자 검색 재현</a> · <a href="deep-evidence.json">함수 범위·해시</a></p>

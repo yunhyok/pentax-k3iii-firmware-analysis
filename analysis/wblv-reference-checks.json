@@ -1,0 +1,107 @@
+{
+  "image_sha256": "342d2f35405e8daf1797dfe431d2e4aa70f4b52a2c242a29df48206672f1dfb4",
+  "image_base": "0x52500000",
+  "image_size": 25483200,
+  "capstone_version": "5.0.7",
+  "search_ranges": {
+    "aligned_image_scan": [
+      "0x52500000",
+      "0x53d4d7c0"
+    ],
+    "reference_family_ranges": [
+      [
+        "0x53ca2aa0",
+        "0x53ca3500"
+      ],
+      [
+        "0x53c7c000",
+        "0x53c7d300"
+      ]
+    ],
+    "local_code_windows": [
+      [
+        "0x5324e4f4",
+        "0x53263000"
+      ],
+      [
+        "0x531bb144",
+        "0x531be624"
+      ]
+    ],
+    "local_family_ranges": [
+      [
+        "0x53ca2aa0",
+        "0x53ca3500"
+      ],
+      [
+        "0x53c7ccd4",
+        "0x53c7d300"
+      ]
+    ]
+  },
+  "methods": {
+    "adr": "All image-aligned A32 ADD/SUB immediate PC source; arithmetic target within family.",
+    "literal_loads": "All image-aligned A32 word LDR PC-relative literal with immediate offset; loaded address in family.",
+    "relative_words": "All image-aligned words interpreted modulo2^32 as displacement from their own address, next word, or address+8; candidates only.",
+    "extended_mov_pairs": "Same-register MOVW followed by MOVT97..1024bytes away; includes data and clobbered-register false positives; manual validation required.",
+    "limits": "Not all address constructions, unaligned records, Thumb instructions, compression or runtime-built pointers are covered. No positive search hit alone establishes a code reference."
+  },
+  "counts": {
+    "adr": 0,
+    "literal_loads": 5,
+    "relative_words": 1031,
+    "extended_mov_pairs": 656
+  },
+  "exact_wblv_candidates": {
+    "relative_words": [
+      {
+        "word_address": "0x53a330cc",
+        "bias": 4,
+        "target": "0x53ca30f8",
+        "region": "r2y_dump_strings",
+        "candidate_only": true
+      }
+    ],
+    "extended_mov_pairs": [
+      {
+        "movw": "0x525b07b4",
+        "movt": "0x525b08b0",
+        "register": 1,
+        "target": "0x53ca30f8",
+        "candidate_only": true
+      },
+      {
+        "movw": "0x525b07b4",
+        "movt": "0x525b0ac4",
+        "register": 1,
+        "target": "0x53ca30f8",
+        "candidate_only": true
+      },
+      {
+        "movw": "0x53330940",
+        "movt": "0x53330a60",
+        "register": 0,
+        "target": "0x53ca30f8",
+        "candidate_only": true
+      }
+    ]
+  },
+  "local_constant_search": {
+    "decoded_words": 24561,
+    "hits": [],
+    "limits": "Linear local constant propagation, not CFG or symbolic execution. Conditional definitions invalidated; jumps/calls clear state. Does not cover arbitrary register arithmetic, distant control-flow paths or Thumb."
+  },
+  "detailed_search_canonical_sha256": {
+    "reference_candidates": "25630abf5b41eb8e057c96ba81f9bc89070d56a038a28c8976821a45584a00af",
+    "local_constants": "61f830f6d11f8ca847f4fb85c38a44f74ccc5c911f32448d17099e5b2af22956"
+  },
+  "canonical_json": "UTF-8, sort_keys=True, separators=(comma,colon), ensure_ascii=False",
+  "scope": "Bounded static candidate searches. No firmware execution, camera, MMIO, pixel arithmetic, or proven WBLV register-read edge.",
+  "limits": [
+    "Candidate counts include false positives and non-code data.",
+    "An exact address match alone does not establish a code reference.",
+    "The three exact long MOVW/MOVT pairs were rejected by separate instruction review; this search does not itself perform that dataflow proof.",
+    "The relative-word exact match lacks a proven consumer.",
+    "No arbitrary computed-pointer, Thumb or complete control-flow analysis is claimed."
+  ]
+}

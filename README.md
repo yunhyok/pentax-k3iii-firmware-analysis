@@ -4,6 +4,7 @@
 
 - [전체 안내·펌웨어 구조·재현 절차](index.html)
 - [JPEG·ISP·WB·색공간·클리핑 최신 보고서](analysis/pipeline-report.html)
+- [수정 펌웨어·UI 이식 선행 연구](analysis/research-roadmap.html)
 - [RTOS 명령 957개](analysis/index.html) · [셔터·AF](analysis/dispatch-af.html)
 - [컬러모드·Lightroom](analysis/color-lightroom.html) · [색 처리 수식](analysis/color-algorithms.html)
 

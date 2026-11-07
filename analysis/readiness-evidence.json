@@ -1,0 +1,173 @@
+{
+  "rtos_sha256": "342d2f35405e8daf1797dfe431d2e4aa70f4b52a2c242a29df48206672f1dfb4",
+  "scope": "Analysis-only UI and update-name paths. No reconstructed firmware, patch, update acceptance, camera execution or port.",
+  "functions": [
+    {
+      "label": "icon_descriptor_lookup",
+      "start": "0x528c3f08",
+      "end": "0x528c3f90",
+      "sha256": "f84820f6a087d7368e5ae778119b48932676b0fcd67d49d66316777b85c689fc",
+      "pseudocode_sha256": "d18e62cd76dd5dccc327542820635deb2408b8815f1fa93bd69f8dc2752e0802"
+    },
+    {
+      "label": "resource_base_lookup",
+      "start": "0x52ff8de4",
+      "end": "0x52ff8ed0",
+      "sha256": "6e85b8290f7c1441eb69f4119e8340bbc778bdd636554048d42769addae5aeff",
+      "pseudocode_sha256": "93186fcca9b4fd662f0cdaaeb93a0cc73141e9de44a4b933e716a3908a61d5c4"
+    },
+    {
+      "label": "resource_ready_lookup",
+      "start": "0x52ff8ed0",
+      "end": "0x52ff8f04",
+      "sha256": "05a15c9d4289179126a838e29b9455da18e9d82500d48c4c67a85442a337b1d2",
+      "pseudocode_sha256": "06ee14dceba2d7c17cc0987535eef44a746da5f278ecd76d894093c8f301a65a"
+    },
+    {
+      "label": "firmware_filename_constructor",
+      "start": "0x52ff32ac",
+      "end": "0x52ff33bc",
+      "sha256": "ea3b5de14d56c56eae3f8dc99a110699b75733c1fe9816cfd9cf5e1a2fd4d908",
+      "pseudocode_sha256": "d7b4bd864ec4c0f23b82e567203515ff4c413f88cb11200ffa7ae6dd7620cea1"
+    },
+    {
+      "label": "model_number_getter",
+      "start": "0x5310b748",
+      "end": "0x5310b75c",
+      "sha256": "1207d92bbd166cd1754afc8cc0bb26a02497628963b2c7714c15e8e6c74bcdc8",
+      "pseudocode_sha256": "f2c88f9d29f5324822912d55710a601c738a4a8a451260657818b135f45b620e"
+    }
+  ],
+  "resource_mapping": {
+    "table_ram": "0x54525578",
+    "record_stride": 16,
+    "slot": 5,
+    "record_ram": "0x545255c8",
+    "record_rom": "0x53d0d308",
+    "name_pointer": "0x53912bc4",
+    "name": "IconBinaryData",
+    "source_rom": "0x53ce7d40",
+    "destination_ram": "0x54500000",
+    "copy_size": "0x65a80",
+    "base_getter": "0x52ff8de4",
+    "ready_getter": "0x52ff8ed0",
+    "ready_marker": "0xa55a5aa5",
+    "lookup": "0x528c3f08",
+    "draw_entry": "0x528c4780",
+    "data_address": "resource_base + (descriptor.u32[8] << 2)",
+    "unresolved": "Complete package ICONBIN-to-runtime-slot loader and pixel format"
+  },
+  "update_filename": {
+    "constructor": "0x52ff32ac",
+    "model_getter": "0x5310b748",
+    "model_member": "0x18",
+    "templates": [
+      "C:\\FWDC%ldB.BIN",
+      "R:\\FWDC%ldB.BIN"
+    ],
+    "unresolved": "Actual file opening, model/version/integrity/signature checks and write request"
+  },
+  "package_records": [
+    {
+      "name": "ICONBIN",
+      "header_offset": 47623484,
+      "kind": 4,
+      "index": 4,
+      "payload_offset": 47623500,
+      "size": 26219192,
+      "sha256": "9895330cd5d8c52231e96e1d39e883ae22ab35906eaf39d11476d852280b5808"
+    },
+    {
+      "name": "RES",
+      "header_offset": 73842744,
+      "kind": 6,
+      "index": 65535,
+      "payload_offset": 73842760,
+      "size": 36,
+      "sha256": "d1968b4c678ffe3a146eb93dba11ef8fed7c4222c484ff15a5363f59126d0def"
+    }
+  ],
+  "oss": {
+    "url": "https://www.ricoh-imaging.co.jp/japan/products/oss/k-3-3/K3mkIII_220.tar.gz",
+    "archive": "stubby-1.60.1.tar.gz",
+    "archive_sha256": "2a68ee9b871bb27ab867aa8db92273976f1f2c9b040c0be180d897a63cd4b2eb",
+    "files": [
+      {
+        "file": "stubby-1.60.1/README",
+        "sha256": "9750c72791a8d076465780db33bbfe814500fc9221fe4d3afcb3814912847a5e",
+        "lines": 140,
+        "selected_line_numbers": [
+          88,
+          109,
+          111,
+          112,
+          114,
+          115,
+          116,
+          117,
+          121,
+          123,
+          125,
+          126,
+          128,
+          131,
+          133,
+          135,
+          137
+        ]
+      },
+      {
+        "file": "stubby-1.60.1/src/Makefile",
+        "sha256": "b8ef3c2dac82082f9d98268511dc992e6d68cf23a44cebd77c235809124d5da8",
+        "lines": 161,
+        "selected_line_numbers": [
+          17,
+          103
+        ]
+      },
+      {
+        "file": "stubby-1.60.1/configs/config-sc2000-rtos.h",
+        "sha256": "7c6e0171f1d666ab1f4bfca366d3e6f6136af31fefbcf3d6ed706b79534be496",
+        "lines": 311,
+        "selected_line_numbers": [
+          5,
+          49,
+          91,
+          94,
+          101,
+          109,
+          149,
+          150,
+          279,
+          285
+        ]
+      }
+    ],
+    "claims": [
+      {
+        "file": "README",
+        "lines": [
+          109,
+          117
+        ],
+        "finding": "MLB01 RTOS-main board image recipe needs separate MILB_SDK.bin"
+      },
+      {
+        "file": "configs/config-sc2000-rtos.h",
+        "lines": [
+          94,
+          109,
+          149,
+          150
+        ],
+        "finding": "RSA options commented; RTOS address 0x60000000, not the analysed camera RTOS base. Not proof of camera signature policy."
+      }
+    ]
+  },
+  "device_spec_sources": {
+    "K-3 Mark III": "https://www.ricoh-imaging.co.jp/english/products/k-3-3/spec/",
+    "K-3 II": "https://www.ricoh-imaging.co.jp/english/products/k-3-2/spec/",
+    "Q7": "https://www.ricoh-imaging.co.jp/english/products/q7/spec/"
+  },
+  "private_evidence_sha256": "3115cbdae8235ecb31c10a18ecedd070077d3e87dd30116d5478e72b4b40b135"
+}

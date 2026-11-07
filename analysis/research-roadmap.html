@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ko"><head><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/><title>수정 펌웨어·UI 이식을 위한 선행 연구</title><style>
+:root{color-scheme:light dark;--bg:#f7f8fa;--paper:#fff;--ink:#182332;--muted:#48596b;--line:#d2dbe5;--accent:#124b8e;--soft:#edf3fa;--focus:#d75f00}
+@media(prefers-color-scheme:dark){:root{--bg:#111821;--paper:#18222d;--ink:#e8edf4;--muted:#b4c2d2;--line:#405369;--accent:#98c8ff;--soft:#223348;--focus:#ffb374}}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.85 system-ui,-apple-system,"Malgun Gothic",sans-serif;word-break:keep-all;overflow-wrap:anywhere}
+a{color:var(--accent);text-underline-offset:.18em}a:hover{text-decoration-thickness:2px}:focus-visible{outline:3px solid var(--focus);outline-offset:4px}
+header,main,footer{max-width:1120px;margin:auto;padding:36px clamp(18px,4vw,56px)}header{padding-top:56px;padding-bottom:24px}main{background:var(--paper);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.eyebrow{color:var(--muted);font-size:.84rem;letter-spacing:.06em}h1{font-size:clamp(1.85rem,4.5vw,3rem);line-height:1.35;letter-spacing:-.025em;margin:12px 0 18px}h2{font-size:1.5rem;line-height:1.5;margin:3.6rem 0 1rem;padding-top:1.2rem;border-top:1px solid var(--line)}h2:first-child{margin-top:0}h3{font-size:1.12rem;margin-top:2rem}p{margin:1rem 0}strong{font-weight:650}.intro{max-width:55em;color:var(--muted)}
+nav{margin-top:25px}nav ul{display:flex;flex-wrap:wrap;gap:8px 22px;list-style:none;padding:0;margin:0}nav ul ul{display:none}nav a{font-size:.9rem}code{font: .88em/1.6 ui-monospace,Consolas,monospace;overflow-wrap:anywhere}pre{background:var(--soft);padding:18px;overflow-x:auto;white-space:pre-wrap;border-radius:5px}pre code{font-size:.82rem}
+.table-scroll{overflow-x:auto;margin:24px 0}table{border-collapse:collapse;width:100%;font-size:.92rem;min-width:530px}th,td{text-align:left;vertical-align:top;padding:14px 16px;border-bottom:1px solid var(--line)}th{background:var(--soft);font-weight:650}td:first-child{min-width:125px}details{border-block:1px solid var(--line);margin-top:24px;padding:16px 0}summary{cursor:pointer;font-weight:650;padding:6px 0}.caption,.meta{font-size:.86rem;color:var(--muted)}
+figure{margin:32px 0;padding:24px 0;border-block:1px solid var(--line)}figcaption{font-size:.95rem;font-weight:650;margin-bottom:20px}.flow{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:32px;list-style:none;padding:0;margin:18px 0}.flow li{position:relative;padding:18px;background:var(--soft);border-radius:6px;line-height:1.6}.flow strong{display:block;font-size:1rem}.flow span{display:block;color:var(--muted);font-size:.86rem;margin-top:9px}.flow li:not(:last-child)::after{content:"→";position:absolute;right:-27px;top:40%;font-size:22px;color:var(--muted)}.second{margin-top:24px}footer{font-size:.88rem;color:var(--muted)}
+@media(max-width:620px){body{font-size:16px}header,main,footer{padding-inline:20px}.flow{grid-template-columns:1fr;gap:26px}.flow li:not(:last-child)::after{content:"↓";right:auto;left:calc(50% - 8px);top:auto;bottom:-28px}.flow li{padding:15px 18px}h2{font-size:1.3rem}nav ul{gap:10px 18px}table{font-size:.87rem}th,td{padding:12px}header{padding-top:30px}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+@media print{body{background:white;color:black;font-size:10pt}header,main,footer{max-width:none;padding:12pt}nav{display:none}a{color:inherit}h2,figure,table{break-inside:avoid}h2{break-after:avoid}main{border:0}.flow li{background:#f1f3f5}.table-scroll{overflow:visible}table{min-width:0}details>*{display:block!important}}
+
+.site-nav{border-block:1px solid var(--line);padding:14px 0;margin:20px 0}.site-nav a{display:inline-block;margin:4px 16px 4px 0}
+.review-note{background:var(--soft);padding:16px 20px;margin:24px 0}.toc{font-size:.92rem}.toc ul{list-style:none;padding-left:0}.toc ul ul{padding-left:20px}
+.branch{margin:18px 0;padding:0 0 0 24px;border-left:3px solid var(--line)}.branch p{margin:8px 0}.diagram-line{padding:12px 16px;background:var(--soft);border-radius:4px}
+</style></head><body><header><div class="eyebrow">PENTAX K-3 MARK III · FIRMWARE 2.20 · 2026-11-07</div><h1>수정 펌웨어·UI 이식을 위한 선행 연구</h1><nav aria-label="분석 문서" class="site-nav"><a href="../index.html">개요·재현</a><a href="index.html">RTOS 957개</a><a href="dispatch-af.html">셔터·AF</a><a href="color-lightroom.html">컬러모드·Lightroom</a><a href="color-algorithms.html">색 처리 수식</a><a href="pipeline-report.html">JPEG·ISP 최신 분석</a><a aria-current="page" href="research-roadmap.html">수정·이식 선행 연구</a></nav><p class="intro">현재 분석에서 확인한 UI·업데이트 경로와 구현 착수 전에 확인할 조건.</p></header><main><h2 id="_1">목표와 현재 단계</h2>
+<p>최종 목표는 일부 정보를 추가하거나 바꾼 펌웨어를 빌드해 K-3 Mark III에서 정상 동작시키는 것이다. 부가 목표는 K-3 Mark III의 UI를 K-3 II 또는 Q7에 이식하는 것이다. 여기서는 사용자가 부른 K-3mk2를 K-3 II로 해석했다. 현재는 두 목표의 선행 분석 단계다. 빌드·패치·플래시와 다른 기종 이식은 아직 시작하지 않았다.</p>
+<p>현재 확보한 의사코드는 원래 소스 프로젝트와 다르다. 타입·이름·링커 배치·라이브러리·자원 생성 도구를 복원하지 않은 상태이므로 의사코드를 컴파일하면 원본과 동등한 펌웨어가 만들어진다고 볼 수 없다. 전체 소스 재구축, 특정 모듈의 재구현, 기존 이미지의 제한적 변경은 필요한 근거와 검증 범위가 서로 다르다. 어느 경로를 선택할지는 아래 분석 결과로 판단한다. <a href="../index.html">현재 분석 범위</a></p>
+<h2 id="ui">이번에 조사한 UI 리소스 접근</h2>
+<p>패키지의 ICONBIN payload는 26,219,192바이트다. 별도의 RES 레코드에는 폰트 경로가 있다. 크기와 레코드 이름만으로 자원 포맷이나 호환성을 판단하지 않았다. <a href="../evidence.json">패키지 레코드·해시</a></p>
+<p>아이콘 그리기 경로 <code>0x528c4780</code>은 <code>0x52ff8ed0(5)</code>로 리소스 슬롯 5의 준비 상태를 확인하고 <code>0x52ff8de4(5)</code>로 기준 주소를 얻는다. RAM 테이블 <code>0x54525578</code>의 16바이트 레코드 중 슬롯 5는 초기화 원본 <code>0x53d0d308</code>에 대응하며 이름 포인터는 <code>IconBinaryData</code>를 가리킨다. ROM→RAM 초기화 매핑과 두 접근 함수의 원본 명령으로 이 연결을 확인했다. <a href="readiness-evidence.json">UI·업데이트 근거</a></p>
+<p>준비 확인 함수는 레코드 <code>+0xc</code>의 포인터가 가리키는 값을 읽어 <code>0xa55a5aa5</code>인지 검사한다. 이는 관찰한 리소스 준비 표식이다. 업데이트 패키지의 암호학적 서명 검증으로 해석하지 않는다. 그리기 함수는 별도 설명자 조회 <code>0x528c3f08</code>의 결과에서 <code>+8</code>을 읽고 <code>기준 주소+(값&lt;&lt;2)</code>로 데이터 주소를 만든다. 설명자 조회에는 ID 재매핑과 <code>0x681</code> 상한 검사도 있다. <a href="deep-evidence.json">범위 해시·호출 근거</a></p>
+<figure aria-labelledby="ui-flow-caption"><figcaption id="ui-flow-caption">확인한 아이콘 접근 의존 관계</figcaption><ol class="flow"><li><strong>아이콘 ID와 설명자</strong><span>재매핑 · 범위 검사<br/>설명자+8에서 데이터 오프셋</span></li><li><strong>리소스 슬롯 5</strong><span>IconBinaryData<br/>준비 표식 · 기준 주소</span></li><li><strong>그리기 함수</strong><span>기준 주소+오프셋×4<br/>회전·배치 처리</span></li></ol><p class="caption">슬롯 5의 런타임 접근은 확인했다. 패키지 ICONBIN을 이 슬롯에 적재하는 전체 로더와 픽셀 포맷은 다음 조사 대상이다.</p></figure>
+<p>이 구조에서는 ICONBIN만 옮겨 UI가 작동한다고 가정할 수 없다. 자원 적재, 설명자 표, 그리기 코드, 메뉴 상태, 입력 이벤트의 인터페이스를 함께 비교해야 한다. 이번에는 관련 함수 5개의 의사코드와 ARM 목록을 로컬에 추가했다.</p>
+<h2 id="_2">업데이트와 공개 소스의 경계</h2>
+<p>파일명 생성자 <code>0x52ff32ac</code>는 런타임 값을 받아 C:와 R: 드라이브의 <code>FWDC%ldB.BIN</code> 경로를 만든다. 해당 숫자는 <code>0x5310b748</code>이 읽는 객체의 <code>+0x18</code>에서 온다. 파일명 생산자를 확인한 결과이며 실제 업데이트 허용·버전·무결성·서명 검사에 연결한 결과는 아니다. <a href="readiness-evidence.json">함수 범위와 전이</a></p>
+<p>공식 OSS 패키지의 Stubby 1.60.1도 확인했다. README 109~117행은 MLB01 보드의 RTOS-main 이미지 조합을 설명하며 MILB_SDK.bin을 별도 입력으로 요구한다. <code>config-sc2000-rtos.h</code>의 RTOS 주소는 <code>0x60000000</code>으로 이번 RTOS 분석 주소 <code>0x52500000</code>과 다르다. 공개 보드 설정을 카메라의 실제 빌드 설정으로 취급하지 않는다. <a href="https://www.ricoh-imaging.co.jp/english/products/oss/">Ricoh 공식 OSS</a> · <a href="https://www.ricoh-imaging.co.jp/japan/products/oss/k-3-3/K3mkIII_220.tar.gz">배포 패키지</a> · <a href="readiness-evidence.json">파일 해시·행 근거</a></p>
+<p>이 설정 파일의 RSA 서명 옵션은 주석 처리돼 있다. 해당 옵션의 존재·상태만으로 카메라가 수정된 업데이트를 허용한다고 결론낼 수 없다. 입력 패키지의 32비트 합계가 0이라는 기존 관찰도 검증 규칙 전체를 설명하지 않는다. RTOS 업데이트 수신부, 패키지 검증기, 실제 부트로더를 각각 연결해야 한다.</p>
+<h2 id="_3">다음 조사 항목과 완료 기준</h2>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>우선순위</th>
+<th>조사할 항목</th>
+<th>출발 근거</th>
+<th>분석 완료 기준</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>상한 후보·bypass·픽셀 순서</td>
+<td>WBLV 후보, R2y 제어 생산자, 조건부 버퍼 연결</td>
+<td>진단 필드↔레지스터 대응 또는 독립적인 레지스터 명세. 비교식·극성·처리 순서는 별도 근거로 확정</td>
+</tr>
+<tr>
+<td>1</td>
+<td>업데이트 파일명에서 실제 검증기로</td>
+<td>0x52ff32ac와 런타임 모델 값</td>
+<td>파일 열기→헤더/기종/버전 검사→무결성/서명 판단→기록 요청의 조건부 호출 그래프</td>
+</tr>
+<tr>
+<td>1</td>
+<td>원본을 보존하는 패키지 재구성</td>
+<td>명명 레코드·길이·체크섬·불명 영역</td>
+<td>분석 종료 후 변경 없는 round trip의 바이트 일치. 불명 영역과 실패 조건 설명</td>
+</tr>
+<tr>
+<td>1</td>
+<td>부팅·복구 의존 관계</td>
+<td>RTOS 초기화 복사와 공개 Stubby</td>
+<td>실제 부트 단계·파티션·실패 시 복구 진입을 확인. 공개 보드 예제와 기기 경로 구분</td>
+</tr>
+<tr>
+<td>2</td>
+<td>ICONBIN 로더와 자원 포맷</td>
+<td>슬롯 5, 설명자+8, 그리기 함수</td>
+<td>payload→RAM 슬롯 연결, 경계 검사, 압축/픽셀 포맷·팔레트·투명도·stride를 설명하고 로컬 디코드로 확인</td>
+</tr>
+<tr>
+<td>2</td>
+<td>메뉴와 입력 이벤트</td>
+<td>ScreenManager·TouchPanel·FontManager 문자열 및 아이콘 호출</td>
+<td>화면 상태→메뉴 동작→공통 속성의 연결, 버튼·다이얼·터치 이벤트 어댑터 목록</td>
+</tr>
+<tr>
+<td>2</td>
+<td>재빌드에 필요한 ABI·도구</td>
+<td>ARMEL RTOS, C++ 객체·vtable, 공개 OSS</td>
+<td>컴파일러 ABI·예외 처리·라이브러리·링커 배치·자원 생성 입력의 확보 여부를 모듈별 판정</td>
+</tr>
+<tr>
+<td>3</td>
+<td>기종별 UI 비교</td>
+<td>K-3 II·Q7 공식 사양</td>
+<td>각 기종 펌웨어를 별도로 분석해 ISA·OS·그리기 API·메모리·입력·자원 포맷 차이표 작성</td>
+</tr>
+</tbody>
+</table></div>
+<p>분석 단계의 종료는 모든 함수를 해석하는 시점으로 잡지 않는다. 첫 변경 대상의 의존 범위, 이미지 재구성 규칙, 부팅·복구 조건, 검증 방법을 설명할 수 있는 시점을 구현 착수 판단 기준으로 삼는다. 실제 정상 동작의 판정에는 부팅뿐 아니라 메뉴 입력, 촬영·저장·재생, AF·노출, 전원 전환과 원본 복구 확인이 필요하다. 이는 후속 단계의 검증 기준이며 이번에 수행한 시험은 아니다.</p>
+<h2 id="k-3-iiq7">K-3 II·Q7 이식 비교의 출발점</h2>
+<p>공식 사양에서 K-3 Mark III는 3.2형 약 162만 도트와 정전식 터치, K-3 II는 3.2형 약 103.7만 도트, Q7은 3.0형 약 46만 도트다. 이 수치는 표시 자원·레이아웃·입력 매핑을 따로 검토해야 하는 근거다. 도트 수를 framebuffer 해상도나 메모리 포맷으로 환산하지 않았다. <a href="https://www.ricoh-imaging.co.jp/english/products/k-3-3/spec/">K-3 Mark III</a> · <a href="https://www.ricoh-imaging.co.jp/english/products/k-3-2/spec/">K-3 II</a> · <a href="https://www.ricoh-imaging.co.jp/english/products/q7/spec/">Q7</a></p>
+<p>다른 기종의 ISA·RTOS·GUI ABI가 일치하는지는 아직 조사하지 않았다. 이 조건들이 다르면 UI 바이너리의 직접 이식보다 화면 구성과 동작을 대상 기종의 인터페이스에 맞게 재구현하는 방향을 검토해야 한다. 화면 재현, 메뉴 동작 이식, 전체 UI 런타임 이식은 구분해 평가하며 현재 어느 방식의 성공도 보장하지 않는다.</p></main><footer><p>현 단계는 분석이다. 수정 이미지의 빌드·플래시·카메라 실행과 타 기종 이식은 수행하지 않았다.</p><a href="pipeline-report.html">JPEG·ISP 분석 보고서</a></footer></body></html>

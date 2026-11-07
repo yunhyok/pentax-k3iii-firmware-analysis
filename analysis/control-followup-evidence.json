@@ -1,0 +1,236 @@
+{
+  "rtos_sha256": "342d2f35405e8daf1797dfe431d2e4aa70f4b52a2c242a29df48206672f1dfb4",
+  "scope": "Authored analysis and metadata. Field production and bounded reference searches; no silicon pixel semantics.",
+  "copy_binding": {
+    "name": "Memcpy mapping",
+    "site": "0x5307fe20",
+    "target": "0x526aac80",
+    "formula": "config[0x644+k] = settings[0x120+k], 0 <= k < 0x5d24",
+    "source_pointer": "params+0x94"
+  },
+  "field_map": [
+    {
+      "config_offset": "0x1864",
+      "packed_offset": "0x1220",
+      "settings_offset": "0x1340",
+      "module": "EdgeEnhancement",
+      "packer": "0x5313432c",
+      "first_control_store": "0x5313435c",
+      "source_formula": "E=P.ptr[0x20]; D=E.ptr[4]; packed.bit0=D.byte[0]&1; packed.bit1=D.byte[1]&1; packed.bit2=D.byte[2]&1",
+      "aggregate_mask": "0x1"
+    },
+    {
+      "config_offset": "0x18e4",
+      "packed_offset": "0x12a0",
+      "settings_offset": "0x13c0",
+      "module": "EdgeEnhancement",
+      "packer": "0x531347c8",
+      "first_control_store": "0x531347f8",
+      "source_formula": "E=P.ptr[0x20]; D=E.ptr[0x20]; packed.bit0=D.byte[0]&1; packed.bit1=E.ptr[4].byte[1]&1; packed.bit2=D.byte[2]&1",
+      "aggregate_mask": "0x1"
+    },
+    {
+      "config_offset": "0x1964",
+      "packed_offset": "0x1320",
+      "settings_offset": "0x1440",
+      "module": "EdgeEnhancement",
+      "packer": "0x53134c64",
+      "first_control_store": "0x53134c94",
+      "source_formula": "E=P.ptr[0x20]; D=E.ptr[0x3c]; packed.bit0=D.byte[0]&1; packed.bit1=E.ptr[4].byte[1]&1; packed.bit2=D.byte[2]&1",
+      "aggregate_mask": "0x1"
+    },
+    {
+      "config_offset": "0x19e4",
+      "packed_offset": "0x13a0",
+      "settings_offset": "0x14c0",
+      "module": "EdgeEnhancement",
+      "packer": "0x53134210",
+      "first_control_store": "0x53134274",
+      "source_formula": "E=P.ptr[0x20]; j=min(P.u16[0x46],167); D=E.ptr[0x5c].ptr[4*j]; packed.bit0=D.byte[5]&1; packed.bit4=D.byte[0xc]&1",
+      "aggregate_mask": "0x11"
+    },
+    {
+      "config_offset": "0x1a04",
+      "packed_offset": "0x13c0",
+      "settings_offset": "0x14e0",
+      "module": "CoordinateScale",
+      "packer": "0x53132cec",
+      "first_control_store": "0x53132d1c",
+      "source_formula": "D=P.ptr[0x24].ptr[0]; packed.bit0=D.byte[0]&1",
+      "aggregate_mask": "0x1"
+    },
+    {
+      "config_offset": "0x1a6c",
+      "packed_offset": "0x1428",
+      "settings_offset": "0x1548",
+      "module": "ColorReference",
+      "packer": "0x53132874",
+      "first_control_store": "0x53132918",
+      "source_formula": "D=P.ptr[0x28].ptr[8]; packed.bit0=D.byte[0]&1; packed.bit4=D.byte[1]&1",
+      "aggregate_mask": "0x11"
+    },
+    {
+      "config_offset": "0x1aac",
+      "packed_offset": "0x1468",
+      "settings_offset": "0x1588",
+      "module": "ColorReference",
+      "packer": "0x53132874",
+      "first_control_store": "0x53132a88",
+      "source_formula": "D=P.ptr[0x28].ptr[4]; packed.bit0=D.byte[0]&1; packed.bit4=D.byte[1]&1",
+      "aggregate_mask": "0x11"
+    },
+    {
+      "config_offset": "0x1aec",
+      "packed_offset": "0x14a8",
+      "settings_offset": "0x15c8",
+      "module": "ColorLpf",
+      "packer": "0x53132ec4",
+      "first_control_store": "0x53132eec",
+      "source_formula": "j=clamp(sum(P.s16[0x46,0x48,0x4a,0x4e])-24,0,167); D=P.ptr[0x2c].ptr[0]+28*j; packed.bit0=D.byte[0]&1; packed.bit4=D.byte[1]&1",
+      "aggregate_mask": "0x11"
+    }
+  ],
+  "relations": [
+    {
+      "name": "Memcpy mapping",
+      "site": "0x5307fe20",
+      "target": "0x526aac80",
+      "formula": "config[0x644+k] = settings[0x120+k], 0 <= k < 0x5d24",
+      "source_pointer": "params+0x94"
+    },
+    {
+      "name": "Mask semantics",
+      "proven": "0x11 tests bits0 and4, not bit1. Packers independently insert low source bits with ARM BFI. Edge first three bytes also carry bits1/2 which the aggregate ignores.",
+      "unknown": "No independent field name proves bypass, clock-gating or exact hardware operation order."
+    },
+    {
+      "name": "Mode selection",
+      "proven": "Ordinary selector path uses tuning-object u16+0x204 values2/3 to choose edge getter5313fd80/5313fdac, otherwise5313fd54. Its u8+0x1f6 internal CustomImage enum10 selects ColorReference getter53140104 instead of531400e4. Coordinate getter531401e4 is project-only in this branch; other runtime branches differ.",
+      "unknown": "No one-to-one eight-byte control signature per user CustomImage mode is established; runtime sub-index and all alternate branches not exhaustively catalogued."
+    },
+    {
+      "name": "CPU preparation evidence",
+      "proven": "Edge resource descriptor byte0 ==1 gates coefficient/table preparation in5313399c, alongside P.byte5d and cached-state conditions. This supports a functional enable role in CPU preparation, not physical hardware bypass/order.",
+      "unknown": "No ordering constraint between WB, matrix, tone and gamma pixels follows from this bit or CPU dispatch order."
+    }
+  ],
+  "wblv": {
+    "search_summary": {
+      "new_methods_only": true,
+      "old_search_not_repeated_as_new": "Prior exact pointer/MOVW-MOVT<=96byte WBLV target scans remain prior work. New family anchor lookups are supplemental checks, not counted as solved WBLV edges.",
+      "adr_family_hits": 0,
+      "literal_load_family_hits": 5,
+      "relative_family_candidates": 1031,
+      "extended_mov_family_candidates": 656,
+      "relative_exact_wblv_candidates": [
+        {
+          "word_address": "0x53a330cc",
+          "word": "0x270028",
+          "bias": 4,
+          "target": "0x53ca30f8",
+          "region": "r2y_dump_strings",
+          "candidate_only": true
+        }
+      ],
+      "extended_exact_wblv_candidates": [
+        {
+          "movw": "0x525b07b4",
+          "movt": "0x525b08b0",
+          "register": 1,
+          "target": "0x53ca30f8",
+          "candidate_only": true
+        },
+        {
+          "movw": "0x525b07b4",
+          "movt": "0x525b0ac4",
+          "register": 1,
+          "target": "0x53ca30f8",
+          "candidate_only": true
+        },
+        {
+          "movw": "0x53330940",
+          "movt": "0x53330a60",
+          "register": 0,
+          "target": "0x53ca30f8",
+          "candidate_only": true
+        }
+      ],
+      "local_constant_words": 24561,
+      "local_constant_hits": [],
+      "physical_register_read_edges_resolved": 0
+    },
+    "candidate_dispositions": [
+      {
+        "candidate": "525b07b4 ->525b08b0",
+        "result": "rejected as paired address construction",
+        "proof": [
+          "525b07b8 immediately makes actual536230f8",
+          "525b08ac MOVW r1,d46c replaces low16 directly before525b08b0 MOVT53ca; actual53cad46c"
+        ]
+      },
+      {
+        "candidate": "525b07b4 ->525b0ac4",
+        "result": "rejected as paired address construction",
+        "proof": [
+          "525b0ac0 MOVW r1,c21c directly precedes MOVT53ca; actual53cac21c"
+        ]
+      },
+      {
+        "candidate": "53330940 ->53330a60",
+        "result": "rejected as paired address construction",
+        "proof": [
+          "5333094c forms actual53cd30f8",
+          "53330954 overwritesr0 and function returns/tails at53330964",
+          "53330a54 MOVW r0,c4c8 directly precedes53330a60 MOVT53ca; actual53cac4c8"
+        ]
+      },
+      {
+        "candidate": "relative word53a330cc, bias4",
+        "result": "unresolved arithmetic coincidence, not a code reference",
+        "proof": [
+          "raw word00270028;53a330cc+4+00270028=53ca30f8",
+          "neighboring data has small signed-halfword-like values",
+          "no instruction that loads and adds this entry is established; data contents are not assigned a semantic table type"
+        ]
+      },
+      {
+        "candidate": "five PC-relative LDR family hits",
+        "result": "class/factory vtable addresses, not diagnostic string reads",
+        "proof": [
+          "531aa11c ->53c7c810 stored object vptr531aa130",
+          "531ab270 ->53c7c860 stored object vptr531ab288",
+          "531bb0d4 ->53c7c908 stored singleton vptr531bb108",
+          "531bd04c ->53c7cc88 stored singleton vptr531bd068",
+          "531bd0a4 ->53c7ccc0 stored object vptr531bd0bc"
+        ]
+      }
+    ],
+    "relationships": [
+      {
+        "name": "R2y channel metadata boundary",
+        "claim": "53254790 stores physical register-base argument at object+4 and vtable53ca2a98 atobject+0. Vtable entries point to53254770/774; preceding RTTI points to14R2yChannelUnit. Nearby diagnostic strings start53ca2aa0. No constructor string consumer or WBLV register read is present."
+      },
+      {
+        "name": "B2r channel metadata boundary",
+        "claim": "531bd0a4 stores register-base argument atobject+4 and vtable53c7ccc0 atobject+0. Entries531bd084/088 and preceding RTTI identify14B2rChannelUnit. Diagnostic family begins53c7ccd4 after adjacent not Comp text. No WBLV consumer is established."
+      }
+    ],
+    "unknowns": [
+      "Any actual WBLV string-to-register-read binding",
+      "Acronym expansion and relation to G+18/R2y+30/+34 or B2r+60/+64",
+      "Whether diagnostic bodies were compiled out, dead-stripped, indirect or otherwise outside these searched mechanisms",
+      "Arbitrary computed/dynamic/Thumb references and other PIC table conventions",
+      "Physical pixel clipping, signedness, threshold formula and stage order"
+    ]
+  },
+  "limitations": [
+    "Genuine angr C is retained with source hashes; inferred C types are subordinate to ARM access widths.",
+    "Numerical checks cover eight bounded new producer fragments, not complete packers, selectors or camera hardware.",
+    "Original resource tables remain private. Resource metadata is for pointer provenance, not a Lightroom profile.",
+    "Physical pixel order, individual bit names, sensor color basis and all runtime control values remain unresolved."
+  ],
+  "private_evidence_sha256": {
+    "r2y-control-producers": "099ce68a93e87d4a3bc939fbc9732a76e0005abbfdb5d01a87aa22cab67605aa",
+    "wblv-references": "5b51f627dd90196a44cce6c56d926583dec05dbfc02ab950c17bf3db445395e0"
+  }
+}

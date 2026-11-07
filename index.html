@@ -1,5 +1,6 @@
-<!doctype html>
-<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>PENTAX K-3 Mark III v2.20 펌웨어 분석</title><style>
+<!DOCTYPE html>
+
+<html lang="ko"><head><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/><title>PENTAX K-3 Mark III v2.20 펌웨어 분석</title><style>
 :root{color-scheme:light dark;--bg:#f7f8fa;--paper:#fff;--ink:#182332;--muted:#48596b;--line:#d2dbe5;--accent:#124b8e;--soft:#edf3fa;--focus:#d75f00}
 @media(prefers-color-scheme:dark){:root{--bg:#111821;--paper:#18222d;--ink:#e8edf4;--muted:#b4c2d2;--line:#405369;--accent:#98c8ff;--soft:#223348;--focus:#ffb374}}
 *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.85 system-ui,-apple-system,"Malgun Gothic",sans-serif;word-break:keep-all;overflow-wrap:anywhere}
@@ -17,8 +18,8 @@ figure{margin:32px 0;padding:24px 0;border-block:1px solid var(--line)}figcaptio
 .review-note{background:var(--soft);padding:16px 20px;margin:24px 0}.toc{font-size:.92rem}.toc ul{list-style:none;padding-left:0}.toc ul ul{padding-left:20px}
 .branch{margin:18px 0;padding:0 0 0 24px;border-left:3px solid var(--line)}.branch p{margin:8px 0}.diagram-line{padding:12px 16px;background:var(--soft);border-radius:4px}
 </style></head>
-<body><header><div class="eyebrow">PENTAX K-3 MARK III · FIRMWARE 2.20 · 2026-11-07</div><h1>PENTAX K-3 Mark III v2.20 펌웨어 분석</h1>
-<nav class="site-nav" aria-label="분석 문서"><a href="index.html" aria-current="page">개요·재현</a><a href="analysis/index.html">RTOS 957개</a><a href="analysis/dispatch-af.html">셔터·AF</a><a href="analysis/color-lightroom.html">컬러모드·Lightroom</a><a href="analysis/color-algorithms.html">색 처리 수식</a><a href="analysis/pipeline-report.html">JPEG·ISP 최신 분석</a></nav><p class="review-note">펌웨어 구조, 확보한 소스와 재현 절차를 정리한 진입 문서다. 세부 단계의 누적 수치는 해당 조사 범위를 뜻하며 최신 결과는 JPEG·ISP 보고서에서 구분해 제시한다.</p><details><summary>이 문서의 목차</summary><div class="toc">
+<body><header><div class="eyebrow">PENTAX K-3 MARK III · FIRMWARE 2.20 · 2026-11-07</div><h1>PENTAX K-3 Mark III v2.20 펌웨어 분석</h1><nav aria-label="분석 문서" class="site-nav"><a aria-current="page" href="index.html">개요·재현</a><a href="analysis/index.html">RTOS 957개</a><a href="analysis/dispatch-af.html">셔터·AF</a><a href="analysis/color-lightroom.html">컬러모드·Lightroom</a><a href="analysis/color-algorithms.html">색 처리 수식</a><a href="analysis/pipeline-report.html">JPEG·ISP 최신 분석</a><a href="analysis/research-roadmap.html">수정·이식 선행 연구</a></nav>
+<p class="review-note">펌웨어 구조, 확보한 소스와 재현 절차를 정리한 진입 문서다. 세부 단계의 누적 수치는 해당 조사 범위를 뜻하며 최신 결과는 JPEG·ISP 보고서에서 구분해 제시한다.</p><details><summary>이 문서의 목차</summary><div class="toc">
 <ul>
 <li><a href="#확보한-코드">확보한 코드</a></li>
 <li><a href="#대상-파일과-내부-구조">대상 파일과 내부 구조</a></li>
@@ -27,7 +28,8 @@ figure{margin:32px 0;padding:24px 0;border-block:1px solid var(--line)}figcaptio
 <li><a href="#재현">재현</a></li>
 </ul>
 </div>
-</details></header><main>
+</details></header><main><section class="review-note" id="control-followup"><h2>2026-11-07 추가 분석</h2><p>R2y 제어 생산자 8개, 새 ARM fragment 실행 2,048건, WBLV 후보의 반증 근거를 반영했다. UI 리소스 슬롯 5와 업데이트 파일명 생산자를 추가 추적했다.</p><p><a href="analysis/pipeline-report.html#control-producers">제어 생산자·WBLV 결과</a> · <a href="analysis/research-roadmap.html">수정 펌웨어·UI 이식 선행 연구</a></p><details><summary>이번 추가 분석 재현</summary><p>기존 환경의 Unicorn 2.1.4와 Capstone 5.0.7을 사용했다. 두 도구 모두 분석한 원본 RTOS의 SHA-256을 확인한다. 아래 decoded.bin은 사용자가 로컬에서 추출한 파일 경로다.</p><pre><code>python verify_r2y_controls.py decoded.bin --output r2y-control-checks.json
+python verify_wblv_references.py decoded.bin --output wblv-reference-checks.json</code></pre><p>WBLV 도구는 후보 검색을 재현한다. 레지스터 재정의에 따른 후보 탈락은 별도의 원본 명령 검토 결과다.</p></details></section>
 <p>최신 결과는 <strong><a href="analysis/pipeline-report.html">JPEG·ISP와 색 재현 경로 — HTML 보고서</a></strong>에 정리했다. 파일을 내려받아 브라우저에서 열면 다이어그램과 표를 오프라인으로 읽을 수 있다. JPEG 서비스→레지스터→완료 콜백, Custom Image→R2y 행렬·감마·톤 설정, 색공간별 감마와 WB 데이터 흐름을 추적했다. Lightroom 이전 조건과 미해결 연결도 명시했다.</p>
 <p>현재 심층 분석은 <strong>389개 고유 디컴파일 진입점</strong>을 포함한다. 이전 단계에서 WB 결과→B2r gain 레지스터, 색공간 메시지 <code>0x145</code>→수신 처리기→common 버퍼 반영을 연결했다. 입력 M2PCLIP, R2y 상한 후보 필드와 조건부 B2r·R2y 버퍼 공유도 추적했다. WB 260사례, 메시지 1,536사례, ISP 설정 65그룹·450검사, 버퍼 32조건이 원본 ARM 합성 실행에서 통과했다. 실제 픽셀의 클리핑·처리 순서와 카메라 JPEG·Lightroom의 색 일치는 미확정이다. <a href="analysis/pipeline-report.html#verification">검증 범위</a> · <a href="analysis/pipeline-evidence.json">필드·레지스터 근거</a></p>
 <p><strong>이 펌웨어에서 Linux 셸 스크립트 원문을 꺼낼 수 있고, 컴파일된 함수는 기계어에서 동작을 추적할 수 있다.</strong> Linux UART 함수 한 개는 제조사가 배포한 C 소스와 대응시켰다. 촬영·영상처리 RTOS에서는 HDMI 명령 처리기의 흐름을 복원했다. 카메라 전체를 다시 빌드하는 데 필요한 비공개 C/C++ 소스, 원래의 타입·주석·빌드 프로젝트는 확보하지 못했다.</p>
