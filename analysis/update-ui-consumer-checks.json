@@ -1,0 +1,975 @@
+{
+  "passed": true,
+  "cases": 28,
+  "image_sha256": "342d2f35405e8daf1797dfe431d2e4aa70f4b52a2c242a29df48206672f1dfb4",
+  "scope": "Original ARM bounded UI queue dispatch and conditional UserFwUpdateController handling.\nNo publisher-to-receiver transport is executed. Initialized singleton guards and a cached\ncontroller are synthetic. OS locks/events, UI observers/rendering/configuration, scheduling,\ncancel and the post-drain predicate are explicit stubs. No actual device or reboot action.\n",
+  "emulator": "Unicorn Cortex-A15 model; not camera CPU/peripheral fidelity",
+  "stubs": {
+    "0x530ed1ac": "record wait, return chosen status; no OS",
+    "0x530ed0f4": "record clear; no OS",
+    "0x530f1a68": "record mutex lock, return chosen status; no OS",
+    "0x530f1bbc": "record unlock, return sentinel; no OS",
+    "0x530ed03c": "record post-drain flag2 wake only",
+    "0x526d8f44": "post-drain predicate returns chosen value; no UI traversal",
+    "0x528c66d0": "return synthetic observer",
+    "0x528c5080": "return synthetic observer",
+    "0x528c5b08": "return synthetic observer",
+    "0x528c5020": "return synthetic observer",
+    "0x528c5920": "return synthetic observer",
+    "0x30000004": "capture observer work only",
+    "0x30000008": "capture callback, optionally change cached controller pointer",
+    "0x5274ef44": "record refresh boundary; no UI rendering",
+    "0x526d9870": "initialize synthetic 28-byte settings output",
+    "0x526d9804": "capture settings byte+2 only",
+    "0x528c52c0": "return synthetic service",
+    "0x528eb490": "capture prior handle cancel boundary",
+    "0x528eb758": "capture args1000/controller+188 and return synthetic handle",
+    "0x5274e860": "capture follow-up work producer boundary, no enqueue",
+    "0x532fb9c8": "unexpected stack guard failure"
+  },
+  "ranges": [
+    {
+      "start": "0x528e8fa0",
+      "end": "0x528e9170",
+      "sha256": "d8d1c7ec3b2e29d3caf77d39f5e3db14bb3a13aa1a957d13966334d4185a64db"
+    },
+    {
+      "start": "0x526dbdac",
+      "end": "0x526dbddc",
+      "sha256": "1b2f6c987f704622141e11d15224c499cdca57a996c017cf09a9b1e41e4ab865"
+    },
+    {
+      "start": "0x526dbe14",
+      "end": "0x526de3dc",
+      "sha256": "5e6c7f331925ff8d988c35fbc864b7512cf106cf7345b1627c7ae8db566681b8"
+    },
+    {
+      "start": "0x526d95c4",
+      "end": "0x526d960c",
+      "sha256": "84cd5cce59cdb649cc89605294e973e43720cb8209fe79466a9e3d8f97c7d82c"
+    },
+    {
+      "start": "0x526d8ccc",
+      "end": "0x526d8f44",
+      "sha256": "8ac2076b4adaaa109a745ed02b668de55cb23cf3fe961dc0e7e570eb639d73e5"
+    },
+    {
+      "start": "0x5274f010",
+      "end": "0x5274f16c",
+      "sha256": "a55816f79648aac109dbe2047b0301a4efb1e5e7b3c0716f7efe7b5fa215ac25"
+    },
+    {
+      "start": "0x5274efd4",
+      "end": "0x5274f010",
+      "sha256": "5b072a1bb4a7aaf04e0f2b5b6c2aeb1cc88b0c98ab14cdce0fc86a1bbdb5c8bb"
+    },
+    {
+      "start": "0x5274e834",
+      "end": "0x5274e860",
+      "sha256": "9036b6f845c8d219e03b9844910a055d0a1f30c6e891fa70977177e23304d0e9"
+    },
+    {
+      "start": "0x5274e88c",
+      "end": "0x5274e8cc",
+      "sha256": "05c7acf45bff8b6204c1218fc1177e7bc22621173a52b4faa7d7c09c60a853a3"
+    },
+    {
+      "start": "0x528c4fcc",
+      "end": "0x528c4ff8",
+      "sha256": "cec2eafc3cb5ccece0a86a053685d2aba881e3e2d6f7fda2b0b31e8ed29aadcc"
+    },
+    {
+      "start": "0x528c51a0",
+      "end": "0x528c51cc",
+      "sha256": "867ace783257ad53acd34b813a4cddb325ab8ee0997e57c70d0fbb15c29c3b47"
+    },
+    {
+      "start": "0x528c6730",
+      "end": "0x528c675c",
+      "sha256": "ce43a5b2053de2100aa17e33fd3d6b85f549efb833745e3e92a4291238b91a4d"
+    }
+  ],
+  "executed_addresses": [
+    "0x526d8ccc",
+    "0x526d8cd0",
+    "0x526d8cd4",
+    "0x526d8cd8",
+    "0x526d8cdc",
+    "0x526d8ce0",
+    "0x526d8ce4",
+    "0x526d8ce8",
+    "0x526d8cec",
+    "0x526d8cf0",
+    "0x526d8cf4",
+    "0x526d8cf8",
+    "0x526d8cfc",
+    "0x526d8d00",
+    "0x526d8d04",
+    "0x526d8d08",
+    "0x526d8d0c",
+    "0x526d8d10",
+    "0x526d8d14",
+    "0x526d8d18",
+    "0x526d8d1c",
+    "0x526d8d20",
+    "0x526d8d24",
+    "0x526d8d28",
+    "0x526d8d2c",
+    "0x526d8d30",
+    "0x526d8d34",
+    "0x526d8d38",
+    "0x526d8d3c",
+    "0x526d8d40",
+    "0x526d8d44",
+    "0x526d8d48",
+    "0x526d8d4c",
+    "0x526d8d50",
+    "0x526d8d54",
+    "0x526d8d58",
+    "0x526d8d5c",
+    "0x526d8d60",
+    "0x526d8d64",
+    "0x526d8d68",
+    "0x526d8d6c",
+    "0x526d8d70",
+    "0x526d8d74",
+    "0x526d8d78",
+    "0x526d8d7c",
+    "0x526d8d80",
+    "0x526d8d84",
+    "0x526d8d88",
+    "0x526d8d8c",
+    "0x526d8d90",
+    "0x526d8d94",
+    "0x526d8d98",
+    "0x526d8d9c",
+    "0x526d8da0",
+    "0x526d8da4",
+    "0x526d8da8",
+    "0x526d8dac",
+    "0x526d8db0",
+    "0x526d8db4",
+    "0x526d8db8",
+    "0x526d8dbc",
+    "0x526d8dc0",
+    "0x526d8dc4",
+    "0x526d8dc8",
+    "0x526d8dcc",
+    "0x526d8df4",
+    "0x526d8df8",
+    "0x526d8f04",
+    "0x526d8f08",
+    "0x526d8f0c",
+    "0x526d8f10",
+    "0x526d8f14",
+    "0x526d8f18",
+    "0x526d95c4",
+    "0x526d95c8",
+    "0x526d95cc",
+    "0x526d95d0",
+    "0x526d95d4",
+    "0x526d95d8",
+    "0x526d95dc",
+    "0x526d95e0",
+    "0x526d95e4",
+    "0x526d95e8",
+    "0x526d95ec",
+    "0x526d95f0",
+    "0x526d95f4",
+    "0x526d95f8",
+    "0x526d95fc",
+    "0x526d9600",
+    "0x526d9604",
+    "0x526d9608",
+    "0x526dbdac",
+    "0x526dbdb0",
+    "0x526dbdb4",
+    "0x526dbdb8",
+    "0x526dbdbc",
+    "0x526dbdc0",
+    "0x526dbdc4",
+    "0x526dbdc8",
+    "0x526dbdcc",
+    "0x526dbdd0",
+    "0x526dbdd4",
+    "0x526dbe14",
+    "0x526dbe18",
+    "0x526dbe1c",
+    "0x526dbe20",
+    "0x526dbe24",
+    "0x526dbe28",
+    "0x526dbe2c",
+    "0x526dbe30",
+    "0x526dbe54",
+    "0x526dbe58",
+    "0x526dbe5c",
+    "0x526dbe60",
+    "0x526dbe64",
+    "0x526dbe68",
+    "0x526dbe6c",
+    "0x526dbe70",
+    "0x526dbe74",
+    "0x526dbe78",
+    "0x526dbe7c",
+    "0x526dbf0c",
+    "0x526dbf10",
+    "0x526dbf14",
+    "0x526dbf18",
+    "0x526dbf1c",
+    "0x526dbf20",
+    "0x526dbf24",
+    "0x526dbf28",
+    "0x526dbf2c",
+    "0x526dbf30",
+    "0x526dbf34",
+    "0x526dbff8",
+    "0x526dbffc",
+    "0x526dc000",
+    "0x526dc004",
+    "0x526dc008",
+    "0x526dc00c",
+    "0x526dc010",
+    "0x526dc014",
+    "0x526dc018",
+    "0x526dc01c",
+    "0x526dc020",
+    "0x526dc024",
+    "0x526dc028",
+    "0x526dc02c",
+    "0x526dc030",
+    "0x526dc034",
+    "0x526dc038",
+    "0x526dc03c",
+    "0x526dc040",
+    "0x526dc044",
+    "0x526dc048",
+    "0x526dc04c",
+    "0x526dc050",
+    "0x526dc054",
+    "0x526dc058",
+    "0x526dc05c",
+    "0x526dc2e0",
+    "0x526dc2e4",
+    "0x526dc4e8",
+    "0x526dc4ec",
+    "0x526dc4f0",
+    "0x526dc4f4",
+    "0x526dc4f8",
+    "0x526dc4fc",
+    "0x526dc500",
+    "0x526dc504",
+    "0x526dc508",
+    "0x526dc50c",
+    "0x526dc510",
+    "0x526dc514",
+    "0x526dc518",
+    "0x526dc51c",
+    "0x526dc520",
+    "0x526dc524",
+    "0x526dc528",
+    "0x526dc52c",
+    "0x526dc530",
+    "0x526dc534",
+    "0x526dc538",
+    "0x5274e834",
+    "0x5274e838",
+    "0x5274e83c",
+    "0x5274e840",
+    "0x5274e844",
+    "0x5274e848",
+    "0x5274e84c",
+    "0x5274e850",
+    "0x5274e854",
+    "0x5274e858",
+    "0x5274e85c",
+    "0x5274e88c",
+    "0x5274e890",
+    "0x5274e894",
+    "0x5274e898",
+    "0x5274e89c",
+    "0x5274e8a0",
+    "0x5274e8a4",
+    "0x5274e8a8",
+    "0x5274e8ac",
+    "0x5274e8b0",
+    "0x5274e8b4",
+    "0x5274e8b8",
+    "0x5274e8bc",
+    "0x5274e8c0",
+    "0x5274e8c4",
+    "0x5274e8c8",
+    "0x5274efd4",
+    "0x5274efd8",
+    "0x5274efdc",
+    "0x5274efe0",
+    "0x5274efe4",
+    "0x5274efe8",
+    "0x5274efec",
+    "0x5274eff0",
+    "0x5274eff4",
+    "0x5274eff8",
+    "0x5274effc",
+    "0x5274f000",
+    "0x5274f004",
+    "0x5274f008",
+    "0x5274f00c",
+    "0x5274f010",
+    "0x5274f014",
+    "0x5274f018",
+    "0x5274f01c",
+    "0x5274f020",
+    "0x5274f024",
+    "0x5274f028",
+    "0x5274f02c",
+    "0x5274f030",
+    "0x5274f034",
+    "0x5274f038",
+    "0x5274f03c",
+    "0x5274f040",
+    "0x5274f044",
+    "0x5274f048",
+    "0x5274f04c",
+    "0x5274f050",
+    "0x5274f054",
+    "0x5274f058",
+    "0x5274f05c",
+    "0x5274f060",
+    "0x5274f064",
+    "0x5274f068",
+    "0x5274f06c",
+    "0x5274f070",
+    "0x5274f074",
+    "0x5274f078",
+    "0x5274f07c",
+    "0x5274f080",
+    "0x5274f084",
+    "0x5274f088",
+    "0x5274f08c",
+    "0x5274f090",
+    "0x5274f094",
+    "0x5274f098",
+    "0x5274f09c",
+    "0x5274f0a0",
+    "0x5274f0a4",
+    "0x5274f0a8",
+    "0x5274f0ac",
+    "0x5274f0b0",
+    "0x5274f0b4",
+    "0x5274f0b8",
+    "0x5274f0bc",
+    "0x5274f0c0",
+    "0x5274f0c4",
+    "0x5274f0c8",
+    "0x5274f0cc",
+    "0x5274f0d0",
+    "0x5274f0d4",
+    "0x5274f0d8",
+    "0x5274f0dc",
+    "0x5274f0e0",
+    "0x5274f0e4",
+    "0x5274f0ec",
+    "0x5274f0f0",
+    "0x5274f0f4",
+    "0x5274f0f8",
+    "0x5274f0fc",
+    "0x5274f100",
+    "0x5274f104",
+    "0x5274f128",
+    "0x5274f12c",
+    "0x5274f130",
+    "0x5274f134",
+    "0x5274f138",
+    "0x5274f13c",
+    "0x5274f140",
+    "0x5274f148",
+    "0x5274f14c",
+    "0x528c4fcc",
+    "0x528c4fd0",
+    "0x528c4fd4",
+    "0x528c4fd8",
+    "0x528c4fdc",
+    "0x528c4fe0",
+    "0x528c4fe4",
+    "0x528c4fe8",
+    "0x528c4fec",
+    "0x528c4ff0",
+    "0x528c4ff4",
+    "0x528c51a0",
+    "0x528c51a4",
+    "0x528c51a8",
+    "0x528c51ac",
+    "0x528c51b0",
+    "0x528c51b4",
+    "0x528c51b8",
+    "0x528c51bc",
+    "0x528c51c0",
+    "0x528c51c4",
+    "0x528c51c8",
+    "0x528c6730",
+    "0x528c6734",
+    "0x528c6738",
+    "0x528c673c",
+    "0x528c6740",
+    "0x528c6744",
+    "0x528c6748",
+    "0x528c674c",
+    "0x528c6750",
+    "0x528c6754",
+    "0x528c6758",
+    "0x528e8fa0",
+    "0x528e8fa4",
+    "0x528e8fa8",
+    "0x528e8fac",
+    "0x528e8fb0",
+    "0x528e8fb4",
+    "0x528e8fb8",
+    "0x528e8fbc",
+    "0x528e8fc0",
+    "0x528e8fc4",
+    "0x528e8fc8",
+    "0x528e8fcc",
+    "0x528e8fd0",
+    "0x528e8fd4",
+    "0x528e8fd8",
+    "0x528e8fdc",
+    "0x528e8fe0",
+    "0x528e8fe4",
+    "0x528e8fe8",
+    "0x528e8fec",
+    "0x528e8ff0",
+    "0x528e8ff4",
+    "0x528e8ff8",
+    "0x528e8ffc",
+    "0x528e9000",
+    "0x528e9004",
+    "0x528e9008",
+    "0x528e900c",
+    "0x528e9010",
+    "0x528e9014",
+    "0x528e9018",
+    "0x528e901c",
+    "0x528e9020",
+    "0x528e9024",
+    "0x528e9028",
+    "0x528e902c",
+    "0x528e9030",
+    "0x528e9034",
+    "0x528e9038",
+    "0x528e903c",
+    "0x528e9040",
+    "0x528e9044",
+    "0x528e9048",
+    "0x528e904c",
+    "0x528e9050",
+    "0x528e9054",
+    "0x528e9058",
+    "0x528e905c",
+    "0x528e9060",
+    "0x528e9064",
+    "0x528e9068",
+    "0x528e906c",
+    "0x528e9070",
+    "0x528e9074",
+    "0x528e9078",
+    "0x528e907c",
+    "0x528e9080",
+    "0x528e9084",
+    "0x528e9088",
+    "0x528e908c",
+    "0x528e9090",
+    "0x528e9094",
+    "0x528e9098",
+    "0x528e909c",
+    "0x528e90a0",
+    "0x528e90a4",
+    "0x528e90a8",
+    "0x528e90ac",
+    "0x528e90b0",
+    "0x528e90b4",
+    "0x528e90b8",
+    "0x528e90bc",
+    "0x528e90c0",
+    "0x528e90c4",
+    "0x528e90c8",
+    "0x528e90cc",
+    "0x528e90d0",
+    "0x528e90d4",
+    "0x528e90d8",
+    "0x528e90dc",
+    "0x528e90e0",
+    "0x528e90e4",
+    "0x528e90e8",
+    "0x528e90ec",
+    "0x528e90f0",
+    "0x528e90f4",
+    "0x528e90f8",
+    "0x528e90fc",
+    "0x528e9100",
+    "0x528e9104",
+    "0x528e9108",
+    "0x528e910c",
+    "0x528e9110",
+    "0x528e9114",
+    "0x528e9118",
+    "0x528e911c",
+    "0x528e9120",
+    "0x528e9124",
+    "0x528e9128",
+    "0x528e912c",
+    "0x528e9130",
+    "0x528e9134",
+    "0x528e9138",
+    "0x528e913c",
+    "0x528e9140",
+    "0x528e9144",
+    "0x528e9148",
+    "0x528e914c",
+    "0x528e9150",
+    "0x528e9154",
+    "0x528e9158",
+    "0x528e9160",
+    "0x528e9164"
+  ],
+  "groups": {
+    "cached-user-state-resolver": 1,
+    "callback-handle-and-flags": 5,
+    "conditional-update-work": 8,
+    "dispatch-and-completion-callback": 4,
+    "inconsistent-count-is-not-drain-guard": 1,
+    "queue-drain-wrap-and-os-status": 5,
+    "resolve-current-state-per-record": 1,
+    "state-id-publish": 3
+  },
+  "results": [
+    {
+      "group": "state-id-publish",
+      "inputs": {
+        "id": "0x0"
+      },
+      "observed": {
+        "queue_id": "0x0",
+        "cleared_bytes": 72
+      },
+      "result_sha256": "f8ac5575f96a8212485c5c29e0451bc6d9c0e1fbde305024236c1a65f87ba725"
+    },
+    {
+      "group": "state-id-publish",
+      "inputs": {
+        "id": "0x100000f"
+      },
+      "observed": {
+        "queue_id": "0x100000f",
+        "cleared_bytes": 72
+      },
+      "result_sha256": "8f00649186026feae791aef60d0fc6521d73697ffd7cc1516e438f4e6724edc8"
+    },
+    {
+      "group": "state-id-publish",
+      "inputs": {
+        "id": "0xffffffff"
+      },
+      "observed": {
+        "queue_id": "0xffffffff",
+        "cleared_bytes": 72
+      },
+      "result_sha256": "79446437313d8ad4a87599302bd1c52539a4faf40d41fdac8b7a90026f51fb9e"
+    },
+    {
+      "group": "cached-user-state-resolver",
+      "inputs": {
+        "id": "0x0100000f"
+      },
+      "observed": {
+        "return_value": 268435456
+      },
+      "result_sha256": "2db56f826d49f4ffe7db547155d2a1384885912e89320f51f15c4fa640163c32"
+    },
+    {
+      "group": "conditional-update-work",
+      "inputs": {
+        "model": 2,
+        "old_handle": 0,
+        "new_handle": 7,
+        "prior_ad": 0
+      },
+      "observed": {
+        "return_value": 1,
+        "setting_flag": 0,
+        "schedule_count": 0,
+        "cancel_count": 0,
+        "followup_count": 0
+      },
+      "result_sha256": "ead0c519fcf72b98b7512e66529c12a87439da2e095c85ee7a9784a031b2728c"
+    },
+    {
+      "group": "conditional-update-work",
+      "inputs": {
+        "model": 3,
+        "old_handle": 0,
+        "new_handle": 7,
+        "prior_ad": 0
+      },
+      "observed": {
+        "return_value": 1,
+        "setting_flag": 1,
+        "schedule_count": 1,
+        "cancel_count": 0,
+        "followup_count": 0
+      },
+      "result_sha256": "99a369e48cd53596d594a7b292d71a16dfe597ee3d03a4cd60aeb1f74c42a273"
+    },
+    {
+      "group": "conditional-update-work",
+      "inputs": {
+        "model": 3,
+        "old_handle": 4660,
+        "new_handle": 7,
+        "prior_ad": 0
+      },
+      "observed": {
+        "return_value": 1,
+        "setting_flag": 1,
+        "schedule_count": 1,
+        "cancel_count": 1,
+        "followup_count": 0
+      },
+      "result_sha256": "1162e26fa1be45aa6ce9e9a69e209163746fef4ebf6d8eb2896b140e54f22c9f"
+    },
+    {
+      "group": "conditional-update-work",
+      "inputs": {
+        "model": 3,
+        "old_handle": 4660,
+        "new_handle": 0,
+        "prior_ad": 0
+      },
+      "observed": {
+        "return_value": 1,
+        "setting_flag": 1,
+        "schedule_count": 1,
+        "cancel_count": 1,
+        "followup_count": 0
+      },
+      "result_sha256": "7a57d10f42af450c8d9442e6a124ba9fd182e9b1557ee1669581e820f7c9f465"
+    },
+    {
+      "group": "conditional-update-work",
+      "inputs": {
+        "model": 4,
+        "old_handle": 0,
+        "new_handle": 7,
+        "prior_ad": 0
+      },
+      "observed": {
+        "return_value": 1,
+        "setting_flag": 1,
+        "schedule_count": 0,
+        "cancel_count": 0,
+        "followup_count": 0
+      },
+      "result_sha256": "7aa8dede053f69df9041517f3252cad32f5b6b7493962560727ec4356954bf3b"
+    },
+    {
+      "group": "conditional-update-work",
+      "inputs": {
+        "model": 5,
+        "old_handle": 0,
+        "new_handle": 7,
+        "prior_ad": 0
+      },
+      "observed": {
+        "return_value": 1,
+        "setting_flag": 1,
+        "schedule_count": 0,
+        "cancel_count": 0,
+        "followup_count": 0
+      },
+      "result_sha256": "876d5f359cffdd02a36da0f21c2163d5ffe74ff2e2a96f6348aff7a2de884acc"
+    },
+    {
+      "group": "conditional-update-work",
+      "inputs": {
+        "model": 5,
+        "old_handle": 0,
+        "new_handle": 7,
+        "prior_ad": 1
+      },
+      "observed": {
+        "return_value": 1,
+        "setting_flag": 1,
+        "schedule_count": 0,
+        "cancel_count": 0,
+        "followup_count": 1
+      },
+      "result_sha256": "efe212a620b9d13a3389a303d6bbfe0ab75b548093230987459b594f30a82cb6"
+    },
+    {
+      "group": "conditional-update-work",
+      "inputs": {
+        "model": 4294967295,
+        "old_handle": 0,
+        "new_handle": 7,
+        "prior_ad": 0
+      },
+      "observed": {
+        "return_value": 1,
+        "setting_flag": 1,
+        "schedule_count": 0,
+        "cancel_count": 0,
+        "followup_count": 0
+      },
+      "result_sha256": "5b2acff35e0cfe39133901b0ca77ebf1249bacc53a239d6c65e71ec1a41e5f36"
+    },
+    {
+      "group": "dispatch-and-completion-callback",
+      "inputs": {
+        "id": 444,
+        "has_callback": false
+      },
+      "observed": {
+        "return_value": 1,
+        "state_dispatches": 0,
+        "callbacks": []
+      },
+      "result_sha256": "123b4dfa48901e5a8de6e8696f0a1ab420dfd96cc4148965b118a01f8e818983"
+    },
+    {
+      "group": "dispatch-and-completion-callback",
+      "inputs": {
+        "id": 444,
+        "has_callback": true
+      },
+      "observed": {
+        "return_value": 1,
+        "state_dispatches": 0,
+        "callbacks": [
+          [
+            444,
+            2882400001
+          ]
+        ]
+      },
+      "result_sha256": "aaddbc77a841a567dd7c524e45c2a5d525d4dbf83e7763e557497f8d27b3b92c"
+    },
+    {
+      "group": "dispatch-and-completion-callback",
+      "inputs": {
+        "id": 296,
+        "has_callback": true
+      },
+      "observed": {
+        "return_value": 1,
+        "state_dispatches": 2,
+        "callbacks": [
+          [
+            296,
+            2882400001
+          ]
+        ]
+      },
+      "result_sha256": "16562c7e5a61959d602febf23d8431a051bf814726c189431bee41178870c0dd"
+    },
+    {
+      "group": "dispatch-and-completion-callback",
+      "inputs": {
+        "id": 297,
+        "has_callback": true
+      },
+      "observed": {
+        "return_value": 1,
+        "state_dispatches": 2,
+        "callbacks": [
+          [
+            297,
+            2882400001
+          ]
+        ]
+      },
+      "result_sha256": "d2137539e3d9588fbc43c1207381b2f980a59cca03b7b163a84a1689e3193be7"
+    },
+    {
+      "group": "queue-drain-wrap-and-os-status",
+      "inputs": {
+        "head": 0,
+        "count": 0,
+        "post": 0,
+        "os_status": 1
+      },
+      "observed": {
+        "return_value": 102,
+        "read_index": 0,
+        "count": 0,
+        "callbacks": 0,
+        "source_records_preserved": true
+      },
+      "result_sha256": "5c460ee2f8fb0ae6a7a0a841fb676e77d0669a08cc6a599975f34571235aeb0f"
+    },
+    {
+      "group": "queue-drain-wrap-and-os-status",
+      "inputs": {
+        "head": 0,
+        "count": 0,
+        "post": 1,
+        "os_status": 0
+      },
+      "observed": {
+        "return_value": 102,
+        "read_index": 0,
+        "count": 0,
+        "callbacks": 0,
+        "source_records_preserved": true
+      },
+      "result_sha256": "6010e0f60fbf70f86faa39789137a6e2a1e0bf0819185039097db34f9c821fa0"
+    },
+    {
+      "group": "queue-drain-wrap-and-os-status",
+      "inputs": {
+        "head": 0,
+        "count": 1,
+        "post": 0,
+        "os_status": 1
+      },
+      "observed": {
+        "return_value": 102,
+        "read_index": 1,
+        "count": 0,
+        "callbacks": 1,
+        "source_records_preserved": true
+      },
+      "result_sha256": "7c8a6e4dba80e6cdf88b97e7efa57b89f202a265385aa4a353d61aabfa81f82f"
+    },
+    {
+      "group": "queue-drain-wrap-and-os-status",
+      "inputs": {
+        "head": 7,
+        "count": 2,
+        "post": 1,
+        "os_status": 1
+      },
+      "observed": {
+        "return_value": 102,
+        "read_index": 1,
+        "count": 0,
+        "callbacks": 2,
+        "source_records_preserved": true
+      },
+      "result_sha256": "407b81d388b15f2ccffa562565fbbe201c56d965a15a71039b60d3e8cbb47709"
+    },
+    {
+      "group": "queue-drain-wrap-and-os-status",
+      "inputs": {
+        "head": 6,
+        "count": 3,
+        "post": 0,
+        "os_status": 0
+      },
+      "observed": {
+        "return_value": 102,
+        "read_index": 1,
+        "count": 0,
+        "callbacks": 3,
+        "source_records_preserved": true
+      },
+      "result_sha256": "cea0b05d269c5c36ba499a7f9c0683119564e61f6fb390066a5183cd8a28fcd4"
+    },
+    {
+      "group": "resolve-current-state-per-record",
+      "inputs": {},
+      "observed": {
+        "controller_sequence": [
+          268435456,
+          268439552
+        ]
+      },
+      "result_sha256": "5f7f2ae2bf0fb8edc13a517d39bdc32b9bee19c91c54fcea1f4982d8520cc4e1"
+    },
+    {
+      "group": "inconsistent-count-is-not-drain-guard",
+      "inputs": {
+        "count": 0,
+        "head": 0,
+        "tail": 1
+      },
+      "observed": {
+        "count_after": 65535,
+        "processed": 1
+      },
+      "result_sha256": "cf38aa19ad0fb1680e128a7c553a916f6cafff18ae9d796ad208efad7cea3ea3"
+    },
+    {
+      "group": "callback-handle-and-flags",
+      "inputs": {
+        "old": 9,
+        "received": 8,
+        "ac": 1,
+        "ae": 0
+      },
+      "observed": {
+        "handle_after": 9,
+        "ad": 0,
+        "followup_count": 0
+      },
+      "result_sha256": "901fbc1c57fac25ab3f67e19bade5d14fda4d11bba61744fa60c7ad8f5f9a67b"
+    },
+    {
+      "group": "callback-handle-and-flags",
+      "inputs": {
+        "old": 9,
+        "received": 9,
+        "ac": 0,
+        "ae": 0
+      },
+      "observed": {
+        "handle_after": 0,
+        "ad": 1,
+        "followup_count": 0
+      },
+      "result_sha256": "75c30394c43e280bbf06ecfc0085b2c9fc787dd9edb060fb7ac094cce64494b6"
+    },
+    {
+      "group": "callback-handle-and-flags",
+      "inputs": {
+        "old": 9,
+        "received": 9,
+        "ac": 1,
+        "ae": 0
+      },
+      "observed": {
+        "handle_after": 0,
+        "ad": 1,
+        "followup_count": 1
+      },
+      "result_sha256": "1b4b5766b27a29fd132e27d842fdd8ae495ba206d82e0828d0b19b232890ae27"
+    },
+    {
+      "group": "callback-handle-and-flags",
+      "inputs": {
+        "old": 9,
+        "received": 9,
+        "ac": 1,
+        "ae": 1
+      },
+      "observed": {
+        "handle_after": 0,
+        "ad": 1,
+        "followup_count": 0
+      },
+      "result_sha256": "75c30394c43e280bbf06ecfc0085b2c9fc787dd9edb060fb7ac094cce64494b6"
+    },
+    {
+      "group": "callback-handle-and-flags",
+      "inputs": {
+        "old": 0,
+        "received": 0,
+        "ac": 1,
+        "ae": 0
+      },
+      "observed": {
+        "handle_after": 0,
+        "ad": 1,
+        "followup_count": 1
+      },
+      "result_sha256": "16a25c772e0e85798785501333a286213800010b89065392e4f182621a6d20a6"
+    }
+  ]
+}

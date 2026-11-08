@@ -1,0 +1,129 @@
+{
+  "passed": true,
+  "image_sha256": "342d2f35405e8daf1797dfe431d2e4aa70f4b52a2c242a29df48206672f1dfb4",
+  "cases": 9,
+  "groups": {
+    "actual-caller-fixed-output": 4,
+    "builder-header-gate-and-fallback": 5
+  },
+  "scope": "Original ARM header-parameter builder and actual caller prefix on authored RAM.\nNo physical controller, NAND/media, OS, bootloader or firmware write executes.\nThe controller word is synthetic RAM; the caller stops immediately after builder.\n",
+  "stubs": {},
+  "ranges": [
+    {
+      "start": "0x53323ce4",
+      "end": "0x533240ac",
+      "sha256": "5906121dfb4b88c7e07225791ddb69b2ca6722c75028b76e60e3f39e5a9a79f7"
+    },
+    {
+      "start": "0x525e012c",
+      "end": "0x525e01a0",
+      "sha256": "554c28c716a2e894c6b9a3cad4a252cf495be39e090e7372b19567aecaac10ce"
+    }
+  ],
+  "results": [
+    {
+      "group": "builder-header-gate-and-fallback",
+      "inputs": {
+        "gate": 0,
+        "maker": 0,
+        "device": 0
+      },
+      "output_sha256": "307ec9149c82efc6afedbf4d207670be3ef05eba5fe5e8e2f8b3cc349e0da4a2",
+      "write_trace_sha256": "bbbd94f8620e6b341e78788c97e8b78f537deb8ee5d6ad04c17425dd46609861",
+      "record4_write_target": "0x54c40f40",
+      "table_unchanged": true
+    },
+    {
+      "group": "builder-header-gate-and-fallback",
+      "inputs": {
+        "gate": 0,
+        "maker": 1,
+        "device": 172
+      },
+      "output_sha256": "d6a917ec86e8f2357af733eef3b2506c37031a81a47ec0129b28741281194bc7",
+      "write_trace_sha256": "86b86acd1cffb503327404e3d59e434be141f8f91ae4438490b1d2298cf5e333",
+      "record4_write_target": "0x54c40f40",
+      "table_unchanged": true
+    },
+    {
+      "group": "builder-header-gate-and-fallback",
+      "inputs": {
+        "gate": 0,
+        "maker": 194,
+        "device": 172
+      },
+      "output_sha256": "d39f4af32664930da3872211dc5a39e7f596a32fbc0d4a5f7daa947c9a135d85",
+      "write_trace_sha256": "ce1b843c0d1fd4c9ddac6bae9da9f9d87de629515124d5f9b75e0e802ab202c0",
+      "record4_write_target": "0x54c40f40",
+      "table_unchanged": true
+    },
+    {
+      "group": "builder-header-gate-and-fallback",
+      "inputs": {
+        "gate": 1,
+        "maker": 0,
+        "device": 0
+      },
+      "output_sha256": "20cfdd9ff40cad6927047106353e00e301eaad17df70fd30470f6f5063397143",
+      "write_trace_sha256": "543fbe5604e6e064a3081a382e91380083e140020faecc2717e2a44b81a18fbd",
+      "record4_write_target": "0x54c40f40",
+      "table_unchanged": true
+    },
+    {
+      "group": "builder-header-gate-and-fallback",
+      "inputs": {
+        "gate": 4294967295,
+        "maker": 1,
+        "device": 172
+      },
+      "output_sha256": "bd4751b180fdd88ae6845ec3d7a37ad786cc26d82f62836009a3174fec35e0fc",
+      "write_trace_sha256": "1c2141a11901d75c1c152ab84a167bde9f21e97e80bc760f16c6a734d96e000a",
+      "record4_write_target": "0x54c40f40",
+      "table_unchanged": true
+    },
+    {
+      "group": "actual-caller-fixed-output",
+      "inputs": {
+        "controller_word": 0,
+        "selected_mode": 1
+      },
+      "output_sha256": "20cfdd9ff40cad6927047106353e00e301eaad17df70fd30470f6f5063397143",
+      "write_trace_sha256": "18737ec1290182dd5d86226c3750680b521fa0f70dac720fab3fb72ad69e2936",
+      "record4_write_target": "0x54c40f40",
+      "table_unchanged": true
+    },
+    {
+      "group": "actual-caller-fixed-output",
+      "inputs": {
+        "controller_word": 1073741824,
+        "selected_mode": 0
+      },
+      "output_sha256": "20cfdd9ff40cad6927047106353e00e301eaad17df70fd30470f6f5063397143",
+      "write_trace_sha256": "3d335f2693f1f276235968ce210760dbada99c0b97691ee9d161167a6f378a91",
+      "record4_write_target": "0x54c40f40",
+      "table_unchanged": true
+    },
+    {
+      "group": "actual-caller-fixed-output",
+      "inputs": {
+        "controller_word": 2147483648,
+        "selected_mode": 1
+      },
+      "output_sha256": "20cfdd9ff40cad6927047106353e00e301eaad17df70fd30470f6f5063397143",
+      "write_trace_sha256": "18737ec1290182dd5d86226c3750680b521fa0f70dac720fab3fb72ad69e2936",
+      "record4_write_target": "0x54c40f40",
+      "table_unchanged": true
+    },
+    {
+      "group": "actual-caller-fixed-output",
+      "inputs": {
+        "controller_word": 3221225472,
+        "selected_mode": 1
+      },
+      "output_sha256": "20cfdd9ff40cad6927047106353e00e301eaad17df70fd30470f6f5063397143",
+      "write_trace_sha256": "18737ec1290182dd5d86226c3750680b521fa0f70dac720fab3fb72ad69e2936",
+      "record4_write_target": "0x54c40f40",
+      "table_unchanged": true
+    }
+  ]
+}
