@@ -1,0 +1,980 @@
+{
+  "passed": true,
+  "image_sha256": "342d2f35405e8daf1797dfe431d2e4aa70f4b52a2c242a29df48206672f1dfb4",
+  "cases": 39,
+  "scope": "Original ARM AppTimerModel scheduling/cancellation/poll and bounded event-task iteration.\nSynthetic RAM only. OS timer syscalls, lock/event APIs and assertion/log function are\nexplicit stubs. A false assertion stops by default; separate cases allow it to return.\nNo physical delay, real event delivery, reboot or media action is demonstrated.\n",
+  "emulator": "Unicorn Cortex-A15 model; no camera/peripheral fidelity claim",
+  "stubs": {
+    "0x525b7844": "timer start syscall: capture(handle,duration), chosen raw OS return",
+    "0x525b78b0": "timer stop syscall: capturehandle, chosen raw OS return",
+    "0x525b73c4": "timer status syscall: fill authored12byte output; chosen raw OS return",
+    "0x530feb20": "assert/log wrapper: recordcondition; false stops unless returning_assertion fixture",
+    "0x530ed03c": "record event set only",
+    "0x530ed1ac": "record wait; second entry stops event-task single-iteration fixture",
+    "0x530ed0f4": "record event clear only",
+    "0x530f1a68": "record lock, return1",
+    "0x530f1bbc": "record unlock, return1",
+    "0x530fdfc4": "unexpected queue assertion",
+    "0x532fb9c8": "unexpected canary failure",
+    "0x30000004": "record cleared slot and savedID; optional authored slot/vector mutations",
+    "0x5274e860": "record UserFwUpdate follow-up boundary only"
+  },
+  "ranges": [
+    {
+      "start": "0x528eb490",
+      "end": "0x528eb500",
+      "sha256": "03a93ce67c284191bb7db028487b3867e62582d3fcd293da476cf25c180ee5fa"
+    },
+    {
+      "start": "0x528eb6b4",
+      "end": "0x528eb830",
+      "sha256": "4be67a7a467508ee8320eed35e25b05f76823b82f38e76e8a064736708412a58"
+    },
+    {
+      "start": "0x528eb420",
+      "end": "0x528eb490",
+      "sha256": "f3b6a42f9185caa0d43d029c2d807b4c4b557c91ed23d52d87c46803f406bc62"
+    },
+    {
+      "start": "0x528c0f30",
+      "end": "0x528c0f44",
+      "sha256": "129860a808074e863df31f82ec77c61c89536eafd433504def18220929565f29"
+    },
+    {
+      "start": "0x528c0fe0",
+      "end": "0x528c0fe8",
+      "sha256": "3f7670ff035a24fc5c3e2a8f4da3d32afa9a6c9985885af51046e41bf1c3550e"
+    },
+    {
+      "start": "0x530eb960",
+      "end": "0x530ebbc0",
+      "sha256": "e6638a3ec5c2e354fb7086f2750e952c7800aafc6f6a185c1d22dd8f5609694e"
+    },
+    {
+      "start": "0x530eb5d0",
+      "end": "0x530eb5ec",
+      "sha256": "ff57d13bed5b49da18c115f9067dac5b103c6c8f05c5b8a9b76ed274a70e8f6f"
+    },
+    {
+      "start": "0x528e8de4",
+      "end": "0x528e8eb0",
+      "sha256": "361636011a97485b6931924d91abc1bb1806c6e6a5fb193992047f5d6b7a203d"
+    },
+    {
+      "start": "0x528e8fc4",
+      "end": "0x528e901c",
+      "sha256": "b52ee0f5adfc68bcec4e5bc7f30adf37a209d5d2456501a26c2a969069e18bd0"
+    },
+    {
+      "start": "0x528c4fcc",
+      "end": "0x528c4ff8",
+      "sha256": "cec2eafc3cb5ccece0a86a053685d2aba881e3e2d6f7fda2b0b31e8ed29aadcc"
+    },
+    {
+      "start": "0x528c51a0",
+      "end": "0x528c51cc",
+      "sha256": "867ace783257ad53acd34b813a4cddb325ab8ee0997e57c70d0fbb15c29c3b47"
+    },
+    {
+      "start": "0x5274e88c",
+      "end": "0x5274e8cc",
+      "sha256": "05c7acf45bff8b6204c1218fc1177e7bc22621173a52b4faa7d7c09c60a853a3"
+    }
+  ],
+  "groups": {
+    "actual-user-secondary-vtable-callback": 3,
+    "cached-slot-free-OR-condition": 3,
+    "callback-authored-reuse-and-vector-end-growth": 1,
+    "cancel-error-assertion-before-clear": 2,
+    "cancel-first-match-and-zero": 5,
+    "explicitly-sequenced-signal-task-queue-dispatch-usercallback": 1,
+    "poll-error-only-fires-if-assertion-returns": 2,
+    "poll-gates-status-and-clear-before-callback": 6,
+    "schedule-OS-error-assertion": 3,
+    "schedule-counter": 4,
+    "status-wrapper-result-and-error": 6,
+    "work-receiver-filter": 3
+  },
+  "executed_addresses": [
+    "0x5274e88c",
+    "0x5274e890",
+    "0x5274e894",
+    "0x5274e898",
+    "0x5274e89c",
+    "0x5274e8a0",
+    "0x5274e8a4",
+    "0x5274e8a8",
+    "0x5274e8ac",
+    "0x5274e8b0",
+    "0x5274e8b4",
+    "0x5274e8b8",
+    "0x5274e8bc",
+    "0x5274e8c0",
+    "0x5274e8c4",
+    "0x5274e8c8",
+    "0x528c0f30",
+    "0x528c0f34",
+    "0x528c0f38",
+    "0x528c0f3c",
+    "0x528c0f40",
+    "0x528c0fe0",
+    "0x528c0fe4",
+    "0x528c4fcc",
+    "0x528c4fd0",
+    "0x528c4fd4",
+    "0x528c4fd8",
+    "0x528c4fdc",
+    "0x528c4fe0",
+    "0x528c4fe4",
+    "0x528c4fe8",
+    "0x528c4fec",
+    "0x528c4ff0",
+    "0x528c4ff4",
+    "0x528c51a0",
+    "0x528c51a4",
+    "0x528c51a8",
+    "0x528c51ac",
+    "0x528c51b0",
+    "0x528c51b4",
+    "0x528c51b8",
+    "0x528c51bc",
+    "0x528c51c0",
+    "0x528c51c4",
+    "0x528c51c8",
+    "0x528e8de4",
+    "0x528e8de8",
+    "0x528e8dec",
+    "0x528e8df0",
+    "0x528e8df4",
+    "0x528e8df8",
+    "0x528e8dfc",
+    "0x528e8e00",
+    "0x528e8e04",
+    "0x528e8e08",
+    "0x528e8e0c",
+    "0x528e8e10",
+    "0x528e8e14",
+    "0x528e8e18",
+    "0x528e8e1c",
+    "0x528e8e20",
+    "0x528e8e24",
+    "0x528e8e28",
+    "0x528e8e2c",
+    "0x528e8e30",
+    "0x528e8e34",
+    "0x528e8e38",
+    "0x528e8e3c",
+    "0x528e8e40",
+    "0x528e8e44",
+    "0x528e8e48",
+    "0x528e8e4c",
+    "0x528e8e50",
+    "0x528e8e54",
+    "0x528e8e58",
+    "0x528e8e5c",
+    "0x528e8e60",
+    "0x528e8e64",
+    "0x528e8e68",
+    "0x528e8e6c",
+    "0x528e8e70",
+    "0x528e8e74",
+    "0x528e8e78",
+    "0x528e8e7c",
+    "0x528e8e80",
+    "0x528e8fc4",
+    "0x528e8fc8",
+    "0x528e8fcc",
+    "0x528e8fd0",
+    "0x528e8fd4",
+    "0x528e8fd8",
+    "0x528e8fdc",
+    "0x528e8ff4",
+    "0x528e8ff8",
+    "0x528e8ffc",
+    "0x528e9000",
+    "0x528e9004",
+    "0x528e9008",
+    "0x528e900c",
+    "0x528e9010",
+    "0x528e9014",
+    "0x528e9018",
+    "0x528eb420",
+    "0x528eb424",
+    "0x528eb428",
+    "0x528eb42c",
+    "0x528eb430",
+    "0x528eb434",
+    "0x528eb438",
+    "0x528eb43c",
+    "0x528eb440",
+    "0x528eb444",
+    "0x528eb448",
+    "0x528eb44c",
+    "0x528eb450",
+    "0x528eb454",
+    "0x528eb458",
+    "0x528eb45c",
+    "0x528eb460",
+    "0x528eb464",
+    "0x528eb468",
+    "0x528eb46c",
+    "0x528eb470",
+    "0x528eb474",
+    "0x528eb478",
+    "0x528eb47c",
+    "0x528eb480",
+    "0x528eb484",
+    "0x528eb488",
+    "0x528eb48c",
+    "0x528eb490",
+    "0x528eb494",
+    "0x528eb498",
+    "0x528eb49c",
+    "0x528eb4a0",
+    "0x528eb4a4",
+    "0x528eb4a8",
+    "0x528eb4ac",
+    "0x528eb4b0",
+    "0x528eb4b4",
+    "0x528eb4b8",
+    "0x528eb4bc",
+    "0x528eb4c0",
+    "0x528eb4d4",
+    "0x528eb4d8",
+    "0x528eb4dc",
+    "0x528eb4e0",
+    "0x528eb4e4",
+    "0x528eb4e8",
+    "0x528eb4ec",
+    "0x528eb4f0",
+    "0x528eb4f4",
+    "0x528eb4f8",
+    "0x528eb4fc",
+    "0x528eb6b4",
+    "0x528eb6b8",
+    "0x528eb6bc",
+    "0x528eb6c0",
+    "0x528eb6c4",
+    "0x528eb6c8",
+    "0x528eb6cc",
+    "0x528eb6d0",
+    "0x528eb6d4",
+    "0x528eb6d8",
+    "0x528eb6dc",
+    "0x528eb6e0",
+    "0x528eb6e4",
+    "0x528eb6e8",
+    "0x528eb6ec",
+    "0x528eb6f0",
+    "0x528eb718",
+    "0x528eb71c",
+    "0x528eb720",
+    "0x528eb758",
+    "0x528eb75c",
+    "0x528eb760",
+    "0x528eb764",
+    "0x528eb768",
+    "0x528eb76c",
+    "0x528eb770",
+    "0x528eb774",
+    "0x528eb778",
+    "0x528eb77c",
+    "0x528eb780",
+    "0x528eb784",
+    "0x528eb788",
+    "0x528eb78c",
+    "0x528eb790",
+    "0x528eb794",
+    "0x528eb798",
+    "0x528eb79c",
+    "0x528eb7a0",
+    "0x528eb7a4",
+    "0x528eb7a8",
+    "0x528eb7ac",
+    "0x528eb7b0",
+    "0x528eb7b4",
+    "0x528eb7b8",
+    "0x528eb7bc",
+    "0x528eb7c0",
+    "0x528eb7c4",
+    "0x528eb7c8",
+    "0x528eb7cc",
+    "0x528eb7d0",
+    "0x528eb7d4",
+    "0x528eb7d8",
+    "0x528eb7dc",
+    "0x528eb7e0",
+    "0x528eb7e4",
+    "0x528eb7e8",
+    "0x528eb7ec",
+    "0x528eb7f0",
+    "0x528eb7f4",
+    "0x528eb7f8",
+    "0x528eb7fc",
+    "0x528eb800",
+    "0x528eb804",
+    "0x528eb808",
+    "0x528eb80c",
+    "0x528eb810",
+    "0x528eb814",
+    "0x528eb818",
+    "0x528eb81c",
+    "0x528eb820",
+    "0x528eb824",
+    "0x528eb828",
+    "0x528eb82c",
+    "0x530eb5d0",
+    "0x530eb5d4",
+    "0x530eb5d8",
+    "0x530eb5dc",
+    "0x530eb5e0",
+    "0x530eb5e4",
+    "0x530eb5e8",
+    "0x530eb960",
+    "0x530eb964",
+    "0x530eb968",
+    "0x530eb96c",
+    "0x530eb970",
+    "0x530eb974",
+    "0x530eb978",
+    "0x530eb97c",
+    "0x530eb980",
+    "0x530eb984",
+    "0x530eb988",
+    "0x530eb98c",
+    "0x530eb990",
+    "0x530eb994",
+    "0x530eb998",
+    "0x530eb99c",
+    "0x530eb9a0",
+    "0x530eb9a4",
+    "0x530eb9a8",
+    "0x530eb9ac",
+    "0x530eb9b0",
+    "0x530eb9b4",
+    "0x530eb9b8",
+    "0x530eb9bc",
+    "0x530eb9c0",
+    "0x530eb9c4",
+    "0x530eb9c8",
+    "0x530eb9cc",
+    "0x530eb9d0",
+    "0x530eb9d4",
+    "0x530eb9d8",
+    "0x530eb9dc",
+    "0x530eb9e0",
+    "0x530eb9e4",
+    "0x530eb9e8",
+    "0x530eb9ec",
+    "0x530eb9f0",
+    "0x530eb9f4",
+    "0x530eb9f8",
+    "0x530eb9fc",
+    "0x530eba00",
+    "0x530eba04",
+    "0x530eba08",
+    "0x530eba0c",
+    "0x530eba10",
+    "0x530eba14",
+    "0x530eba18",
+    "0x530eba1c",
+    "0x530eba20",
+    "0x530eba24",
+    "0x530eba28",
+    "0x530eba2c",
+    "0x530eba30",
+    "0x530eba34",
+    "0x530eba38",
+    "0x530eba3c",
+    "0x530eba40",
+    "0x530eba44",
+    "0x530eba48",
+    "0x530eba4c",
+    "0x530eba50",
+    "0x530eba54",
+    "0x530eba58",
+    "0x530eba5c",
+    "0x530eba60",
+    "0x530eba64",
+    "0x530eba68",
+    "0x530eba6c",
+    "0x530eba70",
+    "0x530eba74",
+    "0x530eba78",
+    "0x530eba7c",
+    "0x530eba80",
+    "0x530eba84",
+    "0x530eba88",
+    "0x530eba8c",
+    "0x530eba90",
+    "0x530eba94",
+    "0x530eba98",
+    "0x530eba9c",
+    "0x530ebaa0",
+    "0x530ebaa4",
+    "0x530ebaa8",
+    "0x530ebaac",
+    "0x530ebab0",
+    "0x530ebab4",
+    "0x530ebab8",
+    "0x530ebabc",
+    "0x530ebac0",
+    "0x530ebac4",
+    "0x530ebac8",
+    "0x530ebacc",
+    "0x530ebad0",
+    "0x530ebad4",
+    "0x530ebad8",
+    "0x530ebadc",
+    "0x530ebae0",
+    "0x530ebae4",
+    "0x530ebae8",
+    "0x530ebaec",
+    "0x530ebaf0",
+    "0x530ebaf4",
+    "0x530ebaf8",
+    "0x530ebafc",
+    "0x530ebb00",
+    "0x530ebb04",
+    "0x530ebb08",
+    "0x530ebb0c",
+    "0x530ebb10",
+    "0x530ebb14",
+    "0x530ebb18",
+    "0x530ebb1c",
+    "0x530ebb20",
+    "0x530ebb24",
+    "0x530ebb28",
+    "0x530ebb2c",
+    "0x530ebb30",
+    "0x530ebb34",
+    "0x530ebb38",
+    "0x530ebb3c",
+    "0x530ebb40",
+    "0x530ebb44",
+    "0x530ebb48",
+    "0x530ebb4c",
+    "0x530ebb50",
+    "0x530ebb54",
+    "0x530ebb58",
+    "0x530ebb5c",
+    "0x530ebb60",
+    "0x530ebb64",
+    "0x530ebb68",
+    "0x530ebb6c",
+    "0x530ebb70",
+    "0x530ebb74",
+    "0x530ebb78",
+    "0x530ebb7c",
+    "0x530ebb80",
+    "0x530ebb84",
+    "0x530ebb88",
+    "0x530ebb8c",
+    "0x530ebb90",
+    "0x530ebb94",
+    "0x530ebb98",
+    "0x530ebb9c",
+    "0x530ebba0",
+    "0x530ebba4",
+    "0x530ebba8",
+    "0x530ebbac",
+    "0x530ebbb0",
+    "0x530ebbb4",
+    "0x530ebbb8"
+  ],
+  "results": [
+    {
+      "group": "schedule-counter",
+      "inputs": {
+        "counter": 0
+      },
+      "observed": {
+        "handle": 1
+      },
+      "result_sha256": "37a0404eb117adbce76cbfc85a30a007a173c6c0334f19b29d937ec8bd516c32"
+    },
+    {
+      "group": "schedule-counter",
+      "inputs": {
+        "counter": 1
+      },
+      "observed": {
+        "handle": 2
+      },
+      "result_sha256": "82939c19d131c938042adb8668381ec89f4d64339e758ac323fe1dabe3416705"
+    },
+    {
+      "group": "schedule-counter",
+      "inputs": {
+        "counter": 4294967294
+      },
+      "observed": {
+        "handle": 4294967295
+      },
+      "result_sha256": "6ad7db772f5682928674443517b732ccaf00c2fffee3ddb5e4f4dae3666cc77f"
+    },
+    {
+      "group": "schedule-counter",
+      "inputs": {
+        "counter": 4294967295
+      },
+      "observed": {
+        "handle": 1
+      },
+      "result_sha256": "37a0404eb117adbce76cbfc85a30a007a173c6c0334f19b29d937ec8bd516c32"
+    },
+    {
+      "group": "cached-slot-free-OR-condition",
+      "inputs": {
+        "prior_id": 0,
+        "prior_callback": 268451840
+      },
+      "observed": {
+        "handle": 2
+      },
+      "result_sha256": "099387e88ef2d1caeaeb2d8688687e663e1b5e46aa793d244d8b812728bc4861"
+    },
+    {
+      "group": "cached-slot-free-OR-condition",
+      "inputs": {
+        "prior_id": 7,
+        "prior_callback": 0
+      },
+      "observed": {
+        "handle": 2
+      },
+      "result_sha256": "099387e88ef2d1caeaeb2d8688687e663e1b5e46aa793d244d8b812728bc4861"
+    },
+    {
+      "group": "cached-slot-free-OR-condition",
+      "inputs": {
+        "prior_id": 0,
+        "prior_callback": 0
+      },
+      "observed": {
+        "handle": 2
+      },
+      "result_sha256": "099387e88ef2d1caeaeb2d8688687e663e1b5e46aa793d244d8b812728bc4861"
+    },
+    {
+      "group": "schedule-OS-error-assertion",
+      "inputs": {
+        "raw": 1,
+        "assertion_returns": false
+      },
+      "observed": {
+        "stopped": "assert",
+        "stored_handle": 2,
+        "returned_handle": null
+      },
+      "result_sha256": "a86aac32fa33207500b5dd2f4f692c81b837fdb0ac84cf7271a1f2f4374ee9fc"
+    },
+    {
+      "group": "schedule-OS-error-assertion",
+      "inputs": {
+        "raw": 1,
+        "assertion_returns": true
+      },
+      "observed": {
+        "stopped": null,
+        "stored_handle": 2,
+        "returned_handle": 2
+      },
+      "result_sha256": "4b89209d6edf3d514f2bcd1bb1fd83184509ce256f85a50be28677fe0882db32"
+    },
+    {
+      "group": "schedule-OS-error-assertion",
+      "inputs": {
+        "raw": 4294967295,
+        "assertion_returns": true
+      },
+      "observed": {
+        "stopped": null,
+        "stored_handle": 2,
+        "returned_handle": 2
+      },
+      "result_sha256": "d4fe68a889fd28760d7601afe1f022b10b7154f1fbe6354831931e2734a5cae5"
+    },
+    {
+      "group": "cancel-first-match-and-zero",
+      "inputs": {
+        "ids": [
+          7
+        ],
+        "query": 7
+      },
+      "observed": {
+        "return_value": 1,
+        "stops": [
+          100
+        ]
+      },
+      "result_sha256": "0be4e7c77e5a9b377b2d460e7aeb2aba4548f3a18018a367b0eaddd3a3bcdc16"
+    },
+    {
+      "group": "cancel-first-match-and-zero",
+      "inputs": {
+        "ids": [
+          7
+        ],
+        "query": 8
+      },
+      "observed": {
+        "return_value": 0,
+        "stops": []
+      },
+      "result_sha256": "d983cc68568e82701f7cce8af03834da04a43236fb7a643c3fdefb82fb3877d9"
+    },
+    {
+      "group": "cancel-first-match-and-zero",
+      "inputs": {
+        "ids": [
+          0
+        ],
+        "query": 0
+      },
+      "observed": {
+        "return_value": 1,
+        "stops": [
+          100
+        ]
+      },
+      "result_sha256": "0be4e7c77e5a9b377b2d460e7aeb2aba4548f3a18018a367b0eaddd3a3bcdc16"
+    },
+    {
+      "group": "cancel-first-match-and-zero",
+      "inputs": {
+        "ids": [
+          7,
+          7
+        ],
+        "query": 7
+      },
+      "observed": {
+        "return_value": 1,
+        "stops": [
+          100
+        ]
+      },
+      "result_sha256": "0be4e7c77e5a9b377b2d460e7aeb2aba4548f3a18018a367b0eaddd3a3bcdc16"
+    },
+    {
+      "group": "cancel-first-match-and-zero",
+      "inputs": {
+        "ids": [],
+        "query": 7
+      },
+      "observed": {
+        "return_value": 0,
+        "stops": []
+      },
+      "result_sha256": "d983cc68568e82701f7cce8af03834da04a43236fb7a643c3fdefb82fb3877d9"
+    },
+    {
+      "group": "cancel-error-assertion-before-clear",
+      "inputs": {
+        "assertion_returns": false
+      },
+      "observed": {
+        "stopped": "assert",
+        "id_after": 7
+      },
+      "result_sha256": "d54c83836ebc212dca37ed81c5f1b44eebe286b479efc8751e562400018b9aec"
+    },
+    {
+      "group": "cancel-error-assertion-before-clear",
+      "inputs": {
+        "assertion_returns": true
+      },
+      "observed": {
+        "stopped": null,
+        "id_after": 0
+      },
+      "result_sha256": "f28d990412439c9eb25826f78bca1d9b590ce1e596d764c18f8215844b915f98"
+    },
+    {
+      "group": "status-wrapper-result-and-error",
+      "inputs": {
+        "raw": 0,
+        "word": 0,
+        "assertion_returns": false
+      },
+      "observed": {
+        "stopped": null,
+        "return_value": 0
+      },
+      "result_sha256": "fbade2f33c514b884e908166818c011063573ac9e3ba678bde47df39a521c9e2"
+    },
+    {
+      "group": "status-wrapper-result-and-error",
+      "inputs": {
+        "raw": 0,
+        "word": 1,
+        "assertion_returns": false
+      },
+      "observed": {
+        "stopped": null,
+        "return_value": 1
+      },
+      "result_sha256": "684ed786a42139b7e852b3a67bb25d3ef8697f7f98dd987764c5082c13cfeccb"
+    },
+    {
+      "group": "status-wrapper-result-and-error",
+      "inputs": {
+        "raw": 0,
+        "word": 2,
+        "assertion_returns": false
+      },
+      "observed": {
+        "stopped": null,
+        "return_value": 0
+      },
+      "result_sha256": "56cc155567f9398b308b9fe6272112e08393fc640884e9fc22618219b85888e7"
+    },
+    {
+      "group": "status-wrapper-result-and-error",
+      "inputs": {
+        "raw": 0,
+        "word": 4294967295,
+        "assertion_returns": false
+      },
+      "observed": {
+        "stopped": null,
+        "return_value": 0
+      },
+      "result_sha256": "1018c5cdbee075f9d007c905d1cc76f1e9bf6f1760328647e515a4a96b2fea47"
+    },
+    {
+      "group": "status-wrapper-result-and-error",
+      "inputs": {
+        "raw": 1,
+        "word": 1,
+        "assertion_returns": false
+      },
+      "observed": {
+        "stopped": "assert",
+        "return_value": null
+      },
+      "result_sha256": "ece276b230a798adb87906e65f16c18b212ff2e67f38421cc5025f1697864837"
+    },
+    {
+      "group": "status-wrapper-result-and-error",
+      "inputs": {
+        "raw": 1,
+        "word": 1,
+        "assertion_returns": true
+      },
+      "observed": {
+        "stopped": null,
+        "return_value": 0
+      },
+      "result_sha256": "b037eb744e31e1aa6a304f905744a95e749d228d3470cb1ec7e463d47891026c"
+    },
+    {
+      "group": "poll-gates-status-and-clear-before-callback",
+      "inputs": {
+        "id": 0,
+        "callback": 268451840,
+        "word": 0
+      },
+      "observed": {
+        "status_calls": 0,
+        "callbacks": []
+      },
+      "result_sha256": "b1be05352623d6e087c406ec8fa6472bdebd139c3f1f1e01d1caa54b6132d4b7"
+    },
+    {
+      "group": "poll-gates-status-and-clear-before-callback",
+      "inputs": {
+        "id": 7,
+        "callback": 0,
+        "word": 0
+      },
+      "observed": {
+        "status_calls": 0,
+        "callbacks": []
+      },
+      "result_sha256": "b1be05352623d6e087c406ec8fa6472bdebd139c3f1f1e01d1caa54b6132d4b7"
+    },
+    {
+      "group": "poll-gates-status-and-clear-before-callback",
+      "inputs": {
+        "id": 0,
+        "callback": 0,
+        "word": 0
+      },
+      "observed": {
+        "status_calls": 0,
+        "callbacks": []
+      },
+      "result_sha256": "b1be05352623d6e087c406ec8fa6472bdebd139c3f1f1e01d1caa54b6132d4b7"
+    },
+    {
+      "group": "poll-gates-status-and-clear-before-callback",
+      "inputs": {
+        "id": 7,
+        "callback": 268451840,
+        "word": 1
+      },
+      "observed": {
+        "status_calls": 1,
+        "callbacks": []
+      },
+      "result_sha256": "c9df83f422d9d5250ad8fff2d6538dd39d4168708d1e2b8e93813665d6b97e9c"
+    },
+    {
+      "group": "poll-gates-status-and-clear-before-callback",
+      "inputs": {
+        "id": 7,
+        "callback": 268451840,
+        "word": 0
+      },
+      "observed": {
+        "status_calls": 1,
+        "callbacks": [
+          7
+        ]
+      },
+      "result_sha256": "52e79af44782c8fce0c554fafaf15f1a47fb0a171cc1b2521a74624ef69088d3"
+    },
+    {
+      "group": "poll-gates-status-and-clear-before-callback",
+      "inputs": {
+        "id": 7,
+        "callback": 268451840,
+        "word": 2
+      },
+      "observed": {
+        "status_calls": 1,
+        "callbacks": [
+          7
+        ]
+      },
+      "result_sha256": "4bccbe7e36fd4e9ffcbd15cf50a30457220b20863e947e232d60627ffdbee8e8"
+    },
+    {
+      "group": "poll-error-only-fires-if-assertion-returns",
+      "inputs": {
+        "assertion_returns": false
+      },
+      "observed": {
+        "callbacks": [],
+        "stopped": "assert"
+      },
+      "result_sha256": "df500d220167934e1e273cb0010ff15ee1592016985a72473ea7ee198aa71567"
+    },
+    {
+      "group": "poll-error-only-fires-if-assertion-returns",
+      "inputs": {
+        "assertion_returns": true
+      },
+      "observed": {
+        "callbacks": [
+          7
+        ],
+        "stopped": null
+      },
+      "result_sha256": "d058be532305603fcf3039e83513be9a971b489448e2cee61dfd31198a42546a"
+    },
+    {
+      "group": "callback-authored-reuse-and-vector-end-growth",
+      "inputs": {},
+      "observed": {
+        "callbacks": [
+          7,
+          8
+        ],
+        "current_slot_new_id": 153
+      },
+      "result_sha256": "5c0f2cc96b25096d728e359bf1ae29e3471570c1146b445327dba333934b8835"
+    },
+    {
+      "group": "actual-user-secondary-vtable-callback",
+      "inputs": {
+        "saved": 7,
+        "issued": 7,
+        "ac": 0,
+        "ae": 0
+      },
+      "observed": {
+        "saved_after": 0,
+        "ad": 1,
+        "followup": 0
+      },
+      "result_sha256": "39bbe502c96fe802e792a78dab9f71d1fd08bef2055b18962fd00c60b6cf1a98"
+    },
+    {
+      "group": "actual-user-secondary-vtable-callback",
+      "inputs": {
+        "saved": 7,
+        "issued": 7,
+        "ac": 1,
+        "ae": 0
+      },
+      "observed": {
+        "saved_after": 0,
+        "ad": 1,
+        "followup": 1
+      },
+      "result_sha256": "c508fc852e4561163ff02a83d53fe9f73514e5123ddb95bfb5aef8dd89e5da17"
+    },
+    {
+      "group": "actual-user-secondary-vtable-callback",
+      "inputs": {
+        "saved": 8,
+        "issued": 7,
+        "ac": 1,
+        "ae": 0
+      },
+      "observed": {
+        "saved_after": 8,
+        "ad": 0,
+        "followup": 0
+      },
+      "result_sha256": "5141aec23423bacb624a2beb45e97335f70ad4e52401de1b73f42085fb1fa53f"
+    },
+    {
+      "group": "work-receiver-filter",
+      "inputs": {
+        "work": 443
+      },
+      "observed": {
+        "callbacks": []
+      },
+      "result_sha256": "4718367d2dab9c3174501cfcfee474847eb89d9c53e61aae7f0c31b4e431b757"
+    },
+    {
+      "group": "work-receiver-filter",
+      "inputs": {
+        "work": 444
+      },
+      "observed": {
+        "callbacks": [
+          7
+        ]
+      },
+      "result_sha256": "5babf9b1ff93b1639eda3a97a1cb43867d38da836a758f5f3d022c63613e0d63"
+    },
+    {
+      "group": "work-receiver-filter",
+      "inputs": {
+        "work": 445
+      },
+      "observed": {
+        "callbacks": []
+      },
+      "result_sha256": "4718367d2dab9c3174501cfcfee474847eb89d9c53e61aae7f0c31b4e431b757"
+    },
+    {
+      "group": "explicitly-sequenced-signal-task-queue-dispatch-usercallback",
+      "inputs": {},
+      "observed": {
+        "queue_work": 444,
+        "record_callback": 268435496,
+        "saved_handle": 0,
+        "ad": 1
+      },
+      "result_sha256": "bbe2720531d59072894eea36bf7c3460ffc87c47a2c8c0176ef5c1a345e9c905"
+    }
+  ]
+}

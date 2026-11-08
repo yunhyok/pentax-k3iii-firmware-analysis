@@ -1,0 +1,185 @@
+{
+  "passed": true,
+  "image_sha256": "342d2f35405e8daf1797dfe431d2e4aa70f4b52a2c242a29df48206672f1dfb4",
+  "cases": 17,
+  "groups": {
+    "deadline-fragment": 5,
+    "dispatch-fragment": 3,
+    "status-fragment": 9
+  },
+  "scope": "Original ARM fragments: timer syscall table, deadline and status arithmetic.\nSynthetic RAM only. No SVC exception, scheduler, real clock, IRQ, device or media runs.\nOnly lower timer queue insertion is stubbed; its preceding metadata stores execute.\n",
+  "stubs": {
+    "0x525b7e00": "timer queue insertion returns without scheduler operation"
+  },
+  "ranges": [
+    {
+      "start": "0x525d78c0",
+      "end": "0x525d7904",
+      "sha256": "81f3a50f18e8f5f8b80b04b5d7a8668b2b266f0330824f72a7c7b1eddfaa7630"
+    },
+    {
+      "start": "0x525d088c",
+      "end": "0x525d08dc",
+      "sha256": "c762cb0630cfa246a13521eaf4abb764db4a4c270098cd582be066da7d86e90f"
+    },
+    {
+      "start": "0x525b805c",
+      "end": "0x525b807c",
+      "sha256": "87b963cdfa007f764cce9887b5853b5d34431a6f1997d812fc60c2893820b1ce"
+    },
+    {
+      "start": "0x525d0bfc",
+      "end": "0x525d0c54",
+      "sha256": "6b5f124059fc35635d3dd4d1d89df3e19d74b7b5f0c310f0917c86ef5aace980"
+    }
+  ],
+  "results": [
+    {
+      "group": "dispatch-fragment",
+      "function_code": "0x805a0200",
+      "entry": "0x525d77c8",
+      "target": "0x525d0590",
+      "arguments_preserved": true
+    },
+    {
+      "group": "dispatch-fragment",
+      "function_code": "0x805b0100",
+      "entry": "0x525d77cc",
+      "target": "0x525d0980",
+      "arguments_preserved": true
+    },
+    {
+      "group": "dispatch-fragment",
+      "function_code": "0x805c0200",
+      "entry": "0x525d77d0",
+      "target": "0x525d0ae4",
+      "arguments_preserved": true
+    },
+    {
+      "group": "deadline-fragment",
+      "now": 100,
+      "delay": 1000,
+      "offset": 1,
+      "deadline": 1101,
+      "flags": 33,
+      "queue_insertion_stub": true
+    },
+    {
+      "group": "deadline-fragment",
+      "now": 4294967295,
+      "delay": 1,
+      "offset": 0,
+      "deadline": 4294967296,
+      "flags": 33,
+      "queue_insertion_stub": true
+    },
+    {
+      "group": "deadline-fragment",
+      "now": 4294967294,
+      "delay": 1,
+      "offset": 2,
+      "deadline": 4294967297,
+      "flags": 33,
+      "queue_insertion_stub": true
+    },
+    {
+      "group": "deadline-fragment",
+      "now": 18446744073709551614,
+      "delay": 1,
+      "offset": 1,
+      "deadline": 0,
+      "flags": 33,
+      "queue_insertion_stub": true
+    },
+    {
+      "group": "deadline-fragment",
+      "now": 0,
+      "delay": 4294967295,
+      "offset": 4294967295,
+      "deadline": 8589934590,
+      "flags": 33,
+      "queue_insertion_stub": true
+    },
+    {
+      "group": "status-fragment",
+      "flags": 1,
+      "deadline": 111,
+      "now": 100,
+      "offset": 1,
+      "remaining": 10,
+      "status": 1
+    },
+    {
+      "group": "status-fragment",
+      "flags": 1,
+      "deadline": 101,
+      "now": 100,
+      "offset": 1,
+      "remaining": 0,
+      "status": 1
+    },
+    {
+      "group": "status-fragment",
+      "flags": 1,
+      "deadline": 100,
+      "now": 100,
+      "offset": 1,
+      "remaining": 0,
+      "status": 1
+    },
+    {
+      "group": "status-fragment",
+      "flags": 1,
+      "deadline": 4294967297,
+      "now": 0,
+      "offset": 0,
+      "remaining": 1,
+      "status": 1
+    },
+    {
+      "group": "status-fragment",
+      "flags": 1,
+      "deadline": 9223372036854775808,
+      "now": 0,
+      "offset": 0,
+      "remaining": 0,
+      "status": 1
+    },
+    {
+      "group": "status-fragment",
+      "flags": 0,
+      "deadline": 111,
+      "now": 100,
+      "offset": 1,
+      "remaining": 0,
+      "status": 0
+    },
+    {
+      "group": "status-fragment",
+      "flags": 7,
+      "deadline": 111,
+      "now": 100,
+      "offset": 1,
+      "remaining": 10,
+      "status": 1
+    },
+    {
+      "group": "status-fragment",
+      "flags": 129,
+      "deadline": 111,
+      "now": 100,
+      "offset": 1,
+      "remaining": 10,
+      "status": 129
+    },
+    {
+      "group": "status-fragment",
+      "flags": 1,
+      "deadline": 0,
+      "now": 1,
+      "offset": 0,
+      "remaining": 0,
+      "status": 1
+    }
+  ]
+}

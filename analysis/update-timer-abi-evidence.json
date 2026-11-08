@@ -1,0 +1,687 @@
+{
+  "image": {
+    "base": "0x52500000",
+    "size": 25483200,
+    "sha256": "342d2f35405e8daf1797dfe431d2e4aa70f4b52a2c242a29df48206672f1dfb4"
+  },
+  "functions": [
+    {
+      "label": "kernel_alarm_start",
+      "start": "0x525d0590",
+      "end": "0x525d0980",
+      "sha256": "9933aeb02fc4508c0b83652e572ca5707860253600926f56cdc975f247bf96ff",
+      "assembly_sha256": "6a959eeda7a81be5c21c383fd69ee6598fcf12e46d82aeebd30e4ee0fadbc4c2",
+      "pseudocode_sha256": "167a3f5fcab18f5eb8a1b4d6400bb28906076879340e952c1ea8fb62b566d541"
+    },
+    {
+      "label": "kernel_alarm_status",
+      "start": "0x525d0ae4",
+      "end": "0x525d0c70",
+      "sha256": "bd9e9d327e3f29b76c31a7e61f405b896cf411a724b80a83d335b15d327be1df",
+      "assembly_sha256": "d1309d834f28b2c52f768373c493b0e07d286b8faa9a3ee3469349000abf718b",
+      "pseudocode_sha256": "04a77595fe1e711dac95108c1a6da7521ebe83728bc6a1d39bb73a1d50150cff"
+    }
+  ],
+  "supporting_ranges": [
+    {
+      "label": "exception_vector",
+      "start": "0x52500000",
+      "end": "0x5250000c",
+      "sha256": "03c4c64782c438edbd2a0f2596b210e6d7a726d9bf8a97701dc0f9682c56bcd6",
+      "assembly_sha256": "5a6ace609de4eb82f55b3db43dc8b54a6b55ef7c223523f50250c67b9bf537fa"
+    },
+    {
+      "label": "svc_router",
+      "start": "0x525d7e40",
+      "end": "0x525d7e98",
+      "sha256": "c3d32a2e2f9f8e9fb4fbd787642e0b54637a55b188225c55ef0de8b7c8532512",
+      "assembly_sha256": "6e996b962c71e6366ff29370bb32898be8372462fca42b577f308d3e613ddc5b"
+    },
+    {
+      "label": "svc_dispatcher_prefix",
+      "start": "0x525d785c",
+      "end": "0x525d7904",
+      "sha256": "48e8188f18ab2bceb2f654a582cd93a5ca181077cfbb2a9ecb88993b6d26cf20",
+      "assembly_sha256": "ba8f7b65317d7c87b0192a7abad038f72434cc447a68445692b5d939f0b747f2"
+    },
+    {
+      "label": "start_syscall_wrapper",
+      "start": "0x525b7844",
+      "end": "0x525b7868",
+      "sha256": "a5e0cb10f41b14b7e01e547f9785207838cb3a8c2ccd93e66f912f2e15d96aca",
+      "assembly_sha256": "29d03273a687c3118f37ca9c784df2ffe8468c32e0276a25118aa255e9674d7f"
+    },
+    {
+      "label": "stop_syscall_wrapper",
+      "start": "0x525b78b0",
+      "end": "0x525b78d4",
+      "sha256": "d0ca9ea8b246feedebf9fd1bd46c3804e0a27dabf9969fa1159badef0406b5dc",
+      "assembly_sha256": "964d2703dda3bab527359782de6336ab8c5aa8af583621fb07e59825b81bfadc"
+    },
+    {
+      "label": "status_syscall_wrapper",
+      "start": "0x525b73c4",
+      "end": "0x525b73e8",
+      "sha256": "b506fa9aafcb9627efd0e3fefdb1b25e90408178215bb6665734023da0cdf99f",
+      "assembly_sha256": "77a82801fbbcb832d3b275a1bdb868cf4e017802856fb577f2195dd08540ca37"
+    },
+    {
+      "label": "timer_metadata_writer",
+      "start": "0x525b805c",
+      "end": "0x525b807c",
+      "sha256": "87b963cdfa007f764cce9887b5853b5d34431a6f1997d812fc60c2893820b1ce",
+      "assembly_sha256": "d24023a2c3a9b0899b82087e5216faf5e6e9547484c2250ad1e0bfbbb12facb3"
+    }
+  ],
+  "transfers": [
+    {
+      "site": "0x525d05a8",
+      "instruction": "beq #0x525d080c"
+    },
+    {
+      "site": "0x525d05bc",
+      "instruction": "bgt #0x525d080c"
+    },
+    {
+      "site": "0x525d05d4",
+      "instruction": "bhi #0x525d080c"
+    },
+    {
+      "site": "0x525d05e0",
+      "instruction": "bne #0x525d080c"
+    },
+    {
+      "site": "0x525d05f4",
+      "instruction": "bl #0x525b6144"
+    },
+    {
+      "site": "0x525d0608",
+      "instruction": "bl #0x525b7a20"
+    },
+    {
+      "site": "0x525d0628",
+      "instruction": "beq #0x525d0638"
+    },
+    {
+      "site": "0x525d0634",
+      "instruction": "beq #0x525d0730"
+    },
+    {
+      "site": "0x525d0640",
+      "instruction": "beq #0x525d081c"
+    },
+    {
+      "site": "0x525d0650",
+      "instruction": "bl #0x525d56a4"
+    },
+    {
+      "site": "0x525d0658",
+      "instruction": "beq #0x525d075c"
+    },
+    {
+      "site": "0x525d065c",
+      "instruction": "bl #0x525b8efc"
+    },
+    {
+      "site": "0x525d0688",
+      "instruction": "beq #0x525d06a4"
+    },
+    {
+      "site": "0x525d0694",
+      "instruction": "beq #0x525d06a4"
+    },
+    {
+      "site": "0x525d06ac",
+      "instruction": "bne #0x525d0680"
+    },
+    {
+      "site": "0x525d06d4",
+      "instruction": "bne #0x525d0710"
+    },
+    {
+      "site": "0x525d06f0",
+      "instruction": "beq #0x525d0710"
+    },
+    {
+      "site": "0x525d070c",
+      "instruction": "ble #0x525d0850"
+    },
+    {
+      "site": "0x525d0718",
+      "instruction": "bl #0x525b7aa4"
+    },
+    {
+      "site": "0x525d0720",
+      "instruction": "bl #0x525b6154"
+    },
+    {
+      "site": "0x525d0748",
+      "instruction": "bgt #0x525d0638"
+    },
+    {
+      "site": "0x525d0754",
+      "instruction": "bx r3"
+    },
+    {
+      "site": "0x525d0758",
+      "instruction": "b #0x525d0638"
+    },
+    {
+      "site": "0x525d0764",
+      "instruction": "bne #0x525d0828"
+    },
+    {
+      "site": "0x525d076c",
+      "instruction": "beq #0x525d0790"
+    },
+    {
+      "site": "0x525d077c",
+      "instruction": "beq #0x525d0790"
+    },
+    {
+      "site": "0x525d0798",
+      "instruction": "bne #0x525d088c"
+    },
+    {
+      "site": "0x525d07a0",
+      "instruction": "beq #0x525d08dc"
+    },
+    {
+      "site": "0x525d07b4",
+      "instruction": "bl #0x525cdfa0"
+    },
+    {
+      "site": "0x525d07f0",
+      "instruction": "bfc ip, #0, #1"
+    },
+    {
+      "site": "0x525d07f8",
+      "instruction": "bne #0x525d07c8"
+    },
+    {
+      "site": "0x525d0800",
+      "instruction": "beq #0x525d065c"
+    },
+    {
+      "site": "0x525d0804",
+      "instruction": "bl #0x525ce880"
+    },
+    {
+      "site": "0x525d0808",
+      "instruction": "b #0x525d065c"
+    },
+    {
+      "site": "0x525d0824",
+      "instruction": "b #0x525d065c"
+    },
+    {
+      "site": "0x525d082c",
+      "instruction": "bne #0x525d0878"
+    },
+    {
+      "site": "0x525d0834",
+      "instruction": "bne #0x525d086c"
+    },
+    {
+      "site": "0x525d0840",
+      "instruction": "beq #0x525d086c"
+    },
+    {
+      "site": "0x525d0848",
+      "instruction": "bne #0x525d0770"
+    },
+    {
+      "site": "0x525d084c",
+      "instruction": "b #0x525d079c"
+    },
+    {
+      "site": "0x525d0860",
+      "instruction": "bne #0x525d0710"
+    },
+    {
+      "site": "0x525d0864",
+      "instruction": "svc #8"
+    },
+    {
+      "site": "0x525d0868",
+      "instruction": "b #0x525d071c"
+    },
+    {
+      "site": "0x525d0874",
+      "instruction": "b #0x525d065c"
+    },
+    {
+      "site": "0x525d0880",
+      "instruction": "beq #0x525d095c"
+    },
+    {
+      "site": "0x525d0888",
+      "instruction": "bne #0x525d0770"
+    },
+    {
+      "site": "0x525d08c8",
+      "instruction": "bl #0x525b805c"
+    },
+    {
+      "site": "0x525d08d8",
+      "instruction": "b #0x525d065c"
+    },
+    {
+      "site": "0x525d08fc",
+      "instruction": "bl #0x525b7aa4"
+    },
+    {
+      "site": "0x525d0920",
+      "instruction": "blx sb"
+    },
+    {
+      "site": "0x525d0940",
+      "instruction": "bl #0x525b7a20"
+    },
+    {
+      "site": "0x525d0958",
+      "instruction": "b #0x525d065c"
+    },
+    {
+      "site": "0x525d0960",
+      "instruction": "bne #0x525d086c"
+    },
+    {
+      "site": "0x525d0968",
+      "instruction": "beq #0x525d088c"
+    },
+    {
+      "site": "0x525d0978",
+      "instruction": "bne #0x525d0780"
+    },
+    {
+      "site": "0x525d097c",
+      "instruction": "b #0x525d0890"
+    },
+    {
+      "site": "0x525d0afc",
+      "instruction": "beq #0x525d0c54"
+    },
+    {
+      "site": "0x525d0b10",
+      "instruction": "bgt #0x525d0c54"
+    },
+    {
+      "site": "0x525d0b28",
+      "instruction": "bhi #0x525d0c54"
+    },
+    {
+      "site": "0x525d0b34",
+      "instruction": "bne #0x525d0c54"
+    },
+    {
+      "site": "0x525d0b48",
+      "instruction": "bl #0x525b6144"
+    },
+    {
+      "site": "0x525d0b5c",
+      "instruction": "bl #0x525b7a20"
+    },
+    {
+      "site": "0x525d0b7c",
+      "instruction": "beq #0x525d0b8c"
+    },
+    {
+      "site": "0x525d0b88",
+      "instruction": "beq #0x525d0bd0"
+    },
+    {
+      "site": "0x525d0b94",
+      "instruction": "beq #0x525d0c64"
+    },
+    {
+      "site": "0x525d0ba4",
+      "instruction": "bl #0x525d56a4"
+    },
+    {
+      "site": "0x525d0bac",
+      "instruction": "beq #0x525d0bfc"
+    },
+    {
+      "site": "0x525d0bb8",
+      "instruction": "bl #0x525b7aa4"
+    },
+    {
+      "site": "0x525d0bc0",
+      "instruction": "bl #0x525b6154"
+    },
+    {
+      "site": "0x525d0be8",
+      "instruction": "bgt #0x525d0b8c"
+    },
+    {
+      "site": "0x525d0bf4",
+      "instruction": "bx r3"
+    },
+    {
+      "site": "0x525d0bf8",
+      "instruction": "b #0x525d0b8c"
+    },
+    {
+      "site": "0x525d0c04",
+      "instruction": "beq #0x525d0c40"
+    },
+    {
+      "site": "0x525d0c50",
+      "instruction": "b #0x525d0bb0"
+    },
+    {
+      "site": "0x525d0c6c",
+      "instruction": "b #0x525d0bb0"
+    },
+    {
+      "site": "0x52500000",
+      "instruction": "b #0x52500250"
+    },
+    {
+      "site": "0x52500004",
+      "instruction": "b #0x52500150"
+    },
+    {
+      "site": "0x52500008",
+      "instruction": "b #0x525d7e40"
+    },
+    {
+      "site": "0x525d7e64",
+      "instruction": "bmi #0x525d7e8c"
+    },
+    {
+      "site": "0x525d7e70",
+      "instruction": "b #0x525d7e8c"
+    },
+    {
+      "site": "0x525d7894",
+      "instruction": "bge #0x525d7998"
+    },
+    {
+      "site": "0x525d78a8",
+      "instruction": "bhi #0x525d78c0"
+    },
+    {
+      "site": "0x525d78bc",
+      "instruction": "bhi #0x525d79bc"
+    },
+    {
+      "site": "0x525d78cc",
+      "instruction": "bgt #0x525d79b4"
+    },
+    {
+      "site": "0x525d78dc",
+      "instruction": "bne #0x525d78e8"
+    },
+    {
+      "site": "0x525b7854",
+      "instruction": "svc #6"
+    },
+    {
+      "site": "0x525b7860",
+      "instruction": "bx lr"
+    },
+    {
+      "site": "0x525b78c0",
+      "instruction": "svc #6"
+    },
+    {
+      "site": "0x525b78cc",
+      "instruction": "bx lr"
+    },
+    {
+      "site": "0x525b73d4",
+      "instruction": "svc #6"
+    },
+    {
+      "site": "0x525b73e0",
+      "instruction": "bx lr"
+    },
+    {
+      "site": "0x525b8078",
+      "instruction": "b #0x525b7e00"
+    }
+  ],
+  "pointer_words": [
+    {
+      "address": "0x525d7e7c",
+      "value": "0x525d785c"
+    },
+    {
+      "address": "0x525d7d90",
+      "value": "0xffff807e"
+    },
+    {
+      "address": "0x525d7d94",
+      "value": "0x525f7660"
+    },
+    {
+      "address": "0x525d77c8",
+      "value": "0x525d0590"
+    },
+    {
+      "address": "0x525d77cc",
+      "value": "0x525d0980"
+    },
+    {
+      "address": "0x525d77d0",
+      "value": "0x525d0ae4"
+    },
+    {
+      "address": "0x525b7864",
+      "value": "0x805a0200"
+    },
+    {
+      "address": "0x525b78d0",
+      "value": "0x805b0100"
+    },
+    {
+      "address": "0x525b73e4",
+      "value": "0x805c0200"
+    }
+  ],
+  "critical_instructions": [
+    {
+      "address": "0x525d78c0",
+      "instruction": "asr sl, lr, #0x10"
+    },
+    {
+      "address": "0x525d78c8",
+      "instruction": "cmp sl, ip"
+    },
+    {
+      "address": "0x525d78cc",
+      "instruction": "bgt #0x525d79b4"
+    },
+    {
+      "address": "0x525d78f8",
+      "instruction": "ldr ip, [pc, #0x494]"
+    },
+    {
+      "address": "0x525d7900",
+      "instruction": "ldr pc, [ip, sl, lsl #2]"
+    },
+    {
+      "address": "0x525d08a8",
+      "instruction": "ldrd r2, r3, [r3]"
+    },
+    {
+      "address": "0x525d08ac",
+      "instruction": "ldr ip, [ip]"
+    },
+    {
+      "address": "0x525d08b4",
+      "instruction": "adds r2, r2, r7"
+    },
+    {
+      "address": "0x525d08b8",
+      "instruction": "adc r3, r3, #0"
+    },
+    {
+      "address": "0x525d08bc",
+      "instruction": "adds r2, r2, ip"
+    },
+    {
+      "address": "0x525d08c0",
+      "instruction": "adc r3, r3, #0"
+    },
+    {
+      "address": "0x525b8068",
+      "instruction": "str lr, [r0, #0x10]"
+    },
+    {
+      "address": "0x525b806c",
+      "instruction": "strd r2, r3, [r0, #8]"
+    },
+    {
+      "address": "0x525b8070",
+      "instruction": "str ip, [r0, #0x14]"
+    },
+    {
+      "address": "0x525d0c24",
+      "instruction": "subs r2, r2, r0"
+    },
+    {
+      "address": "0x525d0c28",
+      "instruction": "sbc r3, r3, r1"
+    },
+    {
+      "address": "0x525d0c2c",
+      "instruction": "subs r2, r2, lr"
+    },
+    {
+      "address": "0x525d0c30",
+      "instruction": "sbc r3, r3, #0"
+    },
+    {
+      "address": "0x525d0c34",
+      "instruction": "cmp r2, #0"
+    },
+    {
+      "address": "0x525d0c38",
+      "instruction": "sbcs r1, r3, #0"
+    },
+    {
+      "address": "0x525d0c3c",
+      "instruction": "movlt r2, #0"
+    },
+    {
+      "address": "0x525d0c44",
+      "instruction": "bic ip, ip, #6"
+    },
+    {
+      "address": "0x525d0c4c",
+      "instruction": "stmib r6, {r2, ip}"
+    }
+  ],
+  "resources": [
+    {
+      "address": "0x533e3431",
+      "length": 31,
+      "sha256": "1f7a6ea2f748717987ae789bd7b12dad646c1b430d9047e3d90925826be2f58f"
+    }
+  ],
+  "relationships": [
+    {
+      "sites": [
+        "0x52500008",
+        "0x525d7e60",
+        "0x525d7e7c",
+        "0x525d78c0",
+        "0x525d7900"
+      ],
+      "description": "Static vector to SVC6 router and signed-upper16 biased table. CPU tests start at dispatch prefix78c0, not exception entry; positive/invalidcodes, privilege checks and installed vector runtime untested."
+    },
+    {
+      "sites": [
+        "0x525d77c8",
+        "0x525d77cc",
+        "0x525d77d0"
+      ],
+      "description": "805a0200→525d0590;805b0100→525d0980;805c0200→525d0ae4. Native ROMtable proof, independentofexternal ABI numbering."
+    },
+    {
+      "sites": [
+        "0x525d088c",
+        "0x525d08b4",
+        "0x525d08bc",
+        "0x525b806c"
+      ],
+      "description": "Selected nonzero-delay fragment stores u64(now54c40e50 +u32delay +u32offset54c40580), modulo2^64. Metadatawriter records callback525cdfa0 andalarmobject. Lowerqueueinsertion stubbed; no fullstart/OS operation."
+    },
+    {
+      "sites": [
+        "0x525d0bfc",
+        "0x525d0c24",
+        "0x525d0c38",
+        "0x525d0c4c"
+      ],
+      "description": "Status fragment uses flagsbit0; remaining=low32 of modulo64(deadline-now-offset), clamped0 when signed64 negative. Inactive→0. Output+8=flags&~6, not merelyflagsbit0; unexplainedhighbits notnormalruntimeclaim."
+    }
+  ],
+  "limits": [
+    "No actual time unit,clock rate,IRQ,SVC exception,scheduler,OS/media/device/build/flash. Fragment entries bypass fullfunctionpreconditions; synthetic edgecases do not prove reachability.",
+    "C2 genuine outputs retained withoutcorrection. Status C has spuriousgoto/selfloop; ARM authoritative.",
+    "TKernel2 officialfncodes differ from firmware. LocalSMP1.00.01banner alone does not validateexternalABIcompatibility. SMPspecPDF fetch failedtimeout/HTTP500."
+  ],
+  "external_sources": [
+    {
+      "url": "https://github.com/tron-forum/tkernel_2/blob/5778f619bdb354443551888dc2e9aa191e684da8/include/sys/svc/tkfncd.h",
+      "local_utf8_sha256": "949d006e97684463a0fe6c821b6082067d9b82bf699223f914a058f99ddd96cc",
+      "claim": "Official2.0 STA_ALM=80600200,STP_ALM=80610100,REF_ALM=80620200; mismatches target."
+    },
+    {
+      "url": "https://github.com/tron-forum/tkernel_2/blob/5778f619bdb354443551888dc2e9aa191e684da8/include/tk/typedef.h",
+      "local_utf8_sha256": "67641816f988f33d69e3dd0908aa928e6ad09123d52d0859fdd5e649ba86e9fc",
+      "claim": "RELTIM specifiedms for this officialimplementation; nottransferredtotarget."
+    },
+    {
+      "url": "https://www.tron.org/wp-content/themes/dp-magjam/pdf/specifications/en_US/TEF021-S002-01.00.00_en.pdf",
+      "retrieved": false,
+      "error": "Web timeout/internal error; direct HTTP500; contentnotused."
+    }
+  ],
+  "manager_validation": {
+    "passed": true,
+    "image_sha256": "342d2f35405e8daf1797dfe431d2e4aa70f4b52a2c242a29df48206672f1dfb4",
+    "genuine_c": 2,
+    "supporting_ranges": 7,
+    "words": 453,
+    "transfers": 92,
+    "critical_instructions": 23,
+    "pointer_words": 9,
+    "resources": 1,
+    "cases": 17,
+    "rtos_decoded_equal": true,
+    "scope": "Original ARM source/hash and selected fragment tests. No exception/OS/clock/device/build or flash."
+  },
+  "prior_public_evidence": [
+    {
+      "path": "update-ui-consumer-evidence.json",
+      "sha256": "c50d0e2deeee91ef080286e3c2eac1d6ab0970c7b34a56723a8adb1442d280ec"
+    }
+  ],
+  "public_cli": {
+    "script": "../verify_update_timer_abi.py",
+    "sha256": "1761a36f9cc422c58c757e04fd3064ec9e71178c24c54ae51f428faf5bcc77ff",
+    "guards": [
+      "existing",
+      "hardlink",
+      "dangling-missing-input",
+      "optimized-missing-input-dangling-output",
+      "unknown-input"
+    ],
+    "passed": true,
+    "both_containers_equal": true
+  },
+  "validation": {
+    "cases": 17,
+    "groups": {
+      "deadline-fragment": 5,
+      "dispatch-fragment": 3,
+      "status-fragment": 9
+    }
+  },
+  "artifact_policy": "Original binary,C,ASM and resource text staylocal. Authored analysis,syntheticfixtures and metadata public."
+}
