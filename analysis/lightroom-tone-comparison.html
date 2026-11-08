@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>K-3 II #1376 Lightroom 톤 곡선 비교</title>
+<style>
+:root{color-scheme:light dark;--bg:#f7f8fa;--paper:#fff;--ink:#182332;--muted:#48596b;--line:#d2dbe5;--accent:#124b8e;--soft:#edf3fa}
+@media(prefers-color-scheme:dark){:root{--bg:#111821;--paper:#18222d;--ink:#e8edf4;--muted:#b4c2d2;--line:#405369;--accent:#98c8ff;--soft:#223348}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.75 system-ui,"Malgun Gothic",sans-serif;word-break:keep-all;overflow-wrap:anywhere}
+header,main{max-width:1060px;margin:auto;padding:clamp(16px,4vw,44px)}header{padding-top:clamp(26px,6vw,64px);padding-bottom:24px}main{background:var(--paper);border:1px solid var(--line)}
+h1{margin:.3em 0 .5em;font-size:clamp(1.75rem,5vw,2.8rem);line-height:1.25}h2{font-size:1.35rem;margin-top:2rem}h2:first-child{margin-top:0}.intro{max-width:46em}
+small,figcaption{color:var(--muted)}nav a{display:inline-block;margin:4px 15px 4px 0}a,summary{color:var(--accent);text-underline-offset:.18em}
+figure{margin:1.4rem 0}figcaption{font-size:.92em;margin:.55rem 0}img{display:block;width:100%;max-width:565px;height:auto;border:1px solid var(--line)}
+.scroll{overflow:auto;max-width:100%;margin:1em 0}a:focus-visible,summary:focus-visible,.scroll:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+table{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums}caption{text-align:left;margin-bottom:.45em}th,td{padding:.35em .6em;border:1px solid var(--line);text-align:right}th{background:var(--soft)}td{white-space:nowrap}th:first-child{text-align:left}.summary{min-width:620px}.neutral{min-width:400px}
+.neutral th:first-child{white-space:nowrap}
+.flow{list-style:none;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;padding:0;margin:1em 0}.flow li{padding:.75em;background:var(--soft);min-width:0}.flow strong,.flow span{display:block}.flow span{color:var(--muted);font-size:.92em}.flow .result{color:var(--ink);font-weight:650}
+pre{background:var(--soft);padding:16px;overflow:auto;font-size:.82rem}code{font-family:ui-monospace,Consolas,monospace}summary{cursor:pointer;font-weight:650}
+@media(max-width:620px){.flow{grid-template-columns:1fr;gap:8px}}
+</style>
+</head>
+<body>
+<header>
+<small>2026-11-08 · PENTAX K-3 II · raw.pixls.us #1376</small>
+<h1>같은 RAW에서 톤 곡선이 바꾼 것</h1>
+<p class="intro">Lightroom Classic에서 곡선 생략 조건을 다시 내보내니 전체 RGB16 픽셀이 기존 출력과 같았다. Adobe DNG SDK의 ACR3 곡선을 명시한 출력은 40.48%의 픽셀에서 코드값이 달랐지만, 24개 패치의 최대 ΔE₀₀는 0.002411이었다.</p>
+<nav aria-label="문서 탐색"><a href="#results">비교 결과</a><a href="#neutrals">중립 패치</a><a href="#controls">실험 조건</a><a href="#sdk">SDK 출처</a><a href="#replay">재현</a><a href="lightroom-tone-comparison.json">측정 JSON</a></nav>
+</header>
+<main>
+<h2 id="results">다섯 TIFF가 답하는 세 가지</h2>
+<ol class="flow" aria-label="입력 대조와 관찰 결과">
+<li><strong>생략 → 생략 재출력</strong><span>같은 프로파일로 다시 내보내기</span><span class="result">전체 픽셀 일치</span></li>
+<li><strong>생략 → 항등 → Lift</strong><span>명시 곡선의 효과 확인</span><span class="result">Lift에서 24패치 L* 상승</span></li>
+<li><strong>생략 재출력 → 명시 ACR3</strong><span>같은 세션에서 SDK 표 대조</span><span class="result">최대 패치 ΔE₀₀ 0.002411</span></li>
+</ol>
+<div class="scroll" tabindex="0" role="region" aria-label="전체 RGB16 코드 및 24개 패치 색차 비교">
+<table class="summary">
+<caption>어느 한 채널이라도 달라진 픽셀 수와 24개 패치 ΔE₀₀</caption>
+<thead><tr><th scope="col">비교</th><th scope="col">변경 픽셀</th><th scope="col">평균</th><th scope="col">중앙값</th><th scope="col">P90</th><th scope="col">최대</th></tr></thead>
+<tbody>
+<tr><th scope="row">생략 → 항등</th><td>24,052,467</td><td>12.89753</td><td>14.86950</td><td>17.08194</td><td>18.01281</td></tr>
+<tr><th scope="row">항등 → Lift</th><td>24,051,407</td><td>1.46054</td><td>1.52804</td><td>1.87110</td><td>1.88671</td></tr>
+<tr><th scope="row">생략 → Lift</th><td>24,053,480</td><td>11.49751</td><td>13.26414</td><td>15.18387</td><td>16.08916</td></tr>
+<tr><th scope="row">생략 → 생략 재출력</th><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+<tr><th scope="row">생략 재출력 → 명시 ACR3</th><td>9,740,796</td><td>0.000448</td><td>0</td><td>0.001724</td><td>0.002411</td></tr>
+</tbody>
+</table>
+</div>
+<p>전체 픽셀은 24,064,000개다. 생략 재출력과 명시 ACR3의 R·G·B 평균 절대 차이는 각각 0.5860, 0.5646, 0.5477 코드값이었다. 채널별 최솟값은 모두 −30, 최댓값은 +11, +11, +10이었다. 패치 중앙값의 색차가 0이어도 패치 안의 픽셀 코드는 달라질 수 있다. 실제로 24개 ROI의 960,000픽셀 중 226,883개에서 코드 차이가 있었다. <a href="lightroom-tone-comparison.json">전체 코드 차이와 패치별 Lab</a></p>
+
+<h2 id="neutrals">중립 패치에서 본 밝기 변화</h2>
+<figure>
+<img src="lightroom-tone-controls.svg" alt="19번부터 24번까지의 L* 중앙값. 생략과 ACR3는 위 그래프에서 겹친다. 아래 확대 그래프에서 ACR3와 생략의 ΔL*는 22번이 +0.001526, 24번이 −0.003052이고 나머지는 0이다.">
+<figcaption>위는 TIFF에서 측정한 중립 패치별 L* 중앙값이다. 아래는 ACR3와 생략 재출력의 차이를 별도 세로 척도로 확대했다. 선은 측정점을 잇는다.</figcaption>
+</figure>
+<div class="scroll" tabindex="0" role="region" aria-label="중립 패치의 L* 및 ACR3 변화량">
+<table class="neutral">
+<caption>중립 패치의 L* 중앙값과 명시 ACR3의 ΔL*</caption>
+<thead><tr><th scope="col">패치</th><th scope="col">생략</th><th scope="col">항등</th><th scope="col">Lift</th><th scope="col">ACR3 − 생략</th></tr></thead>
+<tbody>
+<tr><th scope="row">#19</th><td>94.11459</td><td>80.39674</td><td>82.06302</td><td>0</td></tr>
+<tr><th scope="row">#20</th><td>86.48508</td><td>67.60204</td><td>69.67574</td><td>0</td></tr>
+<tr><th scope="row">#21</th><td>75.18730</td><td>55.05150</td><td>57.05959</td><td>0</td></tr>
+<tr><th scope="row">#22</th><td>55.04845</td><td>40.13581</td><td>41.81124</td><td>+0.001526</td></tr>
+<tr><th scope="row">#23</th><td>33.57595</td><td>26.85740</td><td>28.15289</td><td>0</td></tr>
+<tr><th scope="row">#24</th><td>12.17670</td><td>12.74434</td><td>13.61410</td><td>−0.003052</td></tr>
+</tbody>
+</table>
+</div>
+<p>항등에서 Lift로 바꾸면 중립 패치의 L*가 0.86976~2.07370 높아졌다. 명시 ACR3와 생략 재출력을 비교했을 때 중립 패치의 Δa*는 #21에서만 +0.001945였고, Δb*는 모두 0이었다.</p>
+
+<h2 id="controls">파일과 현상 조건</h2>
+<p>Lightroom Classic 15.6에서 같은 RAW 가상 사본을 ProPhoto RGB 비압축 RGB16 TIFF(6016×4000)로 내보냈다. 다섯 파일에서 As Shot 5200 K/+2, 노출 0 EV, Process Version 15.4, 크롭 없음을 확인했다. XMP 현상 속성 114개를 비교했을 때 프로파일 이름과 CameraProfileDigest만 달랐고, 중첩 요소 6개는 같았다. 내보낼 때 바뀐 파일 날짜와 XMP 기록은 따로 비교했다. 생략 TIFF끼리 파일 해시는 달랐으며, 디코딩한 픽셀 배열의 해시는 일치했다. <a href="lightroom-tone-comparison.json">파일 해시와 메타데이터 비교</a></p>
+<p>시험 DCP 네 개는 UniqueCameraModel, ColorMatrix1/2, CalibrationIlluminant1/2의 원시 태그를 공유한다. 프로파일 이름과 ProfileToneCurve만 구분했다. 생략본에는 50940이 없다. 항등은 (0, 0)과 (1, 1)이고, Lift는 여기에 (0.5, 0.53125)를 추가했다. 명시 ACR3는 SDK 전방 표의 1,025개 점을 썼다. <a href="lightroom-bridge.html">DCP 작성과 태그</a></p>
+<p>기존 비교와 같은 200×200픽셀 안쪽 영역 24개를 사용했다. 생략 재출력과 명시 ACR3의 19개 정합 지점에서 추정한 최대 잔차는 0.005806픽셀이었다. 픽셀이 같은 기존·재출력 생략 쌍에서도 0.005841픽셀이 나왔으므로 이를 실제 영상 이동으로 해석하지 않았다. 기존·재출력 생략과 ACR3의 채널별 영상 끝값(0, 65535) 개수는 같았고 이 세 파일의 ROI에는 두 끝값이 없었다. TIFF 내장 ICC를 Little CMS에서 상대 색도 의도, 검정점 보정 끄기로 처리해 D50 Lab float32로 변환했다. ΔE₀₀는 패치별 L*, a*, b* 중앙값에 적용했다. <a href="color-comparison-protocol.html">영역 선정과 색차 절차</a> · <a href="lightroom-render-comparison.html">기존 색상 비교와 정합</a> · <a href="raw-test-inputs.html">CC0 촬영 원본</a></p>
+
+<h2 id="sdk">명시 ACR3 곡선의 출처</h2>
+<p>Adobe DNG SDK 1.7.1의 <code>dng_render.cpp</code> 208–482행에서 순방향 표의 값을 읽었다. 1,025개 세로 좌표에 <code>x = i/1024</code>를 짝지어 FLOAT 2,050개, 8,200바이트로 직렬화했다. 샘플 SDK는 기본 ACR3 표를 선형 보간한다(475–482행). 명시 곡선은 <code>dng_tone_curve.cpp</code> 116–129행과 <code>dng_spline.cpp</code> 84–181행에서 자연 스플라인으로 처리한다. 두 방식은 점 사이에서 달라질 수 있다. Lightroom TIFF에서 관찰한 작은 차이의 원인으로 보간 방식은 가능성 중 하나다. 이 실험으로 Lightroom의 내부 기본 곡선과 처리 순서를 정할 수는 없다. <a href="https://www.adobe.com/support/downloads/dng/dng_sdk.html">Adobe SDK 배포</a> · <a href="https://helpx.adobe.com/content/dam/help/en/camera-raw/digital-negative/jcr_content/root/content/flex/items/position/position-par/download_section_733958301/download-1/DNG_Spec_1_7_1_0.pdf#page=51">DNG 규격의 ProfileToneCurve</a></p>
+<details>
+<summary>SDK와 태그 SHA-256</summary>
+<ul>
+<li>SDK ZIP <code>c1d3a545ed45b150e59af2e6aa0695c1551f0e2bed34ad87436898a05194d2b1</code></li>
+<li>ZIP 안의 <code>dng_sdk_1_7_1/dng_sdk/source/dng_render.cpp</code> <code>e8920b456e46b9b11a4bb775694aa516c9b5afe2998926acb0c4086eca71529c</code></li>
+<li>50940 payload <code>51dac135a83970b08279dcdcc59839b851c66c7069501aabbbd014ba57715b01</code></li>
+</ul>
+</details>
+<p>명시 ACR3는 이 장면과 현상 설정에서 생략 출력에 가까웠다. 다른 노출·조명·프로세스 버전으로의 재현성은 미확인이다. 이 실험은 카메라 JPEG의 톤을 추정하거나 색을 맞추는 보정을 포함하지 않는다.</p>
+
+<h2 id="replay">원본 산출물로 수치 재현</h2>
+<h3>실험용 DCP 세 개 다시 만들기</h3>
+<p><a href="lightroom-matrix-1376.json">기준 행렬 JSON</a>은 CC0 촬영 원본 #1376의 모델명·행렬·광원에서 작성했다. 아래 명령으로 생략 DCP를 만든 뒤 공식 Adobe DNG SDK 1.7.1 ZIP을 입력하면 항등·Lift·ACR3 DCP를 생성한다. 세 결과는 이 실험에 사용한 파일과 바이트 단위로 같았다. 생성기는 기준 JSON·DCP·SDK와 결과 해시를 검사하며 기존 출력은 덮어쓰지 않는다. SDK ZIP은 공식 배포처에서 별도로 받아야 한다. <a href="../tools/build_lightroom_tone_controls.py">생성 도구</a> · <a href="../tests/test_lightroom_tone_controls.py">합성 검사</a></p>
+<pre><code>python -B tools/profile_bridge.py analysis/lightroom-matrix-1376.json baseline-1376.dcp
+python -B tools/build_lightroom_tone_controls.py `
+  --baseline-json analysis/lightroom-matrix-1376.json --baseline-dcp baseline-1376.dcp `
+  --sdk-zip dng-sdk.zip --output-dir tone-controls</code></pre>
+<p>생성 단계는 Python 3.11 이상의 표준 라이브러리만 사용한다. 결과는 실험용 대조 프로파일이며 카메라 JPEG 색을 맞춘 최종 프로파일은 아니다. Lightroom 설치·선택·내보내기는 이 도구가 수행하지 않는다.</p>
+<h3>기록한 TIFF 측정값 다시 확인하기</h3>
+<p>저장소 루트에서 아래 명령을 실행한다. Python 환경에 NumPy, OpenCV, Pillow, scikit-image, tifffile을 설치하고 Little CMS의 <code>tificc</code>를 PATH에 둔다. 필요하면 <code>--tificc</code>로 실행 파일을 지정한다. 정확히 재현한 도구 버전은 JSON에 기록했다.</p>
+<p><code>exports</code> 아래의 <code>matrix-test-prophoto</code>, <code>tone-identity-prophoto</code>, <code>tone-lift-prophoto</code>, <code>tone-omitted-repeat-prophoto</code>, <code>tone-acr3-prophoto</code> 각 디렉터리에 같은 이름의 원본 <code>pentax-k3ii-1376.tif</code>를 둔다. <code>profiles</code>에는 JSON의 <code>inputs.profiles</code>에 적힌 DCP 네 개를 둔다. 원본 TIFF·DCP 파일과 SDK 표 값은 공개 자료에 포함되어 있지 않다. 이 명령은 이미 확보한 파일의 해시와 측정값을 검증한다. 새로 내보낸 TIFF는 픽셀이 같아도 날짜와 ID 때문에 파일 해시가 달라질 수 있다. <a href="lightroom-tone-comparison.json">파일명과 해시</a> · <a href="../tools/check_lightroom_tone.py">재현 스크립트</a></p>
+<pre><code>$f = 'tone-fixtures'
+New-Item -ItemType Directory -Force "$f/scratch" | Out-Null
+python -B tools/check_lightroom_tone.py --raw "$f/pentax-k3ii-1376.dng" `
+  --exports "$f/exports" --profiles "$f/profiles" `
+  --scratch "$f/scratch" --output "$f/tone-replay.json"
+Get-FileHash -Algorithm SHA256 -LiteralPath "$f/tone-replay.json", analysis/lightroom-tone-comparison.json</code></pre>
+</main>
+</body>
+</html>

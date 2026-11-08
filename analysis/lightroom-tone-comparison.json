@@ -1,0 +1,4952 @@
+{
+  "schema_version": 1,
+  "scope": "Five native Lightroom Classic TIFF exports of the same #1376 raw. Tone-tag output comparison; no fit or internal branch identification.",
+  "provenance": {
+    "raw_source": "https://raw.pixls.us/#repo",
+    "raw_source_record": 1376,
+    "raw_license": "CC0-1.0",
+    "raw_sha256": "992c969286dc06b1690128a7b14ea74c5b5a46209b0fbf21e83df00807b050b9",
+    "baseline_sha256": "5dd24d05fc52f98f5b2e5811ada85bf0acdd663f871af550414e95fc928446b5",
+    "prophoto_icc_sha256": "0a8ef7d1d958d98225b3b71d93d9e8e3cecd9c302e014973d025d2a977ecf27c",
+    "conversion": "Embedded ProPhoto RGB16 ICC to CIELAB D50 float32, relative colorimetric, BPC off; componentwise patch medians; CIEDE2000 kL=kC=kH=1.",
+    "reference_roi_count": 24,
+    "registration_site_count": 19,
+    "sdk_control": {
+      "distribution": "https://www.adobe.com/support/downloads/dng/dng_sdk.html",
+      "specification": "https://helpx.adobe.com/content/dam/help/en/camera-raw/digital-negative/jcr_content/root/content/flex/items/position/position-par/download_section_733958301/download-1/DNG_Spec_1_7_1_0.pdf#page=51",
+      "version": "1.7.1",
+      "zip_sha256": "c1d3a545ed45b150e59af2e6aa0695c1551f0e2bed34ad87436898a05194d2b1",
+      "member": "dng_sdk_1_7_1/dng_sdk/source/dng_render.cpp",
+      "member_sha256": "e8920b456e46b9b11a4bb775694aa516c9b5afe2998926acb0c4086eca71529c",
+      "forward_table_lines": [
+        208,
+        482
+      ],
+      "default_interpolation_lines": [
+        475,
+        482
+      ],
+      "default_and_explicit_selection_lines": [
+        2160,
+        2228
+      ],
+      "explicit_spline_source": "dng_tone_curve.cpp:116–129; dng_spline.cpp:84–181",
+      "normalized_x": "i/1024, i=0..1024",
+      "curve_points": 1025,
+      "curve_payload_sha256": "51dac135a83970b08279dcdcc59839b851c66c7069501aabbbd014ba57715b01",
+      "max_abs_normalized_linear_vs_natural_spline": 9.5144312e-06
+    },
+    "packages_in_recorded_replay": {
+      "opencv": "4.13.0",
+      "numpy": "1.26.4",
+      "scikit-image": "0.24.0",
+      "tifffile": "2023.4.12",
+      "tificc": "6.3",
+      "littlecms": "2.12"
+    }
+  },
+  "inputs": {
+    "profiles": {
+      "omitted": {
+        "file": "pentax-k3ii-1376-matrix-test.dcp",
+        "name": "PENTAX RAW matrix test 1376",
+        "bytes": 272,
+        "sha256": "6aa402a77f6b41f9fa37e99f1bd6911447e74c112eb7f7601c8c3bb116570ee4",
+        "installed_sha256_observed": "6aa402a77f6b41f9fa37e99f1bd6911447e74c112eb7f7601c8c3bb116570ee4",
+        "curve": null
+      },
+      "identity": {
+        "file": "pentax-k3ii-1376-tone-identity-v1.dcp",
+        "name": "PENTAX 1376 Tone Identity v1",
+        "bytes": 302,
+        "sha256": "7fde7d8708ef93324ff5c76e893fa1ecbb2fc4c49ba1269a5d4c3418b65d92f4",
+        "installed_sha256_observed": "7fde7d8708ef93324ff5c76e893fa1ecbb2fc4c49ba1269a5d4c3418b65d92f4",
+        "curve": {
+          "count": 4,
+          "bytes": 16,
+          "sha256": "d25b949c65312b91424a3cabd3065dfe18bc73e7cd8893229e9494cd75c16d92",
+          "points_xy": [
+            [
+              0.0,
+              0.0
+            ],
+            [
+              1.0,
+              1.0
+            ]
+          ]
+        }
+      },
+      "lift": {
+        "file": "pentax-k3ii-1376-tone-lift-v1.dcp",
+        "name": "PENTAX 1376 Tone Lift v1",
+        "bytes": 306,
+        "sha256": "f106554b266df62c4d4a0ba4a86e87143fe872e53963c8e8aa37775466065fbf",
+        "installed_sha256_observed": "f106554b266df62c4d4a0ba4a86e87143fe872e53963c8e8aa37775466065fbf",
+        "curve": {
+          "count": 6,
+          "bytes": 24,
+          "sha256": "a572e30ae1e7dd08186e506f2c2223a0edc4e19b9144c98ef978bff1922ad1c1",
+          "points_xy": [
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.5,
+              0.53125
+            ],
+            [
+              1.0,
+              1.0
+            ]
+          ]
+        }
+      },
+      "acr3": {
+        "file": "pentax-k3ii-1376-acr3-control-v1.dcp",
+        "name": "PENTAX 1376 ACR3 Control v1",
+        "bytes": 8484,
+        "sha256": "d9bd4d7bfecfcddbbdb3fd88c87bb487bf53af06221fb66b5ada8adb0345cd9f",
+        "installed_sha256_observed": "d9bd4d7bfecfcddbbdb3fd88c87bb487bf53af06221fb66b5ada8adb0345cd9f",
+        "curve": {
+          "count": 2050,
+          "bytes": 8200,
+          "sha256": "51dac135a83970b08279dcdcc59839b851c66c7069501aabbbd014ba57715b01"
+        }
+      }
+    },
+    "renders": {
+      "omitted_original": {
+        "folder": "matrix-test-prophoto",
+        "profile": "omitted",
+        "profile_digest": "1C7CF75BBFB3AA224BCEB9DAF7FBBBC9",
+        "sha256": "5a65e3b4349d97df77964b2871fb07934b0d1e444753fe8ff8ac5a08de103bef"
+      },
+      "identity": {
+        "folder": "tone-identity-prophoto",
+        "profile": "identity",
+        "profile_digest": "782E03B3FA73C7D0E8D7766B6B2FEB8F",
+        "sha256": "9a3dd45eaa7ab6ba288d8cb5ee4298a37b8c49f474df536bda92ac77223ce615"
+      },
+      "lift": {
+        "folder": "tone-lift-prophoto",
+        "profile": "lift",
+        "profile_digest": "763036625F340E29923B3CBCA99F0C68",
+        "sha256": "c72fe7978cb6ae0511b27a9b958673377355fb756c9f850cd6c410ece46a9fbb"
+      },
+      "omitted_repeat": {
+        "folder": "tone-omitted-repeat-prophoto",
+        "profile": "omitted",
+        "profile_digest": "1C7CF75BBFB3AA224BCEB9DAF7FBBBC9",
+        "sha256": "bb72136fc661267c14cc333acc890007c81fd53f393f152e8b0016b3ff629d25"
+      },
+      "acr3": {
+        "folder": "tone-acr3-prophoto",
+        "profile": "acr3",
+        "profile_digest": "D8DD6BF0BBFA902108D77C408E0D046C",
+        "sha256": "0add52b07a6f6f0ec00fdc5f95c2114a3d78f0f3b743848ae9213c8335d7e353"
+      }
+    }
+  },
+  "measurements": {
+    "engine": "Little CMS ICC profile applier for TIFF - v6.3 [LittleCMS 2.12]",
+    "dcp_audit": {
+      "omitted": {
+        "bytes": 272,
+        "sha256": "6aa402a77f6b41f9fa37e99f1bd6911447e74c112eb7f7601c8c3bb116570ee4",
+        "tags": {
+          "UniqueCameraModel": {
+            "type": 2,
+            "count": 14,
+            "sha256": "bbc1e8b5068f037b4a01948845f0977070d04f8eff4062315c90469ed5ed22df",
+            "text": "PENTAX K-3 II"
+          },
+          "ColorMatrix1": {
+            "type": 10,
+            "count": 9,
+            "sha256": "5fa1662734a0cfefb497a539f4979d09aa0f1b8b8d21f782c4679fb298dc4cb0"
+          },
+          "ColorMatrix2": {
+            "type": 10,
+            "count": 9,
+            "sha256": "d01c699c8737385dba815ceff0d1af5e2e28a96aacb5ec4c4ac031656b53c208"
+          },
+          "CalibrationIlluminant1": {
+            "type": 3,
+            "count": 1,
+            "sha256": "d94e7f1e9bb1f8a9b90996ba12c461b84956f0e7f230145cc594c2f80b067aa0",
+            "value": 17
+          },
+          "CalibrationIlluminant2": {
+            "type": 3,
+            "count": 1,
+            "sha256": "78b4be1f9eeef9da65c393e4385f67edd142709b400ca7d900bd952e0c3cf727",
+            "value": 21
+          },
+          "ProfileName": {
+            "type": 2,
+            "count": 28,
+            "sha256": "8c1f9a872e016e5375b87a86eb0bfeeee7a5252be34a5cdaa04f710049ffa7ed",
+            "text": "PENTAX RAW matrix test 1376"
+          }
+        }
+      },
+      "identity": {
+        "bytes": 302,
+        "sha256": "7fde7d8708ef93324ff5c76e893fa1ecbb2fc4c49ba1269a5d4c3418b65d92f4",
+        "tags": {
+          "UniqueCameraModel": {
+            "type": 2,
+            "count": 14,
+            "sha256": "bbc1e8b5068f037b4a01948845f0977070d04f8eff4062315c90469ed5ed22df",
+            "text": "PENTAX K-3 II"
+          },
+          "ColorMatrix1": {
+            "type": 10,
+            "count": 9,
+            "sha256": "5fa1662734a0cfefb497a539f4979d09aa0f1b8b8d21f782c4679fb298dc4cb0"
+          },
+          "ColorMatrix2": {
+            "type": 10,
+            "count": 9,
+            "sha256": "d01c699c8737385dba815ceff0d1af5e2e28a96aacb5ec4c4ac031656b53c208"
+          },
+          "CalibrationIlluminant1": {
+            "type": 3,
+            "count": 1,
+            "sha256": "d94e7f1e9bb1f8a9b90996ba12c461b84956f0e7f230145cc594c2f80b067aa0",
+            "value": 17
+          },
+          "CalibrationIlluminant2": {
+            "type": 3,
+            "count": 1,
+            "sha256": "78b4be1f9eeef9da65c393e4385f67edd142709b400ca7d900bd952e0c3cf727",
+            "value": 21
+          },
+          "ProfileName": {
+            "type": 2,
+            "count": 29,
+            "sha256": "d4558440742322bedd95751bedd37fbbfbfdffaa2a7eb37dd22a8619e2d1b7cd",
+            "text": "PENTAX 1376 Tone Identity v1"
+          },
+          "ProfileToneCurve": {
+            "type": 11,
+            "count": 4,
+            "sha256": "d25b949c65312b91424a3cabd3065dfe18bc73e7cd8893229e9494cd75c16d92"
+          }
+        }
+      },
+      "lift": {
+        "bytes": 306,
+        "sha256": "f106554b266df62c4d4a0ba4a86e87143fe872e53963c8e8aa37775466065fbf",
+        "tags": {
+          "UniqueCameraModel": {
+            "type": 2,
+            "count": 14,
+            "sha256": "bbc1e8b5068f037b4a01948845f0977070d04f8eff4062315c90469ed5ed22df",
+            "text": "PENTAX K-3 II"
+          },
+          "ColorMatrix1": {
+            "type": 10,
+            "count": 9,
+            "sha256": "5fa1662734a0cfefb497a539f4979d09aa0f1b8b8d21f782c4679fb298dc4cb0"
+          },
+          "ColorMatrix2": {
+            "type": 10,
+            "count": 9,
+            "sha256": "d01c699c8737385dba815ceff0d1af5e2e28a96aacb5ec4c4ac031656b53c208"
+          },
+          "CalibrationIlluminant1": {
+            "type": 3,
+            "count": 1,
+            "sha256": "d94e7f1e9bb1f8a9b90996ba12c461b84956f0e7f230145cc594c2f80b067aa0",
+            "value": 17
+          },
+          "CalibrationIlluminant2": {
+            "type": 3,
+            "count": 1,
+            "sha256": "78b4be1f9eeef9da65c393e4385f67edd142709b400ca7d900bd952e0c3cf727",
+            "value": 21
+          },
+          "ProfileName": {
+            "type": 2,
+            "count": 25,
+            "sha256": "d2f6f1b7a6d0459537ea04ccc67473808e98dd35fccff33d5fee62d1daed43ec",
+            "text": "PENTAX 1376 Tone Lift v1"
+          },
+          "ProfileToneCurve": {
+            "type": 11,
+            "count": 6,
+            "sha256": "a572e30ae1e7dd08186e506f2c2223a0edc4e19b9144c98ef978bff1922ad1c1"
+          }
+        }
+      },
+      "acr3": {
+        "bytes": 8484,
+        "sha256": "d9bd4d7bfecfcddbbdb3fd88c87bb487bf53af06221fb66b5ada8adb0345cd9f",
+        "tags": {
+          "UniqueCameraModel": {
+            "type": 2,
+            "count": 14,
+            "sha256": "bbc1e8b5068f037b4a01948845f0977070d04f8eff4062315c90469ed5ed22df",
+            "text": "PENTAX K-3 II"
+          },
+          "ColorMatrix1": {
+            "type": 10,
+            "count": 9,
+            "sha256": "5fa1662734a0cfefb497a539f4979d09aa0f1b8b8d21f782c4679fb298dc4cb0"
+          },
+          "ColorMatrix2": {
+            "type": 10,
+            "count": 9,
+            "sha256": "d01c699c8737385dba815ceff0d1af5e2e28a96aacb5ec4c4ac031656b53c208"
+          },
+          "CalibrationIlluminant1": {
+            "type": 3,
+            "count": 1,
+            "sha256": "d94e7f1e9bb1f8a9b90996ba12c461b84956f0e7f230145cc594c2f80b067aa0",
+            "value": 17
+          },
+          "CalibrationIlluminant2": {
+            "type": 3,
+            "count": 1,
+            "sha256": "78b4be1f9eeef9da65c393e4385f67edd142709b400ca7d900bd952e0c3cf727",
+            "value": 21
+          },
+          "ProfileName": {
+            "type": 2,
+            "count": 28,
+            "sha256": "d5bd9634c9e3fadfa666ba27e33c327075d3a49ecd989dcad33e1ce9f0077a81",
+            "text": "PENTAX 1376 ACR3 Control v1"
+          },
+          "ProfileToneCurve": {
+            "type": 11,
+            "count": 2050,
+            "sha256": "51dac135a83970b08279dcdcc59839b851c66c7069501aabbbd014ba57715b01"
+          }
+        }
+      }
+    },
+    "renders": {
+      "omitted_original": {
+        "native_rgb16_le_pixel_sha256": "46866699e22284aa77e7b018ca405129bd6945af4468e02e1f5c2536e6497558",
+        "software": "Adobe Photoshop Lightroom Classic 15.6 (Windows)",
+        "orientation_tag": null,
+        "dimensions_xy": [
+          6016,
+          4000
+        ],
+        "develop_attribute_count": 114,
+        "nested_elements": [
+          "ColorVariance",
+          "PointColors",
+          "ToneCurvePV2012",
+          "ToneCurvePV2012Blue",
+          "ToneCurvePV2012Green",
+          "ToneCurvePV2012Red"
+        ],
+        "develop_differences_vs_original": {},
+        "nested_equal_vs_original": true,
+        "develop_controls": {
+          "ProcessVersion": "15.4",
+          "WhiteBalance": "As Shot",
+          "Temperature": "5200",
+          "Tint": "+2",
+          "Exposure2012": "0.00",
+          "Contrast2012": "0",
+          "Highlights2012": "0",
+          "Shadows2012": "0",
+          "Whites2012": "0",
+          "Blacks2012": "0",
+          "HasCrop": "False",
+          "CropTop": "0",
+          "CropLeft": "0",
+          "CropBottom": "1",
+          "CropRight": "1",
+          "CropAngle": "0",
+          "LensProfileEnable": "0",
+          "AutoLateralCA": "0",
+          "Sharpness": "40",
+          "SharpenRadius": "+1.0",
+          "SharpenDetail": "25",
+          "SharpenEdgeMasking": "0",
+          "LuminanceSmoothing": "0",
+          "ColorNoiseReduction": "25",
+          "HDREditMode": "0"
+        },
+        "registration": {
+          "reference": "omitted_original",
+          "site_count": 19,
+          "max_shift_px": 0.0058405016605759565,
+          "minimum_gradient_correlation": 0.9999999403953552
+        },
+        "whole_image_endpoints_rgb": {
+          "zero": [
+            14777,
+            14957,
+            10771
+          ],
+          "max": [
+            14,
+            5,
+            115
+          ]
+        },
+        "roi_endpoints_rgb": {
+          "zero": [
+            0,
+            0,
+            0
+          ],
+          "max": [
+            0,
+            0,
+            0
+          ]
+        },
+        "patch_endpoints_rgb": [
+          {
+            "zero": [
+              0,
+              0,
+              0
+            ],
+            "max": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "zero": [
+              0,
+              0,
+              0
+            ],
+            "max": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "zero": [
+              0,
+              0,
+              0
+            ],
+            "max": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "zero": [
+              0,
+              0,
+              0
+            ],
+            "max": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "zero": [
+              0,
+              0,
+              0
+            ],
+            "max": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "zero": [
+              0,
+              0,
+              0
+            ],
+            "max": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "zero": [
+              0,
+              0,
+              0
+            ],
+            "max": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "zero": [
+              0,
+              0,
+              0
+            ],
+            "max": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "zero": [
+              0,
+              0,
+              0
+            ],
+            "max": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "zero": [
+              0,
+              0,
+              0
+            ],
+            "max": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "zero": [
+              0,
+              0,
+              0
+            ],
+            "max": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "zero": [
+              0,
+              0,
+              0
+            ],
+            "max": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "zero": [
+              0,
+              0,
+              0
+            ],
+            "max": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "zero": [
+              0,
+              0,
+              0
+            ],
+            "max": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "zero": [
+              0,
+              0,
+              0
+            ],
+            "max": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "zero": [
+              0,
+              0,
+              0
+            ],
+            "max": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "zero": [
+              0,
+              0,
+              0
+            ],
+            "max": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "zero": [
+              0,
+              0,
+              0
+            ],
+            "max": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "zero": [
+              0,
+              0,
+              0
+            ],
+            "max": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "zero": [
+              0,
+              0,
+              0
+            ],
+            "max": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "zero": [
+              0,
+              0,
+              0
+            ],
+            "max": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "zero": [
+              0,
+              0,
+              0
+            ],
+            "max": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "zero": [
+              0,
+              0,
+              0
+            ],
+            "max": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "zero": [
+              0,
+              0,
+              0
+            ],
+            "max": [
+              0,
+              0,
+              0
+            ]
+          }
+        ]
+      },
+      "identity": {
+        "native_rgb16_le_pixel_sha256": "45b0560315b7da6384c24ac5c6d527248662d0d577081954949f96974f63c746",
+        "software": "Adobe Photoshop Lightroom Classic 15.6 (Windows)",
+        "orientation_tag": null,
+        "dimensions_xy": [
+          6016,
+          4000
+        ],
+        "develop_attribute_count": 114,
+        "nested_elements": [
+          "ColorVariance",
+          "PointColors",
+          "ToneCurvePV2012",
+          "ToneCurvePV2012Blue",
+          "ToneCurvePV2012Green",
+          "ToneCurvePV2012Red"
+        ],
+        "develop_differences_vs_original": {
+          "CameraProfile": [
+            "PENTAX RAW matrix test 1376",
+            "PENTAX 1376 Tone Identity v1"
+          ],
+          "CameraProfileDigest": [
+            "1C7CF75BBFB3AA224BCEB9DAF7FBBBC9",
+            "782E03B3FA73C7D0E8D7766B6B2FEB8F"
+          ]
+        },
+        "nested_equal_vs_original": true,
+        "develop_controls": {
+          "ProcessVersion": "15.4",
+          "WhiteBalance": "As Shot",
+          "Temperature": "5200",
+          "Tint": "+2",
+          "Exposure2012": "0.00",
+          "Contrast2012": "0",
+          "Highlights2012": "0",
+          "Shadows2012": "0",
+          "Whites2012": "0",
+          "Blacks2012": "0",
+          "HasCrop": "False",
+          "CropTop": "0",
+          "CropLeft": "0",
+          "CropBottom": "1",
+          "CropRight": "1",
+          "CropAngle": "0",
+          "LensProfileEnable": "0",
+          "AutoLateralCA": "0",
+          "Sharpness": "40",
+          "SharpenRadius": "+1.0",
+          "SharpenDetail": "25",
+          "SharpenEdgeMasking": "0",
+          "LuminanceSmoothing": "0",
+          "ColorNoiseReduction": "25",
+          "HDREditMode": "0"
+        },
+        "registration": {
+          "reference": "omitted_original",
+          "site_count": 19,
+          "max_shift_px": 0.3918917137469309,
+          "minimum_gradient_correlation": 0.9744502902030945
+        },
+        "whole_image_endpoints_rgb": {
+          "zero": [
+            14777,
+            14957,
+            10771
+          ],
+          "max": [
+            9,
+            5,
+            36
+          ]
+        },
+        "roi_endpoints_rgb": {
+          "zero": [
+            0,
+            0,
+            0
+          ],
+          "max": [
+            0,
+            0,
+            0
+          ]
+        },
+        "patch_endpoints_rgb": [
+          {
+            "zero": [
+              0,
+              0,
+              0
+            ],
+            "max": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "zero": [
+              0,
+              0,
+              0
+            ],
+            "max": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "zero": [
+              0,
+              0,
+              0
+            ],
+            "max": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "zero": [
+              0,
+              0,
+              0
+            ],
+            "max": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "zero": [
+              0,
+              0,
+              0
+            ],
+            "max": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "zero": [
+              0,
+              0,
+              0
+            ],
+            "max": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "zero": [
+              0,
+              0,
+              0
+            ],
+            "max": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "zero": [
+              0,
+              0,
+              0
+            ],
+            "max": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "zero": [
+              0,
+              0,
+              0
+            ],
+            "max": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "zero": [
+              0,
+              0,
+              0
+            ],
+            "max": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "zero": [
+              0,
+              0,
+              0
+            ],
+            "max": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "zero": [
+              0,
+              0,
+              0
+            ],
+            "max": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "zero": [
+              0,
+              0,
+              0
+            ],
+            "max": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "zero": [
+              0,
+              0,
+              0
+            ],
+            "max": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "zero": [
+              0,
+              0,
+              0
+            ],
+            "max": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "zero": [
+              0,
+              0,
+              0
+            ],
+            "max": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "zero": [
+              0,
+              0,
+              0
+            ],
+            "max": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "zero": [
+              0,
+              0,
+              0
+            ],
+            "max": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "zero": [
+              0,
+              0,
+              0
+            ],
+            "max": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "zero": [
+              0,
+              0,
+              0
+            ],
+            "max": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "zero": [
+              0,
+              0,
+              0
+            ],
+            "max": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "zero": [
+              0,
+              0,
+              0
+            ],
+            "max": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "zero": [
+              0,
+              0,
+              0
+            ],
+            "max": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "zero": [
+              0,
+              0,
+              0
+            ],
+            "max": [
+              0,
+              0,
+              0
+            ]
+          }
+        ]
+      },
+      "lift": {
+        "native_rgb16_le_pixel_sha256": "bfcdeb8dded06acc87a12b39e74dc253997fd06a4865851f991905b550b254c0",
+        "software": "Adobe Photoshop Lightroom Classic 15.6 (Windows)",
+        "orientation_tag": null,
+        "dimensions_xy": [
+          6016,
+          4000
+        ],
+        "develop_attribute_count": 114,
+        "nested_elements": [
+          "ColorVariance",
+          "PointColors",
+          "ToneCurvePV2012",
+          "ToneCurvePV2012Blue",
+          "ToneCurvePV2012Green",
+          "ToneCurvePV2012Red"
+        ],
+        "develop_differences_vs_original": {
+          "CameraProfile": [
+            "PENTAX RAW matrix test 1376",
+            "PENTAX 1376 Tone Lift v1"
+          ],
+          "CameraProfileDigest": [
+            "1C7CF75BBFB3AA224BCEB9DAF7FBBBC9",
+            "763036625F340E29923B3CBCA99F0C68"
+          ]
+        },
+        "nested_equal_vs_original": true,
+        "develop_controls": {
+          "ProcessVersion": "15.4",
+          "WhiteBalance": "As Shot",
+          "Temperature": "5200",
+          "Tint": "+2",
+          "Exposure2012": "0.00",
+          "Contrast2012": "0",
+          "Highlights2012": "0",
+          "Shadows2012": "0",
+          "Whites2012": "0",
+          "Blacks2012": "0",
+          "HasCrop": "False",
+          "CropTop": "0",
+          "CropLeft": "0",
+          "CropBottom": "1",
+          "CropRight": "1",
+          "CropAngle": "0",
+          "LensProfileEnable": "0",
+          "AutoLateralCA": "0",
+          "Sharpness": "40",
+          "SharpenRadius": "+1.0",
+          "SharpenDetail": "25",
+          "SharpenEdgeMasking": "0",
+          "LuminanceSmoothing": "0",
+          "ColorNoiseReduction": "25",
+          "HDREditMode": "0"
+        },
+        "registration": {
+          "reference": "omitted_original",
+          "site_count": 19,
+          "max_shift_px": 0.36360340908875144,
+          "minimum_gradient_correlation": 0.9777501821517944
+        },
+        "whole_image_endpoints_rgb": {
+          "zero": [
+            14777,
+            14957,
+            10771
+          ],
+          "max": [
+            8,
+            5,
+            39
+          ]
+        },
+        "roi_endpoints_rgb": {
+          "zero": [
+            0,
+            0,
+            0
+          ],
+          "max": [
+            0,
+            0,
+            0
+          ]
+        },
+        "patch_endpoints_rgb": [
+          {
+            "zero": [
+              0,
+              0,
+              0
+            ],
+            "max": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "zero": [
+              0,
+              0,
+              0
+            ],
+            "max": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "zero": [
+              0,
+              0,
+              0
+            ],
+            "max": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "zero": [
+              0,
+              0,
+              0
+            ],
+            "max": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "zero": [
+              0,
+              0,
+              0
+            ],
+            "max": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "zero": [
+              0,
+              0,
+              0
+            ],
+            "max": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "zero": [
+              0,
+              0,
+              0
+            ],
+            "max": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "zero": [
+              0,
+              0,
+              0
+            ],
+            "max": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "zero": [
+              0,
+              0,
+              0
+            ],
+            "max": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "zero": [
+              0,
+              0,
+              0
+            ],
+            "max": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "zero": [
+              0,
+              0,
+              0
+            ],
+            "max": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "zero": [
+              0,
+              0,
+              0
+            ],
+            "max": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "zero": [
+              0,
+              0,
+              0
+            ],
+            "max": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "zero": [
+              0,
+              0,
+              0
+            ],
+            "max": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "zero": [
+              0,
+              0,
+              0
+            ],
+            "max": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "zero": [
+              0,
+              0,
+              0
+            ],
+            "max": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "zero": [
+              0,
+              0,
+              0
+            ],
+            "max": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "zero": [
+              0,
+              0,
+              0
+            ],
+            "max": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "zero": [
+              0,
+              0,
+              0
+            ],
+            "max": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "zero": [
+              0,
+              0,
+              0
+            ],
+            "max": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "zero": [
+              0,
+              0,
+              0
+            ],
+            "max": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "zero": [
+              0,
+              0,
+              0
+            ],
+            "max": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "zero": [
+              0,
+              0,
+              0
+            ],
+            "max": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "zero": [
+              0,
+              0,
+              0
+            ],
+            "max": [
+              0,
+              0,
+              0
+            ]
+          }
+        ]
+      },
+      "omitted_repeat": {
+        "native_rgb16_le_pixel_sha256": "46866699e22284aa77e7b018ca405129bd6945af4468e02e1f5c2536e6497558",
+        "software": "Adobe Photoshop Lightroom Classic 15.6 (Windows)",
+        "orientation_tag": null,
+        "dimensions_xy": [
+          6016,
+          4000
+        ],
+        "develop_attribute_count": 114,
+        "nested_elements": [
+          "ColorVariance",
+          "PointColors",
+          "ToneCurvePV2012",
+          "ToneCurvePV2012Blue",
+          "ToneCurvePV2012Green",
+          "ToneCurvePV2012Red"
+        ],
+        "develop_differences_vs_original": {},
+        "nested_equal_vs_original": true,
+        "develop_controls": {
+          "ProcessVersion": "15.4",
+          "WhiteBalance": "As Shot",
+          "Temperature": "5200",
+          "Tint": "+2",
+          "Exposure2012": "0.00",
+          "Contrast2012": "0",
+          "Highlights2012": "0",
+          "Shadows2012": "0",
+          "Whites2012": "0",
+          "Blacks2012": "0",
+          "HasCrop": "False",
+          "CropTop": "0",
+          "CropLeft": "0",
+          "CropBottom": "1",
+          "CropRight": "1",
+          "CropAngle": "0",
+          "LensProfileEnable": "0",
+          "AutoLateralCA": "0",
+          "Sharpness": "40",
+          "SharpenRadius": "+1.0",
+          "SharpenDetail": "25",
+          "SharpenEdgeMasking": "0",
+          "LuminanceSmoothing": "0",
+          "ColorNoiseReduction": "25",
+          "HDREditMode": "0"
+        },
+        "registration": {
+          "reference": "omitted_original",
+          "site_count": 19,
+          "max_shift_px": 0.0058405016605759565,
+          "minimum_gradient_correlation": 0.9999999403953552
+        },
+        "whole_image_endpoints_rgb": {
+          "zero": [
+            14777,
+            14957,
+            10771
+          ],
+          "max": [
+            14,
+            5,
+            115
+          ]
+        },
+        "roi_endpoints_rgb": {
+          "zero": [
+            0,
+            0,
+            0
+          ],
+          "max": [
+            0,
+            0,
+            0
+          ]
+        },
+        "patch_endpoints_rgb": [
+          {
+            "zero": [
+              0,
+              0,
+              0
+            ],
+            "max": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "zero": [
+              0,
+              0,
+              0
+            ],
+            "max": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "zero": [
+              0,
+              0,
+              0
+            ],
+            "max": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "zero": [
+              0,
+              0,
+              0
+            ],
+            "max": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "zero": [
+              0,
+              0,
+              0
+            ],
+            "max": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "zero": [
+              0,
+              0,
+              0
+            ],
+            "max": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "zero": [
+              0,
+              0,
+              0
+            ],
+            "max": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "zero": [
+              0,
+              0,
+              0
+            ],
+            "max": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "zero": [
+              0,
+              0,
+              0
+            ],
+            "max": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "zero": [
+              0,
+              0,
+              0
+            ],
+            "max": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "zero": [
+              0,
+              0,
+              0
+            ],
+            "max": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "zero": [
+              0,
+              0,
+              0
+            ],
+            "max": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "zero": [
+              0,
+              0,
+              0
+            ],
+            "max": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "zero": [
+              0,
+              0,
+              0
+            ],
+            "max": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "zero": [
+              0,
+              0,
+              0
+            ],
+            "max": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "zero": [
+              0,
+              0,
+              0
+            ],
+            "max": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "zero": [
+              0,
+              0,
+              0
+            ],
+            "max": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "zero": [
+              0,
+              0,
+              0
+            ],
+            "max": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "zero": [
+              0,
+              0,
+              0
+            ],
+            "max": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "zero": [
+              0,
+              0,
+              0
+            ],
+            "max": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "zero": [
+              0,
+              0,
+              0
+            ],
+            "max": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "zero": [
+              0,
+              0,
+              0
+            ],
+            "max": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "zero": [
+              0,
+              0,
+              0
+            ],
+            "max": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "zero": [
+              0,
+              0,
+              0
+            ],
+            "max": [
+              0,
+              0,
+              0
+            ]
+          }
+        ]
+      },
+      "acr3": {
+        "native_rgb16_le_pixel_sha256": "e66e206348a7a44e118551805f898eb1d96aeff9360fa4008ed2985139a4ce40",
+        "software": "Adobe Photoshop Lightroom Classic 15.6 (Windows)",
+        "orientation_tag": null,
+        "dimensions_xy": [
+          6016,
+          4000
+        ],
+        "develop_attribute_count": 114,
+        "nested_elements": [
+          "ColorVariance",
+          "PointColors",
+          "ToneCurvePV2012",
+          "ToneCurvePV2012Blue",
+          "ToneCurvePV2012Green",
+          "ToneCurvePV2012Red"
+        ],
+        "develop_differences_vs_original": {
+          "CameraProfile": [
+            "PENTAX RAW matrix test 1376",
+            "PENTAX 1376 ACR3 Control v1"
+          ],
+          "CameraProfileDigest": [
+            "1C7CF75BBFB3AA224BCEB9DAF7FBBBC9",
+            "D8DD6BF0BBFA902108D77C408E0D046C"
+          ]
+        },
+        "nested_equal_vs_original": true,
+        "develop_controls": {
+          "ProcessVersion": "15.4",
+          "WhiteBalance": "As Shot",
+          "Temperature": "5200",
+          "Tint": "+2",
+          "Exposure2012": "0.00",
+          "Contrast2012": "0",
+          "Highlights2012": "0",
+          "Shadows2012": "0",
+          "Whites2012": "0",
+          "Blacks2012": "0",
+          "HasCrop": "False",
+          "CropTop": "0",
+          "CropLeft": "0",
+          "CropBottom": "1",
+          "CropRight": "1",
+          "CropAngle": "0",
+          "LensProfileEnable": "0",
+          "AutoLateralCA": "0",
+          "Sharpness": "40",
+          "SharpenRadius": "+1.0",
+          "SharpenDetail": "25",
+          "SharpenEdgeMasking": "0",
+          "LuminanceSmoothing": "0",
+          "ColorNoiseReduction": "25",
+          "HDREditMode": "0"
+        },
+        "registration": {
+          "reference": "omitted_repeat",
+          "site_count": 19,
+          "max_shift_px": 0.005805757491709521,
+          "minimum_gradient_correlation": 0.9999999403953552
+        },
+        "whole_image_endpoints_rgb": {
+          "zero": [
+            14777,
+            14957,
+            10771
+          ],
+          "max": [
+            14,
+            5,
+            115
+          ]
+        },
+        "roi_endpoints_rgb": {
+          "zero": [
+            0,
+            0,
+            0
+          ],
+          "max": [
+            0,
+            0,
+            0
+          ]
+        },
+        "patch_endpoints_rgb": [
+          {
+            "zero": [
+              0,
+              0,
+              0
+            ],
+            "max": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "zero": [
+              0,
+              0,
+              0
+            ],
+            "max": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "zero": [
+              0,
+              0,
+              0
+            ],
+            "max": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "zero": [
+              0,
+              0,
+              0
+            ],
+            "max": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "zero": [
+              0,
+              0,
+              0
+            ],
+            "max": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "zero": [
+              0,
+              0,
+              0
+            ],
+            "max": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "zero": [
+              0,
+              0,
+              0
+            ],
+            "max": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "zero": [
+              0,
+              0,
+              0
+            ],
+            "max": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "zero": [
+              0,
+              0,
+              0
+            ],
+            "max": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "zero": [
+              0,
+              0,
+              0
+            ],
+            "max": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "zero": [
+              0,
+              0,
+              0
+            ],
+            "max": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "zero": [
+              0,
+              0,
+              0
+            ],
+            "max": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "zero": [
+              0,
+              0,
+              0
+            ],
+            "max": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "zero": [
+              0,
+              0,
+              0
+            ],
+            "max": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "zero": [
+              0,
+              0,
+              0
+            ],
+            "max": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "zero": [
+              0,
+              0,
+              0
+            ],
+            "max": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "zero": [
+              0,
+              0,
+              0
+            ],
+            "max": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "zero": [
+              0,
+              0,
+              0
+            ],
+            "max": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "zero": [
+              0,
+              0,
+              0
+            ],
+            "max": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "zero": [
+              0,
+              0,
+              0
+            ],
+            "max": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "zero": [
+              0,
+              0,
+              0
+            ],
+            "max": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "zero": [
+              0,
+              0,
+              0
+            ],
+            "max": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "zero": [
+              0,
+              0,
+              0
+            ],
+            "max": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "zero": [
+              0,
+              0,
+              0
+            ],
+            "max": [
+              0,
+              0,
+              0
+            ]
+          }
+        ]
+      }
+    },
+    "comparisons": [
+      {
+        "from": "omitted_original",
+        "to": "identity",
+        "whole_rgb": {
+          "total_pixels": 24064000,
+          "identical_pixel_arrays": false,
+          "changed_pixels": 24052467,
+          "changed_pixels_percent": 99.95207363696808,
+          "changed_samples_rgb": [
+            24022348,
+            24027749,
+            24034879
+          ],
+          "positive_delta_samples_rgb": [
+            5046712,
+            4951325,
+            3928212
+          ],
+          "negative_delta_samples_rgb": [
+            18975636,
+            19076424,
+            20106667
+          ],
+          "min_delta_codes_rgb": [
+            -21860,
+            -21844,
+            -22365
+          ],
+          "max_delta_codes_rgb": [
+            1213,
+            2168,
+            2194
+          ],
+          "mean_abs_delta_codes_rgb": [
+            4946.76568309508,
+            4779.700893284575,
+            4793.349541680519
+          ]
+        },
+        "roi_changed_pixels": 960000,
+        "roi_total_pixels": 960000,
+        "delta_e00": {
+          "mean": 12.897530767637726,
+          "median": 14.869495727576947,
+          "p90": 17.08193654861152,
+          "max": 18.01281067202769,
+          "max_patch": 14
+        },
+        "all_patches_delta_lstar_positive": false,
+        "neutral_delta_lstar_min_max": [
+          -20.13580322265625,
+          0.5676355361938477
+        ],
+        "neutral_max_abs_delta_astar": 1.4007781744003296,
+        "neutral_max_abs_delta_bstar": 0.5019455552101135,
+        "metadata_field_differences": {
+          "tiff_tags_except_offsets_icc_xmp": [
+            "DateTime",
+            "ImageResources"
+          ],
+          "non_develop_xmp": [
+            "{http://ns.adobe.com/xap/1.0/mm/}DocumentID",
+            "{http://ns.adobe.com/xap/1.0/mm/}History",
+            "{http://ns.adobe.com/xap/1.0/mm/}InstanceID",
+            "{http://ns.adobe.com/xap/1.0/}MetadataDate",
+            "{http://ns.adobe.com/xap/1.0/}ModifyDate"
+          ]
+        },
+        "patches": [
+          {
+            "patch": 1,
+            "name": "dark skin",
+            "lab_before": [
+              37.434959411621094,
+              15.175097465515137,
+              16.19455337524414
+            ],
+            "lab_after": [
+              29.164567947387695,
+              9.922179222106934,
+              9.922179222106934
+            ],
+            "delta_lab": [
+              -8.270391464233398,
+              -5.252918243408203,
+              -6.272374153137207
+            ],
+            "delta_e00": 8.230846744723518
+          },
+          {
+            "patch": 2,
+            "name": "light skin",
+            "lab_before": [
+              73.20515441894531,
+              16.723735809326172,
+              12.649805068969727
+            ],
+            "lab_after": [
+              53.62936019897461,
+              14.31517505645752,
+              10.972763061523438
+            ],
+            "delta_lab": [
+              -19.575794219970703,
+              -2.4085607528686523,
+              -1.677042007446289
+            ],
+            "delta_e00": 16.528831087123166
+          },
+          {
+            "patch": 3,
+            "name": "blue sky",
+            "lab_before": [
+              55.41008758544922,
+              -6.377431869506836,
+              -25.428014755249023
+            ],
+            "lab_after": [
+              40.44861602783203,
+              -4.319066047668457,
+              -17.688716888427734
+            ],
+            "delta_lab": [
+              -14.961471557617188,
+              2.058365821838379,
+              7.739297866821289
+            ],
+            "delta_e00": 15.320082978074781
+          },
+          {
+            "patch": 4,
+            "name": "foliage",
+            "lab_before": [
+              44.70283126831055,
+              -18.315176010131836,
+              29.43968963623047
+            ],
+            "lab_after": [
+              33.775081634521484,
+              -12.062256813049316,
+              18.25680923461914
+            ],
+            "delta_lab": [
+              -10.927749633789062,
+              6.2529191970825195,
+              -11.182880401611328
+            ],
+            "delta_e00": 11.081113711555169
+          },
+          {
+            "patch": 5,
+            "name": "blue flower",
+            "lab_before": [
+              63.1296272277832,
+              7.007781982421875,
+              -24.74319076538086
+            ],
+            "lab_after": [
+              45.403221130371094,
+              5.817120552062988,
+              -20.35408592224121
+            ],
+            "delta_lab": [
+              -17.72640609741211,
+              -1.1906614303588867,
+              4.389104843139648
+            ],
+            "delta_e00": 17.125318884481086
+          },
+          {
+            "patch": 6,
+            "name": "bluish green",
+            "lab_before": [
+              79.52849578857422,
+              -25.15953254699707,
+              -0.35797664523124695
+            ],
+            "lab_after": [
+              59.58037567138672,
+              -24.478599548339844,
+              -0.3463034927845001
+            ],
+            "delta_lab": [
+              -19.9481201171875,
+              0.6809329986572266,
+              0.011673152446746826
+            ],
+            "delta_e00": 15.516343614365049
+          },
+          {
+            "patch": 7,
+            "name": "orange",
+            "lab_before": [
+              66.11581420898438,
+              39.19455337524414,
+              64.87937927246094
+            ],
+            "lab_after": [
+              48.78767013549805,
+              28.377431869506836,
+              42.77042770385742
+            ],
+            "delta_lab": [
+              -17.328144073486328,
+              -10.817121505737305,
+              -22.108951568603516
+            ],
+            "delta_e00": 17.116455886315798
+          },
+          {
+            "patch": 8,
+            "name": "purplish blue",
+            "lab_before": [
+              44.306095123291016,
+              10.140077590942383,
+              -51.719844818115234
+            ],
+            "lab_after": [
+              33.565269470214844,
+              6.583657741546631,
+              -35.673152923583984
+            ],
+            "delta_lab": [
+              -10.740825653076172,
+              -3.556419849395752,
+              16.04669189453125
+            ],
+            "delta_e00": 10.645740440904747
+          },
+          {
+            "patch": 9,
+            "name": "moderate red",
+            "lab_before": [
+              52.81071090698242,
+              57.49805450439453,
+              13.696497917175293
+            ],
+            "lab_after": [
+              38.95628356933594,
+              38.525291442871094,
+              8.696497917175293
+            ],
+            "delta_lab": [
+              -13.854427337646484,
+              -18.972763061523438,
+              -5.0
+            ],
+            "delta_e00": 14.632898242578804
+          },
+          {
+            "patch": 10,
+            "name": "purple",
+            "lab_before": [
+              26.991683959960938,
+              25.007781982421875,
+              -27.147859573364258
+            ],
+            "lab_after": [
+              22.57419776916504,
+              15.182879447937012,
+              -17.377431869506836
+            ],
+            "delta_lab": [
+              -4.417486190795898,
+              -9.824902534484863,
+              9.770427703857422
+            ],
+            "delta_e00": 6.763399692886313
+          },
+          {
+            "patch": 11,
+            "name": "yellow green",
+            "lab_before": [
+              78.4344253540039,
+              -28.922178268432617,
+              61.249027252197266
+            ],
+            "lab_after": [
+              58.420692443847656,
+              -21.704280853271484,
+              44.72373580932617
+            ],
+            "delta_lab": [
+              -20.01373291015625,
+              7.217897415161133,
+              -16.525291442871094
+            ],
+            "delta_e00": 16.536988126158274
+          },
+          {
+            "patch": 12,
+            "name": "orange yellow",
+            "lab_before": [
+              74.71121978759766,
+              15.88715934753418,
+              75.12451171875
+            ],
+            "lab_after": [
+              55.39940643310547,
+              11.735408782958984,
+              51.72762680053711
+            ],
+            "delta_lab": [
+              -19.311813354492188,
+              -4.151750564575195,
+              -23.39688491821289
+            ],
+            "delta_e00": 17.00139142730154
+          },
+          {
+            "patch": 13,
+            "name": "blue",
+            "lab_before": [
+              28.0140380859375,
+              18.49805450439453,
+              -61.83657455444336
+            ],
+            "lab_after": [
+              23.395132064819336,
+              9.992218017578125,
+              -38.92607116699219
+            ],
+            "delta_lab": [
+              -4.618906021118164,
+              -8.505836486816406,
+              22.910503387451172
+            ],
+            "delta_e00": 7.030691100403238
+          },
+          {
+            "patch": 14,
+            "name": "green",
+            "lab_before": [
+              62.89768981933594,
+              -44.704280853271484,
+              40.7470817565918
+            ],
+            "lab_after": [
+              45.447471618652344,
+              -29.330739974975586,
+              25.67315101623535
+            ],
+            "delta_lab": [
+              -17.450218200683594,
+              15.373540878295898,
+              -15.073930740356445
+            ],
+            "delta_e00": 18.01281067202769
+          },
+          {
+            "patch": 15,
+            "name": "red",
+            "lab_before": [
+              41.25429153442383,
+              60.99610900878906,
+              31.003890991210938
+            ],
+            "lab_after": [
+              30.856794357299805,
+              40.17898941040039,
+              17.591440200805664
+            ],
+            "delta_lab": [
+              -10.397497177124023,
+              -20.817119598388672,
+              -13.412450790405273
+            ],
+            "delta_e00": 11.269960243925315
+          },
+          {
+            "patch": 16,
+            "name": "yellow",
+            "lab_before": [
+              84.53498077392578,
+              -2.459143877029419,
+              85.5875473022461
+            ],
+            "lab_after": [
+              65.12092590332031,
+              -1.9260700941085815,
+              64.52918243408203
+            ],
+            "delta_lab": [
+              -19.41405487060547,
+              0.5330737829208374,
+              -21.058364868164062
+            ],
+            "delta_e00": 14.99928852147731
+          },
+          {
+            "patch": 17,
+            "name": "magenta",
+            "lab_before": [
+              54.93858337402344,
+              57.83268356323242,
+              -20.268482208251953
+            ],
+            "lab_after": [
+              40.363162994384766,
+              39.1595344543457,
+              -13.692606925964355
+            ],
+            "delta_lab": [
+              -14.575420379638672,
+              -18.67314910888672,
+              6.575875282287598
+            ],
+            "delta_e00": 15.537167609753851
+          },
+          {
+            "patch": 18,
+            "name": "cyan",
+            "lab_before": [
+              59.05241394042969,
+              -25.770427703857422,
+              -28.155641555786133
+            ],
+            "lab_after": [
+              43.21965408325195,
+              -18.229572296142578,
+              -20.428014755249023
+            ],
+            "delta_lab": [
+              -15.832759857177734,
+              7.540855407714844,
+              7.727626800537109
+            ],
+            "delta_e00": 16.370136123439057
+          },
+          {
+            "patch": 19,
+            "name": "white",
+            "lab_before": [
+              94.11459350585938,
+              -1.2607003450393677,
+              0.2568093240261078
+            ],
+            "lab_after": [
+              80.39673614501953,
+              -2.6614785194396973,
+              0.5369649529457092
+            ],
+            "delta_lab": [
+              -13.717857360839844,
+              -1.4007781744003296,
+              0.28015562891960144
+            ],
+            "delta_e00": 9.018595790357528
+          },
+          {
+            "patch": 20,
+            "name": "neutral 8",
+            "lab_before": [
+              86.4850845336914,
+              -2.1828794479370117,
+              -0.5680933594703674
+            ],
+            "lab_after": [
+              67.60204315185547,
+              -2.961089611053467,
+              -0.7665369510650635
+            ],
+            "delta_lab": [
+              -18.883041381835938,
+              -0.7782101631164551,
+              -0.19844359159469604
+            ],
+            "delta_e00": 13.52330006871256
+          },
+          {
+            "patch": 21,
+            "name": "neutral 6.5",
+            "lab_before": [
+              75.18730163574219,
+              -3.163424015045166,
+              -1.0583657026290894
+            ],
+            "lab_after": [
+              55.05149841308594,
+              -2.887159585952759,
+              -0.9649805426597595
+            ],
+            "delta_lab": [
+              -20.13580322265625,
+              0.2762644290924072,
+              0.09338515996932983
+            ],
+            "delta_e00": 16.542690452449918
+          },
+          {
+            "patch": 22,
+            "name": "neutral 5",
+            "lab_before": [
+              55.04844665527344,
+              -3.023346185684204,
+              -0.6303501725196838
+            ],
+            "lab_after": [
+              40.135807037353516,
+              -1.8560311794281006,
+              -0.38910505175590515
+            ],
+            "delta_lab": [
+              -14.912639617919922,
+              1.1673150062561035,
+              0.2412451207637787
+            ],
+            "delta_e00": 14.739702933676583
+          },
+          {
+            "patch": 23,
+            "name": "neutral 3.5",
+            "lab_before": [
+              33.575950622558594,
+              -2.5369648933410645,
+              -1.3735408782958984
+            ],
+            "lab_after": [
+              26.857404708862305,
+              -1.603112816810608,
+              -0.8715953230857849
+            ],
+            "delta_lab": [
+              -6.718545913696289,
+              0.9338520765304565,
+              0.5019455552101135
+            ],
+            "delta_e00": 5.3690324463751296
+          },
+          {
+            "patch": 24,
+            "name": "black",
+            "lab_before": [
+              12.1766996383667,
+              -1.140077829360962,
+              -1.225680947303772
+            ],
+            "lab_after": [
+              12.744335174560547,
+              -0.8365758657455444,
+              -0.9105058312416077
+            ],
+            "delta_lab": [
+              0.5676355361938477,
+              0.3035019636154175,
+              0.3151751160621643
+            ],
+            "delta_e00": 0.6279516242389771
+          }
+        ]
+      },
+      {
+        "from": "identity",
+        "to": "lift",
+        "whole_rgb": {
+          "total_pixels": 24064000,
+          "identical_pixel_arrays": false,
+          "changed_pixels": 24051407,
+          "changed_pixels_percent": 99.94766871675532,
+          "changed_samples_rgb": [
+            24045499,
+            24045384,
+            24049898
+          ],
+          "positive_delta_samples_rgb": [
+            24045465,
+            24045366,
+            24049872
+          ],
+          "negative_delta_samples_rgb": [
+            34,
+            18,
+            26
+          ],
+          "min_delta_codes_rgb": [
+            -389,
+            -270,
+            -434
+          ],
+          "max_delta_codes_rgb": [
+            2141,
+            2072,
+            2199
+          ],
+          "mean_abs_delta_codes_rgb": [
+            707.7692258144947,
+            702.4025574301862,
+            710.914799368351
+          ]
+        },
+        "roi_changed_pixels": 960000,
+        "roi_total_pixels": 960000,
+        "delta_e00": {
+          "mean": 1.460536402213055,
+          "median": 1.5280375261964716,
+          "p90": 1.8710992574731813,
+          "max": 1.8867103177804736,
+          "max_patch": 2
+        },
+        "all_patches_delta_lstar_positive": true,
+        "neutral_delta_lstar_min_max": [
+          0.8697643280029297,
+          2.073699951171875
+        ],
+        "neutral_max_abs_delta_astar": 0.15564203262329102,
+        "neutral_max_abs_delta_bstar": 0.031128406524658203,
+        "metadata_field_differences": {
+          "tiff_tags_except_offsets_icc_xmp": [
+            "DateTime",
+            "ImageResources"
+          ],
+          "non_develop_xmp": [
+            "{http://ns.adobe.com/xap/1.0/mm/}DocumentID",
+            "{http://ns.adobe.com/xap/1.0/mm/}History",
+            "{http://ns.adobe.com/xap/1.0/mm/}InstanceID",
+            "{http://ns.adobe.com/xap/1.0/}MetadataDate",
+            "{http://ns.adobe.com/xap/1.0/}ModifyDate"
+          ]
+        },
+        "patches": [
+          {
+            "patch": 1,
+            "name": "dark skin",
+            "lab_before": [
+              29.164567947387695,
+              9.922179222106934,
+              9.922179222106934
+            ],
+            "lab_after": [
+              30.527198791503906,
+              10.21789836883545,
+              10.214007377624512
+            ],
+            "delta_lab": [
+              1.362630844116211,
+              0.2957191467285156,
+              0.2918281555175781
+            ],
+            "delta_e00": 1.0905604587481657
+          },
+          {
+            "patch": 2,
+            "name": "light skin",
+            "lab_before": [
+              53.62936019897461,
+              14.31517505645752,
+              10.972763061523438
+            ],
+            "lab_after": [
+              55.598533630371094,
+              14.579766273498535,
+              11.163424491882324
+            ],
+            "delta_lab": [
+              1.9691734313964844,
+              0.2645912170410156,
+              0.19066143035888672
+            ],
+            "delta_e00": 1.8867103177804736
+          },
+          {
+            "patch": 3,
+            "name": "blue sky",
+            "lab_before": [
+              40.44861602783203,
+              -4.319066047668457,
+              -17.688716888427734
+            ],
+            "lab_after": [
+              42.12710952758789,
+              -4.420233249664307,
+              -18.116731643676758
+            ],
+            "delta_lab": [
+              1.6784934997558594,
+              -0.10116720199584961,
+              -0.42801475524902344
+            ],
+            "delta_e00": 1.5231095794315628
+          },
+          {
+            "patch": 4,
+            "name": "foliage",
+            "lab_before": [
+              33.775081634521484,
+              -12.062256813049316,
+              18.25680923461914
+            ],
+            "lab_after": [
+              35.27275466918945,
+              -12.420233726501465,
+              18.793773651123047
+            ],
+            "delta_lab": [
+              1.4976730346679688,
+              -0.35797691345214844,
+              0.5369644165039062
+            ],
+            "delta_e00": 1.2694325537234574
+          },
+          {
+            "patch": 5,
+            "name": "blue flower",
+            "lab_before": [
+              45.403221130371094,
+              5.817120552062988,
+              -20.35408592224121
+            ],
+            "lab_after": [
+              47.2144660949707,
+              5.918287754058838,
+              -20.747081756591797
+            ],
+            "delta_lab": [
+              1.8112449645996094,
+              0.10116720199584961,
+              -0.39299583435058594
+            ],
+            "delta_e00": 1.7624553323971848
+          },
+          {
+            "patch": 6,
+            "name": "bluish green",
+            "lab_before": [
+              59.58037567138672,
+              -24.478599548339844,
+              -0.3463034927845001
+            ],
+            "lab_after": [
+              61.63119125366211,
+              -24.793773651123047,
+              -0.3501945436000824
+            ],
+            "delta_lab": [
+              2.0508155822753906,
+              -0.3151741027832031,
+              -0.0038910508155822754
+            ],
+            "delta_e00": 1.7957375162658311
+          },
+          {
+            "patch": 7,
+            "name": "orange",
+            "lab_before": [
+              48.78767013549805,
+              28.377431869506836,
+              42.77042770385742
+            ],
+            "lab_after": [
+              50.618751525878906,
+              29.108949661254883,
+              43.77431869506836
+            ],
+            "delta_lab": [
+              1.8310813903808594,
+              0.7315177917480469,
+              1.0038909912109375
+            ],
+            "delta_e00": 1.8682852677168282
+          },
+          {
+            "patch": 8,
+            "name": "purplish blue",
+            "lab_before": [
+              33.565269470214844,
+              6.583657741546631,
+              -35.673152923583984
+            ],
+            "lab_after": [
+              35.05760192871094,
+              6.731517314910889,
+              -36.536964416503906
+            ],
+            "delta_lab": [
+              1.4923324584960938,
+              0.1478595733642578,
+              -0.8638114929199219
+            ],
+            "delta_e00": 1.2629744767495772
+          },
+          {
+            "patch": 9,
+            "name": "moderate red",
+            "lab_before": [
+              38.95628356933594,
+              38.525291442871094,
+              8.696497917175293
+            ],
+            "lab_after": [
+              40.58136749267578,
+              39.525291442871094,
+              8.914397239685059
+            ],
+            "delta_lab": [
+              1.6250839233398438,
+              1.0,
+              0.21789932250976562
+            ],
+            "delta_e00": 1.471153798954707
+          },
+          {
+            "patch": 10,
+            "name": "purple",
+            "lab_before": [
+              22.57419776916504,
+              15.182879447937012,
+              -17.377431869506836
+            ],
+            "lab_after": [
+              23.741512298583984,
+              15.630350112915039,
+              -17.891050338745117
+            ],
+            "delta_lab": [
+              1.1673145294189453,
+              0.44747066497802734,
+              -0.5136184692382812
+            ],
+            "delta_e00": 0.9038863533304806
+          },
+          {
+            "patch": 11,
+            "name": "yellow green",
+            "lab_before": [
+              58.420692443847656,
+              -21.704280853271484,
+              44.72373580932617
+            ],
+            "lab_after": [
+              60.46387481689453,
+              -22.217899322509766,
+              45.69649887084961
+            ],
+            "delta_lab": [
+              2.043182373046875,
+              -0.5136184692382812,
+              0.9727630615234375
+            ],
+            "delta_e00": 1.8425508127209806
+          },
+          {
+            "patch": 12,
+            "name": "orange yellow",
+            "lab_before": [
+              55.39940643310547,
+              11.735408782958984,
+              51.72762680053711
+            ],
+            "lab_after": [
+              57.380027770996094,
+              12.038910865783691,
+              52.95719909667969
+            ],
+            "delta_lab": [
+              1.980621337890625,
+              0.30350208282470703,
+              1.2295722961425781
+            ],
+            "delta_e00": 1.873541641602987
+          },
+          {
+            "patch": 13,
+            "name": "blue",
+            "lab_before": [
+              23.395132064819336,
+              9.992218017578125,
+              -38.92607116699219
+            ],
+            "lab_after": [
+              24.588388442993164,
+              10.260700225830078,
+              -40.01167297363281
+            ],
+            "delta_lab": [
+              1.1932563781738281,
+              0.2684822082519531,
+              -1.085601806640625
+            ],
+            "delta_e00": 0.9505373679900858
+          },
+          {
+            "patch": 14,
+            "name": "green",
+            "lab_before": [
+              45.447471618652344,
+              -29.330739974975586,
+              25.67315101623535
+            ],
+            "lab_after": [
+              47.2480354309082,
+              -30.11284065246582,
+              26.346303939819336
+            ],
+            "delta_lab": [
+              1.8005638122558594,
+              -0.7821006774902344,
+              0.6731529235839844
+            ],
+            "delta_e00": 1.7796463859945746
+          },
+          {
+            "patch": 15,
+            "name": "red",
+            "lab_before": [
+              30.856794357299805,
+              40.17898941040039,
+              17.591440200805664
+            ],
+            "lab_after": [
+              32.257572174072266,
+              41.33462905883789,
+              18.085603713989258
+            ],
+            "delta_lab": [
+              1.400777816772461,
+              1.1556396484375,
+              0.49416351318359375
+            ],
+            "delta_e00": 1.1808938570074958
+          },
+          {
+            "patch": 16,
+            "name": "yellow",
+            "lab_before": [
+              65.12092590332031,
+              -1.9260700941085815,
+              64.52918243408203
+            ],
+            "lab_after": [
+              67.20378112792969,
+              -1.9688715934753418,
+              65.84046936035156
+            ],
+            "delta_lab": [
+              2.082855224609375,
+              -0.042801499366760254,
+              1.3112869262695312
+            ],
+            "delta_e00": 1.7209739927549592
+          },
+          {
+            "patch": 17,
+            "name": "magenta",
+            "lab_before": [
+              40.363162994384766,
+              39.1595344543457,
+              -13.692606925964355
+            ],
+            "lab_after": [
+              42.026397705078125,
+              40.16342544555664,
+              -14.042801856994629
+            ],
+            "delta_lab": [
+              1.6632347106933594,
+              1.0038909912109375,
+              -0.35019493103027344
+            ],
+            "delta_e00": 1.5329654729613804
+          },
+          {
+            "patch": 18,
+            "name": "cyan",
+            "lab_before": [
+              43.21965408325195,
+              -18.229572296142578,
+              -20.428014755249023
+            ],
+            "lab_after": [
+              44.95307922363281,
+              -18.63035011291504,
+              -20.910505294799805
+            ],
+            "delta_lab": [
+              1.7334251403808594,
+              -0.40077781677246094,
+              -0.48249053955078125
+            ],
+            "delta_e00": 1.6434827164340111
+          },
+          {
+            "patch": 19,
+            "name": "white",
+            "lab_before": [
+              80.39673614501953,
+              -2.6614785194396973,
+              0.5369649529457092
+            ],
+            "lab_after": [
+              82.06301879882812,
+              -2.5058364868164062,
+              0.505836546421051
+            ],
+            "delta_lab": [
+              1.6662826538085938,
+              0.15564203262329102,
+              -0.031128406524658203
+            ],
+            "delta_e00": 1.1558716000324916
+          },
+          {
+            "patch": 20,
+            "name": "neutral 8",
+            "lab_before": [
+              67.60204315185547,
+              -2.961089611053467,
+              -0.7665369510650635
+            ],
+            "lab_after": [
+              69.67574310302734,
+              -2.933852195739746,
+              -0.7626459002494812
+            ],
+            "delta_lab": [
+              2.073699951171875,
+              0.027237415313720703,
+              0.0038910508155822754
+            ],
+            "delta_e00": 1.6307953177753831
+          },
+          {
+            "patch": 21,
+            "name": "neutral 6.5",
+            "lab_before": [
+              55.05149841308594,
+              -2.887159585952759,
+              -0.9649805426597595
+            ],
+            "lab_after": [
+              57.05958557128906,
+              -2.933852195739746,
+              -0.9805447459220886
+            ],
+            "delta_lab": [
+              2.008087158203125,
+              -0.046692609786987305,
+              -0.015564203262329102
+            ],
+            "delta_e00": 1.8723052530830468
+          },
+          {
+            "patch": 22,
+            "name": "neutral 5",
+            "lab_before": [
+              40.135807037353516,
+              -1.8560311794281006,
+              -0.38910505175590515
+            ],
+            "lab_after": [
+              41.81124496459961,
+              -1.9066147804260254,
+              -0.3968871533870697
+            ],
+            "delta_lab": [
+              1.6754379272460938,
+              -0.050583600997924805,
+              -0.007782101631164551
+            ],
+            "delta_e00": 1.4956906204936453
+          },
+          {
+            "patch": 23,
+            "name": "neutral 3.5",
+            "lab_before": [
+              26.857404708862305,
+              -1.603112816810608,
+              -0.8715953230857849
+            ],
+            "lab_after": [
+              28.152894973754883,
+              -1.6498054265975952,
+              -0.8988326787948608
+            ],
+            "delta_lab": [
+              1.2954902648925781,
+              -0.046692609786987305,
+              -0.027237355709075928
+            ],
+            "delta_e00": 0.9756837578164218
+          },
+          {
+            "patch": 24,
+            "name": "black",
+            "lab_before": [
+              12.744335174560547,
+              -0.8365758657455444,
+              -0.9105058312416077
+            ],
+            "lab_after": [
+              13.614099502563477,
+              -0.8638132214546204,
+              -0.9377431869506836
+            ],
+            "delta_lab": [
+              0.8697643280029297,
+              -0.027237355709075928,
+              -0.027237355709075928
+            ],
+            "delta_e00": 0.5636292013475838
+          }
+        ]
+      },
+      {
+        "from": "omitted_original",
+        "to": "lift",
+        "whole_rgb": {
+          "total_pixels": 24064000,
+          "identical_pixel_arrays": false,
+          "changed_pixels": 24053480,
+          "changed_pixels_percent": 99.95628324468085,
+          "changed_samples_rgb": [
+            24013884,
+            24015347,
+            24019257
+          ],
+          "positive_delta_samples_rgb": [
+            9121993,
+            8371190,
+            6796167
+          ],
+          "negative_delta_samples_rgb": [
+            14891891,
+            15644157,
+            17223090
+          ],
+          "min_delta_codes_rgb": [
+            -19987,
+            -19896,
+            -20166
+          ],
+          "max_delta_codes_rgb": [
+            956,
+            2431,
+            2555
+          ],
+          "mean_abs_delta_codes_rgb": [
+            4410.20214112367,
+            4236.726548204787,
+            4208.337370553524
+          ]
+        },
+        "roi_changed_pixels": 960000,
+        "roi_total_pixels": 960000,
+        "delta_e00": {
+          "mean": 11.49751200212934,
+          "median": 13.264139272199031,
+          "p90": 15.183865770334664,
+          "max": 16.08916467891357,
+          "max_patch": 14
+        },
+        "all_patches_delta_lstar_positive": false,
+        "neutral_delta_lstar_min_max": [
+          -18.127716064453125,
+          1.4373998641967773
+        ],
+        "neutral_max_abs_delta_astar": 1.2451361417770386,
+        "neutral_max_abs_delta_bstar": 0.4747081995010376,
+        "metadata_field_differences": {
+          "tiff_tags_except_offsets_icc_xmp": [
+            "DateTime",
+            "ImageResources"
+          ],
+          "non_develop_xmp": [
+            "{http://ns.adobe.com/xap/1.0/mm/}DocumentID",
+            "{http://ns.adobe.com/xap/1.0/mm/}History",
+            "{http://ns.adobe.com/xap/1.0/mm/}InstanceID",
+            "{http://ns.adobe.com/xap/1.0/}MetadataDate",
+            "{http://ns.adobe.com/xap/1.0/}ModifyDate"
+          ]
+        },
+        "patches": [
+          {
+            "patch": 1,
+            "name": "dark skin",
+            "lab_before": [
+              37.434959411621094,
+              15.175097465515137,
+              16.19455337524414
+            ],
+            "lab_after": [
+              30.527198791503906,
+              10.21789836883545,
+              10.214007377624512
+            ],
+            "delta_lab": [
+              -6.9077606201171875,
+              -4.9571990966796875,
+              -5.980545997619629
+            ],
+            "delta_e00": 7.228247419341478
+          },
+          {
+            "patch": 2,
+            "name": "light skin",
+            "lab_before": [
+              73.20515441894531,
+              16.723735809326172,
+              12.649805068969727
+            ],
+            "lab_after": [
+              55.598533630371094,
+              14.579766273498535,
+              11.163424491882324
+            ],
+            "delta_lab": [
+              -17.60662078857422,
+              -2.1439695358276367,
+              -1.4863805770874023
+            ],
+            "delta_e00": 14.675982515891663
+          },
+          {
+            "patch": 3,
+            "name": "blue sky",
+            "lab_before": [
+              55.41008758544922,
+              -6.377431869506836,
+              -25.428014755249023
+            ],
+            "lab_after": [
+              42.12710952758789,
+              -4.420233249664307,
+              -18.116731643676758
+            ],
+            "delta_lab": [
+              -13.282978057861328,
+              1.9571986198425293,
+              7.311283111572266
+            ],
+            "delta_e00": 13.762923104099801
+          },
+          {
+            "patch": 4,
+            "name": "foliage",
+            "lab_before": [
+              44.70283126831055,
+              -18.315176010131836,
+              29.43968963623047
+            ],
+            "lab_after": [
+              35.27275466918945,
+              -12.420233726501465,
+              18.793773651123047
+            ],
+            "delta_lab": [
+              -9.430076599121094,
+              5.894942283630371,
+              -10.645915985107422
+            ],
+            "delta_e00": 9.877460762844693
+          },
+          {
+            "patch": 5,
+            "name": "blue flower",
+            "lab_before": [
+              63.1296272277832,
+              7.007781982421875,
+              -24.74319076538086
+            ],
+            "lab_after": [
+              47.2144660949707,
+              5.918287754058838,
+              -20.747081756591797
+            ],
+            "delta_lab": [
+              -15.9151611328125,
+              -1.089494228363037,
+              3.9961090087890625
+            ],
+            "delta_e00": 15.170755327123508
+          },
+          {
+            "patch": 6,
+            "name": "bluish green",
+            "lab_before": [
+              79.52849578857422,
+              -25.15953254699707,
+              -0.35797664523124695
+            ],
+            "lab_after": [
+              61.63119125366211,
+              -24.793773651123047,
+              -0.3501945436000824
+            ],
+            "delta_lab": [
+              -17.89730453491211,
+              0.36575889587402344,
+              0.007782101631164551
+            ],
+            "delta_e00": 13.750849767824832
+          },
+          {
+            "patch": 7,
+            "name": "orange",
+            "lab_before": [
+              66.11581420898438,
+              39.19455337524414,
+              64.87937927246094
+            ],
+            "lab_after": [
+              50.618751525878906,
+              29.108949661254883,
+              43.77431869506836
+            ],
+            "delta_lab": [
+              -15.497062683105469,
+              -10.085603713989258,
+              -21.105060577392578
+            ],
+            "delta_e00": 15.27426487631836
+          },
+          {
+            "patch": 8,
+            "name": "purplish blue",
+            "lab_before": [
+              44.306095123291016,
+              10.140077590942383,
+              -51.719844818115234
+            ],
+            "lab_after": [
+              35.05760192871094,
+              6.731517314910889,
+              -36.536964416503906
+            ],
+            "delta_lab": [
+              -9.248493194580078,
+              -3.408560276031494,
+              15.182880401611328
+            ],
+            "delta_e00": 9.428720049283324
+          },
+          {
+            "patch": 9,
+            "name": "moderate red",
+            "lab_before": [
+              52.81071090698242,
+              57.49805450439453,
+              13.696497917175293
+            ],
+            "lab_after": [
+              40.58136749267578,
+              39.525291442871094,
+              8.914397239685059
+            ],
+            "delta_lab": [
+              -12.22934341430664,
+              -17.972763061523438,
+              -4.782100677490234
+            ],
+            "delta_e00": 13.196571112927096
+          },
+          {
+            "patch": 10,
+            "name": "purple",
+            "lab_before": [
+              26.991683959960938,
+              25.007781982421875,
+              -27.147859573364258
+            ],
+            "lab_after": [
+              23.741512298583984,
+              15.630350112915039,
+              -17.891050338745117
+            ],
+            "delta_lab": [
+              -3.250171661376953,
+              -9.377431869506836,
+              9.25680923461914
+            ],
+            "delta_e00": 6.099180793283473
+          },
+          {
+            "patch": 11,
+            "name": "yellow green",
+            "lab_before": [
+              78.4344253540039,
+              -28.922178268432617,
+              61.249027252197266
+            ],
+            "lab_after": [
+              60.46387481689453,
+              -22.217899322509766,
+              45.69649887084961
+            ],
+            "delta_lab": [
+              -17.970550537109375,
+              6.704278945922852,
+              -15.552528381347656
+            ],
+            "delta_e00": 14.737840748231365
+          },
+          {
+            "patch": 12,
+            "name": "orange yellow",
+            "lab_before": [
+              74.71121978759766,
+              15.88715934753418,
+              75.12451171875
+            ],
+            "lab_after": [
+              57.380027770996094,
+              12.038910865783691,
+              52.95719909667969
+            ],
+            "delta_lab": [
+              -17.331192016601562,
+              -3.8482484817504883,
+              -22.167312622070312
+            ],
+            "delta_e00": 15.189484531710875
+          },
+          {
+            "patch": 13,
+            "name": "blue",
+            "lab_before": [
+              28.0140380859375,
+              18.49805450439453,
+              -61.83657455444336
+            ],
+            "lab_after": [
+              24.588388442993164,
+              10.260700225830078,
+              -40.01167297363281
+            ],
+            "delta_lab": [
+              -3.425649642944336,
+              -8.237354278564453,
+              21.824901580810547
+            ],
+            "delta_e00": 6.291609388679326
+          },
+          {
+            "patch": 14,
+            "name": "green",
+            "lab_before": [
+              62.89768981933594,
+              -44.704280853271484,
+              40.7470817565918
+            ],
+            "lab_after": [
+              47.2480354309082,
+              -30.11284065246582,
+              26.346303939819336
+            ],
+            "delta_lab": [
+              -15.649654388427734,
+              14.591440200805664,
+              -14.400777816772461
+            ],
+            "delta_e00": 16.08916467891357
+          },
+          {
+            "patch": 15,
+            "name": "red",
+            "lab_before": [
+              41.25429153442383,
+              60.99610900878906,
+              31.003890991210938
+            ],
+            "lab_after": [
+              32.257572174072266,
+              41.33462905883789,
+              18.085603713989258
+            ],
+            "delta_lab": [
+              -8.996719360351562,
+              -19.661479949951172,
+              -12.91828727722168
+            ],
+            "delta_e00": 10.184338963420686
+          },
+          {
+            "patch": 16,
+            "name": "yellow",
+            "lab_before": [
+              84.53498077392578,
+              -2.459143877029419,
+              85.5875473022461
+            ],
+            "lab_after": [
+              67.20378112792969,
+              -1.9688715934753418,
+              65.84046936035156
+            ],
+            "delta_lab": [
+              -17.331199645996094,
+              0.49027228355407715,
+              -19.74707794189453
+            ],
+            "delta_e00": 13.31399268403904
+          },
+          {
+            "patch": 17,
+            "name": "magenta",
+            "lab_before": [
+              54.93858337402344,
+              57.83268356323242,
+              -20.268482208251953
+            ],
+            "lab_after": [
+              42.026397705078125,
+              40.16342544555664,
+              -14.042801856994629
+            ],
+            "delta_lab": [
+              -12.912185668945312,
+              -17.66925811767578,
+              6.225680351257324
+            ],
+            "delta_e00": 13.99537897413587
+          },
+          {
+            "patch": 18,
+            "name": "cyan",
+            "lab_before": [
+              59.05241394042969,
+              -25.770427703857422,
+              -28.155641555786133
+            ],
+            "lab_after": [
+              44.95307922363281,
+              -18.63035011291504,
+              -20.910505294799805
+            ],
+            "delta_lab": [
+              -14.099334716796875,
+              7.140077590942383,
+              7.245136260986328
+            ],
+            "delta_e00": 14.526612123871091
+          },
+          {
+            "patch": 19,
+            "name": "white",
+            "lab_before": [
+              94.11459350585938,
+              -1.2607003450393677,
+              0.2568093240261078
+            ],
+            "lab_after": [
+              82.06301879882812,
+              -2.5058364868164062,
+              0.505836546421051
+            ],
+            "delta_lab": [
+              -12.05157470703125,
+              -1.2451361417770386,
+              0.24902722239494324
+            ],
+            "delta_e00": 7.867990815841804
+          },
+          {
+            "patch": 20,
+            "name": "neutral 8",
+            "lab_before": [
+              86.4850845336914,
+              -2.1828794479370117,
+              -0.5680933594703674
+            ],
+            "lab_after": [
+              69.67574310302734,
+              -2.933852195739746,
+              -0.7626459002494812
+            ],
+            "delta_lab": [
+              -16.809341430664062,
+              -0.7509727478027344,
+              -0.19455254077911377
+            ],
+            "delta_e00": 11.911078194170496
+          },
+          {
+            "patch": 21,
+            "name": "neutral 6.5",
+            "lab_before": [
+              75.18730163574219,
+              -3.163424015045166,
+              -1.0583657026290894
+            ],
+            "lab_after": [
+              57.05958557128906,
+              -2.933852195739746,
+              -0.9805447459220886
+            ],
+            "delta_lab": [
+              -18.127716064453125,
+              0.22957181930541992,
+              0.07782095670700073
+            ],
+            "delta_e00": 14.704379876980683
+          },
+          {
+            "patch": 22,
+            "name": "neutral 5",
+            "lab_before": [
+              55.04844665527344,
+              -3.023346185684204,
+              -0.6303501725196838
+            ],
+            "lab_after": [
+              41.81124496459961,
+              -1.9066147804260254,
+              -0.3968871533870697
+            ],
+            "delta_lab": [
+              -13.237201690673828,
+              1.1167314052581787,
+              0.23346301913261414
+            ],
+            "delta_e00": 13.214285860359025
+          },
+          {
+            "patch": 23,
+            "name": "neutral 3.5",
+            "lab_before": [
+              33.575950622558594,
+              -2.5369648933410645,
+              -1.3735408782958984
+            ],
+            "lab_after": [
+              28.152894973754883,
+              -1.6498054265975952,
+              -0.8988326787948608
+            ],
+            "delta_lab": [
+              -5.423055648803711,
+              0.8871594667434692,
+              0.4747081995010376
+            ],
+            "delta_e00": 4.412782260315587
+          },
+          {
+            "patch": 24,
+            "name": "black",
+            "lab_before": [
+              12.1766996383667,
+              -1.140077829360962,
+              -1.225680947303772
+            ],
+            "lab_after": [
+              13.614099502563477,
+              -0.8638132214546204,
+              -0.9377431869506836
+            ],
+            "delta_lab": [
+              1.4373998641967773,
+              0.27626460790634155,
+              0.2879377603530884
+            ],
+            "delta_e00": 1.03639322149653
+          }
+        ]
+      },
+      {
+        "from": "omitted_original",
+        "to": "omitted_repeat",
+        "whole_rgb": {
+          "total_pixels": 24064000,
+          "identical_pixel_arrays": true,
+          "changed_pixels": 0,
+          "changed_pixels_percent": 0.0,
+          "changed_samples_rgb": [
+            0,
+            0,
+            0
+          ],
+          "positive_delta_samples_rgb": [
+            0,
+            0,
+            0
+          ],
+          "negative_delta_samples_rgb": [
+            0,
+            0,
+            0
+          ],
+          "min_delta_codes_rgb": [
+            0,
+            0,
+            0
+          ],
+          "max_delta_codes_rgb": [
+            0,
+            0,
+            0
+          ],
+          "mean_abs_delta_codes_rgb": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "roi_changed_pixels": 0,
+        "roi_total_pixels": 960000,
+        "delta_e00": {
+          "mean": 0.0,
+          "median": 0.0,
+          "p90": 0.0,
+          "max": 0.0,
+          "max_patch": 1
+        },
+        "all_patches_delta_lstar_positive": false,
+        "neutral_delta_lstar_min_max": [
+          0.0,
+          0.0
+        ],
+        "neutral_max_abs_delta_astar": 0.0,
+        "neutral_max_abs_delta_bstar": 0.0,
+        "metadata_field_differences": {
+          "tiff_tags_except_offsets_icc_xmp": [
+            "DateTime"
+          ],
+          "non_develop_xmp": [
+            "{http://ns.adobe.com/xap/1.0/mm/}DocumentID",
+            "{http://ns.adobe.com/xap/1.0/mm/}History",
+            "{http://ns.adobe.com/xap/1.0/mm/}InstanceID",
+            "{http://ns.adobe.com/xap/1.0/}MetadataDate",
+            "{http://ns.adobe.com/xap/1.0/}ModifyDate"
+          ]
+        },
+        "patches": [
+          {
+            "patch": 1,
+            "name": "dark skin",
+            "lab_before": [
+              37.434959411621094,
+              15.175097465515137,
+              16.19455337524414
+            ],
+            "lab_after": [
+              37.434959411621094,
+              15.175097465515137,
+              16.19455337524414
+            ],
+            "delta_lab": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "delta_e00": 0.0
+          },
+          {
+            "patch": 2,
+            "name": "light skin",
+            "lab_before": [
+              73.20515441894531,
+              16.723735809326172,
+              12.649805068969727
+            ],
+            "lab_after": [
+              73.20515441894531,
+              16.723735809326172,
+              12.649805068969727
+            ],
+            "delta_lab": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "delta_e00": 0.0
+          },
+          {
+            "patch": 3,
+            "name": "blue sky",
+            "lab_before": [
+              55.41008758544922,
+              -6.377431869506836,
+              -25.428014755249023
+            ],
+            "lab_after": [
+              55.41008758544922,
+              -6.377431869506836,
+              -25.428014755249023
+            ],
+            "delta_lab": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "delta_e00": 0.0
+          },
+          {
+            "patch": 4,
+            "name": "foliage",
+            "lab_before": [
+              44.70283126831055,
+              -18.315176010131836,
+              29.43968963623047
+            ],
+            "lab_after": [
+              44.70283126831055,
+              -18.315176010131836,
+              29.43968963623047
+            ],
+            "delta_lab": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "delta_e00": 0.0
+          },
+          {
+            "patch": 5,
+            "name": "blue flower",
+            "lab_before": [
+              63.1296272277832,
+              7.007781982421875,
+              -24.74319076538086
+            ],
+            "lab_after": [
+              63.1296272277832,
+              7.007781982421875,
+              -24.74319076538086
+            ],
+            "delta_lab": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "delta_e00": 0.0
+          },
+          {
+            "patch": 6,
+            "name": "bluish green",
+            "lab_before": [
+              79.52849578857422,
+              -25.15953254699707,
+              -0.35797664523124695
+            ],
+            "lab_after": [
+              79.52849578857422,
+              -25.15953254699707,
+              -0.35797664523124695
+            ],
+            "delta_lab": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "delta_e00": 0.0
+          },
+          {
+            "patch": 7,
+            "name": "orange",
+            "lab_before": [
+              66.11581420898438,
+              39.19455337524414,
+              64.87937927246094
+            ],
+            "lab_after": [
+              66.11581420898438,
+              39.19455337524414,
+              64.87937927246094
+            ],
+            "delta_lab": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "delta_e00": 0.0
+          },
+          {
+            "patch": 8,
+            "name": "purplish blue",
+            "lab_before": [
+              44.306095123291016,
+              10.140077590942383,
+              -51.719844818115234
+            ],
+            "lab_after": [
+              44.306095123291016,
+              10.140077590942383,
+              -51.719844818115234
+            ],
+            "delta_lab": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "delta_e00": 0.0
+          },
+          {
+            "patch": 9,
+            "name": "moderate red",
+            "lab_before": [
+              52.81071090698242,
+              57.49805450439453,
+              13.696497917175293
+            ],
+            "lab_after": [
+              52.81071090698242,
+              57.49805450439453,
+              13.696497917175293
+            ],
+            "delta_lab": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "delta_e00": 0.0
+          },
+          {
+            "patch": 10,
+            "name": "purple",
+            "lab_before": [
+              26.991683959960938,
+              25.007781982421875,
+              -27.147859573364258
+            ],
+            "lab_after": [
+              26.991683959960938,
+              25.007781982421875,
+              -27.147859573364258
+            ],
+            "delta_lab": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "delta_e00": 0.0
+          },
+          {
+            "patch": 11,
+            "name": "yellow green",
+            "lab_before": [
+              78.4344253540039,
+              -28.922178268432617,
+              61.249027252197266
+            ],
+            "lab_after": [
+              78.4344253540039,
+              -28.922178268432617,
+              61.249027252197266
+            ],
+            "delta_lab": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "delta_e00": 0.0
+          },
+          {
+            "patch": 12,
+            "name": "orange yellow",
+            "lab_before": [
+              74.71121978759766,
+              15.88715934753418,
+              75.12451171875
+            ],
+            "lab_after": [
+              74.71121978759766,
+              15.88715934753418,
+              75.12451171875
+            ],
+            "delta_lab": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "delta_e00": 0.0
+          },
+          {
+            "patch": 13,
+            "name": "blue",
+            "lab_before": [
+              28.0140380859375,
+              18.49805450439453,
+              -61.83657455444336
+            ],
+            "lab_after": [
+              28.0140380859375,
+              18.49805450439453,
+              -61.83657455444336
+            ],
+            "delta_lab": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "delta_e00": 0.0
+          },
+          {
+            "patch": 14,
+            "name": "green",
+            "lab_before": [
+              62.89768981933594,
+              -44.704280853271484,
+              40.7470817565918
+            ],
+            "lab_after": [
+              62.89768981933594,
+              -44.704280853271484,
+              40.7470817565918
+            ],
+            "delta_lab": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "delta_e00": 0.0
+          },
+          {
+            "patch": 15,
+            "name": "red",
+            "lab_before": [
+              41.25429153442383,
+              60.99610900878906,
+              31.003890991210938
+            ],
+            "lab_after": [
+              41.25429153442383,
+              60.99610900878906,
+              31.003890991210938
+            ],
+            "delta_lab": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "delta_e00": 0.0
+          },
+          {
+            "patch": 16,
+            "name": "yellow",
+            "lab_before": [
+              84.53498077392578,
+              -2.459143877029419,
+              85.5875473022461
+            ],
+            "lab_after": [
+              84.53498077392578,
+              -2.459143877029419,
+              85.5875473022461
+            ],
+            "delta_lab": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "delta_e00": 0.0
+          },
+          {
+            "patch": 17,
+            "name": "magenta",
+            "lab_before": [
+              54.93858337402344,
+              57.83268356323242,
+              -20.268482208251953
+            ],
+            "lab_after": [
+              54.93858337402344,
+              57.83268356323242,
+              -20.268482208251953
+            ],
+            "delta_lab": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "delta_e00": 0.0
+          },
+          {
+            "patch": 18,
+            "name": "cyan",
+            "lab_before": [
+              59.05241394042969,
+              -25.770427703857422,
+              -28.155641555786133
+            ],
+            "lab_after": [
+              59.05241394042969,
+              -25.770427703857422,
+              -28.155641555786133
+            ],
+            "delta_lab": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "delta_e00": 0.0
+          },
+          {
+            "patch": 19,
+            "name": "white",
+            "lab_before": [
+              94.11459350585938,
+              -1.2607003450393677,
+              0.2568093240261078
+            ],
+            "lab_after": [
+              94.11459350585938,
+              -1.2607003450393677,
+              0.2568093240261078
+            ],
+            "delta_lab": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "delta_e00": 0.0
+          },
+          {
+            "patch": 20,
+            "name": "neutral 8",
+            "lab_before": [
+              86.4850845336914,
+              -2.1828794479370117,
+              -0.5680933594703674
+            ],
+            "lab_after": [
+              86.4850845336914,
+              -2.1828794479370117,
+              -0.5680933594703674
+            ],
+            "delta_lab": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "delta_e00": 0.0
+          },
+          {
+            "patch": 21,
+            "name": "neutral 6.5",
+            "lab_before": [
+              75.18730163574219,
+              -3.163424015045166,
+              -1.0583657026290894
+            ],
+            "lab_after": [
+              75.18730163574219,
+              -3.163424015045166,
+              -1.0583657026290894
+            ],
+            "delta_lab": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "delta_e00": 0.0
+          },
+          {
+            "patch": 22,
+            "name": "neutral 5",
+            "lab_before": [
+              55.04844665527344,
+              -3.023346185684204,
+              -0.6303501725196838
+            ],
+            "lab_after": [
+              55.04844665527344,
+              -3.023346185684204,
+              -0.6303501725196838
+            ],
+            "delta_lab": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "delta_e00": 0.0
+          },
+          {
+            "patch": 23,
+            "name": "neutral 3.5",
+            "lab_before": [
+              33.575950622558594,
+              -2.5369648933410645,
+              -1.3735408782958984
+            ],
+            "lab_after": [
+              33.575950622558594,
+              -2.5369648933410645,
+              -1.3735408782958984
+            ],
+            "delta_lab": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "delta_e00": 0.0
+          },
+          {
+            "patch": 24,
+            "name": "black",
+            "lab_before": [
+              12.1766996383667,
+              -1.140077829360962,
+              -1.225680947303772
+            ],
+            "lab_after": [
+              12.1766996383667,
+              -1.140077829360962,
+              -1.225680947303772
+            ],
+            "delta_lab": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "delta_e00": 0.0
+          }
+        ]
+      },
+      {
+        "from": "omitted_repeat",
+        "to": "acr3",
+        "whole_rgb": {
+          "total_pixels": 24064000,
+          "identical_pixel_arrays": false,
+          "changed_pixels": 9740796,
+          "changed_pixels_percent": 40.478706781914894,
+          "changed_samples_rgb": [
+            4508549,
+            4386164,
+            4578368
+          ],
+          "positive_delta_samples_rgb": [
+            944303,
+            892862,
+            1105044
+          ],
+          "negative_delta_samples_rgb": [
+            3564246,
+            3493302,
+            3473324
+          ],
+          "min_delta_codes_rgb": [
+            -30,
+            -30,
+            -30
+          ],
+          "max_delta_codes_rgb": [
+            11,
+            11,
+            10
+          ],
+          "mean_abs_delta_codes_rgb": [
+            0.586040309175532,
+            0.564595744680851,
+            0.5476846326462766
+          ]
+        },
+        "roi_changed_pixels": 226883,
+        "roi_total_pixels": 960000,
+        "delta_e00": {
+          "mean": 0.0004479965528824068,
+          "median": 0.0,
+          "p90": 0.0017242382978656726,
+          "max": 0.002410842616303291,
+          "max_patch": 21
+        },
+        "all_patches_delta_lstar_positive": false,
+        "neutral_delta_lstar_min_max": [
+          -0.0030517578125,
+          0.00152587890625
+        ],
+        "neutral_max_abs_delta_astar": 0.00194549560546875,
+        "neutral_max_abs_delta_bstar": 0.0,
+        "metadata_field_differences": {
+          "tiff_tags_except_offsets_icc_xmp": [
+            "DateTime",
+            "ImageResources"
+          ],
+          "non_develop_xmp": [
+            "{http://ns.adobe.com/xap/1.0/mm/}DocumentID",
+            "{http://ns.adobe.com/xap/1.0/mm/}History",
+            "{http://ns.adobe.com/xap/1.0/mm/}InstanceID",
+            "{http://ns.adobe.com/xap/1.0/}MetadataDate",
+            "{http://ns.adobe.com/xap/1.0/}ModifyDate"
+          ]
+        },
+        "patches": [
+          {
+            "patch": 1,
+            "name": "dark skin",
+            "lab_before": [
+              37.434959411621094,
+              15.175097465515137,
+              16.19455337524414
+            ],
+            "lab_after": [
+              37.434959411621094,
+              15.175097465515137,
+              16.19455337524414
+            ],
+            "delta_lab": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "delta_e00": 0.0
+          },
+          {
+            "patch": 2,
+            "name": "light skin",
+            "lab_before": [
+              73.20515441894531,
+              16.723735809326172,
+              12.649805068969727
+            ],
+            "lab_after": [
+              73.20515441894531,
+              16.723735809326172,
+              12.649805068969727
+            ],
+            "delta_lab": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "delta_e00": 0.0
+          },
+          {
+            "patch": 3,
+            "name": "blue sky",
+            "lab_before": [
+              55.41008758544922,
+              -6.377431869506836,
+              -25.428014755249023
+            ],
+            "lab_after": [
+              55.41008758544922,
+              -6.377431869506836,
+              -25.428014755249023
+            ],
+            "delta_lab": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "delta_e00": 0.0
+          },
+          {
+            "patch": 4,
+            "name": "foliage",
+            "lab_before": [
+              44.70283126831055,
+              -18.315176010131836,
+              29.43968963623047
+            ],
+            "lab_after": [
+              44.70283126831055,
+              -18.315176010131836,
+              29.43968963623047
+            ],
+            "delta_lab": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "delta_e00": 0.0
+          },
+          {
+            "patch": 5,
+            "name": "blue flower",
+            "lab_before": [
+              63.1296272277832,
+              7.007781982421875,
+              -24.74319076538086
+            ],
+            "lab_after": [
+              63.1296272277832,
+              7.007781982421875,
+              -24.74319076538086
+            ],
+            "delta_lab": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "delta_e00": 0.0
+          },
+          {
+            "patch": 6,
+            "name": "bluish green",
+            "lab_before": [
+              79.52849578857422,
+              -25.15953254699707,
+              -0.35797664523124695
+            ],
+            "lab_after": [
+              79.52849578857422,
+              -25.15953254699707,
+              -0.35797664523124695
+            ],
+            "delta_lab": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "delta_e00": 0.0
+          },
+          {
+            "patch": 7,
+            "name": "orange",
+            "lab_before": [
+              66.11581420898438,
+              39.19455337524414,
+              64.87937927246094
+            ],
+            "lab_after": [
+              66.11581420898438,
+              39.19455337524414,
+              64.88327026367188
+            ],
+            "delta_lab": [
+              0.0,
+              0.0,
+              0.0038909912109375
+            ],
+            "delta_e00": 0.001402253998049762
+          },
+          {
+            "patch": 8,
+            "name": "purplish blue",
+            "lab_before": [
+              44.306095123291016,
+              10.140077590942383,
+              -51.719844818115234
+            ],
+            "lab_after": [
+              44.306095123291016,
+              10.140077590942383,
+              -51.719844818115234
+            ],
+            "delta_lab": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "delta_e00": 0.0
+          },
+          {
+            "patch": 9,
+            "name": "moderate red",
+            "lab_before": [
+              52.81071090698242,
+              57.49805450439453,
+              13.696497917175293
+            ],
+            "lab_after": [
+              52.8099479675293,
+              57.49805450439453,
+              13.696497917175293
+            ],
+            "delta_lab": [
+              -0.000762939453125,
+              0.0,
+              0.0
+            ],
+            "delta_e00": 0.0007462025050450502
+          },
+          {
+            "patch": 10,
+            "name": "purple",
+            "lab_before": [
+              26.991683959960938,
+              25.007781982421875,
+              -27.147859573364258
+            ],
+            "lab_after": [
+              26.991683959960938,
+              25.007781982421875,
+              -27.147859573364258
+            ],
+            "delta_lab": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "delta_e00": 0.0
+          },
+          {
+            "patch": 11,
+            "name": "yellow green",
+            "lab_before": [
+              78.4344253540039,
+              -28.922178268432617,
+              61.249027252197266
+            ],
+            "lab_after": [
+              78.4344253540039,
+              -28.922178268432617,
+              61.249027252197266
+            ],
+            "delta_lab": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "delta_e00": 0.0
+          },
+          {
+            "patch": 12,
+            "name": "orange yellow",
+            "lab_before": [
+              74.71121978759766,
+              15.88715934753418,
+              75.12451171875
+            ],
+            "lab_after": [
+              74.71121978759766,
+              15.88715934753418,
+              75.12451171875
+            ],
+            "delta_lab": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "delta_e00": 0.0
+          },
+          {
+            "patch": 13,
+            "name": "blue",
+            "lab_before": [
+              28.0140380859375,
+              18.49805450439453,
+              -61.83657455444336
+            ],
+            "lab_after": [
+              28.0140380859375,
+              18.49805450439453,
+              -61.83657455444336
+            ],
+            "delta_lab": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "delta_e00": 0.0
+          },
+          {
+            "patch": 14,
+            "name": "green",
+            "lab_before": [
+              62.89768981933594,
+              -44.704280853271484,
+              40.7470817565918
+            ],
+            "lab_after": [
+              62.89768981933594,
+              -44.704280853271484,
+              40.7470817565918
+            ],
+            "delta_lab": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "delta_e00": 0.0
+          },
+          {
+            "patch": 15,
+            "name": "red",
+            "lab_before": [
+              41.25429153442383,
+              60.99610900878906,
+              31.003890991210938
+            ],
+            "lab_after": [
+              41.25429153442383,
+              60.99610900878906,
+              31.005836486816406
+            ],
+            "delta_lab": [
+              0.0,
+              0.0,
+              0.00194549560546875
+            ],
+            "delta_e00": 0.0009523320875274003
+          },
+          {
+            "patch": 16,
+            "name": "yellow",
+            "lab_before": [
+              84.53498077392578,
+              -2.459143877029419,
+              85.5875473022461
+            ],
+            "lab_after": [
+              84.53498077392578,
+              -2.459143877029419,
+              85.5875473022461
+            ],
+            "delta_lab": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "delta_e00": 0.0
+          },
+          {
+            "patch": 17,
+            "name": "magenta",
+            "lab_before": [
+              54.93858337402344,
+              57.83268356323242,
+              -20.268482208251953
+            ],
+            "lab_after": [
+              54.93858337402344,
+              57.83268356323242,
+              -20.268482208251953
+            ],
+            "delta_lab": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "delta_e00": 0.0
+          },
+          {
+            "patch": 18,
+            "name": "cyan",
+            "lab_before": [
+              59.05241394042969,
+              -25.770427703857422,
+              -28.155641555786133
+            ],
+            "lab_after": [
+              59.05241394042969,
+              -25.77431869506836,
+              -28.155641555786133
+            ],
+            "delta_lab": [
+              0.0,
+              -0.0038909912109375,
+              0.0
+            ],
+            "delta_e00": 0.0018443368842822137
+          },
+          {
+            "patch": 19,
+            "name": "white",
+            "lab_before": [
+              94.11459350585938,
+              -1.2607003450393677,
+              0.2568093240261078
+            ],
+            "lab_after": [
+              94.11459350585938,
+              -1.2607003450393677,
+              0.2568093240261078
+            ],
+            "delta_lab": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "delta_e00": 0.0
+          },
+          {
+            "patch": 20,
+            "name": "neutral 8",
+            "lab_before": [
+              86.4850845336914,
+              -2.1828794479370117,
+              -0.5680933594703674
+            ],
+            "lab_after": [
+              86.4850845336914,
+              -2.1828794479370117,
+              -0.5680933594703674
+            ],
+            "delta_lab": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "delta_e00": 0.0
+          },
+          {
+            "patch": 21,
+            "name": "neutral 6.5",
+            "lab_before": [
+              75.18730163574219,
+              -3.163424015045166,
+              -1.0583657026290894
+            ],
+            "lab_after": [
+              75.18730163574219,
+              -3.1614785194396973,
+              -1.0583657026290894
+            ],
+            "delta_lab": [
+              0.0,
+              0.00194549560546875,
+              0.0
+            ],
+            "delta_e00": 0.002410842616303291
+          },
+          {
+            "patch": 22,
+            "name": "neutral 5",
+            "lab_before": [
+              55.04844665527344,
+              -3.023346185684204,
+              -0.6303501725196838
+            ],
+            "lab_after": [
+              55.04997253417969,
+              -3.023346185684204,
+              -0.6303501725196838
+            ],
+            "delta_lab": [
+              0.00152587890625,
+              0.0,
+              0.0
+            ],
+            "delta_e00": 0.0014440082628937442
+          },
+          {
+            "patch": 23,
+            "name": "neutral 3.5",
+            "lab_before": [
+              33.575950622558594,
+              -2.5369648933410645,
+              -1.3735408782958984
+            ],
+            "lab_after": [
+              33.575950622558594,
+              -2.5369648933410645,
+              -1.3735408782958984
+            ],
+            "delta_lab": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "delta_e00": 0.0
+          },
+          {
+            "patch": 24,
+            "name": "black",
+            "lab_before": [
+              12.1766996383667,
+              -1.140077829360962,
+              -1.225680947303772
+            ],
+            "lab_after": [
+              12.1736478805542,
+              -1.140077829360962,
+              -1.225680947303772
+            ],
+            "delta_lab": [
+              -0.0030517578125,
+              0.0,
+              0.0
+            ],
+            "delta_e00": 0.0019519409150763015
+          }
+        ]
+      }
+    ]
+  }
+}
