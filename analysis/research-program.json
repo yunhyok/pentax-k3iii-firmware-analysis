@@ -4,14 +4,14 @@
   "time_zone": "Asia/Seoul",
   "title": "펜탁스 펌웨어 연구 본부",
   "summary": "K-3 Mark III, K-3 II, Q7의 분석 결과를 네 가지 목표로 비교합니다. 각 항목에 근거가 있는 결과, 아직 넘지 못한 검증 단계, 다음에 확인할 일을 기록합니다.",
-  "boundary": "세 기종에서 무변경 재포장과 제한된 편집 후보를 검증했습니다. K-3 Mark III에서는 재컴파일한 행렬 함수 하나를 원본 호출 위치에서 대조했습니다. 전체 소스 재빌드와 실기 설치·부팅, Lightroom 색차 실측, 변경된 렌즈 구동과 UI 이식 검증은 남아 있습니다.",
+  "boundary": "세 기종에서 무변경 재포장과 제한된 편집 후보를 검증했습니다. K-3 Mark III에서는 재컴파일한 행렬 함수 하나를 원본 호출 위치에서 대조했습니다. 전체 소스 재빌드, 실기 설치·부팅, Lightroom 색차 실측, 변경된 렌즈 구동과 UI 이식은 검증이 남아 있습니다.",
   "cameras": [
     {
       "id": "k3iii",
       "name": "K-3 Mark III",
       "firmware_version": "2.20",
       "firmware_sha256": "3c9d466b8160689867af2f58ff2cf0bf3363bc3b42daff43685a33171b91eb1a",
-      "commit": "c0dae9cf1032309115330478328617f56b5dd8f5",
+      "commit": "4aac2e9e0468efdbbebbb2e7a72ff1c66616ab78",
       "digest_source": "iii-input",
       "digest_field": "input_sha256",
       "report_source": "iii-integration"
@@ -21,7 +21,7 @@
       "name": "K-3 II",
       "firmware_version": "1.12",
       "firmware_sha256": "a33485f351019960192891ef69ddc5d4904ef9e298671d9d9955679e4c901a9a",
-      "commit": "9521f6881b356429ed0b8b58123c6483e23eddd5",
+      "commit": "89403125b108aea9070f0b91d5c4aca6b1ae0a39",
       "digest_source": "ii-input",
       "digest_field": "firmware_sha256",
       "report_source": "ii-rebuild"
@@ -31,7 +31,7 @@
       "name": "Q7",
       "firmware_version": "1.01",
       "firmware_sha256": "8a928b574623c28624127501526d8496a98a42eac3d843def6d3b5ceb074ff3b",
-      "commit": "2f850e7f1ef5bd4a4024574f66b035c359bc133d",
+      "commit": "bc141e5dd5bdd856f780893da4a71f623ace7dbf",
       "digest_source": "q-input",
       "digest_field": "input_sha256",
       "report_source": "q-implementation"
@@ -202,6 +202,61 @@
       "camera": "k3iii",
       "path": "analysis/af-capability-checks.json",
       "label": "능력 필드 갱신 검사 272건"
+    },
+    "iii-q-scope": {
+      "camera": "k3iii",
+      "path": "analysis/qflag-scope.json",
+      "label": "원본 행렬 경로의 Q 플래그 검사"
+    },
+    "iii-update-memory": {
+      "camera": "k3iii",
+      "path": "analysis/update-memory.html",
+      "label": "업데이트 로더와 할당 경로"
+    },
+    "iii-af-consumer": {
+      "camera": "k3iii",
+      "path": "analysis/af-request-consumer.html",
+      "label": "AF 요청 큐와 완료 통지"
+    },
+    "iii-colorspace-ui": {
+      "camera": "k3iii",
+      "path": "analysis/colorspace-ui.html",
+      "label": "색공간 화면·설정 요청"
+    },
+    "iii-colorspace-input": {
+      "camera": "k3iii",
+      "path": "analysis/colorspace-ui-input.html",
+      "label": "방향 이벤트와 리스트 포커스"
+    },
+    "iii-neutral": {
+      "camera": "k3iii",
+      "path": "analysis/neutral-roi-checks.json",
+      "label": "중립 패치 RAW·JPEG 밝기 검사"
+    },
+    "ii-af-control": {
+      "camera": "k3ii",
+      "path": "analysis/af-control.html",
+      "label": "AF 보정량 계산·구동 준비"
+    },
+    "ii-color-ui": {
+      "camera": "k3ii",
+      "path": "analysis/color-ui.html",
+      "label": "색공간 선택·확정·취소"
+    },
+    "ii-settings": {
+      "camera": "k3ii",
+      "path": "analysis/settings-storage.html",
+      "label": "설정 섹터 준비·비교·기록 요청"
+    },
+    "q-lens-foundation": {
+      "camera": "q7",
+      "path": "analysis/lens-foundation.json",
+      "label": "Q 렌즈 능력·명령·완료"
+    },
+    "q-loader-foundation": {
+      "camera": "q7",
+      "path": "analysis/loader-foundation.json",
+      "label": "SD 입력·보호·BurnNand 경계"
     }
   },
   "tracks": [
@@ -211,33 +266,36 @@
       "dependency": "수정 이미지를 사용하는 AF·UI 실기 시험의 선행 조건입니다.",
       "cards": {
         "k3iii": {
-          "state": "무변경 일치 · 행렬 함수 교체 후보",
-          "finding": "무변경 재포장은 배포본과 일치했습니다. Q13 행렬 곱 하나를 재컴파일해 원본 호출 위치에서 대조했습니다. 같은 변경의 블록 보존 후보는 35,136,788바이트입니다. 디코딩 결과에서 달라진 부분은 코드 79바이트와 검사합 4바이트였습니다. 원본과 후보에 대한 원본 ARM 검사 8건도 통과했습니다.",
-          "next": "다른 호출의 스택 여유와 Q 플래그 의존성을 살피고 하드웨어 디코더·부트 인증·복구 경로를 확인합니다.",
+          "state": "행렬 교체 후보 · 로더와 할당 검사",
+          "finding": "무변경 재포장은 배포본과 일치했습니다. Q13 행렬을 교체한 블록 보존 후보는 35,136,788바이트입니다. 디코딩 결과에서 코드 79바이트와 검사합 4바이트가 달라졌고 원본 ARM 검사 8건을 통과했습니다. 원본의 네 호출 지점에서는 Q만 바꾼 80쌍(160회)의 준비·패킹 결과가 다음 호출 직전까지 일치했습니다. 별도로 합성 입력 로더 27건과 할당 경로 35건을 실행했습니다.",
+          "next": "실제 가용 메모리를 확인하고 입력·디코딩 버퍼를 함께 할당할 수 있는지 살핍니다. 하드웨어 디코더, 부트 인증, 복구 경로도 검증 범위에 남아 있습니다.",
           "sources": [
             "iii-package",
             "iii-integration",
             "iii-selective",
-            "iii-boot"
+            "iii-boot",
+            "iii-q-scope",
+            "iii-update-memory"
           ]
         },
         "k3ii": {
-          "state": "무변경 XOR 일치 · 원본 검사 재실행",
-          "finding": "고정 크기 XOR 역변환으로 배포본을 그대로 재생성했습니다. 메뉴 글자 한 바이트를 바꾼 후보는 원본 ARM으로 복호화했고 주·보조 검사합과 명령 7 검사도 통과했습니다. 검사합이 생략 표식과 충돌하는 편집은 도구에서 거부합니다.",
-          "next": "검사 뒤 실제 기록 대상과 실패 처리 경로를 추적합니다. 설치·복구는 별도 실기 검증으로 남깁니다.",
+          "state": "무변경 XOR 일치 · 원본 복호화 재실행",
+          "finding": "고정 크기 XOR 역변환으로 배포본을 그대로 재생성했습니다. 본부 재실행에서 메뉴 글자 한 바이트를 바꾼 후보를 원본 ARM으로 복호화했고 주·보조 검사합과 명령 7 검사도 통과했습니다. 검사합이 생략 표식과 충돌하는 편집은 도구에서 거부합니다.",
+          "next": "검사 뒤 실제 기록 대상과 실패 처리 경로를 추적합니다. 설치·부팅·복구는 실기에서 따로 확인합니다.",
           "sources": [
             "ii-rebuild",
             "ii-status"
           ]
         },
         "q7": {
-          "state": "448블록 원본 일치 · 한 명령 변경",
-          "finding": "압축 448블록을 다시 직렬화해 배포본과 바이트 단위로 일치시켰습니다. MIPS 명령 하나를 교체한 후보의 분석용 ELF에서 반환값 0→1을 확인했습니다. 앱 파일 검사 13건과 burn 헤더 분기 5건은 별도 오프라인 검사입니다.",
-          "next": "burn 레코드의 보호 조건과 기록 목적지를 추적합니다. 전체 업데이트·부팅·복구는 아직 실행하지 않았습니다.",
+          "state": "448블록 원본 일치 · SD 로더와 기록 전 경계",
+          "finding": "압축 448블록을 다시 직렬화해 배포본과 일치시켰습니다. MIPS 명령 하나를 교체한 후보의 분석용 ELF에서 반환값 0→1을 확인했습니다. 별도의 원본 E01 재실행에서는 SD 읽기 응답, 섹션 보호·매핑과 BurnNand의 매핑 반환 지점까지 확인했습니다. SD 응답, 설치 헤더와 NAND 기하 정보는 합성 입력으로 제공했습니다.",
+          "next": "매핑 이후 실제 기록 목적지와 실패 복구를 확인합니다. 업데이트 수용, NAND 기록과 부팅은 실기 검증으로 남아 있습니다.",
           "sources": [
             "q-implementation",
             "q-rebuild",
-            "q-status"
+            "q-status",
+            "q-loader-foundation"
           ]
         }
       },
@@ -294,13 +352,14 @@
           ]
         },
         "k3ii": {
-          "state": "ColorChecker 24패치 정합 · ICC 절차 검사",
-          "finding": "펌웨어 1.10의 DNG #1376에서 CFA와 Natural 내장 JPEG의 패치 24개를 대응시켰습니다. 합성 입력으로 16비트 TIFF의 ICC 변환과 색차 계산을 확인했습니다. Lightroom 주소 검색 동의 창은 사용자가 처리하기를 기다리고 있어 실제 TIFF 내보내기는 미실행입니다. 패치별 ΔE00 실측도 남아 있습니다.",
-          "next": "Lightroom에서 Adobe Standard·Camera Natural·시험 DCP의 TIFF를 같은 조건으로 내보내 비교합니다. 이후 펌웨어 1.12의 표본과 조명·노출을 달리한 촬영 쌍으로 비교 범위를 넓힙니다.",
+          "state": "ColorChecker 24패치 정합 · 중립 밝기 순서",
+          "finding": "펌웨어 1.10의 DNG #1376에서 CFA와 Natural 내장 JPEG의 패치 24개를 대응시켰습니다. 중립 패치 6개는 RAW 녹색과 JPEG 휘도의 밝기 순서가 같았습니다. 합성 입력으로 16비트 TIFF의 ICC 변환과 색차 계산을 확인했습니다. Lightroom에서 출력을 검증하고 있습니다. 실제 TIFF 내보내기와 패치별 ΔE00 계산은 아직 마치지 않았습니다.",
+          "next": "Adobe Standard·Camera Natural·시험 DCP의 TIFF를 같은 조건으로 내보내 비교합니다. 이후 펌웨어 1.12 표본과 조명·노출을 달리한 촬영 쌍을 추가합니다.",
           "sources": [
             "iii-color-test",
             "iii-raw",
-            "ii-color"
+            "ii-color",
+            "iii-neutral"
           ]
         },
         "q7": {
@@ -344,9 +403,9 @@
       "dependency": "현재는 향후 변경에 필요한 알고리즘과 렌즈 제어를 오프라인에서 연구합니다. 특정 렌즈용 패치와 실기 구동 시험은 후속 단계입니다.",
       "cards": {
         "k3iii": {
-          "state": "AF 계산 · 렌즈 응답과 구동 명령 추적",
-          "finding": "AF 상관·디포커스 경로에서 SAD·SSD 계산을 대조했습니다. 렌즈 응답의 bit 6에 따라 InMotor와 Joint를 선택하는 코드도 확인했습니다. 원본 ARM의 선택 587건, 이벤트·명령 408건, 능력 필드 갱신 272건을 RTOS 추출본과 전체 디코딩 이미지에서 각각 재실행했습니다. 입력마다 총 1,267건을 검사했고 두 입력에서 얻은 결과 파일은 바이트 단위로 일치했습니다. 합성 응답과 일부 대체 호출을 사용했으며 실제 렌즈 통신과 모터 구동은 미검증입니다.",
-          "next": "AF 계산 결과가 명령 인자로 이어지는 경로와 큐 이후의 통신·완료 처리를 추적합니다. 구형 DA★ 16–50 SDM처럼 두 구동 방식이 명시된 렌즈의 문서는 향후 비교에 사용합니다.",
+          "state": "AF 계산 · 요청 큐와 소프트웨어 완료 통지",
+          "finding": "AF의 SAD·SSD 계산과 렌즈 응답 bit 6에 따른 InMotor·Joint 선택을 확인했습니다. 원본 ARM의 선택 587건, 이벤트·명령 408건, 능력 필드 갱신 272건은 RTOS 추출본과 전체 디코딩 이미지에서 각각 재실행해 일치했습니다. 별도 요청 소비 검사 18건에서는 합성 큐로 요청 복사·소비와 완료 통지를 확인했습니다. 전달을 건너뛴 경우에도 통지가 발생했습니다.",
+          "next": "AF 계산 결과가 명령 인자로 바뀌는 조건과 큐 이후 물리 통신을 추적합니다. 실제 모터 이동과 광학적 초점은 별도 실기 검증에 남아 있습니다.",
           "sources": [
             "iii-af",
             "iii-kernels",
@@ -354,28 +413,31 @@
             "iii-af-selection",
             "iii-af-commands",
             "iii-af-capability",
-            "k-dual"
+            "k-dual",
+            "iii-af-consumer"
           ]
         },
         "k3ii": {
-          "state": "렌즈 응답의 bit 6과 구동 분기",
-          "finding": "명령 0x8205가 성공할 때 저장되는 렌즈 응답과 bit 6에 따른 렌즈 명령·바디 드라이버 분기를 확인했습니다. 합성 응답에서 bit 7과 전송 실패 때의 기존 값 보존도 구분했습니다. 실제 모터 이동은 관측하지 않았습니다.",
-          "next": "렌즈 정보 읽기와 능력 정책의 조사 범위를 넓혀 뷰파인더 위상차 AF와 라이브뷰 콘트라스트 AF의 계산·제어 상태를 해당 분기에 연결합니다.",
+          "state": "렌즈 능력 응답 · 바디·렌즈 구동 준비",
+          "finding": "명령 0x8205가 성공할 때 저장되는 렌즈 응답과 bit 6에 따른 분기를 확인했습니다. 원본 ARM에서 능력 획득 8건, 바디 제어 14건, 렌즈 제어 3건을 재현했습니다. 렌즈 계산에 쓰는 0x8211 응답과 바디 펄스 처리도 확인했으며 재현은 구동 준비의 첫 분기까지입니다.",
+          "next": "뷰파인더 위상차 AF와 라이브뷰 콘트라스트 AF의 입력부터 구동 준비까지 연결합니다. 실제 모터 이동과 광학적 초점은 실기에서 따로 확인합니다.",
           "sources": [
             "ii-af",
             "ii-spec",
-            "ii-status"
+            "ii-status",
+            "ii-af-control"
           ]
         },
         "q7": {
-          "state": "초점 추정·네 구동 모드의 코드 경계",
-          "finding": "콘트라스트 AF의 피크 추정을 합성 사례 6건으로 대조하고 네 구동 모드를 렌즈 통신 경계까지 추적했습니다. 공식 호환표에서 AF 지원 Q 렌즈와 수동 초점인 공식 K 어댑터를 구분합니다. 실제 모터 이동은 미측정입니다.",
-          "next": "Q 렌즈 정보가 능력과 제한 정책으로 이어지는 경로를 찾아 위치 구동과 완료·오류 처리에 연결합니다.",
+          "state": "렌즈 능력·명령 · 응답과 이동 상태 분리",
+          "finding": "AF 활성 판정의 통신 비트·지원 동작과 검색 명령의 전송 허용을 구분했습니다. Q 렌즈 탐색, 캐시, 속도, 명령 응답과 완료를 원본 MIPS/VEX 32건으로 재실행했습니다. 큐 응답과 라이브뷰 이동 상태를 처리하는 경로는 별개입니다. 공식 호환표의 K 마운트 Adapter Q는 수동 초점입니다.",
+          "next": "렌즈마다 위치·속도 단위와 늦은 응답·취소의 영향을 확인합니다. 실제 통신, 모터 이동과 광학적 초점은 이후 실기 시험에서 다룹니다.",
           "sources": [
             "q-implementation",
             "q-route",
             "q-lenses",
-            "q-status"
+            "q-status",
+            "q-lens-foundation"
           ]
         }
       },
@@ -404,23 +466,27 @@
       "dependency": "첫 이식 단위는 세 기종에 공통인 촬영 색공간 선택 화면입니다. PC 화면 모형과 대상 기종의 렌더링·입력 연결은 단계별로 검증합니다.",
       "cards": {
         "k3iii": {
-          "state": "ICONBIN 복사 규칙 · 색공간 설정 경로",
-          "finding": "ICONBIN의 32비트 픽셀 복사와 상위 바이트의 생략 조건을 확인했습니다. ID 5의 44픽셀 편집과 원복은 오프라인에서 검증했습니다. sRGB·AdobeRGB의 설정 갱신은 합성 객체에서 확인했고 실제 색공간 위젯과는 아직 연결하지 못했습니다.",
-          "next": "촬영 5의 실제 입력에서 색공간 요청까지, 화면 갱신에서 문자·포커스 그리기까지 추적합니다.",
+          "state": "색공간 화면 · 합성 방향 입력에서 포커스까지",
+          "finding": "ICONBIN의 픽셀 복사 조건과 ID 5의 44픽셀 편집·원복을 확인했습니다. 합성 객체로 색공간 위젯의 선택·확정·취소와 같은 객체에서의 선택 재구성을 원본 ARM 16건으로 대조했습니다. 별도의 방향 이벤트·리스트 포커스 검사 50건에는 합성 입력과 화면 좌표를 사용했습니다.",
+          "next": "실제 키·다이얼·터치 입력이 어디서 이벤트가 되는지 추적하고 문자와 포커스를 그리는 경로를 확인합니다. 카메라 LCD와 실제 창의 종료·재생성은 확인이 남아 있습니다.",
           "sources": [
             "iii-icon",
             "iii-ui",
-            "ui-menu-map"
+            "ui-menu-map",
+            "iii-colorspace-ui",
+            "iii-colorspace-input"
           ]
         },
         "k3ii": {
-          "state": "공통 색공간 메뉴 · 이벤트와 설정 ID 미확인",
-          "finding": "리코 문서의 C3 색공간 메뉴를 공통 화면으로 정했습니다. 별도로 조사한 RAW File Format에서는 위젯·설정 연결이 확인됐지만 그 ID와 값은 색공간 화면에 적용할 수 없습니다.",
-          "next": "C3의 색공간 위젯·설정 값과 실제 버튼·다이얼 입력을 연결합니다. 선택·확정·취소의 읽기·쓰기를 기록합니다.",
+          "state": "색공간 설정 0x15C · 확정과 저장 경로",
+          "finding": "C3 색공간 화면의 상태 전이 8건에서 선택은 임시값을 바꾸고 취소는 설정값을 쓰지 않았습니다. 동일값 확정도 현재 RAM과 미러에 한 번씩 썼습니다. 별도 설정 검사는 선택·메타데이터·저장 29건이며, 내용이 같은 섹터에 쓰기 요청이 없음을 확인했습니다.",
+          "next": "실제 버튼·다이얼을 화면 동작에 연결하고 그리기와 저장을 확인합니다. 물리 쓰기 내구성, 전원 차단 중 안전성, 재부팅 뒤 복구는 미검증입니다.",
           "sources": [
             "iii-ui",
             "ui-menu-map",
-            "ii-lifecycle"
+            "ii-lifecycle",
+            "ii-color-ui",
+            "ii-settings"
           ]
         },
         "q7": {
@@ -461,7 +527,7 @@
     ],
     [
       "색 검증 샘플",
-      "세 기종의 실촬영 DNG와 내장 JPEG를 확보했습니다. 먼저 K-3 II ColorChecker 표본의 Lightroom TIFF가 필요합니다. 이후 기종·펌웨어·모드별로 다른 조명과 노출의 촬영 쌍을 추가합니다."
+      "세 기종의 실촬영 DNG와 내장 JPEG를 확보했습니다. Lightroom에서 K-3 II ColorChecker 표본의 TIFF 출력을 검증 중입니다. 이후 기종·펌웨어·모드별로 조명과 노출을 달리한 촬영 쌍을 추가합니다."
     ],
     [
       "AF 렌즈와 평가 조건",
