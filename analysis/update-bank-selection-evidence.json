@@ -1,0 +1,1440 @@
+{
+  "images": {
+    "rtos": {
+      "base": "0x52500000",
+      "size": 25483200,
+      "sha256": "342d2f35405e8daf1797dfe431d2e4aa70f4b52a2c242a29df48206672f1dfb4"
+    },
+    "boot": {
+      "base": "0x50b00000",
+      "size": 21696,
+      "sha256": "0a9c086818b9d6e7531b93710c2cab2782c7f2c32bb5b1c26e3b5b5b69695900"
+    }
+  },
+  "functions": [
+    {
+      "label": "storage_write_index",
+      "image": "rtos",
+      "start": "0x52ff586c",
+      "end": "0x52ff59f4",
+      "sha256": "cb03b6f0d9986ec6104fb27fea39bc3a5ad4a918a8be28edf65c50e482d782be",
+      "assembly_sha256": "0751a4ca1dd7f96f908d3a78417ab00a581ee6a357c102a667832ceec36253cd",
+      "pseudocode_sha256": "ff8ce6319f5744ae7d262bdc913a32943f9873f880723c359eac19337c219575",
+      "angr_version": "10.0.5",
+      "scope": "Prior genuine angr C retained byte-identical, not newly generated C. Full original words re-dumped here."
+    },
+    {
+      "label": "partition_layout_prepare",
+      "image": "rtos",
+      "start": "0x52ff1ea8",
+      "end": "0x52ff2060",
+      "sha256": "8e1c52e6e4e5f204f510505af51c93251b78d1c725a996f768abef61df19c776",
+      "assembly_sha256": "28bcf6406f7bf637d541edec7a4ba5bf33ca7ca28fc20b74b46921725a58b0f2",
+      "pseudocode_sha256": "8aabdcafb5aa48a91be75a1cdcb611c4c294d76e9cc39ea9a07a46287649463c",
+      "angr_version": "10.0.5",
+      "scope": "Prior genuine angr C retained byte-identical, not newly generated C. Full original words re-dumped here."
+    },
+    {
+      "label": "boot_resources_load",
+      "image": "boot",
+      "start": "0x50b00a48",
+      "end": "0x50b011b0",
+      "sha256": "7ec972fa419b410280d27299e672ad106de504851450c1911a929cf434091965",
+      "assembly_sha256": "02b439a6f3f0df963745f40b18eea6684f7ebce23444ad53f1c01f2bc200f681",
+      "pseudocode_sha256": "a799a1fde7ab310f03dcbd52bdca43b73327a65d9b7fe1d244409153330c2b4c",
+      "angr_version": "10.0.5",
+      "scope": "Prior genuine angr C retained byte-identical, not newly generated C. Full original words re-dumped here."
+    }
+  ],
+  "fragments": [
+    {
+      "label": "fwpartition_constructor",
+      "image": "rtos",
+      "start": "0x52ff52d4",
+      "end": "0x52ff5304",
+      "sha256": "8b6d2f17c2c5f47e48d80307da7993141d19f18ad3d801b03310cc50fd255904",
+      "assembly_sha256": "a6b9ec9e9a1d61e00a7bcd5f7cbf31e7d3ff7bd23da752ea94e6924f0f60381f"
+    },
+    {
+      "label": "slot2_to_table_field",
+      "image": "rtos",
+      "start": "0x52ff528c",
+      "end": "0x52ff52d4",
+      "sha256": "cb9a28c38f48956a44671d113e2b07266ebe562784453771fda3be1b65896755",
+      "assembly_sha256": "da60ae7dbbaf28dd18af0c049796f059ce53caa4e39d8df29dec41bba6385bcb"
+    },
+    {
+      "label": "block_count_helper",
+      "image": "rtos",
+      "start": "0x532974a8",
+      "end": "0x53297510",
+      "sha256": "b38b49549511613e40b475af6ce7e8c9c205010468b95671340817c52eda4f98",
+      "assembly_sha256": "385a66e8289a422e08f3149cea731e9fb8b5b80ab5c88d26af3fcd43900ad10c"
+    },
+    {
+      "label": "emmc_blocksize_getter",
+      "image": "rtos",
+      "start": "0x532971dc",
+      "end": "0x532971e4",
+      "sha256": "732254e783751fcde0d42a21270c5e4b8f2ea029fe41215bd85bfbcc79455a7f",
+      "assembly_sha256": "3622b8d1588f0024e1e3aed2a57abc9dfa833a7c60476f0dafb28ed5c5e9e967"
+    }
+  ],
+  "transfers": [
+    {
+      "image": "rtos",
+      "site": "0x52ff5894",
+      "instruction": "bl #0x532974a8",
+      "source_range": "storage_write_index",
+      "target": "0x532974a8"
+    },
+    {
+      "image": "rtos",
+      "site": "0x52ff58dc",
+      "instruction": "bhi #0x52ff5918",
+      "source_range": "storage_write_index",
+      "target": "0x52ff5918"
+    },
+    {
+      "image": "rtos",
+      "site": "0x52ff58e8",
+      "instruction": "bl #0x52ff5708",
+      "source_range": "storage_write_index",
+      "target": "0x52ff5708"
+    },
+    {
+      "image": "rtos",
+      "site": "0x52ff58f0",
+      "instruction": "beq #0x52ff59bc",
+      "source_range": "storage_write_index",
+      "target": "0x52ff59bc"
+    },
+    {
+      "image": "rtos",
+      "site": "0x52ff5940",
+      "instruction": "bl #0x530fced4",
+      "source_range": "storage_write_index",
+      "target": "0x530fced4"
+    },
+    {
+      "image": "rtos",
+      "site": "0x52ff5988",
+      "instruction": "bl #0x530fced4",
+      "source_range": "storage_write_index",
+      "target": "0x530fced4"
+    },
+    {
+      "image": "rtos",
+      "site": "0x52ff59a8",
+      "instruction": "bl #0x530fced4",
+      "source_range": "storage_write_index",
+      "target": "0x530fced4"
+    },
+    {
+      "image": "rtos",
+      "site": "0x52ff59e0",
+      "instruction": "bl #0x530fced4",
+      "source_range": "storage_write_index",
+      "target": "0x530fced4"
+    },
+    {
+      "image": "rtos",
+      "site": "0x52ff1f10",
+      "instruction": "bl #0x530fced4",
+      "source_range": "partition_layout_prepare",
+      "target": "0x530fced4"
+    },
+    {
+      "image": "rtos",
+      "site": "0x52ff1f34",
+      "instruction": "bl #0x530fced4",
+      "source_range": "partition_layout_prepare",
+      "target": "0x530fced4"
+    },
+    {
+      "image": "rtos",
+      "site": "0x52ff1f3c",
+      "instruction": "beq #0x52ff2058",
+      "source_range": "partition_layout_prepare",
+      "target": "0x52ff2058"
+    },
+    {
+      "image": "rtos",
+      "site": "0x52ff1f60",
+      "instruction": "bl #0x532974a8",
+      "source_range": "partition_layout_prepare",
+      "target": "0x532974a8"
+    },
+    {
+      "image": "rtos",
+      "site": "0x52ff1f6c",
+      "instruction": "bne #0x52ff1f4c",
+      "source_range": "partition_layout_prepare",
+      "target": "0x52ff1f4c"
+    },
+    {
+      "image": "rtos",
+      "site": "0x52ff1f84",
+      "instruction": "b #0x52ff1f8c",
+      "source_range": "partition_layout_prepare",
+      "target": "0x52ff1f8c"
+    },
+    {
+      "image": "rtos",
+      "site": "0x52ff1fa0",
+      "instruction": "bhi #0x52ff1f88",
+      "source_range": "partition_layout_prepare",
+      "target": "0x52ff1f88"
+    },
+    {
+      "image": "rtos",
+      "site": "0x52ff1fa8",
+      "instruction": "beq #0x52ff2058",
+      "source_range": "partition_layout_prepare",
+      "target": "0x52ff2058"
+    },
+    {
+      "image": "rtos",
+      "site": "0x52ff1fc8",
+      "instruction": "b #0x52ff1fd0",
+      "source_range": "partition_layout_prepare",
+      "target": "0x52ff1fd0"
+    },
+    {
+      "image": "rtos",
+      "site": "0x52ff2054",
+      "instruction": "bne #0x52ff1fcc",
+      "source_range": "partition_layout_prepare",
+      "target": "0x52ff1fcc"
+    },
+    {
+      "image": "boot",
+      "site": "0x50b00a7c",
+      "instruction": "bl #0x50b01538",
+      "source_range": "boot_resources_load",
+      "target": "0x50b01538"
+    },
+    {
+      "image": "boot",
+      "site": "0x50b00a88",
+      "instruction": "bl #0x50b01538",
+      "source_range": "boot_resources_load",
+      "target": "0x50b01538"
+    },
+    {
+      "image": "boot",
+      "site": "0x50b00a94",
+      "instruction": "bl #0x50b01538",
+      "source_range": "boot_resources_load",
+      "target": "0x50b01538"
+    },
+    {
+      "image": "boot",
+      "site": "0x50b00b58",
+      "instruction": "bl #0x50b03cd4",
+      "source_range": "boot_resources_load",
+      "target": "0x50b03cd4"
+    },
+    {
+      "image": "boot",
+      "site": "0x50b00b60",
+      "instruction": "bne #0x50b01038",
+      "source_range": "boot_resources_load",
+      "target": "0x50b01038"
+    },
+    {
+      "image": "boot",
+      "site": "0x50b00b64",
+      "instruction": "bl #0x50b03e68",
+      "source_range": "boot_resources_load",
+      "target": "0x50b03e68"
+    },
+    {
+      "image": "boot",
+      "site": "0x50b00b6c",
+      "instruction": "bne #0x50b01198",
+      "source_range": "boot_resources_load",
+      "target": "0x50b01198"
+    },
+    {
+      "image": "boot",
+      "site": "0x50b00b7c",
+      "instruction": "bl #0x50b01538",
+      "source_range": "boot_resources_load",
+      "target": "0x50b01538"
+    },
+    {
+      "image": "boot",
+      "site": "0x50b00b84",
+      "instruction": "bl #0x50b03d90",
+      "source_range": "boot_resources_load",
+      "target": "0x50b03d90"
+    },
+    {
+      "image": "boot",
+      "site": "0x50b00b8c",
+      "instruction": "bne #0x50b0118c",
+      "source_range": "boot_resources_load",
+      "target": "0x50b0118c"
+    },
+    {
+      "image": "boot",
+      "site": "0x50b00ba0",
+      "instruction": "bl #0x50b03f04",
+      "source_range": "boot_resources_load",
+      "target": "0x50b03f04"
+    },
+    {
+      "image": "boot",
+      "site": "0x50b00ba8",
+      "instruction": "bne #0x50b0118c",
+      "source_range": "boot_resources_load",
+      "target": "0x50b0118c"
+    },
+    {
+      "image": "boot",
+      "site": "0x50b00bc0",
+      "instruction": "bl #0x50b04400",
+      "source_range": "boot_resources_load",
+      "target": "0x50b04400"
+    },
+    {
+      "image": "boot",
+      "site": "0x50b00bc8",
+      "instruction": "bl #0x50b03d90",
+      "source_range": "boot_resources_load",
+      "target": "0x50b03d90"
+    },
+    {
+      "image": "boot",
+      "site": "0x50b00bd0",
+      "instruction": "bne #0x50b0118c",
+      "source_range": "boot_resources_load",
+      "target": "0x50b0118c"
+    },
+    {
+      "image": "boot",
+      "site": "0x50b00bf8",
+      "instruction": "bne #0x50b0101c",
+      "source_range": "boot_resources_load",
+      "target": "0x50b0101c"
+    },
+    {
+      "image": "boot",
+      "site": "0x50b00c54",
+      "instruction": "beq #0x50b00fbc",
+      "source_range": "boot_resources_load",
+      "target": "0x50b00fbc"
+    },
+    {
+      "image": "boot",
+      "site": "0x50b00c64",
+      "instruction": "bl #0x50b03f04",
+      "source_range": "boot_resources_load",
+      "target": "0x50b03f04"
+    },
+    {
+      "image": "boot",
+      "site": "0x50b00c6c",
+      "instruction": "bne #0x50b00fbc",
+      "source_range": "boot_resources_load",
+      "target": "0x50b00fbc"
+    },
+    {
+      "image": "boot",
+      "site": "0x50b00c80",
+      "instruction": "beq #0x50b00cf4",
+      "source_range": "boot_resources_load",
+      "target": "0x50b00cf4"
+    },
+    {
+      "image": "boot",
+      "site": "0x50b00c94",
+      "instruction": "beq #0x50b00cdc",
+      "source_range": "boot_resources_load",
+      "target": "0x50b00cdc"
+    },
+    {
+      "image": "boot",
+      "site": "0x50b00cb0",
+      "instruction": "bne #0x50b00cc8",
+      "source_range": "boot_resources_load",
+      "target": "0x50b00cc8"
+    },
+    {
+      "image": "boot",
+      "site": "0x50b00ccc",
+      "instruction": "bl #0x50b03f04",
+      "source_range": "boot_resources_load",
+      "target": "0x50b03f04"
+    },
+    {
+      "image": "boot",
+      "site": "0x50b00cd8",
+      "instruction": "bne #0x50b01160",
+      "source_range": "boot_resources_load",
+      "target": "0x50b01160"
+    },
+    {
+      "image": "boot",
+      "site": "0x50b00cfc",
+      "instruction": "bl #0x50b014b0",
+      "source_range": "boot_resources_load",
+      "target": "0x50b014b0"
+    },
+    {
+      "image": "boot",
+      "site": "0x50b00d20",
+      "instruction": "beq #0x50b00db0",
+      "source_range": "boot_resources_load",
+      "target": "0x50b00db0"
+    },
+    {
+      "image": "boot",
+      "site": "0x50b00d34",
+      "instruction": "beq #0x50b010d0",
+      "source_range": "boot_resources_load",
+      "target": "0x50b010d0"
+    },
+    {
+      "image": "boot",
+      "site": "0x50b00d5c",
+      "instruction": "bne #0x50b01170",
+      "source_range": "boot_resources_load",
+      "target": "0x50b01170"
+    },
+    {
+      "image": "boot",
+      "site": "0x50b00d74",
+      "instruction": "bne #0x50b01170",
+      "source_range": "boot_resources_load",
+      "target": "0x50b01170"
+    },
+    {
+      "image": "boot",
+      "site": "0x50b00d88",
+      "instruction": "bl #0x50b03f04",
+      "source_range": "boot_resources_load",
+      "target": "0x50b03f04"
+    },
+    {
+      "image": "boot",
+      "site": "0x50b00d98",
+      "instruction": "bne #0x50b0117c",
+      "source_range": "boot_resources_load",
+      "target": "0x50b0117c"
+    },
+    {
+      "image": "boot",
+      "site": "0x50b00da4",
+      "instruction": "beq #0x50b00db0",
+      "source_range": "boot_resources_load",
+      "target": "0x50b00db0"
+    },
+    {
+      "image": "boot",
+      "site": "0x50b00dbc",
+      "instruction": "beq #0x50b00e34",
+      "source_range": "boot_resources_load",
+      "target": "0x50b00e34"
+    },
+    {
+      "image": "boot",
+      "site": "0x50b00dc8",
+      "instruction": "beq #0x50b01124",
+      "source_range": "boot_resources_load",
+      "target": "0x50b01124"
+    },
+    {
+      "image": "boot",
+      "site": "0x50b00df0",
+      "instruction": "bne #0x50b01144",
+      "source_range": "boot_resources_load",
+      "target": "0x50b01144"
+    },
+    {
+      "image": "boot",
+      "site": "0x50b00e08",
+      "instruction": "bne #0x50b01144",
+      "source_range": "boot_resources_load",
+      "target": "0x50b01144"
+    },
+    {
+      "image": "boot",
+      "site": "0x50b00e14",
+      "instruction": "bl #0x50b03f04",
+      "source_range": "boot_resources_load",
+      "target": "0x50b03f04"
+    },
+    {
+      "image": "boot",
+      "site": "0x50b00e20",
+      "instruction": "bne #0x50b01150",
+      "source_range": "boot_resources_load",
+      "target": "0x50b01150"
+    },
+    {
+      "image": "boot",
+      "site": "0x50b00e28",
+      "instruction": "beq #0x50b00e30",
+      "source_range": "boot_resources_load",
+      "target": "0x50b00e30"
+    },
+    {
+      "image": "boot",
+      "site": "0x50b00e40",
+      "instruction": "beq #0x50b00ebc",
+      "source_range": "boot_resources_load",
+      "target": "0x50b00ebc"
+    },
+    {
+      "image": "boot",
+      "site": "0x50b00e4c",
+      "instruction": "beq #0x50b010fc",
+      "source_range": "boot_resources_load",
+      "target": "0x50b010fc"
+    },
+    {
+      "image": "boot",
+      "site": "0x50b00e74",
+      "instruction": "bne #0x50b00fa4",
+      "source_range": "boot_resources_load",
+      "target": "0x50b00fa4"
+    },
+    {
+      "image": "boot",
+      "site": "0x50b00e8c",
+      "instruction": "bne #0x50b00fa4",
+      "source_range": "boot_resources_load",
+      "target": "0x50b00fa4"
+    },
+    {
+      "image": "boot",
+      "site": "0x50b00e98",
+      "instruction": "bl #0x50b03f04",
+      "source_range": "boot_resources_load",
+      "target": "0x50b03f04"
+    },
+    {
+      "image": "boot",
+      "site": "0x50b00ea4",
+      "instruction": "bne #0x50b00fb0",
+      "source_range": "boot_resources_load",
+      "target": "0x50b00fb0"
+    },
+    {
+      "image": "boot",
+      "site": "0x50b00eac",
+      "instruction": "beq #0x50b00eb8",
+      "source_range": "boot_resources_load",
+      "target": "0x50b00eb8"
+    },
+    {
+      "image": "boot",
+      "site": "0x50b00ec0",
+      "instruction": "beq #0x50b0110c",
+      "source_range": "boot_resources_load",
+      "target": "0x50b0110c"
+    },
+    {
+      "image": "boot",
+      "site": "0x50b00ed0",
+      "instruction": "beq #0x50b00f58",
+      "source_range": "boot_resources_load",
+      "target": "0x50b00f58"
+    },
+    {
+      "image": "boot",
+      "site": "0x50b00f04",
+      "instruction": "bne #0x50b00f1c",
+      "source_range": "boot_resources_load",
+      "target": "0x50b00f1c"
+    },
+    {
+      "image": "boot",
+      "site": "0x50b00f20",
+      "instruction": "bl #0x50b03f04",
+      "source_range": "boot_resources_load",
+      "target": "0x50b03f04"
+    },
+    {
+      "image": "boot",
+      "site": "0x50b00f2c",
+      "instruction": "bne #0x50b010b0",
+      "source_range": "boot_resources_load",
+      "target": "0x50b010b0"
+    },
+    {
+      "image": "boot",
+      "site": "0x50b00f64",
+      "instruction": "bne #0x50b01050",
+      "source_range": "boot_resources_load",
+      "target": "0x50b01050"
+    },
+    {
+      "image": "boot",
+      "site": "0x50b00f74",
+      "instruction": "bl #0x50b01538",
+      "source_range": "boot_resources_load",
+      "target": "0x50b01538"
+    },
+    {
+      "image": "boot",
+      "site": "0x50b00f84",
+      "instruction": "bne #0x50b01048",
+      "source_range": "boot_resources_load",
+      "target": "0x50b01048"
+    },
+    {
+      "image": "boot",
+      "site": "0x50b00fa4",
+      "instruction": "bl #0x50b03f04",
+      "source_range": "boot_resources_load",
+      "target": "0x50b03f04"
+    },
+    {
+      "image": "boot",
+      "site": "0x50b00fac",
+      "instruction": "beq #0x50b00eb0",
+      "source_range": "boot_resources_load",
+      "target": "0x50b00eb0"
+    },
+    {
+      "image": "boot",
+      "site": "0x50b00fb8",
+      "instruction": "bl #0x50b014b0",
+      "source_range": "boot_resources_load",
+      "target": "0x50b014b0"
+    },
+    {
+      "image": "boot",
+      "site": "0x50b00fc8",
+      "instruction": "beq #0x50b00fe0",
+      "source_range": "boot_resources_load",
+      "target": "0x50b00fe0"
+    },
+    {
+      "image": "boot",
+      "site": "0x50b00fdc",
+      "instruction": "b #0x50b00c4c",
+      "source_range": "boot_resources_load",
+      "target": "0x50b00c4c"
+    },
+    {
+      "image": "boot",
+      "site": "0x50b00fe8",
+      "instruction": "bl #0x50b014b0",
+      "source_range": "boot_resources_load",
+      "target": "0x50b014b0"
+    },
+    {
+      "image": "boot",
+      "site": "0x50b01018",
+      "instruction": "b #0x50b01018",
+      "source_range": "boot_resources_load",
+      "target": "0x50b01018"
+    },
+    {
+      "image": "boot",
+      "site": "0x50b01020",
+      "instruction": "bne #0x50b0118c",
+      "source_range": "boot_resources_load",
+      "target": "0x50b0118c"
+    },
+    {
+      "image": "boot",
+      "site": "0x50b01034",
+      "instruction": "b #0x50b00c0c",
+      "source_range": "boot_resources_load",
+      "target": "0x50b00c0c"
+    },
+    {
+      "image": "boot",
+      "site": "0x50b01040",
+      "instruction": "bl #0x50b014b0",
+      "source_range": "boot_resources_load",
+      "target": "0x50b014b0"
+    },
+    {
+      "image": "boot",
+      "site": "0x50b01078",
+      "instruction": "bne #0x50b01090",
+      "source_range": "boot_resources_load",
+      "target": "0x50b01090"
+    },
+    {
+      "image": "boot",
+      "site": "0x50b01090",
+      "instruction": "bl #0x50b03f04",
+      "source_range": "boot_resources_load",
+      "target": "0x50b03f04"
+    },
+    {
+      "image": "boot",
+      "site": "0x50b01098",
+      "instruction": "bne #0x50b010c0",
+      "source_range": "boot_resources_load",
+      "target": "0x50b010c0"
+    },
+    {
+      "image": "boot",
+      "site": "0x50b010ac",
+      "instruction": "b #0x50b00f68",
+      "source_range": "boot_resources_load",
+      "target": "0x50b00f68"
+    },
+    {
+      "image": "boot",
+      "site": "0x50b010b8",
+      "instruction": "bl #0x50b014b0",
+      "source_range": "boot_resources_load",
+      "target": "0x50b014b0"
+    },
+    {
+      "image": "boot",
+      "site": "0x50b010bc",
+      "instruction": "b #0x50b00fbc",
+      "source_range": "boot_resources_load",
+      "target": "0x50b00fbc"
+    },
+    {
+      "image": "boot",
+      "site": "0x50b010c8",
+      "instruction": "bl #0x50b014b0",
+      "source_range": "boot_resources_load",
+      "target": "0x50b014b0"
+    },
+    {
+      "image": "boot",
+      "site": "0x50b010cc",
+      "instruction": "b #0x50b00fbc",
+      "source_range": "boot_resources_load",
+      "target": "0x50b00fbc"
+    },
+    {
+      "image": "boot",
+      "site": "0x50b010e8",
+      "instruction": "bne #0x50b01124",
+      "source_range": "boot_resources_load",
+      "target": "0x50b01124"
+    },
+    {
+      "image": "boot",
+      "site": "0x50b010f8",
+      "instruction": "beq #0x50b0110c",
+      "source_range": "boot_resources_load",
+      "target": "0x50b0110c"
+    },
+    {
+      "image": "boot",
+      "site": "0x50b01120",
+      "instruction": "b #0x50b00f68",
+      "source_range": "boot_resources_load",
+      "target": "0x50b00f68"
+    },
+    {
+      "image": "boot",
+      "site": "0x50b0113c",
+      "instruction": "bne #0x50b010fc",
+      "source_range": "boot_resources_load",
+      "target": "0x50b010fc"
+    },
+    {
+      "image": "boot",
+      "site": "0x50b01140",
+      "instruction": "b #0x50b0110c",
+      "source_range": "boot_resources_load",
+      "target": "0x50b0110c"
+    },
+    {
+      "image": "boot",
+      "site": "0x50b01144",
+      "instruction": "bl #0x50b03f04",
+      "source_range": "boot_resources_load",
+      "target": "0x50b03f04"
+    },
+    {
+      "image": "boot",
+      "site": "0x50b0114c",
+      "instruction": "beq #0x50b00e2c",
+      "source_range": "boot_resources_load",
+      "target": "0x50b00e2c"
+    },
+    {
+      "image": "boot",
+      "site": "0x50b01158",
+      "instruction": "bl #0x50b014b0",
+      "source_range": "boot_resources_load",
+      "target": "0x50b014b0"
+    },
+    {
+      "image": "boot",
+      "site": "0x50b0115c",
+      "instruction": "b #0x50b00fbc",
+      "source_range": "boot_resources_load",
+      "target": "0x50b00fbc"
+    },
+    {
+      "image": "boot",
+      "site": "0x50b01168",
+      "instruction": "bl #0x50b014b0",
+      "source_range": "boot_resources_load",
+      "target": "0x50b014b0"
+    },
+    {
+      "image": "boot",
+      "site": "0x50b0116c",
+      "instruction": "b #0x50b00fbc",
+      "source_range": "boot_resources_load",
+      "target": "0x50b00fbc"
+    },
+    {
+      "image": "boot",
+      "site": "0x50b01170",
+      "instruction": "bl #0x50b03f04",
+      "source_range": "boot_resources_load",
+      "target": "0x50b03f04"
+    },
+    {
+      "image": "boot",
+      "site": "0x50b01178",
+      "instruction": "beq #0x50b00da8",
+      "source_range": "boot_resources_load",
+      "target": "0x50b00da8"
+    },
+    {
+      "image": "boot",
+      "site": "0x50b01184",
+      "instruction": "bl #0x50b014b0",
+      "source_range": "boot_resources_load",
+      "target": "0x50b014b0"
+    },
+    {
+      "image": "boot",
+      "site": "0x50b01188",
+      "instruction": "b #0x50b00fbc",
+      "source_range": "boot_resources_load",
+      "target": "0x50b00fbc"
+    },
+    {
+      "image": "boot",
+      "site": "0x50b011a0",
+      "instruction": "bl #0x50b014b0",
+      "source_range": "boot_resources_load",
+      "target": "0x50b014b0"
+    },
+    {
+      "image": "rtos",
+      "site": "0x52ff529c",
+      "instruction": "b #0x52ff52a4",
+      "source_range": "slot2_to_table_field",
+      "target": "0x52ff52a4"
+    },
+    {
+      "image": "rtos",
+      "site": "0x52ff52a0",
+      "instruction": "bl #0x530f3e1c",
+      "source_range": "slot2_to_table_field",
+      "target": "0x530f3e1c"
+    },
+    {
+      "image": "rtos",
+      "site": "0x52ff52ac",
+      "instruction": "bl #0x52ff8ed0",
+      "source_range": "slot2_to_table_field",
+      "target": "0x52ff8ed0"
+    },
+    {
+      "image": "rtos",
+      "site": "0x52ff52b8",
+      "instruction": "beq #0x52ff52a0",
+      "source_range": "slot2_to_table_field",
+      "target": "0x52ff52a0"
+    },
+    {
+      "image": "rtos",
+      "site": "0x52ff52c4",
+      "instruction": "bl #0x52ff8de4",
+      "source_range": "slot2_to_table_field",
+      "target": "0x52ff8de4"
+    },
+    {
+      "image": "rtos",
+      "site": "0x532974d0",
+      "instruction": "bne #0x53297504",
+      "source_range": "block_count_helper",
+      "target": "0x53297504"
+    },
+    {
+      "image": "rtos",
+      "site": "0x532974dc",
+      "instruction": "bl #0x526a834c",
+      "source_range": "block_count_helper",
+      "target": "0x526a834c"
+    },
+    {
+      "image": "rtos",
+      "site": "0x532974ec",
+      "instruction": "bne #0x532974f8",
+      "source_range": "block_count_helper",
+      "target": "0x532974f8"
+    },
+    {
+      "image": "rtos",
+      "site": "0x532974f0",
+      "instruction": "bl #0x526a8330",
+      "source_range": "block_count_helper",
+      "target": "0x526a8330"
+    },
+    {
+      "image": "rtos",
+      "site": "0x532974f8",
+      "instruction": "bl #0x526a8330",
+      "source_range": "block_count_helper",
+      "target": "0x526a8330"
+    },
+    {
+      "image": "rtos",
+      "site": "0x5329750c",
+      "instruction": "b #0x532974d4",
+      "source_range": "block_count_helper",
+      "target": "0x532974d4"
+    }
+  ],
+  "indirect_transfers": [
+    {
+      "image": "rtos",
+      "site": "0x52ff2030",
+      "instruction": "blx r3",
+      "source_range": "partition_layout_prepare"
+    },
+    {
+      "image": "rtos",
+      "site": "0x53297504",
+      "instruction": "blx r2",
+      "source_range": "block_count_helper"
+    }
+  ],
+  "resources": [
+    {
+      "label": "initial_slot2_record",
+      "image": "rtos",
+      "address": "0x53d0d2d8",
+      "source_address": "0x53d0d2d8",
+      "size": 16,
+      "sha256": "298e4429e22ce69e7192a8077588e167668c5e18a9bb013d0cb988afcd47a6b0"
+    }
+  ],
+  "pointer_words": [
+    {
+      "image": "rtos",
+      "address": "0x52ff5300",
+      "value": "0x53912568",
+      "sha256": "2bcdac3957108553fd57edf70d1257f4372871953a5649426b06aed06265f19a"
+    }
+  ],
+  "conditional_bindings": [],
+  "relationships": [
+    {
+      "label": "bank-default-and-table-alias",
+      "image": "rtos",
+      "sites": [
+        "0x52ff52f4",
+        "0x52ff52c4",
+        "0x52ff52c8"
+      ],
+      "expression": "Ctor writes object byte+10=0. After slot2 ready, getter2 return is stored to object+14. Initial slot2 ROM record base50b70100; current numeric fixture attaches that fixed table explicitly after ctor, without executing readywait/getter.",
+      "instructions": [
+        {
+          "address": "0x52ff52f4",
+          "sha256": "ce47e1cd3cfb6a14b6b03fea4b8a657ab838921f4a1dd80c3498541af7892d80",
+          "instruction": "strb r2, [r0, #0x10]"
+        },
+        {
+          "address": "0x52ff52c4",
+          "sha256": "c3eeefaa08b541b749090bd254b8ff0e01aedeb4dc8af546399a84674b3986c0",
+          "instruction": "bl #0x52ff8de4"
+        },
+        {
+          "address": "0x52ff52c8",
+          "sha256": "cd3fc4620fa50cd15f2fecb7fb96e7fe0b92d8826f1bb1a31d2f4e085dd8590f",
+          "instruction": "str r0, [r4, #0x14]"
+        }
+      ]
+    },
+    {
+      "label": "write-bank-and-range-gate",
+      "image": "rtos",
+      "sites": [
+        "0x52ff5894",
+        "0x52ff58a0",
+        "0x52ff58b4",
+        "0x52ff58b8",
+        "0x52ff58bc",
+        "0x52ff58cc",
+        "0x52ff58d0",
+        "0x52ff58d4",
+        "0x52ff58d8",
+        "0x52ff58dc",
+        "0x52ff58e8"
+      ],
+      "expression": "D=table+870*resourceIndex+434*u8(object+10); next resource index is u8(index+1). Reject iff unsigned u32(D.start+ceil512(bytes)) > nextD.start. Otherwise lower write(object,D.start,bytes,source). Numeric tests use index1 and small non-overflowing lengths; general integer overflow/range safety is not established.",
+      "instructions": [
+        {
+          "address": "0x52ff5894",
+          "sha256": "5620b6e065c8c543832f52964b4421f528410bf30b4f648c872707da8f724deb",
+          "instruction": "bl #0x532974a8"
+        },
+        {
+          "address": "0x52ff58a0",
+          "sha256": "7201cc1546bf524eea449410babafe327a6a4ea4e24f98cd9927f27fd7f14378",
+          "instruction": "ldrb r0, [r4, #0x10]"
+        },
+        {
+          "address": "0x52ff58b4",
+          "sha256": "c56d640be5c5b62ee93cf85f7cc94b986aa1d6230d59381b5621c7af3005c87f",
+          "instruction": "mla r2, sl, r0, r2"
+        },
+        {
+          "address": "0x52ff58b8",
+          "sha256": "f3c0d9b5cf91db9f48f88ca5ebb501dcb94da79ba756b49ebb302c1eadfb6918",
+          "instruction": "mul r6, r5, r7"
+        },
+        {
+          "address": "0x52ff58bc",
+          "sha256": "e4be84bd42b393d97fcb3517fd39a1ca57bd0f34978c53fb68afe808633b42c5",
+          "instruction": "uxtb r1, r1"
+        },
+        {
+          "address": "0x52ff58cc",
+          "sha256": "46e94f16222118451e737a5e58c51a275994985ce883e6d7ed1a61e22fb81531",
+          "instruction": "ldr r1, [r0, #0x10]"
+        },
+        {
+          "address": "0x52ff58d0",
+          "sha256": "bae95a3c307d27a53b52ebe428ad076dcd2c553e6b5d9e77c14eed8042a3b285",
+          "instruction": "ldr r2, [r2, #0x10]"
+        },
+        {
+          "address": "0x52ff58d4",
+          "sha256": "b75f8b9e1ba346d5d317f79063ca88dba356cef75426b999fda2bcd69d76c275",
+          "instruction": "add r0, sb, r1"
+        },
+        {
+          "address": "0x52ff58d8",
+          "sha256": "f8e7c79be062aa762d0a2441bda44c5e2f0170c28b5e87f59f066ecbe75d1497",
+          "instruction": "cmp r0, r2"
+        },
+        {
+          "address": "0x52ff58dc",
+          "sha256": "fcbc049c9558e6d8e5b9ecfbbc075606ce0c5e821a4004a6cd947ad73d7b5ebf",
+          "instruction": "bhi #0x52ff5918"
+        },
+        {
+          "address": "0x52ff58e8",
+          "sha256": "70e4aa9c962805354a1608bb41908cd7d302d9ae92c311082261ced45945ded1",
+          "instruction": "bl #0x52ff5708"
+        }
+      ]
+    },
+    {
+      "label": "write-success-only-metadata",
+      "image": "rtos",
+      "sites": [
+        "0x52ff58ec",
+        "0x52ff58f0",
+        "0x52ff58fc",
+        "0x52ff5904",
+        "0x52ff5908",
+        "0x52ff590c"
+      ],
+      "expression": "Nonzero lower write result gates re-reading bank byte and stores D+14=byte length, D+18=rounded block count. Common record+4 is not stored in this bounded function. Actual write return may be nonboolean; fixtures use0/1. Concurrent selector mutation not modeled.",
+      "instructions": [
+        {
+          "address": "0x52ff58ec",
+          "sha256": "0ac17147879a4c2fc31a723f1cfed8e5624f04f320e18c40d2689096d932cddf",
+          "instruction": "subs ip, r0, #0"
+        },
+        {
+          "address": "0x52ff58f0",
+          "sha256": "ad8ebf92dff717c350193b974130adf7554cfc62758faa33a2ca4d7042c047bc",
+          "instruction": "beq #0x52ff59bc"
+        },
+        {
+          "address": "0x52ff58fc",
+          "sha256": "2bb0099cee698fba03d099b76f3ebc14b7558eae6c7a53cb39f3ad1004691450",
+          "instruction": "ldrb r3, [r4, #0x10]"
+        },
+        {
+          "address": "0x52ff5904",
+          "sha256": "2fc7532f1e6f8f4159f8d2759e71cadc298505ae41f21bcd04c5e2c6286e01bf",
+          "instruction": "mla sl, sl, r3, r6"
+        },
+        {
+          "address": "0x52ff5908",
+          "sha256": "dfec52f5934e60804e6efc06172f3456a8793b9f2a8edf7f016eca26873200a7",
+          "instruction": "str r8, [sl, #0x14]"
+        },
+        {
+          "address": "0x52ff590c",
+          "sha256": "481ef161e18edf95381329f2827971e34182475a032bb10e398d4f62a79cde37",
+          "instruction": "str sb, [sl, #0x18]"
+        }
+      ]
+    },
+    {
+      "label": "layout-preserves-selector",
+      "image": "rtos",
+      "sites": [
+        "0x52ff1fe8",
+        "0x52ff1ffc",
+        "0x52ff2004",
+        "0x52ff2014",
+        "0x52ff2020",
+        "0x52ff2024",
+        "0x52ff2028",
+        "0x52ff2030",
+        "0x52ff2050"
+      ],
+      "expression": "Layout writes common record+0 and selected bank descriptor+8,+c,+10,+14,+18; no common record+4 store in bounded fullfunction. One numeric layout case passes3 entries; these authored layout fields are not a claim about actual package values.",
+      "instructions": [
+        {
+          "address": "0x52ff1fe8",
+          "sha256": "3c12e2db5396b98faab9e01d258ca446558e5949909ce985a8d70607d723a2c2",
+          "instruction": "ldrb ip, [r5, #0x10]"
+        },
+        {
+          "address": "0x52ff1ffc",
+          "sha256": "c188367f9dc91da9ac1ff3a5382ae61fb04c7eb2d9bdc192b96bc3b7433325ad",
+          "instruction": "mla r3, r8, ip, r3"
+        },
+        {
+          "address": "0x52ff2004",
+          "sha256": "7aa9adad3f6579c31ae88c0738aaf5fa7c0d7aed2377afb8c93f6d8b597aa356",
+          "instruction": "str lr, [r0, r4]"
+        },
+        {
+          "address": "0x52ff2014",
+          "sha256": "f487d4fd2250313ab869afa831676539343078201023fe3edb7e2a6f3c29fb58",
+          "instruction": "str ip, [r3, #0x10]"
+        },
+        {
+          "address": "0x52ff2020",
+          "sha256": "509e5345a8a17060c37eb8b1ed458834495cbc2abbece51b0caaee46b5f91235",
+          "instruction": "str lr, [r3, #8]"
+        },
+        {
+          "address": "0x52ff2024",
+          "sha256": "9cc017569212ba3304f81e96318ce89de274b16e274d1f7d86d972125dd30ba3",
+          "instruction": "str ip, [r3, #0xc]"
+        },
+        {
+          "address": "0x52ff2028",
+          "sha256": "cdd9270a0b6c49fa50fe6d541c55bafa664169659f2104f0da65e4a01fe2a40a",
+          "instruction": "str sb, [r3, #0x18]"
+        },
+        {
+          "address": "0x52ff2030",
+          "sha256": "8d82c69d3410eab8902008af07ad145a1392ec9e062f624c7973214627cf3725",
+          "instruction": "blx r3"
+        },
+        {
+          "address": "0x52ff2050",
+          "sha256": "cd3fc4620fa50cd15f2fecb7fb96e7fe0b92d8826f1bb1a31d2f4e085dd8590f",
+          "instruction": "str r0, [r4, #0x14]"
+        }
+      ]
+    },
+    {
+      "label": "boot-source-table-and-bank",
+      "image": "boot",
+      "sites": [
+        "0x50b00c0c",
+        "0x50b00c20",
+        "0x50b00c30",
+        "0x50b00c58",
+        "0x50b00c5c",
+        "0x50b00c64",
+        "0x50b00c70",
+        "0x50b00c80",
+        "0x50b00c88",
+        "0x50b00c90",
+        "0x50b00c9c"
+      ],
+      "expression": "BOOT table-read destination50b70100, count87hex blocks. Successful table import checks resource1 record+0, then reads record+4 UXTH and selects bank*434. Numeric entryc70 assumes table-read success and injects r5=r6=50b70100; no import/commit/reboot runs.",
+      "instructions": [
+        {
+          "address": "0x50b00c0c",
+          "sha256": "2b16ef402295fc6ed7da154578ff53f1fbaf5e469d1b181db4816a968f5ef332",
+          "instruction": "movw r6, #0x100"
+        },
+        {
+          "address": "0x50b00c20",
+          "sha256": "fae104f4b6eef27f5e320a9385aca929a3ea22624133e731b5a915fb41c84161",
+          "instruction": "movt r6, #0x50b7"
+        },
+        {
+          "address": "0x50b00c30",
+          "sha256": "eeb717832e80f91224453d536e15856c50076b590066aa99136903c507d4487d",
+          "instruction": "mov r5, r6"
+        },
+        {
+          "address": "0x50b00c58",
+          "sha256": "45b9167bc1b79225bebcbc31e55d07a6267474c8f7d58178c878211e39c19749",
+          "instruction": "movw r2, #0x100"
+        },
+        {
+          "address": "0x50b00c5c",
+          "sha256": "c98cbed5be6a086cfb574c8007b1f4db667bb9a9946e477c5902843e039adfd0",
+          "instruction": "mov r1, #0x87"
+        },
+        {
+          "address": "0x50b00c64",
+          "sha256": "1451fa6a35def4ae309db0121bb6abaefaba556e2f8a663f832254699ad8db9d",
+          "instruction": "bl #0x50b03f04"
+        },
+        {
+          "address": "0x50b00c70",
+          "sha256": "bb7c2d80adaa1603333369f507d2077925de4a36b0cad87d8eaa4740d2531622",
+          "instruction": "ldr r3, [r5, #0x870]"
+        },
+        {
+          "address": "0x50b00c80",
+          "sha256": "46d28d5d7b8b2fb5a51c290ea50b17ff3e66401856dce82729642ba43b22114e",
+          "instruction": "beq #0x50b00cf4"
+        },
+        {
+          "address": "0x50b00c88",
+          "sha256": "6c06b1720585ff923ea44a58a78950d2cd7eddcf819630d24249943c5a7640e1",
+          "instruction": "ldr r3, [r5, #0x874]"
+        },
+        {
+          "address": "0x50b00c90",
+          "sha256": "c2897be534778fb65ec3c310a5663daf29de59ca868b216cc6885b8125d8da9d",
+          "instruction": "uxth r3, r3"
+        },
+        {
+          "address": "0x50b00c9c",
+          "sha256": "04466483fe7a6d5100313e3fb620553bdfad10003ff426ac7c354fa6bd80f801",
+          "instruction": "mla ip, ip, r3, r5"
+        }
+      ]
+    },
+    {
+      "label": "boot-payload-range-and-entry",
+      "image": "boot",
+      "sites": [
+        "0x50b00c8c",
+        "0x50b00c94",
+        "0x50b00ca0",
+        "0x50b00ca4",
+        "0x50b00ca8",
+        "0x50b00cac",
+        "0x50b00cb4",
+        "0x50b00cc4",
+        "0x50b00ccc",
+        "0x50b00cd4",
+        "0x50b00cd8",
+        "0x50b00ce8",
+        "0x50b00cec",
+        "0x50b00cf0"
+      ],
+      "expression": "Unless local mode==2, read(selectedD+10, selectedD+18 or ceil(selectedD+14/512), selectedD+8). Nonzero read return goes1160 before entry stores. Success/local mode2 stores selectedD+c at4fffff20 and50b054c4. Mode2 injection proves fragment branch only, not reachability from BOOT entry or a stale-entry policy. Stopcf4 before other resources/SEV/entry execution.",
+      "instructions": [
+        {
+          "address": "0x50b00c8c",
+          "sha256": "705c658811cb952ddbdce5725e1c15de138ac1bf5b63fd6703a9bb3ea6ce5d9b",
+          "instruction": "cmp r2, #2"
+        },
+        {
+          "address": "0x50b00c94",
+          "sha256": "1e0612da619db950e9d1da43b7a3a19e30b6612d6af832050a1ee926be5a590e",
+          "instruction": "beq #0x50b00cdc"
+        },
+        {
+          "address": "0x50b00ca0",
+          "sha256": "32b4f358e9eb4a1f4879d6a1336f1bf213960d5d2714edfba40a09d12aa35ac2",
+          "instruction": "ldr r1, [ip, #0x888]"
+        },
+        {
+          "address": "0x50b00ca4",
+          "sha256": "90dfe07c632b0dba893ba1f45b7a9c88ad1b27a35447c692ae2a6cd1cb1d7418",
+          "instruction": "ldr r0, [ip, #0x880]"
+        },
+        {
+          "address": "0x50b00ca8",
+          "sha256": "efacd923710f585c6d82080a9c177a90995651b44d42585dec8030c3765d4dd5",
+          "instruction": "ldr r2, [ip, #0x878]"
+        },
+        {
+          "address": "0x50b00cac",
+          "sha256": "8dc7afd3236c9e90c1ba9b43ee2c59e5be9ec42798ad3287c1c1780ff4066de2",
+          "instruction": "cmp r1, #0"
+        },
+        {
+          "address": "0x50b00cb4",
+          "sha256": "0da57ffed6d10135c92ef71b38c90f64ea8d8b9efacf69ddb0a9f211aed8d510",
+          "instruction": "ldr r1, [ip, #0x884]"
+        },
+        {
+          "address": "0x50b00cc4",
+          "sha256": "5e83288cc7069623355f6f846daa2ee4a350563660dd2a82a889d52b98274f4f",
+          "instruction": "addne r1, r1, #1"
+        },
+        {
+          "address": "0x50b00ccc",
+          "sha256": "c5410c80d2706030646298f1f433036d46e0f5c92ab776f9276da382172900f8",
+          "instruction": "bl #0x50b03f04"
+        },
+        {
+          "address": "0x50b00cd4",
+          "sha256": "bc6af13b64b078874699db341acef932e72c93eabad7abba11544746a1917788",
+          "instruction": "cmp r0, #0"
+        },
+        {
+          "address": "0x50b00cd8",
+          "sha256": "aa773d0809e60746d3a14d8d47c26f24c53abcaa7df482b4a5694d1e9e153884",
+          "instruction": "bne #0x50b01160"
+        },
+        {
+          "address": "0x50b00ce8",
+          "sha256": "31506a676bfcc9f1406e430794155740529f52907ec6d3fac345b53041b1726c",
+          "instruction": "ldr r3, [r3, #0x87c]"
+        },
+        {
+          "address": "0x50b00cec",
+          "sha256": "e4ec3dfd9e76e1affaa5b6b4d51b5fe5279830c7074f931ab64ead3c06274b59",
+          "instruction": "str r3, [r2, #-0xdf]"
+        },
+        {
+          "address": "0x50b00cf0",
+          "sha256": "c84fb5b0e5d863a0c619fb7e63f5fb7bccada1ddb5af8d8448b0e0935bc3f081",
+          "instruction": "str r3, [r4, #4]"
+        }
+      ]
+    },
+    {
+      "label": "conditional-cross-image-conclusion",
+      "image": "rtos",
+      "sites": [
+        "0x52ff58a0",
+        "0x52ff58e8",
+        "0x52ff5908",
+        "0x52ff590c"
+      ],
+      "expression": "For distinct nonaliasing fixture media ranges, successful write plus boot read success selects newly written bytes iff writer u8bank equals BOOT low16bank, with resource present and local mode!=2. General invariant is chosen descriptor resolving written payload location/range, not unconditional bank-number equality. No code tying objectbank to record+4 is added here; retained import value/producer policy remains unresolved.",
+      "instructions": [
+        {
+          "address": "0x52ff58a0",
+          "sha256": "7201cc1546bf524eea449410babafe327a6a4ea4e24f98cd9927f27fd7f14378",
+          "instruction": "ldrb r0, [r4, #0x10]"
+        },
+        {
+          "address": "0x52ff58e8",
+          "sha256": "70e4aa9c962805354a1608bb41908cd7d302d9ae92c311082261ced45945ded1",
+          "instruction": "bl #0x52ff5708"
+        },
+        {
+          "address": "0x52ff5908",
+          "sha256": "dfec52f5934e60804e6efc06172f3456a8793b9f2a8edf7f016eca26873200a7",
+          "instruction": "str r8, [sl, #0x14]"
+        },
+        {
+          "address": "0x52ff590c",
+          "sha256": "481ef161e18edf95381329f2827971e34182475a032bb10e398d4f62a79cde37",
+          "instruction": "str sb, [sl, #0x18]"
+        }
+      ]
+    }
+  ],
+  "limits": [
+    "Bounded comparison of established paths, not a broad search for all bank writers. Three prior genuine C artifacts reused unchanged; original ARM is authoritative.",
+    "Same synthetic RAM table is handed between stages by authored harness. No actual updater completion, table persistence/reload, boot header copy selection, reset, authentication, partition hardware, flush, atomicity or entry execution.",
+    "Object bank1 case is an explicit synthetic override after real ctor zero, never evidence for a firmware nonzero producer. Common record+4 fixture values are authored, not observed device contents.",
+    "BOOT local mode2 case entersc70 with injected registers. The original entry skips the resource loader if its first read of 0x0100fffc is 2. Otherwise it rereads the field before calling the loader. The injected fragment does not establish normal path reachability.",
+    "Bank equality is conditional on distinct media locations in these fixtures. The mock media is keyed by start block and does not model partial overlap between ranges with different starts. One additional local case confirms same-start aliasing, outside the public12.",
+    "Write failure preserves mock media and read failure preserves destination because of fixture policy. Real partial writes/read failures, durability, concurrent mutation and power loss are untested.",
+    "Writer capacity guard uses u32 addition, unbounded bank byte, and u8 next-index; cases deliberately valid small tables/index1. No general safety/bounds guarantee.",
+    "512-byte conversion helper and block getter are explicit arithmetic stubs. Original BOOT ceil fallback executes. Cortex-A15 emulation does not assert actual camera CPU/hardware fidelity.",
+    "Successful same-bank synthetic bytes are necessary dataflow evidence under fixture conditions only; not proof a modified package is accepted, authenticated, persisted or booted. Concrete producer/update policy of resource record+4 remains the bank-policy gap."
+  ],
+  "prior_public_evidence": [
+    {
+      "path": "bank-switch-evidence.json",
+      "sha256": "a27c03ecd887e958270596a9fbaaaf9100ae95602cbde1c58216ae26dd05c8fe"
+    },
+    {
+      "path": "bank-record-evidence.json",
+      "sha256": "0001fef7a8b8befac5a850d46e1039475dafc7faab031e65dabd978bcd3fd5de"
+    },
+    {
+      "path": "bank-alias-evidence.json",
+      "sha256": "6a7a60dbfdb572591466133333b0515737933bb4cac885a39c31e75f751221cc"
+    },
+    {
+      "path": "bank-writer-evidence.json",
+      "sha256": "a68f23b2931698ec71bc9138a674e08b7010ff0f08dd5b3b087a222d1c512fd0"
+    }
+  ],
+  "manager_validation": {
+    "passed": true,
+    "images": {
+      "rtos": {
+        "base": "0x52500000",
+        "size": 25483200,
+        "sha256": "342d2f35405e8daf1797dfe431d2e4aa70f4b52a2c242a29df48206672f1dfb4"
+      },
+      "boot": {
+        "base": "0x50b00000",
+        "size": 21696,
+        "sha256": "0a9c086818b9d6e7531b93710c2cab2782c7f2c32bb5b1c26e3b5b5b69695900"
+      }
+    },
+    "retained_genuine_c": 3,
+    "new_genuine_c": 0,
+    "supporting_ranges": 4,
+    "words": 740,
+    "direct_transfers": 117,
+    "indirect_transfers": 2,
+    "critical_instructions": 58,
+    "resources": 1,
+    "pointer_words": 1,
+    "cases": 12,
+    "fixture_entry_runs": 37,
+    "both_input_containers_equal": true,
+    "full_assembly_lf_hash_verified": true,
+    "scope": "Authored same-table join, not actual update or reboot. Media stubs only. Synthetic bank1 not producer. Mode2 injected fragment not reachability. Distinct fixture media ranges condition bank-equality conclusion."
+  },
+  "public_cli": {
+    "script": "../verify_update_bank_selection.py",
+    "sha256": "0618f4a8160f66f93c5ab385739a6f149a5cf9eda71c982f0502ca538a37650d",
+    "passed": true,
+    "guards": [
+      "existing",
+      "hardlink",
+      "dangling-missing-input",
+      "optimized-missing-input-dangling-output",
+      "unknown-input",
+      "missing-boot",
+      "wrong-boot",
+      "redundant-boot-with-decoded-input"
+    ],
+    "split_and_decoded_equal": true
+  },
+  "private_independent_review": {
+    "cases": 2,
+    "fixture_entry_runs": 6,
+    "passed": true,
+    "sha256": "34ef2c68c550ae6d24a8c9e2439ffc0f7d85ec8ff3c17f6c1ebc376056a044ed",
+    "findings": [
+      "Different banks with equal synthetic start block can read the new payload; bank equality is not universally necessary.",
+      "Original writer preserves nonzero lower return2 rather than normalizing to1."
+    ],
+    "limits": "Authored changed fixture; not actual producer, storage commit/reload, reboot or authentication."
+  },
+  "local_explanatory_pseudocode": {
+    "sha256": "ccd2a5a46b5d2967def4561d15d345b0c5da79e500821ce296eca67ba23713db",
+    "type": "Authored explanatory pseudocode, not recovered source or executable code."
+  },
+  "artifact_policy": "Original binary,C,ASM and resource text remain local. Authored analysis,synthetic fixtures,addresses and hashes are public."
+}

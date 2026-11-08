@@ -1,0 +1,1054 @@
+{
+  "passed": true,
+  "cases": 12,
+  "fixture_entry_runs": 37,
+  "image_sha256": "342d2f35405e8daf1797dfe431d2e4aa70f4b52a2c242a29df48206672f1dfb4",
+  "boot_sha256": "0a9c086818b9d6e7531b93710c2cab2782c7f2c32bb5b1c26e3b5b5b69695900",
+  "ranges": [
+    {
+      "image": "rtos",
+      "start": "0x52ff52d4",
+      "end": "0x52ff5300",
+      "sha256": "b0e80c520adae7747671efe8dbed5319add25fccf75913fe70d7a7c826581794"
+    },
+    {
+      "image": "rtos",
+      "start": "0x52ff1ea8",
+      "end": "0x52ff2060",
+      "sha256": "8e1c52e6e4e5f204f510505af51c93251b78d1c725a996f768abef61df19c776"
+    },
+    {
+      "image": "rtos",
+      "start": "0x52ff586c",
+      "end": "0x52ff59f4",
+      "sha256": "cb03b6f0d9986ec6104fb27fea39bc3a5ad4a918a8be28edf65c50e482d782be"
+    },
+    {
+      "image": "boot",
+      "start": "0x50b00c70",
+      "end": "0x50b00cf4",
+      "sha256": "53660fe7f1bde136466a6701159f529920e76ee4c000e886a9fb9ed63c319574"
+    }
+  ],
+  "explicit_stubs": {
+    "0x532974a8": "ceil(unsigned byte count/512), no driver; configured block size assumption backed by prior concrete Emmc getter",
+    "0x532971dc": "512 for layout virtual block-size call",
+    "0x530fced4": "diagnostic returns0; no logging IO",
+    "0x52ff5708": "captures object/start block/byte length/source; synthetic media map updated only on configured success, failure preserves map by fixture policy",
+    "0x50b03f04": "captures start block/block count/destination; synthetic RAM copy only on return0, failure preserves destination by fixture policy"
+  },
+  "scope": "Full original RTOS ctor/layout/indexed writer and selected BOOT 50b00c70..cf4 fragment. Cortex-A15 emulator, synthetic RAM. Explicit same-table bridge; no actual update commit/reload/reboot, media/OS/hardware, authentication, target CPU fidelity, or nonzero bank producer. BOOT mode2 is only the injected numeric read-skip branch, not proof of reachability from normal entry. Bank equality is required only for the distinct nonaliasing media locations in these fixtures; general condition is resolving the written payload location/range.",
+  "cases_detail": [
+    {
+      "bank": 0,
+      "record": 0,
+      "present": true,
+      "write": 1,
+      "read": 0,
+      "tight": false,
+      "mode": 0,
+      "layout": false,
+      "old_count": 2,
+      "old_length": 1024,
+      "label": "default-bank0-match",
+      "ctor_bank": 0,
+      "synthetic_override": false,
+      "write_return": 1,
+      "writer_descriptor_offset": "0x870",
+      "boot_bank_low16": 0,
+      "read_arguments": [
+        [
+          100,
+          2,
+          285212672
+        ]
+      ],
+      "write_arguments": [
+        [
+          268439552,
+          100,
+          513
+        ]
+      ],
+      "entry_written": true,
+      "new_payload_bytes_in_synthetic_destination": true,
+      "common_record4_preserved": true,
+      "table_before_sha256": "2348351f490b157adcd526b374ce1db01003feab7d37d369aae4749913269311",
+      "table_after_sha256": "72f9fd9cfe5100a470ca3c8d0588a784e77cf3bdba1d81de4ddd261a972cfa97",
+      "table_writes": [
+        {
+          "stage": "write",
+          "address": "0x50b70984",
+          "size": 4,
+          "value": 513
+        },
+        {
+          "stage": "write",
+          "address": "0x50b70988",
+          "size": 4,
+          "value": 2
+        }
+      ],
+      "trace": [
+        {
+          "stage": "write",
+          "stub": "ceil512",
+          "bytes": 513
+        },
+        {
+          "stage": "write",
+          "stub": "media-write",
+          "arguments": [
+            268439552,
+            100,
+            513,
+            268500992
+          ],
+          "returned": 1
+        },
+        {
+          "stage": "boot",
+          "stub": "media-read",
+          "arguments": [
+            100,
+            2,
+            285212672
+          ],
+          "returned": 0
+        }
+      ]
+    },
+    {
+      "bank": 0,
+      "record": 1,
+      "present": true,
+      "write": 1,
+      "read": 0,
+      "tight": false,
+      "mode": 0,
+      "layout": false,
+      "old_count": 2,
+      "old_length": 1024,
+      "label": "default-bank0-mismatch-bank1",
+      "ctor_bank": 0,
+      "synthetic_override": false,
+      "write_return": 1,
+      "writer_descriptor_offset": "0x870",
+      "boot_bank_low16": 1,
+      "read_arguments": [
+        [
+          200,
+          2,
+          285216768
+        ]
+      ],
+      "write_arguments": [
+        [
+          268439552,
+          100,
+          513
+        ]
+      ],
+      "entry_written": true,
+      "new_payload_bytes_in_synthetic_destination": false,
+      "common_record4_preserved": true,
+      "table_before_sha256": "3d2df9b1ce399f7270016c492da31a20ed01efe13c99a320f5ba00ed7584979d",
+      "table_after_sha256": "1eae40259c744fc10a8a0e246f79100765ba7bf30312f5fb0507ecd97e5dc8c8",
+      "table_writes": [
+        {
+          "stage": "write",
+          "address": "0x50b70984",
+          "size": 4,
+          "value": 513
+        },
+        {
+          "stage": "write",
+          "address": "0x50b70988",
+          "size": 4,
+          "value": 2
+        }
+      ],
+      "trace": [
+        {
+          "stage": "write",
+          "stub": "ceil512",
+          "bytes": 513
+        },
+        {
+          "stage": "write",
+          "stub": "media-write",
+          "arguments": [
+            268439552,
+            100,
+            513,
+            268500992
+          ],
+          "returned": 1
+        },
+        {
+          "stage": "boot",
+          "stub": "media-read",
+          "arguments": [
+            200,
+            2,
+            285216768
+          ],
+          "returned": 0
+        }
+      ]
+    },
+    {
+      "bank": 0,
+      "record": 2774138880,
+      "present": true,
+      "write": 1,
+      "read": 0,
+      "tight": false,
+      "mode": 0,
+      "layout": false,
+      "old_count": 2,
+      "old_length": 1024,
+      "label": "upper16-ignored-bank0",
+      "ctor_bank": 0,
+      "synthetic_override": false,
+      "write_return": 1,
+      "writer_descriptor_offset": "0x870",
+      "boot_bank_low16": 0,
+      "read_arguments": [
+        [
+          100,
+          2,
+          285212672
+        ]
+      ],
+      "write_arguments": [
+        [
+          268439552,
+          100,
+          513
+        ]
+      ],
+      "entry_written": true,
+      "new_payload_bytes_in_synthetic_destination": true,
+      "common_record4_preserved": true,
+      "table_before_sha256": "b1ecfb7dd9a99c175b845df4cd242b7bdecd210a399d5bffc43e8ea5d841e47e",
+      "table_after_sha256": "4e53d8cffd3b92ec27b54aaa6efb2a21cba88bba29868fd3838f80a462c1052e",
+      "table_writes": [
+        {
+          "stage": "write",
+          "address": "0x50b70984",
+          "size": 4,
+          "value": 513
+        },
+        {
+          "stage": "write",
+          "address": "0x50b70988",
+          "size": 4,
+          "value": 2
+        }
+      ],
+      "trace": [
+        {
+          "stage": "write",
+          "stub": "ceil512",
+          "bytes": 513
+        },
+        {
+          "stage": "write",
+          "stub": "media-write",
+          "arguments": [
+            268439552,
+            100,
+            513,
+            268500992
+          ],
+          "returned": 1
+        },
+        {
+          "stage": "boot",
+          "stub": "media-read",
+          "arguments": [
+            100,
+            2,
+            285212672
+          ],
+          "returned": 0
+        }
+      ]
+    },
+    {
+      "bank": 0,
+      "record": 4294901761,
+      "present": true,
+      "write": 1,
+      "read": 0,
+      "tight": false,
+      "mode": 0,
+      "layout": false,
+      "old_count": 2,
+      "old_length": 1024,
+      "label": "upper16-ignored-bank1",
+      "ctor_bank": 0,
+      "synthetic_override": false,
+      "write_return": 1,
+      "writer_descriptor_offset": "0x870",
+      "boot_bank_low16": 1,
+      "read_arguments": [
+        [
+          200,
+          2,
+          285216768
+        ]
+      ],
+      "write_arguments": [
+        [
+          268439552,
+          100,
+          513
+        ]
+      ],
+      "entry_written": true,
+      "new_payload_bytes_in_synthetic_destination": false,
+      "common_record4_preserved": true,
+      "table_before_sha256": "aa307165744ef7b24b31f01e36a73060d5e1f44db8339b11a0dbee8051ca1dcf",
+      "table_after_sha256": "418f160c516e1c582acf9bd3b6b03570f9189a282fe81c770622345bdeeb7624",
+      "table_writes": [
+        {
+          "stage": "write",
+          "address": "0x50b70984",
+          "size": 4,
+          "value": 513
+        },
+        {
+          "stage": "write",
+          "address": "0x50b70988",
+          "size": 4,
+          "value": 2
+        }
+      ],
+      "trace": [
+        {
+          "stage": "write",
+          "stub": "ceil512",
+          "bytes": 513
+        },
+        {
+          "stage": "write",
+          "stub": "media-write",
+          "arguments": [
+            268439552,
+            100,
+            513,
+            268500992
+          ],
+          "returned": 1
+        },
+        {
+          "stage": "boot",
+          "stub": "media-read",
+          "arguments": [
+            200,
+            2,
+            285216768
+          ],
+          "returned": 0
+        }
+      ]
+    },
+    {
+      "bank": 0,
+      "record": 0,
+      "present": false,
+      "write": 1,
+      "read": 0,
+      "tight": false,
+      "mode": 0,
+      "layout": false,
+      "old_count": 2,
+      "old_length": 1024,
+      "label": "resource-absent",
+      "ctor_bank": 0,
+      "synthetic_override": false,
+      "write_return": 1,
+      "writer_descriptor_offset": "0x870",
+      "boot_bank_low16": 0,
+      "read_arguments": [],
+      "write_arguments": [
+        [
+          268439552,
+          100,
+          513
+        ]
+      ],
+      "entry_written": false,
+      "new_payload_bytes_in_synthetic_destination": false,
+      "common_record4_preserved": true,
+      "table_before_sha256": "4afaa5a3f95490bbeba44ff7176221c4dca7dd69b192b33c860546fdf6c7b60d",
+      "table_after_sha256": "d0baa7d5b29334ced3c6b14693ba1bbc338d62018bfc8af13b291d8f38f9cab6",
+      "table_writes": [
+        {
+          "stage": "write",
+          "address": "0x50b70984",
+          "size": 4,
+          "value": 513
+        },
+        {
+          "stage": "write",
+          "address": "0x50b70988",
+          "size": 4,
+          "value": 2
+        }
+      ],
+      "trace": [
+        {
+          "stage": "write",
+          "stub": "ceil512",
+          "bytes": 513
+        },
+        {
+          "stage": "write",
+          "stub": "media-write",
+          "arguments": [
+            268439552,
+            100,
+            513,
+            268500992
+          ],
+          "returned": 1
+        }
+      ]
+    },
+    {
+      "bank": 0,
+      "record": 0,
+      "present": true,
+      "write": 0,
+      "read": 0,
+      "tight": false,
+      "mode": 0,
+      "layout": false,
+      "old_count": 2,
+      "old_length": 1024,
+      "label": "write-failure",
+      "ctor_bank": 0,
+      "synthetic_override": false,
+      "write_return": 0,
+      "writer_descriptor_offset": "0x870",
+      "boot_bank_low16": 0,
+      "read_arguments": [
+        [
+          100,
+          2,
+          285212672
+        ]
+      ],
+      "write_arguments": [
+        [
+          268439552,
+          100,
+          513
+        ]
+      ],
+      "entry_written": true,
+      "new_payload_bytes_in_synthetic_destination": false,
+      "common_record4_preserved": true,
+      "table_before_sha256": "2348351f490b157adcd526b374ce1db01003feab7d37d369aae4749913269311",
+      "table_after_sha256": "2348351f490b157adcd526b374ce1db01003feab7d37d369aae4749913269311",
+      "table_writes": [],
+      "trace": [
+        {
+          "stage": "write",
+          "stub": "ceil512",
+          "bytes": 513
+        },
+        {
+          "stage": "write",
+          "stub": "media-write",
+          "arguments": [
+            268439552,
+            100,
+            513,
+            268500992
+          ],
+          "returned": 0
+        },
+        {
+          "stage": "write",
+          "stub": "diagnostic-return0"
+        },
+        {
+          "stage": "boot",
+          "stub": "media-read",
+          "arguments": [
+            100,
+            2,
+            285212672
+          ],
+          "returned": 0
+        }
+      ]
+    },
+    {
+      "bank": 0,
+      "record": 0,
+      "present": true,
+      "write": 1,
+      "read": 0,
+      "tight": true,
+      "mode": 0,
+      "layout": false,
+      "old_count": 2,
+      "old_length": 1024,
+      "label": "capacity-reject",
+      "ctor_bank": 0,
+      "synthetic_override": false,
+      "write_return": 0,
+      "writer_descriptor_offset": "0x870",
+      "boot_bank_low16": 0,
+      "read_arguments": [
+        [
+          100,
+          2,
+          285212672
+        ]
+      ],
+      "write_arguments": [],
+      "entry_written": true,
+      "new_payload_bytes_in_synthetic_destination": false,
+      "common_record4_preserved": true,
+      "table_before_sha256": "8492a390988402b38eec98a5b3d980f1575e7179f0230667bf4fa5e572bf0740",
+      "table_after_sha256": "8492a390988402b38eec98a5b3d980f1575e7179f0230667bf4fa5e572bf0740",
+      "table_writes": [],
+      "trace": [
+        {
+          "stage": "write",
+          "stub": "ceil512",
+          "bytes": 513
+        },
+        {
+          "stage": "write",
+          "stub": "diagnostic-return0"
+        },
+        {
+          "stage": "write",
+          "stub": "diagnostic-return0"
+        },
+        {
+          "stage": "write",
+          "stub": "diagnostic-return0"
+        },
+        {
+          "stage": "boot",
+          "stub": "media-read",
+          "arguments": [
+            100,
+            2,
+            285212672
+          ],
+          "returned": 0
+        }
+      ]
+    },
+    {
+      "bank": 0,
+      "record": 0,
+      "present": true,
+      "write": 1,
+      "read": 1,
+      "tight": false,
+      "mode": 0,
+      "layout": false,
+      "old_count": 2,
+      "old_length": 1024,
+      "label": "boot-read-failure",
+      "ctor_bank": 0,
+      "synthetic_override": false,
+      "write_return": 1,
+      "writer_descriptor_offset": "0x870",
+      "boot_bank_low16": 0,
+      "read_arguments": [
+        [
+          100,
+          2,
+          285212672
+        ]
+      ],
+      "write_arguments": [
+        [
+          268439552,
+          100,
+          513
+        ]
+      ],
+      "entry_written": false,
+      "new_payload_bytes_in_synthetic_destination": false,
+      "common_record4_preserved": true,
+      "table_before_sha256": "2348351f490b157adcd526b374ce1db01003feab7d37d369aae4749913269311",
+      "table_after_sha256": "72f9fd9cfe5100a470ca3c8d0588a784e77cf3bdba1d81de4ddd261a972cfa97",
+      "table_writes": [
+        {
+          "stage": "write",
+          "address": "0x50b70984",
+          "size": 4,
+          "value": 513
+        },
+        {
+          "stage": "write",
+          "address": "0x50b70988",
+          "size": 4,
+          "value": 2
+        }
+      ],
+      "trace": [
+        {
+          "stage": "write",
+          "stub": "ceil512",
+          "bytes": 513
+        },
+        {
+          "stage": "write",
+          "stub": "media-write",
+          "arguments": [
+            268439552,
+            100,
+            513,
+            268500992
+          ],
+          "returned": 1
+        },
+        {
+          "stage": "boot",
+          "stub": "media-read",
+          "arguments": [
+            100,
+            2,
+            285212672
+          ],
+          "returned": 1
+        }
+      ]
+    },
+    {
+      "bank": 0,
+      "record": 0,
+      "present": true,
+      "write": 1,
+      "read": 0,
+      "tight": false,
+      "mode": 2,
+      "layout": false,
+      "old_count": 2,
+      "old_length": 1024,
+      "label": "boot-mode2-skips-read",
+      "ctor_bank": 0,
+      "synthetic_override": false,
+      "write_return": 1,
+      "writer_descriptor_offset": "0x870",
+      "boot_bank_low16": 0,
+      "read_arguments": [],
+      "write_arguments": [
+        [
+          268439552,
+          100,
+          513
+        ]
+      ],
+      "entry_written": true,
+      "new_payload_bytes_in_synthetic_destination": false,
+      "common_record4_preserved": true,
+      "table_before_sha256": "2348351f490b157adcd526b374ce1db01003feab7d37d369aae4749913269311",
+      "table_after_sha256": "72f9fd9cfe5100a470ca3c8d0588a784e77cf3bdba1d81de4ddd261a972cfa97",
+      "table_writes": [
+        {
+          "stage": "write",
+          "address": "0x50b70984",
+          "size": 4,
+          "value": 513
+        },
+        {
+          "stage": "write",
+          "address": "0x50b70988",
+          "size": 4,
+          "value": 2
+        }
+      ],
+      "trace": [
+        {
+          "stage": "write",
+          "stub": "ceil512",
+          "bytes": 513
+        },
+        {
+          "stage": "write",
+          "stub": "media-write",
+          "arguments": [
+            268439552,
+            100,
+            513,
+            268500992
+          ],
+          "returned": 1
+        }
+      ]
+    },
+    {
+      "bank": 0,
+      "record": 1,
+      "present": true,
+      "write": 1,
+      "read": 0,
+      "tight": false,
+      "mode": 0,
+      "layout": true,
+      "old_count": 2,
+      "old_length": 1024,
+      "label": "layout-preserves-mismatching-selector",
+      "ctor_bank": 0,
+      "synthetic_override": false,
+      "write_return": 1,
+      "writer_descriptor_offset": "0x870",
+      "boot_bank_low16": 1,
+      "read_arguments": [
+        [
+          200,
+          2,
+          285216768
+        ]
+      ],
+      "write_arguments": [
+        [
+          268439552,
+          18,
+          513
+        ]
+      ],
+      "entry_written": true,
+      "new_payload_bytes_in_synthetic_destination": false,
+      "common_record4_preserved": true,
+      "table_before_sha256": "6b3962449da7d0791df48fdbc40367aa8cb7431d676f84e18058f7f18b87df1f",
+      "table_after_sha256": "50da0a29135245f28a949c03bd23b35c40b4a36e43e1704a20cc9440f178c87e",
+      "table_writes": [
+        {
+          "stage": "layout",
+          "address": "0x50b70100",
+          "size": 4,
+          "value": 4096
+        },
+        {
+          "stage": "layout",
+          "address": "0x50b70110",
+          "size": 4,
+          "value": 10
+        },
+        {
+          "stage": "layout",
+          "address": "0x50b70108",
+          "size": 4,
+          "value": 285212672
+        },
+        {
+          "stage": "layout",
+          "address": "0x50b7010c",
+          "size": 4,
+          "value": 285212928
+        },
+        {
+          "stage": "layout",
+          "address": "0x50b70118",
+          "size": 4,
+          "value": 1
+        },
+        {
+          "stage": "layout",
+          "address": "0x50b70114",
+          "size": 4,
+          "value": 512
+        },
+        {
+          "stage": "layout",
+          "address": "0x50b70970",
+          "size": 4,
+          "value": 4096
+        },
+        {
+          "stage": "layout",
+          "address": "0x50b70980",
+          "size": 4,
+          "value": 18
+        },
+        {
+          "stage": "layout",
+          "address": "0x50b70978",
+          "size": 4,
+          "value": 285220864
+        },
+        {
+          "stage": "layout",
+          "address": "0x50b7097c",
+          "size": 4,
+          "value": 285212928
+        },
+        {
+          "stage": "layout",
+          "address": "0x50b70988",
+          "size": 4,
+          "value": 1
+        },
+        {
+          "stage": "layout",
+          "address": "0x50b70984",
+          "size": 4,
+          "value": 512
+        },
+        {
+          "stage": "layout",
+          "address": "0x50b711e0",
+          "size": 4,
+          "value": 4096
+        },
+        {
+          "stage": "layout",
+          "address": "0x50b711f0",
+          "size": 4,
+          "value": 26
+        },
+        {
+          "stage": "layout",
+          "address": "0x50b711e8",
+          "size": 4,
+          "value": 285229056
+        },
+        {
+          "stage": "layout",
+          "address": "0x50b711ec",
+          "size": 4,
+          "value": 285229312
+        },
+        {
+          "stage": "layout",
+          "address": "0x50b711f8",
+          "size": 4,
+          "value": 1
+        },
+        {
+          "stage": "layout",
+          "address": "0x50b711f4",
+          "size": 4,
+          "value": 512
+        },
+        {
+          "stage": "write",
+          "address": "0x50b70984",
+          "size": 4,
+          "value": 513
+        },
+        {
+          "stage": "write",
+          "address": "0x50b70988",
+          "size": 4,
+          "value": 2
+        }
+      ],
+      "trace": [
+        {
+          "stage": "layout",
+          "stub": "diagnostic-return0"
+        },
+        {
+          "stage": "layout",
+          "stub": "diagnostic-return0"
+        },
+        {
+          "stage": "layout",
+          "stub": "ceil512",
+          "bytes": 4096
+        },
+        {
+          "stage": "layout",
+          "stub": "ceil512",
+          "bytes": 4096
+        },
+        {
+          "stage": "layout",
+          "stub": "ceil512",
+          "bytes": 4096
+        },
+        {
+          "stage": "write",
+          "stub": "ceil512",
+          "bytes": 513
+        },
+        {
+          "stage": "write",
+          "stub": "media-write",
+          "arguments": [
+            268439552,
+            18,
+            513,
+            268500992
+          ],
+          "returned": 1
+        },
+        {
+          "stage": "boot",
+          "stub": "media-read",
+          "arguments": [
+            200,
+            2,
+            285216768
+          ],
+          "returned": 0
+        }
+      ]
+    },
+    {
+      "bank": 1,
+      "record": 1,
+      "present": true,
+      "write": 1,
+      "read": 0,
+      "tight": false,
+      "mode": 0,
+      "layout": false,
+      "old_count": 2,
+      "old_length": 1024,
+      "label": "synthetic-bank1-match-not-a-producer",
+      "ctor_bank": 0,
+      "synthetic_override": true,
+      "write_return": 1,
+      "writer_descriptor_offset": "0xca4",
+      "boot_bank_low16": 1,
+      "read_arguments": [
+        [
+          200,
+          2,
+          285216768
+        ]
+      ],
+      "write_arguments": [
+        [
+          268439552,
+          200,
+          513
+        ]
+      ],
+      "entry_written": true,
+      "new_payload_bytes_in_synthetic_destination": true,
+      "common_record4_preserved": true,
+      "table_before_sha256": "3d2df9b1ce399f7270016c492da31a20ed01efe13c99a320f5ba00ed7584979d",
+      "table_after_sha256": "f8eefb16b131aae4c443abb6b90e3c84838a1f4c412886e96291d90913e6a04f",
+      "table_writes": [
+        {
+          "stage": "write",
+          "address": "0x50b70db8",
+          "size": 4,
+          "value": 513
+        },
+        {
+          "stage": "write",
+          "address": "0x50b70dbc",
+          "size": 4,
+          "value": 2
+        }
+      ],
+      "trace": [
+        {
+          "stage": "write",
+          "stub": "ceil512",
+          "bytes": 513
+        },
+        {
+          "stage": "write",
+          "stub": "media-write",
+          "arguments": [
+            268439552,
+            200,
+            513,
+            268500992
+          ],
+          "returned": 1
+        },
+        {
+          "stage": "boot",
+          "stub": "media-read",
+          "arguments": [
+            200,
+            2,
+            285216768
+          ],
+          "returned": 0
+        }
+      ]
+    },
+    {
+      "bank": 0,
+      "record": 0,
+      "present": true,
+      "write": 0,
+      "read": 0,
+      "tight": false,
+      "mode": 0,
+      "layout": false,
+      "old_count": 0,
+      "old_length": 513,
+      "label": "failed-write-boot-ceil-fallback",
+      "ctor_bank": 0,
+      "synthetic_override": false,
+      "write_return": 0,
+      "writer_descriptor_offset": "0x870",
+      "boot_bank_low16": 0,
+      "read_arguments": [
+        [
+          100,
+          2,
+          285212672
+        ]
+      ],
+      "write_arguments": [
+        [
+          268439552,
+          100,
+          513
+        ]
+      ],
+      "entry_written": true,
+      "new_payload_bytes_in_synthetic_destination": false,
+      "common_record4_preserved": true,
+      "table_before_sha256": "bcef10740f879c03feb35c8a978fada9eaf390c37340a8ea006dbd549705b8cb",
+      "table_after_sha256": "bcef10740f879c03feb35c8a978fada9eaf390c37340a8ea006dbd549705b8cb",
+      "table_writes": [],
+      "trace": [
+        {
+          "stage": "write",
+          "stub": "ceil512",
+          "bytes": 513
+        },
+        {
+          "stage": "write",
+          "stub": "media-write",
+          "arguments": [
+            268439552,
+            100,
+            513,
+            268500992
+          ],
+          "returned": 0
+        },
+        {
+          "stage": "write",
+          "stub": "diagnostic-return0"
+        },
+        {
+          "stage": "boot",
+          "stub": "media-read",
+          "arguments": [
+            100,
+            2,
+            285212672
+          ],
+          "returned": 0
+        }
+      ]
+    }
+  ]
+}

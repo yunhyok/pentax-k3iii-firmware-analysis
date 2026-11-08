@@ -16,6 +16,7 @@
 - [UI 타이머 예약·취소·콜백 39사례](analysis/update-ui-timer.html) · [커널 호출·64비트 시각 계산 17사례](analysis/update-timer-abi.html)
 - [TTimPeriod 설정·카운터 증가 20사례](analysis/update-timer-clock.html) · [하위 시간 변환의 32비트 산술·6,754회 실행](analysis/update-subtick-arithmetic.html)
 - [타이머 등록·지연 콜백 20사례](analysis/update-timer-irq.html) · [시각 조회 출력 12사례](analysis/update-clock-readers.html) · [기한 큐 삽입 18사례](analysis/update-timer-insertion.html)
+- [RTOS 쓰기 bank와 BOOT 선택의 합성 표 대조 12사례](analysis/update-bank-selection.html)
 - [실제 DNG 표본·DCP 시험 준비](analysis/raw-test-inputs.html)
 - [ColorChecker 24패치·ICC 색차 비교 절차](analysis/color-comparison-protocol.html)
 - [Lightroom 실제 TIFF 6개·프로파일·출력 색공간 비교](analysis/lightroom-render-comparison.html)
