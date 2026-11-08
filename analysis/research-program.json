@@ -1,0 +1,438 @@
+{
+  "schema_version": 1,
+  "as_of": "2026-11-08",
+  "time_zone": "Asia/Seoul",
+  "title": "펜탁스 펌웨어 연구 본부",
+  "summary": "K-3 Mark III, K-3 II, Q7의 분석 결과를 네 가지 목표로 비교합니다. 각 항목에 근거가 있는 결과, 아직 넘지 못한 검증 단계, 다음에 확인할 일을 기록합니다.",
+  "boundary": "이 판본은 공개 커밋에 고정한 선행 분석입니다. 원본 명령을 합성 입력으로 실행한 결과는 실기 동작과 구분합니다. 수정 이미지의 카메라 수용·부팅, 신규 프로파일의 독립 색 검증과 Lightroom 적용, 변경된 렌즈 구동과 UI 이식은 완료로 판정하지 않았습니다.",
+  "cameras": [
+    {
+      "id": "k3iii",
+      "name": "K-3 Mark III",
+      "firmware_version": "2.20",
+      "firmware_sha256": "3c9d466b8160689867af2f58ff2cf0bf3363bc3b42daff43685a33171b91eb1a",
+      "commit": "1617d141021f95f3a915b000ff701637dcec3967",
+      "digest_source": "iii-input",
+      "digest_field": "input_sha256",
+      "report_source": "iii-plan"
+    },
+    {
+      "id": "k3ii",
+      "name": "K-3 II",
+      "firmware_version": "1.12",
+      "firmware_sha256": "a33485f351019960192891ef69ddc5d4904ef9e298671d9d9955679e4c901a9a",
+      "commit": "66c85ea53f52b6e9489d742b5bd63e50e543055e",
+      "digest_source": "ii-input",
+      "digest_field": "firmware_sha256",
+      "report_source": "ii-lifecycle"
+    },
+    {
+      "id": "q7",
+      "name": "Q7",
+      "firmware_version": "1.01",
+      "firmware_sha256": "8a928b574623c28624127501526d8496a98a42eac3d843def6d3b5ceb074ff3b",
+      "commit": "ca3a9ba3bb7bdf77a484b2964b4dd15d8c233ba8",
+      "digest_source": "q-input",
+      "digest_field": "input_sha256",
+      "report_source": "q-hdr"
+    }
+  ],
+  "sources": {
+    "iii-input": {
+      "camera": "k3iii",
+      "path": "evidence.json",
+      "label": "원본 해시·컨테이너"
+    },
+    "iii-plan": {
+      "camera": "k3iii",
+      "path": "analysis/research-roadmap.html",
+      "label": "수정·이식 선행 연구"
+    },
+    "iii-update": {
+      "camera": "k3iii",
+      "path": "analysis/update-resources.html",
+      "label": "업데이트 검사·ICONBIN"
+    },
+    "iii-boot": {
+      "camera": "k3iii",
+      "path": "analysis/startup-storage.html",
+      "label": "BOOT·저장소"
+    },
+    "iii-af": {
+      "camera": "k3iii",
+      "path": "analysis/dispatch-af.html",
+      "label": "AF 수치 연산"
+    },
+    "iii-color": {
+      "camera": "k3iii",
+      "path": "analysis/color-lightroom.html",
+      "label": "컬러모드·Lightroom"
+    },
+    "iii-spec": {
+      "url": "https://www.ricoh-imaging.co.jp/english/products/k-3-3/spec/",
+      "label": "리코 K-3 III 사양"
+    },
+    "ui-menu-map": {
+      "url": "https://www.ricoh-imaging.co.jp/japan/support/pdf/k-3-3_09.pdf",
+      "label": "리코 K-3 III·K-3 II 메뉴 대응표 (PDF)"
+    },
+    "k-motor": {
+      "url": "https://www.ricoh-imaging.co.jp/english/products/lens/common/annotation-focus-k.html",
+      "label": "리코 K 렌즈 구동 호환표"
+    },
+    "k-dual": {
+      "url": "https://www.ricoh-imaging.co.jp/english/products/lens/k/standard/smcpentax-das16-50/",
+      "label": "구형 DA★ 16–50 SDM 구동 사양"
+    },
+    "ii-input": {
+      "camera": "k3ii",
+      "path": "analysis/official-package.json",
+      "label": "공식 ZIP과 원본 해시 대조"
+    },
+    "ii-readme": {
+      "camera": "k3ii",
+      "path": "README.md",
+      "label": "원본 식별·재현 절차"
+    },
+    "ii-hw": {
+      "camera": "k3ii",
+      "path": "analysis/hardware.json",
+      "label": "CPU·보조 코드 근거"
+    },
+    "ii-findings": {
+      "camera": "k3ii",
+      "path": "analysis/findings.json",
+      "label": "초기 벡터·주소 근거"
+    },
+    "ii-lifecycle": {
+      "camera": "k3ii",
+      "path": "analysis/superresolution-lifecycle.html",
+      "label": "Pixel Shift 메뉴·버퍼"
+    },
+    "ii-color": {
+      "camera": "k3ii",
+      "path": "analysis/pipeline-analysis.html",
+      "label": "톤·색 처리"
+    },
+    "ii-menu": {
+      "camera": "k3ii",
+      "path": "analysis/output-menu-analysis.html",
+      "label": "Reversal Film 메뉴 이벤트"
+    },
+    "ii-spec": {
+      "url": "https://www.ricoh-imaging.co.jp/english/products/k-3-2/spec/",
+      "label": "리코 K-3 II 사양"
+    },
+    "q-input": {
+      "camera": "q7",
+      "path": "analysis/evidence.json",
+      "label": "원본 해시·ELF 경계"
+    },
+    "q-readme": {
+      "camera": "q7",
+      "path": "README.md",
+      "label": "원본 대조·압축 복원"
+    },
+    "q-route": {
+      "camera": "q7",
+      "path": "routing-report.html",
+      "label": "렌즈 명령·색 레지스터"
+    },
+    "q-hdr": {
+      "camera": "q7",
+      "path": "hdr-task-report.html",
+      "label": "HDR 작업 생성·완료"
+    },
+    "q-spec": {
+      "url": "https://www.ricoh-imaging.co.jp/english/products/q7/spec/",
+      "label": "리코 Q7 사양"
+    },
+    "q-lenses": {
+      "url": "https://www.ricoh-imaging.co.jp/english/support/qa/q7/index.html",
+      "label": "리코 Q7 렌즈별 AF 호환표"
+    }
+  },
+  "tracks": [
+    {
+      "id": "firmware",
+      "title": "수정 펌웨어 빌드와 실행",
+      "dependency": "수정 이미지를 사용하는 AF·UI 실기 시험의 선행 조건입니다.",
+      "cards": {
+        "k3iii": {
+          "state": "업데이터·부팅 경로 일부 확인",
+          "finding": "프로젝트·버전·체크섬 검사와 저장 요청, BOOT의 일부 적재 경로를 추적했습니다. Boot ROM의 선행 인증과 미확정 bank 선택값의 생성 경로가 남았습니다.",
+          "next": "블록과 트레일러를 보존하는 무변경 재포장을 만들고 부팅 전에 검사되는 범위를 별도로 좁힙니다.",
+          "sources": [
+            "iii-input",
+            "iii-update",
+            "iii-boot"
+          ]
+        },
+        "k3ii": {
+          "state": "원본 식별·XOR 해제",
+          "finding": "공식 배포본의 파일 해시와 XOR 해제 후 초기 벡터를 대조했습니다. Cortex-A9 초기화 분기와 F²MC-8L 호환 보조 코드는 정적 근거이며 정확한 칩 부품 번호는 미확정입니다.",
+          "next": "XOR 역변환으로 원본 전체가 복원되는지 검사한 뒤 검사합·업데이터 수용 조건을 찾습니다.",
+          "sources": [
+            "ii-input",
+            "ii-readme",
+            "ii-findings",
+            "ii-hw"
+          ]
+        },
+        "q7": {
+          "state": "ELF 경계·압축 해제",
+          "finding": "공식 배포본과 일치하는 입력에서 유효 ELF 12개를 식별했습니다. 압축 448블록을 복원했지만 재압축·전체 패키지 재포장과 부팅 수용은 검증 범위에 들지 않습니다.",
+          "next": "로더의 블록 경계와 입력 검사를 추적하고 동일 바이트를 내는 재포장 조건을 확인합니다.",
+          "sources": [
+            "q-input",
+            "q-readme"
+          ]
+        }
+      },
+      "gates": [
+        [
+          "원본·형식 식별",
+          "공식 배포 BIN의 기종·버전·SHA-256을 고정하고 블록·레코드·트레일러·불명 영역을 구분합니다."
+        ],
+        [
+          "무변경 바이트 일치",
+          "해제 후 재포장한 전체 파일이 원본과 바이트 단위로 일치해야 합니다. 해시와 첫 차이 위치를 기록합니다."
+        ],
+        [
+          "변경 이미지 구조 검사",
+          "작은 변경 하나의 의도된 차이와 재계산 필드를 기록합니다. 독립 파서로 길이·주소·정렬·무결성 필드와 미변경 영역을 확인합니다."
+        ],
+        [
+          "업데이터 수용·부팅",
+          "복구 경로가 확인된 시험체에서 실제 검사·기록 수용과 재시작 뒤 부팅을 별도 기록하고 변경 내용이 실행되는지 확인합니다."
+        ],
+        [
+          "실기 회귀·복구",
+          "메뉴 입력, 촬영·저장·재생, 노출·AF, 전원 전환을 원본 기준과 비교하고 원본 복구를 재현합니다."
+        ]
+      ],
+      "routes": [
+        [
+          "기존 바이너리 재포장",
+          "제한된 위치만 수정하고 기존 컨테이너로 다시 감쌉니다. 원본 소스가 필요하지 않지만 검사·인증 조건은 검증해야 합니다."
+        ],
+        [
+          "일부 모듈 재구현",
+          "호출 규약과 데이터 구조를 복원해 특정 모듈을 교체합니다. 모듈 실행과 전체 이미지 수용은 따로 판정합니다."
+        ],
+        [
+          "전체 소스 재컴파일",
+          "소스·도구 체인·라이브러리·링커 배치·리소스 생성까지 재현하는 별도 목표입니다. 선별 함수 의사코드만으로는 이 경로를 검증할 수 없습니다."
+        ]
+      ]
+    },
+    {
+      "id": "color",
+      "title": "Lightroom RAW 색 프로파일",
+      "dependency": "공식 펌웨어의 RAW+JPEG 촬영 쌍과 Lightroom으로 검증할 수 있어 수정 펌웨어 시험과 병행합니다.",
+      "cards": {
+        "k3iii": {
+          "state": "모드별 행렬·곡선 식별",
+          "finding": "Q13 행렬, Gold 채널별 곡선, Reversal Film 분기를 추적했습니다. 로컬에 설치된 Adobe Camera Matching DCP 5종을 확인했지만 신규 모드를 내보내 검증한 결과는 아닙니다.",
+          "next": "Gold 또는 Reversal Film 하나를 정해 좌표계와 보간·클리핑 순서를 고정한 뒤 검증용 RAW+JPEG 쌍을 마련합니다.",
+          "sources": [
+            "iii-color"
+          ]
+        },
+        "k3ii": {
+          "state": "메뉴 선택·톤·색 설정 연결",
+          "finding": "Reversal Film 메뉴의 selector와 ImageTone 분기, WB·색 행렬 및 클리핑 설정을 연결했습니다. 레지스터·버퍼 추적은 실제 픽셀 출력의 대조가 아닙니다.",
+          "next": "Reversal Film의 톤 곡선과 색 행렬 적용 위치를 좁히고 표준 촬영 쌍으로 출력 차이를 확인합니다.",
+          "sources": [
+            "ii-color",
+            "ii-menu"
+          ]
+        },
+        "q7": {
+          "state": "색 설정·HDR 작업 경로 추적",
+          "finding": "색 행렬이 모드별 캐시와 필터를 거쳐 레지스터에 전달되는 경로와 HDR 작업의 생성·제출·완료 조건을 확인했습니다. HDR 패스 제어만으로 일반 RAW 색 프로파일을 결정할 수 없습니다.",
+          "next": "일반 정지화상 모드 하나를 골라 최종 색 계수와 감마의 적용 대상을 구분하고 실제 JPEG와 비교합니다.",
+          "sources": [
+            "q-route",
+            "q-hdr"
+          ]
+        }
+      },
+      "gates": [
+        [
+          "행렬·곡선 식별",
+          "기종·모드·조정값과 계수·곡선의 대응을 기록하고 원본 바이트의 오프셋·해시를 대조합니다."
+        ],
+        [
+          "처리 의미 재현",
+          "좌표계, WB, 고정소수점, 색·톤 처리 순서, 보간과 클리핑을 알려진 입력으로 검증합니다."
+        ],
+        [
+          "DCP 또는 XMP 생성",
+          "지원 카메라 모델과 기본 프로파일, 색·톤의 표현 한계를 기록하고 생성물 구조를 독립 도구로 읽습니다."
+        ],
+        [
+          "독립 RAW+JPEG 색 검증",
+          "학습에 쓰지 않은 동일 촬영 쌍과 복수 조명에서 중립·색차(ΔE00)·톤 오차를 비교합니다. 허용치는 실험 전에 정합니다."
+        ],
+        [
+          "Lightroom 적용",
+          "제품·버전을 기록하고 실제 RAW에서 가져오기·선택·렌더링·내보내기를 검증합니다. 일치하는 범위와 예외를 함께 기록합니다."
+        ]
+      ]
+    },
+    {
+      "id": "af",
+      "title": "AF 알고리즘과 렌즈 구동 변경",
+      "dependency": "알고리즘 재실행은 오프라인으로 검증합니다. 수정 이미지를 사용한 구동 시험은 펌웨어 수용·부팅 단계 이후에 진행합니다.",
+      "cards": {
+        "k3iii": {
+          "state": "상관·디포커스 계산 검증",
+          "finding": "PafPredictor에서 상관·디포커스 계산을 추적했고 SAD·SSD 커널을 합성 입력으로 검증했습니다. 공식 사양의 KAF2 커플러와 호환 렌즈 내 모터 경로를 구분해야 하며 최종 구동 명령은 아직 연결하지 못했습니다.",
+          "next": "디포커스 결과의 소비자를 찾아 구동 경로를 분리합니다. 스크루 구동 전환은 구형 DA★ 16–50 SDM처럼 두 구동 방식이 문서에 명시된 렌즈부터 평가합니다.",
+          "sources": [
+            "iii-af",
+            "iii-spec",
+            "k-motor",
+            "k-dual"
+          ]
+        },
+        "k3ii": {
+          "state": "물리 구동 조건 식별",
+          "finding": "공식 사양에는 뷰파인더 위상차 AF와 라이브뷰 콘트라스트 AF, KAF2 커플러가 명시돼 있습니다. 기준 판본은 바디와 렌즈 내 모터 제어 코드의 연결을 입증하지 않습니다.",
+          "next": "SAFOX 측정값과 라이브뷰 AF의 진입점을 별도로 찾고 장착 렌즈 종류에 따른 명령 분기를 대조합니다.",
+          "sources": [
+            "ii-spec",
+            "k-motor",
+            "ii-hw"
+          ]
+        },
+        "q7": {
+          "state": "AF 콜백·렌즈 큐 추적",
+          "finding": "콘트라스트 AF의 네 구동 모드를 렌즈 통신 경계까지 추적했습니다. 공식 호환표에서 AF를 지원하는 Q 렌즈와 수동 초점인 공식 K 어댑터를 구분합니다. 실제 모터 이동은 미측정입니다.",
+          "next": "지원 Q 렌즈의 명령·응답·중단 조건을 대조하고 위치 구동 한계와 통신 실패를 오프라인으로 검증합니다.",
+          "sources": [
+            "q-route",
+            "q-spec",
+            "q-lenses"
+          ]
+        }
+      },
+      "gates": [
+        [
+          "물리 구동 능력",
+          "바디·렌즈·마운트·어댑터별로 스크루, 렌즈 내 모터, 수동 초점 여부를 문서와 시험체로 확인합니다."
+        ],
+        [
+          "제어 코드 연결",
+          "측정값부터 제어량, 렌즈 분기, 명령·통신과 오류 처리까지 호출·데이터 근거로 연결합니다."
+        ],
+        [
+          "변경안 오프라인 검증",
+          "원본과 변경안을 같은 입력으로 재실행하고 구동 방향·이동량·범위 제한·정지·시간 초과를 비교합니다."
+        ],
+        [
+          "렌즈 장착 실기 시험",
+          "지정한 렌즈에서 속도·정확도·반복성과 중단·오류 처리를 비교합니다. 렌즈 모델, 조건, 안전 한계와 회귀 결과를 남깁니다."
+        ]
+      ]
+    },
+    {
+      "id": "ui",
+      "title": "K-3 Mark III UI를 K-3 II·Q7에 이식",
+      "dependency": "PC 화면 모형은 펌웨어와 독립적으로 검증합니다. 타깃 구현은 대상 기종의 렌더링·입력 인터페이스와 실행 경로가 필요합니다.",
+      "cards": {
+        "k3iii": {
+          "state": "원형 · ICONBIN 접근 경로",
+          "finding": "ICONBIN의 저장소 인덱스 4→리소스 슬롯 5와 설명자 오프셋을 쓰는 아이콘 접근을 확인했습니다. 자원 픽셀 포맷과 메뉴·입력 ABI 전체는 미확정입니다.",
+          "next": "아이콘 하나의 포맷·팔레트·투명도·stride를 판별하고 화면 하나에서 메뉴 상태와 입력 이벤트를 함께 기록합니다.",
+          "sources": [
+            "iii-plan",
+            "iii-update",
+            "iii-spec"
+          ]
+        },
+        "k3ii": {
+          "state": "대상 · 메뉴 이벤트 일부 확인",
+          "finding": "Reversal Film과 Pixel Shift 메뉴 이벤트를 내부 설정에 연결했습니다. 리코 대응표에 따르면 K-3 II의 촬영 기록 설정은 K-3 III에서 파일 형식·JPEG 크기 등으로 나뉩니다. 메뉴 위치의 대응은 펌웨어의 이벤트 ID나 GUI 바이너리 호환을 뜻하지 않습니다.",
+          "next": "메뉴 항목 하나의 렌더러, 폰트·아이콘 로더, 버튼·다이얼 입력을 연결해 대응표를 만듭니다.",
+          "sources": [
+            "ii-menu",
+            "ii-lifecycle",
+            "ii-spec",
+            "ui-menu-map"
+          ]
+        },
+        "q7": {
+          "state": "대상 · 형식·표시 사양 확보",
+          "finding": "MIPS ELF와 공식 LCD 사양을 확보했습니다. K-3 III의 ARM UI를 그대로 실행할 근거가 없으며 Q7의 렌더러·리소스·메뉴 인터페이스는 추가 조사가 필요합니다.",
+          "next": "화면 상태, 리소스 로더와 버튼 이벤트 진입점을 찾아 같은 메뉴 동작을 대상 인터페이스로 재구현할 수 있는지 평가합니다.",
+          "sources": [
+            "q-input",
+            "q-spec",
+            "iii-plan"
+          ]
+        }
+      },
+      "gates": [
+        [
+          "자원 포맷",
+          "기종별 아이콘·폰트·문자열의 포맷과 경계를 식별하고 한 화면에 필요한 자원을 로컬에서 확인합니다."
+        ],
+        [
+          "렌더러·메뉴·입력 ABI",
+          "표시 버퍼·그리기 함수·화면 상태·메뉴 속성·입력 이벤트의 대응을 비교합니다. 도트 수는 버퍼 포맷의 증거로 쓰지 않습니다."
+        ],
+        [
+          "PC 화면·입력 모형",
+          "메뉴 화면 하나의 상태 전이를 재현합니다. 해상도·배치와 터치가 없는 대상의 버튼·다이얼 조작을 확인합니다."
+        ],
+        [
+          "대상 구현·실기",
+          "기종별 구현을 부팅한 뒤 동일 메뉴의 진입·선택·저장·복귀와 기존 UI 회귀를 기록합니다. 검증된 화면과 동작 범위를 밝힙니다."
+        ]
+      ]
+    }
+  ],
+  "inputs": [
+    [
+      "시험 바디와 복구 조건",
+      "사용 가능한 기종·버전, 시험 전용 바디 여부, 공식 복구 수단, 원본 보존과 복구 가능성을 확인합니다. 실기 적용·복구 로그는 아직 없습니다."
+    ],
+    [
+      "색 검증 샘플",
+      "우선할 기종·컬러모드와 조명·WB·노출·색 공간을 기록한 RAW+카메라 JPEG 쌍, 컬러차트, 사용할 Lightroom 제품·버전이 필요합니다."
+    ],
+    [
+      "AF 렌즈와 평가 조건",
+      "AF는 향후 변경을 위한 기반 연구로 진행합니다. 정확한 렌즈 모델과 실기는 구체적인 변경을 시험할 때 확인하며 현재 연구의 선행조건은 아닙니다."
+    ],
+    [
+      "이식 화면과 입력 우선순위",
+      "먼저 이식할 메뉴·화면 하나, 대상 기종, 반드시 유지할 조작과 버튼·다이얼로 대체할 동작을 정합니다."
+    ]
+  ],
+  "loop": [
+    [
+      "근거 추가",
+      "기종별 분석에서 원본 해시, 커밋, 관찰 범위와 재현 방법을 남깁니다."
+    ],
+    [
+      "본부 검토",
+      "기종별 analysis/hq-status.json이 제출되면 근거와 검증 결과를 수동으로 대조하고 채택한 내용만 반영합니다."
+    ],
+    [
+      "단계 검증",
+      "그 단계의 입력과 판정 조건으로 다시 확인하고 합성 실행·실기·미검증을 구분합니다."
+    ],
+    [
+      "판본 공개",
+      "채택한 커밋과 다음 검증을 이 JSON과 HTML에 반영합니다. 원본 펌웨어와 제조사 LUT는 게시하지 않습니다."
+    ],
+    [
+      "다음 병목 선정",
+      "아직 넘지 못한 단계의 첫 질문을 다음 조사로 넘깁니다. 사용량 잔여 10% 초과 시 계속하고 10% 이하이면 근거와 다음 작업을 체크포인트에 남깁니다."
+    ]
+  ],
+  "refresh_note": "이 페이지는 검토를 마친 결과의 스냅샷입니다. 새 커밋이나 카메라를 자동으로 감시하지 않습니다."
+}

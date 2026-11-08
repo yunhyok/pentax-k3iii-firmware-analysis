@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>수치 커널 두 개의 C 재구현과 ARM 검증</title>
+<style>
+  :root { color-scheme: light dark; }
+  body { margin: 0 auto; max-width: 56rem; padding: 2rem 1.25rem; font: 1.05rem/1.75 system-ui, sans-serif;
+         overflow-wrap: anywhere; word-break: keep-all; }
+  h1, h2 { line-height: 1.3; }
+  h2 { margin-top: 2.5rem; }
+  a { text-underline-offset: .17em; }
+  table { width: 100%; border-collapse: collapse; }
+  th, td { border-bottom: 1px solid GrayText; text-align: left; padding: .65rem .8rem; vertical-align: top; }
+  .table-scroll { overflow-x: auto; }
+  table { min-width: 30rem; }
+  code { font-size: .88em; }
+  pre { padding: .9rem; background: color-mix(in srgb, CanvasText 8%, Canvas); white-space: pre-wrap; }
+</style>
+</head>
+<body>
+<header>
+<nav aria-label="관련 문서"><a href="../index.html">개요</a> · <a href="dispatch-af.html">AF 분석</a> · <a href="color-algorithms.html">색 처리 수식</a></nav>
+<p>PENTAX K-3 Mark III · 펌웨어 2.20</p>
+<h1>수치 커널 두 개의 C 재구현과 ARM 검증</h1>
+<p>독립적으로 작성한 <a href="../source/reconstructed/numeric_kernels.c">C 코드</a>를 ARM으로 교차 컴파일했다. Unicorn의 Cortex-A7 모델에서 원본과 빌드 결과를 별도 주소에 놓고 각각 실행한 결과, 합성 입력 237개에서 두 ARM 코드의 출력 바이트가 Python 기준식과 일치했다. <a href="recompiled-kernels.json">사례별 결과와 해시</a> · <a href="../tools/verify_recompiled_kernels.py">빌드·검증 스크립트</a></p>
+</header>
+<main>
+<div class="table-scroll" tabindex="0" role="region" aria-label="커널별 검증 결과">
+<table>
+<thead><tr><th scope="col">함수</th><th scope="col">원본 → 샌드박스 진입점</th><th scope="col">코드 크기</th><th scope="col">일치</th><th scope="col">최대 스택 쓰기 깊이</th></tr></thead>
+<tbody>
+<tr><th scope="row">SAD·SSD</th><td><code>0x52c73190 → 0x62000000</code></td><td>216 → 84바이트</td><td>131개</td><td>12 → 16바이트</td></tr>
+<tr><th scope="row">Q13 3×3 곱</th><td><code>0x5312cd40 → 0x62001000</code></td><td>116 → 112바이트</td><td>106개</td><td>28 → 32바이트</td></tr>
+</tbody>
+</table>
+</div>
+<p>코드 크기는 원본 함수 구간과 컴파일된 함수의 <code>.text</code> 크기다. 원본 SAD·SSD의 128바이트 마스크 표와 ELF 메타데이터는 이 수치에 포함하지 않았다. 스택 깊이는 진입 SP 아래에서 가장 멀리 관측한 쓰기 위치다. <a href="recompiled-kernels.json">구간과 측정값</a></p>
+
+<h2>동작과 검증 범위</h2>
+<p><strong>SAD·SSD.</strong> <code>r1/r2</code>는 부호 없는 16비트 배열, <code>r3</code>는 양수 개수다. 진입 <code>SP</code>와 <code>SP+4</code>에 놓인 포인터로 절대차 합과 제곱차 합을 각각 32비트로 저장한다. 원본에는 마지막 NEON 벡터를 읽을 수 있도록 0이 아닌 패딩 값을 넣고, C에서 만든 기계어에는 유효 원소만 줬다. 8개 단위 경계, 동일값, 최대 차, 교대값, 난수를 검사했다. 모든 차가 65535인 경우 길이 65,537의 SAD는 <code>0xffffffff</code>, 길이 65,538은 <code>65534</code>였다. 0과 음수 개수의 원본 동작은 미확인이다. <a href="dispatch-af.html">AF 호출·패딩 근거</a> · <a href="numerical-checks.json">기존 원본 수치 검증</a></p>
+<p><strong>Q13 행렬.</strong> <code>r1</code>은 출력, <code>r2/r3</code>는 행 우선으로 배치한 부호 있는 16비트 입력 행렬이다. 내적에 4096을 더한 32비트 값을 오른쪽으로 13비트 논리 시프트하고 하위 16비트를 저장한다. 단위·영 행렬, 양·음의 반올림 경계, 32비트 합과 16비트 저장 범위를 넘는 경우, 난수를 검사했다. 범위를 넘는 출력은 포화시키지 않고 하위 16비트만 남겼다. 출력만으로 중간 시프트나 누산 폭을 구분할 수 없으므로 그 해석은 원본 명령 분석에 따른다. <a href="color-algorithms.html">행렬 합성과 원본 연산</a> · <a href="deep-evidence.json">원본 주소·호출 위치·구간 해시</a></p>
+<p>두 함수 모두 사용하지 않는 첫 인수 <code>r0</code>에 매핑하지 않은 주소를 넣었다. 매번 함수 범위 내 실행과 복귀, <code>r4–r11</code>·<code>d8–d15</code>·<code>SP</code> 보존, 호출자 스택 인수와 CPSR 제어 비트 보존, 지정된 출력 바이트에 대한 쓰기를 확인했다. 출력과 스택 작업 영역을 벗어난 쓰기는 허용하지 않았다. 명령과 데이터 접근을 감시했으며, 타이밍과 모든 플래그의 동일성은 비교 기준에 넣지 않았다. <a href="../tools/verify_recompiled_kernels.py">격리 환경과 검사 코드</a> · <a href="https://github.com/ARM-software/abi-aa/blob/main/aapcs32/aapcs32.rst">Arm AAPCS32</a> · <a href="https://github.com/unicorn-engine/unicorn">Unicorn</a></p>
+
+<h2>재현</h2>
+<p>검증기는 <a href="../inspect_firmware.py">추출기</a>의 <code>decoded.bin</code> 또는 별도 <code>rtos.bin</code>을 받는다. RTOS 적재 기준은 <code>0x52500000</code>이고, 입력 RTOS의 SHA-256이 <code>342d2f35405e8daf1797dfe431d2e4aa70f4b52a2c242a29df48206672f1dfb4</code>일 때만 실행한다. Python 환경에는 <code>unicorn==2.1.4</code>와 <code>pyelftools==0.33</code>을 사용했다.</p>
+<p><a href="https://ziglang.org/download/index.json">Zig 공식 배포 색인</a>의 <code>0.15.2 / x86_64-windows</code> ZIP을 받아 SHA-256 <code>3a0ed1e8799a2f8ce2a6e6290a9ff22e6906f8227865911fb7ddedc3cc14cb0c</code>과 일치할 때만 풀었다. 아래는 저장소 루트의 PowerShell에서 실행한다. <code>&lt;Zig 폴더&gt;</code>는 압축을 푼 경로다.</p>
+<pre><code>python tools/verify_recompiled_kernels.py .private/my-decode/decoded.bin "&lt;Zig 폴더&gt;/zig.exe"</code></pre>
+<p>검증기는 실행 파일 해시를 확인하고 아래 명령으로 컴파일한다. ARM A32 little-endian ELF 객체의 심볼에서 두 함수만 꺼냈다. 함수 코드에는 재배치 항목이나 외부 심볼 참조가 없었다. ELF 객체, 실행한 함수별 바이너리와 빌드 캐시는 <code>.private/hq-compile/</code>에 둔다. 공개 결과는 해시와 합성 사례만 포함한다.</p>
+<pre><code>zig cc -target arm-freestanding-eabi -mcpu=cortex_a7 -marm -std=c11 -ffreestanding -fno-builtin -fno-stack-protector -fno-unwind-tables -fno-asynchronous-unwind-tables -ffunction-sections -Oz -Wall -Wextra -Werror -c source/reconstructed/numeric_kernels.c -o .private/hq-compile/numeric_kernels.o</code></pre>
+
+<h2>펌웨어에 통합하기 전에 남은 확인</h2>
+<p>AF의 상관 처리와 색공간 행렬 준비 단계에서 일부 직접 호출 위치는 이미 확인했다. 다음 단계에서는 실제 호출마다 버퍼의 수명·정렬·겹침, 양수 길이의 범위, 스택 여유, 간접 호출 가능성을 확인해야 한다. AF의 원본 NEON과 새 스칼라 코드의 실기 실행 시간과 프레임 예산은 측정하지 않았다. 실행 주소 배치와 분기 연결, 이미지 검증·부팅 절차, 실기 AF·색 출력도 별도 검증이 필요하다. 이번에는 펌웨어를 패치하거나 카메라에서 실행하지 않았다. <a href="deep-evidence.json">확인된 호출 위치</a> · <a href="research-roadmap.html">통합 전 연구 항목</a></p>
+</main>
+</body>
+</html>

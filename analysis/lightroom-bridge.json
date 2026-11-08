@@ -1,0 +1,1188 @@
+{
+  "checked_local_date": "2026-11-08",
+  "purpose": "Metadata-only inspection of installed Adobe DCPs and independent DCP serialization verification. No Adobe calibration payloads included.",
+  "sources": {
+    "adobe_camera_support": "https://helpx.adobe.com/camera-raw/desktop/dng-and-file-formats/camera-raw-plug-supported-cameras.html",
+    "adobe_dng_spec_1_7_1_0": "https://helpx.adobe.com/content/dam/help/en/camera-raw/digital-negative/jcr_content/root/content/flex/items/position/position-par/download_section_733958301/download-1/DNG_Spec_1_7_1_0.pdf",
+    "adobe_dng_sdk": {
+      "url": "https://www.adobe.com/go/dng_sdk",
+      "build": "1.7.1 Build 2768",
+      "zip_sha256": "c1d3a545ed45b150e59af2e6aa0695c1551f0e2bed34ad87436898a05194d2b1",
+      "reviewed": [
+        "dng_image_writer.cpp: tiff_dng_extended_color_profile::Put",
+        "dng_shared.cpp: dng_camera_profile_info::ParseExtended",
+        "dng_camera_profile.cpp: IsValid and ValidForwardMatrix"
+      ]
+    },
+    "adobe_profiles_sdk": {
+      "url": "https://download.adobe.com/pub/adobe/lightroom/profile-sdk/ACR_and_Lightroom_Profile_SDK.zip",
+      "zip_sha256": "eaa07f08b319866118ff48ff12e76574b7a4d1e56be372e71a2a63d7b73730a7",
+      "reviewed": "Enhanced Profiles.pdf, pp. 1-3, 8-9"
+    },
+    "ricoh_k3iii": "https://www.ricoh-imaging.co.jp/english/products/k-3-3/feature/05.html",
+    "ricoh_k3ii": "https://www.ricoh-imaging.co.jp/english/products/k-3-2/feature/04.html",
+    "ricoh_q7": "https://www.ricoh-imaging.co.jp/english/products/q7/spec/",
+    "existing_firmware_evidence": [
+      "color-algorithms.html",
+      "pipeline-report.html",
+      "color-resources.json"
+    ]
+  },
+  "inspection": {
+    "inspector": "../inspect_adobe_profiles.py",
+    "roots": [
+      "C:/ProgramData/Adobe/CameraRaw/CameraProfiles",
+      "C:/Program Files/Adobe/Adobe Lightroom Classic/Resources/CameraProfiles"
+    ],
+    "lightroom_classic_file_version": "15.6",
+    "unique_filenames": 13,
+    "matching_filename_and_file_sha256_across_roots": 13,
+    "prior_inventory_file_sha256_matches": 6,
+    "camera_matching_distinct_forward_matrix_payloads_by_tag": {
+      "ForwardMatrix1": 10,
+      "ForwardMatrix2": 10
+    },
+    "identical_look_and_tone_payload_groups_across_both_k3_cameras": [
+      {
+        "modes": [
+          "Bright",
+          "Landscape"
+        ],
+        "files": [
+          "Pentax K-3 II Camera Bright.dcp",
+          "Pentax K-3 II Camera Landscape.dcp",
+          "PENTAX K-3 Mark III Camera Bright.dcp",
+          "PENTAX K-3 Mark III Camera Landscape.dcp"
+        ],
+        "ProfileLookTableData_sha256": "3ff4acccd85d2ddfe998c07ffc7ff10248c846ba9a4683cc400a872b44239aa5",
+        "ProfileToneCurve_sha256": "f18fb8deec6ef59d88c2ac5d1659644b2807574a02c3c0ef1c040255ceb6fc14"
+      },
+      {
+        "modes": [
+          "Natural",
+          "Portrait",
+          "Vibrant"
+        ],
+        "files": [
+          "Pentax K-3 II Camera Natural.dcp",
+          "Pentax K-3 II Camera Portrait.dcp",
+          "Pentax K-3 II Camera Vibrant.dcp",
+          "PENTAX K-3 Mark III Camera Natural.dcp",
+          "PENTAX K-3 Mark III Camera Portrait.dcp",
+          "PENTAX K-3 Mark III Camera Vibrant.dcp"
+        ],
+        "ProfileLookTableData_sha256": "d0cff232b5ac40e41635f7cd6a3202b10f279b648d1bb3eb6ce701fdff769d4f",
+        "ProfileToneCurve_sha256": "38b4849763d2ee147de95cb433ae32b38e97ee319448b14cded6b547fad1ae60"
+      }
+    ]
+  },
+  "cameras": {
+    "PENTAX K-3 Mark III": {
+      "official_support": {
+        "raw_formats": [
+          "DNG",
+          "PEF"
+        ],
+        "camera_matching": true,
+        "minimum_camera_raw": "13.3",
+        "minimum_lightroom": "4.3",
+        "minimum_lightroom_classic": "10.3"
+      },
+      "installed_camera_matching": [
+        "Camera Bright",
+        "Camera Landscape",
+        "Camera Natural",
+        "Camera Portrait",
+        "Camera Vibrant"
+      ],
+      "installed_adobe_standard": "PENTAX K-3 Mark III Adobe Standard.dcp",
+      "ColorMatrix1_sha256": "e59e555506e2d04f441b4417817b2c27e689639199dfceb0b78d06f4ed86131f",
+      "ColorMatrix2_sha256": "650cfe77dcad21b53175638547238243ca8df8a3203c11487126c505f6ded0e2"
+    },
+    "PENTAX K-3 II": {
+      "official_support": {
+        "raw_formats": [
+          "DNG",
+          "PEF"
+        ],
+        "camera_matching": true,
+        "minimum_camera_raw": "9.1.1",
+        "minimum_lightroom": "1.0",
+        "minimum_lightroom_classic": "2015.1.1"
+      },
+      "installed_camera_matching": [
+        "Camera Bright",
+        "Camera Landscape",
+        "Camera Natural",
+        "Camera Portrait",
+        "Camera Vibrant"
+      ],
+      "installed_adobe_standard": "PENTAX K-3 II Adobe Standard.dcp",
+      "ColorMatrix1_sha256": "834aac5726e0d8ae154b566d26692d41e4b65f27129accf85e5ea54e526c35ec",
+      "ColorMatrix2_sha256": "caf6825df86f5a66ad4ba402ae696b948cb04948d389fc28edd2829d900788c5"
+    },
+    "PENTAX Q7": {
+      "official_support": {
+        "raw_formats": [
+          "DNG"
+        ],
+        "camera_matching": false,
+        "minimum_camera_raw": "8.2",
+        "minimum_lightroom": "1.0",
+        "minimum_lightroom_classic": "5.2"
+      },
+      "installed_camera_matching": [],
+      "installed_adobe_standard": "PENTAX Q7 Adobe Standard.dcp",
+      "ColorMatrix1_sha256": "383324b84205ff6a04e838af5b074469829ed089bc4461c3f156ffa9fd6f4728",
+      "ColorMatrix2_sha256": "d97029d1bf2af104097b04572fe7a613f903ce35ecd559425cb42e3a8eb61558"
+    }
+  },
+  "verification": {
+    "stdlib_tests": {
+      "command": "python -m unittest discover -s tests -p test_profile_bridge.py -v",
+      "passed": 3
+    },
+    "inspector_self_test": "passed",
+    "synthetic_dcp": {
+      "input_sha256": "99597ebe6e7de767790c7decd88818d813ef1084714eb58f9c7ff7779b0e9f21",
+      "output_sha256": "ae1d55fe536286a41797bc6521d76b63b705f2aed13499e44f87fe7104724db7",
+      "independent_reader": "ExifTool 13.59",
+      "validate": "0 0 0",
+      "type": "DCP"
+    },
+    "not_run": [
+      "Lightroom/ACR profile import and render",
+      "matched camera output color measurement"
+    ]
+  },
+  "profiles": [
+    {
+      "file": "PENTAX K-3 II Adobe Standard.dcp",
+      "bytes": 120690,
+      "sha256": "0da4d8df22a9cdd11b50a22ebaf60753852bb5963b0c9a1ea2ece9c5754bd360",
+      "tags": {
+        "UniqueCameraModel": {
+          "type": 2,
+          "count": 14,
+          "sha256": "bbc1e8b5068f037b4a01948845f0977070d04f8eff4062315c90469ed5ed22df",
+          "text": "PENTAX K-3 II"
+        },
+        "ColorMatrix1": {
+          "type": 10,
+          "count": 9,
+          "sha256": "834aac5726e0d8ae154b566d26692d41e4b65f27129accf85e5ea54e526c35ec"
+        },
+        "ColorMatrix2": {
+          "type": 10,
+          "count": 9,
+          "sha256": "caf6825df86f5a66ad4ba402ae696b948cb04948d389fc28edd2829d900788c5"
+        },
+        "CalibrationIlluminant1": {
+          "type": 3,
+          "count": 1,
+          "sha256": "d94e7f1e9bb1f8a9b90996ba12c461b84956f0e7f230145cc594c2f80b067aa0",
+          "value": 17
+        },
+        "CalibrationIlluminant2": {
+          "type": 3,
+          "count": 1,
+          "sha256": "78b4be1f9eeef9da65c393e4385f67edd142709b400ca7d900bd952e0c3cf727",
+          "value": 21
+        },
+        "ProfileName": {
+          "type": 2,
+          "count": 15,
+          "sha256": "d3242020e8db973c5b1d2effc569823494eddb4a29c96350412214f40a0d2326",
+          "text": "Adobe Standard"
+        },
+        "ProfileHueSatMapDims": {
+          "type": 4,
+          "count": 3,
+          "sha256": "d337fdc5fab1c73c53ebf75a524091eccb074118afc6e2cc560fb12117b24927",
+          "dimensions": [
+            90,
+            30,
+            1
+          ]
+        },
+        "ProfileHueSatMapData1": {
+          "type": 11,
+          "count": 8100,
+          "sha256": "71a1d6900050f00549cf006943523ca51680c8505ad794b89b2103686100079d"
+        },
+        "ProfileHueSatMapData2": {
+          "type": 11,
+          "count": 8100,
+          "sha256": "39ec2b29a48b89e922443796ca24a982e7be1ba82c2ea24de64564c1a71232ae"
+        },
+        "ForwardMatrix1": {
+          "type": 10,
+          "count": 9,
+          "sha256": "04d6438401b90e3cb039ba977be3c44b42469a9044986fa2c9776f42a150c289"
+        },
+        "ForwardMatrix2": {
+          "type": 10,
+          "count": 9,
+          "sha256": "c25b8621fd10d388b03777e1f161d7e10115aca5486d665b93875397ff595a27"
+        },
+        "ProfileLookTableDims": {
+          "type": 4,
+          "count": 3,
+          "sha256": "58de6521100b18eb615f6d656cef5dd3317634ddd9f190e34a2a46f7d887eea0",
+          "dimensions": [
+            36,
+            8,
+            16
+          ]
+        },
+        "ProfileLookTableData": {
+          "type": 11,
+          "count": 13824,
+          "sha256": "4b5cf5fd5f61e2630acf62a27f4585c414506b56bd81cc7b36198418a19f8271"
+        }
+      }
+    },
+    {
+      "file": "PENTAX K-3 Mark III Adobe Standard.dcp",
+      "bytes": 120696,
+      "sha256": "c30f2fdb0df54d1e06af6c1b990efc0df639e1e5a16f134f0f0db951b31c3ec5",
+      "tags": {
+        "UniqueCameraModel": {
+          "type": 2,
+          "count": 20,
+          "sha256": "49db655402c66126dad5122f3b2323c5234f652db5069b7e4d40b3c44ac1040d",
+          "text": "PENTAX K-3 Mark III"
+        },
+        "ColorMatrix1": {
+          "type": 10,
+          "count": 9,
+          "sha256": "e59e555506e2d04f441b4417817b2c27e689639199dfceb0b78d06f4ed86131f"
+        },
+        "ColorMatrix2": {
+          "type": 10,
+          "count": 9,
+          "sha256": "650cfe77dcad21b53175638547238243ca8df8a3203c11487126c505f6ded0e2"
+        },
+        "CalibrationIlluminant1": {
+          "type": 3,
+          "count": 1,
+          "sha256": "d94e7f1e9bb1f8a9b90996ba12c461b84956f0e7f230145cc594c2f80b067aa0",
+          "value": 17
+        },
+        "CalibrationIlluminant2": {
+          "type": 3,
+          "count": 1,
+          "sha256": "78b4be1f9eeef9da65c393e4385f67edd142709b400ca7d900bd952e0c3cf727",
+          "value": 21
+        },
+        "ProfileName": {
+          "type": 2,
+          "count": 15,
+          "sha256": "d3242020e8db973c5b1d2effc569823494eddb4a29c96350412214f40a0d2326",
+          "text": "Adobe Standard"
+        },
+        "ProfileHueSatMapDims": {
+          "type": 4,
+          "count": 3,
+          "sha256": "d337fdc5fab1c73c53ebf75a524091eccb074118afc6e2cc560fb12117b24927",
+          "dimensions": [
+            90,
+            30,
+            1
+          ]
+        },
+        "ProfileHueSatMapData1": {
+          "type": 11,
+          "count": 8100,
+          "sha256": "16e8ced5686ab14275e557d956f27eb7e92a34371068a9c40c4487b272d53b7e"
+        },
+        "ProfileHueSatMapData2": {
+          "type": 11,
+          "count": 8100,
+          "sha256": "6531280841a9b63ec7d440029bca5be20cdf80fd53c1ad6c54717ce1c080b4e2"
+        },
+        "ForwardMatrix1": {
+          "type": 10,
+          "count": 9,
+          "sha256": "de589e12c4f74f3f9ce565f358aac421f86372edef8186dbed0d5ef672489c3c"
+        },
+        "ForwardMatrix2": {
+          "type": 10,
+          "count": 9,
+          "sha256": "5f582db026919cb4d9134766d029573cabbf310349aae6e07135ccc3a35fe804"
+        },
+        "ProfileLookTableDims": {
+          "type": 4,
+          "count": 3,
+          "sha256": "58de6521100b18eb615f6d656cef5dd3317634ddd9f190e34a2a46f7d887eea0",
+          "dimensions": [
+            36,
+            8,
+            16
+          ]
+        },
+        "ProfileLookTableData": {
+          "type": 11,
+          "count": 13824,
+          "sha256": "4b5cf5fd5f61e2630acf62a27f4585c414506b56bd81cc7b36198418a19f8271"
+        }
+      }
+    },
+    {
+      "file": "PENTAX Q7 Adobe Standard.dcp",
+      "bytes": 120686,
+      "sha256": "83ba6fbd61d52fdb70c60ed6765220fc3554baf8876c6e8834967714fea08fff",
+      "tags": {
+        "UniqueCameraModel": {
+          "type": 2,
+          "count": 10,
+          "sha256": "37614c0f2c74d32e0682f82f10b9bbb3f417903887241b6c0cf588492a141e27",
+          "text": "PENTAX Q7"
+        },
+        "ColorMatrix1": {
+          "type": 10,
+          "count": 9,
+          "sha256": "383324b84205ff6a04e838af5b074469829ed089bc4461c3f156ffa9fd6f4728"
+        },
+        "ColorMatrix2": {
+          "type": 10,
+          "count": 9,
+          "sha256": "d97029d1bf2af104097b04572fe7a613f903ce35ecd559425cb42e3a8eb61558"
+        },
+        "CalibrationIlluminant1": {
+          "type": 3,
+          "count": 1,
+          "sha256": "d94e7f1e9bb1f8a9b90996ba12c461b84956f0e7f230145cc594c2f80b067aa0",
+          "value": 17
+        },
+        "CalibrationIlluminant2": {
+          "type": 3,
+          "count": 1,
+          "sha256": "78b4be1f9eeef9da65c393e4385f67edd142709b400ca7d900bd952e0c3cf727",
+          "value": 21
+        },
+        "ProfileName": {
+          "type": 2,
+          "count": 15,
+          "sha256": "d3242020e8db973c5b1d2effc569823494eddb4a29c96350412214f40a0d2326",
+          "text": "Adobe Standard"
+        },
+        "ProfileHueSatMapDims": {
+          "type": 4,
+          "count": 3,
+          "sha256": "d337fdc5fab1c73c53ebf75a524091eccb074118afc6e2cc560fb12117b24927",
+          "dimensions": [
+            90,
+            30,
+            1
+          ]
+        },
+        "ProfileHueSatMapData1": {
+          "type": 11,
+          "count": 8100,
+          "sha256": "1fddb9736be43811c965ff4b7be7dd15c453fb43516740f47e7634886e8cc048"
+        },
+        "ProfileHueSatMapData2": {
+          "type": 11,
+          "count": 8100,
+          "sha256": "d266b921cccf9288fc69ccb98255d169b7b51b9241d0eaa63c2528ca48254b31"
+        },
+        "ForwardMatrix1": {
+          "type": 10,
+          "count": 9,
+          "sha256": "3760ab8dd41f7d7f91f61a53ac97881695b246e5652e39f3b23b3631a779c656"
+        },
+        "ForwardMatrix2": {
+          "type": 10,
+          "count": 9,
+          "sha256": "3760ab8dd41f7d7f91f61a53ac97881695b246e5652e39f3b23b3631a779c656"
+        },
+        "ProfileLookTableDims": {
+          "type": 4,
+          "count": 3,
+          "sha256": "58de6521100b18eb615f6d656cef5dd3317634ddd9f190e34a2a46f7d887eea0",
+          "dimensions": [
+            36,
+            8,
+            16
+          ]
+        },
+        "ProfileLookTableData": {
+          "type": 11,
+          "count": 13824,
+          "sha256": "a2daae1af80d8163a4aac8435c72b11a47d9a125cf14354bcdddc6bab7dd77c5"
+        }
+      }
+    },
+    {
+      "file": "Pentax K-3 II Camera Bright.dcp",
+      "bytes": 56408,
+      "sha256": "fe248efebc1f0fc79f9e6df79f3f829d359aca25929e27b926cc3755951724cb",
+      "tags": {
+        "UniqueCameraModel": {
+          "type": 2,
+          "count": 14,
+          "sha256": "bbc1e8b5068f037b4a01948845f0977070d04f8eff4062315c90469ed5ed22df",
+          "text": "PENTAX K-3 II"
+        },
+        "ColorMatrix1": {
+          "type": 10,
+          "count": 9,
+          "sha256": "834aac5726e0d8ae154b566d26692d41e4b65f27129accf85e5ea54e526c35ec"
+        },
+        "ColorMatrix2": {
+          "type": 10,
+          "count": 9,
+          "sha256": "caf6825df86f5a66ad4ba402ae696b948cb04948d389fc28edd2829d900788c5"
+        },
+        "CalibrationIlluminant1": {
+          "type": 3,
+          "count": 1,
+          "sha256": "d94e7f1e9bb1f8a9b90996ba12c461b84956f0e7f230145cc594c2f80b067aa0",
+          "value": 17
+        },
+        "CalibrationIlluminant2": {
+          "type": 3,
+          "count": 1,
+          "sha256": "78b4be1f9eeef9da65c393e4385f67edd142709b400ca7d900bd952e0c3cf727",
+          "value": 21
+        },
+        "ProfileName": {
+          "type": 2,
+          "count": 14,
+          "sha256": "1f895d951cd889b531f7c021dda326f76d61df8bcc54d976d012fd67e8c47eba",
+          "text": "Camera Bright"
+        },
+        "ProfileToneCurve": {
+          "type": 11,
+          "count": 128,
+          "sha256": "f18fb8deec6ef59d88c2ac5d1659644b2807574a02c3c0ef1c040255ceb6fc14"
+        },
+        "ForwardMatrix1": {
+          "type": 10,
+          "count": 9,
+          "sha256": "d16f25c176708a54c006ba03211ea86e8288fffda85d2d8cd6b132f7ebd84d36"
+        },
+        "ForwardMatrix2": {
+          "type": 10,
+          "count": 9,
+          "sha256": "d16f25c176708a54c006ba03211ea86e8288fffda85d2d8cd6b132f7ebd84d36"
+        },
+        "ProfileLookTableDims": {
+          "type": 4,
+          "count": 3,
+          "sha256": "58de6521100b18eb615f6d656cef5dd3317634ddd9f190e34a2a46f7d887eea0",
+          "dimensions": [
+            36,
+            8,
+            16
+          ]
+        },
+        "ProfileLookTableData": {
+          "type": 11,
+          "count": 13824,
+          "sha256": "3ff4acccd85d2ddfe998c07ffc7ff10248c846ba9a4683cc400a872b44239aa5"
+        },
+        "ProfileLookTableEncoding": {
+          "type": 4,
+          "count": 1,
+          "sha256": "67abdd721024f0ff4e0b3f4c2fc13bc5bad42d0b7851d456d88d203d15aaa450",
+          "value": 1
+        }
+      }
+    },
+    {
+      "file": "Pentax K-3 II Camera Landscape.dcp",
+      "bytes": 56412,
+      "sha256": "1bed62ac54dc372540e2791286e11e04237bd0fdc0db164a6f0ae97e974e2bbd",
+      "tags": {
+        "UniqueCameraModel": {
+          "type": 2,
+          "count": 14,
+          "sha256": "bbc1e8b5068f037b4a01948845f0977070d04f8eff4062315c90469ed5ed22df",
+          "text": "PENTAX K-3 II"
+        },
+        "ColorMatrix1": {
+          "type": 10,
+          "count": 9,
+          "sha256": "834aac5726e0d8ae154b566d26692d41e4b65f27129accf85e5ea54e526c35ec"
+        },
+        "ColorMatrix2": {
+          "type": 10,
+          "count": 9,
+          "sha256": "caf6825df86f5a66ad4ba402ae696b948cb04948d389fc28edd2829d900788c5"
+        },
+        "CalibrationIlluminant1": {
+          "type": 3,
+          "count": 1,
+          "sha256": "d94e7f1e9bb1f8a9b90996ba12c461b84956f0e7f230145cc594c2f80b067aa0",
+          "value": 17
+        },
+        "CalibrationIlluminant2": {
+          "type": 3,
+          "count": 1,
+          "sha256": "78b4be1f9eeef9da65c393e4385f67edd142709b400ca7d900bd952e0c3cf727",
+          "value": 21
+        },
+        "ProfileName": {
+          "type": 2,
+          "count": 17,
+          "sha256": "7cd681f70b4e90efac270c1dc3cbd5046cc60cd4e508a9aee1870cbdec95656c",
+          "text": "Camera Landscape"
+        },
+        "ProfileToneCurve": {
+          "type": 11,
+          "count": 128,
+          "sha256": "f18fb8deec6ef59d88c2ac5d1659644b2807574a02c3c0ef1c040255ceb6fc14"
+        },
+        "ForwardMatrix1": {
+          "type": 10,
+          "count": 9,
+          "sha256": "932af02d5313465b94ee2c27abb2384234ad6692aa2c70de34cee9a90cad92e4"
+        },
+        "ForwardMatrix2": {
+          "type": 10,
+          "count": 9,
+          "sha256": "932af02d5313465b94ee2c27abb2384234ad6692aa2c70de34cee9a90cad92e4"
+        },
+        "ProfileLookTableDims": {
+          "type": 4,
+          "count": 3,
+          "sha256": "58de6521100b18eb615f6d656cef5dd3317634ddd9f190e34a2a46f7d887eea0",
+          "dimensions": [
+            36,
+            8,
+            16
+          ]
+        },
+        "ProfileLookTableData": {
+          "type": 11,
+          "count": 13824,
+          "sha256": "3ff4acccd85d2ddfe998c07ffc7ff10248c846ba9a4683cc400a872b44239aa5"
+        },
+        "ProfileLookTableEncoding": {
+          "type": 4,
+          "count": 1,
+          "sha256": "67abdd721024f0ff4e0b3f4c2fc13bc5bad42d0b7851d456d88d203d15aaa450",
+          "value": 1
+        }
+      }
+    },
+    {
+      "file": "Pentax K-3 II Camera Natural.dcp",
+      "bytes": 56410,
+      "sha256": "49822c2b58b4f15627b741f61ae604c6340326c7a655bf9a6092673fa588dd43",
+      "tags": {
+        "UniqueCameraModel": {
+          "type": 2,
+          "count": 14,
+          "sha256": "bbc1e8b5068f037b4a01948845f0977070d04f8eff4062315c90469ed5ed22df",
+          "text": "PENTAX K-3 II"
+        },
+        "ColorMatrix1": {
+          "type": 10,
+          "count": 9,
+          "sha256": "834aac5726e0d8ae154b566d26692d41e4b65f27129accf85e5ea54e526c35ec"
+        },
+        "ColorMatrix2": {
+          "type": 10,
+          "count": 9,
+          "sha256": "caf6825df86f5a66ad4ba402ae696b948cb04948d389fc28edd2829d900788c5"
+        },
+        "CalibrationIlluminant1": {
+          "type": 3,
+          "count": 1,
+          "sha256": "d94e7f1e9bb1f8a9b90996ba12c461b84956f0e7f230145cc594c2f80b067aa0",
+          "value": 17
+        },
+        "CalibrationIlluminant2": {
+          "type": 3,
+          "count": 1,
+          "sha256": "78b4be1f9eeef9da65c393e4385f67edd142709b400ca7d900bd952e0c3cf727",
+          "value": 21
+        },
+        "ProfileName": {
+          "type": 2,
+          "count": 15,
+          "sha256": "ee84d1de84bfe09915b647ef61c91d42d1ce62900cc2f47f54789159ceacaa53",
+          "text": "Camera Natural"
+        },
+        "ProfileToneCurve": {
+          "type": 11,
+          "count": 128,
+          "sha256": "38b4849763d2ee147de95cb433ae32b38e97ee319448b14cded6b547fad1ae60"
+        },
+        "ForwardMatrix1": {
+          "type": 10,
+          "count": 9,
+          "sha256": "1f5dbcb15ddf55d71b80069b05edf5ce59ff998fba2bb765f3255a310104f94c"
+        },
+        "ForwardMatrix2": {
+          "type": 10,
+          "count": 9,
+          "sha256": "1f5dbcb15ddf55d71b80069b05edf5ce59ff998fba2bb765f3255a310104f94c"
+        },
+        "ProfileLookTableDims": {
+          "type": 4,
+          "count": 3,
+          "sha256": "58de6521100b18eb615f6d656cef5dd3317634ddd9f190e34a2a46f7d887eea0",
+          "dimensions": [
+            36,
+            8,
+            16
+          ]
+        },
+        "ProfileLookTableData": {
+          "type": 11,
+          "count": 13824,
+          "sha256": "d0cff232b5ac40e41635f7cd6a3202b10f279b648d1bb3eb6ce701fdff769d4f"
+        },
+        "ProfileLookTableEncoding": {
+          "type": 4,
+          "count": 1,
+          "sha256": "67abdd721024f0ff4e0b3f4c2fc13bc5bad42d0b7851d456d88d203d15aaa450",
+          "value": 1
+        }
+      }
+    },
+    {
+      "file": "Pentax K-3 II Camera Portrait.dcp",
+      "bytes": 56410,
+      "sha256": "ee15158ef0aba123729aa33e56a9bdfc35369806e06cb6f6fb7d9b021d6cea4a",
+      "tags": {
+        "UniqueCameraModel": {
+          "type": 2,
+          "count": 14,
+          "sha256": "bbc1e8b5068f037b4a01948845f0977070d04f8eff4062315c90469ed5ed22df",
+          "text": "PENTAX K-3 II"
+        },
+        "ColorMatrix1": {
+          "type": 10,
+          "count": 9,
+          "sha256": "834aac5726e0d8ae154b566d26692d41e4b65f27129accf85e5ea54e526c35ec"
+        },
+        "ColorMatrix2": {
+          "type": 10,
+          "count": 9,
+          "sha256": "caf6825df86f5a66ad4ba402ae696b948cb04948d389fc28edd2829d900788c5"
+        },
+        "CalibrationIlluminant1": {
+          "type": 3,
+          "count": 1,
+          "sha256": "d94e7f1e9bb1f8a9b90996ba12c461b84956f0e7f230145cc594c2f80b067aa0",
+          "value": 17
+        },
+        "CalibrationIlluminant2": {
+          "type": 3,
+          "count": 1,
+          "sha256": "78b4be1f9eeef9da65c393e4385f67edd142709b400ca7d900bd952e0c3cf727",
+          "value": 21
+        },
+        "ProfileName": {
+          "type": 2,
+          "count": 16,
+          "sha256": "d8d0181efd8d04944acd56ff8456a2755058eb329afd987b29a04e27da3ae674",
+          "text": "Camera Portrait"
+        },
+        "ProfileToneCurve": {
+          "type": 11,
+          "count": 128,
+          "sha256": "38b4849763d2ee147de95cb433ae32b38e97ee319448b14cded6b547fad1ae60"
+        },
+        "ForwardMatrix1": {
+          "type": 10,
+          "count": 9,
+          "sha256": "ea5cc0d16029a47bd8eb827122919193d4b3319dfbadb16fe6b80b42b77ee3af"
+        },
+        "ForwardMatrix2": {
+          "type": 10,
+          "count": 9,
+          "sha256": "ea5cc0d16029a47bd8eb827122919193d4b3319dfbadb16fe6b80b42b77ee3af"
+        },
+        "ProfileLookTableDims": {
+          "type": 4,
+          "count": 3,
+          "sha256": "58de6521100b18eb615f6d656cef5dd3317634ddd9f190e34a2a46f7d887eea0",
+          "dimensions": [
+            36,
+            8,
+            16
+          ]
+        },
+        "ProfileLookTableData": {
+          "type": 11,
+          "count": 13824,
+          "sha256": "d0cff232b5ac40e41635f7cd6a3202b10f279b648d1bb3eb6ce701fdff769d4f"
+        },
+        "ProfileLookTableEncoding": {
+          "type": 4,
+          "count": 1,
+          "sha256": "67abdd721024f0ff4e0b3f4c2fc13bc5bad42d0b7851d456d88d203d15aaa450",
+          "value": 1
+        }
+      }
+    },
+    {
+      "file": "Pentax K-3 II Camera Vibrant.dcp",
+      "bytes": 56410,
+      "sha256": "7e73a20c92b0073743a1d1f3bae625233e10294d1ce6553ffb1b16220fc95e03",
+      "tags": {
+        "UniqueCameraModel": {
+          "type": 2,
+          "count": 14,
+          "sha256": "bbc1e8b5068f037b4a01948845f0977070d04f8eff4062315c90469ed5ed22df",
+          "text": "PENTAX K-3 II"
+        },
+        "ColorMatrix1": {
+          "type": 10,
+          "count": 9,
+          "sha256": "834aac5726e0d8ae154b566d26692d41e4b65f27129accf85e5ea54e526c35ec"
+        },
+        "ColorMatrix2": {
+          "type": 10,
+          "count": 9,
+          "sha256": "caf6825df86f5a66ad4ba402ae696b948cb04948d389fc28edd2829d900788c5"
+        },
+        "CalibrationIlluminant1": {
+          "type": 3,
+          "count": 1,
+          "sha256": "d94e7f1e9bb1f8a9b90996ba12c461b84956f0e7f230145cc594c2f80b067aa0",
+          "value": 17
+        },
+        "CalibrationIlluminant2": {
+          "type": 3,
+          "count": 1,
+          "sha256": "78b4be1f9eeef9da65c393e4385f67edd142709b400ca7d900bd952e0c3cf727",
+          "value": 21
+        },
+        "ProfileName": {
+          "type": 2,
+          "count": 15,
+          "sha256": "b1acd546d36993ea877be02a97a462ba3bcddec11c267170c858730bc680df25",
+          "text": "Camera Vibrant"
+        },
+        "ProfileToneCurve": {
+          "type": 11,
+          "count": 128,
+          "sha256": "38b4849763d2ee147de95cb433ae32b38e97ee319448b14cded6b547fad1ae60"
+        },
+        "ForwardMatrix1": {
+          "type": 10,
+          "count": 9,
+          "sha256": "bd87c1ca73638c26bd78777ef705b7cb85fcceb0f6068ff92398d31f2c182c26"
+        },
+        "ForwardMatrix2": {
+          "type": 10,
+          "count": 9,
+          "sha256": "bd87c1ca73638c26bd78777ef705b7cb85fcceb0f6068ff92398d31f2c182c26"
+        },
+        "ProfileLookTableDims": {
+          "type": 4,
+          "count": 3,
+          "sha256": "58de6521100b18eb615f6d656cef5dd3317634ddd9f190e34a2a46f7d887eea0",
+          "dimensions": [
+            36,
+            8,
+            16
+          ]
+        },
+        "ProfileLookTableData": {
+          "type": 11,
+          "count": 13824,
+          "sha256": "d0cff232b5ac40e41635f7cd6a3202b10f279b648d1bb3eb6ce701fdff769d4f"
+        },
+        "ProfileLookTableEncoding": {
+          "type": 4,
+          "count": 1,
+          "sha256": "67abdd721024f0ff4e0b3f4c2fc13bc5bad42d0b7851d456d88d203d15aaa450",
+          "value": 1
+        }
+      }
+    },
+    {
+      "file": "PENTAX K-3 Mark III Camera Bright.dcp",
+      "bytes": 56414,
+      "sha256": "f05c49b6cbf92700403ec1510f48c86a520b7dc5da3cbc72f55b5ee5bc71f695",
+      "tags": {
+        "UniqueCameraModel": {
+          "type": 2,
+          "count": 20,
+          "sha256": "49db655402c66126dad5122f3b2323c5234f652db5069b7e4d40b3c44ac1040d",
+          "text": "PENTAX K-3 Mark III"
+        },
+        "ColorMatrix1": {
+          "type": 10,
+          "count": 9,
+          "sha256": "e59e555506e2d04f441b4417817b2c27e689639199dfceb0b78d06f4ed86131f"
+        },
+        "ColorMatrix2": {
+          "type": 10,
+          "count": 9,
+          "sha256": "650cfe77dcad21b53175638547238243ca8df8a3203c11487126c505f6ded0e2"
+        },
+        "CalibrationIlluminant1": {
+          "type": 3,
+          "count": 1,
+          "sha256": "d94e7f1e9bb1f8a9b90996ba12c461b84956f0e7f230145cc594c2f80b067aa0",
+          "value": 17
+        },
+        "CalibrationIlluminant2": {
+          "type": 3,
+          "count": 1,
+          "sha256": "78b4be1f9eeef9da65c393e4385f67edd142709b400ca7d900bd952e0c3cf727",
+          "value": 21
+        },
+        "ProfileName": {
+          "type": 2,
+          "count": 14,
+          "sha256": "1f895d951cd889b531f7c021dda326f76d61df8bcc54d976d012fd67e8c47eba",
+          "text": "Camera Bright"
+        },
+        "ProfileToneCurve": {
+          "type": 11,
+          "count": 128,
+          "sha256": "f18fb8deec6ef59d88c2ac5d1659644b2807574a02c3c0ef1c040255ceb6fc14"
+        },
+        "ForwardMatrix1": {
+          "type": 10,
+          "count": 9,
+          "sha256": "41da184664a39f04ded673739336bbb1f09cad00a6fd857b5e088eb18874f4d8"
+        },
+        "ForwardMatrix2": {
+          "type": 10,
+          "count": 9,
+          "sha256": "41da184664a39f04ded673739336bbb1f09cad00a6fd857b5e088eb18874f4d8"
+        },
+        "ProfileLookTableDims": {
+          "type": 4,
+          "count": 3,
+          "sha256": "58de6521100b18eb615f6d656cef5dd3317634ddd9f190e34a2a46f7d887eea0",
+          "dimensions": [
+            36,
+            8,
+            16
+          ]
+        },
+        "ProfileLookTableData": {
+          "type": 11,
+          "count": 13824,
+          "sha256": "3ff4acccd85d2ddfe998c07ffc7ff10248c846ba9a4683cc400a872b44239aa5"
+        },
+        "ProfileLookTableEncoding": {
+          "type": 4,
+          "count": 1,
+          "sha256": "67abdd721024f0ff4e0b3f4c2fc13bc5bad42d0b7851d456d88d203d15aaa450",
+          "value": 1
+        }
+      }
+    },
+    {
+      "file": "PENTAX K-3 Mark III Camera Landscape.dcp",
+      "bytes": 56418,
+      "sha256": "c69df83a77ca706858d5e0f453869ced53cf2ff7d16a2ca8f9996f96c0c26f1b",
+      "tags": {
+        "UniqueCameraModel": {
+          "type": 2,
+          "count": 20,
+          "sha256": "49db655402c66126dad5122f3b2323c5234f652db5069b7e4d40b3c44ac1040d",
+          "text": "PENTAX K-3 Mark III"
+        },
+        "ColorMatrix1": {
+          "type": 10,
+          "count": 9,
+          "sha256": "e59e555506e2d04f441b4417817b2c27e689639199dfceb0b78d06f4ed86131f"
+        },
+        "ColorMatrix2": {
+          "type": 10,
+          "count": 9,
+          "sha256": "650cfe77dcad21b53175638547238243ca8df8a3203c11487126c505f6ded0e2"
+        },
+        "CalibrationIlluminant1": {
+          "type": 3,
+          "count": 1,
+          "sha256": "d94e7f1e9bb1f8a9b90996ba12c461b84956f0e7f230145cc594c2f80b067aa0",
+          "value": 17
+        },
+        "CalibrationIlluminant2": {
+          "type": 3,
+          "count": 1,
+          "sha256": "78b4be1f9eeef9da65c393e4385f67edd142709b400ca7d900bd952e0c3cf727",
+          "value": 21
+        },
+        "ProfileName": {
+          "type": 2,
+          "count": 17,
+          "sha256": "7cd681f70b4e90efac270c1dc3cbd5046cc60cd4e508a9aee1870cbdec95656c",
+          "text": "Camera Landscape"
+        },
+        "ProfileToneCurve": {
+          "type": 11,
+          "count": 128,
+          "sha256": "f18fb8deec6ef59d88c2ac5d1659644b2807574a02c3c0ef1c040255ceb6fc14"
+        },
+        "ForwardMatrix1": {
+          "type": 10,
+          "count": 9,
+          "sha256": "32a2d1e12db0d53ab2fbc48f80fe5772197dde62cc9eb806961512aa8f16a591"
+        },
+        "ForwardMatrix2": {
+          "type": 10,
+          "count": 9,
+          "sha256": "32a2d1e12db0d53ab2fbc48f80fe5772197dde62cc9eb806961512aa8f16a591"
+        },
+        "ProfileLookTableDims": {
+          "type": 4,
+          "count": 3,
+          "sha256": "58de6521100b18eb615f6d656cef5dd3317634ddd9f190e34a2a46f7d887eea0",
+          "dimensions": [
+            36,
+            8,
+            16
+          ]
+        },
+        "ProfileLookTableData": {
+          "type": 11,
+          "count": 13824,
+          "sha256": "3ff4acccd85d2ddfe998c07ffc7ff10248c846ba9a4683cc400a872b44239aa5"
+        },
+        "ProfileLookTableEncoding": {
+          "type": 4,
+          "count": 1,
+          "sha256": "67abdd721024f0ff4e0b3f4c2fc13bc5bad42d0b7851d456d88d203d15aaa450",
+          "value": 1
+        }
+      }
+    },
+    {
+      "file": "PENTAX K-3 Mark III Camera Natural.dcp",
+      "bytes": 56416,
+      "sha256": "06d37a27b4403bc8db979b78066b3c620934dce5b400ac1cf4198e9d5692c651",
+      "tags": {
+        "UniqueCameraModel": {
+          "type": 2,
+          "count": 20,
+          "sha256": "49db655402c66126dad5122f3b2323c5234f652db5069b7e4d40b3c44ac1040d",
+          "text": "PENTAX K-3 Mark III"
+        },
+        "ColorMatrix1": {
+          "type": 10,
+          "count": 9,
+          "sha256": "e59e555506e2d04f441b4417817b2c27e689639199dfceb0b78d06f4ed86131f"
+        },
+        "ColorMatrix2": {
+          "type": 10,
+          "count": 9,
+          "sha256": "650cfe77dcad21b53175638547238243ca8df8a3203c11487126c505f6ded0e2"
+        },
+        "CalibrationIlluminant1": {
+          "type": 3,
+          "count": 1,
+          "sha256": "d94e7f1e9bb1f8a9b90996ba12c461b84956f0e7f230145cc594c2f80b067aa0",
+          "value": 17
+        },
+        "CalibrationIlluminant2": {
+          "type": 3,
+          "count": 1,
+          "sha256": "78b4be1f9eeef9da65c393e4385f67edd142709b400ca7d900bd952e0c3cf727",
+          "value": 21
+        },
+        "ProfileName": {
+          "type": 2,
+          "count": 15,
+          "sha256": "ee84d1de84bfe09915b647ef61c91d42d1ce62900cc2f47f54789159ceacaa53",
+          "text": "Camera Natural"
+        },
+        "ProfileToneCurve": {
+          "type": 11,
+          "count": 128,
+          "sha256": "38b4849763d2ee147de95cb433ae32b38e97ee319448b14cded6b547fad1ae60"
+        },
+        "ForwardMatrix1": {
+          "type": 10,
+          "count": 9,
+          "sha256": "d24290702e46e423ec9db128ca8c642208598632922a3175ddefd0c4f3975bf8"
+        },
+        "ForwardMatrix2": {
+          "type": 10,
+          "count": 9,
+          "sha256": "d24290702e46e423ec9db128ca8c642208598632922a3175ddefd0c4f3975bf8"
+        },
+        "ProfileLookTableDims": {
+          "type": 4,
+          "count": 3,
+          "sha256": "58de6521100b18eb615f6d656cef5dd3317634ddd9f190e34a2a46f7d887eea0",
+          "dimensions": [
+            36,
+            8,
+            16
+          ]
+        },
+        "ProfileLookTableData": {
+          "type": 11,
+          "count": 13824,
+          "sha256": "d0cff232b5ac40e41635f7cd6a3202b10f279b648d1bb3eb6ce701fdff769d4f"
+        },
+        "ProfileLookTableEncoding": {
+          "type": 4,
+          "count": 1,
+          "sha256": "67abdd721024f0ff4e0b3f4c2fc13bc5bad42d0b7851d456d88d203d15aaa450",
+          "value": 1
+        }
+      }
+    },
+    {
+      "file": "PENTAX K-3 Mark III Camera Portrait.dcp",
+      "bytes": 56416,
+      "sha256": "30b188f25e2b6eab4221b8a218ae731389c97673fef341f5b3cb32a759399ae4",
+      "tags": {
+        "UniqueCameraModel": {
+          "type": 2,
+          "count": 20,
+          "sha256": "49db655402c66126dad5122f3b2323c5234f652db5069b7e4d40b3c44ac1040d",
+          "text": "PENTAX K-3 Mark III"
+        },
+        "ColorMatrix1": {
+          "type": 10,
+          "count": 9,
+          "sha256": "e59e555506e2d04f441b4417817b2c27e689639199dfceb0b78d06f4ed86131f"
+        },
+        "ColorMatrix2": {
+          "type": 10,
+          "count": 9,
+          "sha256": "650cfe77dcad21b53175638547238243ca8df8a3203c11487126c505f6ded0e2"
+        },
+        "CalibrationIlluminant1": {
+          "type": 3,
+          "count": 1,
+          "sha256": "d94e7f1e9bb1f8a9b90996ba12c461b84956f0e7f230145cc594c2f80b067aa0",
+          "value": 17
+        },
+        "CalibrationIlluminant2": {
+          "type": 3,
+          "count": 1,
+          "sha256": "78b4be1f9eeef9da65c393e4385f67edd142709b400ca7d900bd952e0c3cf727",
+          "value": 21
+        },
+        "ProfileName": {
+          "type": 2,
+          "count": 16,
+          "sha256": "d8d0181efd8d04944acd56ff8456a2755058eb329afd987b29a04e27da3ae674",
+          "text": "Camera Portrait"
+        },
+        "ProfileToneCurve": {
+          "type": 11,
+          "count": 128,
+          "sha256": "38b4849763d2ee147de95cb433ae32b38e97ee319448b14cded6b547fad1ae60"
+        },
+        "ForwardMatrix1": {
+          "type": 10,
+          "count": 9,
+          "sha256": "e356b70aae94d5035d5b6bd3be4dddc18e2145da1122c132bee7885c320d863f"
+        },
+        "ForwardMatrix2": {
+          "type": 10,
+          "count": 9,
+          "sha256": "e356b70aae94d5035d5b6bd3be4dddc18e2145da1122c132bee7885c320d863f"
+        },
+        "ProfileLookTableDims": {
+          "type": 4,
+          "count": 3,
+          "sha256": "58de6521100b18eb615f6d656cef5dd3317634ddd9f190e34a2a46f7d887eea0",
+          "dimensions": [
+            36,
+            8,
+            16
+          ]
+        },
+        "ProfileLookTableData": {
+          "type": 11,
+          "count": 13824,
+          "sha256": "d0cff232b5ac40e41635f7cd6a3202b10f279b648d1bb3eb6ce701fdff769d4f"
+        },
+        "ProfileLookTableEncoding": {
+          "type": 4,
+          "count": 1,
+          "sha256": "67abdd721024f0ff4e0b3f4c2fc13bc5bad42d0b7851d456d88d203d15aaa450",
+          "value": 1
+        }
+      }
+    },
+    {
+      "file": "PENTAX K-3 Mark III Camera Vibrant.dcp",
+      "bytes": 56416,
+      "sha256": "968f80b50f05927dff26e8ca178372f79253fb2b0a14db0abc4d793b0b8fc855",
+      "tags": {
+        "UniqueCameraModel": {
+          "type": 2,
+          "count": 20,
+          "sha256": "49db655402c66126dad5122f3b2323c5234f652db5069b7e4d40b3c44ac1040d",
+          "text": "PENTAX K-3 Mark III"
+        },
+        "ColorMatrix1": {
+          "type": 10,
+          "count": 9,
+          "sha256": "e59e555506e2d04f441b4417817b2c27e689639199dfceb0b78d06f4ed86131f"
+        },
+        "ColorMatrix2": {
+          "type": 10,
+          "count": 9,
+          "sha256": "650cfe77dcad21b53175638547238243ca8df8a3203c11487126c505f6ded0e2"
+        },
+        "CalibrationIlluminant1": {
+          "type": 3,
+          "count": 1,
+          "sha256": "d94e7f1e9bb1f8a9b90996ba12c461b84956f0e7f230145cc594c2f80b067aa0",
+          "value": 17
+        },
+        "CalibrationIlluminant2": {
+          "type": 3,
+          "count": 1,
+          "sha256": "78b4be1f9eeef9da65c393e4385f67edd142709b400ca7d900bd952e0c3cf727",
+          "value": 21
+        },
+        "ProfileName": {
+          "type": 2,
+          "count": 15,
+          "sha256": "b1acd546d36993ea877be02a97a462ba3bcddec11c267170c858730bc680df25",
+          "text": "Camera Vibrant"
+        },
+        "ProfileToneCurve": {
+          "type": 11,
+          "count": 128,
+          "sha256": "38b4849763d2ee147de95cb433ae32b38e97ee319448b14cded6b547fad1ae60"
+        },
+        "ForwardMatrix1": {
+          "type": 10,
+          "count": 9,
+          "sha256": "c7822b357d875a43bd791c27f63aacd69b4b5b6666940e6e9f3bb4b99a10be92"
+        },
+        "ForwardMatrix2": {
+          "type": 10,
+          "count": 9,
+          "sha256": "c7822b357d875a43bd791c27f63aacd69b4b5b6666940e6e9f3bb4b99a10be92"
+        },
+        "ProfileLookTableDims": {
+          "type": 4,
+          "count": 3,
+          "sha256": "58de6521100b18eb615f6d656cef5dd3317634ddd9f190e34a2a46f7d887eea0",
+          "dimensions": [
+            36,
+            8,
+            16
+          ]
+        },
+        "ProfileLookTableData": {
+          "type": 11,
+          "count": 13824,
+          "sha256": "d0cff232b5ac40e41635f7cd6a3202b10f279b648d1bb3eb6ce701fdff769d4f"
+        },
+        "ProfileLookTableEncoding": {
+          "type": 4,
+          "count": 1,
+          "sha256": "67abdd721024f0ff4e0b3f4c2fc13bc5bad42d0b7851d456d88d203d15aaa450",
+          "value": 1
+        }
+      }
+    }
+  ]
+}

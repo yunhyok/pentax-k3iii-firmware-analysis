@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PENTAX 3기종 Lightroom 색 프로파일 연구</title>
+<style>
+:root{color-scheme:light dark;--bg:#f7f8fa;--paper:#fff;--ink:#182332;--muted:#48596b;--line:#d2dbe5;--accent:#124b8e;--soft:#edf3fa}
+@media(prefers-color-scheme:dark){:root{--bg:#111821;--paper:#18222d;--ink:#e8edf4;--muted:#b4c2d2;--line:#405369;--accent:#98c8ff;--soft:#223348}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.75 system-ui,"Malgun Gothic",sans-serif;word-break:keep-all;overflow-wrap:anywhere}
+header,main{max-width:1060px;margin:auto;padding:clamp(18px,4vw,44px)}main{background:var(--paper);border:1px solid var(--line)}
+h1{font-size:clamp(1.8rem,5vw,2.8rem);line-height:1.25}h2{font-size:1.35rem;margin-top:2.2rem}h2:first-child{margin-top:0}small{color:var(--muted)}a{color:var(--accent);text-underline-offset:.18em}nav a{display:inline-block;margin:4px 16px 4px 0}
+.table-scroll,pre{overflow:auto}table{width:100%;min-width:550px;border-collapse:collapse}th,td{padding:11px 12px;text-align:left;vertical-align:top;border-bottom:1px solid var(--line)}th,pre{background:var(--soft)}pre{padding:16px;font-size:.84rem}code{font-family:ui-monospace,Consolas,monospace}
+</style>
+</head>
+<body>
+<header>
+<small>2026-11-08 · PENTAX K-3 Mark III · K-3 II · Q7</small>
+<h1>PENTAX 3기종 Lightroom 색 프로파일 연구</h1>
+<p>설치된 Adobe DCP 13개의 구조를 확인하고, 출처가 명시된 독립 보정값을 DCP로 내보내는 도구를 만들었다. 합성 DCP는 두 파서로 검사했다. 실제 카메라의 색을 맞춘 새 프로파일이나 Lightroom 렌더링 결과는 아직 없다.</p>
+<nav aria-label="관련 문서"><a href="research-program.html">세 기종 연구 본부</a><a href="raw-test-inputs.html">실제 RAW 시험 자료</a><a href="../index.html">연구 개요</a><a href="color-lightroom.html">K-3 Mark III 모드 연구</a><a href="pipeline-report.html">ISP 처리 증거</a><a href="lightroom-bridge.json">파일·태그 SHA-256</a></nav>
+</header>
+<main>
+<h2>설치된 Adobe 프로파일</h2>
+<div class="table-scroll"><table>
+<thead><tr><th scope="col">기종</th><th scope="col">Adobe RAW 지원</th><th scope="col">확인한 DCP</th></tr></thead>
+<tbody>
+<tr><th scope="row">K-3 Mark III</th><td>DNG·PEF, Camera Matching 지원</td><td>Adobe Standard, Camera Bright·Landscape·Natural·Portrait·Vibrant</td></tr>
+<tr><th scope="row">K-3 II</th><td>DNG·PEF, Camera Matching 지원</td><td>Adobe Standard, Camera Bright·Landscape·Natural·Portrait·Vibrant</td></tr>
+<tr><th scope="row">Q7</th><td>DNG, Camera Matching 미지원</td><td>Adobe Standard</td></tr>
+</tbody>
+</table></div>
+<p><code>C:\ProgramData\Adobe\CameraRaw\CameraProfiles</code>와 이 PC에 설치된 Lightroom Classic 15.6의 <code>Resources\CameraProfiles</code>에서 같은 13개 파일명과 SHA-256을 확인했다. K-3 Mark III의 기존 조사 파일 6개와도 일치했다. Q7 Adobe Standard의 <code>UniqueCameraModel</code>은 <code>PENTAX Q7</code>이며 파일 SHA-256은 <code>83ba6fbd61d52fdb70c60ed6765220fc3554baf8876c6e8834967714fea08fff</code>다. <a href="lightroom-bridge.json">태그·해시 기록</a> · <a href="adobe-profiles.json">이전 기록</a> · <a href="https://helpx.adobe.com/camera-raw/desktop/dng-and-file-formats/camera-raw-plug-supported-cameras.html">Adobe 지원표</a></p>
+<p>두 K-3 기종에서 Camera Bright와 Landscape는 기종에 관계없이 같은 LookTable과 톤 곡선을 썼다. Camera Natural·Portrait·Vibrant는 서로 또 다른 동일한 조합을 썼다. 각 조합의 바이트가 같더라도 두 <code>ForwardMatrix</code> 태그는 각각 열 개 프로파일에서 모두 달랐다. 반면 각 기종의 <code>ColorMatrix1/2</code>는 Adobe Standard와 다섯 Camera Matching 파일이 동일했다. 모드가 같은 두 기종에서도 LookTable과 톤 곡선의 일치만으로 센서 변환이나 최종 색의 일치를 판정할 수 없다. <a href="lightroom-bridge.json">동일 태그 그룹과 해시</a></p>
+<p>세 Adobe Standard DCP에는 A·D65 조명(17·21)의 행렬, 조명별 90×30×1 HueSatMap과 36×8×16 LookTable이 있다. 조사한 Camera Matching DCP 10개는 HueSatMap 태그 없이 36×8×16 LookTable과 톤 곡선 64쌍을 갖는다. 이 조사에서는 설치 파일의 계수나 LUT를 복제하지 않았다. <a href="lightroom-bridge.json">파일별 구조</a></p>
+
+<h2>DCP와 Enhanced XMP의 적용 위치</h2>
+<div class="table-scroll"><table>
+<thead><tr><th scope="col">단계</th><th scope="col">표현하는 변환</th></tr></thead>
+<tbody>
+<tr><th scope="row">DCP 행렬</th><td><code>ColorMatrix</code>는 XYZ에서 기준 카메라 색공간으로, <code>ForwardMatrix</code>는 화이트밸런스를 적용한 카메라 색에서 XYZ D50으로 변환한다. 단순히 역행렬 관계에 있지 않다.</td></tr>
+<tr><th scope="row">DCP HSV 표</th><td><code>ProfileHueSatMap</code>은 XYZ D50 변환 후 선형 ProPhoto RGB 원색으로 만든 HSV를 보정한다. <code>ProfileLookTable</code>은 같은 색공간에서 노출 보정 뒤, 톤 곡선 전에 적용한다. 인코딩 1은 3차원 표에서 HSV의 V에 sRGB 전달 함수를 적용하는 방식이다.</td></tr>
+<tr><th scope="row">Enhanced XMP</th><td>RAW에서는 지정한 기준 DCP 위에 적용할 수 있다. 별도의 HSV Look Table 또는 처리 후반에 적용되는 RGB→RGB LUT를 포함할 수 있다. Adobe의 2018 SDK는 Camera Raw에서 <code>.cube</code> 파일을 불러오는 절차와 32×32×32 한도를 설명한다.</td></tr>
+</tbody>
+</table></div>
+<p><a href="https://helpx.adobe.com/content/dam/help/en/camera-raw/digital-negative/jcr_content/root/content/flex/items/position/position-par/download_section_733958301/download-1/DNG_Spec_1_7_1_0.pdf">Adobe DNG 1.7.1.0, 32–33·48–53·56–57·62–64·100–104쪽</a> · <a href="https://download.adobe.com/pub/adobe/lightroom/profile-sdk/ACR_and_Lightroom_Profile_SDK.zip">Adobe Profile SDK의 Enhanced Profiles.pdf, 1–3·8–9쪽</a></p>
+
+<h2>독립 보정값으로 DCP 만들기</h2>
+<p><a href="../tools/profile_bridge.py">내보내기 도구</a>는 파이썬 표준 라이브러리만 쓴다. JSON에 데이터의 출처를 <code>provenance</code>로 적고, RAW의 <code>UniqueCameraModel</code>을 정확히 입력한다. <code>ProfileName</code>, <code>ColorMatrix1</code>, <code>CalibrationIlluminant1</code>도 필수다. 아래 숫자는 파일 형식 시험용이며 실제 PENTAX 기종에 사용할 값은 아니다.</p>
+<pre><code>{
+  "provenance": "Synthetic serialization test only",
+  "UniqueCameraModel": "TEST camera, not a real model",
+  "ProfileName": "Bridge Format Test",
+  "CalibrationIlluminant1": 17,
+  "ColorMatrix1": [[0.85, -0.125, 0.0625], [0, 1, 0], [0, 0, 1]]
+}</code></pre>
+<p>위 JSON을 저장소 안 <code>.private/profile-input.json</code>에 저장한 뒤 실행한다. 출력 경로에 파일이 이미 있으면 작업을 중단하며, 입력·출력 SHA-256과 출처는 표준 출력으로 기록한다.</p>
+<pre><code>python tools/profile_bridge.py .private/profile-input.json .private/profile-output.dcp
+python inspect_adobe_profiles.py .private/profile-output.dcp
+python -m unittest discover -s tests -p test_profile_bridge.py -v
+exiftool -validate -Warning -Error -FileType .private/profile-output.dcp</code></pre>
+<ul>
+<li>3채널 SDR 기준이며 조명은 한 개 또는 두 개다. A(17), D55(20), D65(21), D75(22), D50(23)을 받는다. 두 번째 조명에는 <code>CalibrationIlluminant2</code>와 <code>ColorMatrix2</code>가 필요하다. <code>ForwardMatrix1/2</code>는 선택 입력이며, 조명이 두 개일 때는 둘 다 제공하거나 둘 다 생략한다. 행렬은 행 우선 3×3이고 10<sup>−6</sup> 단위의 부호 있는 유리수로 저장한다.</li>
+<li>선택 입력 <code>ProfileHueSatMapDims</code>와 <code>ProfileHueSatMapData1</code>, 또는 <code>ProfileLookTableDims</code>와 <code>ProfileLookTableData</code>는 각각 함께 제공한다. 조명 두 개에 다른 HueSatMap을 적용하려면 <code>ProfileHueSatMapData2</code>를 추가한다. 차원은 <code>[H,S,V]</code>, 데이터는 <code>[hue_shift_deg,sat_scale,value_scale]</code>의 배열이며 S→H→V 순으로 인덱스가 증가한다. V 차원이 1보다 크면 각각의 <code>…Encoding</code>에 0(선형) 또는 1(sRGB V 인코딩)을 명시한다. <code>ProfileToneCurve</code>는 <code>[0,0]</code>에서 <code>[1,1]</code>까지 x가 증가하는 선형 감마 좌표 쌍이다.</li>
+</ul>
+<p>기존 파서로 태그를 확인하고, ExifTool 13.59가 합성 파일을 <code>DCP</code>로 읽어 <code>Validate: 0 0 0</code>을 반환했다. 단위 테스트 5개는 두 조명의 태그와 배열 값, 잘못된 입력 거부, 기존 출력 보존을 검사한다. Adobe SDK가 행렬을 정규화하고 소수 네 자리로 반올림한 뒤에도 유효한지 검사하며 톤 곡선은 8,192점으로 제한한다. <a href="../tests/test_profile_bridge.py">테스트</a> · <a href="lightroom-bridge.json">검사값과 합성 파일 해시</a> · <a href="https://helpx.adobe.com/camera-raw/desktop/dng-and-file-formats/digital-negative.html">Adobe DNG SDK 안내</a></p>
+
+<h2>카메라 색을 맞추기 위해 남은 확인</h2>
+<ol>
+<li><strong>입력 좌표:</strong> RAW의 검정·백색 레벨과 채널 배열, 노출 배율, B2r의 WB gain 단위 및 적용 전후 좌표를 확인한다. Q13으로 계산한 펌웨어 행렬은 아직 DNG가 정의하는 방향의 행렬로 바꿀 수 없다. 각 RGB·YCbCr 구간의 원색, 백색점, 선형성과 행렬 순서가 필요하다.</li>
+<li><strong>픽셀 처리:</strong> 모드·출력 형식·bypass에 따른 분기와 실제 MultiAxial·ColorReference 보간, M2P/R2y 포화 및 감마·톤의 순서를 확인한다. 펌웨어에서 찾은 설정값과 ARM 계수 산술은 이 처리 순서의 증거 일부다. 하이라이트 클리핑, 히스토그램에 의존하는 처리, 노이즈 감소나 샤프닝까지 전역 LUT 한 개로 맞출 수는 없다. <a href="color-algorithms.html">계수와 설정 근거</a> · <a href="pipeline-report.html">픽셀 경로와 검증 조건</a></li>
+<li><strong>같은 RAW의 출력 쌍:</strong> 기종별로 같은 RAW를 카메라에서 여러 Custom Image로 현상한다. 두 K-3 기종은 TIFF 또는 JPEG, Q7은 JPEG로 출력할 수 있다. WB, 노출, 출력 색공간과 모드 세부값, 자동 보정, 렌즈·펌웨어 버전을 기록한다. Auto Select는 실제 선택된 모드를, Cross Processing은 고정 프리셋을, Monochrome은 필터·토닝 값을 구분한다. <a href="https://www.ricoh-imaging.co.jp/english/products/k-3-3/feature/05.html">K-3 Mark III</a> · <a href="https://www.ricoh-imaging.co.jp/english/products/k-3-2/feature/04.html">K-3 II</a> · <a href="https://www.ricoh-imaging.co.jp/english/products/q7/spec/">Q7</a></li>
+<li><strong>별도 장면으로 확인:</strong> Adobe에서 기준 DCP, Process Version, WB, 노출과 자동 보정을 고정한다. 색상표와 회색 계조를 두 조명과 여러 노출에서 촬영하고, 적합에 사용하지 않은 피부·잎·고채도·하이라이트 장면을 별도로 확보한다. 같은 출력 색공간으로 변환한 다음 패치별 ΔE<sub>00</sub> 분포, 중성축, 계조, 채널별 클리핑을 비교한다. 그 결과로 DCP HSV 표와 후반 RGB LUT 중 어느 쪽이 목표 변환을 잘 표현하는지 판단할 수 있다.</li>
+</ol>
+<p>이 도구는 계수 추정, XMP 작성, Lightroom 설치를 수행하지 않는다. 구조 검사와 기종별 색 검증을 구분한다. 생성 파일은 DNG 명세의 기본 ProfileEmbedPolicy(0)를 따르므로 현재 시험 대상은 DNG다. PEF에서의 적용은 별도 검증이 필요하다. Q7의 Smart Effect는 Ricoh 사양상 Custom Image와 별도이며, 다른 기종에서 이름이 같은 모드도 별도 보정이 필요하다. <a href="https://www.ricoh-imaging.co.jp/english/products/q7/spec/">Q7 촬영 설정</a></p>
+
+<h2>설치 파일 검사 재현</h2>
+<pre><code>$profilePaths = @(Get-ChildItem -LiteralPath 'C:\ProgramData\Adobe\CameraRaw\CameraProfiles' -Recurse -File |
+  Where-Object { $_.Name -match '^PENTAX (?:K-3 Mark III|K-3 II|Q7) (?:Adobe Standard|Camera .+)\.dcp$' } |
+  ForEach-Object FullName)
+python inspect_adobe_profiles.py @profilePaths</code></pre>
+<p>Lightroom Classic 내장 파일의 경우 위 경로를 프로그램의 <code>Resources\CameraProfiles</code>로 바꿔 실행한다. 공개 기록은 파일 크기, 태그 형식과 개수, 차원 및 SHA-256을 포함한다.</p>
+</main>
+</body>
+</html>
