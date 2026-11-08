@@ -1,0 +1,289 @@
+{
+  "image": {
+    "base": "0x52500000",
+    "size": 25483200,
+    "sha256": "342d2f35405e8daf1797dfe431d2e4aa70f4b52a2c242a29df48206672f1dfb4"
+  },
+  "functions": [
+    {
+      "label": "timer_insert_ordered",
+      "start": "0x525b7e00",
+      "end": "0x525b7e64",
+      "sha256": "86cc52c37e3c72fe2337ea06bd010964e6f1253f445d69da6b672d71debe0714",
+      "assembly_sha256": "8ef627cb4cbfcfdc0f687ec0998d42284b02ee9ec4a6099d6c0dc132d1771474",
+      "pseudocode_sha256": "fe0b24ae2ad606734eae9dc82c19c8faf6ad9713f9ecdbf90d9c3580befc30da"
+    },
+    {
+      "label": "timer_signed_delay",
+      "start": "0x525b7fcc",
+      "end": "0x525b801c",
+      "sha256": "cd2345948fb17ab895cdad4a501b628bb4a0d6f8bf7ba0cec5f7723a9ed6f4be",
+      "assembly_sha256": "e48a659d62164275e7f21b6b2a7feaa8719d5c65983f011ae5dbdedb11a6841f",
+      "pseudocode_sha256": "3da830f4f63e84b357c3680ca2ed6833ae026eb800d8c3c20ed81ebb99eae1a3"
+    },
+    {
+      "label": "timer_unsigned_delay",
+      "start": "0x525b801c",
+      "end": "0x525b805c",
+      "sha256": "f9740a8fbbe6516849479c19628ac58c755dfa4233aa8edae0e0ce19edeaa199",
+      "assembly_sha256": "d02e88ad211036e6e66e0573cc65db9daade40170fc342370290170070b26a98",
+      "pseudocode_sha256": "f5ae9d9f1d6c9b9d6629f39f1242169420eaee403b9c02e8308a9617d833b26a"
+    },
+    {
+      "label": "timer_absolute_deadline",
+      "start": "0x525b805c",
+      "end": "0x525b807c",
+      "sha256": "87b963cdfa007f764cce9887b5853b5d34431a6f1997d812fc60c2893820b1ce",
+      "assembly_sha256": "d24023a2c3a9b0899b82087e5216faf5e6e9547484c2250ad1e0bfbbb12facb3",
+      "pseudocode_sha256": "e728ad251f8eb5acfeb8fbf11167e5fe8fcc93f6b8478b1835488e1df3d5b0b3"
+    }
+  ],
+  "fragments": [],
+  "critical_instructions": [
+    {
+      "address": "0x525b7e30",
+      "instruction": "subs r4, r6, r4"
+    },
+    {
+      "address": "0x525b7e34",
+      "instruction": "sbc r5, r7, r5"
+    },
+    {
+      "address": "0x525b7e38",
+      "instruction": "cmp r4, #0"
+    },
+    {
+      "address": "0x525b7e3c",
+      "instruction": "sbcs r1, r5, #0"
+    },
+    {
+      "address": "0x525b7e40",
+      "instruction": "bge #0x525b7e20"
+    },
+    {
+      "address": "0x525b7e4c",
+      "instruction": "str r2, [r0, #4]"
+    },
+    {
+      "address": "0x525b7e54",
+      "instruction": "str r3, [r0]"
+    },
+    {
+      "address": "0x525b7e58",
+      "instruction": "str r0, [r2]"
+    },
+    {
+      "address": "0x525b7e5c",
+      "instruction": "str r0, [r3, #4]"
+    },
+    {
+      "address": "0x525b7fcc",
+      "instruction": "str r2, [r0, #0x10]"
+    },
+    {
+      "address": "0x525b7fd0",
+      "instruction": "cmn r1, #1"
+    },
+    {
+      "address": "0x525b7fd4",
+      "instruction": "str r3, [r0, #0x14]"
+    },
+    {
+      "address": "0x525b7fd8",
+      "instruction": "streq r0, [r0]"
+    },
+    {
+      "address": "0x525b7fdc",
+      "instruction": "streq r0, [r0, #4]"
+    },
+    {
+      "address": "0x525b7fe0",
+      "instruction": "bxeq lr"
+    },
+    {
+      "address": "0x525b8000",
+      "instruction": "adds r2, r2, r1"
+    },
+    {
+      "address": "0x525b8004",
+      "instruction": "adc r3, r3, r1, asr #31"
+    },
+    {
+      "address": "0x525b8008",
+      "instruction": "adds r2, r2, lr"
+    },
+    {
+      "address": "0x525b800c",
+      "instruction": "adc r3, r3, #0"
+    },
+    {
+      "address": "0x525b8010",
+      "instruction": "strd r2, r3, [r0, #8]"
+    },
+    {
+      "address": "0x525b8018",
+      "instruction": "b #0x525b7e00"
+    },
+    {
+      "address": "0x525b8040",
+      "instruction": "adds r4, r4, r1"
+    },
+    {
+      "address": "0x525b8044",
+      "instruction": "adc r5, r5, #0"
+    },
+    {
+      "address": "0x525b8048",
+      "instruction": "adds r4, r4, lr"
+    },
+    {
+      "address": "0x525b804c",
+      "instruction": "adc r5, r5, #0"
+    },
+    {
+      "address": "0x525b8050",
+      "instruction": "strd r4, r5, [r0, #8]"
+    },
+    {
+      "address": "0x525b8058",
+      "instruction": "b #0x525b7e00"
+    },
+    {
+      "address": "0x525b8060",
+      "instruction": "ldr lr, [sp, #4]"
+    },
+    {
+      "address": "0x525b8064",
+      "instruction": "ldr ip, [sp, #8]"
+    },
+    {
+      "address": "0x525b8068",
+      "instruction": "str lr, [r0, #0x10]"
+    },
+    {
+      "address": "0x525b806c",
+      "instruction": "strd r2, r3, [r0, #8]"
+    },
+    {
+      "address": "0x525b8070",
+      "instruction": "str ip, [r0, #0x14]"
+    },
+    {
+      "address": "0x525b8078",
+      "instruction": "b #0x525b7e00"
+    }
+  ],
+  "relationships": [
+    {
+      "sites": [
+        "0x525b7e30",
+        "0x525b7e34",
+        "0x525b7e38",
+        "0x525b7e3c",
+        "0x525b7e40"
+      ],
+      "description": "Scan forward while signed64(mod64(new_deadline-current_deadline))>=0. Insert beforefirstnegative difference, orheadsentinel atlistend. Equaldeadline nodes remainbefore newnode inselectedcoherentfixtures."
+    },
+    {
+      "sites": [
+        "0x525b7e4c",
+        "0x525b7e54",
+        "0x525b7e58",
+        "0x525b7e5c"
+      ],
+      "description": "Fourstores linknewnode between currentprev andcurrent. Metadata+8..+17 unchangedbyinsert. Caller mustprovide validunlinkednewnode andvalidcircularlist; noinputvalidation proved."
+    },
+    {
+      "sites": [
+        "0x525b7fcc",
+        "0x525b7fd0",
+        "0x525b7fd4",
+        "0x525b7fd8",
+        "0x525b7fdc",
+        "0x525b7fe0",
+        "0x525b8000",
+        "0x525b8004",
+        "0x525b8008",
+        "0x525b8010",
+        "0x525b8018"
+      ],
+      "description": "Signed32delay wrapper writescallback/argument first. Delayffffffff(-1) selflinksnode, retainsolddeadline andreturnswithoutinsertion. Otherwise deadline=mod64(NOW64+signextend32(delay)+u32period),thentailsoriginalinsert."
+    },
+    {
+      "sites": [
+        "0x525b8040",
+        "0x525b8044",
+        "0x525b8048",
+        "0x525b804c",
+        "0x525b8050",
+        "0x525b8058"
+      ],
+      "description": "Unsignedwrapper deadline=mod64(NOW64+u32delay+u32period). ffffffff islargepositivedelay, no-1sentinel branch. Originalinsertexecutes."
+    },
+    {
+      "sites": [
+        "0x525b8060",
+        "0x525b8064",
+        "0x525b8068",
+        "0x525b806c",
+        "0x525b8070",
+        "0x525b8078"
+      ],
+      "description": "Absolutewriter takes64bitdeadlineinr2/r3, callback/argument fromentrySP/SP+4, storesmetadata then tailsoriginalinsert. No stub inthese18tests."
+    }
+  ],
+  "limits": [
+    "18syntheticcases; noOS,IRQ,hardware,callbackexecution,buildorflash. Source69words includepreviouslypreservedabsolutewriter8words.",
+    "Fixturelists arevalidandnewnodeunlinked. Reinsertalreadyqueuednode, malformedlinks andconcurrencynotvalidated.",
+    "Signedmod64comparison isnotatotalorder overarbitrarytimestamps; wide/half-rangeedgecases showlocalcomparisononly. No globalqueueinvariant foranyproducer oractualtimeunitclaim.",
+    "Signedwrappernegativevaluesotherthan-1 aredirecttestinputs, notprovenallowedbyupstreamcaller. Sentinelselflink doesnotdetachapreviouslylinkednode.",
+    "GenuineC retainedunchanged: signedwrapperC losesconditionalityofselflinkstores andtailcall; insertionC hasdecompiler_ccall. ARM/caseexecutiongovern."
+  ],
+  "manager_validation": {
+    "passed": true,
+    "image_sha256": "342d2f35405e8daf1797dfe431d2e4aa70f4b52a2c242a29df48206672f1dfb4",
+    "genuine_c": 4,
+    "words": 69,
+    "critical_instructions": 33,
+    "cases": 18,
+    "rtos_decoded_equal": true,
+    "stubs": 0,
+    "scope": "OriginalARM69words,18syntheticcases; nohardware,OS,callbackexecution,buildorflash. Validunlinkednewnodesandcoherentcircularlists only."
+  },
+  "prior_public_evidence": [
+    {
+      "path": "update-timer-irq-evidence.json",
+      "sha256": "f49ab140f6abd26100a3207e9d0d6c39bce20b8a8c15a68084224969f466c6a6"
+    }
+  ],
+  "public_cli": {
+    "script": "../verify_update_timer_insertion.py",
+    "sha256": "d75d93139eb36f816291e484e784640b51bfa5990bac66e6783a8b363e75c9a2",
+    "guards": [
+      "existing",
+      "hardlink",
+      "dangling-missing-input",
+      "optimized-missing-input-dangling-output",
+      "unknown-input"
+    ],
+    "passed": true,
+    "both_containers_equal": true
+  },
+  "validation": {
+    "cases": 18,
+    "groups": {
+      "absolute-deadline": 1,
+      "ordered-insert": 10,
+      "signed-delay": 5,
+      "unsigned-delay": 2
+    }
+  },
+  "artifact_policy": "Original binaries,C,ASM and resource text stay local. Authored analysis,synthetic fixtures and metadata public.",
+  "independent_review": {
+    "passed": true,
+    "additional_private_cases": 4,
+    "baseline_cases": 18,
+    "manager_reran_additional_cases": true,
+    "scope": "Signed modular local comparison only; no global arbitrarytimestamp order or upstream validation. Sentinel selflink does not unlink an alreadyqueued node. Raw C remains unchanged and is not authoritative for conditional stores/tailcalls."
+  }
+}

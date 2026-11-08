@@ -1,0 +1,781 @@
+{
+  "passed": true,
+  "cases": 20,
+  "image_sha256": "342d2f35405e8daf1797dfe431d2e4aa70f4b52a2c242a29df48206672f1dfb4",
+  "scope": "Original ARM timer deadline drain, CPU0 descriptor producer and deferred alarm route.\nSynthetic RAM only; no privileged IRQ/SVC, physical MMIO, OS or time runs. Handler\nexecutes only selected queue slices after its earlier gates. Deferred drain begins\nafter MPIDR read/prologue with authored CPU index and stops before epilogue. Callback\ndelivery is explicitly sequenced by the fixture, not actual scheduler/IRQ delivery.\n",
+  "emulator": "Unicorn Cortex-A15; no target/IRQ/peripheral fidelity claim",
+  "stubs": {
+    "0x525da92c": "standard memset for descriptor CPU0 prefix only",
+    "0x525b6144": "IRQ mask returns authored token; no CPSR/IRQ operation",
+    "0x525b6154": "IRQ restore boundary only; no IRQ operation",
+    "0x525b7a20": "lock acquire boundary only; no OS",
+    "0x525b7aa4": "lock release boundary only; no OS",
+    "0x30000100": "authored due callback, verifies unlink before invocation; optional authored NOW mutation",
+    "0x30000200": "authored application callback verifies deferred unlink/flags; optional generation mutation"
+  },
+  "ranges": [
+    {
+      "start": "0x525d9e94",
+      "end": "0x525d9f10",
+      "sha256": "96ecef7e578ee1011a58bc9d58caa02a517faa7c8c4e874cc5330acacd9ba6d7"
+    },
+    {
+      "start": "0x525b5b4c",
+      "end": "0x525b5be0",
+      "sha256": "57a985750088915c0a8f03523256ee6995da438f38c8f96c12a9cad8ce941b39"
+    },
+    {
+      "start": "0x525ce770",
+      "end": "0x525ce7bc",
+      "sha256": "78a542944160900a5afc878d16eb0c466a2b19ae49220720d48d2ffc63259877"
+    },
+    {
+      "start": "0x525b819c",
+      "end": "0x525b81f4",
+      "sha256": "0f95b1fb34d1bd396e3e887dede505c3786dc7223c812699e524012962e68ff8"
+    },
+    {
+      "start": "0x525b831c",
+      "end": "0x525b8328",
+      "sha256": "9fa54eab5b5a870183bce861f173b19cff495572d5eaf7e61dc4ccbb439aaea0"
+    },
+    {
+      "start": "0x525cdfa0",
+      "end": "0x525ce050",
+      "sha256": "51a76eee260214f515e5861bdcf6ccccff1a24f6c9dcbd979ade5f089a05cc12"
+    },
+    {
+      "start": "0x525ce7bc",
+      "end": "0x525ce80c",
+      "sha256": "27825ca2215f040e45e947972fa04ab72b346103958c184c4d00e876dcdb01d3"
+    },
+    {
+      "start": "0x525ce814",
+      "end": "0x525ce87c",
+      "sha256": "17061dfe16c263c8a17ceab9aaee22bfac6f12e9b8bee77c611f6d83fc302b9d"
+    },
+    {
+      "start": "0x525cde48",
+      "end": "0x525cdeb0",
+      "sha256": "c20ae5115eb339c1ed7f3b85fa52a3759cd4b3e8f9e2d602f78ad54140d99c66"
+    }
+  ],
+  "executed_addresses": [
+    "0x525b5b4c",
+    "0x525b5b50",
+    "0x525b5b54",
+    "0x525b5b58",
+    "0x525b5b5c",
+    "0x525b5b60",
+    "0x525b5b64",
+    "0x525b5b68",
+    "0x525b5b6c",
+    "0x525b5b70",
+    "0x525b5b74",
+    "0x525b5b78",
+    "0x525b5b7c",
+    "0x525b5b80",
+    "0x525b5b84",
+    "0x525b5b88",
+    "0x525b5b8c",
+    "0x525b5b90",
+    "0x525b5b94",
+    "0x525b5b98",
+    "0x525b5b9c",
+    "0x525b5ba0",
+    "0x525b5ba4",
+    "0x525b5ba8",
+    "0x525b5bac",
+    "0x525b5bb0",
+    "0x525b5bb4",
+    "0x525b5bb8",
+    "0x525b5bbc",
+    "0x525b5bc0",
+    "0x525b5bc4",
+    "0x525b5bc8",
+    "0x525b5bcc",
+    "0x525b5bd0",
+    "0x525b5bd4",
+    "0x525b5bd8",
+    "0x525b5bdc",
+    "0x525b819c",
+    "0x525b81a0",
+    "0x525b81a4",
+    "0x525b81a8",
+    "0x525b81ac",
+    "0x525b81b0",
+    "0x525b81b4",
+    "0x525b81b8",
+    "0x525b81bc",
+    "0x525b81c0",
+    "0x525b81c4",
+    "0x525b81c8",
+    "0x525b81cc",
+    "0x525b81d0",
+    "0x525b81d4",
+    "0x525b81d8",
+    "0x525b81dc",
+    "0x525b81e0",
+    "0x525b81e4",
+    "0x525b81e8",
+    "0x525b81ec",
+    "0x525b81f0",
+    "0x525b831c",
+    "0x525b8320",
+    "0x525b8324",
+    "0x525cde48",
+    "0x525cde4c",
+    "0x525cde50",
+    "0x525cde54",
+    "0x525cde58",
+    "0x525cde5c",
+    "0x525cde60",
+    "0x525cde64",
+    "0x525cde68",
+    "0x525cde6c",
+    "0x525cde70",
+    "0x525cde74",
+    "0x525cde78",
+    "0x525cde7c",
+    "0x525cde80",
+    "0x525cde84",
+    "0x525cde88",
+    "0x525cde8c",
+    "0x525cde90",
+    "0x525cde94",
+    "0x525cde98",
+    "0x525cde9c",
+    "0x525cdea0",
+    "0x525cdea4",
+    "0x525cdea8",
+    "0x525cdeac",
+    "0x525cdfa0",
+    "0x525cdfa4",
+    "0x525cdfa8",
+    "0x525cdfac",
+    "0x525cdfb0",
+    "0x525cdfb4",
+    "0x525cdfb8",
+    "0x525cdfbc",
+    "0x525cdfc0",
+    "0x525cdfc4",
+    "0x525cdfc8",
+    "0x525cdfdc",
+    "0x525cdfe0",
+    "0x525cdfe4",
+    "0x525cdfe8",
+    "0x525cdfec",
+    "0x525cdff0",
+    "0x525cdff4",
+    "0x525cdff8",
+    "0x525cdffc",
+    "0x525ce000",
+    "0x525ce004",
+    "0x525ce008",
+    "0x525ce00c",
+    "0x525ce010",
+    "0x525ce014",
+    "0x525ce018",
+    "0x525ce01c",
+    "0x525ce020",
+    "0x525ce024",
+    "0x525ce028",
+    "0x525ce02c",
+    "0x525ce03c",
+    "0x525ce040",
+    "0x525ce044",
+    "0x525ce048",
+    "0x525ce04c",
+    "0x525ce770",
+    "0x525ce774",
+    "0x525ce778",
+    "0x525ce77c",
+    "0x525ce780",
+    "0x525ce784",
+    "0x525ce788",
+    "0x525ce78c",
+    "0x525ce790",
+    "0x525ce794",
+    "0x525ce798",
+    "0x525ce79c",
+    "0x525ce7a0",
+    "0x525ce7a4",
+    "0x525ce7a8",
+    "0x525ce7ac",
+    "0x525ce7b0",
+    "0x525ce7b4",
+    "0x525ce7b8",
+    "0x525ce7bc",
+    "0x525ce7c0",
+    "0x525ce7c4",
+    "0x525ce7c8",
+    "0x525ce7cc",
+    "0x525ce7d0",
+    "0x525ce7d4",
+    "0x525ce7d8",
+    "0x525ce7dc",
+    "0x525ce7e0",
+    "0x525ce7e4",
+    "0x525ce7e8",
+    "0x525ce7ec",
+    "0x525ce7f0",
+    "0x525ce7f4",
+    "0x525ce7f8",
+    "0x525ce7fc",
+    "0x525ce800",
+    "0x525ce804",
+    "0x525ce808",
+    "0x525ce814",
+    "0x525ce818",
+    "0x525ce81c",
+    "0x525ce820",
+    "0x525ce824",
+    "0x525ce828",
+    "0x525ce82c",
+    "0x525ce830",
+    "0x525ce834",
+    "0x525ce838",
+    "0x525ce83c",
+    "0x525ce840",
+    "0x525ce844",
+    "0x525ce848",
+    "0x525ce84c",
+    "0x525ce850",
+    "0x525ce854",
+    "0x525ce858",
+    "0x525ce85c",
+    "0x525ce860",
+    "0x525ce864",
+    "0x525ce868",
+    "0x525ce86c",
+    "0x525ce870",
+    "0x525ce874",
+    "0x525ce878",
+    "0x525d9e94",
+    "0x525d9e98",
+    "0x525d9e9c",
+    "0x525d9ea0",
+    "0x525d9ea4",
+    "0x525d9ea8",
+    "0x525d9eac",
+    "0x525d9eb0",
+    "0x525d9eb4",
+    "0x525d9eb8",
+    "0x525d9ebc",
+    "0x525d9ec0",
+    "0x525d9ec4",
+    "0x525d9ec8",
+    "0x525d9ecc",
+    "0x525d9ed0",
+    "0x525d9ed4",
+    "0x525d9ed8",
+    "0x525d9edc",
+    "0x525d9ee0",
+    "0x525d9ee4",
+    "0x525d9ee8",
+    "0x525d9eec",
+    "0x525d9ef0",
+    "0x525d9ef4",
+    "0x525d9ef8",
+    "0x525d9efc",
+    "0x525d9f00",
+    "0x525d9f04",
+    "0x525d9f08",
+    "0x525d9f0c"
+  ],
+  "groups": {
+    "alarm-route-mark-deferred-drain": 4,
+    "cpu0-descriptor-producer": 1,
+    "deadline-drain": 12,
+    "deferred-mark-flags": 1,
+    "deferred-queues-initialize": 1,
+    "empty-deferred-drain": 1
+  },
+  "results": [
+    {
+      "group": "cpu0-descriptor-producer",
+      "inputs": {
+        "entry": "0x525d9e94",
+        "assumed_prior_cpu0_branch": true,
+        "memset_value_r1": 0
+      },
+      "observed": {
+        "callbacks_match": true,
+        "alias_copies_match": true
+      },
+      "result_sha256": "c3e007a56eb1fc567137e53cb921824c03c5ff494fb658483729899de88c758e"
+    },
+    {
+      "group": "deferred-queues-initialize",
+      "inputs": {
+        "authored_fill": 165
+      },
+      "observed": {
+        "entries": 4,
+        "low_two_bits_cleared": true,
+        "other_bytes_preserved": true
+      },
+      "result_sha256": "e8d1b122b7df4d4d58f2797d4da8a6e02dea711f62a0dcb36c3fa62a26d2f1e7"
+    },
+    {
+      "group": "deadline-drain",
+      "inputs": {
+        "label": "empty",
+        "now": 0,
+        "deadlines": [],
+        "callback_null": [],
+        "authored_now_change": null
+      },
+      "observed": {
+        "callback_indices": [],
+        "remaining_indices": [],
+        "comparisons": []
+      },
+      "result_sha256": "c4bfda47517649bb87b56d035601956379fdb028be3305a5b5de2ae10d13e69d"
+    },
+    {
+      "group": "deadline-drain",
+      "inputs": {
+        "label": "future1",
+        "now": 0,
+        "deadlines": [
+          1
+        ],
+        "callback_null": [
+          false
+        ],
+        "authored_now_change": null
+      },
+      "observed": {
+        "callback_indices": [],
+        "remaining_indices": [
+          0
+        ],
+        "comparisons": [
+          {
+            "delta": 1,
+            "signed_delta": 1,
+            "bge": true
+          }
+        ]
+      },
+      "result_sha256": "4a33b6dbcb5d4924b86b1c824efc2639e8ef1792c0d7d6dd55014ec25257f560"
+    },
+    {
+      "group": "deadline-drain",
+      "inputs": {
+        "label": "equal",
+        "now": 5,
+        "deadlines": [
+          5
+        ],
+        "callback_null": [
+          false
+        ],
+        "authored_now_change": null
+      },
+      "observed": {
+        "callback_indices": [
+          0
+        ],
+        "remaining_indices": [],
+        "comparisons": [
+          {
+            "delta": 0,
+            "signed_delta": 0,
+            "bge": false
+          }
+        ]
+      },
+      "result_sha256": "998948725e5799649dca86e3e15601261fb1d990045acf68bcfef9f4f15aad4c"
+    },
+    {
+      "group": "deadline-drain",
+      "inputs": {
+        "label": "past1",
+        "now": 5,
+        "deadlines": [
+          4
+        ],
+        "callback_null": [
+          false
+        ],
+        "authored_now_change": null
+      },
+      "observed": {
+        "callback_indices": [
+          0
+        ],
+        "remaining_indices": [],
+        "comparisons": [
+          {
+            "delta": 18446744073709551615,
+            "signed_delta": -1,
+            "bge": false
+          }
+        ]
+      },
+      "result_sha256": "31c354347c50f6ca5ee2b09376186de4b5107e6489c10176b29e90caff572d17"
+    },
+    {
+      "group": "deadline-drain",
+      "inputs": {
+        "label": "signed-max",
+        "now": 0,
+        "deadlines": [
+          9223372036854775807
+        ],
+        "callback_null": [
+          false
+        ],
+        "authored_now_change": null
+      },
+      "observed": {
+        "callback_indices": [],
+        "remaining_indices": [
+          0
+        ],
+        "comparisons": [
+          {
+            "delta": 9223372036854775807,
+            "signed_delta": 9223372036854775807,
+            "bge": true
+          }
+        ]
+      },
+      "result_sha256": "e77ebc12780de3447cfa8dd7b701b9ff2a7de9c65a1da6a629ce68d693a16109"
+    },
+    {
+      "group": "deadline-drain",
+      "inputs": {
+        "label": "signed-min",
+        "now": 0,
+        "deadlines": [
+          9223372036854775808
+        ],
+        "callback_null": [
+          false
+        ],
+        "authored_now_change": null
+      },
+      "observed": {
+        "callback_indices": [
+          0
+        ],
+        "remaining_indices": [],
+        "comparisons": [
+          {
+            "delta": 9223372036854775808,
+            "signed_delta": -9223372036854775808,
+            "bge": false
+          }
+        ]
+      },
+      "result_sha256": "ba4817c484b697716b9f22c534fd20746e9efa355f1cafed675c875068540bd5"
+    },
+    {
+      "group": "deadline-drain",
+      "inputs": {
+        "label": "wrap-future",
+        "now": 18446744073709551615,
+        "deadlines": [
+          0
+        ],
+        "callback_null": [
+          false
+        ],
+        "authored_now_change": null
+      },
+      "observed": {
+        "callback_indices": [],
+        "remaining_indices": [
+          0
+        ],
+        "comparisons": [
+          {
+            "delta": 1,
+            "signed_delta": 1,
+            "bge": true
+          }
+        ]
+      },
+      "result_sha256": "4a33b6dbcb5d4924b86b1c824efc2639e8ef1792c0d7d6dd55014ec25257f560"
+    },
+    {
+      "group": "deadline-drain",
+      "inputs": {
+        "label": "wrap-past",
+        "now": 0,
+        "deadlines": [
+          18446744073709551615
+        ],
+        "callback_null": [
+          false
+        ],
+        "authored_now_change": null
+      },
+      "observed": {
+        "callback_indices": [
+          0
+        ],
+        "remaining_indices": [],
+        "comparisons": [
+          {
+            "delta": 18446744073709551615,
+            "signed_delta": -1,
+            "bge": false
+          }
+        ]
+      },
+      "result_sha256": "31c354347c50f6ca5ee2b09376186de4b5107e6489c10176b29e90caff572d17"
+    },
+    {
+      "group": "deadline-drain",
+      "inputs": {
+        "label": "two-due-one-future",
+        "now": 10,
+        "deadlines": [
+          9,
+          10,
+          11
+        ],
+        "callback_null": [
+          false,
+          false,
+          false
+        ],
+        "authored_now_change": null
+      },
+      "observed": {
+        "callback_indices": [
+          0,
+          1
+        ],
+        "remaining_indices": [
+          2
+        ],
+        "comparisons": [
+          {
+            "delta": 18446744073709551615,
+            "signed_delta": -1,
+            "bge": false
+          },
+          {
+            "delta": 0,
+            "signed_delta": 0,
+            "bge": false
+          },
+          {
+            "delta": 1,
+            "signed_delta": 1,
+            "bge": true
+          }
+        ]
+      },
+      "result_sha256": "e866c153c4cb0046cf1d4d234c54aedb4ea6b902847822ea202e5e6234793d9b"
+    },
+    {
+      "group": "deadline-drain",
+      "inputs": {
+        "label": "null-callback",
+        "now": 10,
+        "deadlines": [
+          9,
+          10
+        ],
+        "callback_null": [
+          true,
+          false
+        ],
+        "authored_now_change": null
+      },
+      "observed": {
+        "callback_indices": [
+          1
+        ],
+        "remaining_indices": [],
+        "comparisons": [
+          {
+            "delta": 18446744073709551615,
+            "signed_delta": -1,
+            "bge": false
+          },
+          {
+            "delta": 0,
+            "signed_delta": 0,
+            "bge": false
+          }
+        ]
+      },
+      "result_sha256": "0596c43970fb274d743d89f666171ad7851aa0808bbf5c2dad62f1a282f0fa8c"
+    },
+    {
+      "group": "deadline-drain",
+      "inputs": {
+        "label": "future-head-blocks-tail",
+        "now": 10,
+        "deadlines": [
+          11,
+          9
+        ],
+        "callback_null": [
+          false,
+          false
+        ],
+        "authored_now_change": null
+      },
+      "observed": {
+        "callback_indices": [],
+        "remaining_indices": [
+          0,
+          1
+        ],
+        "comparisons": [
+          {
+            "delta": 1,
+            "signed_delta": 1,
+            "bge": true
+          }
+        ]
+      },
+      "result_sha256": "a134cdcf1b46da6719ea4be994cdd6775f94fb410ca14d729b559bc3485ab965"
+    },
+    {
+      "group": "deadline-drain",
+      "inputs": {
+        "label": "callback-advances-now",
+        "now": 0,
+        "deadlines": [
+          0,
+          5
+        ],
+        "callback_null": [
+          false,
+          false
+        ],
+        "authored_now_change": 10
+      },
+      "observed": {
+        "callback_indices": [
+          0,
+          1
+        ],
+        "remaining_indices": [],
+        "comparisons": [
+          {
+            "delta": 0,
+            "signed_delta": 0,
+            "bge": false
+          },
+          {
+            "delta": 18446744073709551611,
+            "signed_delta": -5,
+            "bge": false
+          }
+        ]
+      },
+      "result_sha256": "9935e648eca33965a13f2594cae8ab22ac49d591a949007f53a977015c789729"
+    },
+    {
+      "group": "alarm-route-mark-deferred-drain",
+      "inputs": {
+        "flag4": 131072,
+        "mask34": 0,
+        "authored_cpu": 0,
+        "generation_changed_by_stub": false
+      },
+      "observed": {
+        "mark_mask": 1,
+        "user_callback_count": 1,
+        "final_flags": 128,
+        "deadline_queue_empty": true,
+        "deferred_queue_empty": true
+      },
+      "result_sha256": "944910e8cbec56307a691b984ac93607a60a5e4aa2d195b6921e177d0d6d8723"
+    },
+    {
+      "group": "alarm-route-mark-deferred-drain",
+      "inputs": {
+        "flag4": 131072,
+        "mask34": 1,
+        "authored_cpu": 0,
+        "generation_changed_by_stub": false
+      },
+      "observed": {
+        "mark_mask": 1,
+        "user_callback_count": 1,
+        "final_flags": 128,
+        "deadline_queue_empty": true,
+        "deferred_queue_empty": true
+      },
+      "result_sha256": "944910e8cbec56307a691b984ac93607a60a5e4aa2d195b6921e177d0d6d8723"
+    },
+    {
+      "group": "alarm-route-mark-deferred-drain",
+      "inputs": {
+        "flag4": 131072,
+        "mask34": 4,
+        "authored_cpu": 2,
+        "generation_changed_by_stub": false
+      },
+      "observed": {
+        "mark_mask": 4,
+        "user_callback_count": 1,
+        "final_flags": 128,
+        "deadline_queue_empty": true,
+        "deferred_queue_empty": true
+      },
+      "result_sha256": "9176f0de2353cc5d27e4727c0d28f989b21a9bd48f37d3f403e8450d56e9714b"
+    },
+    {
+      "group": "alarm-route-mark-deferred-drain",
+      "inputs": {
+        "flag4": 131072,
+        "mask34": 8,
+        "authored_cpu": 3,
+        "generation_changed_by_stub": true
+      },
+      "observed": {
+        "mark_mask": 8,
+        "user_callback_count": 1,
+        "final_flags": 130,
+        "deadline_queue_empty": true,
+        "deferred_queue_empty": true
+      },
+      "result_sha256": "4d6def1055a90c13350c24d0bd099f3104d7b0d110cb863da85cdb5d2828c968"
+    },
+    {
+      "group": "deferred-mark-flags",
+      "inputs": {
+        "flags": [
+          1,
+          3,
+          0,
+          2
+        ]
+      },
+      "observed": {
+        "mask": 1,
+        "after": [
+          2,
+          2,
+          0,
+          2
+        ]
+      },
+      "result_sha256": "d1f704bb3b74ab691299a196ffb4199fe775552f32fd22828fc99ddb68bdc558"
+    },
+    {
+      "group": "empty-deferred-drain",
+      "inputs": {
+        "authored_cpu": 1,
+        "flags": 166
+      },
+      "observed": {
+        "flags_after": 164,
+        "callbacks": 0
+      },
+      "result_sha256": "6e91a24c47710dfa6ef0274765c258144b4bf155a0a796e9a62180c77dde044f"
+    }
+  ]
+}

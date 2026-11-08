@@ -1,0 +1,253 @@
+{
+  "image": {
+    "base": "0x52500000",
+    "size": 25483200,
+    "sha256": "342d2f35405e8daf1797dfe431d2e4aa70f4b52a2c242a29df48206672f1dfb4"
+  },
+  "functions": [
+    {
+      "label": "clock_with_offset_reader",
+      "start": "0x525ce390",
+      "end": "0x525ce45c",
+      "sha256": "24aa3def8dbd0a162185b225c719cb8e6de3113d8b004df5fdac2c7f4f376da3",
+      "assembly_sha256": "18103018d0ed829a943da51764b31181c764af3a848136a06feaa21a2799e9d0",
+      "pseudocode_sha256": "8cd1b88a67844a1a0b18b7f1c9a002b3382bc867401f72923e47e9d6e26ff3f1"
+    },
+    {
+      "label": "clock_counter_reader",
+      "start": "0x525ce45c",
+      "end": "0x525ce518",
+      "sha256": "e7a08dc1a1fd9b4719a3ba1733de0a7acc81db4d361710052b6b7b13ef73835e",
+      "assembly_sha256": "3e7d1419ada5a346042b272f6d468aaa2b98624a534194134ae53c1cb71ccc14",
+      "pseudocode_sha256": "79c06f8cc5efd9346c1615ba0e8de2b01188b05a0ba5ed28e93fd83a339c4565"
+    }
+  ],
+  "fragments": [
+    {
+      "label": "subtick_conversion",
+      "start": "0x525b5c60",
+      "end": "0x525b5c9c",
+      "sha256": "92cdf6a39ad684a03fa0328457d695a9043912cf66783372118d921a940c0ac4",
+      "assembly_sha256": "5d9e8e4abfefade9678cf0714ca7dbc37f844a6ca3fe75105e349fe223a6b957"
+    }
+  ],
+  "critical_instructions": [
+    {
+      "address": "0x525ce398",
+      "instruction": "mov r5, r1"
+    },
+    {
+      "address": "0x525ce3b8",
+      "instruction": "mrc p15, #0, r2, c0, c0, #5"
+    },
+    {
+      "address": "0x525ce3d8",
+      "instruction": "tst r3, #0xf7"
+    },
+    {
+      "address": "0x525ce3f8",
+      "instruction": "ble #0x525ce44c"
+    },
+    {
+      "address": "0x525ce3fc",
+      "instruction": "bl #0x525b5c60"
+    },
+    {
+      "address": "0x525ce400",
+      "instruction": "str r0, [r5]"
+    },
+    {
+      "address": "0x525ce418",
+      "instruction": "ldrd r2, r3, [r3]"
+    },
+    {
+      "address": "0x525ce41c",
+      "instruction": "ldrd r6, r7, [r1]"
+    },
+    {
+      "address": "0x525ce424",
+      "instruction": "adds r2, r2, r6"
+    },
+    {
+      "address": "0x525ce428",
+      "instruction": "adc r3, r3, r7"
+    },
+    {
+      "address": "0x525ce42c",
+      "instruction": "str r3, [r4]"
+    },
+    {
+      "address": "0x525ce430",
+      "instruction": "str r2, [r4, #4]"
+    },
+    {
+      "address": "0x525ce440",
+      "instruction": "mov r0, #0"
+    },
+    {
+      "address": "0x525ce454",
+      "instruction": "bx r3"
+    },
+    {
+      "address": "0x525ce464",
+      "instruction": "mov r5, r1"
+    },
+    {
+      "address": "0x525ce484",
+      "instruction": "mrc p15, #0, r2, c0, c0, #5"
+    },
+    {
+      "address": "0x525ce4a4",
+      "instruction": "tst r3, #0xf7"
+    },
+    {
+      "address": "0x525ce4c4",
+      "instruction": "ble #0x525ce508"
+    },
+    {
+      "address": "0x525ce4c8",
+      "instruction": "bl #0x525b5c60"
+    },
+    {
+      "address": "0x525ce4cc",
+      "instruction": "str r0, [r5]"
+    },
+    {
+      "address": "0x525ce4e0",
+      "instruction": "ldr r2, [r3]"
+    },
+    {
+      "address": "0x525ce4e4",
+      "instruction": "ldr r3, [r3, #4]"
+    },
+    {
+      "address": "0x525ce4e8",
+      "instruction": "str r2, [r4, #4]"
+    },
+    {
+      "address": "0x525ce4ec",
+      "instruction": "str r3, [r4]"
+    },
+    {
+      "address": "0x525ce4fc",
+      "instruction": "mov r0, #0"
+    },
+    {
+      "address": "0x525ce510",
+      "instruction": "bx r3"
+    }
+  ],
+  "pointer_words": [
+    {
+      "address": "0x525d7b64",
+      "value": "0x525ce390"
+    },
+    {
+      "address": "0x525d7b68",
+      "value": "0x525ce45c"
+    }
+  ],
+  "relationships": [
+    {
+      "sites": [
+        "0x525ce398",
+        "0x525ce400",
+        "0x525ce464",
+        "0x525ce4cc"
+      ],
+      "description": "Original subtick result stores through entry r1 saved inr5 before coarse outputs."
+    },
+    {
+      "sites": [
+        "0x525ce424",
+        "0x525ce428",
+        "0x525ce42c",
+        "0x525ce430"
+      ],
+      "description": "With-offset reader adds NOW64 at54c40e50 to OFFSET64 at54c3fd20 modulo64; entryr0 output+0=high32,+4=low32. Offset64 differs from period32 at54c40580."
+    },
+    {
+      "sites": [
+        "0x525ce4e0",
+        "0x525ce4e4",
+        "0x525ce4e8",
+        "0x525ce4ec"
+      ],
+      "description": "Counter-only reader copies NOW64; samehigh-firstlayout but storeslowwordbeforehighword. Fineoutput is stored first inbothfunctions."
+    },
+    {
+      "sites": [
+        "0x525ce3b8",
+        "0x525ce3d8",
+        "0x525ce3f8",
+        "0x525ce454",
+        "0x525ce484",
+        "0x525ce4a4",
+        "0x525ce4c4",
+        "0x525ce510"
+      ],
+      "description": "EmulatedMPIDR selectsCPU0. Ifcurrenttask!=0, (taskbyte2b&f7)==0, and signednesting[54c3f4dc]<=0, tailboundary525d724c beforeoutputs. Noassertionreturn/haltpolicy assumed."
+    },
+    {
+      "sites": [
+        "0x525d7b64",
+        "0x525d7b68"
+      ],
+      "description": "Native dispatch table points tothese2functions; relative to525f7660 signedindices−32447/−32446, upper16codes8141/8142. No callingwrapper/actualrequestproducer established; tablelookup alone doesnotprove runtime use."
+    }
+  ],
+  "limits": [
+    "All113ARMwords overlap earlierstatic subtick report; new2genuineC and12fullreader syntheticcases extend verification, not113newunique sourcewords.",
+    "Lock/IRQ helpers stubbed, CPU0 only viaemulatedMPIDR. No physicalMMIO/clock/SVC/IRQ/scheduler/device/build/flash.",
+    "Two guardfailure cases stop at525d724c beforeunverifiedcode; outstandingauthoredlock/token notarealexceptionpolicy.",
+    "GenuineC output omits contextguardbranch and misrenders restorecall; retainedunchanged, ARM authoritative.",
+    "Outputunit, validhardwarecounterrange, trueconsumer/APIcontract, actualtimestampmonotonicity andcameraimpact unresolved.",
+    "Selectedfixtures use nonaliasingvalidoutputbuffers; no completenessclaim for invalidpointers, concurrency oralltaskstates."
+  ],
+  "manager_validation": {
+    "passed": true,
+    "image_sha256": "342d2f35405e8daf1797dfe431d2e4aa70f4b52a2c242a29df48206672f1dfb4",
+    "genuine_c": 2,
+    "supporting_ranges": 1,
+    "words": 113,
+    "critical_instructions": 26,
+    "pointer_words": 2,
+    "cases": 12,
+    "rtos_decoded_equal": true,
+    "scope": "12syntheticfullreader cases withlock/IRQ stubs,CPU0 emulation,guardboundary stop. 113sourcewords overlappriorsubtickreport; no actualunits/runtimeuse/device."
+  },
+  "prior_public_evidence": [
+    {
+      "path": "update-subtick-arithmetic-evidence.json",
+      "sha256": "5e150fa0acd2188e562055c3848e7c28f8d1e6b5b14a037d1b2a23b68796e7ff"
+    }
+  ],
+  "public_cli": {
+    "script": "../verify_update_clock_readers.py",
+    "sha256": "bb2643773f4a4869797e0787ad2960f2ec113f1cbc3a3c7f55a4c4071cba8d78",
+    "guards": [
+      "existing",
+      "hardlink",
+      "dangling-missing-input",
+      "optimized-missing-input-dangling-output",
+      "unknown-input"
+    ],
+    "passed": true,
+    "both_containers_equal": true
+  },
+  "validation": {
+    "cases": 12,
+    "groups": {
+      "with-offset": 6,
+      "counter-only": 6
+    }
+  },
+  "artifact_policy": "Original binaries,C,ASM and resource text stay local. Authored analysis,synthetic fixtures and metadata public.",
+  "independent_review": {
+    "passed": true,
+    "additional_private_cases": 3,
+    "baseline_cases": 12,
+    "manager_reran_additional_cases": true,
+    "scope": "Caller/request producer, output units, actual counter range, hardware timing and effect unresolved. 113words overlap prior static proof. IRQ/lock stubs and guardboundary stop are not real execution/error policy."
+  }
+}

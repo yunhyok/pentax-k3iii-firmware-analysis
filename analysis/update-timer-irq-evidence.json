@@ -1,0 +1,663 @@
+{
+  "image": {
+    "base": "0x52500000",
+    "size": 25483200,
+    "sha256": "342d2f35405e8daf1797dfe431d2e4aa70f4b52a2c242a29df48206672f1dfb4"
+  },
+  "functions": [
+    {
+      "label": "board_runtime_initialize",
+      "start": "0x525d9e30",
+      "end": "0x525d9f48",
+      "sha256": "42ad8f6f4c8d26a7be76b4bea2a6751c59cec96516a49c9aefa54a83e498907f",
+      "assembly_sha256": "7b0fed08e2d77b375a71031cc385f941b56d76fcf28abfc0961fed1dcfeebb11",
+      "pseudocode_sha256": "b1911549c7e7fe3ffeb00f78d812f55e837d85df8ddb4ead4fbf082d112b85d8",
+      "angr_version": "10.0.5"
+    },
+    {
+      "label": "timer_irq_handler",
+      "start": "0x525b807c",
+      "end": "0x525b8370",
+      "sha256": "046bf80cc42e65b4997379fb3dc67212bd26ac971c167927e48dab4ccc4efdb4",
+      "assembly_sha256": "a13840fd9f4a8bdb3b5343ebdb655959ad8f331e5661d5e756a5cef25f368bfb",
+      "pseudocode_sha256": "c93a36544e66055e4164b1d3c4250558267d2a2ef03b2739c8bc4ad38f606066",
+      "angr_version": "10.0.5"
+    },
+    {
+      "label": "deferred_queues_initialize",
+      "start": "0x525ce770",
+      "end": "0x525ce7bc",
+      "sha256": "78a542944160900a5afc878d16eb0c466a2b19ae49220720d48d2ffc63259877",
+      "assembly_sha256": "48e95169914a11e614cb4f6e08a890fab387f20378641cd3b7a8208b7b22ea1c",
+      "pseudocode_sha256": "6895da338a8ef125c28bff6bf5d376344d6e67f36316620e4b381cad690c64c2",
+      "angr_version": "10.0.5"
+    },
+    {
+      "label": "alarm_route_deferred",
+      "start": "0x525cdfa0",
+      "end": "0x525ce050",
+      "sha256": "51a76eee260214f515e5861bdcf6ccccff1a24f6c9dcbd979ade5f089a05cc12",
+      "assembly_sha256": "76a673d6926f403d56b87d770ce9ce79d0f922a786d11d594ad4a2b107854a27",
+      "pseudocode_sha256": "4bf4ea484e6e3d23e01a8d137bbc416e0930e0bd5b3d1b2d996b11d286d3e9c0",
+      "angr_version": "10.0.5"
+    },
+    {
+      "label": "deferred_queues_mark",
+      "start": "0x525ce7bc",
+      "end": "0x525ce80c",
+      "sha256": "27825ca2215f040e45e947972fa04ab72b346103958c184c4d00e876dcdb01d3",
+      "assembly_sha256": "c95455ae812f0c6decb1c67abfc3f073fdc93073549e7fcd946ababe427fae2f",
+      "pseudocode_sha256": "75cfd4ad6eaab22f1e503e2b786ded5c03b617518b6717d6fad3fd035b94dc27",
+      "angr_version": "10.0.5"
+    },
+    {
+      "label": "deferred_queue_drain",
+      "start": "0x525ce80c",
+      "end": "0x525ce880",
+      "sha256": "f38119f34c2f2d4d5cd9a1af1202ed5d9a4435d7d01d5d4e016bc73f466aeb8e",
+      "assembly_sha256": "4c5fc696df9b0ad32e0136ca9eab2881dde17e4cf2418277b7e08230740b4001",
+      "pseudocode_sha256": "35f06720d06e4085643d66804e9055afa99cd206d50b80bac456f8f9b0b3b6b1",
+      "angr_version": "10.0.5"
+    },
+    {
+      "label": "alarm_execute_callback",
+      "start": "0x525cde48",
+      "end": "0x525cdeb0",
+      "sha256": "c20ae5115eb339c1ed7f3b85fa52a3759cd4b3e8f9e2d602f78ad54140d99c66",
+      "assembly_sha256": "88710841fb67e506d29c5afc4042a7f552a7b9d7f4532c58158adc4e7861b2d5",
+      "pseudocode_sha256": "b0572f5ffb18b554bf732a7263691e30bec449c23574eca17f33cfb03b634197",
+      "angr_version": "10.0.5"
+    }
+  ],
+  "fragments": [
+    {
+      "label": "board_callback_binder",
+      "start": "0x525b5b4c",
+      "end": "0x525b5be0",
+      "sha256": "57a985750088915c0a8f03523256ee6995da438f38c8f96c12a9cad8ce941b39",
+      "assembly_sha256": "b535ecb2ddb38633cbbd781f7bd2a67e19afd9a9e7a2e3b2442d77f16133d2e3"
+    },
+    {
+      "label": "board_timer_callbacks",
+      "start": "0x525b5bf0",
+      "end": "0x525b5c60",
+      "sha256": "3b09020bdfd6229c64ecfcb1a6908099cd065aa9b803ebf44a472907735b5dab",
+      "assembly_sha256": "ce6fb31744514fcc64b073c51ae66672e4624d8605a7bda9df78276f97977d7a"
+    },
+    {
+      "label": "timer_init_registration",
+      "start": "0x525b7ec8",
+      "end": "0x525b7f8c",
+      "sha256": "7533e296be2db097b28407b7f87575bce5bb819a040e51df6a2dca264dd5994a",
+      "assembly_sha256": "bc7be9a819fb857a4edceea5e26fcc601ececcab5bfba604df0c9b3c32a035a1"
+    },
+    {
+      "label": "irq_privileged_wrapper",
+      "start": "0x525d7c90",
+      "end": "0x525d7cf0",
+      "sha256": "69307572dccc23445df1399f556943bdc4c542bfe4a7c3129df5b81919c7bf36",
+      "assembly_sha256": "edb2e4ecdd29a9782f9cb8e32f203955a5d88a7948ee11ff1bb6d656060df1a0"
+    },
+    {
+      "label": "alarm_metadata_writer",
+      "start": "0x525b805c",
+      "end": "0x525b807c",
+      "sha256": "87b963cdfa007f764cce9887b5853b5d34431a6f1997d812fc60c2893820b1ce",
+      "assembly_sha256": "d24023a2c3a9b0899b82087e5216faf5e6e9547484c2250ad1e0bfbbb12facb3"
+    },
+    {
+      "label": "alarm_queue_producer",
+      "start": "0x525d088c",
+      "end": "0x525d08d8",
+      "sha256": "54dc6c22f14ef34be1581394ce92b48f4c21623b55d8481db22608b68238dfc0",
+      "assembly_sha256": "034c994652d9bbd354479cb7fd317f71e157a66ecb46c4ef0133ab20a78537a0"
+    },
+    {
+      "label": "deferred_delivery_selector",
+      "start": "0x525ce880",
+      "end": "0x525ce8d0",
+      "sha256": "c5ac3904242ab45b39b37937bedfcd8c01ec82abaac23f8958fe4a7c3f18f473",
+      "assembly_sha256": "d31654988067cc13361a9be4eef58a9c42ae071ffb9f16596e07caf97dfb1426"
+    }
+  ],
+  "transfers": [
+    {
+      "site": "0x525d9e80",
+      "instruction": "bl #0x525d9f48",
+      "source_range": "board_runtime_initialize",
+      "target": "0x525d9f48"
+    },
+    {
+      "site": "0x525d9e90",
+      "instruction": "b #0x525b7b04",
+      "source_range": "board_runtime_initialize",
+      "target": "0x525b7b04"
+    },
+    {
+      "site": "0x525d9ea4",
+      "instruction": "bl #0x525da92c",
+      "source_range": "board_runtime_initialize",
+      "target": "0x525da92c"
+    },
+    {
+      "site": "0x525d9eac",
+      "instruction": "bl #0x525b5b4c",
+      "source_range": "board_runtime_initialize",
+      "target": "0x525b5b4c"
+    },
+    {
+      "site": "0x525d9f10",
+      "instruction": "bl #0x525d826c",
+      "source_range": "board_runtime_initialize",
+      "target": "0x525d826c"
+    },
+    {
+      "site": "0x525d9f20",
+      "instruction": "bl #0x525d8288",
+      "source_range": "board_runtime_initialize",
+      "target": "0x525d8288"
+    },
+    {
+      "site": "0x525d9f30",
+      "instruction": "bl #0x525d6eb4",
+      "source_range": "board_runtime_initialize",
+      "target": "0x525d6eb4"
+    },
+    {
+      "site": "0x525d9f44",
+      "instruction": "b #0x525d9e80",
+      "source_range": "board_runtime_initialize",
+      "target": "0x525d9e80"
+    },
+    {
+      "site": "0x525b80cc",
+      "instruction": "bl #0x525b6144",
+      "source_range": "timer_irq_handler",
+      "target": "0x525b6144"
+    },
+    {
+      "site": "0x525b80e0",
+      "instruction": "bl #0x525b7a20",
+      "source_range": "timer_irq_handler",
+      "target": "0x525b7a20"
+    },
+    {
+      "site": "0x525b817c",
+      "instruction": "bl #0x525b8df4",
+      "source_range": "timer_irq_handler",
+      "target": "0x525b8df4"
+    },
+    {
+      "site": "0x525b81a8",
+      "instruction": "b #0x525b81e8",
+      "source_range": "timer_irq_handler",
+      "target": "0x525b81e8"
+    },
+    {
+      "site": "0x525b81f4",
+      "instruction": "bl #0x525ce7bc",
+      "source_range": "timer_irq_handler",
+      "target": "0x525ce7bc"
+    },
+    {
+      "site": "0x525b81f8",
+      "instruction": "bl #0x525ce8c4",
+      "source_range": "timer_irq_handler",
+      "target": "0x525ce8c4"
+    },
+    {
+      "site": "0x525b81fc",
+      "instruction": "bl #0x525b8efc",
+      "source_range": "timer_irq_handler",
+      "target": "0x525b8efc"
+    },
+    {
+      "site": "0x525b82b0",
+      "instruction": "bl #0x525b7aa4",
+      "source_range": "timer_irq_handler",
+      "target": "0x525b7aa4"
+    },
+    {
+      "site": "0x525b82b8",
+      "instruction": "bl #0x525b6154",
+      "source_range": "timer_irq_handler",
+      "target": "0x525b6154"
+    },
+    {
+      "site": "0x525b82d8",
+      "instruction": "bl #0x525b8a80",
+      "source_range": "timer_irq_handler",
+      "target": "0x525b8a80"
+    },
+    {
+      "site": "0x525b82ec",
+      "instruction": "b #0x525b8188",
+      "source_range": "timer_irq_handler",
+      "target": "0x525b8188"
+    },
+    {
+      "site": "0x525b8318",
+      "instruction": "b #0x525b810c",
+      "source_range": "timer_irq_handler",
+      "target": "0x525b810c"
+    },
+    {
+      "site": "0x525b8324",
+      "instruction": "b #0x525b81a4",
+      "source_range": "timer_irq_handler",
+      "target": "0x525b81a4"
+    },
+    {
+      "site": "0x525b8338",
+      "instruction": "bl #0x525d4d9c",
+      "source_range": "timer_irq_handler",
+      "target": "0x525d4d9c"
+    },
+    {
+      "site": "0x525b834c",
+      "instruction": "bl #0x525b8d98",
+      "source_range": "timer_irq_handler",
+      "target": "0x525b8d98"
+    },
+    {
+      "site": "0x525b8350",
+      "instruction": "b #0x525b819c",
+      "source_range": "timer_irq_handler",
+      "target": "0x525b819c"
+    },
+    {
+      "site": "0x525b836c",
+      "instruction": "b #0x525b82b4",
+      "source_range": "timer_irq_handler",
+      "target": "0x525b82b4"
+    },
+    {
+      "site": "0x525ce038",
+      "instruction": "b #0x525cdfdc",
+      "source_range": "alarm_route_deferred",
+      "target": "0x525cdfdc"
+    },
+    {
+      "site": "0x525ce04c",
+      "instruction": "b #0x525cdfdc",
+      "source_range": "alarm_route_deferred",
+      "target": "0x525cdfdc"
+    },
+    {
+      "site": "0x525cde74",
+      "instruction": "bl #0x525b7aa4",
+      "source_range": "alarm_execute_callback",
+      "target": "0x525b7aa4"
+    },
+    {
+      "site": "0x525cde7c",
+      "instruction": "bl #0x525b6154",
+      "source_range": "alarm_execute_callback",
+      "target": "0x525b6154"
+    },
+    {
+      "site": "0x525cde88",
+      "instruction": "bl #0x525b6144",
+      "source_range": "alarm_execute_callback",
+      "target": "0x525b6144"
+    },
+    {
+      "site": "0x525cde94",
+      "instruction": "bl #0x525b7a20",
+      "source_range": "alarm_execute_callback",
+      "target": "0x525b7a20"
+    },
+    {
+      "site": "0x525b5bf4",
+      "instruction": "bl #0x525b6144",
+      "source_range": "board_timer_callbacks",
+      "target": "0x525b6144"
+    },
+    {
+      "site": "0x525b5c30",
+      "instruction": "b #0x525b6154",
+      "source_range": "board_timer_callbacks",
+      "target": "0x525b6154"
+    },
+    {
+      "site": "0x525b7ec8",
+      "instruction": "bl #0x525ce770",
+      "source_range": "timer_init_registration",
+      "target": "0x525ce770"
+    },
+    {
+      "site": "0x525b7f30",
+      "instruction": "bl #0x525b61c0",
+      "source_range": "timer_init_registration",
+      "target": "0x525b61c0"
+    },
+    {
+      "site": "0x525b7f58",
+      "instruction": "bl #0x525b6214",
+      "source_range": "timer_init_registration",
+      "target": "0x525b6214"
+    },
+    {
+      "site": "0x525b7f64",
+      "instruction": "bl #0x525b62dc",
+      "source_range": "timer_init_registration",
+      "target": "0x525b62dc"
+    },
+    {
+      "site": "0x525d7cb4",
+      "instruction": "bl #0x525b807c",
+      "source_range": "irq_privileged_wrapper",
+      "target": "0x525b807c"
+    },
+    {
+      "site": "0x525b8078",
+      "instruction": "b #0x525b7e00",
+      "source_range": "alarm_metadata_writer",
+      "target": "0x525b7e00"
+    },
+    {
+      "site": "0x525d08c8",
+      "instruction": "bl #0x525b805c",
+      "source_range": "alarm_queue_producer",
+      "target": "0x525b805c"
+    },
+    {
+      "site": "0x525ce8c0",
+      "instruction": "b #0x525ce80c",
+      "source_range": "deferred_delivery_selector",
+      "target": "0x525ce80c"
+    },
+    {
+      "site": "0x525ce8cc",
+      "instruction": "b #0x525ce880",
+      "source_range": "deferred_delivery_selector",
+      "target": "0x525ce880"
+    }
+  ],
+  "indirect_transfers": [
+    {
+      "site": "0x525b8098",
+      "instruction": "blx r3",
+      "source_range": "timer_irq_handler"
+    },
+    {
+      "site": "0x525b82c8",
+      "instruction": "blx r3",
+      "source_range": "timer_irq_handler"
+    },
+    {
+      "site": "0x525b8314",
+      "instruction": "bx r3",
+      "source_range": "timer_irq_handler"
+    },
+    {
+      "site": "0x525b8320",
+      "instruction": "blx r3",
+      "source_range": "timer_irq_handler"
+    },
+    {
+      "site": "0x525ce858",
+      "instruction": "blx r2",
+      "source_range": "deferred_queue_drain"
+    },
+    {
+      "site": "0x525cde84",
+      "instruction": "blx r6",
+      "source_range": "alarm_execute_callback"
+    },
+    {
+      "site": "0x525b7ee0",
+      "instruction": "blx r3",
+      "source_range": "timer_init_registration"
+    }
+  ],
+  "resources": [
+    {
+      "label": "lowest_bit_in_nibble",
+      "address": "0x533e3368",
+      "source_address": "0x533e3368",
+      "size": 64,
+      "sha256": "704f481be1caf5d0dd726cc35727cf1037cc9ff9a5652fa3ce3265ca56462658",
+      "fact": "16 u32 entries, consumed by525ce044 with nibble index; no array export"
+    }
+  ],
+  "pointer_words": [
+    {
+      "address": "0x525d7d58",
+      "value": "0x54c3f4dc",
+      "sha256": "8a46ec93cb81e4d80511ebe111288dae69c19487d7530e929337e1c78ce8caa3"
+    }
+  ],
+  "conditional_bindings": [],
+  "relationships": [
+    {
+      "label": "cpu0-descriptor-production",
+      "sites": [
+        "0x525d9e60",
+        "0x525d9e64",
+        "0x525d9e68",
+        "0x525d9e94",
+        "0x525d9e9c",
+        "0x525d9ea4",
+        "0x525d9ea8",
+        "0x525d9eac",
+        "0x525b5b9c",
+        "0x525b5ba4",
+        "0x525b5bac",
+        "0x525b5bb4"
+      ],
+      "expression": "MPIDR low2bits==0 path makes r1=0, memset54c40e70 length30, then calls525b5b4c(r0=54c40e70). Descriptor+0=525b5bf0,+4=525b5c34,+8=525b5c48,+c=525b5c4c,+14=525b5214. CPU check starts9e94 with prior condition assumed; privileged prefix not executed."
+    },
+    {
+      "label": "descriptor-alias-copies",
+      "sites": [
+        "0x525d9eb0",
+        "0x525d9eb8",
+        "0x525d9ec0",
+        "0x525d9ec8",
+        "0x525d9ed0",
+        "0x525d9ed8",
+        "0x525d9ef0",
+        "0x525d9ef8",
+        "0x525d9f00",
+        "0x525d9f04",
+        "0x525d9f08",
+        "0x525d9f0c"
+      ],
+      "expression": "Descriptor+18->54c40ea4,+1c->54c40eac,+20->54c40ea0,+24->54c40ea8,+28->54c40e68,+2c->54c40e5c. Binder assigns+20=83; register meanings not inferred from this alone."
+    },
+    {
+      "label": "init-callback-and-registration",
+      "sites": [
+        "0x525b7ec8",
+        "0x525b7ed4",
+        "0x525b7ee0",
+        "0x525b7efc",
+        "0x525b7f34",
+        "0x525b7f38",
+        "0x525b7f40",
+        "0x525b7f44",
+        "0x525d7ca0",
+        "0x525d7cb4"
+      ],
+      "expression": "Init calls deferredqueues_initialize then optionally blx[54c40e70]. With proven CPU0 binder state and no later overwrite, target525b5bf0. Init writes525d7c90 into54c3f504[index54c40ea0]; wrapper calls525b807c. Actual registration/privileged IRQ/SVC7 not executed."
+    },
+    {
+      "label": "handler-board-callbacks",
+      "sites": [
+        "0x525b8080",
+        "0x525b8084",
+        "0x525b808c",
+        "0x525b8098",
+        "0x525b82bc",
+        "0x525b82c8"
+      ],
+      "expression": "Handler optionally calls descriptor+4 before internal work, and+8 after unlock/restore. Under CPU0 binder state these are525b5c34 and525b5c48. These full-handler paths static only; callback binding has runtime RAM storage, not a ROM vtable slot."
+    },
+    {
+      "label": "deadline-and-unlink",
+      "sites": [
+        "0x525b81a4",
+        "0x525b81ac",
+        "0x525b81b0",
+        "0x525b81b4",
+        "0x525b81b8",
+        "0x525b81bc",
+        "0x525b81c0",
+        "0x525b81d0",
+        "0x525b81d8",
+        "0x525b81dc",
+        "0x525b81e8",
+        "0x525b831c",
+        "0x525b8320",
+        "0x525b8324"
+      ],
+      "expression": "delta=(u64(node+8)-NOW64) mod2^64. CMP low,1 / SBCS high,0 / BGE tests signed64(delta)>=1 and stops at positive head. Otherwise unlink neighbors before optional node+10 callback(node+14). NULL callback skips call. Callback return loops via81a4 rereadingNOW/head. Node own links are not reset; invalid/cyclic lists and concurrency safety unproved."
+    },
+    {
+      "label": "alarm-node-fields",
+      "sites": [
+        "0x525d088c",
+        "0x525d0890",
+        "0x525d08a4",
+        "0x525d08b0",
+        "0x525d08c4",
+        "0x525d08c8",
+        "0x525b8060",
+        "0x525b8064",
+        "0x525b8068",
+        "0x525b806c",
+        "0x525b8070",
+        "0x525b8078"
+      ],
+      "expression": "Alarm producer passes node=object+10, callback525cdfa0 and argumentobject on stack to525b805c. Metadata stores node+8 deadline,node+10 callback,node+14 argument before tail queue insert525b7e00. Producer metadata static here; prior arithmetic checkpoint covered its selected execution."
+    },
+    {
+      "label": "alarm-deferred-routing",
+      "sites": [
+        "0x525cdfa4",
+        "0x525cdfa8",
+        "0x525cdfb0",
+        "0x525cdfc0",
+        "0x525cdfdc",
+        "0x525cdfe4",
+        "0x525cdff8",
+        "0x525ce000",
+        "0x525ce00c",
+        "0x525ce010",
+        "0x525ce018",
+        "0x525ce020",
+        "0x525ce028",
+        "0x525ce030",
+        "0x525ce034",
+        "0x525ce044"
+      ],
+      "expression": "525cdfa0 uses explicit flag4&20000 path to choose index from word34 (zero->0; nonzero lowest set bit via nibble table), else MPIDR&3. For four-entry valid selected index it appends nodeobject+10 to54c405e8+12*index+4, sets callbackobject+20=525cde48,argobject+24=object, ORs slotflag1. No check proving arbitrary mask index<4 in this function; selected CPU masks only tested."
+    },
+    {
+      "label": "deferred-mark-and-dispatch",
+      "sites": [
+        "0x525ce7dc",
+        "0x525ce7e0",
+        "0x525ce7e4",
+        "0x525ce7ec",
+        "0x525ce7fc",
+        "0x525ce800",
+        "0x525b81f4",
+        "0x525b81f8",
+        "0x525ce8c4",
+        "0x525ce8cc",
+        "0x525ce890",
+        "0x525ce8b4",
+        "0x525ce8b8",
+        "0x525ce8c0"
+      ],
+      "expression": "For4slots, if(flags&3)==1 setbit1 and outputCPU bit; always clearbit0. Handler passes returnedmask to525ce8c4->525ce880; noncurrent bits cause MMIO signaling and currentbit tails525ce80c. Delivery selector static only; CPU tests explicitly sequence mark and chosen drain after MPIDR/prologue."
+    },
+    {
+      "label": "deferred-callback-lifetime",
+      "sites": [
+        "0x525ce838",
+        "0x525ce83c",
+        "0x525ce848",
+        "0x525ce850",
+        "0x525ce854",
+        "0x525ce858",
+        "0x525ce85c",
+        "0x525ce874",
+        "0x525cde54",
+        "0x525cde60",
+        "0x525cde68",
+        "0x525cde6c",
+        "0x525cde70",
+        "0x525cde74",
+        "0x525cde7c",
+        "0x525cde80",
+        "0x525cde84",
+        "0x525cde88",
+        "0x525cde94",
+        "0x525cde98",
+        "0x525cdea4",
+        "0x525cdea8"
+      ],
+      "expression": "Deferreddrain unlinks before calling node+10(node+14), then reloadshead; clears slotbit1 atempty. 525cde48 clears object+c bit0,setsbit1; savesobject+38 comparedvalue; releaseslock/restoresIRQ then calls object+8(object+0); masksIRQ/relocks, clearsbit1 only ifcomparedvalueunchanged. Lock/IRQ and finalappcallback are stubs; true concurrency not proved."
+    }
+  ],
+  "limits": [
+    "No actual IRQ/SVC, scheduler, OS, physical MMIO, device, media, time, camera, build or flash.",
+    "Runtime CPU0 descriptor producer is source-backed; CPU tests start after privileged branch and inject r1=0, not full startup. Later descriptor overwrite or full startup reachability not exhaustively excluded.",
+    "Handler tests execute only819c..81f4 and831c..8328, skipping earlier tickincrement, scheduler/gates and later interrupt signaling/restore. Existing clock20 and subtick5 remain separate.",
+    "Deferreddrain starts525ce814 after prologue/MPIDR with authoredr7, stops525ce87c beforeepilogue. Mark->chosenCPUdrain is explicit fixture sequencing, not realCPUdelivery.",
+    "Alarmroute flag4 bit20000 path with mask34=0/1/4/8 only executed. MPIDR route, arbitrary mask indices, invalid lists and true concurrent mutation are unproved.",
+    "Callback NOW and object+38 changes are authoredstub actions, not discovered real producers. The numerical fixture label generation is descriptive only; field+38 semantics beyond equality comparison are not established. Future head blocks later entries in tested list; no general ordering invariant producer proved here.",
+    "GenuineC unchanged: alarm_route_deferred has inaccurate pointer aliases/MPIDR recovery; IRQ handler and startup C may lose machine-state details. ExactARM and boundedCPU results govern.",
+    "Nominal timeunit/frequency, nonzero bank producer, resource record+4 writer, authentication and restart remain unresolved."
+  ],
+  "manager_validation": {
+    "passed": true,
+    "image_sha256": "342d2f35405e8daf1797dfe431d2e4aa70f4b52a2c242a29df48206672f1dfb4",
+    "genuine_c": 7,
+    "supporting_ranges": 7,
+    "words": 582,
+    "transfers": 42,
+    "indirect_transfers": 7,
+    "resources": 1,
+    "pointer_words": 1,
+    "conditional_bindings": 0,
+    "cases": 20,
+    "decoded_equal": true,
+    "assembly_lf_and_file_sha_verified": true,
+    "limits": "No physical timer/OS/IRQ/device. CPU0 producer prefix and selected deadline/deferred queue code use synthetic RAM. Actual privileged IRQ/SVC wrapper and delivery selector are static only. Lock/IRQ/finalappcallback are stubs; no timeunit, clock rate, restart, bank or authentication claim."
+  },
+  "prior_public_evidence": [
+    {
+      "path": "update-timer-clock-evidence.json",
+      "sha256": "20919f5c3c7e63d9402d1a3e2342f95a6e5f2581d88c3a73ac40c53ebc8dc519"
+    }
+  ],
+  "public_cli": {
+    "script": "../verify_update_timer_irq.py",
+    "sha256": "fd23b55aabaa6ae5dab063361b596e7fedd4271f8cbd5d0710e0202e184ff937",
+    "guards": [
+      "existing",
+      "hardlink",
+      "dangling-missing-input",
+      "optimized-missing-input-dangling-output",
+      "unknown-input"
+    ],
+    "passed": true,
+    "both_containers_equal": true
+  },
+  "validation": {
+    "cases": 20,
+    "groups": {
+      "alarm-route-mark-deferred-drain": 4,
+      "cpu0-descriptor-producer": 1,
+      "deadline-drain": 12,
+      "deferred-mark-flags": 1,
+      "deferred-queues-initialize": 1,
+      "empty-deferred-drain": 1
+    }
+  },
+  "artifact_policy": "Original binaries,C,ASM and resource text stay local. Authored analysis,synthetic fixtures and metadata public."
+}

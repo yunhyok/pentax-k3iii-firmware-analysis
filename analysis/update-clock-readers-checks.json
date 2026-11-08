@@ -1,0 +1,389 @@
+{
+  "passed": true,
+  "cases": 12,
+  "image_sha256": "342d2f35405e8daf1797dfe431d2e4aa70f4b52a2c242a29df48206672f1dfb4",
+  "groups": {
+    "with-offset": 6,
+    "counter-only": 6
+  },
+  "scope": "Original ARM clock readers with authored state and synthetic timer registers.\nLock/IRQ helpers are stubs. Emulated MPIDR selects CPU0; no IRQ, time or device runs.\nGuard failure stops at the unresolved boundary, not an assertion policy emulation.\n",
+  "stubs": {
+    "0x525b6144": "nested authored IRQ tokens",
+    "0x525b6154": "check/pop authored token",
+    "0x525b7a20": "lock argument capture only",
+    "0x525b7aa4": "unlock argument capture only"
+  },
+  "stop_boundary": "0x525d724c",
+  "ranges": [
+    {
+      "start": "0x525ce390",
+      "end": "0x525ce518",
+      "sha256": "e0791cb8d250786fb30eb787dfaec2aed2c053a43c79567fda212c93f62d9dc7"
+    },
+    {
+      "start": "0x525b5c60",
+      "end": "0x525b5c9c",
+      "sha256": "92cdf6a39ad684a03fa0328457d695a9043912cf66783372118d921a940c0ac4"
+    }
+  ],
+  "results": [
+    {
+      "group": "with-offset",
+      "case": "zero",
+      "now": 0,
+      "offset": 0,
+      "synthetic_counter_difference": 0,
+      "task_present": false,
+      "flags": 0,
+      "nesting": 0,
+      "observed": {
+        "coarse_high_word": 0,
+        "coarse_low_word": 0,
+        "fine_integer": 0,
+        "write_addresses": [
+          [
+            "0x20002020",
+            4,
+            0
+          ],
+          [
+            "0x20002000",
+            4,
+            0
+          ],
+          [
+            "0x20002004",
+            4,
+            0
+          ]
+        ],
+        "return_value": 0
+      }
+    },
+    {
+      "group": "with-offset",
+      "case": "carry",
+      "now": 4294967295,
+      "offset": 2,
+      "synthetic_counter_difference": 4294,
+      "task_present": false,
+      "flags": 0,
+      "nesting": 0,
+      "observed": {
+        "coarse_high_word": 1,
+        "coarse_low_word": 1,
+        "fine_integer": 636242,
+        "write_addresses": [
+          [
+            "0x20002020",
+            4,
+            636242
+          ],
+          [
+            "0x20002000",
+            4,
+            1
+          ],
+          [
+            "0x20002004",
+            4,
+            1
+          ]
+        ],
+        "return_value": 0
+      }
+    },
+    {
+      "group": "with-offset",
+      "case": "wrap",
+      "now": 18446744073709551615,
+      "offset": 2,
+      "synthetic_counter_difference": 4295,
+      "task_present": false,
+      "flags": 0,
+      "nesting": 0,
+      "observed": {
+        "coarse_high_word": 0,
+        "coarse_low_word": 1,
+        "fine_integer": 4,
+        "write_addresses": [
+          [
+            "0x20002020",
+            4,
+            4
+          ],
+          [
+            "0x20002000",
+            4,
+            0
+          ],
+          [
+            "0x20002004",
+            4,
+            1
+          ]
+        ],
+        "return_value": 0
+      }
+    },
+    {
+      "group": "with-offset",
+      "case": "flag-allows",
+      "now": 123,
+      "offset": 456,
+      "synthetic_counter_difference": 6749,
+      "task_present": true,
+      "flags": 1,
+      "nesting": 0,
+      "observed": {
+        "coarse_high_word": 0,
+        "coarse_low_word": 579,
+        "fine_integer": 363614,
+        "write_addresses": [
+          [
+            "0x20002020",
+            4,
+            363614
+          ],
+          [
+            "0x20002000",
+            4,
+            0
+          ],
+          [
+            "0x20002004",
+            4,
+            579
+          ]
+        ],
+        "return_value": 0
+      }
+    },
+    {
+      "group": "with-offset",
+      "case": "count-allows",
+      "now": 123,
+      "offset": 456,
+      "synthetic_counter_difference": 1,
+      "task_present": true,
+      "flags": 8,
+      "nesting": 1,
+      "observed": {
+        "coarse_high_word": 0,
+        "coarse_low_word": 579,
+        "fine_integer": 148,
+        "write_addresses": [
+          [
+            "0x20002020",
+            4,
+            148
+          ],
+          [
+            "0x20002000",
+            4,
+            0
+          ],
+          [
+            "0x20002004",
+            4,
+            579
+          ]
+        ],
+        "return_value": 0
+      }
+    },
+    {
+      "group": "with-offset",
+      "case": "guard-failure",
+      "now": 123,
+      "offset": 456,
+      "synthetic_counter_difference": 1,
+      "task_present": true,
+      "flags": 8,
+      "nesting": 0,
+      "observed": {
+        "guard_boundary": "0x525d724c",
+        "outputs_unchanged": true
+      }
+    },
+    {
+      "group": "counter-only",
+      "case": "zero",
+      "now": 0,
+      "offset": 0,
+      "synthetic_counter_difference": 0,
+      "task_present": false,
+      "flags": 0,
+      "nesting": 0,
+      "observed": {
+        "coarse_high_word": 0,
+        "coarse_low_word": 0,
+        "fine_integer": 0,
+        "write_addresses": [
+          [
+            "0x20002020",
+            4,
+            0
+          ],
+          [
+            "0x20002004",
+            4,
+            0
+          ],
+          [
+            "0x20002000",
+            4,
+            0
+          ]
+        ],
+        "return_value": 0
+      }
+    },
+    {
+      "group": "counter-only",
+      "case": "carry",
+      "now": 4294967295,
+      "offset": 2,
+      "synthetic_counter_difference": 4294,
+      "task_present": false,
+      "flags": 0,
+      "nesting": 0,
+      "observed": {
+        "coarse_high_word": 0,
+        "coarse_low_word": 4294967295,
+        "fine_integer": 636242,
+        "write_addresses": [
+          [
+            "0x20002020",
+            4,
+            636242
+          ],
+          [
+            "0x20002004",
+            4,
+            4294967295
+          ],
+          [
+            "0x20002000",
+            4,
+            0
+          ]
+        ],
+        "return_value": 0
+      }
+    },
+    {
+      "group": "counter-only",
+      "case": "wrap",
+      "now": 18446744073709551615,
+      "offset": 2,
+      "synthetic_counter_difference": 4295,
+      "task_present": false,
+      "flags": 0,
+      "nesting": 0,
+      "observed": {
+        "coarse_high_word": 4294967295,
+        "coarse_low_word": 4294967295,
+        "fine_integer": 4,
+        "write_addresses": [
+          [
+            "0x20002020",
+            4,
+            4
+          ],
+          [
+            "0x20002004",
+            4,
+            4294967295
+          ],
+          [
+            "0x20002000",
+            4,
+            4294967295
+          ]
+        ],
+        "return_value": 0
+      }
+    },
+    {
+      "group": "counter-only",
+      "case": "flag-allows",
+      "now": 123,
+      "offset": 456,
+      "synthetic_counter_difference": 6749,
+      "task_present": true,
+      "flags": 1,
+      "nesting": 0,
+      "observed": {
+        "coarse_high_word": 0,
+        "coarse_low_word": 123,
+        "fine_integer": 363614,
+        "write_addresses": [
+          [
+            "0x20002020",
+            4,
+            363614
+          ],
+          [
+            "0x20002004",
+            4,
+            123
+          ],
+          [
+            "0x20002000",
+            4,
+            0
+          ]
+        ],
+        "return_value": 0
+      }
+    },
+    {
+      "group": "counter-only",
+      "case": "count-allows",
+      "now": 123,
+      "offset": 456,
+      "synthetic_counter_difference": 1,
+      "task_present": true,
+      "flags": 8,
+      "nesting": 1,
+      "observed": {
+        "coarse_high_word": 0,
+        "coarse_low_word": 123,
+        "fine_integer": 148,
+        "write_addresses": [
+          [
+            "0x20002020",
+            4,
+            148
+          ],
+          [
+            "0x20002004",
+            4,
+            123
+          ],
+          [
+            "0x20002000",
+            4,
+            0
+          ]
+        ],
+        "return_value": 0
+      }
+    },
+    {
+      "group": "counter-only",
+      "case": "guard-failure",
+      "now": 123,
+      "offset": 456,
+      "synthetic_counter_difference": 1,
+      "task_present": true,
+      "flags": 8,
+      "nesting": 0,
+      "observed": {
+        "guard_boundary": "0x525d724c",
+        "outputs_unchanged": true
+      }
+    }
+  ]
+}

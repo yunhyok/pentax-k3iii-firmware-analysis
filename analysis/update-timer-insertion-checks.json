@@ -1,0 +1,335 @@
+{
+  "passed": true,
+  "cases": 18,
+  "image_sha256": "342d2f35405e8daf1797dfe431d2e4aa70f4b52a2c242a29df48206672f1dfb4",
+  "scope": "Original ARM timer insertion and three metadata writers in synthetic RAM.\nNo stubs, OS, hardware, IRQ or callback execution. Authored unlinked new nodes and\nvalid circular lists only; signed modular comparisons do not imply a total order\nfor arbitrary 64-bit timestamps or prove caller input validation.\n",
+  "stubs": {},
+  "groups": {
+    "absolute-deadline": 1,
+    "ordered-insert": 10,
+    "signed-delay": 5,
+    "unsigned-delay": 2
+  },
+  "ranges": [
+    {
+      "start": "0x525b7e00",
+      "end": "0x525b7e64",
+      "sha256": "86cc52c37e3c72fe2337ea06bd010964e6f1253f445d69da6b672d71debe0714"
+    },
+    {
+      "start": "0x525b7fcc",
+      "end": "0x525b807c",
+      "sha256": "57e6ff181880dddb725620aac12c8c532abd5ef16a3fc049a49af0d1443c0c11"
+    }
+  ],
+  "results": [
+    {
+      "group": "ordered-insert",
+      "deadlines": [],
+      "new_deadline": 5,
+      "insert_index": 0,
+      "comparisons": []
+    },
+    {
+      "group": "ordered-insert",
+      "deadlines": [
+        5,
+        10,
+        10,
+        20
+      ],
+      "new_deadline": 0,
+      "insert_index": 0,
+      "comparisons": [
+        {
+          "delta": 18446744073709551611,
+          "signed_delta": -5,
+          "continue_scan": false
+        }
+      ]
+    },
+    {
+      "group": "ordered-insert",
+      "deadlines": [
+        5,
+        10,
+        10,
+        20
+      ],
+      "new_deadline": 5,
+      "insert_index": 1,
+      "comparisons": [
+        {
+          "delta": 0,
+          "signed_delta": 0,
+          "continue_scan": true
+        },
+        {
+          "delta": 18446744073709551611,
+          "signed_delta": -5,
+          "continue_scan": false
+        }
+      ]
+    },
+    {
+      "group": "ordered-insert",
+      "deadlines": [
+        5,
+        10,
+        10,
+        20
+      ],
+      "new_deadline": 10,
+      "insert_index": 3,
+      "comparisons": [
+        {
+          "delta": 5,
+          "signed_delta": 5,
+          "continue_scan": true
+        },
+        {
+          "delta": 0,
+          "signed_delta": 0,
+          "continue_scan": true
+        },
+        {
+          "delta": 0,
+          "signed_delta": 0,
+          "continue_scan": true
+        },
+        {
+          "delta": 18446744073709551606,
+          "signed_delta": -10,
+          "continue_scan": false
+        }
+      ]
+    },
+    {
+      "group": "ordered-insert",
+      "deadlines": [
+        5,
+        10,
+        10,
+        20
+      ],
+      "new_deadline": 15,
+      "insert_index": 3,
+      "comparisons": [
+        {
+          "delta": 10,
+          "signed_delta": 10,
+          "continue_scan": true
+        },
+        {
+          "delta": 5,
+          "signed_delta": 5,
+          "continue_scan": true
+        },
+        {
+          "delta": 5,
+          "signed_delta": 5,
+          "continue_scan": true
+        },
+        {
+          "delta": 18446744073709551611,
+          "signed_delta": -5,
+          "continue_scan": false
+        }
+      ]
+    },
+    {
+      "group": "ordered-insert",
+      "deadlines": [
+        5,
+        10,
+        10,
+        20
+      ],
+      "new_deadline": 20,
+      "insert_index": 4,
+      "comparisons": [
+        {
+          "delta": 15,
+          "signed_delta": 15,
+          "continue_scan": true
+        },
+        {
+          "delta": 10,
+          "signed_delta": 10,
+          "continue_scan": true
+        },
+        {
+          "delta": 10,
+          "signed_delta": 10,
+          "continue_scan": true
+        },
+        {
+          "delta": 0,
+          "signed_delta": 0,
+          "continue_scan": true
+        }
+      ]
+    },
+    {
+      "group": "ordered-insert",
+      "deadlines": [
+        5,
+        10,
+        10,
+        20
+      ],
+      "new_deadline": 30,
+      "insert_index": 4,
+      "comparisons": [
+        {
+          "delta": 25,
+          "signed_delta": 25,
+          "continue_scan": true
+        },
+        {
+          "delta": 20,
+          "signed_delta": 20,
+          "continue_scan": true
+        },
+        {
+          "delta": 20,
+          "signed_delta": 20,
+          "continue_scan": true
+        },
+        {
+          "delta": 10,
+          "signed_delta": 10,
+          "continue_scan": true
+        }
+      ]
+    },
+    {
+      "group": "ordered-insert",
+      "deadlines": [
+        18446744073709551610,
+        18446744073709551613,
+        3,
+        7
+      ],
+      "new_deadline": 0,
+      "insert_index": 2,
+      "comparisons": [
+        {
+          "delta": 6,
+          "signed_delta": 6,
+          "continue_scan": true
+        },
+        {
+          "delta": 3,
+          "signed_delta": 3,
+          "continue_scan": true
+        },
+        {
+          "delta": 18446744073709551613,
+          "signed_delta": -3,
+          "continue_scan": false
+        }
+      ]
+    },
+    {
+      "group": "ordered-insert",
+      "deadlines": [
+        0
+      ],
+      "new_deadline": 9223372036854775807,
+      "insert_index": 1,
+      "comparisons": [
+        {
+          "delta": 9223372036854775807,
+          "signed_delta": 9223372036854775807,
+          "continue_scan": true
+        }
+      ]
+    },
+    {
+      "group": "ordered-insert",
+      "deadlines": [
+        0
+      ],
+      "new_deadline": 9223372036854775808,
+      "insert_index": 0,
+      "comparisons": [
+        {
+          "delta": 9223372036854775808,
+          "signed_delta": -9223372036854775808,
+          "continue_scan": false
+        }
+      ]
+    },
+    {
+      "group": "signed-delay",
+      "now": 100,
+      "period": 1,
+      "delay_word": 0,
+      "sentinel_minus_one": false,
+      "deadline": 101,
+      "metadata_preserved": true
+    },
+    {
+      "group": "signed-delay",
+      "now": 100,
+      "period": 1,
+      "delay_word": 4294967295,
+      "sentinel_minus_one": true,
+      "deadline": null,
+      "metadata_preserved": true
+    },
+    {
+      "group": "signed-delay",
+      "now": 100,
+      "period": 1,
+      "delay_word": 4294967294,
+      "sentinel_minus_one": false,
+      "deadline": 99,
+      "metadata_preserved": true
+    },
+    {
+      "group": "signed-delay",
+      "now": 0,
+      "period": 1,
+      "delay_word": 2147483648,
+      "sentinel_minus_one": false,
+      "deadline": 18446744071562067969,
+      "metadata_preserved": true
+    },
+    {
+      "group": "signed-delay",
+      "now": 18446744073709551615,
+      "period": 1,
+      "delay_word": 1,
+      "sentinel_minus_one": false,
+      "deadline": 1,
+      "metadata_preserved": true
+    },
+    {
+      "group": "unsigned-delay",
+      "now": 100,
+      "period": 1,
+      "delay_word": 4294967295,
+      "sentinel_minus_one": false,
+      "deadline": 4294967396,
+      "metadata_preserved": true
+    },
+    {
+      "group": "unsigned-delay",
+      "now": 18446744073709551615,
+      "period": 1,
+      "delay_word": 1,
+      "sentinel_minus_one": false,
+      "deadline": 1,
+      "metadata_preserved": true
+    },
+    {
+      "group": "absolute-deadline",
+      "deadline": 18364758544493064720,
+      "stack_callback": 287454020,
+      "stack_argument": 1432778632,
+      "linked": true
+    }
+  ]
+}
