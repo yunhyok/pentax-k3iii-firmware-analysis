@@ -1,0 +1,313 @@
+{
+  "passed": true,
+  "image_sha256": "342d2f35405e8daf1797dfe431d2e4aa70f4b52a2c242a29df48206672f1dfb4",
+  "cases": 15,
+  "groups": {
+    "completion-notification-order": 3,
+    "completion-queue-full-assertion": 2,
+    "completion-queue-wrap-and-status": 3,
+    "publish-envelope-transport-result": 3,
+    "router-update-state-and-ui-work": 4
+  },
+  "scope": "Original ARM update notification publishing, UI routing and bounded queue writes.\nPublishing and receiving are separate probes: no claim of transport delivery.\nOnly initialized singleton fast paths execute. Locks/events/transport/assertions\nare synthetic and no camera, OS queue, storage, allocator or update code executes.\n",
+  "stubs": {
+    "0x53309c10": "capture publishing envelope and return chosen transport status; NO delivery or OS call",
+    "0x53156fec": "capture completion event flag only",
+    "0x53156fa4": "capture final notification boundary and return sentinel",
+    "0x530f1a68": "record lock request and return selected status",
+    "0x530f1bbc": "record unlock only",
+    "0x530ed03c": "capture UI queue wake flag and return chosen status; no event API",
+    "0x530fdfc4": "false assertion stops unless explicit returning-assertion fixture",
+    "0x532fb9c8": "stack guard boundary must remain unreachable"
+  },
+  "ranges": [
+    {
+      "start": "0x52ff382c",
+      "end": "0x52ff391c",
+      "sha256": "c6abd9be16544cbd47b2e69e58251e67056fec82e64fdf24efa21152ca67f479"
+    },
+    {
+      "start": "0x52ff3960",
+      "end": "0x52ff399c",
+      "sha256": "e456061368d99403be098829caf497b0d425b533cda5b7903c588f516fc13605"
+    },
+    {
+      "start": "0x5330b29c",
+      "end": "0x5330b2a4",
+      "sha256": "39ec250827131aaa26326311f61d540a0c4b7dba2d2e739076de0c477005d171"
+    },
+    {
+      "start": "0x528e761c",
+      "end": "0x528e7980",
+      "sha256": "ae5a2b3b95864a069bad38d8a422caff3eac2e1cd1ef0f838d680ef580488a82"
+    },
+    {
+      "start": "0x528e74b4",
+      "end": "0x528e7590",
+      "sha256": "26b5335d61dfc9c25b1923b59819d382411e8d393d996d5f57d5e62f2fb3d21d"
+    },
+    {
+      "start": "0x528e9b64",
+      "end": "0x528e9b98",
+      "sha256": "a78e26dc6dc44d7e2942cb216a77cad585d8ecf4da363ef5296e2bbe3b943521"
+    },
+    {
+      "start": "0x52a64b3c",
+      "end": "0x52a64e34",
+      "sha256": "6399ca2ea497c29d735e82789081c3ad1f0a2c0d596c87223a1df9ab2944fa67"
+    },
+    {
+      "start": "0x528e8de4",
+      "end": "0x528e8eb0",
+      "sha256": "361636011a97485b6931924d91abc1bb1806c6e6a5fb193992047f5d6b7a203d"
+    },
+    {
+      "start": "0x528c4fcc",
+      "end": "0x528c4ff8",
+      "sha256": "cec2eafc3cb5ccece0a86a053685d2aba881e3e2d6f7fda2b0b31e8ed29aadcc"
+    },
+    {
+      "start": "0x528c51a0",
+      "end": "0x528c51cc",
+      "sha256": "867ace783257ad53acd34b813a4cddb325ab8ee0997e57c70d0fbb15c29c3b47"
+    },
+    {
+      "start": "0x528c6730",
+      "end": "0x528c675c",
+      "sha256": "ce43a5b2053de2100aa17e33fd3d6b85f549efb833745e3e92a4291238b91a4d"
+    }
+  ],
+  "results": [
+    {
+      "group": "publish-envelope-transport-result",
+      "inputs": {
+        "transport": 0
+      },
+      "observed": {
+        "return_value": 0,
+        "published": [
+          641761803,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "result_sha256": "a56da6ba659a556a13b2d5acfa8e37dcffcb478579f02ab09c01db81f45f7151"
+    },
+    {
+      "group": "completion-notification-order",
+      "inputs": {
+        "transport": 0
+      },
+      "observed": {
+        "return_value": 119,
+        "published": [
+          641761803,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "result_sha256": "e4ae5c08279c5f0f6b2d5e806f8819c5a0109287b2f837ac8132ccbe5e0af4f4"
+    },
+    {
+      "group": "publish-envelope-transport-result",
+      "inputs": {
+        "transport": 1
+      },
+      "observed": {
+        "return_value": 1,
+        "published": [
+          641761803,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "result_sha256": "bdd308adf76e6f87f6bcbf338b0129370cdfd596e5aaa720c37b6ef6b64243f0"
+    },
+    {
+      "group": "completion-notification-order",
+      "inputs": {
+        "transport": 1
+      },
+      "observed": {
+        "return_value": 119,
+        "published": [
+          641761803,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "result_sha256": "b32a45eb24849dec53864baa8c33b5ffc8f600e69c55d240864a3d959d3e0092"
+    },
+    {
+      "group": "publish-envelope-transport-result",
+      "inputs": {
+        "transport": 4294967295
+      },
+      "observed": {
+        "return_value": 4294967295,
+        "published": [
+          641761803,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "result_sha256": "9f0419056e4720ebe588b3909f2610e0604197d2d12a28ea15707654a4657540"
+    },
+    {
+      "group": "completion-notification-order",
+      "inputs": {
+        "transport": 4294967295
+      },
+      "observed": {
+        "return_value": 119,
+        "published": [
+          641761803,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "result_sha256": "5809eb5da3521ff1c1680c468a51328c92dc13d96183889509f08a8f2f083f51"
+    },
+    {
+      "group": "router-update-state-and-ui-work",
+      "inputs": {
+        "message": "0x2640820b"
+      },
+      "observed": {
+        "state": 3,
+        "work_id": 296,
+        "queue_count": 1
+      },
+      "result_sha256": "c98f179cd5439bb3acb49984d9980d939947fb939b66d22d78e84d0852341217"
+    },
+    {
+      "group": "router-update-state-and-ui-work",
+      "inputs": {
+        "message": "0x2640820c"
+      },
+      "observed": {
+        "state": 5,
+        "work_id": 296,
+        "queue_count": 1
+      },
+      "result_sha256": "b4accbb143440170c1e739d0bc12c15c7742bd11bb83332b36dbb2d398b1e087"
+    },
+    {
+      "group": "router-update-state-and-ui-work",
+      "inputs": {
+        "message": "0x2640820d"
+      },
+      "observed": {
+        "state": 4,
+        "work_id": 296,
+        "queue_count": 1
+      },
+      "result_sha256": "d44ee643735d70177f2061e60913e24368fea7ccf1523316cc877eb5b1902ce3"
+    },
+    {
+      "group": "router-update-state-and-ui-work",
+      "inputs": {
+        "message": "0x2640820e"
+      },
+      "observed": {
+        "state": 2,
+        "work_id": 296,
+        "queue_count": 1
+      },
+      "result_sha256": "a92cad45c53fe105a152cf02a26c247bbfa371c909365ef3c42a0e8a41dca8db"
+    },
+    {
+      "group": "completion-queue-wrap-and-status",
+      "inputs": {
+        "count": 0,
+        "tail": 0,
+        "lock": 1,
+        "wake": 1
+      },
+      "observed": {
+        "count": 1,
+        "tail": 1,
+        "return_value": 1
+      },
+      "result_sha256": "d88654264886f5943d941a2c642476af228b951008d50935ab41966885b4883b"
+    },
+    {
+      "group": "completion-queue-wrap-and-status",
+      "inputs": {
+        "count": 6,
+        "tail": 7,
+        "lock": 1,
+        "wake": 1
+      },
+      "observed": {
+        "count": 7,
+        "tail": 0,
+        "return_value": 1
+      },
+      "result_sha256": "e92d5aa76f5a6699a6b7e94af8a037782bb6d08a2c1c0696eb12736dff4eb121"
+    },
+    {
+      "group": "completion-queue-wrap-and-status",
+      "inputs": {
+        "count": 0,
+        "tail": 0,
+        "lock": 0,
+        "wake": 0
+      },
+      "observed": {
+        "count": 1,
+        "tail": 1,
+        "return_value": 0
+      },
+      "result_sha256": "ef6ca547565666455d1620b10367b2cf1e73f3fe06afa498e783836aedf7c729"
+    },
+    {
+      "group": "completion-queue-full-assertion",
+      "inputs": {
+        "returning_assertion": false
+      },
+      "observed": {
+        "state": 3,
+        "queue_unchanged": true,
+        "stopped": true
+      },
+      "result_sha256": "c389960d65cb47c37774d34f63f3063adfc3fdf2ce5e20998810fbc9633c4590"
+    },
+    {
+      "group": "completion-queue-full-assertion",
+      "inputs": {
+        "returning_assertion": true
+      },
+      "observed": {
+        "state": 3,
+        "queue_unchanged": true,
+        "stopped": false
+      },
+      "result_sha256": "314bca0bbfd306783ff49ee613469391a203eabb36d2b4c3bd8a3d1d42462554"
+    }
+  ]
+}

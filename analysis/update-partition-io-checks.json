@@ -1,0 +1,504 @@
+{
+  "passed": true,
+  "image_sha256": "342d2f35405e8daf1797dfe431d2e4aa70f4b52a2c242a29df48206672f1dfb4",
+  "cases": 25,
+  "groups": {
+    "Emmc-gates-and-retries": 8,
+    "FAT-callback-through-Emmc": 8,
+    "R-record-base-and-total-sectors": 1,
+    "actual-callback-registration-stores": 1,
+    "callback-invalid-handle": 1,
+    "callback-zero-count": 2,
+    "geometry-command5-total-sectors": 1,
+    "selected-chain-does-not-check-partition-end": 2,
+    "unknown-path-fallback": 1
+  },
+  "scope": "Original ARM FAT volume-to-Emmc sector flow on authored buffers.\nReal filesystem/media/OS/cache operations are explicit stubs. No camera or\nstorage access. Cortex-A15 Unicorn is a numerical CPU model, not target fidelity.\n",
+  "stubs": {
+    "0x526ac9c0": "bounded strlen of authored path",
+    "0x530fdfc4": "require true assertion; no assertion implementation",
+    "0x530f1a68": "lock returns selected fixture boolean",
+    "0x530f1bbc": "unlock returns0",
+    "0x530fced4": "diagnostic no-op",
+    "0x5331b9e8": "read sector boundary: capture(start,count,buffer), synthesize bytes only on chosen success0",
+    "0x5331b99c": "write sector boundary: capture(start,count,buffer), hash authored bytes, return chosen status; NO IO",
+    "0x53100d84": "returns synthetic cache object",
+    "0x53100e14": "capture buffer/byte count, no cache operation",
+    "0x526aac80": "bounded synthetic memcpy, no original libc",
+    "0x526ab2a8": "bounded synthetic memset",
+    "0x5336fdac": "handle lookup returns authored FS record or0",
+    "0x53366610": "writes authored R volume string into6-byte destination",
+    "0x53371228": "geometry initialization stub zeros requested100-byte fixture",
+    "0x533711b8": "geometry output copy stub100 bytes",
+    "0x53375e34": "registration volume lookup returns authored pointer",
+    "0x5336f240": "registration record lookup returns authored handle",
+    "0x53366768": "registration setup reports success",
+    "0x53368030": "registration subobject initialization no-op"
+  },
+  "ranges": [
+    {
+      "start": "0x52f52554",
+      "end": "0x52f52674",
+      "sha256": "59a62c05a08f6f3ebb6f64fb1e56be76f1506b8ac35bede165bc9d44b2751177"
+    },
+    {
+      "start": "0x52f527d4",
+      "end": "0x52f5285c",
+      "sha256": "481f7c0e8b23852e7aeb1db211c7bfe09f10ce96b0335552347dca70c9f914f4"
+    },
+    {
+      "start": "0x52f4bb70",
+      "end": "0x52f4be50",
+      "sha256": "91c2b63799b57b5fad4ed621be3dd202df2fafc91bbad9e8c97b25cfdc06d890"
+    },
+    {
+      "start": "0x52f4bec0",
+      "end": "0x52f4bfcc",
+      "sha256": "8afa9bad1e3ffa0ad5f92bbad10286ae5ea55d080e17204fac9110c0a7aa55eb"
+    },
+    {
+      "start": "0x532971b8",
+      "end": "0x532971c0",
+      "sha256": "6dcd5e75586fe6683156c0d559d4827b73bd48d501fa5781a1c6099aacd7c877"
+    },
+    {
+      "start": "0x52f494e4",
+      "end": "0x52f494ec",
+      "sha256": "007f34a6c3441b0240da53f253e513b959105da2d8803255e1856aa48f48db47"
+    },
+    {
+      "start": "0x53297510",
+      "end": "0x53297728",
+      "sha256": "d729c1be821a24f85f5870efecdf96178aee37f99e834e869edd5648a48a0da2"
+    },
+    {
+      "start": "0x53297938",
+      "end": "0x53297bc0",
+      "sha256": "b31fff40ea455ea5dddbd0c6a109c9503db95eca0657a09ecbc3ec74623b8cdb"
+    },
+    {
+      "start": "0x53366838",
+      "end": "0x533668c0",
+      "sha256": "5fff6c3590114ef146651611c2240633c49acfcbaca4f6914e76466500d5ecf3"
+    }
+  ],
+  "results": [
+    {
+      "group": "R-record-base-and-total-sectors",
+      "inputs": {},
+      "observed": {
+        "base": 3440640,
+        "sectors": 3719168
+      },
+      "result_sha256": "1abe029e18b819b2b728f3c1b30303436d099c531e5b28b7ac7d2139b7a4fe7f"
+    },
+    {
+      "group": "unknown-path-fallback",
+      "inputs": {},
+      "observed": {
+        "base": 4294967295,
+        "geometry_pointer": 268455936,
+        "total_from_fallback": 305419896
+      },
+      "result_sha256": "4f93dd8c0bc787f916575c3fab109d6c77948aa46f51f0c6cf9d10903c879b1e"
+    },
+    {
+      "group": "actual-callback-registration-stores",
+      "inputs": {},
+      "observed": {
+        "io": "0x52f4bd7c",
+        "geometry": "0x52f4bec0"
+      },
+      "result_sha256": "5a49a93faaa67404c39aeafda69161657256a89cd41e345fb48c3ab6a3f3c810"
+    },
+    {
+      "group": "geometry-command5-total-sectors",
+      "inputs": {},
+      "observed": {
+        "return_value": 0,
+        "total_sectors": 3719168
+      },
+      "result_sha256": "cd77945e1a26a9874bdaf09780a8469b0d0ad39a609106a28ff9328b572b7078"
+    },
+    {
+      "group": "FAT-callback-through-Emmc",
+      "inputs": {
+        "read": false,
+        "unaligned": false,
+        "count": 1
+      },
+      "observed": {
+        "return_value": 1,
+        "io": [
+          {
+            "kind": "write",
+            "sector": 3440649,
+            "count": 1,
+            "buffer": 268500992,
+            "status": 0,
+            "data_sha256": "6f5f7ceb5229e96a34998ff6db1ae67c265e7947e83a0549769d6adf92694958"
+          }
+        ],
+        "copy_bytes": []
+      },
+      "result_sha256": "6f54b44165f6619dbfa8348cae33f7cc47b28e6c6d2aa23de09e60a0de44b2c8"
+    },
+    {
+      "group": "FAT-callback-through-Emmc",
+      "inputs": {
+        "read": false,
+        "unaligned": false,
+        "count": 5
+      },
+      "observed": {
+        "return_value": 1,
+        "io": [
+          {
+            "kind": "write",
+            "sector": 3440649,
+            "count": 5,
+            "buffer": 268500992,
+            "status": 0,
+            "data_sha256": "a9a04a6711a8ee7a41c890a5a54a083fa56008dd75e4940f0bd86d6e63193226"
+          }
+        ],
+        "copy_bytes": []
+      },
+      "result_sha256": "d1f3529314d4fcca9764d1accdcd13290108efa7867dec502219b328faaa9a37"
+    },
+    {
+      "group": "FAT-callback-through-Emmc",
+      "inputs": {
+        "read": false,
+        "unaligned": true,
+        "count": 1
+      },
+      "observed": {
+        "return_value": 1,
+        "io": [
+          {
+            "kind": "write",
+            "sector": 3440649,
+            "count": 1,
+            "buffer": 268566528,
+            "status": 0,
+            "data_sha256": "ee4159392417eb19083afa1031562380e27f84e1407d1ee5339715089dac3508"
+          }
+        ],
+        "copy_bytes": [
+          512
+        ]
+      },
+      "result_sha256": "f9d73ab0bdc47bf16d860fb9e06eaeffae2d4ea2d8f2394fc2a7c2609151d447"
+    },
+    {
+      "group": "FAT-callback-through-Emmc",
+      "inputs": {
+        "read": false,
+        "unaligned": true,
+        "count": 5
+      },
+      "observed": {
+        "return_value": 1,
+        "io": [
+          {
+            "kind": "write",
+            "sector": 3440649,
+            "count": 2,
+            "buffer": 268566528,
+            "status": 0,
+            "data_sha256": "76aa543744ed4c85a60769049a9a72dec938bcb8568f5a4475d5a0f162821e57"
+          },
+          {
+            "kind": "write",
+            "sector": 3440651,
+            "count": 2,
+            "buffer": 268566528,
+            "status": 0,
+            "data_sha256": "76aa543744ed4c85a60769049a9a72dec938bcb8568f5a4475d5a0f162821e57"
+          },
+          {
+            "kind": "write",
+            "sector": 3440653,
+            "count": 1,
+            "buffer": 268566528,
+            "status": 0,
+            "data_sha256": "ee4159392417eb19083afa1031562380e27f84e1407d1ee5339715089dac3508"
+          }
+        ],
+        "copy_bytes": [
+          1024,
+          1024,
+          512
+        ]
+      },
+      "result_sha256": "5038e218daedb0b98ee093e9fe149d8d6b8114a3b3a9926c8e55de529587dbe1"
+    },
+    {
+      "group": "Emmc-gates-and-retries",
+      "inputs": {
+        "read": false,
+        "case": "retry-success"
+      },
+      "observed": {
+        "return_value": 1,
+        "io_attempts": 2
+      },
+      "result_sha256": "508c7104e8cd49beb039447bb32ecff2b8529850ffceded07fbb5cf218705ed8"
+    },
+    {
+      "group": "Emmc-gates-and-retries",
+      "inputs": {
+        "read": false,
+        "case": "three-failures"
+      },
+      "observed": {
+        "return_value": 0,
+        "io_attempts": 3
+      },
+      "result_sha256": "e5f12ecf0cb8fd5fa11ec7ae98492c76721cd696420c44bc257446764b6240c0"
+    },
+    {
+      "group": "Emmc-gates-and-retries",
+      "inputs": {
+        "read": false,
+        "case": "lock-failure"
+      },
+      "observed": {
+        "return_value": 0,
+        "io_attempts": 0
+      },
+      "result_sha256": "59fe5afb574615c81dd9325a04522214dc2a60ec97d8206e3a06325faaf4b461"
+    },
+    {
+      "group": "Emmc-gates-and-retries",
+      "inputs": {
+        "read": false,
+        "case": "not-initialized"
+      },
+      "observed": {
+        "return_value": 0,
+        "io_attempts": 0
+      },
+      "result_sha256": "c8706fd8164158640445576cd1baacef2d348038b176c239b78788f1203cb124"
+    },
+    {
+      "group": "selected-chain-does-not-check-partition-end",
+      "inputs": {
+        "read": false,
+        "relative_sector": 3719167,
+        "count": 2
+      },
+      "observed": {
+        "forwarded_sector": 7159807,
+        "count": 2
+      },
+      "result_sha256": "aa6eb0cf3298fc021e48d3c2ba00fbf64c0c76c3de106d8d61c98121eb4488b4"
+    },
+    {
+      "group": "callback-zero-count",
+      "inputs": {
+        "read": false
+      },
+      "observed": {
+        "return_value": 0,
+        "io_attempts": 0
+      },
+      "result_sha256": "6ee6b94bf72ca68d45b61ce5b8137e9baf2cdcb04f53be6fe1fbe432e985888e"
+    },
+    {
+      "group": "FAT-callback-through-Emmc",
+      "inputs": {
+        "read": true,
+        "unaligned": false,
+        "count": 1
+      },
+      "observed": {
+        "return_value": 1,
+        "io": [
+          {
+            "kind": "read",
+            "sector": 3440649,
+            "count": 1,
+            "buffer": 268500992,
+            "status": 0,
+            "data_sha256": "31804b54e0737e5b7eb69f7247759fe2173cec8e594d7efef89e263611048b95"
+          }
+        ],
+        "copy_bytes": []
+      },
+      "result_sha256": "78e42a3a71238cc536c3274c34c7e042ea1b4cfa4b6c29686ba39684f769a0cc"
+    },
+    {
+      "group": "FAT-callback-through-Emmc",
+      "inputs": {
+        "read": true,
+        "unaligned": false,
+        "count": 5
+      },
+      "observed": {
+        "return_value": 1,
+        "io": [
+          {
+            "kind": "read",
+            "sector": 3440649,
+            "count": 5,
+            "buffer": 268500992,
+            "status": 0,
+            "data_sha256": "f6e66eaa5dc70d8f59313a15183199e78e05e8ac266662ec501a2810a21759b8"
+          }
+        ],
+        "copy_bytes": []
+      },
+      "result_sha256": "74e85900cc1b514bf11fd5af93523e097192c75ce4b2495829683d9c72da12ac"
+    },
+    {
+      "group": "FAT-callback-through-Emmc",
+      "inputs": {
+        "read": true,
+        "unaligned": true,
+        "count": 1
+      },
+      "observed": {
+        "return_value": 1,
+        "io": [
+          {
+            "kind": "read",
+            "sector": 3440649,
+            "count": 1,
+            "buffer": 268632064,
+            "status": 0,
+            "data_sha256": "31804b54e0737e5b7eb69f7247759fe2173cec8e594d7efef89e263611048b95"
+          }
+        ],
+        "copy_bytes": [
+          512
+        ]
+      },
+      "result_sha256": "8baa589a9ebb1a86246b966878f1e3aed032ff5e4c58370706e4fcc21b1a2cb1"
+    },
+    {
+      "group": "FAT-callback-through-Emmc",
+      "inputs": {
+        "read": true,
+        "unaligned": true,
+        "count": 5
+      },
+      "observed": {
+        "return_value": 1,
+        "io": [
+          {
+            "kind": "read",
+            "sector": 3440649,
+            "count": 2,
+            "buffer": 268632064,
+            "status": 0,
+            "data_sha256": "456bdef63cc9e384972074a2965e53883e4b7060715c766af40ee525d99123d5"
+          },
+          {
+            "kind": "read",
+            "sector": 3440651,
+            "count": 2,
+            "buffer": 268632064,
+            "status": 0,
+            "data_sha256": "3696bd18963ffc3dd3ec880a1dc88fee92e3c0eef5c8f037b173154068ebbc1e"
+          },
+          {
+            "kind": "read",
+            "sector": 3440653,
+            "count": 1,
+            "buffer": 268632064,
+            "status": 0,
+            "data_sha256": "86243a132e7b9b84a38088c189bda4cc086d45b5544a4f8f3aa97158ff032a2d"
+          }
+        ],
+        "copy_bytes": [
+          1024,
+          1024,
+          512
+        ]
+      },
+      "result_sha256": "609aa45aeaaf708b34186b13f6be4b05418245c3c87b1f782d270a4c8d574f91"
+    },
+    {
+      "group": "Emmc-gates-and-retries",
+      "inputs": {
+        "read": true,
+        "case": "retry-success"
+      },
+      "observed": {
+        "return_value": 1,
+        "io_attempts": 2
+      },
+      "result_sha256": "1305546e47dfe4dc3c9cfb7279e05c4c8bb42cc22c6501b5fcf5d47c0a37ce37"
+    },
+    {
+      "group": "Emmc-gates-and-retries",
+      "inputs": {
+        "read": true,
+        "case": "three-failures"
+      },
+      "observed": {
+        "return_value": 0,
+        "io_attempts": 3
+      },
+      "result_sha256": "be92606a0cd27244776524d99cc4d76ed5e5647dab0688ae3f7cd4507918f59e"
+    },
+    {
+      "group": "Emmc-gates-and-retries",
+      "inputs": {
+        "read": true,
+        "case": "lock-failure"
+      },
+      "observed": {
+        "return_value": 0,
+        "io_attempts": 0
+      },
+      "result_sha256": "cd6a07a7ae272781dba6139cb3ad58309b764a2a87484d4cd18c9896dd2999f1"
+    },
+    {
+      "group": "Emmc-gates-and-retries",
+      "inputs": {
+        "read": true,
+        "case": "not-initialized"
+      },
+      "observed": {
+        "return_value": 0,
+        "io_attempts": 0
+      },
+      "result_sha256": "e6b98a99ad13e6da4d307fd82c74d83855355c84564c2851ec85329f986ce528"
+    },
+    {
+      "group": "selected-chain-does-not-check-partition-end",
+      "inputs": {
+        "read": true,
+        "relative_sector": 3719167,
+        "count": 2
+      },
+      "observed": {
+        "forwarded_sector": 7159807,
+        "count": 2
+      },
+      "result_sha256": "298c2cc03228ccbfb2d22ad771ff80d67cbf14c35c61fc8a28fb5dc9ab915a0d"
+    },
+    {
+      "group": "callback-zero-count",
+      "inputs": {
+        "read": true
+      },
+      "observed": {
+        "return_value": 0,
+        "io_attempts": 0
+      },
+      "result_sha256": "6ee6b94bf72ca68d45b61ce5b8137e9baf2cdcb04f53be6fe1fbe432e985888e"
+    },
+    {
+      "group": "callback-invalid-handle",
+      "inputs": {},
+      "observed": {
+        "return_value": 0
+      },
+      "result_sha256": "512ae1b2ba22605c29eb5c722a07ff5fdbf404bc5bae8a9acd699e6dbd8064ef"
+    }
+  ]
+}

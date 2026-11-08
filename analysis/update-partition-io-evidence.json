@@ -1,0 +1,1561 @@
+{
+  "image": {
+    "base": "0x52500000",
+    "size": 25483200,
+    "sha256": "342d2f35405e8daf1797dfe431d2e4aa70f4b52a2c242a29df48206672f1dfb4"
+  },
+  "functions": [
+    {
+      "label": "volume_sector_base_get",
+      "start": "0x52f527d4",
+      "end": "0x52f52818",
+      "sha256": "0cc8ba84b9eb2c3eb9a306331d9ec87ccb6c6b49c197e22fae23176159f2ca84",
+      "assembly_sha256": "f016895fe8d741919c5c3a0e33fad53624fab6f922e57bf8c249f4d4e2c82ab5",
+      "pseudocode_sha256": "c3bc73bde1e5bc9ab97eced79eb441798b9d85e04ef5ec6f8620f9b47f32e027",
+      "angr_version": "10.0.5"
+    },
+    {
+      "label": "volume_geometry_pointer_get",
+      "start": "0x52f52818",
+      "end": "0x52f5285c",
+      "sha256": "145a1e37ebeed81c938c209723640a6d24d26b047d2c0978d1580feaecc8d25e",
+      "assembly_sha256": "0214368efa54f3845f48d98b1b890b7d36438dae9af6b7d70eb08d7f00453681",
+      "pseudocode_sha256": "ed7862366620dd8f2c5c3d2d1bc471c553acbec894730ecc7d8d1867fd43793f",
+      "angr_version": "10.0.5"
+    },
+    {
+      "label": "fat_total_sectors",
+      "start": "0x52f4bb70",
+      "end": "0x52f4bbd0",
+      "sha256": "490088ca264120d3dc65dbf16c7c84576b300e080286a6f38801cca2264f4597",
+      "assembly_sha256": "4c5b36567e2b4d5e3985cbff196ff0ff02a32cc7d12198689f35625001ec37b6",
+      "pseudocode_sha256": "9727d337827f7191b5756f680d3528d46a9619b63d3a8cfd141f248cae58ded7",
+      "angr_version": "10.0.5"
+    },
+    {
+      "label": "fat_media_write",
+      "start": "0x52f4bbd0",
+      "end": "0x52f4bcc4",
+      "sha256": "b490a3ea6e510b16023acc064712b874009243aaed46b617b5ea30ee2dde21f2",
+      "assembly_sha256": "e53e038752e79b9a990609329ea7d09c3e5d9e11ca0fa467ce74bc69ec1b0344",
+      "pseudocode_sha256": "ed8e37b42fef833d47c993df476685017f1a90f4c2abb910edc2b3e47c9297ed",
+      "angr_version": "10.0.5"
+    },
+    {
+      "label": "fat_media_read",
+      "start": "0x52f4bcc4",
+      "end": "0x52f4bd7c",
+      "sha256": "2fdce5da7e39a4742dc4f1dae685f401ef849ccc8dd133db35ea278a8b07b9db",
+      "assembly_sha256": "47dca76a2ac8937981f03cb86b4a1fe6915586f77b835f6502c321fee5087832",
+      "pseudocode_sha256": "d9d9b56dc8cf0064339c731513b5e63b4689a6d08f081af9a88bd4ab89665f3f",
+      "angr_version": "10.0.5"
+    },
+    {
+      "label": "fat_io_callback",
+      "start": "0x52f4bd7c",
+      "end": "0x52f4be50",
+      "sha256": "51ebdc17868dcaf7095807dc02300e674b4aa849de19b0709d2be48582a42081",
+      "assembly_sha256": "c21559d318271baf418bf95fbb374824985d77414c682d38adb319304d18fdc9",
+      "pseudocode_sha256": "79a0e4a73b9ee79632a45b147698928eeb435324b118d707bba303d0236e0715",
+      "angr_version": "10.0.5"
+    },
+    {
+      "label": "emmc_read",
+      "start": "0x53297938",
+      "end": "0x53297a84",
+      "sha256": "a035440545194033188ae5f6dd0748cfc5ae3e2312f6b8b44d2a48312375d96a",
+      "assembly_sha256": "9ec1b2094521e70e34a1360ff95bfcf76d0450e0e2fb521c5c74e9d54586436a",
+      "pseudocode_sha256": "543fd4f8f7b5d454565862c28e53292313fd46000bf3be181a7ea42f86b803d7",
+      "angr_version": "10.0.5"
+    },
+    {
+      "label": "emmc_write",
+      "start": "0x53297a84",
+      "end": "0x53297bc0",
+      "sha256": "53ca2d9e2e84f8d8501ea40807737a6f78d2b6eb403a41f52f1ea167ba8d5875",
+      "assembly_sha256": "2f783a75e18aba2ea6608b452c4c785aab1a100fe03125aeef1ad59ee578974c",
+      "pseudocode_sha256": "9998c5b7ce8392a1347790cd2cc58c08a40d9da8d23195014dcf9a3af97458ec",
+      "angr_version": "10.0.5"
+    },
+    {
+      "label": "emmc_read_lower",
+      "start": "0x53297510",
+      "end": "0x53297640",
+      "sha256": "c99ae22aadfdcf25dc69dc6cf664bdc210e7f76a04aaecdf1c081fafe8c4e0e1",
+      "assembly_sha256": "a41f82a23e607d2f9903f5112b15db7e682bb21e40250aa09b41a5f99afacfc6",
+      "pseudocode_sha256": "9065fdfd9d9336bbf7cee8c667b06a4f58a43dc2e7f00c521fa48d7d0770afeb",
+      "angr_version": "10.0.5"
+    },
+    {
+      "label": "emmc_write_lower",
+      "start": "0x53297640",
+      "end": "0x53297728",
+      "sha256": "132622874d9cc9644a8563980c397e933ecc0770eb8515614308549607c21f13",
+      "assembly_sha256": "cd2f31b3ae235f6958ec83cc6cce259c8bfc0652a5b1f254c6b7390f9f3d3ad6",
+      "pseudocode_sha256": "6ea77f665dbcbced796826ea8f2c65f3499a1abee63618362f29e988e0920363",
+      "angr_version": "10.0.5"
+    }
+  ],
+  "fragments": [
+    {
+      "label": "volume_path_and_descriptor",
+      "start": "0x52f52554",
+      "end": "0x52f52674",
+      "sha256": "59a62c05a08f6f3ebb6f64fb1e56be76f1506b8ac35bede165bc9d44b2751177",
+      "assembly_sha256": "0e7f77c2d685cf60d8b0473c2afb570c06ba651917b8556be083cafa75654612"
+    },
+    {
+      "label": "fat_global_vm_alias",
+      "start": "0x52f4957c",
+      "end": "0x52f495cc",
+      "sha256": "82de8f33af5df19d7656e37a93e6b767b9e8ab0552c9917c0ece40846bedc055",
+      "assembly_sha256": "270ab753c626aad608653dc9eedca7d5d129f7b0427c022110d1b8dda69f85ac"
+    },
+    {
+      "label": "factory_fat_init_binding",
+      "start": "0x52f514f0",
+      "end": "0x52f51548",
+      "sha256": "8ea9409e14ba303a386557ae1d9f1ff0c7e1054ab4087cf9c6907ba46a4a1b52",
+      "assembly_sha256": "319a82cc42027e87f9e8e2f60e65b93d9fdbb7c69b8795fe980bdef5829aa5c0"
+    },
+    {
+      "label": "fat_callback_registration",
+      "start": "0x52f496a8",
+      "end": "0x52f49820",
+      "sha256": "22fb4c470a7f0da6ff962245a8372fa73fea494bd84426a998fd96177bb69abe",
+      "assembly_sha256": "6fc19e0e8321c66abc03a0d75c6520b193649196fa06b24bbdebe42e66407ff3"
+    },
+    {
+      "label": "fat_geometry_callback",
+      "start": "0x52f4bec0",
+      "end": "0x52f4bfcc",
+      "sha256": "8afa9bad1e3ffa0ad5f92bbad10286ae5ea55d080e17204fac9110c0a7aa55eb",
+      "assembly_sha256": "ddb1c496c2bc782d9de4df53152805cadd200049a570393dd3b77a5a016e43f6"
+    },
+    {
+      "label": "library_register_callbacks",
+      "start": "0x53366838",
+      "end": "0x533668c0",
+      "sha256": "5fff6c3590114ef146651611c2240633c49acfcbaca4f6914e76466500d5ecf3",
+      "assembly_sha256": "baeb08145732a4d57d19ae48346fbef492fd72ff5bb3722d10a50e9bf98947f5"
+    },
+    {
+      "label": "emmc_getters",
+      "start": "0x532971b8",
+      "end": "0x532971e4",
+      "sha256": "f173e6b36c496c52eb7bb9009a70c11a61a9ea5037a18f9897af977b86125d0d",
+      "assembly_sha256": "b663cd2d4f81ec1d733e150fc68bbd95adf5ea59bddfb9093ca42bc88f91221f"
+    },
+    {
+      "label": "default_write_gate",
+      "start": "0x52f494e4",
+      "end": "0x52f494ec",
+      "sha256": "007f34a6c3441b0240da53f253e513b959105da2d8803255e1856aa48f48db47",
+      "assembly_sha256": "cd0811935382c13ad86d6a142119e43a77585814a8f000b563b87cf7b0fad333"
+    },
+    {
+      "label": "emmc_partition_constants",
+      "start": "0x53298058",
+      "end": "0x532980d4",
+      "sha256": "8382dc0d27c0adf78d2deb4438ac0a0b1b53ebfdcc43edc99cd83e37bf1271ae",
+      "assembly_sha256": "61d7b0ffd647d48cca43ef0d8d52f2bd8fc0ca17ff550d842ac77d34bcfc3e60"
+    },
+    {
+      "label": "volume_metadata_producers",
+      "start": "0x52f51028",
+      "end": "0x52f510e8",
+      "sha256": "11b239df752d37a69a2c03bcb292f6f6fa9122dfe210e3f7f4ee5fdd2d58bcb8",
+      "assembly_sha256": "396bd90291ddb9ae5fa1980d2b09f0e788ebe268397a433c4eace8a6b76e53b7"
+    },
+    {
+      "label": "volume_base_setter",
+      "start": "0x52f52788",
+      "end": "0x52f527d4",
+      "sha256": "481b697b797ed583719366e857de9c3acc641397b26f4ba9c81ae72d798181f4",
+      "assembly_sha256": "7d630e08d39570ceae6a8f9ef7b91be0cdddc8c871d33457e389e1af00c4e9b4"
+    },
+    {
+      "label": "volume_geometry_setter",
+      "start": "0x52f5288c",
+      "end": "0x52f528e8",
+      "sha256": "5b5c3816560fda22298723886ada0b077964a54e7ee279835914eef297f000c8",
+      "assembly_sha256": "af3fdbfd94dbb3f6ca7ccca40dc9d8fd14463ecb0d83055716e66177c1c46751"
+    }
+  ],
+  "transfers": [
+    {
+      "site": "0x52f527e4",
+      "instruction": "bl #0x52f52554",
+      "source_range": "volume_sector_base_get",
+      "target": "0x52f52554"
+    },
+    {
+      "site": "0x52f527ec",
+      "instruction": "blt #0x52f52810",
+      "source_range": "volume_sector_base_get",
+      "target": "0x52f52810"
+    },
+    {
+      "site": "0x52f527f8",
+      "instruction": "bge #0x52f52810",
+      "source_range": "volume_sector_base_get",
+      "target": "0x52f52810"
+    },
+    {
+      "site": "0x52f52828",
+      "instruction": "bl #0x52f52554",
+      "source_range": "volume_geometry_pointer_get",
+      "target": "0x52f52554"
+    },
+    {
+      "site": "0x52f52830",
+      "instruction": "blt #0x52f52854",
+      "source_range": "volume_geometry_pointer_get",
+      "target": "0x52f52854"
+    },
+    {
+      "site": "0x52f5283c",
+      "instruction": "bge #0x52f52854",
+      "source_range": "volume_geometry_pointer_get",
+      "target": "0x52f52854"
+    },
+    {
+      "site": "0x52f4bb90",
+      "instruction": "bl #0x52f52818",
+      "source_range": "fat_total_sectors",
+      "target": "0x52f52818"
+    },
+    {
+      "site": "0x52f4bbc0",
+      "instruction": "bl #0x530fdfc4",
+      "source_range": "fat_total_sectors",
+      "target": "0x530fdfc4"
+    },
+    {
+      "site": "0x52f4bc08",
+      "instruction": "bl #0x52f52630",
+      "source_range": "fat_media_write",
+      "target": "0x52f52630"
+    },
+    {
+      "site": "0x52f4bc28",
+      "instruction": "bne #0x52f4bc90",
+      "source_range": "fat_media_write",
+      "target": "0x52f4bc90"
+    },
+    {
+      "site": "0x52f4bc38",
+      "instruction": "bne #0x52f4bc9c",
+      "source_range": "fat_media_write",
+      "target": "0x52f4bc9c"
+    },
+    {
+      "site": "0x52f4bc50",
+      "instruction": "bne #0x52f4bca8",
+      "source_range": "fat_media_write",
+      "target": "0x52f4bca8"
+    },
+    {
+      "site": "0x52f4bc5c",
+      "instruction": "bl #0x52f527d4",
+      "source_range": "fat_media_write",
+      "target": "0x52f527d4"
+    },
+    {
+      "site": "0x52f4bc84",
+      "instruction": "beq #0x52f4bc90",
+      "source_range": "fat_media_write",
+      "target": "0x52f4bc90"
+    },
+    {
+      "site": "0x52f4bc88",
+      "instruction": "bl #0x52f53f74",
+      "source_range": "fat_media_write",
+      "target": "0x52f53f74"
+    },
+    {
+      "site": "0x52f4bc8c",
+      "instruction": "bl #0x52f53fec",
+      "source_range": "fat_media_write",
+      "target": "0x52f53fec"
+    },
+    {
+      "site": "0x52f4bc9c",
+      "instruction": "bl #0x52f53f74",
+      "source_range": "fat_media_write",
+      "target": "0x52f53f74"
+    },
+    {
+      "site": "0x52f4bca0",
+      "instruction": "bl #0x52f53fc8",
+      "source_range": "fat_media_write",
+      "target": "0x52f53fc8"
+    },
+    {
+      "site": "0x52f4bca4",
+      "instruction": "b #0x52f4bc3c",
+      "source_range": "fat_media_write",
+      "target": "0x52f4bc3c"
+    },
+    {
+      "site": "0x52f4bcb8",
+      "instruction": "bne #0x52f4bc54",
+      "source_range": "fat_media_write",
+      "target": "0x52f4bc54"
+    },
+    {
+      "site": "0x52f4bcc0",
+      "instruction": "b #0x52f4bc80",
+      "source_range": "fat_media_write",
+      "target": "0x52f4bc80"
+    },
+    {
+      "site": "0x52f4bcf0",
+      "instruction": "bl #0x52f52630",
+      "source_range": "fat_media_read",
+      "target": "0x52f52630"
+    },
+    {
+      "site": "0x52f4bd00",
+      "instruction": "beq #0x52f4bd38",
+      "source_range": "fat_media_read",
+      "target": "0x52f4bd38"
+    },
+    {
+      "site": "0x52f4bd0c",
+      "instruction": "bl #0x52f527d4",
+      "source_range": "fat_media_read",
+      "target": "0x52f527d4"
+    },
+    {
+      "site": "0x52f4bd38",
+      "instruction": "bl #0x52f53f74",
+      "source_range": "fat_media_read",
+      "target": "0x52f53f74"
+    },
+    {
+      "site": "0x52f4bd3c",
+      "instruction": "bl #0x52f53fc8",
+      "source_range": "fat_media_read",
+      "target": "0x52f53fc8"
+    },
+    {
+      "site": "0x52f4bd48",
+      "instruction": "bl #0x52f527d4",
+      "source_range": "fat_media_read",
+      "target": "0x52f527d4"
+    },
+    {
+      "site": "0x52f4bd6c",
+      "instruction": "bl #0x52f53f74",
+      "source_range": "fat_media_read",
+      "target": "0x52f53f74"
+    },
+    {
+      "site": "0x52f4bd70",
+      "instruction": "bl #0x52f53fec",
+      "source_range": "fat_media_read",
+      "target": "0x52f53fec"
+    },
+    {
+      "site": "0x52f4bdac",
+      "instruction": "bl #0x5336fdac",
+      "source_range": "fat_io_callback",
+      "target": "0x5336fdac"
+    },
+    {
+      "site": "0x52f4bdc8",
+      "instruction": "bne #0x52f4bde4",
+      "source_range": "fat_io_callback",
+      "target": "0x52f4bde4"
+    },
+    {
+      "site": "0x52f4bdd8",
+      "instruction": "bne #0x52f4be4c",
+      "source_range": "fat_io_callback",
+      "target": "0x52f4be4c"
+    },
+    {
+      "site": "0x52f4bdf0",
+      "instruction": "bl #0x526ab2a8",
+      "source_range": "fat_io_callback",
+      "target": "0x526ab2a8"
+    },
+    {
+      "site": "0x52f4be00",
+      "instruction": "bl #0x53366610",
+      "source_range": "fat_io_callback",
+      "target": "0x53366610"
+    },
+    {
+      "site": "0x52f4be0c",
+      "instruction": "beq #0x52f4be28",
+      "source_range": "fat_io_callback",
+      "target": "0x52f4be28"
+    },
+    {
+      "site": "0x52f4be20",
+      "instruction": "bl #0x52f4bcc4",
+      "source_range": "fat_io_callback",
+      "target": "0x52f4bcc4"
+    },
+    {
+      "site": "0x52f4be24",
+      "instruction": "b #0x52f4bdcc",
+      "source_range": "fat_io_callback",
+      "target": "0x52f4bdcc"
+    },
+    {
+      "site": "0x52f4be44",
+      "instruction": "bl #0x52f4bbd0",
+      "source_range": "fat_io_callback",
+      "target": "0x52f4bbd0"
+    },
+    {
+      "site": "0x52f4be48",
+      "instruction": "b #0x52f4bdcc",
+      "source_range": "fat_io_callback",
+      "target": "0x52f4bdcc"
+    },
+    {
+      "site": "0x52f4be4c",
+      "instruction": "bl #0x532fb9c8",
+      "source_range": "fat_io_callback",
+      "target": "0x532fb9c8"
+    },
+    {
+      "site": "0x53297968",
+      "instruction": "bl #0x530f1a68",
+      "source_range": "emmc_read",
+      "target": "0x530f1a68"
+    },
+    {
+      "site": "0x53297974",
+      "instruction": "beq #0x53297a38",
+      "source_range": "emmc_read",
+      "target": "0x53297a38"
+    },
+    {
+      "site": "0x53297980",
+      "instruction": "bne #0x53297a44",
+      "source_range": "emmc_read",
+      "target": "0x53297a44"
+    },
+    {
+      "site": "0x53297988",
+      "instruction": "beq #0x53297a54",
+      "source_range": "emmc_read",
+      "target": "0x53297a54"
+    },
+    {
+      "site": "0x53297994",
+      "instruction": "beq #0x53297a24",
+      "source_range": "emmc_read",
+      "target": "0x53297a24"
+    },
+    {
+      "site": "0x532979a4",
+      "instruction": "b #0x532979e8",
+      "source_range": "emmc_read",
+      "target": "0x532979e8"
+    },
+    {
+      "site": "0x532979c0",
+      "instruction": "bl #0x53297510",
+      "source_range": "emmc_read",
+      "target": "0x53297510"
+    },
+    {
+      "site": "0x532979d8",
+      "instruction": "beq #0x53297a20",
+      "source_range": "emmc_read",
+      "target": "0x53297a20"
+    },
+    {
+      "site": "0x532979dc",
+      "instruction": "bl #0x526aac80",
+      "source_range": "emmc_read",
+      "target": "0x526aac80"
+    },
+    {
+      "site": "0x532979e4",
+      "instruction": "beq #0x53297a24",
+      "source_range": "emmc_read",
+      "target": "0x53297a24"
+    },
+    {
+      "site": "0x53297a0c",
+      "instruction": "beq #0x532979a8",
+      "source_range": "emmc_read",
+      "target": "0x532979a8"
+    },
+    {
+      "site": "0x53297a1c",
+      "instruction": "b #0x532979a8",
+      "source_range": "emmc_read",
+      "target": "0x532979a8"
+    },
+    {
+      "site": "0x53297a2c",
+      "instruction": "bne #0x53297a78",
+      "source_range": "emmc_read",
+      "target": "0x53297a78"
+    },
+    {
+      "site": "0x53297a34",
+      "instruction": "bl #0x530f1bbc",
+      "source_range": "emmc_read",
+      "target": "0x530f1bbc"
+    },
+    {
+      "site": "0x53297a48",
+      "instruction": "bl #0x5329790c",
+      "source_range": "emmc_read",
+      "target": "0x5329790c"
+    },
+    {
+      "site": "0x53297a50",
+      "instruction": "bne #0x5329798c",
+      "source_range": "emmc_read",
+      "target": "0x5329798c"
+    },
+    {
+      "site": "0x53297a64",
+      "instruction": "bl #0x53297510",
+      "source_range": "emmc_read",
+      "target": "0x53297510"
+    },
+    {
+      "site": "0x53297a74",
+      "instruction": "beq #0x53297a30",
+      "source_range": "emmc_read",
+      "target": "0x53297a30"
+    },
+    {
+      "site": "0x53297a7c",
+      "instruction": "bl #0x532973e4",
+      "source_range": "emmc_read",
+      "target": "0x532973e4"
+    },
+    {
+      "site": "0x53297a80",
+      "instruction": "b #0x53297a30",
+      "source_range": "emmc_read",
+      "target": "0x53297a30"
+    },
+    {
+      "site": "0x53297ab4",
+      "instruction": "bl #0x530f1a68",
+      "source_range": "emmc_write",
+      "target": "0x530f1a68"
+    },
+    {
+      "site": "0x53297ac0",
+      "instruction": "beq #0x53297b74",
+      "source_range": "emmc_write",
+      "target": "0x53297b74"
+    },
+    {
+      "site": "0x53297acc",
+      "instruction": "bne #0x53297b80",
+      "source_range": "emmc_write",
+      "target": "0x53297b80"
+    },
+    {
+      "site": "0x53297ad4",
+      "instruction": "beq #0x53297b90",
+      "source_range": "emmc_write",
+      "target": "0x53297b90"
+    },
+    {
+      "site": "0x53297ae0",
+      "instruction": "beq #0x53297b60",
+      "source_range": "emmc_write",
+      "target": "0x53297b60"
+    },
+    {
+      "site": "0x53297aec",
+      "instruction": "b #0x53297b2c",
+      "source_range": "emmc_write",
+      "target": "0x53297b2c"
+    },
+    {
+      "site": "0x53297b00",
+      "instruction": "bl #0x526aac80",
+      "source_range": "emmc_write",
+      "target": "0x526aac80"
+    },
+    {
+      "site": "0x53297b18",
+      "instruction": "bl #0x53297640",
+      "source_range": "emmc_write",
+      "target": "0x53297640"
+    },
+    {
+      "site": "0x53297b20",
+      "instruction": "beq #0x53297b5c",
+      "source_range": "emmc_write",
+      "target": "0x53297b5c"
+    },
+    {
+      "site": "0x53297b28",
+      "instruction": "beq #0x53297b60",
+      "source_range": "emmc_write",
+      "target": "0x53297b60"
+    },
+    {
+      "site": "0x53297b4c",
+      "instruction": "beq #0x53297af0",
+      "source_range": "emmc_write",
+      "target": "0x53297af0"
+    },
+    {
+      "site": "0x53297b58",
+      "instruction": "b #0x53297af0",
+      "source_range": "emmc_write",
+      "target": "0x53297af0"
+    },
+    {
+      "site": "0x53297b68",
+      "instruction": "bne #0x53297bb4",
+      "source_range": "emmc_write",
+      "target": "0x53297bb4"
+    },
+    {
+      "site": "0x53297b70",
+      "instruction": "bl #0x530f1bbc",
+      "source_range": "emmc_write",
+      "target": "0x530f1bbc"
+    },
+    {
+      "site": "0x53297b84",
+      "instruction": "bl #0x5329790c",
+      "source_range": "emmc_write",
+      "target": "0x5329790c"
+    },
+    {
+      "site": "0x53297b8c",
+      "instruction": "bne #0x53297ad8",
+      "source_range": "emmc_write",
+      "target": "0x53297ad8"
+    },
+    {
+      "site": "0x53297ba0",
+      "instruction": "bl #0x53297640",
+      "source_range": "emmc_write",
+      "target": "0x53297640"
+    },
+    {
+      "site": "0x53297bb0",
+      "instruction": "beq #0x53297b6c",
+      "source_range": "emmc_write",
+      "target": "0x53297b6c"
+    },
+    {
+      "site": "0x53297bb8",
+      "instruction": "bl #0x532973e4",
+      "source_range": "emmc_write",
+      "target": "0x532973e4"
+    },
+    {
+      "site": "0x53297bbc",
+      "instruction": "b #0x53297b6c",
+      "source_range": "emmc_write",
+      "target": "0x53297b6c"
+    },
+    {
+      "site": "0x53297544",
+      "instruction": "beq #0x532975bc",
+      "source_range": "emmc_read_lower",
+      "target": "0x532975bc"
+    },
+    {
+      "site": "0x53297554",
+      "instruction": "bl #0x5331b9e8",
+      "source_range": "emmc_read_lower",
+      "target": "0x5331b9e8"
+    },
+    {
+      "site": "0x5329756c",
+      "instruction": "beq #0x532975f4",
+      "source_range": "emmc_read_lower",
+      "target": "0x532975f4"
+    },
+    {
+      "site": "0x53297574",
+      "instruction": "bl #0x530fced4",
+      "source_range": "emmc_read_lower",
+      "target": "0x530fced4"
+    },
+    {
+      "site": "0x5329757c",
+      "instruction": "bne #0x53297548",
+      "source_range": "emmc_read_lower",
+      "target": "0x53297548"
+    },
+    {
+      "site": "0x532975ac",
+      "instruction": "bl #0x530fced4",
+      "source_range": "emmc_read_lower",
+      "target": "0x530fced4"
+    },
+    {
+      "site": "0x532975e4",
+      "instruction": "bl #0x530fced4",
+      "source_range": "emmc_read_lower",
+      "target": "0x530fced4"
+    },
+    {
+      "site": "0x532975f4",
+      "instruction": "bl #0x53100d84",
+      "source_range": "emmc_read_lower",
+      "target": "0x53100d84"
+    },
+    {
+      "site": "0x53297614",
+      "instruction": "bne #0x53297630",
+      "source_range": "emmc_read_lower",
+      "target": "0x53297630"
+    },
+    {
+      "site": "0x53297624",
+      "instruction": "bl #0x53100e14",
+      "source_range": "emmc_read_lower",
+      "target": "0x53100e14"
+    },
+    {
+      "site": "0x5329762c",
+      "instruction": "b #0x532975b4",
+      "source_range": "emmc_read_lower",
+      "target": "0x532975b4"
+    },
+    {
+      "site": "0x5329763c",
+      "instruction": "b #0x53297618",
+      "source_range": "emmc_read_lower",
+      "target": "0x53297618"
+    },
+    {
+      "site": "0x53297670",
+      "instruction": "beq #0x532976e8",
+      "source_range": "emmc_write_lower",
+      "target": "0x532976e8"
+    },
+    {
+      "site": "0x53297680",
+      "instruction": "bl #0x5331b99c",
+      "source_range": "emmc_write_lower",
+      "target": "0x5331b99c"
+    },
+    {
+      "site": "0x53297698",
+      "instruction": "beq #0x53297720",
+      "source_range": "emmc_write_lower",
+      "target": "0x53297720"
+    },
+    {
+      "site": "0x532976a0",
+      "instruction": "bl #0x530fced4",
+      "source_range": "emmc_write_lower",
+      "target": "0x530fced4"
+    },
+    {
+      "site": "0x532976a8",
+      "instruction": "bne #0x53297674",
+      "source_range": "emmc_write_lower",
+      "target": "0x53297674"
+    },
+    {
+      "site": "0x532976d8",
+      "instruction": "bl #0x530fced4",
+      "source_range": "emmc_write_lower",
+      "target": "0x530fced4"
+    },
+    {
+      "site": "0x53297710",
+      "instruction": "bl #0x530fced4",
+      "source_range": "emmc_write_lower",
+      "target": "0x530fced4"
+    },
+    {
+      "site": "0x53297724",
+      "instruction": "b #0x532976e0",
+      "source_range": "emmc_write_lower",
+      "target": "0x532976e0"
+    },
+    {
+      "site": "0x52f52570",
+      "instruction": "blx #0x526ac9c0",
+      "source_range": "volume_path_and_descriptor",
+      "target": "0x526ac9c0"
+    },
+    {
+      "site": "0x52f52578",
+      "instruction": "beq #0x52f52608",
+      "source_range": "volume_path_and_descriptor",
+      "target": "0x52f52608"
+    },
+    {
+      "site": "0x52f5258c",
+      "instruction": "bhi #0x52f52618",
+      "source_range": "volume_path_and_descriptor",
+      "target": "0x52f52618"
+    },
+    {
+      "site": "0x52f52598",
+      "instruction": "ble #0x52f52608",
+      "source_range": "volume_path_and_descriptor",
+      "target": "0x52f52608"
+    },
+    {
+      "site": "0x52f525ac",
+      "instruction": "b #0x52f525c0",
+      "source_range": "volume_path_and_descriptor",
+      "target": "0x52f525c0"
+    },
+    {
+      "site": "0x52f525bc",
+      "instruction": "ble #0x52f52608",
+      "source_range": "volume_path_and_descriptor",
+      "target": "0x52f52608"
+    },
+    {
+      "site": "0x52f525e0",
+      "instruction": "bl #0x530fdfc4",
+      "source_range": "volume_path_and_descriptor",
+      "target": "0x530fdfc4"
+    },
+    {
+      "site": "0x52f525f8",
+      "instruction": "bne #0x52f525b0",
+      "source_range": "volume_path_and_descriptor",
+      "target": "0x52f525b0"
+    },
+    {
+      "site": "0x52f5262c",
+      "instruction": "b #0x52f52590",
+      "source_range": "volume_path_and_descriptor",
+      "target": "0x52f52590"
+    },
+    {
+      "site": "0x52f52640",
+      "instruction": "bl #0x52f52554",
+      "source_range": "volume_path_and_descriptor",
+      "target": "0x52f52554"
+    },
+    {
+      "site": "0x52f52648",
+      "instruction": "blt #0x52f5266c",
+      "source_range": "volume_path_and_descriptor",
+      "target": "0x52f5266c"
+    },
+    {
+      "site": "0x52f52654",
+      "instruction": "bge #0x52f5266c",
+      "source_range": "volume_path_and_descriptor",
+      "target": "0x52f5266c"
+    },
+    {
+      "site": "0x52f495c8",
+      "instruction": "bl #0x530fdfc4",
+      "source_range": "fat_global_vm_alias",
+      "target": "0x530fdfc4"
+    },
+    {
+      "site": "0x52f514f4",
+      "instruction": "bl #0x530f25f4",
+      "source_range": "factory_fat_init_binding",
+      "target": "0x530f25f4"
+    },
+    {
+      "site": "0x52f51500",
+      "instruction": "bl #0x52f49894",
+      "source_range": "factory_fat_init_binding",
+      "target": "0x52f49894"
+    },
+    {
+      "site": "0x52f51528",
+      "instruction": "bl #0x530fdfc4",
+      "source_range": "factory_fat_init_binding",
+      "target": "0x530fdfc4"
+    },
+    {
+      "site": "0x52f496cc",
+      "instruction": "bl #0x53366f24",
+      "source_range": "fat_callback_registration",
+      "target": "0x53366f24"
+    },
+    {
+      "site": "0x52f496d8",
+      "instruction": "ble #0x52f4980c",
+      "source_range": "fat_callback_registration",
+      "target": "0x52f4980c"
+    },
+    {
+      "site": "0x52f496f4",
+      "instruction": "b #0x52f49708",
+      "source_range": "fat_callback_registration",
+      "target": "0x52f49708"
+    },
+    {
+      "site": "0x52f49704",
+      "instruction": "ble #0x52f497f0",
+      "source_range": "fat_callback_registration",
+      "target": "0x52f497f0"
+    },
+    {
+      "site": "0x52f49710",
+      "instruction": "bl #0x52f5285c",
+      "source_range": "fat_callback_registration",
+      "target": "0x52f5285c"
+    },
+    {
+      "site": "0x52f49718",
+      "instruction": "bne #0x52f496f8",
+      "source_range": "fat_callback_registration",
+      "target": "0x52f496f8"
+    },
+    {
+      "site": "0x52f4972c",
+      "instruction": "blt #0x52f49740",
+      "source_range": "fat_callback_registration",
+      "target": "0x52f49740"
+    },
+    {
+      "site": "0x52f49758",
+      "instruction": "bl #0x530fdfc4",
+      "source_range": "fat_callback_registration",
+      "target": "0x530fdfc4"
+    },
+    {
+      "site": "0x52f49794",
+      "instruction": "bl #0x53366838",
+      "source_range": "fat_callback_registration",
+      "target": "0x53366838"
+    },
+    {
+      "site": "0x52f497a8",
+      "instruction": "bl #0x53371320",
+      "source_range": "fat_callback_registration",
+      "target": "0x53371320"
+    },
+    {
+      "site": "0x52f497e0",
+      "instruction": "bl #0x530fdfc4",
+      "source_range": "fat_callback_registration",
+      "target": "0x530fdfc4"
+    },
+    {
+      "site": "0x52f497ec",
+      "instruction": "bgt #0x52f49708",
+      "source_range": "fat_callback_registration",
+      "target": "0x52f49708"
+    },
+    {
+      "site": "0x52f49800",
+      "instruction": "bne #0x52f49814",
+      "source_range": "fat_callback_registration",
+      "target": "0x52f49814"
+    },
+    {
+      "site": "0x52f49810",
+      "instruction": "b #0x52f497f0",
+      "source_range": "fat_callback_registration",
+      "target": "0x52f497f0"
+    },
+    {
+      "site": "0x52f49814",
+      "instruction": "bl #0x532fb9c8",
+      "source_range": "fat_callback_registration",
+      "target": "0x532fb9c8"
+    },
+    {
+      "site": "0x52f4beec",
+      "instruction": "bl #0x5336fdac",
+      "source_range": "fat_geometry_callback",
+      "target": "0x5336fdac"
+    },
+    {
+      "site": "0x52f4bef4",
+      "instruction": "beq #0x52f4bfc0",
+      "source_range": "fat_geometry_callback",
+      "target": "0x52f4bfc0"
+    },
+    {
+      "site": "0x52f4bf04",
+      "instruction": "bl #0x526ab2a8",
+      "source_range": "fat_geometry_callback",
+      "target": "0x526ab2a8"
+    },
+    {
+      "site": "0x52f4bf14",
+      "instruction": "bl #0x53366610",
+      "source_range": "fat_geometry_callback",
+      "target": "0x53366610"
+    },
+    {
+      "site": "0x52f4bf1c",
+      "instruction": "beq #0x52f4bf94",
+      "source_range": "fat_geometry_callback",
+      "target": "0x52f4bf94"
+    },
+    {
+      "site": "0x52f4bf24",
+      "instruction": "beq #0x52f4bf4c",
+      "source_range": "fat_geometry_callback",
+      "target": "0x52f4bf4c"
+    },
+    {
+      "site": "0x52f4bf2c",
+      "instruction": "beq #0x52f4bf80",
+      "source_range": "fat_geometry_callback",
+      "target": "0x52f4bf80"
+    },
+    {
+      "site": "0x52f4bf40",
+      "instruction": "bne #0x52f4bfc8",
+      "source_range": "fat_geometry_callback",
+      "target": "0x52f4bfc8"
+    },
+    {
+      "site": "0x52f4bf58",
+      "instruction": "bl #0x53371228",
+      "source_range": "fat_geometry_callback",
+      "target": "0x53371228"
+    },
+    {
+      "site": "0x52f4bf60",
+      "instruction": "bl #0x52f4bb70",
+      "source_range": "fat_geometry_callback",
+      "target": "0x52f4bb70"
+    },
+    {
+      "site": "0x52f4bf74",
+      "instruction": "bl #0x533711b8",
+      "source_range": "fat_geometry_callback",
+      "target": "0x533711b8"
+    },
+    {
+      "site": "0x52f4bf7c",
+      "instruction": "b #0x52f4bf34",
+      "source_range": "fat_geometry_callback",
+      "target": "0x52f4bf34"
+    },
+    {
+      "site": "0x52f4bf84",
+      "instruction": "bl #0x52f4be50",
+      "source_range": "fat_geometry_callback",
+      "target": "0x52f4be50"
+    },
+    {
+      "site": "0x52f4bf90",
+      "instruction": "b #0x52f4bf34",
+      "source_range": "fat_geometry_callback",
+      "target": "0x52f4bf34"
+    },
+    {
+      "site": "0x52f4bfa4",
+      "instruction": "bl #0x52f4be8c",
+      "source_range": "fat_geometry_callback",
+      "target": "0x52f4be8c"
+    },
+    {
+      "site": "0x52f4bfac",
+      "instruction": "bne #0x52f4bf30",
+      "source_range": "fat_geometry_callback",
+      "target": "0x52f4bf30"
+    },
+    {
+      "site": "0x52f4bfbc",
+      "instruction": "b #0x52f4bf34",
+      "source_range": "fat_geometry_callback",
+      "target": "0x52f4bf34"
+    },
+    {
+      "site": "0x52f4bfc4",
+      "instruction": "b #0x52f4bf34",
+      "source_range": "fat_geometry_callback",
+      "target": "0x52f4bf34"
+    },
+    {
+      "site": "0x52f4bfc8",
+      "instruction": "bl #0x532fb9c8",
+      "source_range": "fat_geometry_callback",
+      "target": "0x532fb9c8"
+    },
+    {
+      "site": "0x53366850",
+      "instruction": "bl #0x53375e34",
+      "source_range": "library_register_callbacks",
+      "target": "0x53375e34"
+    },
+    {
+      "site": "0x53366858",
+      "instruction": "beq #0x533668b8",
+      "source_range": "library_register_callbacks",
+      "target": "0x533668b8"
+    },
+    {
+      "site": "0x53366860",
+      "instruction": "bl #0x5336f240",
+      "source_range": "library_register_callbacks",
+      "target": "0x5336f240"
+    },
+    {
+      "site": "0x53366868",
+      "instruction": "beq #0x533668b8",
+      "source_range": "library_register_callbacks",
+      "target": "0x533668b8"
+    },
+    {
+      "site": "0x53366870",
+      "instruction": "bl #0x53366768",
+      "source_range": "library_register_callbacks",
+      "target": "0x53366768"
+    },
+    {
+      "site": "0x53366878",
+      "instruction": "beq #0x533668b0",
+      "source_range": "library_register_callbacks",
+      "target": "0x533668b0"
+    },
+    {
+      "site": "0x53366890",
+      "instruction": "bl #0x53368030",
+      "source_range": "library_register_callbacks",
+      "target": "0x53368030"
+    },
+    {
+      "site": "0x533668b4",
+      "instruction": "bl #0x5336f240",
+      "source_range": "library_register_callbacks",
+      "target": "0x5336f240"
+    },
+    {
+      "site": "0x52f51040",
+      "instruction": "bl #0x52f52630",
+      "source_range": "volume_metadata_producers",
+      "target": "0x52f52630"
+    },
+    {
+      "site": "0x52f51050",
+      "instruction": "beq #0x52f51068",
+      "source_range": "volume_metadata_producers",
+      "target": "0x52f51068"
+    },
+    {
+      "site": "0x52f51064",
+      "instruction": "b #0x52f52788",
+      "source_range": "volume_metadata_producers",
+      "target": "0x52f52788"
+    },
+    {
+      "site": "0x52f51070",
+      "instruction": "bl #0x53298148",
+      "source_range": "volume_metadata_producers",
+      "target": "0x53298148"
+    },
+    {
+      "site": "0x52f51078",
+      "instruction": "b #0x52f51054",
+      "source_range": "volume_metadata_producers",
+      "target": "0x52f51054"
+    },
+    {
+      "site": "0x52f51098",
+      "instruction": "bl #0x52f52630",
+      "source_range": "volume_metadata_producers",
+      "target": "0x52f52630"
+    },
+    {
+      "site": "0x52f510a4",
+      "instruction": "beq #0x52f510cc",
+      "source_range": "volume_metadata_producers",
+      "target": "0x52f510cc"
+    },
+    {
+      "site": "0x52f510c0",
+      "instruction": "bl #0x52f5288c",
+      "source_range": "volume_metadata_producers",
+      "target": "0x52f5288c"
+    },
+    {
+      "site": "0x52f510d4",
+      "instruction": "bl #0x532981ec",
+      "source_range": "volume_metadata_producers",
+      "target": "0x532981ec"
+    },
+    {
+      "site": "0x52f510e4",
+      "instruction": "b #0x52f510b4",
+      "source_range": "volume_metadata_producers",
+      "target": "0x52f510b4"
+    },
+    {
+      "site": "0x52f5279c",
+      "instruction": "bl #0x52f52554",
+      "source_range": "volume_base_setter",
+      "target": "0x52f52554"
+    },
+    {
+      "site": "0x52f527a4",
+      "instruction": "blt #0x52f527cc",
+      "source_range": "volume_base_setter",
+      "target": "0x52f527cc"
+    },
+    {
+      "site": "0x52f527b0",
+      "instruction": "bge #0x52f527cc",
+      "source_range": "volume_base_setter",
+      "target": "0x52f527cc"
+    },
+    {
+      "site": "0x52f528a8",
+      "instruction": "bl #0x52f52554",
+      "source_range": "volume_geometry_setter",
+      "target": "0x52f52554"
+    },
+    {
+      "site": "0x52f528b0",
+      "instruction": "blt #0x52f528e0",
+      "source_range": "volume_geometry_setter",
+      "target": "0x52f528e0"
+    },
+    {
+      "site": "0x52f528bc",
+      "instruction": "bge #0x52f528e0",
+      "source_range": "volume_geometry_setter",
+      "target": "0x52f528e0"
+    }
+  ],
+  "indirect_transfers": [
+    {
+      "site": "0x52f4bc1c",
+      "instruction": "blx r3",
+      "source_range": "fat_media_write"
+    },
+    {
+      "site": "0x52f4bc78",
+      "instruction": "blx ip",
+      "source_range": "fat_media_write"
+    },
+    {
+      "site": "0x52f4bcb0",
+      "instruction": "blx r2",
+      "source_range": "fat_media_write"
+    },
+    {
+      "site": "0x52f4bd28",
+      "instruction": "blx ip",
+      "source_range": "fat_media_read"
+    },
+    {
+      "site": "0x52f4bd64",
+      "instruction": "blx ip",
+      "source_range": "fat_media_read"
+    },
+    {
+      "site": "0x53297a14",
+      "instruction": "blx r2",
+      "source_range": "emmc_read"
+    },
+    {
+      "site": "0x53297b54",
+      "instruction": "blx r2",
+      "source_range": "emmc_write"
+    },
+    {
+      "site": "0x53297634",
+      "instruction": "blx r2",
+      "source_range": "emmc_read_lower"
+    },
+    {
+      "site": "0x52f51544",
+      "instruction": "blx r3",
+      "source_range": "factory_fat_init_binding"
+    }
+  ],
+  "resources": [
+    {
+      "name": "FatFileSystem_source",
+      "address": "0x538fe75c",
+      "source_address": "0x538fe75c",
+      "size": 22,
+      "sha256": "afba616767cbf5f4690b48fcef6440af64ec17013dc921cd48ec36b12e615236"
+    },
+    {
+      "name": "GetTotalSectors",
+      "address": "0x53900ff0",
+      "source_address": "0x53900ff0",
+      "size": 16,
+      "sha256": "c7dce9d37f1231cf0fedfce4895b785f13799b701c018c4a64c67d85e2dd6b10"
+    },
+    {
+      "name": "emmc_read_not_initialized",
+      "address": "0x53cb1280",
+      "source_address": "0x53cb1280",
+      "size": 53,
+      "sha256": "8b9c489b4a01c654a08d9132de30a0a378defc800d938f384f8216c11510e02a"
+    },
+    {
+      "name": "emmc_read_retry",
+      "address": "0x53cb12b8",
+      "source_address": "0x53cb12b8",
+      "size": 19,
+      "sha256": "4affc505545d48a6bcf6c0cde383502b3a55309da6b9871de5c7966f9192be1e"
+    },
+    {
+      "name": "emmc_read_error",
+      "address": "0x53cb12cc",
+      "source_address": "0x53cb12cc",
+      "size": 47,
+      "sha256": "c29b64ec5d05541a8f402f69198cb98ec4cc8cb29fea628ead08881d6014ec42"
+    },
+    {
+      "name": "emmc_write_not_initialized",
+      "address": "0x53cb12fc",
+      "source_address": "0x53cb12fc",
+      "size": 54,
+      "sha256": "384bd300426172567b21dd474114b4468ceb69309138b1c4799f6a163e1aa2b7"
+    },
+    {
+      "name": "emmc_write_retry",
+      "address": "0x53cb1334",
+      "source_address": "0x53cb1334",
+      "size": 20,
+      "sha256": "d9f0d081189138c830ab5b4fa2b3a6a80c152a1264fa837d18b2cf88682209f8"
+    },
+    {
+      "name": "emmc_write_error",
+      "address": "0x53cb1348",
+      "source_address": "0x53cb1348",
+      "size": 48,
+      "sha256": "0e67ca2e19171f6534f206b825010597e2223f3a9eca3cc012e223c828a928a5"
+    }
+  ],
+  "pointer_words": [
+    {
+      "address": "0x53900eb8",
+      "value": "0x52f4957c"
+    },
+    {
+      "address": "0x53cb1664",
+      "value": "0x53297a84"
+    },
+    {
+      "address": "0x53cb1668",
+      "value": "0x53297938"
+    },
+    {
+      "address": "0x53cb1674",
+      "value": "0x532971b8"
+    },
+    {
+      "address": "0x53cb1684",
+      "value": "0x532971dc"
+    },
+    {
+      "address": "0x53cb1688",
+      "value": "0x52f494e4"
+    }
+  ],
+  "conditional_bindings": [
+    {
+      "callsite": "0x52f51544",
+      "table_slot": "0x53900eb8",
+      "target": "0x52f4957c",
+      "condition": "Factory+8 is initialized FatFileSystem with unchanged primaryvptr53900eb0."
+    },
+    {
+      "callsite": "0x52f4bc1c",
+      "table_slot": "0x53cb1674",
+      "target": "0x532971b8",
+      "condition": "Volume descriptor is Emmc with unchanged vptr53cb1638; returns0 in this gate."
+    },
+    {
+      "callsite": "0x52f4bc78",
+      "table_slot": "0x53cb1664",
+      "target": "0x53297a84",
+      "condition": "Emmc descriptor unchanged; prior write gates passed."
+    },
+    {
+      "callsite": "0x52f4bd28",
+      "table_slot": "0x53cb1668",
+      "target": "0x53297938",
+      "condition": "Emmc descriptor byte14=3, unchanged vptr; selected read path."
+    }
+  ],
+  "relationships": [
+    {
+      "kind": "vm_alias",
+      "sites": [
+        "0x52f5152c",
+        "0x52f51534",
+        "0x52f51544",
+        "0x52f49590",
+        "0x52f495b0"
+      ],
+      "expression": "Factory passes its volume manager at pack+0 to FatFileSystem initializer; initializer stores it atglobal54787078. Adapter getters use this global."
+    },
+    {
+      "kind": "callback_registration",
+      "sites": [
+        "0x52f49764",
+        "0x52f49768",
+        "0x52f49794",
+        "0x53366894",
+        "0x5336689c"
+      ],
+      "expression": "FAT registration passes IO callback52f4bd7c and geometry callback52f4bec0 to53366838. On success body stores callbacks at library record+400/+404. Library selection/setup are explicit stubs in the CPU test; actual later library invocation is not emulated."
+    },
+    {
+      "kind": "sector_base",
+      "sites": [
+        "0x52f52808",
+        "0x52f4bc5c",
+        "0x52f4bc68",
+        "0x52f4bc78",
+        "0x52f4bd0c",
+        "0x52f4bd18",
+        "0x52f4bd28"
+      ],
+      "expression": "Getter52f527d4 returns volume record+c. Write/read adapters add it to requested relative sector and passu32 sum as Emmc r1. R starts at348000 sectors in this software mapping; addition is32bit, not byte scaling. The selected chain has no check against record+10 partition end."
+    },
+    {
+      "kind": "total_sectors",
+      "sites": [
+        "0x52f5284c",
+        "0x52f4bb90",
+        "0x52f4bbc4",
+        "0x52f4bf60",
+        "0x52f4bf64"
+      ],
+      "expression": "Getter52f52818 returns &record+10.52f4bb70 dereferences it and is named GetTotalSectors by diagnostic literal53900ff0. Geometry command5 stores result at local geometry+10, then passes100bytes to533711b8 output helper (copy semantics stubbed). R total count=38c000 sectors; no boundary enforcement is inferred from this query."
+    },
+    {
+      "kind": "read_write_identity",
+      "sites": [
+        "0x53297554",
+        "0x53297580",
+        "0x53297680",
+        "0x532976ac"
+      ],
+      "expression": "Emmc vslot30=53297938→53297510→5331b9e8 is read; vslot2c=53297a84→53297640→5331b99c is write. Exact diagnostic strings name read/write sector errors. Physical endpoint implementations are not followed or executed."
+    },
+    {
+      "kind": "units_and_chunking",
+      "sites": [
+        "0x532979bc",
+        "0x532979dc",
+        "0x532979ec",
+        "0x53297af0",
+        "0x53297b00",
+        "0x53297b0c",
+        "0x53297b30",
+        "0x53297620"
+      ],
+      "expression": "Unaligned read/write adapters multiply chunk sector count by default vslot4c size512 for buffer copies and advance sector index by chunk count. Read bounce criterionbuffer&3f; writecriterionbuffer&3. Read chunk capthis+40, writecapthis+38. This proves512-byte sector unit for the bound default Emmc class; overridden getters are not exercised."
+    },
+    {
+      "kind": "gates_and_results",
+      "sites": [
+        "0x52f4bdb0",
+        "0x52f4bdc4",
+        "0x5329796c",
+        "0x53297ab8",
+        "0x53297544",
+        "0x53297670",
+        "0x53297578",
+        "0x532976a4"
+      ],
+      "expression": "FAT callback returns0 for invalid handle or zero count. Emmc mutexreturn0 blocks lowerIO. this+30zero logs andreturns0. Lower read/write status0 means success, nonzero retried up to3 and maps failureto0; successmaps1. OS/transport/cache boundaries are stubs."
+    },
+    {
+      "kind": "R_partition_quantities",
+      "sites": [
+        "0x532980a0",
+        "0x532980d0",
+        "0x52f51070",
+        "0x52f510d4",
+        "0x52f527c4",
+        "0x52f528d0"
+      ],
+      "expression": "Prior proven EmmcPartition R constants348000/38c000 enter volume record+c/+10. Now connected to sector start offset and total-sector query, giving software interval[348000,6d4000) in units512bytes. This is configured mapping, not discovered live media geometry or proofofend-checking. Emmc descriptor+18 is a distinct field; later nonzero producer remains unresolved."
+    }
+  ],
+  "searched_scope": [
+    "Direct aligned ARM B/BL targets to52f527d4/52f52818 and then their FAT wrappers. Results retained in getter-callers.json andadapter-callers.json; no claim to exhaustive indirect aliases.",
+    "FAT initialized global volume manager, callback registration and read/write/geometry callbacks; Emmc vtable targets and two lower routines up to5331b9e8/5331b99c. No wider Virtual/exFAT or driver sweep.",
+    "Selected Emmc read/write and lower routines contain no directdescriptor+18 writer; this bounded observation does not prove immutability."
+  ],
+  "limits": [
+    "Ten genuine bounded angr C; source ARM authoritative. Raw C types/conditions/tail calls may be wrong.",
+    "All physicalIO, OS locks, cache operations, path/handle library lookups and callbacks registration setup are explicitstubs. Input media bytes are synthetic.",
+    "Mapped descriptor has knownEmmc vptr,byte14=3,readybyte30=1,byte44=0; startup,othermodes and overriddencallbacks notexecuted.",
+    "25 CPU cases on authored buffers include2 beyond-partition-end requests forwarded by selectedchain; do not infer broader boundsabsence, exploitabledefect or hardware acceptance.",
+    "R record+c/+10 now proven software sector offset/count; actual partition formatting, mountedbackend choice and physicaladdressing remain unproved.",
+    "This pass did not prove Virtual/exFAT use of the same records or a nonzero producer of Emmc descriptor+18. No actualfilesystem read/write or firmware modification."
+  ],
+  "validation": {
+    "cases": 25,
+    "groups": {
+      "Emmc-gates-and-retries": 8,
+      "FAT-callback-through-Emmc": 8,
+      "R-record-base-and-total-sectors": 1,
+      "actual-callback-registration-stores": 1,
+      "callback-invalid-handle": 1,
+      "callback-zero-count": 2,
+      "geometry-command5-total-sectors": 1,
+      "selected-chain-does-not-check-partition-end": 2,
+      "unknown-path-fallback": 1
+    }
+  },
+  "manager_validation": {
+    "passed": true,
+    "image_sha256": "342d2f35405e8daf1797dfe431d2e4aa70f4b52a2c242a29df48206672f1dfb4",
+    "genuine_c": 10,
+    "supporting_ranges": 12,
+    "words": 957,
+    "transfers": 174,
+    "indirect_transfers": 9,
+    "resources": 8,
+    "pointer_words": 6,
+    "conditional_bindings": 4,
+    "cases": 25,
+    "decoded_equal": true,
+    "assembly_lf_and_file_sha_verified": true,
+    "limits": "No physical filesystem/OS/device. Original FAT-to-Emmc arithmetic and memory flow use synthetic endpoints; no full mount/startup or driver execution."
+  },
+  "independent_review": {
+    "passed": true,
+    "source_sha256": "1b171bed8b365728b43270d5c58ae0d177308d47f0c52b6b3e2c923138877569",
+    "original_cases_identical": 25,
+    "additional_cases": 3,
+    "scope": "Independent synthetic original ARM checks: read64 vs write4 alignment; u32 offset wrap. No real I/O and no global range-policy claim."
+  },
+  "prior_public_evidence": [
+    {
+      "path": "update-volume-descriptor-evidence.json",
+      "sha256": "f4b86804a3f691ae36d3c50100b24277d35a5d94f93d800e667af8389e93d923"
+    },
+    {
+      "path": "update-file-interface-evidence.json",
+      "sha256": "84cdee9a6af868e6beb479e3a9e454a04878d8031d25f94cb4377d20d8f97a12"
+    }
+  ],
+  "public_cli": {
+    "script": "../verify_update_partition_io.py",
+    "sha256": "1b171bed8b365728b43270d5c58ae0d177308d47f0c52b6b3e2c923138877569",
+    "output_guard": "os.path.lexists and exclusive creation",
+    "guards": [
+      "existing",
+      "hardlink",
+      "dangling-missing-input",
+      "optimized-missing-input-dangling-output",
+      "unknown-input"
+    ],
+    "passed": true,
+    "both_containers_equal": true
+  },
+  "artifact_policy": "Original binary,C,ASM and resource text remain local. Public authored analysis,synthetic checks and provenance metadata only."
+}

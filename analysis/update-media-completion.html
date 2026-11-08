@@ -1,0 +1,63 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>업데이트 매체의 크기 필드와 완료 통지</title><style>
+:root{color-scheme:light dark;--bg:#f7f8fa;--paper:#fff;--ink:#182332;--muted:#48596b;--line:#d2dbe5;--accent:#124b8e;--soft:#edf3fa;--focus:#d75f00}
+@media(prefers-color-scheme:dark){:root{--bg:#111821;--paper:#18222d;--ink:#e8edf4;--muted:#b4c2d2;--line:#405369;--accent:#98c8ff;--soft:#223348;--focus:#ffb374}}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.85 system-ui,-apple-system,"Malgun Gothic",sans-serif;word-break:keep-all;overflow-wrap:anywhere}
+a{color:var(--accent);text-underline-offset:.18em}a:hover{text-decoration-thickness:2px}:focus-visible{outline:3px solid var(--focus);outline-offset:4px}
+header,main,footer{max-width:1120px;margin:auto;padding:36px clamp(18px,4vw,56px)}header{padding-top:56px;padding-bottom:24px}main{background:var(--paper);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.eyebrow{color:var(--muted);font-size:.84rem;letter-spacing:.06em}h1{font-size:clamp(1.85rem,4.5vw,3rem);line-height:1.35;letter-spacing:-.025em;margin:12px 0 18px}h2{font-size:1.5rem;line-height:1.5;margin:3.6rem 0 1rem;padding-top:1.2rem;border-top:1px solid var(--line)}h2:first-child{margin-top:0}h3{font-size:1.12rem;margin-top:2rem}p{margin:1rem 0}strong{font-weight:650}.intro{max-width:55em;color:var(--muted)}
+nav{margin-top:25px}nav ul{display:flex;flex-wrap:wrap;gap:8px 22px;list-style:none;padding:0;margin:0}nav ul ul{display:none}nav a{font-size:.9rem}code{font: .88em/1.6 ui-monospace,Consolas,monospace;overflow-wrap:anywhere}pre{background:var(--soft);padding:18px;overflow-x:auto;white-space:pre-wrap;border-radius:5px}pre code{font-size:.82rem}
+.table-scroll{overflow-x:auto;margin:24px 0}table{border-collapse:collapse;width:100%;font-size:.92rem;min-width:530px}th,td{text-align:left;vertical-align:top;padding:14px 16px;border-bottom:1px solid var(--line)}th{background:var(--soft);font-weight:650}td:first-child{min-width:125px}details{border-block:1px solid var(--line);margin-top:24px;padding:16px 0}summary{cursor:pointer;font-weight:650;padding:6px 0}.caption,.meta{font-size:.86rem;color:var(--muted)}
+figure{margin:32px 0;padding:24px 0;border-block:1px solid var(--line)}figcaption{font-size:.95rem;font-weight:650;margin-bottom:20px}.flow{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:32px;list-style:none;padding:0;margin:18px 0}.flow li{position:relative;padding:18px;background:var(--soft);border-radius:6px;line-height:1.6}.flow strong{display:block;font-size:1rem}.flow span{display:block;color:var(--muted);font-size:.86rem;margin-top:9px}.flow li:not(:last-child)::after{content:"→";position:absolute;right:-27px;top:40%;font-size:22px;color:var(--muted)}.second{margin-top:24px}footer{font-size:.88rem;color:var(--muted)}
+@media(max-width:620px){body{font-size:16px}header,main,footer{padding-inline:20px}.flow{grid-template-columns:1fr;gap:26px}.flow li:not(:last-child)::after{content:"↓";right:auto;left:calc(50% - 8px);top:auto;bottom:-28px}.flow li{padding:15px 18px}h2{font-size:1.3rem}nav ul{gap:10px 18px}table{font-size:.87rem}th,td{padding:12px}header{padding-top:30px}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+@media print{body{background:white;color:black;font-size:10pt}header,main,footer{max-width:none;padding:12pt}nav{display:none}a{color:inherit}h2,figure,table{break-inside:avoid}h2{break-after:avoid}main{border:0}.flow li{background:#f1f3f5}.table-scroll{overflow:visible}table{min-width:0}details>*{display:block!important}}
+
+.site-nav{border-block:1px solid var(--line);padding:14px 0;margin:20px 0}.site-nav a{display:inline-block;margin:4px 16px 4px 0}
+.review-note{background:var(--soft);padding:16px 20px;margin:24px 0}.toc{font-size:.92rem}.toc ul{list-style:none;padding-left:0}.toc ul ul{padding-left:20px}
+.branch{margin:18px 0;padding:0 0 0 24px;border-left:3px solid var(--line)}.branch p{margin:8px 0}.diagram-line{padding:12px 16px;background:var(--soft);border-radius:4px}
+td code{white-space:nowrap}
+</style></head><body><header><div class="eyebrow">PENTAX K-3 MARK III · FIRMWARE 2.20 · 2026-11-08</div><h1>업데이트 매체의 크기 필드와 완료 통지</h1>
+<p class="intro">C 경로의 SdDriver와 R 경로의 Emmc를 실제 생성자로 구분했다. SD의 sector 수 생산자를 연결하고 R의 별도 파티션 객체를 확인했다. 완료 통지는 FwUpdateModel의 상태 갱신과 UI 작업 등록까지 추적했다.</p>
+<nav aria-label="관련 문서"><a href="../index.html">연구 개요</a> · <a href="update-volume-finalization.html">파일명·종료 처리</a> · <a href="#media">매체 객체</a> · <a href="#csd">SD 크기 계산</a> · <a href="#emmc">R 파티션</a> · <a href="#completion">완료 통지</a> · <a href="#verification">검증 범위</a></nav></header><main>
+<section id="media"><h2>문자에서 실제 매체 객체로</h2>
+<p>앞선 조사에서 C는 provider index 0, R은 index 2에 연결됐다. 이번에는 provider에 저장하는 실제 생산자를 따라 C의 클래스가 <code>SdDriver</code>, R의 클래스가 <code>Emmc</code>임을 확인했다. 근거는 생성자·vtable·RTTI와 provider 저장 위치다. 이 이름이 현재 카메라의 카드 장착 상태나 매체 초기화 성공을 뜻하지는 않는다. <a href="update-volume-descriptor-evidence.json">객체 생산자·RTTI 근거</a></p>
+<div class="table-scroll"><table><thead><tr><th>경로</th><th>생산과 저장</th><th>초기 필드</th></tr></thead><tbody>
+<tr><td>C / provider 0</td><td><code>0x5327fb5c</code> → ctor <code>0x53281698</code><br><code>0x5327fc9c</code>에서 provider+4 저장<br>vptr <code>0x53cb0710</code> · SdDriver</td><td>byte+0x14=0<br>word+0x18=0</td></tr>
+<tr><td>R / provider 2</td><td><code>0x5327f954</code> → ctor <code>0x53297454</code><br><code>0x5327f9fc</code>에서 provider+0x0c 저장<br>vptr <code>0x53cb1638</code> · Emmc</td><td>byte+0x14=3<br>word+0x18=0</td></tr></tbody></table></div>
+<p>공통 생성자 <code>0x5327f4e4</code>는 인수 r1의 하위 byte를 +0x14에 쓰고 +0x18을 0으로 초기화한다. 따라서 뒤의 비제로 값은 별도 생산자가 필요하다. SD에서는 그 기록자를 찾았지만 Emmc의 +0x18을 나중에 비제로로 만드는 경로는 이번 범위에서 확인하지 못했다. 두 Emmc 초기화 함수에서 직접 쓰기가 보이지 않았다는 사실을 전체 펌웨어의 불변성으로 확대하지 않는다.</p></section>
+<section id="csd"><h2>SD의 +0x18은 CSD에서 계산한 sector 수다</h2>
+<p>SD 활성화 함수 <code>0x53281cf8</code>는 선택한 gate·준비 상태·존재 조건과 acquisition 결과가 허용할 때 전역 <code>0x54583af0</code>의 16바이트를 this+0x28에 복사한다. <code>0x53282554</code>가 계산한 값을 <code>0x53281e04</code>에서 this+0x18에 저장하고 +0x79를 1로 만든다. 검사한 gate 실패·이미 준비됨·존재 조건 실패·세 번의 acquisition 실패에서는 기존 +0x18이 보존됐다. 실제 데이터 수신은 합성 반환값으로 대체했다. <a href="update-volume-descriptor-checks.json">조건부 갱신 7사례</a></p>
+<p>같은 전역 버퍼의 진단 경로는 이를 CSD Register로 표시한다. 성공 로그는 계산값을 <code>total sectors</code>라고 부르며 <code>0x53281e20</code>과 <code>0x53281e4c</code>가 해당 인수를 연결한다. 양쪽 매체 클래스의 vslot+0x4c getter는 512를 반환한다. 이 근거와 아래 계산식이 SD의 +0x18을 512바이트 sector 수로 해석하게 한다. 현재 매체 용량을 측정한 결과는 아니다. <a href="update-volume-descriptor-evidence.json">진단·getter·계산 근거</a></p>
+<details><summary>CSD 필드와 ARM 계산식</summary><p>16바이트 입력을 b, 구조값을 <code>s=b[0]&gt;&gt;6</code>으로 둔다. <code>0x532824fc</code>가 크기 필드 C를 추출하고 <code>0x53282554</code>가 count를 계산한다. u32는 32비트로 잘리는 결과를 뜻한다.</p><pre><code>s=1:
+C = ((b[7] &amp; 63) &lt;&lt; 16) | (b[8] &lt;&lt; 8) | b[9]
+count = u32((C + 1) &lt;&lt; 10)
+
+s=0:
+C = ((b[6] &amp; 3) &lt;&lt; 10) | (b[7] &lt;&lt; 2) | (b[8] &gt;&gt; 6)
+r = b[5] &amp; 15
+m = ((b[9] &amp; 3) &lt;&lt; 1) | (b[10] &gt;&gt; 7)
+count = u32((C + 1) * (LSL32(2, u32(r-1)) &gt;&gt; 9) * LSL32(2, m+1))
+
+s=2 또는 3: count = 0</code></pre><p>LSL32의 register shift는 하위 8비트를 사용하며 shift가 32 이상이면 0이다. s=1의 최대 C에서 결과가 32비트 overflow로 0이 되는 합성 사례도 확인했다. 이 입력이 실제 지원 카드에서 허용되거나 도달한다는 뜻은 아니다.</p></details>
+<p>공식 SD Association 문서의 CSD v2 용량식 <code>(C_SIZE+1)×512KByte</code>를 512바이트로 나누면 펌웨어의 <code>(C+1)×1024</code>와 일치한다. 공식 PDF의 검색 색인에서 C_SIZE·READ_BL_LEN 설명과 인쇄 쪽 172를 확인했다. PDF 직접 열기·다운로드는 지원 형식과 HTTP 403 제한으로 완료하지 못해 전체 문서를 검토했다고 주장하지 않는다. <a href="https://www.sdcard.org/cms/wp-content/themes/sdcard-org/dl.php?f=Part1_Physical_Layer_Simplified_Specification_Ver6.00.pdf">SD Physical Layer Simplified Specification v6.00</a></p>
+<p>기존 backend selector는 descriptor byte+0x14가 4이면 Virtual, 그 밖에는 word+0x18이 <code>0x0403ffff</code>보다 클 때 ExFat을 선택한다. 이번 결과로 C 경로에서 읽는 크기 필드의 생산자를 연결했다. 전체 초기화와 mount의 실행 시점·성공 여부는 별도 확인이 필요하다.</p></section>
+<section id="emmc"><h2>R의 record 값은 별도 EmmcPartition에서 온다</h2>
+<p><code>0x53297fac</code>의 대상은 vptr <code>0x53cb16e8</code>, RTTI <code>EmmcPartition</code>인 별도 객체다. task lookup과 dynamic cast로 얻은 Emmc 포인터를 이 객체의 +4에 저장한다. 따라서 이 생성자의 +0x14/+0x18 쓰기를 Emmc descriptor의 갱신으로 세면 안 된다. <a href="update-volume-descriptor-evidence.json">객체 정체성과 저장 관계</a></p>
+<div class="table-scroll"><table><thead><tr><th>volume record 필드</th><th>descriptor kind 3 · R</th><th>다른 kind · 검사한 C 조건</th></tr></thead><tbody>
+<tr><td>+0x0c</td><td>EmmcPartition+0x24 → <code>0x348000</code></td><td>0</td></tr><tr><td>+0x10</td><td>EmmcPartition+0x44 → <code>0x38c000</code></td><td>descriptor+0x18</td></tr><tr><td>+0x14 / +0x16</td><td>0 / 0</td><td>descriptor+0x1c / +0x1e</td></tr></tbody></table></div>
+<p><code>0x52f51028</code>과 <code>0x52f5107c</code>가 signed descriptor byte+0x14를 검사해 이 분기를 선택한다. R 문자 getter <code>0x53298148 / 0x532981ec</code>는 위 상수를 반환하며 실제 record 저장은 <code>0x52f527c4 / 0x52f528d0</code>에 있다. 원본 ARM 시험에서 descriptor 자체의 내용은 유지됐다. R 상수의 단위와 시작 위치·길이 의미는 하위 소비 경로까지 확인하지 않았으므로 여기서는 숫자로만 기록한다. 이 record와 FwPartition의 bank record는 서로 다른 구조다.</p></section>
+<section id="completion"><h2>완료 통지는 모델 상태와 UI 작업으로 이어진다</h2>
+<p>완료 함수 <code>0x52ff3960</code>이 r1에 메시지 ID <code>0x2640820b</code>, r2에 0을 선택한다. 공통 송신 함수 <code>0x52ff382c</code>는 전달받은 두 값을 envelope의 첫 두 word에 저장하고 나머지 다섯 word를 0으로 초기화한다. notifier+4의 pipe를 거쳐 <code>0x53309c10</code>에 전달하는 것은 이 공통 함수다. 공유 소유자 포인터가 null인 검사 조건에서는 하위 transport의 반환값을 그대로 반환했다. 상위 <code>0x52ff3960</code>은 그 반환값을 분기 조건으로 쓰지 않고 event 경계에 <code>0x20</code>을 넘긴 뒤 마지막 통지 호출로 이동한다. <a href="update-completion-message-evidence.json">송신 경로·반환값 근거</a></p>
+<figure><figcaption>수신부에서 확인한 원본 ARM 연결</figcaption><ol class="flow"><li><strong>메시지 분류</strong><span>0x528e761c · group 0x26<br>update predicate 통과<br>실제 큐 전달은 미확정</span></li><li><strong>FwUpdateModel 갱신</strong><span>getter → 0x545acf48<br>0x52a64b3c 수신부<br>메시지 0x2640820b → +8=3</span></li><li><strong>UI 작업 등록</strong><span>작업 ID 0x128<br>인수 0 / 0<br>0x528e8de4 → queue wake</span></li></ol></figure>
+<p>수신 router는 group 0x26을 선택한 뒤 두 predicate를 거쳐 <code>0x52a64b3c</code>로 이동한다. getter <code>0x528c6730</code>의 초기화된 경로는 <code>0x545acf48</code>을 반환하고 생성자의 vptr·RTTI는 이 객체를 FwUpdateModel로 식별한다. 수신부는 +8을 3으로 쓴 뒤 작업 ID <code>0x128</code>을 등록한다. 송신부와 수신부는 각각 원본 ARM으로 실행했지만 둘 사이의 실제 구독·전달·스케줄링을 이번 시험에서 연결하지 않았다. 상태 3을 물리 업데이트 성공이나 인증 통과로 해석하지 않는다.</p>
+<h2>UI queue가 가득 찬 경우</h2>
+<p>queue 등록 함수는 16비트 count와 capacity를 읽어 <code>count &lt; capacity−1</code>일 때 12바이트 record에 작업 ID와 두 인수를 저장한다. count를 늘리고 write index를 <code>(index+1)&amp;mask</code>로 갱신한 뒤 unlock과 wake를 호출한다. 합성 8-slot queue에서 count 6은 저장됐고 count 7은 assertion에 도달했다. lock의 반환값은 이 저장 경로의 분기 조건으로 쓰이지 않았다. <a href="update-completion-message-checks.json">wrap·반환값·full queue 검사</a></p>
+<p>모델의 상태 쓰기는 queue 검사보다 먼저 일어난다. 기본 시험 fixture는 false assertion에서 멈춘다. 별도로 assertion이 반환한다고 가정한 사례에서는 record를 추가하지 않고 unlock·wake로 진행했다. 실제 assertion 함수의 본체와 카메라의 실패 처리 정책은 실행하지 않았으므로 두 시험을 실제 장치의 동작으로 단정하지 않는다. 이 경로의 모델과 queue 처리에서는 decoded 출력의 해제 호출을 확인하지 못했으며 작업 0x128의 소비와 최종 회수는 다음 조사 대상이다.</p></section>
+<section id="verification"><h2>재현 범위</h2>
+<p>descriptor 57사례와 완료 통지 15사례, 합계 72사례가 RTOS 직접 입력과 통합 decoded 입력에서 동일하게 통과했다. C 출력 17개와 원본 ARM 1,878 words의 주소·해시를 로컬에 보존했다. 재분석한 함수도 포함한 출력 수이며 독창적인 원본 소스 17개를 확보했다는 뜻은 아니다. 공개 자료는 분석·합성 검사·메타데이터로 구성한다.</p>
+<p>descriptor 시험의 base constructor·task lookup·dynamic cast·media acquisition과 설정·작은 memcpy는 대체 함수다. SD 활성화는 +0x24=0, +0x7a=0, +0x10=0x1b2와 기본 callback 조건의 선택된 분기를 실행했다. mutex 경로·다른 mode·재정의된 callback은 실행하지 않았다. 완료 통지는 초기화된 singleton guard와 작성한 queue를 사용하며 실제 transport·OS 이벤트·업데이트 executor는 대체했다.</p>
+<p>자동 복원 C에는 tail call 누락과 구조체·index 추정 오류가 남을 수 있다. C 원문은 수정하지 않고 원본 ARM과 재현 결과를 결론의 기준으로 삼았다. 물리 매체·카메라·펌웨어 빌드·플래시는 수행하지 않았다.</p>
+<details><summary>공개 도구로 재현</summary><pre><code>python verify_update_volume_descriptor.py rtos.bin --output descriptor-checks.json
+python verify_update_completion_message.py rtos.bin --output completion-checks.json</code></pre><p>입력 SHA-256, 기존 출력 덮어쓰기와 assert 비활성 실행을 검사한다. <a href="../verify_update_volume_descriptor.py">descriptor 재현 도구</a> · <a href="../verify_update_completion_message.py">완료 통지 재현 도구</a></p></details></section></main>
+<footer>정적 근거와 합성 CPU 시험 결과다. HTML 구조와 로컬 링크 15개를 검사했다. 화면 렌더링은 검사하지 않았다.</footer>
+</body></html>
