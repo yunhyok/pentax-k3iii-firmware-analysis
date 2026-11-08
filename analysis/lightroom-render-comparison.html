@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>K-3 II #1376 Lightroom 출력 비교</title>
+<style>
+:root{color-scheme:light dark;--bg:#f7f8fa;--paper:#fff;--ink:#182332;--muted:#48596b;--line:#d2dbe5;--accent:#124b8e;--soft:#edf3fa}
+@media(prefers-color-scheme:dark){:root{--bg:#111821;--paper:#18222d;--ink:#e8edf4;--muted:#b4c2d2;--line:#405369;--accent:#98c8ff;--soft:#223348}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.75 system-ui,"Malgun Gothic",sans-serif;word-break:keep-all;overflow-wrap:anywhere}
+header,main{max-width:1060px;margin:auto;padding:clamp(18px,4vw,44px)}main{background:var(--paper);border:1px solid var(--line)}
+h1{font-size:clamp(1.8rem,5vw,2.8rem);line-height:1.25}h2{font-size:1.35rem;margin-top:2.2rem}h2:first-child{margin-top:0}small{color:var(--muted)}a{color:var(--accent);text-underline-offset:.18em}nav a{display:inline-block;margin:4px 16px 4px 0}
+table{border-collapse:collapse}th,td{min-width:3.2em;padding:.35em .6em;border:1px solid var(--line);text-align:center}caption{text-align:left;margin-bottom:.45em}th{background:var(--soft)}pre{background:var(--soft);padding:16px;overflow:auto;font-size:.84rem}code{font-family:ui-monospace,Consolas,monospace}
+header{padding-top:clamp(26px,6vw,64px);padding-bottom:24px}
+h1{margin:.3em 0 .5em}.intro{max-width:48em}.section-label{letter-spacing:.08em;font-size:.82rem}
+figure{margin:1.6rem 0}figcaption{color:var(--muted);font-size:.92rem;margin:.55rem 0}
+img{display:block;width:100%;height:auto}a:focus-visible,summary:focus-visible,.scroll:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+.scroll{overflow:auto;max-width:100%;margin:1.1rem 0}.scroll table{width:100%}
+.workflow{list-style:none;padding:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+.workflow li{padding:.8em;background:var(--soft);min-width:0}.workflow li strong{display:block;margin-bottom:.3em}
+.workflow li span{color:var(--muted);font-size:.9em}
+.patch-chart{min-width:770px;font-size:.89rem;table-layout:fixed}
+.patch-chart col.patch-name{width:18%}.patch-chart col.series{width:15%}.patch-chart col.wide-series{width:12.333%}
+.patch-chart tbody th,.patch-chart thead th[rowspan]{text-align:left;position:sticky;left:0;z-index:1}
+.patch-chart td{min-width:7.2em}.patch-chart .wide{min-width:5em}.patch-chart tbody tr.neutral th{border-left:4px solid var(--accent)}
+.measure{display:grid;grid-template-columns:minmax(0,1fr) 5.25ch;gap:.4em;align-items:center;white-space:nowrap;text-align:right;font-variant-numeric:tabular-nums}
+.scale{display:block;height:.42em;background:var(--soft);border-radius:3px}
+.scale span{display:block;height:100%;border-radius:3px}
+.adobe .scale span{background:#697b98}.natural .scale span{background:#16746a}.matrix .scale span{background:#a96037}
+@media(prefers-color-scheme:dark){.adobe .scale span{background:#9fb2cf}.natural .scale span{background:#65c9b4}.matrix .scale span{background:#efa47d}}
+.summary-table,.gamut-table{min-width:610px;font-variant-numeric:tabular-nums}
+.summary-table th:first-child,.gamut-table th:first-child{text-align:left}
+.hash-table{text-align:left;min-width:550px}.hash-table td{text-align:left}.hash-table code{overflow-wrap:anywhere}
+.note{padding:.75em 1em;background:var(--soft)}details{margin:1.1em 0}summary{color:var(--accent);font-weight:650}
+@media(max-width:650px){.workflow{grid-template-columns:1fr 1fr;gap:8px}}
+</style>
+</head>
+<body>
+<header>
+<small class="section-label">2026-11-08 · PENTAX K-3 II · raw.pixls.us #1376</small>
+<h1>Lightroom TIFF 6개와 카메라 Natural 미리보기</h1>
+<p class="intro">Lightroom Classic 15.6에서 같은 DNG를 세 프로파일로 현상해 sRGB와 ProPhoto RGB의 16비트 TIFF를 만들었다. 24개 패치에서 카메라 Natural 미리보기에 가장 가까운 것은 두 출력 색공간 모두 Camera Natural이었다.</p>
+<nav aria-label="문서 탐색"><a href="#results">결과</a><a href="#patches">패치별 값</a><a href="#gamut">색공간 대조</a><a href="#method">측정 방법</a><a href="#replay">재현</a><a href="lightroom-render-comparison.json">검증 JSON</a></nav>
+</header>
+<main>
+<h2 id="results">같은 촬영의 내장 JPEG와 비교한 색차</h2>
+<div class="scroll" tabindex="0" role="region" aria-label="프로파일별 색차 요약">
+<table class="summary-table">
+<caption>각 출력에서 카메라 Natural 내장 JPEG와 비교한 24개 패치의 ΔE₀₀</caption>
+<thead><tr><th scope="col">Lightroom 프로파일</th><th scope="col">출력 공간</th><th scope="col">평균</th><th scope="col">중앙값</th><th scope="col">P90</th><th scope="col">최댓값</th></tr></thead>
+<tbody><tr><th scope="row">Adobe Standard</th><td>sRGB</td><td>3.476</td><td>3.131</td><td>5.130</td><td>5.822</td></tr>
+<tr><th scope="row">Adobe Standard</th><td>ProPhoto RGB</td><td>3.640</td><td>3.370</td><td>5.365</td><td>6.216</td></tr>
+<tr><th scope="row">Camera Natural</th><td>sRGB</td><td>1.615</td><td>1.532</td><td>2.297</td><td>3.295</td></tr>
+<tr><th scope="row">Camera Natural</th><td>ProPhoto RGB</td><td>1.620</td><td>1.528</td><td>2.294</td><td>3.301</td></tr>
+<tr><th scope="row">시험 DCP</th><td>sRGB</td><td>3.073</td><td>3.184</td><td>4.741</td><td>5.035</td></tr>
+<tr><th scope="row">시험 DCP</th><td>ProPhoto RGB</td><td>3.088</td><td>3.192</td><td>4.824</td><td>5.048</td></tr></tbody>
+</table>
+</div>
+<p>시험 DCP는 카메라 DNG의 행렬과 광원 태그를 바탕으로 만들었다. Lightroom UI에서 직접 선택했고 TIFF의 CameraProfile과 CameraProfileDigest에서도 확인했다. 이 표본에서 시험 DCP의 sRGB 평균과 P90은 Adobe Standard보다 낮았고 중앙값은 0.053 높았다. 프로파일을 불러와 출력한 파일에서 이 차이를 측정했다. 기종별 색 모드 보정은 후속 실험에서 다룬다. <a href="lightroom-bridge.html">DCP 작성 범위</a> · <a href="raw-test-inputs.html">시험 DCP의 출처</a></p>
+
+<h2 id="patches">24개 패치별 ΔE₀₀</h2>
+<p>막대는 sRGB 열의 0–6 ΔE₀₀ 공통 척도를 쓴다. ProPhoto RGB 열에는 내장 JPEG와의 직접 Lab 비교값을 적었다. 19–24번은 중립 패치다.</p>
+<figure aria-labelledby="patch-caption">
+<figcaption id="patch-caption">패치별 측정값과 sRGB 색차 막대</figcaption>
+<div class="scroll" tabindex="0" role="region" aria-label="24개 패치의 여섯 색차 열">
+<table class="patch-chart">
+<colgroup><col class="patch-name"></colgroup>
+<colgroup><col class="series" span="3"></colgroup>
+<colgroup><col class="wide-series" span="3"></colgroup>
+<thead><tr><th scope="col" rowspan="2">패치</th><th scope="colgroup" colspan="3">sRGB</th><th scope="colgroup" colspan="3">ProPhoto RGB</th></tr>
+<tr><th scope="col">Adobe Standard</th><th scope="col">Camera Natural</th><th scope="col">시험 DCP</th><th scope="col">Adobe Standard</th><th scope="col">Camera Natural</th><th scope="col">시험 DCP</th></tr></thead>
+<tbody><tr><th scope="row">1 · dark skin</th><td class="adobe"><span class="measure"><span class="scale" aria-hidden="true"><span style="width:49.367%"></span></span>2.962</span></td><td class="natural"><span class="measure"><span class="scale" aria-hidden="true"><span style="width:23.843%"></span></span>1.431</span></td><td class="matrix"><span class="measure"><span class="scale" aria-hidden="true"><span style="width:67.762%"></span></span>4.066</span></td><td class="wide">2.980</td><td class="wide">1.444</td><td class="wide">4.081</td></tr>
+<tr><th scope="row">2 · light skin</th><td class="adobe"><span class="measure"><span class="scale" aria-hidden="true"><span style="width:52.288%"></span></span>3.137</span></td><td class="natural"><span class="measure"><span class="scale" aria-hidden="true"><span style="width:13.105%"></span></span>0.786</span></td><td class="matrix"><span class="measure"><span class="scale" aria-hidden="true"><span style="width:32.920%"></span></span>1.975</span></td><td class="wide">3.142</td><td class="wide">0.795</td><td class="wide">1.969</td></tr>
+<tr><th scope="row">3 · blue sky</th><td class="adobe"><span class="measure"><span class="scale" aria-hidden="true"><span style="width:85.588%"></span></span>5.135</span></td><td class="natural"><span class="measure"><span class="scale" aria-hidden="true"><span style="width:13.786%"></span></span>0.827</span></td><td class="matrix"><span class="measure"><span class="scale" aria-hidden="true"><span style="width:56.981%"></span></span>3.419</span></td><td class="wide">5.146</td><td class="wide">0.831</td><td class="wide">3.426</td></tr>
+<tr><th scope="row">4 · foliage</th><td class="adobe"><span class="measure"><span class="scale" aria-hidden="true"><span style="width:66.869%"></span></span>4.012</span></td><td class="natural"><span class="measure"><span class="scale" aria-hidden="true"><span style="width:17.264%"></span></span>1.036</span></td><td class="matrix"><span class="measure"><span class="scale" aria-hidden="true"><span style="width:67.013%"></span></span>4.021</span></td><td class="wide">4.028</td><td class="wide">1.050</td><td class="wide">4.036</td></tr>
+<tr><th scope="row">5 · blue flower</th><td class="adobe"><span class="measure"><span class="scale" aria-hidden="true"><span style="width:82.159%"></span></span>4.930</span></td><td class="natural"><span class="measure"><span class="scale" aria-hidden="true"><span style="width:14.724%"></span></span>0.883</span></td><td class="matrix"><span class="measure"><span class="scale" aria-hidden="true"><span style="width:34.055%"></span></span>2.043</span></td><td class="wide">4.936</td><td class="wide">0.894</td><td class="wide">2.049</td></tr>
+<tr><th scope="row">6 · bluish green</th><td class="adobe"><span class="measure"><span class="scale" aria-hidden="true"><span style="width:50.003%"></span></span>3.000</span></td><td class="natural"><span class="measure"><span class="scale" aria-hidden="true"><span style="width:39.640%"></span></span>2.378</span></td><td class="matrix"><span class="measure"><span class="scale" aria-hidden="true"><span style="width:19.152%"></span></span>1.149</span></td><td class="wide">3.015</td><td class="wide">2.370</td><td class="wide">1.147</td></tr>
+<tr><th scope="row">7 · orange</th><td class="adobe"><span class="measure"><span class="scale" aria-hidden="true"><span style="width:78.433%"></span></span>4.706</span></td><td class="natural"><span class="measure"><span class="scale" aria-hidden="true"><span style="width:30.770%"></span></span>1.846</span></td><td class="matrix"><span class="measure"><span class="scale" aria-hidden="true"><span style="width:83.820%"></span></span>5.029</span></td><td class="wide">4.695</td><td class="wide">1.835</td><td class="wide">5.021</td></tr>
+<tr><th scope="row">8 · purplish blue</th><td class="adobe"><span class="measure"><span class="scale" aria-hidden="true"><span style="width:97.040%"></span></span>5.822</span></td><td class="natural"><span class="measure"><span class="scale" aria-hidden="true"><span style="width:32.845%"></span></span>1.971</span></td><td class="matrix"><span class="measure"><span class="scale" aria-hidden="true"><span style="width:79.130%"></span></span>4.748</span></td><td class="wide">5.837</td><td class="wide">1.989</td><td class="wide">4.764</td></tr>
+<tr><th scope="row">9 · moderate red</th><td class="adobe"><span class="measure"><span class="scale" aria-hidden="true"><span style="width:90.842%"></span></span>5.451</span></td><td class="natural"><span class="measure"><span class="scale" aria-hidden="true"><span style="width:15.771%"></span></span>0.946</span></td><td class="matrix"><span class="measure"><span class="scale" aria-hidden="true"><span style="width:56.255%"></span></span>3.375</span></td><td class="wide">5.459</td><td class="wide">0.951</td><td class="wide">3.383</td></tr>
+<tr><th scope="row">10 · purple</th><td class="adobe"><span class="measure"><span class="scale" aria-hidden="true"><span style="width:68.211%"></span></span>4.093</span></td><td class="natural"><span class="measure"><span class="scale" aria-hidden="true"><span style="width:32.979%"></span></span>1.979</span></td><td class="matrix"><span class="measure"><span class="scale" aria-hidden="true"><span style="width:66.252%"></span></span>3.975</span></td><td class="wide">4.102</td><td class="wide">1.990</td><td class="wide">3.988</td></tr>
+<tr><th scope="row">11 · yellow green</th><td class="adobe"><span class="measure"><span class="scale" aria-hidden="true"><span style="width:48.782%"></span></span>2.927</span></td><td class="natural"><span class="measure"><span class="scale" aria-hidden="true"><span style="width:25.038%"></span></span>1.502</span></td><td class="matrix"><span class="measure"><span class="scale" aria-hidden="true"><span style="width:31.560%"></span></span>1.894</span></td><td class="wide">2.923</td><td class="wide">1.502</td><td class="wide">1.909</td></tr>
+<tr><th scope="row">12 · orange yellow</th><td class="adobe"><span class="measure"><span class="scale" aria-hidden="true"><span style="width:77.763%"></span></span>4.666</span></td><td class="natural"><span class="measure"><span class="scale" aria-hidden="true"><span style="width:29.960%"></span></span>1.798</span></td><td class="matrix"><span class="measure"><span class="scale" aria-hidden="true"><span style="width:76.981%"></span></span>4.619</span></td><td class="wide">4.653</td><td class="wide">1.789</td><td class="wide">4.608</td></tr>
+<tr><th scope="row">13 · blue</th><td class="adobe"><span class="measure"><span class="scale" aria-hidden="true"><span style="width:46.143%"></span></span>2.769</span></td><td class="natural"><span class="measure"><span class="scale" aria-hidden="true"><span style="width:34.994%"></span></span>2.100</span></td><td class="matrix"><span class="measure"><span class="scale" aria-hidden="true"><span style="width:78.767%"></span></span>4.726</span></td><td class="wide">3.200</td><td class="wide">2.117</td><td class="wide">4.849</td></tr>
+<tr><th scope="row">14 · green</th><td class="adobe"><span class="measure"><span class="scale" aria-hidden="true"><span style="width:52.086%"></span></span>3.125</span></td><td class="natural"><span class="measure"><span class="scale" aria-hidden="true"><span style="width:20.301%"></span></span>1.218</span></td><td class="matrix"><span class="measure"><span class="scale" aria-hidden="true"><span style="width:36.902%"></span></span>2.214</span></td><td class="wide">3.136</td><td class="wide">1.216</td><td class="wide">2.224</td></tr>
+<tr><th scope="row">15 · red</th><td class="adobe"><span class="measure"><span class="scale" aria-hidden="true"><span style="width:62.986%"></span></span>3.779</span></td><td class="natural"><span class="measure"><span class="scale" aria-hidden="true"><span style="width:18.017%"></span></span>1.081</span></td><td class="matrix"><span class="measure"><span class="scale" aria-hidden="true"><span style="width:33.908%"></span></span>2.034</span></td><td class="wide">3.788</td><td class="wide">1.090</td><td class="wide">2.045</td></tr>
+<tr><th scope="row">16 · yellow</th><td class="adobe"><span class="measure"><span class="scale" aria-hidden="true"><span style="width:52.048%"></span></span>3.123</span></td><td class="natural"><span class="measure"><span class="scale" aria-hidden="true"><span style="width:26.029%"></span></span>1.562</span></td><td class="matrix"><span class="measure"><span class="scale" aria-hidden="true"><span style="width:45.299%"></span></span>2.718</span></td><td class="wide">3.286</td><td class="wide">1.554</td><td class="wide">2.832</td></tr>
+<tr><th scope="row">17 · magenta</th><td class="adobe"><span class="measure"><span class="scale" aria-hidden="true"><span style="width:20.608%"></span></span>1.236</span></td><td class="natural"><span class="measure"><span class="scale" aria-hidden="true"><span style="width:16.420%"></span></span>0.985</span></td><td class="matrix"><span class="measure"><span class="scale" aria-hidden="true"><span style="width:49.893%"></span></span>2.994</span></td><td class="wide">1.230</td><td class="wide">0.995</td><td class="wide">3.001</td></tr>
+<tr><th scope="row">18 · cyan</th><td class="adobe"><span class="measure"><span class="scale" aria-hidden="true"><span style="width:50.333%"></span></span>3.020</span></td><td class="natural"><span class="measure"><span class="scale" aria-hidden="true"><span style="width:24.296%"></span></span>1.458</span></td><td class="matrix"><span class="measure"><span class="scale" aria-hidden="true"><span style="width:57.371%"></span></span>3.442</span></td><td class="wide">6.216</td><td class="wide">1.466</td><td class="wide">3.425</td></tr>
+<tr class="neutral"><th scope="row">19 · white</th><td class="adobe"><span class="measure"><span class="scale" aria-hidden="true"><span style="width:36.226%"></span></span>2.174</span></td><td class="natural"><span class="measure"><span class="scale" aria-hidden="true"><span style="width:54.910%"></span></span>3.295</span></td><td class="matrix"><span class="measure"><span class="scale" aria-hidden="true"><span style="width:37.293%"></span></span>2.238</span></td><td class="wide">2.177</td><td class="wide">3.301</td><td class="wide">2.245</td></tr>
+<tr class="neutral"><th scope="row">20 · neutral 8</th><td class="adobe"><span class="measure"><span class="scale" aria-hidden="true"><span style="width:17.018%"></span></span>1.021</span></td><td class="natural"><span class="measure"><span class="scale" aria-hidden="true"><span style="width:35.110%"></span></span>2.107</span></td><td class="matrix"><span class="measure"><span class="scale" aria-hidden="true"><span style="width:16.503%"></span></span>0.990</span></td><td class="wide">1.026</td><td class="wide">2.111</td><td class="wide">0.998</td></tr>
+<tr class="neutral"><th scope="row">21 · neutral 6.5</th><td class="adobe"><span class="measure"><span class="scale" aria-hidden="true"><span style="width:17.804%"></span></span>1.068</span></td><td class="natural"><span class="measure"><span class="scale" aria-hidden="true"><span style="width:27.427%"></span></span>1.646</span></td><td class="matrix"><span class="measure"><span class="scale" aria-hidden="true"><span style="width:15.173%"></span></span>0.910</span></td><td class="wide">1.065</td><td class="wide">1.640</td><td class="wide">0.902</td></tr>
+<tr class="neutral"><th scope="row">22 · neutral 5</th><td class="adobe"><span class="measure"><span class="scale" aria-hidden="true"><span style="width:57.330%"></span></span>3.440</span></td><td class="natural"><span class="measure"><span class="scale" aria-hidden="true"><span style="width:24.197%"></span></span>1.452</span></td><td class="matrix"><span class="measure"><span class="scale" aria-hidden="true"><span style="width:57.149%"></span></span>3.429</span></td><td class="wide">3.453</td><td class="wide">1.459</td><td class="wide">3.444</td></tr>
+<tr class="neutral"><th scope="row">23 · neutral 3.5</th><td class="adobe"><span class="measure"><span class="scale" aria-hidden="true"><span style="width:85.291%"></span></span>5.117</span></td><td class="natural"><span class="measure"><span class="scale" aria-hidden="true"><span style="width:41.567%"></span></span>2.494</span></td><td class="matrix"><span class="measure"><span class="scale" aria-hidden="true"><span style="width:83.922%"></span></span>5.035</span></td><td class="wide">5.130</td><td class="wide">2.507</td><td class="wide">5.048</td></tr>
+<tr class="neutral"><th scope="row">24 · black</th><td class="adobe"><span class="measure"><span class="scale" aria-hidden="true"><span style="width:45.233%"></span></span>2.714</span></td><td class="natural"><span class="measure"><span class="scale" aria-hidden="true"><span style="width:33.004%"></span></span>1.980</span></td><td class="matrix"><span class="measure"><span class="scale" aria-hidden="true"><span style="width:45.285%"></span></span>2.717</span></td><td class="wide">2.726</td><td class="wide">1.992</td><td class="wide">2.728</td></tr></tbody>
+</table>
+</div>
+</figure>
+<p>Camera Natural sRGB의 가장 큰 차이는 흰색 #19였다. ΔE₀₀ 3.295와 함께 Lightroom 출력의 ΔL*는 −5.376이었다. 중립 패치에도 밝기 차이가 남는다. <a href="lightroom-render-comparison.json">모든 패치의 Lab 중앙값과 ΔL*·Δa*·Δb*</a></p>
+
+<h2 id="gamut">ProPhoto RGB로 확인한 sRGB 끝점</h2>
+<p>세 ProPhoto TIFF의 패치에는 RGB 코드 0이나 65535가 없었다. 그 TIFF들을 원래 sRGB 출력의 정확한 ICC로 다시 변환하면 아래처럼 대부분의 코드 0이 같은 위치에서 재현된다. Adobe Standard의 R=65535는 41개 중 37개를 같은 위치에서 재현했다.</p>
+<div class="scroll" tabindex="0" role="region" aria-label="sRGB 끝점 재현 결과">
+<table class="gamut-table">
+<caption>원래 sRGB TIFF와 ProPhoto에서 다시 변환한 sRGB의 비교</caption>
+<thead><tr><th scope="col">프로파일</th><th scope="col">원래 R=0 / B=0</th><th scope="col">같은 위치 R=0 / B=0</th><th scope="col">다시 변환한 sRGB의 최대 ΔE₀₀</th><th scope="col">ProPhoto 직접 비교의 최대 ΔE₀₀</th></tr></thead>
+<tbody><tr><th scope="row">Adobe Standard</th><td>78,061 / 39,964</td><td>78,055 / 39,964</td><td>0.03311</td><td>4.79469</td></tr>
+<tr><th scope="row">Camera Natural</th><td>9 / 6</td><td>9 / 6</td><td>0.03057</td><td>0.03057</td></tr>
+<tr><th scope="row">시험 DCP</th><td>48,663 / 38,648</td><td>48,641 / 38,648</td><td>0.03266</td><td>0.41459</td></tr></tbody>
+</table>
+</div>
+<p>기본 LittleCMS 사전 계산(<code>-c1</code>)으로 변환하면 시험 DCP의 R=0/B=0이 4,242/13,170개였다. 최적화를 끈 <code>-c0</code>에서는 48,871/38,938개였고 원래 sRGB 파일은 48,663/38,648개였다. 별도로 ProPhoto Lab에서 sRGB ICC의 색도행렬을 역으로 적용해 전달 곡선 전 선형 RGB가 0 미만 또는 1 초과인 위치를 확인했다. 이 대조로 Adobe Standard와 시험 DCP의 sRGB 끝점 대부분을 출력 색공간 변환으로 설명할 수 있다. 카메라 JPEG의 인코딩 전 색이나 Lightroom 내부 처리 전체는 이 측정으로 복원할 수 없다. <a href="https://raw.githubusercontent.com/mm2/Little-CMS/lcms2.12/utils/tificc/tificc.c">LittleCMS 2.12의 -c0와 -c1 처리</a></p>
+
+<h2 id="method">촬영·현상 조건과 정합</h2>
+<div class="scroll" tabindex="0" role="region" aria-label="프로파일별 현상 조건">
+<table class="gamut-table">
+<caption>내보낸 TIFF의 XMP에서 읽은 프로파일과 As Shot 표시</caption>
+<thead><tr><th scope="col">프로파일</th><th scope="col">CameraProfileDigest</th><th scope="col">온도</th><th scope="col">Tint</th></tr></thead>
+<tbody><tr><th scope="row">Adobe Standard</th><td><code>60AC1A2E4B4616A5F94860B8586E09F4</code></td><td>5300 K</td><td>-2</td></tr>
+<tr><th scope="row">Camera Natural</th><td><code>67653F62730129864ADC9A1E8C76BDF0</code></td><td>5300 K</td><td>-2</td></tr>
+<tr><th scope="row">PENTAX RAW matrix test 1376</th><td><code>1C7CF75BBFB3AA224BCEB9DAF7FBBBC9</code></td><td>5200 K</td><td>+2</td></tr></tbody>
+</table>
+</div>
+<p>같은 Lightroom 연구용 가상 사본에서 프로파일과 출력 색공간을 바꿨다. 프로파일별 sRGB·ProPhoto TIFF 사이의 114개 현상 속성과 중첩 요소는 일치했다. 공통 설정은 Process Version 15.4, 현상 노출 0, 자르기 없음, 렌즈 프로파일 보정과 자동 색수차 제거 끔이다. 6016×4000 RGB16 TIFF를 내보낼 때 크기 변경과 출력 샤프닝을 끄더라도, 기본 캡처 샤프닝 40과 색 노이즈 감소 25는 현상 값에 남는다.</p>
+<p>카메라 MakerNote의 Kelvin 설정은 5000K다. Lightroom에서 As Shot을 유지한 상태로 시험 DCP를 선택하면 표시가 5200K·Tint +2로 바뀌었다. DNG에서 카메라 공간의 중립값을 CIE xy로 바꿀 때 색 보정 행렬을 사용하므로 프로파일에 따라 환산값이 달라질 수 있다. 세 프로파일에서 절대 백색점이 같았는지는 따로 측정해야 한다. 촬영 보정 −0.7 EV와 Lightroom 현상 노출 0도 별도 값이다. <a href="https://helpx.adobe.com/lightroom-classic/desktop/process-and-develop-photos/image-tone-color.html">Adobe의 As Shot 정의</a> · <a href="https://helpx.adobe.com/content/dam/help/en/camera-raw/digital-negative/jcr_content/root/content/flex/items/position/position-par/download_section_733958301/download-1/DNG_Spec_1_7_1_0.pdf#page=102">DNG 색 보정 행렬과 중립 좌표</a></p>
+<figure>
+<figcaption>측정 흐름</figcaption>
+<ol class="workflow">
+<li><strong>01 · 입력 고정</strong><span>같은 RAW의 Natural 내장 JPEG와 Lightroom RGB16 TIFF 6개</span></li>
+<li><strong>02 · 차트 정합</strong><span>모서리 4곳, 독립 교차점 15곳, 패치 안쪽 200×200</span></li>
+<li><strong>03 · D50 Lab</strong><span>TIFF 포함 ICC와 JPEG sRGB, 상대 색도계, 흑점 보정 끔</span></li>
+<li><strong>04 · 패치별 색차</strong><span>L*·a*·b* 중앙값, CIEDE2000, RGB 끝점 집계</span></li>
+</ol>
+</figure>
+<figure>
+<img src="lightroom-registration.png" width="1100" height="770" alt="왼쪽 카메라 Natural JPEG, 오른쪽 Lightroom Adobe Standard TIFF의 차트에 같은 번호의 24개 중앙 패치 영역이 표시되어 있다.">
+<figcaption>정합에 사용한 차트와 측정 영역. 청록색 사각형은 양쪽 원본 픽셀에서 뽑은 200×200 영역이다. 오른쪽 TIFF의 표시용 그림은 8비트로 줄였으며 계산은 원본 RGB16에서 했다. <a href="https://raw.pixls.us/getfile.php/1376/nice/Pentax%20-%20K-3%20II%20-%2014bit%20%283:2%29.dng">raw.pixls.us #1376 원본</a> · <a href="https://creativecommons.org/publicdomain/zero/1.0/">CC0 1.0</a> · <a href="color-comparison-protocol.html">좌표와 차트 방향</a></figcaption>
+</figure>
+<p>카메라 JPEG와 첫 TIFF 사이의 정합에 사용하지 않은 15개 교차점의 최대 잔차는 2.712px였다. TIFF끼리는 차트의 같은 위치 19곳을 확인했다. 프로파일과 출력 공간을 바꾼 비교에서 가장 큰 이동은 0.167px였다. 중앙 100×100만 사용한 민감도 검사에서 sRGB 패치별 색차는 최대 0.2083만큼 달라졌다.</p>
+<p>내장 JPEG 자체에는 ICC가 없어 DNG의 PreviewColorSpace에 따라 sRGB를 지정했다. TIFF는 포함된 프로파일을 사용했다. LittleCMS 2.12에서 16비트 입력 1코드의 차이가 0.001526 L*로 남았으며, CIEDE2000 구현은 Sharma 자료 34건에서 최대 오차 0.00005 미만이었다. JPEG에 TIFF와 같은 sRGB ICC를 지정했을 때 JPEG 패치 자체의 변화는 최대 0.03145 ΔE₀₀였다. <a href="https://www.color.org/iccmax/connection1/">ICC D50 연결 색공간</a> · <a href="https://hajim.rochester.edu/ece/sites/gsharma/ciede2000/">CIEDE2000 검증 자료</a></p>
+
+<h2 id="replay">근거와 재실행</h2>
+<p>공개 JSON에는 좌표와 패치별 색차, 여섯 TIFF의 해시, 프로파일 식별값, ICC 해시를 기록했다. 아래 명령은 같은 해시의 TIFF 여섯 개를 로컬에서 재생하는 절차다. 원본 TIFF와 DCP는 비공개 보관 자료다. 메타데이터가 달라진 새 TIFF는 원래 파일과 별도 증거로 취급한다. DNG는 CC0 원본에서 확보하고 ExifTool로 SubIFD1:PreviewImage를 추출한다. <a href="lightroom-render-comparison.json">측정·출처 JSON</a> · <a href="https://hajim.rochester.edu/ece/sites/gsharma/ciede2000/dataNprograms/ciede2000testdata.txt">검증 데이터 파일</a></p>
+<details><summary>입력 파일 및 ICC SHA-256</summary>
+<div class="scroll" tabindex="0" role="region" aria-label="입력 해시">
+<table class="hash-table">
+<thead><tr><th scope="col">자료</th><th scope="col">SHA-256</th></tr></thead>
+<tbody><tr><th scope="row">CC0 DNG #1376</th><td><code>992c969286dc06b1690128a7b14ea74c5b5a46209b0fbf21e83df00807b050b9</code></td></tr>
+<tr><th scope="row">Natural 내장 JPEG</th><td><code>04609f9896a82b2277637a20999f2e3716b389ef9de1717af0e97fd41b427831</code></td></tr>
+<tr><th scope="row">Adobe Standard · sRGB TIFF</th><td><code>1bb9bca6f82f95ee874499016b7997c370cc8b4d8934a0f2533565b3b7a32432</code></td></tr>
+<tr><th scope="row">Adobe Standard · ProPhoto RGB TIFF</th><td><code>358d4606353acc6d10790262691613efda112f8d7c0faf5268718cfec2e2fb0c</code></td></tr>
+<tr><th scope="row">Camera Natural · sRGB TIFF</th><td><code>75481cb359a4d7c98e154f6e33592d1b0aacbf2aa3d770a23fc507615fca7ecf</code></td></tr>
+<tr><th scope="row">Camera Natural · ProPhoto RGB TIFF</th><td><code>b63549343c5fcb6afc8b1ae11d4aa0e8ca9a97b5615b86dc05fe374bbdcec24f</code></td></tr>
+<tr><th scope="row">시험 DCP · sRGB TIFF</th><td><code>ded2f859699ec10f5c9f4adec148af70873539d4fc6af88538619089c1e69e54</code></td></tr>
+<tr><th scope="row">시험 DCP · ProPhoto RGB TIFF</th><td><code>5a65e3b4349d97df77964b2871fb07934b0d1e444753fe8ff8ac5a08de103bef</code></td></tr>
+<tr><th scope="row">sRGB ICC</th><td><code>2b3aa1645779a9e634744faf9b01e9102b0c9b88fd6deced7934df86b949af7e</code></td></tr>
+<tr><th scope="row">ProPhoto RGB ICC</th><td><code>0a8ef7d1d958d98225b3b71d93d9e8e3cecd9c302e014973d025d2a977ecf27c</code></td></tr>
+<tr><th scope="row">K-3 II 시험 DCP</th><td><code>6aa402a77f6b41f9fa37e99f1bd6911447e74c112eb7f7601c8c3bb116570ee4</code></td></tr></tbody>
+</table>
+</div>
+</details>
+<p>Python 3.11 이상과 NumPy, OpenCV, Pillow, tifffile, scikit-image가 필요하다. 검사에 사용한 버전은 JSON에 있다. <code>exiftool</code>과 <code>tificc</code>는 PATH에 두거나 <code>--exiftool</code>·<code>--tificc</code>에 실행 경로를 넣는다. 아래 폴더 이름은 CLI의 입력 배치이며 <code>fixtures/work</code>는 미리 만든 비공개 작업 폴더다.</p>
+<pre><code>fixtures/
+  pentax-k3ii-1376.dng
+  pentax-k3ii-1376-preview.jpg
+  ciede2000testdata.txt
+  exports/
+    adobe-standard/pentax-k3ii-1376.tif
+    camera-natural/pentax-k3ii-1376.tif
+    matrix-test/pentax-k3ii-1376.tif
+    adobe-standard-prophoto/pentax-k3ii-1376.tif
+    camera-natural-prophoto/pentax-k3ii-1376.tif
+    matrix-test-prophoto/pentax-k3ii-1376.tif
+  work/</code></pre>
+<pre><code>exiftool -b -SubIFD1:PreviewImage -w "%d%f-preview.jpg" fixtures/pentax-k3ii-1376.dng
+python -B tools/check_lightroom_render.py --raw fixtures/pentax-k3ii-1376.dng --preview fixtures/pentax-k3ii-1376-preview.jpg --exports fixtures/exports --sharma-data fixtures/ciede2000testdata.txt --scratch fixtures/work --output fixtures/work/srgb.json
+python -B tools/check_lightroom_gamut.py --exports fixtures/exports --scratch fixtures/work --output fixtures/work/gamut.json</code></pre>
+<p>두 명령은 해시가 맞는 입력만 읽고 새 JSON을 만든다. 색공간 검사기는 공개 baseline 객체의 해시를 확인한 뒤 그 정합 좌표와 JPEG Lab 값을 사용한다. 이 해시는 객체를 UTF-8 JSON, indent=2, ensure_ascii=False, 마지막 LF로 직렬화한 값이다. 원래 비공개 재현 파일의 해시는 별도 provenance에 남겼다. <a href="../tools/check_lightroom_render.py">sRGB 재현 코드</a> · <a href="../tools/check_lightroom_gamut.py">색공간 재현 코드</a></p>
+
+<h2>다음 검증</h2>
+<p>이 수치는 단일 장면의 카메라 Natural 미리보기와 얼마나 가까운지 보여 준다. 차트의 절대 색 정확도, 조명과 노출이 다른 장면, 별도 촬영 JPEG에서의 성능은 추가 검증이 필요하다. 시험 DCP를 선택하고 내보내는 동작을 확인한 기종은 이번 표본의 K-3 II다.</p>
+<p>다음에는 계수와 광원을 유지하고 ProfileToneCurve만 달리한다. 기존의 태그 생략 DCP를 기준으로 명시적 항등 곡선과 작은 단조 변화를 각각 적용해 ProPhoto TIFF 두 개를 얻는다. 중립 패치 6개의 ΔL*, Δa*, Δb*를 비교하면 Lightroom이 이 태그에 어떻게 반응하는지 살펴볼 수 있다. 이후 독립된 노출과 장면을 확보해 보정 후보를 평가한다. <a href="https://helpx.adobe.com/content/dam/help/en/camera-raw/digital-negative/jcr_content/root/content/flex/items/position/position-par/download_section_733958301/download-1/DNG_Spec_1_7_1_0.pdf">Adobe DNG 규격의 ProfileToneCurve</a></p>
+</main>
+</body>
+</html>

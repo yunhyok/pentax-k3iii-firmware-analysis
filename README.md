@@ -12,6 +12,7 @@
 - [파일 인터페이스와 입력·해제 버퍼 수명](analysis/update-file-lifetimes.html)
 - [실제 DNG 표본·DCP 시험 준비](analysis/raw-test-inputs.html)
 - [ColorChecker 24패치·ICC 색차 비교 절차](analysis/color-comparison-protocol.html)
+- [Lightroom 실제 TIFF 6개·프로파일·출력 색공간 비교](analysis/lightroom-render-comparison.html)
 - [색 모드·채도·대비에 따른 행렬과 감마 변화](analysis/color-mode-boundaries.html)
 - [세 기종 색공간 선택 화면의 UI 이식 설계](analysis/ui-port-contract.html)
 - [K-3 III 색공간 선택·확정·취소 경로](analysis/colorspace-ui.html)
