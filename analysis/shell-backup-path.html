@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="PENTAX K-3 Mark III v2.20의 SD 스크립트, RTOS 셸, 보정 데이터 백업과 eMMC 쓰기 경로를 원본 명령으로 추적한 결과">
+<title>K-3 Mark III — SD 셸 입력과 보정 데이터 백업</title>
+<style>
+:root{color-scheme:light dark;--bg:#f7f8fa;--paper:#fff;--ink:#182332;--muted:#46566c;--line:#ccd5e0;--link:#124b8e;--accent:#176157;--warn:#973d1e}
+@media(prefers-color-scheme:dark){:root{--bg:#101822;--paper:#171f2c;--ink:#edf3fa;--muted:#c0ccda;--line:#425268;--link:#a0cdff;--accent:#92dac8;--warn:#ffbd9c}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.8 system-ui,"Malgun Gothic",sans-serif;word-break:keep-all;overflow-wrap:anywhere}
+header,main,footer{max-width:1060px;margin:auto;padding:clamp(20px,4vw,48px)}main{background:var(--paper);border-block:1px solid var(--line)}
+a{color:var(--link);text-underline-offset:.19em}a:focus-visible{outline:2px solid var(--link);outline-offset:4px}nav{display:flex;flex-wrap:wrap;gap:.5rem 1.25rem;margin-top:1.4rem}
+h1,h2,h3{line-height:1.32}h1{font-size:clamp(1.8rem,4vw,3rem);margin:.55rem 0 1rem}h2{border-top:1px solid var(--line);padding-top:1.45rem;margin:2.8rem 0 1rem}section:first-child h2{border:0;padding-top:0;margin-top:0}h3{font-size:1.06rem}
+.meta,figcaption,footer{color:var(--muted);font-size:.9rem}.lead{max-width:52rem;font-size:1.06rem}code{font:.88em/1.6 ui-monospace,Consolas,monospace;overflow-wrap:anywhere}
+figure{margin:1.55rem 0;padding:1rem 0;border-block:1px solid var(--line)}figcaption{margin-top:1rem}
+.flow{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1.5rem;padding:0;list-style:none;counter-reset:step}.flow li{counter-increment:step;border-top:2px solid var(--accent);padding-top:.65rem}.flow li::before{content:"0" counter(step);display:block;color:var(--accent);font: .8rem ui-monospace,monospace}.flow span{display:block;color:var(--muted);font-size:.88rem}
+.routes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1.35rem;margin:0}.routes div{border-top:2px solid var(--warn);padding-top:.65rem}.routes div:first-child{border-color:var(--accent)}.routes dt{font-weight:700}.routes dd{margin:.3rem 0 0}
+.anchors{display:grid;grid-template-columns:minmax(8rem,1fr) 3fr;gap:.7rem 1rem}.anchors dt{font-weight:700}.anchors dd{margin:0}.caution{border-left:3px solid var(--warn);padding-left:1rem}
+@media(max-width:640px){.flow,.routes,.anchors{grid-template-columns:1fr;gap:.65rem}.anchors dd{margin-bottom:.7rem}}
+@media print{body,main{background:white;color:black}nav{display:none}figure{break-inside:avoid}}
+</style>
+</head>
+<body>
+<header>
+<p class="meta">PENTAX K-3 MARK III · R03010 · 펌웨어 v2.20 · 2026-11-08</p>
+<h1>SD 카드에서 셸 명령을 받는 경로</h1>
+<p class="lead">SD의 TTL 스크립트가 <code>sendln</code>을 거쳐 RTOS 셸 명령을 실행하는 코드가 있다. 이 경로는 카메라의 시스템 초기화가 진행돼야 사용할 수 있다. USB에서 같은 셸로 들어가는 경로는 확인하지 못했다. 보정 데이터 백업 명령은 조건에 따라 내부 eMMC에 쓰므로 읽기 전용 백업으로 분류할 수 없다.</p>
+<nav aria-label="보고서 목차"><a href="../index.html">연구 개요</a><a href="#sd">SD 스크립트</a><a href="#usb">USB</a><a href="#adjust">보정 데이터</a><a href="#evidence">분석 근거</a></nav>
+</header>
+<main>
+<section id="sd">
+<h2>SD 파일에서 eMMC 읽기 명령까지</h2>
+<figure>
+<ol class="flow" aria-label="SD에서 내부 셸까지 이어지는 순서">
+<li><strong>시스템 메시지</strong><span><code>0xA2C08101</code> · 인수 0</span></li>
+<li><strong>SD 스크립트 열기</strong><span><code>C:\script\dbgparam.ttl</code> 확인 뒤 <code>startup.ttl</code> 확인</span></li>
+<li><strong>TTL의 <code>sendln</code></strong><span>토큰 <code>0x4e</code> · 셸에 문자열 전달</span></li>
+<li><strong>RTOS 명령 실행</strong><span>등록된 명령 이름을 찾아 처리 함수 호출</span></li>
+</ol>
+<figcaption>표시한 순서는 v2.20 원본 명령에서 확인했다. 카드 마운트, 스크립트 실행과 출력 파일 생성은 실기에서 확인할 항목이다.</figcaption>
+</figure>
+<p>초기화 경로의 <code>0x532fe8d0</code>이 <code>0x533012b8</code>을 호출한다. 이 함수는 메시지 <code>0xA2C08101</code>과 인수 0을 보낸다. 시스템 처리기 <code>0x53318764</code>는 인수가 0이면 <code>dbgparam.ttl</code>의 크기를 검사해 내용이 있을 때 실행을 요청하고, 이어 <code>startup.ttl</code>에도 같은 검사를 한다. 인수가 0이 아닌 쪽은 <code>shutdown.ttl</code>을 확인한다. 세 파일은 모두 <code>C:\script\</code> 아래에 있으며 <code>C:</code>는 SD 드라이버로 연결된다. <a href="update-media-completion.html">C 볼륨과 SD 드라이버</a></p>
+<p>스크립트 처리기는 <code>sendln</code>을 토큰 <code>0x4e</code>로 바꾼다. 분기표의 <code>0x533a27f0</code>은 <code>0x533a2b2c</code>를 가리키고, 그곳에서 호출한 <code>0x533a180c</code>가 문자열을 콜백에 넘긴다. 초기 복사 영역의 포인터 <code>0x53d0de3c → 0x530ffa40</code>과 스크립트 실행기가 넘기는 RAM 주소 <code>0x545260fc</code>가 이 콜백을 특정한다. 셸은 <code>0x530ff66c</code>에서 명령 이름을 찾고 <code>0x530ff840</code>의 간접 호출로 해당 함수를 실행한다. 콘솔 초기화 쪽은 리소스 슬롯 4를 읽어 명령을 등록하며 초기 레코드의 이름은 <code>ShellCmdList</code>다. <a href="index.html">SHELLCMD 명령 색인</a> · <a href="../rtos_catalog.py">명령표 재현 도구</a></p>
+<p><code>emmc_fread</code>는 일반 영역을 읽어 지정한 파일에 쓴다. <code>sys_fwdump</code>는 정해진 범위를 읽어 <code>C:\fwdump.bin</code>으로 내보낸다. 추적한 두 처리 함수에서 eMMC 데이터 기록 호출은 발견하지 않았다. 출력 파일을 SD로 지정하는 조건에서 두 함수가 후보가 된다. <code>emmc_freadb</code>는 eMMC 부트 파티션을 선택했다가 일반 영역으로 돌아오므로 같은 범주의 읽기 시험에서 분리한다. <a href="startup-storage.html#restore-failure">eMMC 파티션 선택과 복귀</a></p>
+<p class="caution">출력 파일이 SD에 생겨도 정상 초기화 도중 내부 로그나 설정을 기록하는지는 별도로 확인해야 한다. 이 스크립트는 RTOS가 실행된 뒤에 읽는다. 부팅이 멈춘 바디의 Boot ROM 복구 기능은 아직 확인되지 않았다.</p>
+</section>
+<section id="usb">
+<h2>USB의 셸 진입 경로는 미확인</h2>
+<p>Ricoh가 공개한 USB 기능은 MTP·CD-ROM 데이터 전송과 테더 촬영이다. 바이너리에는 <code>UsbServer</code>와 <code>HostInterfaceCommand::DeviceCommandProcessor::ExecuteLinuxShellCommand</code>가 있지만, 조사한 초기화와 호출 범위에서는 USB 요청이 RTOS 셸 <code>0x530ff66c</code>에 도달한다는 근거를 찾지 못했다. Linux 명령 처리기의 이름만으로 USB 입력이나 <code>SHELLCMD</code> 실행을 입증할 수 없다. <a href="https://www.ricoh-imaging.co.jp/english/support/qa/k-3-3/">Ricoh USB 기능 안내</a></p>
+<p>PentaxForums에는 K-3 Mark III에서 <code>sendln</code>을 사용한 연구 기록과 디버그 메뉴의 조정 데이터 SD 내보내기에 관한 보고가 있다. 펌웨어 내부 단서와 방향이 일치하지만, 그 보고만으로 무기록 백업이나 이 버전의 전체 실행 조건까지 확인되지는 않는다. <a href="https://www.pentaxforums.com/forums/32-digital-processing-software-printing/464577-pentax-k-3-markiii-reveal-hacking-10.html">연구자 게시물</a></p>
+</section>
+<section id="adjust">
+<h2>보정 백업이 쓰는 세 경로</h2>
+<figure>
+<dl class="routes" aria-label="보정 백업의 파일 및 파티션 쓰기 대상">
+<div><dt>백업 파일 · SD</dt><dd><code>C:\KB….ADJ</code><br>조정 데이터 네 그룹을 모은 결과</dd></div>
+<div><dt>그룹 재구성 · 내부 eMMC</dt><dd>조정 데이터 본문을 쓰고 성공 시 파티션 표를 다시 기록</dd></div>
+<div><dt>MDBL 파일 보존 · 내부 eMMC</dt><dd>레코드별 경로를 사용. 무선 LAN 레코드에서 <code>B:\WifiInfo.bin</code> 확인</dd></div>
+</dl>
+<figcaption>세 경로가 한 번에 항상 실행되는 것은 아니다. 내부 쓰기는 작업 데이터 검증 결과와 레코드 상태에 따라 갈린다.</figcaption>
+</figure>
+<p><code>inf_adj</code>의 <code>backup</code> 분기(<code>0x52564f1c</code>)는 <code>0x52eacfc0</code>을 호출한다. 이 함수가 모으는 그룹은 <code>BOOT</code>, <code>CPTR</code>, <code>IMAG</code>, <code>MDBL</code>이다. 버퍼 구성에 성공하면 <code>0x52ead08c</code>에서 파일 쓰기 함수를 호출한다. 이때 파일명은 생성자가 준비한 <code>C:\KB%ld.ADJ</code>다.</p>
+<p>수집 중 그룹 작업 데이터의 검사가 실패하면 <code>0x52eace24</code>가 재구성 경로 <code>0x52eac814</code>에 들어간다. 여기서는 상태에 따라 이전 레코드의 무효화가 먼저 일어날 수 있다. 새 본문은 <code>0x52eac328 → 0x52ff586c → 0x52ff5708</code>을 통해 내부 eMMC에 쓰고, 성공하면 <code>0x52ff5818</code>에서 파티션 표를 다시 기록한다. 최종 SD 파일 쓰기 전에 일어나는 내부 기록이다. <a href="startup-storage.html#direct-bank-writers">조정 그룹의 쓰기 대상과 인덱스</a> · <a href="bank-writer-checks.json">저장 함수의 기존 합성 검증</a></p>
+<p><code>MDBL</code>을 재구성할 때는 먼저 보존 함수 <code>0x52eaccdc</code>도 거친다. 이 함수는 레코드의 유효 표식과 대응 객체를 확인하고, 경로 조회가 0을 반환하면 파일 쓰기를 요청한다. 무선 LAN 조정 객체의 생성자 <code>0x52ec99a4</code>는 일반 경로 <code>E:\WifiInfo.bin</code>과 별도로 보존 경로 <code>B:\WifiInfo.bin</code>을 둔다. 보존 함수가 사용하는 가상 메서드 <code>0x52eaaf30</code>은 그 보존 경로를 돌려준다. <code>B:</code>는 내부 eMMC와 같은 제공자에 연결된다. 다른 보존 레코드의 경로는 각 객체가 결정한다. <a href="update-volume-finalization.html#volume">B와 R의 볼륨 등록</a> · <a href="update-media-completion.html">내부 eMMC 제공자</a></p>
+<p class="caution"><strong>이 버전의 <code>inf_adj backup</code>은 내부 무기록 백업에 사용할 수 없다.</strong> 조정 데이터가 유효하면 SD 파일만 쓰는 경로를 따르지만, 재구성 분기에 들어가면 내부 eMMC에도 쓰기를 요청한다.</p>
+</section>
+<section id="evidence">
+<h2>근거와 검증 범위</h2>
+<p>공식 v2.20에서 추출한 RTOS를 기준 주소 <code>0x52500000</code>에 놓고 ARM 명령과 리소스 포인터를 대조했다. RTOS SHA-256은 <code>342d2f35405e8daf1797dfe431d2e4aa70f4b52a2c242a29df48206672f1dfb4</code>다. 아래 주소는 같은 이미지에서 각 연결을 다시 찾을 수 있는 지점이다. <a href="../evidence.json">공식 업데이트·추출 이미지 식별 정보</a> · <a href="https://www.ricoh-imaging.co.jp/japan/support/download/digital/k-3-3.html">Ricoh 배포 페이지</a></p>
+<dl class="anchors">
+<dt>SD 파일 확인·실행</dt><dd><code>0x533121f4 / 0x53312258</code> 및 <code>0x53312324 / 0x53312388</code>. 파일명 초기 포인터 <code>0x53d4cdf8–0x53d4ce00</code>.</dd>
+<dt>TTL에서 셸까지</dt><dd><code>0x533a4a0c → 0x533a27f0 → 0x533a2b2c → 0x533a1850</code>. 콜백은 <code>0x530ffa40</code>, 명령 처리기 호출은 <code>0x530ff840</code>.</dd>
+<dt>보존 파일명</dt><dd><code>0x53d0b140 → 0x538e71e0</code>. 객체 <code>+0x18</code> 저장 <code>0x52ec99e8</code>, 조회 <code>0x52eaaf30</code>, 쓰기 호출 <code>0x52eacdc4</code>.</dd>
+<dt>내부 기록</dt><dd>그룹 본문 <code>0x52eac3c8</code>, 성공 후 파티션 표 <code>0x52eac3e0</code>. 이전 레코드 무효화 경로 <code>0x52eac5fc</code>.</dd>
+</dl>
+<p>이번 검증은 PC에서 진행한 정적 분석이다. 카메라에서 스크립트를 실행하거나 내부 데이터를 읽고 쓰지 않았다. SD 파일이 올라오는 실제 시점과 카메라가 부팅하면서 수행하는 다른 기록은 확인 범위 밖이다.</p>
+</section>
+</main>
+<footer>PENTAX K-3 Mark III 펌웨어 연구 · 원본 펌웨어 및 바디별 보정값은 배포 파일에 포함하지 않는다.</footer>
+</body>
+</html>
