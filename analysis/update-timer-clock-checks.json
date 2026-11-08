@@ -1,0 +1,584 @@
+{
+  "passed": true,
+  "cases": 20,
+  "image_sha256": "342d2f35405e8daf1797dfe431d2e4aa70f4b52a2c242a29df48206672f1dfb4",
+  "scope": "Original ARM TTimPeriod parsing/init prefix, clock increment fragment and board timer writes.\nSynthetic buffers/RAM only. No OS, IRQ, physical MMIO or actual time runs. Initializer\nsuccess stops at525b7ec8 before the next unverified call and hardware setup. Board timer\nIRQ-mask helpers are stubs, and its register addresses are ordinary emulator RAM.\n",
+  "emulator": "Unicorn Cortex-A15; no target/peripheral fidelity claim",
+  "stubs": {
+    "0x525b6144": "IRQ mask helper returns authored token; no CPSR/IRQ operation",
+    "0x525b6154": "capture restore token only; no CPSR/IRQ operation"
+  },
+  "ranges": [
+    {
+      "start": "0x525b7e64",
+      "end": "0x525b7ec8",
+      "sha256": "f57cdd809df4a91f39b2a53196d04a1c6eb960c6f7a9e52ba32ddc5959ec33fe"
+    },
+    {
+      "start": "0x525b7f90",
+      "end": "0x525b7f9c",
+      "sha256": "3d6dbd5cb513b833cb98ae37706accdd01c15de32fe0075fa20e798a3231ac0c"
+    },
+    {
+      "start": "0x525d91fc",
+      "end": "0x525d9228",
+      "sha256": "fc163623d520d26b470c9cb245607cba4da1921d8d80393be592e63a2f175090"
+    },
+    {
+      "start": "0x525d8fe0",
+      "end": "0x525d9180",
+      "sha256": "3f84b2da65ea14b9a4112f6c0d8c88da2252cc8d6237dba4c0d3cb30b191eeeb"
+    },
+    {
+      "start": "0x525dac64",
+      "end": "0x525dade4",
+      "sha256": "5cffc16c091499a74451d341829e013353dad3deeb12b39db625a1abba621577"
+    },
+    {
+      "start": "0x525da9ec",
+      "end": "0x525daa1c",
+      "sha256": "cdd8e1640e7bec7121cfce9b3bc575a4ec9bcd88a10f35f151524dd9e0786a2c"
+    },
+    {
+      "start": "0x525daaa4",
+      "end": "0x525daad0",
+      "sha256": "92d61d7e5f925a2601b27c263858cd21dbc49753f9dd859ee75fadae26f1bd69"
+    },
+    {
+      "start": "0x525b810c",
+      "end": "0x525b8144",
+      "sha256": "9b489d2478e07031c25e8dd37811b8ea2a546a216c2dbe496d5f6b5b70ce1cc4"
+    },
+    {
+      "start": "0x525b5bf0",
+      "end": "0x525b5c34",
+      "sha256": "c3612176d8137a7f9eba726fa7a902161231e06f1c854b574080e4f326a1d765"
+    }
+  ],
+  "executed_addresses": [
+    "0x525b5bf0",
+    "0x525b5bf4",
+    "0x525b5bf8",
+    "0x525b5bfc",
+    "0x525b5c00",
+    "0x525b5c04",
+    "0x525b5c08",
+    "0x525b5c0c",
+    "0x525b5c10",
+    "0x525b5c14",
+    "0x525b5c18",
+    "0x525b5c1c",
+    "0x525b5c20",
+    "0x525b5c24",
+    "0x525b5c28",
+    "0x525b5c2c",
+    "0x525b5c30",
+    "0x525b7e64",
+    "0x525b7e68",
+    "0x525b7e6c",
+    "0x525b7e70",
+    "0x525b7e74",
+    "0x525b7e78",
+    "0x525b7e7c",
+    "0x525b7e80",
+    "0x525b7e84",
+    "0x525b7e88",
+    "0x525b7e8c",
+    "0x525b7e90",
+    "0x525b7e94",
+    "0x525b7e98",
+    "0x525b7e9c",
+    "0x525b7ea0",
+    "0x525b7ea4",
+    "0x525b7ea8",
+    "0x525b7eac",
+    "0x525b7eb0",
+    "0x525b7eb4",
+    "0x525b7eb8",
+    "0x525b7ebc",
+    "0x525b7ec0",
+    "0x525b7ec4",
+    "0x525b7f90",
+    "0x525b7f94",
+    "0x525b7f98",
+    "0x525b810c",
+    "0x525b8110",
+    "0x525b8114",
+    "0x525b8118",
+    "0x525b811c",
+    "0x525b8120",
+    "0x525b8124",
+    "0x525b8128",
+    "0x525b812c",
+    "0x525b8130",
+    "0x525b8134",
+    "0x525b8138",
+    "0x525b813c",
+    "0x525b8140",
+    "0x525d8fe0",
+    "0x525d8fe4",
+    "0x525d8fe8",
+    "0x525d8fec",
+    "0x525d8ff0",
+    "0x525d8ff4",
+    "0x525d8ff8",
+    "0x525d8ffc",
+    "0x525d9000",
+    "0x525d9004",
+    "0x525d9008",
+    "0x525d900c",
+    "0x525d9010",
+    "0x525d9014",
+    "0x525d9018",
+    "0x525d9020",
+    "0x525d9024",
+    "0x525d9028",
+    "0x525d902c",
+    "0x525d9030",
+    "0x525d9034",
+    "0x525d9038",
+    "0x525d903c",
+    "0x525d9040",
+    "0x525d9044",
+    "0x525d9048",
+    "0x525d904c",
+    "0x525d9054",
+    "0x525d9058",
+    "0x525d905c",
+    "0x525d9060",
+    "0x525d9064",
+    "0x525d9068",
+    "0x525d906c",
+    "0x525d9070",
+    "0x525d9074",
+    "0x525d9078",
+    "0x525d907c",
+    "0x525d9080",
+    "0x525d9084",
+    "0x525d9088",
+    "0x525d908c",
+    "0x525d9090",
+    "0x525d9094",
+    "0x525d9098",
+    "0x525d909c",
+    "0x525d90a0",
+    "0x525d90a4",
+    "0x525d90a8",
+    "0x525d90ac",
+    "0x525d90b0",
+    "0x525d90b4",
+    "0x525d90b8",
+    "0x525d90bc",
+    "0x525d90c0",
+    "0x525d90c4",
+    "0x525d90c8",
+    "0x525d90cc",
+    "0x525d90d0",
+    "0x525d90d4",
+    "0x525d90d8",
+    "0x525d90dc",
+    "0x525d90e0",
+    "0x525d90e4",
+    "0x525d90e8",
+    "0x525d90ec",
+    "0x525d90f0",
+    "0x525d90f4",
+    "0x525d90f8",
+    "0x525d90fc",
+    "0x525d9100",
+    "0x525d9104",
+    "0x525d9108",
+    "0x525d910c",
+    "0x525d9110",
+    "0x525d9114",
+    "0x525d9118",
+    "0x525d911c",
+    "0x525d9120",
+    "0x525d9124",
+    "0x525d9128",
+    "0x525d912c",
+    "0x525d9130",
+    "0x525d9134",
+    "0x525d9138",
+    "0x525d913c",
+    "0x525d9140",
+    "0x525d9144",
+    "0x525d9148",
+    "0x525d914c",
+    "0x525d9150",
+    "0x525d9154",
+    "0x525d9158",
+    "0x525d915c",
+    "0x525d9160",
+    "0x525d9164",
+    "0x525d9168",
+    "0x525d916c",
+    "0x525d9170",
+    "0x525d9174",
+    "0x525d9178",
+    "0x525d917c",
+    "0x525d91fc",
+    "0x525d9200",
+    "0x525d9204",
+    "0x525d9208",
+    "0x525d920c",
+    "0x525d9210",
+    "0x525d9214",
+    "0x525d9218",
+    "0x525d921c",
+    "0x525d9220",
+    "0x525d9224",
+    "0x525da9ec",
+    "0x525da9f0",
+    "0x525da9f4",
+    "0x525da9f8",
+    "0x525da9fc",
+    "0x525daa00",
+    "0x525daa04",
+    "0x525daa08",
+    "0x525daa0c",
+    "0x525daa10",
+    "0x525daa14",
+    "0x525daa18",
+    "0x525daaa4",
+    "0x525daaa8",
+    "0x525daaac",
+    "0x525daab0",
+    "0x525daab4",
+    "0x525daab8",
+    "0x525daabc",
+    "0x525daac0",
+    "0x525daac4",
+    "0x525daac8",
+    "0x525daacc",
+    "0x525dac64",
+    "0x525dac68",
+    "0x525dac6c",
+    "0x525dac70",
+    "0x525dac74",
+    "0x525dac78",
+    "0x525dac8c",
+    "0x525dac90",
+    "0x525dac94",
+    "0x525dac98",
+    "0x525dac9c",
+    "0x525daca0",
+    "0x525daca4",
+    "0x525daca8",
+    "0x525dacac",
+    "0x525dacb0",
+    "0x525dacb4",
+    "0x525dacb8",
+    "0x525dacbc",
+    "0x525dacc0",
+    "0x525dacc4",
+    "0x525dacc8",
+    "0x525daccc",
+    "0x525dacd0",
+    "0x525dacd4",
+    "0x525dacd8",
+    "0x525dacdc",
+    "0x525dace0",
+    "0x525dace4",
+    "0x525dace8",
+    "0x525dacec",
+    "0x525dacf0",
+    "0x525dacf4",
+    "0x525dacf8",
+    "0x525dacfc",
+    "0x525dad00",
+    "0x525dad04",
+    "0x525dad08",
+    "0x525dad0c",
+    "0x525dad10",
+    "0x525dad14",
+    "0x525dad18",
+    "0x525dad1c",
+    "0x525dad20",
+    "0x525dad24",
+    "0x525dad28",
+    "0x525dad2c",
+    "0x525dad7c",
+    "0x525dad80",
+    "0x525dad84",
+    "0x525dad88",
+    "0x525dad8c",
+    "0x525dad90",
+    "0x525dad94",
+    "0x525dada0",
+    "0x525dada4",
+    "0x525dada8",
+    "0x525dadac",
+    "0x525dadb0",
+    "0x525dadb4",
+    "0x525dadb8",
+    "0x525dadbc",
+    "0x525dadc0",
+    "0x525dadc4",
+    "0x525dadc8",
+    "0x525dadcc",
+    "0x525dadd0",
+    "0x525dadd4"
+  ],
+  "groups": {
+    "board-timer-synthetic-register-sequence": 2,
+    "clock-add-fragment": 6,
+    "embedded-config-key-value": 1,
+    "empty-key": 1,
+    "init-config-and-range": 9,
+    "numeric-count-versus-output-capacity": 1
+  },
+  "results": [
+    {
+      "group": "init-config-and-range",
+      "inputs": {
+        "label": "one",
+        "authored_config": "TTimPeriod\t1\n"
+      },
+      "observed": {
+        "parsed_period": 1,
+        "success_prefix": true,
+        "error_return": null
+      },
+      "result_sha256": "6560b6c16d60eb74f4f982bbab339282f9ffcfae99f4990a8a5919af75ccf0b9"
+    },
+    {
+      "group": "init-config-and-range",
+      "inputs": {
+        "label": "zero",
+        "authored_config": "TTimPeriod 0\n"
+      },
+      "observed": {
+        "parsed_period": 0,
+        "success_prefix": false,
+        "error_return": 4294639616
+      },
+      "result_sha256": "71f293861ad8961ca91ddec8e024af9c218e0e5003ba4745fbb3f60548f2890f"
+    },
+    {
+      "group": "init-config-and-range",
+      "inputs": {
+        "label": "max50",
+        "authored_config": "TTimPeriod 50\n"
+      },
+      "observed": {
+        "parsed_period": 50,
+        "success_prefix": true,
+        "error_return": null
+      },
+      "result_sha256": "f4ffbd66e2439b020fbc1cae792e622543275fc126f97f14a2671d60b993b4f4"
+    },
+    {
+      "group": "init-config-and-range",
+      "inputs": {
+        "label": "over51",
+        "authored_config": "TTimPeriod 51\n"
+      },
+      "observed": {
+        "parsed_period": 51,
+        "success_prefix": false,
+        "error_return": 4294639616
+      },
+      "result_sha256": "27fe4689a92df17037cfeced18fdae15b818a3af26ef4f45d66e40c3b6560c8a"
+    },
+    {
+      "group": "init-config-and-range",
+      "inputs": {
+        "label": "uint32max",
+        "authored_config": "TTimPeriod 0xffffffff\n"
+      },
+      "observed": {
+        "parsed_period": 4294967295,
+        "success_prefix": false,
+        "error_return": 4294639616
+      },
+      "result_sha256": "3fc5283254f7720aa85818c0e3df9d0dda0399c952ca2d4067c9cd32b2d921ff"
+    },
+    {
+      "group": "init-config-and-range",
+      "inputs": {
+        "label": "negativeone",
+        "authored_config": "TTimPeriod -1\n"
+      },
+      "observed": {
+        "parsed_period": 4294967295,
+        "success_prefix": false,
+        "error_return": 4294639616
+      },
+      "result_sha256": "3fc5283254f7720aa85818c0e3df9d0dda0399c952ca2d4067c9cd32b2d921ff"
+    },
+    {
+      "group": "init-config-and-range",
+      "inputs": {
+        "label": "missing",
+        "authored_config": "Other 1\n"
+      },
+      "observed": {
+        "parsed_period": 2779096485,
+        "success_prefix": false,
+        "error_return": 4294639616
+      },
+      "result_sha256": "c8726b781fd64a325416f26b0a6b30afed01de03a6350fdb09137ca733915f4c"
+    },
+    {
+      "group": "init-config-and-range",
+      "inputs": {
+        "label": "empty-value",
+        "authored_config": "TTimPeriod\n"
+      },
+      "observed": {
+        "parsed_period": 2779096485,
+        "success_prefix": false,
+        "error_return": 4294639616
+      },
+      "result_sha256": "c8726b781fd64a325416f26b0a6b30afed01de03a6350fdb09137ca733915f4c"
+    },
+    {
+      "group": "init-config-and-range",
+      "inputs": {
+        "label": "no-final-newline",
+        "authored_config": "TTimPeriod 1"
+      },
+      "observed": {
+        "parsed_period": 1,
+        "success_prefix": true,
+        "error_return": null
+      },
+      "result_sha256": "6560b6c16d60eb74f4f982bbab339282f9ffcfae99f4990a8a5919af75ccf0b9"
+    },
+    {
+      "group": "empty-key",
+      "inputs": {},
+      "observed": {
+        "return_value": 4292214784,
+        "output_preserved": true
+      },
+      "result_sha256": "0fce1cb84f81c190f4505def4c1eae3a5cf07a1d6c6fc82cb1fa2cb2a3c3e209"
+    },
+    {
+      "group": "embedded-config-key-value",
+      "inputs": {
+        "config_address": "0x533e3138",
+        "key": "TTimPeriod"
+      },
+      "observed": {
+        "count": 1,
+        "value": 1
+      },
+      "result_sha256": "3e3b30d76009b37ebf35381c4eafd56a8c5cfc45b7edf93ea920d889d5e343a7"
+    },
+    {
+      "group": "numeric-count-versus-output-capacity",
+      "inputs": {
+        "authored_config": "TTimPeriod 1 50\n",
+        "capacity": 1
+      },
+      "observed": {
+        "parsed_count": 2,
+        "stored_first": 1,
+        "second_word_preserved": true
+      },
+      "result_sha256": "5a40e5a96a8b74220faf6d3c2cffa6cbbbdb4afd5fe5ff261b0a378c08564fb6"
+    },
+    {
+      "group": "clock-add-fragment",
+      "inputs": {
+        "now": 0,
+        "period": 1,
+        "period_validated_by_init": true
+      },
+      "observed": {
+        "after": 1
+      },
+      "result_sha256": "00d6db2446e04de33390369b5b595442ef61bc2ccfc31a7a127327fdfaa7c89a"
+    },
+    {
+      "group": "clock-add-fragment",
+      "inputs": {
+        "now": 4294967295,
+        "period": 1,
+        "period_validated_by_init": true
+      },
+      "observed": {
+        "after": 4294967296
+      },
+      "result_sha256": "7fc4e713bf8a4c6142a6ee3d07be950e0c41031f9be5abae37dfe41b0711427f"
+    },
+    {
+      "group": "clock-add-fragment",
+      "inputs": {
+        "now": 18446744073709551614,
+        "period": 50,
+        "period_validated_by_init": true
+      },
+      "observed": {
+        "after": 48
+      },
+      "result_sha256": "d10f68ac1ae6f18c1ae9fd02ba1a5dba1d3d00deb9e5a42d4e1a87480dce2773"
+    },
+    {
+      "group": "clock-add-fragment",
+      "inputs": {
+        "now": 18446744073709551615,
+        "period": 1,
+        "period_validated_by_init": true
+      },
+      "observed": {
+        "after": 0
+      },
+      "result_sha256": "dae2156d10debd56c1d55f8d5086e5f90816de2d064a8a950b04d49c31ea6b19"
+    },
+    {
+      "group": "clock-add-fragment",
+      "inputs": {
+        "now": 100,
+        "period": 50,
+        "period_validated_by_init": true
+      },
+      "observed": {
+        "after": 150
+      },
+      "result_sha256": "ca9eda14549648af62c685a5343c644aaf07a014f8eb686d9631e98ef2b0df22"
+    },
+    {
+      "group": "clock-add-fragment",
+      "inputs": {
+        "now": 0,
+        "period": 4294967295,
+        "period_validated_by_init": false
+      },
+      "observed": {
+        "after": 4294967295
+      },
+      "result_sha256": "8b35f63fb0303d79b25265ff0cbae57a5f1b54c186bec270c294ab8f850f24f2"
+    },
+    {
+      "group": "board-timer-synthetic-register-sequence",
+      "inputs": {
+        "prior_control": 0,
+        "irq_token": 19
+      },
+      "observed": {
+        "final_control": 1051,
+        "reload": 6749,
+        "high": 0,
+        "write_count": 5
+      },
+      "result_sha256": "71f3f8bad6359da5f702592ed4a243b341e315754d1155d22edb17a6f1d33c1d"
+    },
+    {
+      "group": "board-timer-synthetic-register-sequence",
+      "inputs": {
+        "prior_control": 4294967295,
+        "irq_token": 147
+      },
+      "observed": {
+        "final_control": 1051,
+        "reload": 6749,
+        "high": 0,
+        "write_count": 5
+      },
+      "result_sha256": "d4749885d431b385428806552251a6165b0dcbf90c60b204cb9758d1d23c944d"
+    }
+  ]
+}

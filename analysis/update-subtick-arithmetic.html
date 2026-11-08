@@ -1,0 +1,38 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>32비트 중간값이 바꾸는 반환값</title><style>
+:root{color-scheme:light dark;--bg:#f7f8fa;--paper:#fff;--ink:#182332;--muted:#48596b;--line:#d2dbe5;--accent:#124b8e;--soft:#edf3fa;--focus:#d75f00}
+@media(prefers-color-scheme:dark){:root{--bg:#111821;--paper:#18222d;--ink:#e8edf4;--muted:#b4c2d2;--line:#405369;--accent:#98c8ff;--soft:#223348;--focus:#ffb374}}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.85 system-ui,-apple-system,"Malgun Gothic",sans-serif;word-break:keep-all;overflow-wrap:anywhere}
+a{color:var(--accent);text-underline-offset:.18em}a:hover{text-decoration-thickness:2px}:focus-visible{outline:3px solid var(--focus);outline-offset:4px}
+header,main,footer{max-width:1120px;margin:auto;padding:36px clamp(18px,4vw,56px)}header{padding-top:56px;padding-bottom:24px}main{background:var(--paper);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.eyebrow{color:var(--muted);font-size:.84rem;letter-spacing:.06em}h1{font-size:clamp(1.85rem,4.5vw,3rem);line-height:1.35;letter-spacing:-.025em;margin:12px 0 18px}h2{font-size:1.5rem;line-height:1.5;margin:3.6rem 0 1rem;padding-top:1.2rem;border-top:1px solid var(--line)}h2:first-child{margin-top:0}h3{font-size:1.12rem;margin-top:2rem}p{margin:1rem 0}strong{font-weight:650}.intro{max-width:55em;color:var(--muted)}
+nav{margin-top:25px}nav ul{display:flex;flex-wrap:wrap;gap:8px 22px;list-style:none;padding:0;margin:0}nav ul ul{display:none}nav a{font-size:.9rem}code{font: .88em/1.6 ui-monospace,Consolas,monospace;overflow-wrap:anywhere}pre{background:var(--soft);padding:18px;overflow-x:auto;white-space:pre-wrap;border-radius:5px}pre code{font-size:.82rem}
+.table-scroll{overflow-x:auto;margin:24px 0}table{border-collapse:collapse;width:100%;font-size:.92rem;min-width:530px}th,td{text-align:left;vertical-align:top;padding:14px 16px;border-bottom:1px solid var(--line)}th{background:var(--soft);font-weight:650}td:first-child{min-width:125px}details{border-block:1px solid var(--line);margin-top:24px;padding:16px 0}summary{cursor:pointer;font-weight:650;padding:6px 0}.caption,.meta{font-size:.86rem;color:var(--muted)}
+figure{margin:32px 0;padding:24px 0;border-block:1px solid var(--line)}figcaption{font-size:.95rem;font-weight:650;margin-bottom:20px}.flow{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:32px;list-style:none;padding:0;margin:18px 0}.flow li{position:relative;padding:18px;background:var(--soft);border-radius:6px;line-height:1.6}.flow strong{display:block;font-size:1rem}.flow span{display:block;color:var(--muted);font-size:.86rem;margin-top:9px}.flow li:not(:last-child)::after{content:"→";position:absolute;right:-27px;top:40%;font-size:22px;color:var(--muted)}.second{margin-top:24px}footer{font-size:.88rem;color:var(--muted)}
+@media(max-width:620px){body{font-size:16px}header,main,footer{padding-inline:20px}.flow{grid-template-columns:1fr;gap:26px}.flow li:not(:last-child)::after{content:"↓";right:auto;left:calc(50% - 8px);top:auto;bottom:-28px}.flow li{padding:15px 18px}h2{font-size:1.3rem}nav ul{gap:10px 18px}table{font-size:.87rem}th,td{padding:12px}header{padding-top:30px}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+@media print{body{background:white;color:black;font-size:10pt}header,main,footer{max-width:none;padding:12pt}nav{display:none}a{color:inherit}h2,figure,table{break-inside:avoid}h2{break-after:avoid}main{border:0}.flow li{background:#f1f3f5}.table-scroll{overflow:visible}table{min-width:0}details>*{display:block!important}}
+
+.site-nav{border-block:1px solid var(--line);padding:14px 0;margin:20px 0}.site-nav a{display:inline-block;margin:4px 16px 4px 0}
+.review-note{background:var(--soft);padding:16px 20px;margin:24px 0}.toc{font-size:.92rem}.toc ul{list-style:none;padding-left:0}.toc ul ul{padding-left:20px}
+.branch{margin:18px 0;padding:0 0 0 24px;border-left:3px solid var(--line)}.branch p{margin:8px 0}.diagram-line{padding:12px 16px;background:var(--soft);border-radius:4px}
+td code{white-space:nowrap}
+
+.site-nav{display:flex;flex-wrap:wrap;gap:10px 22px}.flow{grid-template-columns:repeat(4,minmax(0,1fr))}.arithmetic-chart{display:block;width:100%;height:auto;background:#fff}@media(max-width:620px){.flow{grid-template-columns:1fr}}
+</style></head><body><header><div class="wrap"><p class="eyebrow">K-3 III · 하위 시각 변환 산술</p><h1>32비트 중간값이 바꾸는 반환값</h1><p>카운터 차이에 1,000,000을 곱하는 명령은 중간값의 하위 32비트만 남긴다. 합성 입력에서 발생하는 반환값 감소를 확인했으며 실제 카메라 시각의 오류 여부는 미확정이다.</p><nav class="site-nav" aria-label="보고서 탐색"><a href="update-timer-clock.html">설정과 카운터</a><a href="#formula">정확한 연산</a><a href="#sweep">합성 입력 결과</a><a href="#callers">호출자와 한계</a></nav></div></header>
+<main><section id="formula"><h2>64비트 곱셈 이전의 32비트 절단</h2>
+<p><code>0x525b5c60</code>은 주소 <code>0x1e0000d8</code>의 reload와 <code>0x1e0000d4</code>의 current를 읽는다. <code>0x525b5c74</code>에서 차이를 구한 뒤, <code>0x525b5c8c</code>의 MUL로 32비트 곱을 만든다. 다음 UMULL과 우측 이동이 반환값을 결정한다. <a href="update-subtick-arithmetic-evidence.json">원본 명령·해시 근거</a></p>
+<pre><code>d = (reload − current) mod 2³²
+p = (d × 1,000,000) mod 2³²
+result = floor((p × 0x9b5e1bb1) / 2⁴⁴)</code></pre>
+<p>이는 원본 ARM을 옮긴 수학적 표현이다. 디컴파일 C에 나타나는 signed int 곱셈·나눗셈 표현만으로는 중간값의 절단을 정확히 규정할 수 없다. 로컬 genuine C는 수정하지 않고 보존했다. 반환값의 물리적 단위와 유효 입력 범위는 아직 확정하지 않았다.</p></section>
+<section id="sweep"><h2>6,750개 합성 입력의 연속 조회</h2>
+<p>별도 초기화에서 관측한 reload 상수 6,749를 fixture로 고정하고 차이 d를 0~6,749로 바꾸어 원본 ARM을 실행했다. 실제 카운터가 이 범위 전체를 지난다는 가정은 검증하지 않았다. 모든 결과를 정확한 정수식과 대조했고 출력 배열의 해시도 보존했다. <a href="update-subtick-arithmetic-checks.json">실행 결과와 배열 해시</a></p>
+<figure><img class="arithmetic-chart" src="update-subtick-arithmetic.svg" alt="합성 입력 d가 0에서 4294까지 증가할 때 반환값은 636242까지 증가한다. d 4295에서 4로 감소한 뒤 d 6749에서 363614가 된다. 실제 시간 단위는 미확정이다."><figcaption>가로축은 합성 카운터 차이, 세로축은 단위가 확인되지 않은 반환 정수다. 이 그림은 실제 시간 측정값이 아니다. <a href="update-subtick-arithmetic.svg">그래프를 원본 크기로 보기</a></figcaption></figure>
+<div class="table-scroll"><table><thead><tr><th>합성 차이 d</th><th>반환값</th><th>해석</th></tr></thead><tbody><tr><td>0</td><td>0</td><td>차이가 없음</td></tr><tr><td>1</td><td>148</td><td>정수 연산 결과</td></tr><tr><td>4,294</td><td>636,242</td><td>중간 곱의 첫 순환 직전</td></tr><tr><td>4,295</td><td>4</td><td>중간 곱이 32비트를 넘음</td></tr><tr><td>6,749</td><td>363,614</td><td>이번 합성 조회의 마지막 입력</td></tr></tbody></table></div>
+<p>6,750개 조회는 검증 기록에서 한 사례로 센다. 차이 계산의 순환 경계 4사례를 더해 총 5사례, ARM 실행은 6,754회다. RTOS·decoded 입력의 결과가 일치했다. IRQ mask·restore는 대체 함수이며 MMIO 주소는 일반 RAM이다. 함수 실행 전후 레지스터용 RAM이 바뀌지 않았음도 확인했다.</p></section>
+<section id="callers"><h2>반환값을 전달하는 두 호출자</h2>
+<p><code>0x525ce390</code>의 선택 호출은 <code>0x525ce3fc</code>에서 이 함수를 부르고 <code>0x525ce400</code>에서 저장한다. 다른 함수 <code>0x525ce45c</code>도 <code>0x525ce4c8</code>에서 호출한 뒤 <code>0x525ce4cc</code>에서 저장한다. 두 저장 대상은 각각 진입 시 r1에서 보존한 포인터다. 호출자 전체는 정적 분석만 했으며 실제 API 호출·반환 계약과 상위 시각 조합은 실행하지 않았다.</p>
+<p>따라서 이번 결과로 단정할 수 있는 것은 선택한 함수의 정수 연산과 합성 입력에 대한 반환값이다. 실제 timestamp의 역행, UI 지연 오작동, 촬영 시간 오류 또는 사용자가 체감하는 영향을 입증하지 않는다. 다음 단계에서는 호출자의 출력 필드가 실제 소비되는 경로와 타이머 채널의 동작 범위를 확인해야 한다.</p>
+<p>genuine C 1개, 지원 범위 2개와 ARM 113 words를 로컬에 저장했다. HTML은 구조·링크와 320·390·1280px 화면을 확인했으며, 그래프 좌표도 정수식과 대조했다. 카메라·IRQ·주변장치 동작은 검사하지 않았다.</p>
+<details><summary>재현 명령</summary><pre><code>python verify_update_subtick_arithmetic.py rtos.bin --output subtick-arithmetic.json</code></pre><p><a href="../verify_update_subtick_arithmetic.py">재현 도구</a>는 decoded 입력도 지원하며 원본 파일을 읽기만 한다. 원본 C·ASM·바이너리는 로컬에만 보관한다. 펌웨어 빌드·플래시는 수행하지 않았다.</p></details></section></main><footer>합성 입력에서 원본 ARM의 산술을 검증했다. 실제 타이머 주파수·입력 범위·시간 단위는 미확정이다.</footer>
+</body></html>

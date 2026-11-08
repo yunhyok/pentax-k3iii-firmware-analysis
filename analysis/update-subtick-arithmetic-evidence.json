@@ -1,0 +1,175 @@
+{
+  "image": {
+    "base": "0x52500000",
+    "size": 25483200,
+    "sha256": "342d2f35405e8daf1797dfe431d2e4aa70f4b52a2c242a29df48206672f1dfb4"
+  },
+  "functions": [
+    {
+      "label": "subtick_conversion",
+      "start": "0x525b5c60",
+      "end": "0x525b5c9c",
+      "sha256": "92cdf6a39ad684a03fa0328457d695a9043912cf66783372118d921a940c0ac4",
+      "assembly_sha256": "5d9e8e4abfefade9678cf0714ca7dbc37f844a6ca3fe75105e349fe223a6b957",
+      "pseudocode_sha256": "3da48ca2219c052efe6672739060f87ce8409f366aeac4d37a5a286a9adc4158"
+    }
+  ],
+  "fragments": [
+    {
+      "label": "clock_with_offset_reader",
+      "start": "0x525ce390",
+      "end": "0x525ce45c",
+      "sha256": "24aa3def8dbd0a162185b225c719cb8e6de3113d8b004df5fdac2c7f4f376da3",
+      "assembly_sha256": "18103018d0ed829a943da51764b31181c764af3a848136a06feaa21a2799e9d0"
+    },
+    {
+      "label": "clock_counter_reader",
+      "start": "0x525ce45c",
+      "end": "0x525ce518",
+      "sha256": "e7a08dc1a1fd9b4719a3ba1733de0a7acc81db4d361710052b6b7b13ef73835e",
+      "assembly_sha256": "3e7d1419ada5a346042b272f6d468aaa2b98624a534194134ae53c1cb71ccc14"
+    }
+  ],
+  "critical_instructions": [
+    {
+      "address": "0x525b5c6c",
+      "instruction": "ldr r3, [r2, #0xd8]"
+    },
+    {
+      "address": "0x525b5c70",
+      "instruction": "ldr r4, [r2, #0xd4]"
+    },
+    {
+      "address": "0x525b5c74",
+      "instruction": "rsb r4, r4, r3"
+    },
+    {
+      "address": "0x525b5c7c",
+      "instruction": "movw r3, #0x4240"
+    },
+    {
+      "address": "0x525b5c80",
+      "instruction": "movw r2, #0x1bb1"
+    },
+    {
+      "address": "0x525b5c84",
+      "instruction": "movt r3, #0xf"
+    },
+    {
+      "address": "0x525b5c88",
+      "instruction": "movt r2, #0x9b5e"
+    },
+    {
+      "address": "0x525b5c8c",
+      "instruction": "mul r3, r3, r4"
+    },
+    {
+      "address": "0x525b5c90",
+      "instruction": "umull r2, r3, r3, r2"
+    },
+    {
+      "address": "0x525b5c94",
+      "instruction": "lsr r0, r3, #0xc"
+    },
+    {
+      "address": "0x525ce3fc",
+      "instruction": "bl #0x525b5c60"
+    },
+    {
+      "address": "0x525ce400",
+      "instruction": "str r0, [r5]"
+    },
+    {
+      "address": "0x525ce464",
+      "instruction": "mov r5, r1"
+    },
+    {
+      "address": "0x525ce4c8",
+      "instruction": "bl #0x525b5c60"
+    },
+    {
+      "address": "0x525ce4cc",
+      "instruction": "str r0, [r5]"
+    }
+  ],
+  "relationships": [
+    {
+      "sites": [
+        "0x525b5c74",
+        "0x525b5c8c",
+        "0x525b5c90",
+        "0x525b5c94"
+      ],
+      "description": "d=u32(reload-current);p=u32(d*1000000);result=(u64(p)*0x9b5e1bb1)>>44. OriginalARM u32intermediate is essential; restoredC signedint not executableproof."
+    },
+    {
+      "sites": [
+        "0x525ce3fc",
+        "0x525ce400",
+        "0x525ce4c8",
+        "0x525ce4cc"
+      ],
+      "description": "Two selected native callers store resultthrough their savedoutputpointer. Callers static only; no monotonicity or absoluteclock behavior claim."
+    }
+  ],
+  "limits": [
+    "Syntheticregistersweep0..6749 is chosenfrom observedreloadconstant elsewhere; actualhardwarecountervalues/timing notsampled.",
+    "IRQmask/restore stubs, no actualMMIO,OS,clock,device,build orflash.",
+    "Outputunit and callercontract unresolved. Arithmeticdecrease doesnot establish realcamera timestamp regression or practicalimpact.",
+    "OnegenuineC untouched; Cexpression doesnot faithfullyspecify ARM32bitwrapping semantics."
+  ],
+  "manager_validation": {
+    "passed": true,
+    "image_sha256": "342d2f35405e8daf1797dfe431d2e4aa70f4b52a2c242a29df48206672f1dfb4",
+    "genuine_c": 1,
+    "supporting_ranges": 2,
+    "words": 113,
+    "critical_instructions": 15,
+    "cases": 5,
+    "arm_executions": 6754,
+    "rtos_decoded_equal": true,
+    "scope": "One synthetic6750point sweep plus4edgecases. Source and ARM execution only; no realclock/timestamps/device."
+  },
+  "prior_public_evidence": [
+    {
+      "path": "update-timer-clock-evidence.json",
+      "sha256": "20919f5c3c7e63d9402d1a3e2342f95a6e5f2581d88c3a73ac40c53ebc8dc519"
+    }
+  ],
+  "public_cli": {
+    "script": "../verify_update_subtick_arithmetic.py",
+    "sha256": "6211f318c32f5d4298998691027f7d7dc17f3e717bf4d5ab9efb214577195b23",
+    "guards": [
+      "existing",
+      "hardlink",
+      "dangling-missing-input",
+      "optimized-missing-input-dangling-output",
+      "unknown-input"
+    ],
+    "passed": true,
+    "both_containers_equal": true
+  },
+  "validation": {
+    "cases": 5,
+    "arm_executions": 6754,
+    "groups": {
+      "synthetic-register-sweep": 1,
+      "synthetic-wrap-edges": 4
+    }
+  },
+  "artifact_policy": "Original binaries,C,ASM and resource text stay local. Authored analysis,synthetic fixtures and metadata public.",
+  "independent_review": {
+    "passed": true,
+    "additional_private_cases": 5,
+    "baseline_cases": 5,
+    "manager_reran_additional_cases": true,
+    "scope": "Callers static only, conditional paths include external state/lock/error boundaries. No timing unit, actual reachable register range, timestamp monotonicity, camera bug or hardware behavior inferred."
+  },
+  "figure": {
+    "path": "update-subtick-arithmetic.svg",
+    "sha256": "f2b886b74e60238caf2dc1c671f40a072eeb8dacbfd8208c445f371c3c108fc7",
+    "series_sha256": "e7ccc5f0322bbc2f747ab53023d3f8d87afa1b5f6a8ec757dae64d2cf4239615",
+    "png_preview_inspected": true,
+    "html_screen_rendered": false
+  }
+}

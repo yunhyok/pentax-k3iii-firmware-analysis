@@ -1,0 +1,66 @@
+{
+  "passed": true,
+  "image_sha256": "342d2f35405e8daf1797dfe431d2e4aa70f4b52a2c242a29df48206672f1dfb4",
+  "cases": 5,
+  "arm_executions": 6754,
+  "groups": {
+    "synthetic-register-sweep": 1,
+    "synthetic-wrap-edges": 4
+  },
+  "scope": "Original ARM subtick conversion over authored timer register values.\nExhaustive sweep is one group, not proof of actual counter range or timestamp behavior.\nIRQ mask/restore are stubs. No actual MMIO, OS, hardware clock or elapsed time runs.\n",
+  "stubs": {
+    "0x525b6144": "IRQ mask boundary returns synthetic13",
+    "0x525b6154": "IRQ restore boundary returns0"
+  },
+  "ranges": [
+    {
+      "start": "0x525b5c60",
+      "end": "0x525b5c9c",
+      "sha256": "92cdf6a39ad684a03fa0328457d695a9043912cf66783372118d921a940c0ac4"
+    }
+  ],
+  "results": [
+    {
+      "group": "synthetic-register-sweep",
+      "samples": 6750,
+      "reload": 6749,
+      "difference_min": 0,
+      "difference_max": 6749,
+      "drop_indices": [
+        4295
+      ],
+      "boundary_outputs": {
+        "0": 0,
+        "1": 148,
+        "4294": 636242,
+        "4295": 4,
+        "6749": 363614
+      },
+      "all_outputs_sha256": "e7ccc5f0322bbc2f747ab53023d3f8d87afa1b5f6a8ec757dae64d2cf4239615"
+    },
+    {
+      "group": "synthetic-wrap-edges",
+      "reload": 0,
+      "current": 0,
+      "result": 0
+    },
+    {
+      "group": "synthetic-wrap-edges",
+      "reload": 0,
+      "current": 1,
+      "result": 636237
+    },
+    {
+      "group": "synthetic-wrap-edges",
+      "reload": 4294967295,
+      "current": 0,
+      "result": 636237
+    },
+    {
+      "group": "synthetic-wrap-edges",
+      "reload": 4294967295,
+      "current": 4294967295,
+      "result": 0
+    }
+  ]
+}

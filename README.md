@@ -14,6 +14,7 @@
 - [SD·Emmc 객체와 완료 통지 72사례](analysis/update-media-completion.html) · [R 파티션의 sector 주소와 I/O 25사례](analysis/update-partition-io.html)
 - [부트 헤더 출력과 파티션 표의 구분](analysis/header-alias-consumer.html) · [완료 통지 이후 UI 작업·handle 처리](analysis/update-ui-consumer.html)
 - [UI 타이머 예약·취소·콜백 39사례](analysis/update-ui-timer.html) · [커널 호출·64비트 시각 계산 17사례](analysis/update-timer-abi.html)
+- [TTimPeriod 설정·카운터 증가 20사례](analysis/update-timer-clock.html) · [하위 시간 변환의 32비트 산술·6,754회 실행](analysis/update-subtick-arithmetic.html)
 - [실제 DNG 표본·DCP 시험 준비](analysis/raw-test-inputs.html)
 - [ColorChecker 24패치·ICC 색차 비교 절차](analysis/color-comparison-protocol.html)
 - [Lightroom 실제 TIFF 6개·프로파일·출력 색공간 비교](analysis/lightroom-render-comparison.html)
