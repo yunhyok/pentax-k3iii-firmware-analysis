@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>K-3 II #1376의 ColorChecker 비교 절차</title>
+<style>
+:root{color-scheme:light dark;--bg:#f7f8fa;--paper:#fff;--ink:#182332;--muted:#48596b;--line:#d2dbe5;--accent:#124b8e;--soft:#edf3fa}
+@media(prefers-color-scheme:dark){:root{--bg:#111821;--paper:#18222d;--ink:#e8edf4;--muted:#b4c2d2;--line:#405369;--accent:#98c8ff;--soft:#223348}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.75 system-ui,"Malgun Gothic",sans-serif;word-break:keep-all;overflow-wrap:anywhere}
+header,main{max-width:1060px;margin:auto;padding:clamp(18px,4vw,44px)}main{background:var(--paper);border:1px solid var(--line)}
+h1{font-size:clamp(1.8rem,5vw,2.8rem);line-height:1.25}h2{font-size:1.35rem;margin-top:2.2rem}h2:first-child{margin-top:0}small{color:var(--muted)}a{color:var(--accent);text-underline-offset:.18em}nav a{display:inline-block;margin:4px 16px 4px 0}
+table{border-collapse:collapse}th,td{min-width:3.2em;padding:.35em .6em;border:1px solid var(--line);text-align:center}caption{text-align:left;margin-bottom:.45em}th{background:var(--soft)}pre{background:var(--soft);padding:16px;overflow:auto;font-size:.84rem}code{font-family:ui-monospace,Consolas,monospace}
+</style>
+</head>
+<body>
+<header>
+<small>2026-11-08 · raw.pixls.us #1376 · PENTAX K-3 II</small>
+<h1>K-3 II #1376의 ColorChecker 비교 절차</h1>
+<p>내장 JPEG에서 ColorChecker Classic 패치 24개의 위치를 확인했다. 이 좌표를 사용하면 같은 RAW에서 만든 Lightroom 출력의 색과 톤을 패치별로 비교할 수 있다.</p>
+<nav aria-label="관련 문서"><a href="raw-test-inputs.html">RAW 시험 자료</a><a href="lightroom-bridge.html">DCP 내보내기</a><a href="color-comparison-protocol.json">좌표와 검사 기록</a></nav>
+</header>
+<main>
+<h2>표본과 패치 좌표</h2>
+<p>raw.pixls.us #1376의 CC0 DNG에서 <code>SubIFD1:PreviewImage</code>를 추출했다. 6016×4000 JPEG의 오른쪽에 Classic 차트가 있고 왼쪽에는 별도의 패스포트 패치가 있다. 오른쪽 차트는 제조사의 6열×4행 배치를 반시계 방향으로 90도 돌린 상태다. 검정은 오른쪽 위, 흰색은 오른쪽 아래, 어두운 피부색은 왼쪽 아래다. <a href="https://raw.pixls.us/json/getrepository.php?set=all">raw.pixls.us 원본 레코드</a> · <a href="https://creativecommons.org/publicdomain/zero/1.0/">CC0 1.0</a> · <a href="https://calibrite.com/wp-content/uploads/2023/08/ColorChecker-Passport-Photo-2-Guide_-EN_0123.pdf">Calibrite 패스포트 안내서</a></p>
+<table>
+<caption>JPEG에서 보이는 패치 번호</caption>
+<thead><tr><th scope="col">행</th><th scope="col">1열</th><th scope="col">2열</th><th scope="col">3열</th><th scope="col">4열</th></tr></thead>
+<tbody>
+<tr><th scope="row">위</th><td>6</td><td>12</td><td>18</td><td>24</td></tr>
+<tr><th scope="row">2</th><td>5</td><td>11</td><td>17</td><td>23</td></tr>
+<tr><th scope="row">3</th><td>4</td><td>10</td><td>16</td><td>22</td></tr>
+<tr><th scope="row">4</th><td>3</td><td>9</td><td>15</td><td>21</td></tr>
+<tr><th scope="row">5</th><td>2</td><td>8</td><td>14</td><td>20</td></tr>
+<tr><th scope="row">아래</th><td>1</td><td>7</td><td>13</td><td>19</td></tr>
+</tbody></table>
+<p>좌표 원점은 JPEG 왼쪽 위다. 각 패치 중앙의 200×200픽셀을 <code>[x0, y0, x1, y1)</code>로 지정했다. 시작 좌표는 포함하고 끝 좌표는 제외한다. 예를 들어 흰색 19번은 <code>[5019, 3006, 5219, 3206)</code>, 검정 24번은 <code>[5050, 666, 5250, 866)</code>다. 차트 전체를 한 화면에서 확인할 때는 <code>[3480, 540, 5400, 3350)</code> 범위를 쓸 수 있다. <a href="color-comparison-protocol.json">24개 영역 좌표와 원본 SHA-256</a></p>
+
+<h2>내장 JPEG의 하이라이트와 패치 내 편차</h2>
+<p>선택한 960,000픽셀에서 RGB 어느 채널도 0이나 255에 도달하지 않았다. 흰색 패치 중앙값은 8비트 RGB <code>[247, 249, 248]</code>이고 채널별 최댓값은 <code>[250, 252, 251]</code>이다. 중성 패치 19–24번의 선형 sRGB 상대 휘도 중앙값은 흰색에서 검정까지 순서대로 낮아졌다. 이 값은 카메라가 렌더링한 JPEG에서 얻었다. RAW 포화 여부는 센서 값과 RAW의 <code>WhiteLevel</code>을 따로 비교해야 한다. <a href="color-comparison-protocol.json">채널 범위와 상대 휘도 기록</a> · <a href="https://www.w3.org/TR/WCAG22/#dfn-relative-luminance">sRGB 상대 휘도 계산</a></p>
+<p>각 영역을 네 사분면으로 나누고 상대 휘도 중앙값의 범위를 전체 영역의 중앙값으로 나눴다. 가장 큰 값은 검정 패치의 3.00%였고 나머지 패치는 최대 1.46%였다. 검정 패치는 분모가 작아 같은 절대 편차도 비율이 커질 수 있다. 이 방법은 패치 안에서 밝기가 고른지 보는 검사다. 차트 전체의 조명 편차를 구하려면 반사율이 같은 표적을 여러 위치에 놓거나 별도로 조명을 측정해야 한다. <a href="color-comparison-protocol.json">패치별 사분면 값</a></p>
+<p>같은 DNG의 손실 없는 CFA 데이터를 디코딩해 RAW도 검사했다. DNG 태그로 계산한 기본 크롭 시작점은 센서 배열의 <code>(16, 16)</code>이다. 크롭 크기는 JPEG와 같았지만 차트 모서리 네 곳의 구조를 맞추자 가로 최대 30픽셀, 세로 최대 22픽셀 차이가 있었다. 이 대응에 맞춰 RAW의 패치 중심을 옮겨 검사했다. CFA 표본 960,000개에서 <code>BlackLevel=1</code> 이하와 <code>WhiteLevel=16317</code> 이상이 각각 0개였다. 패치에서 가장 높은 값은 14420이었다. 기본 크롭 전체에서는 144개가 WhiteLevel에 도달했다. <a href="color-comparison-protocol.json">RAW 정합·센서 레벨 기록</a> · <a href="https://helpx.adobe.com/content/dam/help/en/camera-raw/digital-negative/jcr_content/root/content/flex/items/position/position-par/download_section_733958301/download-1/DNG_Spec_1_7_1_0.pdf">Adobe DNG 규격의 BlackLevel·WhiteLevel·DefaultCropOrigin</a></p>
+
+<h2>Lightroom 출력의 색차 계산</h2>
+<ol>
+<li>같은 #1376에서 Adobe Standard, Camera Natural, 행렬 기반 시험 DCP로 각각 현상한다. Process Version, As Shot WB, 노출, 방향, 자르기를 고정한다. 같은 해상도의 16비트 RGB TIFF를 sRGB ICC와 함께 저장하고 크기 변경과 출력 샤프닝은 끈다.</li>
+<li>TIFF에서 차트 네 모서리와 안쪽 경계를 대조한다. 해상도가 같아도 패치 위치를 확인한다. 크롭이나 렌즈 보정으로 위치가 바뀌었다면 차트를 정합한 뒤 좌표를 옮긴다. 정합이 확인된 영역만 비교한다.</li>
+<li>TIFF는 포함된 ICC를 사용한다. 내장 JPEG는 DNG의 <code>PreviewColorSpace</code>에 따라 sRGB로 지정한다. 두 이미지를 상대 색도계 방식으로 CIELAB D50에 변환하고 흑점 보정은 끈다. <a href="https://www.color.org/iccmax/connection1/">ICC의 D50 프로파일 연결 색공간</a> · <a href="https://registry.color.org/rgb-registry/srgb">ICC sRGB 등록 정보</a></li>
+<li>각 패치에서 L*, a*, b* 중앙값을 구하고 <code>kL=kC=kH=1</code>로 ΔE<sub>00</sub>을 계산한다. 전체 24개 값, 중앙값, 90백분위, 최댓값을 보고한다. 중성 패치의 ΔL*, Δa*, Δb*와 RGB 끝점 개수도 함께 기록한다. <a href="https://www.cie.co.at/publications/colorimetry-part-6-ciede2000-colour-difference-formula-1">ISO/CIE 11664-6:2022</a> · <a href="https://hajim.rochester.edu/ece/sites/gsharma/ciede2000/">Sharma·Wu·Dalal 검증 자료</a></li>
+</ol>
+<p>설치된 <code>tifffile</code> 2023.4.12로 16비트 RGB 값과 TIFF ICC 태그를 확인할 수 있다. <code>tificc</code> 6.3(LittleCMS 2.12)는 아래 명령으로 CIELAB을 float32 TIFF로 출력했다. 합성 RGB 16비트 입력에서 1코드 차이가 변환 후에도 약 0.00153 L* 차이로 남았고 같은 RGB 값에 다른 ICC를 적용하면 Lab 결과가 달라졌다. <code>scikit-image</code> 0.24.0의 ΔE<sub>00</sub>은 저자 제공 34개 사례에서 소수 넷째 자리 기준 최대 오차가 0.00005 미만이었다. <a href="https://raw.githubusercontent.com/mm2/Little-CMS/lcms2.12/utils/tificc/tificc.c">LittleCMS 2.12 소스</a> · <a href="color-comparison-protocol.json">검사 버전과 수치</a></p>
+<pre><code>tificc -t1 '-o*Lab4' -w32 lightroom-srgb16.tif lightroom-lab.tif
+tificc -t1 '-i*sRGB' '-o*Lab4' -w32 preview-rgb8.tif preview-lab.tif</code></pre>
+<p>두 번째 명령의 <code>preview-rgb8.tif</code>는 JPEG를 RGB8로 디코딩한 뒤 픽셀 값을 유지해 저장한다. 첫 번째 명령을 실행하기 전에 Lightroom TIFF에 sRGB ICC가 들어 있는지 확인한다.</p>
+
+<h2>이 시험에서 판정할 수 있는 범위</h2>
+<p>이 표본으로 같은 노출과 조명에서 어느 Lightroom 프로파일의 출력이 Natural 미리보기에 가까운지 재현 가능하게 비교할 수 있다. 실물 차트의 제작 시기, 보관 상태, 조명 스펙트럼과 공간 분포는 확인되지 않았다. 따라서 제조사 표준값과의 절대 색 정확도, 다른 조명과 노출에서의 성능, 별도 촬영 JPEG와의 일치 여부에는 추가 시험이 필요하다. 이번 기록에는 Lightroom 출력과의 ΔE<sub>00</sub> 실측이 없다. <a href="https://www.xrite.com/service-support/new_color_specifications_for_colorchecker_sg_and_classic_charts">X-Rite의 차트 제조 시기별 색 규격</a> · <a href="raw-test-inputs.html">표본의 촬영 조건과 범위</a></p>
+</main>
+</body>
+</html>

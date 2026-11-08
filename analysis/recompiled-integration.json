@@ -1,0 +1,488 @@
+{
+  "schema_version": 1,
+  "scope": "One offline Q13 matrix placement and repack. No device or updater execution.",
+  "candidate_file_lifecycle": {
+    "during_verification": "matrix-offline.repacked.unverified.bin",
+    "after_checks_and_evidence": "matrix-offline.repacked.bin"
+  },
+  "build": {
+    "zig_version": "0.15.2",
+    "zig_exe_sha256": "d408dd38eed3e5204af841bcebf70502a4dbbb8399a3a3262be55059370bc018",
+    "object_sha256": "b1236d23bce9e4c14ae02e18ba982e83da2a9fc268763ddd5a78d47ec40d17ce",
+    "source_lf_sha256": "c281653dffff16d90a2af36622e763363f04314bdc4b2398907ca97351adbf52",
+    "command": [
+      "<zig.exe>",
+      "cc",
+      "-target",
+      "arm-freestanding-eabi",
+      "-mcpu=cortex_a7",
+      "-marm",
+      "-std=c11",
+      "-ffreestanding",
+      "-fno-builtin",
+      "-fno-stack-protector",
+      "-fno-unwind-tables",
+      "-fno-asynchronous-unwind-tables",
+      "-ffunction-sections",
+      "-Oz",
+      "-Wall",
+      "-Wextra",
+      "-Werror",
+      "-c",
+      "source/reconstructed/numeric_kernels.c",
+      "-o",
+      "<private run>/numeric_kernels.o"
+    ],
+    "matrix_sha256": "84d8f005c12abf45bfb40c4410daee4d8bd131e5ccaa74bcedea0c583bb8bea5",
+    "instructions": 28,
+    "direct_branch_targets": [
+      "0x5312cd64",
+      "0x5312cd58",
+      "0x5312cd48"
+    ],
+    "text_relocations": 0,
+    "external_pc_relative_reads": 0,
+    "capstone": "5.0.7"
+  },
+  "package_tools_sha256": {
+    "package_roundtrip.py": "b46863f35476c4b0db5910858c6ff4bdfc21ec1200141080ae1a522358812250",
+    "verify_package_roundtrip.py": "a134af308197798188429bf72bcb0c731a2f28f668832f89a4a77323d2935881",
+    "inspect_firmware.py": "e6d3221abd8738b937c0f507007b89acd33b687ae37a0fb4a33cc686b03737af",
+    "verify_update_resources.py": "5ee49c4b85beb46971e10ab153bf4da3af10d96bb531e1af2e6dc3d90ce7b41b"
+  },
+  "unicorn": "2.1.4",
+  "original": {
+    "package_sha256": "3c9d466b8160689867af2f58ff2cf0bf3363bc3b42daff43685a33171b91eb1a",
+    "package_size": 35106716,
+    "decoded_sha256": "7ff301d585ef7adcd620a15575faa39b4227cc5a27eaa8d754efe50f667a30f9",
+    "decoded_size": 78683892,
+    "blocks": 3202,
+    "stored_blocks": 742,
+    "outer_checksum": 2953380011,
+    "inner_checksum": 1803449087
+  },
+  "candidate": {
+    "package_sha256": "c8466d5db7e2afb6393790c5ade30b3183c33d37daaae1c184542711ff970984",
+    "package_size": 78690708,
+    "decoded_sha256": "eb4b22845cf697ca7c843e5a57df0b6fba19e47020ecad2eeecde18a715c803b",
+    "decoded_size": 78683892,
+    "blocks": 3203,
+    "stored_blocks": 3203,
+    "outer_checksum": 3308621839,
+    "inner_checksum": 1848025883
+  },
+  "repack_mode": "stored-block-reencoding",
+  "placement": {
+    "rtos_record": {
+      "name": "RTOS",
+      "index": 1,
+      "payload_offset": 115100,
+      "size": 25483200,
+      "before_sha256": "342d2f35405e8daf1797dfe431d2e4aa70f4b52a2c242a29df48206672f1dfb4",
+      "after_sha256": "641a6441669ba7d4dfed16e479c8ab5c9b49a4b2defb0f1bc33bf4565cd2b249"
+    },
+    "entry": "0x5312cd40",
+    "preserved_tail_start": "0x5312cdb0",
+    "end_exclusive": "0x5312cdb4",
+    "original_leaf_sha256": "cfbe871ad650aa038a0756f3d3be2389be7b21d8b2ec382b1407597dd9ba28c7",
+    "candidate_leaf_sha256": "c6cadb2f1c1f925b064721f83081cff388d941393b2a2306a4f2961f7c30953d",
+    "preserved_tail_sha256": "c2a4c56a376cbb61064313be4925898e2816aa603b23f50cf658da7a34236454",
+    "decoded_start": "0xc48edc",
+    "decoded_end_exclusive": "0xc48f4c",
+    "replacement_bytes": 112,
+    "different_code_bytes": 79,
+    "different_checksum_bytes": 4,
+    "original_inner_checksum": "0x6b7e72ff",
+    "candidate_inner_checksum": "0x6e26a31b"
+  },
+  "direct_calls": {
+    "cases_per_image": 106,
+    "seed": 3220220,
+    "entry": "0x5312cd40",
+    "max_stack_write_depth": {
+      "original": 28,
+      "candidate": 32
+    },
+    "inputs": "disjoint 18-byte, halfword-aligned arrays",
+    "checks": "numeric oracle, preserved registers, SP and CPSR control bits, leaf-only execution, data access, output writes",
+    "cpsr_q_difference_fixture": {
+      "left": [
+        -32768,
+        -32768,
+        32766,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "right": [
+        -32768,
+        0,
+        0,
+        -32767,
+        0,
+        0,
+        1,
+        0,
+        0
+      ],
+      "initial_q": false,
+      "output_hex_both_images": "000000000000000000000000000000000000",
+      "return_q": {
+        "original": false,
+        "candidate": true
+      },
+      "boundary": "Q is outside the control-bit comparison and is undefined on AAPCS32 public return."
+    }
+  },
+  "caller": {
+    "entry": "0x5312ce30",
+    "end_exclusive": "0x5312d0ac",
+    "caller_bytes_sha256": "d4ba290d24c5f014e4c77effb4d1b14f3af611478a6e91ede8b4fa269948d526",
+    "call_sites": [
+      "0x5312ced8",
+      "0x5312cefc",
+      "0x5312d0a0"
+    ],
+    "cases_per_image": 10,
+    "color_space_flag": 1,
+    "nested_matrix_calls_per_image": 20,
+    "call_abi": {
+      "checked_preserved_registers": "r4-r11, d8-d15",
+      "sp_restored": true,
+      "scope": "Nested Q13 and outer prepare returns",
+      "nested_memory": {
+        "own_stack_bytes_below_entry_sp": {
+          "original": 28,
+          "candidate": 32
+        },
+        "reads": "two 18-byte operands and own stack frame",
+        "writes": "exact 18-byte output footprint and own stack frame"
+      }
+    },
+    "stubbed_callees": 0,
+    "original_max_stack_write_depth": 228,
+    "candidate_max_stack_write_depth": 232,
+    "candidate_cases": [
+      {
+        "case": "manual-identity",
+        "calls": [
+          {
+            "site": "0x5312ced8",
+            "out": "0x61000048",
+            "left": "0x700007a8",
+            "right": "0x600001a0",
+            "entry_sp": "0x70000738",
+            "matrix_output_sha256": "63a8bcec9f3d1a8ddf0751c30e497c2b6977b9b9b77d0a8029f0e38d16a6bbdc"
+          },
+          {
+            "site": "0x5312cefc",
+            "out": "0x70000738",
+            "left": "0x53a7bacc",
+            "right": "0x61000048",
+            "entry_sp": "0x70000738",
+            "matrix_output_sha256": "50be4d5667ed186354f5e40c9a72486b50650b3ef6f7541e2143b1f50c187c58"
+          }
+        ],
+        "input_sha256": "96ff74f3f40847cbae85e0ac1316049377abc00558e475704b4b4c507ce7232a",
+        "output_sha256": "5f4e44485d23be30813a39bb8254422a7c307d7636b30791bca8f2860addef9a",
+        "max_stack_write_depth": 232
+      },
+      {
+        "case": "manual-overflow",
+        "calls": [
+          {
+            "site": "0x5312ced8",
+            "out": "0x61000048",
+            "left": "0x700007a8",
+            "right": "0x600001a0",
+            "entry_sp": "0x70000738",
+            "matrix_output_sha256": "60daa3a5f7dbfa200f8c82840ecf5b42640b70f3b7218a4c6bbd67db542e75a4"
+          },
+          {
+            "site": "0x5312cefc",
+            "out": "0x70000738",
+            "left": "0x53a7bacc",
+            "right": "0x61000048",
+            "entry_sp": "0x70000738",
+            "matrix_output_sha256": "60daa3a5f7dbfa200f8c82840ecf5b42640b70f3b7218a4c6bbd67db542e75a4"
+          }
+        ],
+        "input_sha256": "3e18e92b83a9af6971e9112fa23b92173bfb80ddbeb32402407739e17ee7d3b5",
+        "output_sha256": "50961586c73d6a1f70ef965aee92c69db6bc56985af2e3a000efffa502b5171f",
+        "max_stack_write_depth": 232
+      },
+      {
+        "case": "manual-random-0",
+        "calls": [
+          {
+            "site": "0x5312ced8",
+            "out": "0x61000048",
+            "left": "0x700007a8",
+            "right": "0x600001a0",
+            "entry_sp": "0x70000738",
+            "matrix_output_sha256": "f432beea5af81d845574eb364cf1e17cc935c5cbac11ac23db835f80b503aa67"
+          },
+          {
+            "site": "0x5312cefc",
+            "out": "0x70000738",
+            "left": "0x53a7bacc",
+            "right": "0x61000048",
+            "entry_sp": "0x70000738",
+            "matrix_output_sha256": "4f5f330be6381b70daa5eb8251c7b663c46b6913515a4387abfad7c5820f94c4"
+          }
+        ],
+        "input_sha256": "29d9485f883cd96ef4034c706a76b5796d901d973b8204a323eb0be5fa231d27",
+        "output_sha256": "493e3542c01bee15a3c06b7c27f19e6d2e490878c5eb950ad0aef08b7149353e",
+        "max_stack_write_depth": 232
+      },
+      {
+        "case": "manual-random-1",
+        "calls": [
+          {
+            "site": "0x5312ced8",
+            "out": "0x61000048",
+            "left": "0x700007a8",
+            "right": "0x600001a0",
+            "entry_sp": "0x70000738",
+            "matrix_output_sha256": "5db5418ccc60cbb80de291686b5b4cb48d7751d75b86fddf52b4060c78ecabe4"
+          },
+          {
+            "site": "0x5312cefc",
+            "out": "0x70000738",
+            "left": "0x53a7bacc",
+            "right": "0x61000048",
+            "entry_sp": "0x70000738",
+            "matrix_output_sha256": "33f847022a932b015117a44c9afd75949d39c755b07349aa8d465a0f285ccc77"
+          }
+        ],
+        "input_sha256": "257847c0ca17c45cee74a7a648885a3c334f2af10d6b9ddc448198af457ba1f2",
+        "output_sha256": "107bf60617bcc5eb4b5026b9dcdb0bc1188f8d8e401874f6427f918f4516110c",
+        "max_stack_write_depth": 232
+      },
+      {
+        "case": "manual-random-2",
+        "calls": [
+          {
+            "site": "0x5312ced8",
+            "out": "0x61000048",
+            "left": "0x700007a8",
+            "right": "0x600001a0",
+            "entry_sp": "0x70000738",
+            "matrix_output_sha256": "aaae2fa19eef0744f39eff77c38dad43f72809cf6116da5c1291a7ce8faf7483"
+          },
+          {
+            "site": "0x5312cefc",
+            "out": "0x70000738",
+            "left": "0x53a7bacc",
+            "right": "0x61000048",
+            "entry_sp": "0x70000738",
+            "matrix_output_sha256": "4e02a0c90378816afa82b5a525e2f226af01e41f6c1c5dd819ba35f168afbae7"
+          }
+        ],
+        "input_sha256": "62e250b48e0edf4ecc6ee3ed8183e7eaac9e718aa96c364506beb24546ec8455",
+        "output_sha256": "a82e9179ebb1db6ac1597656610ed523a79e3832de1cb588965a833da8c13410",
+        "max_stack_write_depth": 232
+      },
+      {
+        "case": "filter-identity",
+        "calls": [
+          {
+            "site": "0x5312d0a0",
+            "out": "0x61000048",
+            "left": "0x60000280",
+            "right": "0x600001a0",
+            "entry_sp": "0x70000738",
+            "matrix_output_sha256": "8164fe4332da34f08d0dcbe4dfe2d21dc9ccbe47a5c8eff37868465e5c28fbde"
+          },
+          {
+            "site": "0x5312cefc",
+            "out": "0x70000738",
+            "left": "0x53a7bacc",
+            "right": "0x61000048",
+            "entry_sp": "0x70000738",
+            "matrix_output_sha256": "61e89d1a5814e6616997fd11cebd3e40dcc858ad366326ccfb2e6999210e27ab"
+          }
+        ],
+        "input_sha256": "66423f13a4c5ce6ba8cc79ef38384ebb1c2cd2ec4ff85b1163e7850fb8a89258",
+        "output_sha256": "27520e1a1e10745064fe6c87048fea53d19776835e78c1ced20749fae4376fb8",
+        "max_stack_write_depth": 232
+      },
+      {
+        "case": "filter-overflow",
+        "calls": [
+          {
+            "site": "0x5312d0a0",
+            "out": "0x61000048",
+            "left": "0x60000280",
+            "right": "0x600001a0",
+            "entry_sp": "0x70000738",
+            "matrix_output_sha256": "7f4d2bfe99ba224620e40cdd77fa378b0063350986d303d6277ccd93b6a0a10d"
+          },
+          {
+            "site": "0x5312cefc",
+            "out": "0x70000738",
+            "left": "0x53a7bacc",
+            "right": "0x61000048",
+            "entry_sp": "0x70000738",
+            "matrix_output_sha256": "1af83ebe0734a02ac33fb79261d44436040b0da2dc51778e9a72e2d24771f245"
+          }
+        ],
+        "input_sha256": "feb0352415a200f29359d5677c666191e8f5aa6ba7eeeb040e945d74cb46f9a5",
+        "output_sha256": "f4e27f8ffadfcec70a816b5d8ac9ac620c95e511b4dda677dba84f03598ba31c",
+        "max_stack_write_depth": 232
+      },
+      {
+        "case": "filter-random-0",
+        "calls": [
+          {
+            "site": "0x5312d0a0",
+            "out": "0x61000048",
+            "left": "0x60000300",
+            "right": "0x600001a0",
+            "entry_sp": "0x70000738",
+            "matrix_output_sha256": "38b5f719fc211ab230dc4ca8de10d2f9cdc10116549d6bd3a33c7ec1ae4beb20"
+          },
+          {
+            "site": "0x5312cefc",
+            "out": "0x70000738",
+            "left": "0x53a7bacc",
+            "right": "0x61000048",
+            "entry_sp": "0x70000738",
+            "matrix_output_sha256": "66e1e8f7505b725f8dd83d0e1ad60b37938ea1ce9ece690ab292b7de562247ef"
+          }
+        ],
+        "input_sha256": "5d66283985146b8ab29ed2cc90f358f573eec876bdd7218f1608143b4803d8ef",
+        "output_sha256": "9475316e0bbd855be51e83ca4321523f88919903bae4e0dcb6c18f47de474450",
+        "max_stack_write_depth": 232
+      },
+      {
+        "case": "filter-random-1",
+        "calls": [
+          {
+            "site": "0x5312d0a0",
+            "out": "0x61000048",
+            "left": "0x600002e0",
+            "right": "0x600001a0",
+            "entry_sp": "0x70000738",
+            "matrix_output_sha256": "777f6d65f54fda44c555c902903fc62cb3abf933c25710e44b2f659cfa69906c"
+          },
+          {
+            "site": "0x5312cefc",
+            "out": "0x70000738",
+            "left": "0x53a7bacc",
+            "right": "0x61000048",
+            "entry_sp": "0x70000738",
+            "matrix_output_sha256": "693996b91f402a67110d6d34719e727f9da07ed842a80bb212530fd739aee274"
+          }
+        ],
+        "input_sha256": "0e472744f1affde5307cde3de444989b6b9f9c97e816d12eca5576dd9a06be43",
+        "output_sha256": "f502756d2afec8078fbb95e9c967395f618fb4c1a39c0d99e8efe22cf0dbcccf",
+        "max_stack_write_depth": 232
+      },
+      {
+        "case": "filter-random-2",
+        "calls": [
+          {
+            "site": "0x5312d0a0",
+            "out": "0x61000048",
+            "left": "0x600002c0",
+            "right": "0x600001a0",
+            "entry_sp": "0x70000738",
+            "matrix_output_sha256": "6849f5eb503371eec1b2c8c58ef242e00ef4a252eafd0d6729d67d959cec66d7"
+          },
+          {
+            "site": "0x5312cefc",
+            "out": "0x70000738",
+            "left": "0x53a7bacc",
+            "right": "0x61000048",
+            "entry_sp": "0x70000738",
+            "matrix_output_sha256": "4f354a3cdcf7a66d2d6d868d536b129744819369556e0ec8fda59c197f26e3a3"
+          }
+        ],
+        "input_sha256": "1aa1f88fe2de705e170afeda4437876efcbd8f93e0634dfb0162c321670b0948",
+        "output_sha256": "9016b3c97aa0d96dacecb091ace87a1da78dc4d7ea131c9631c953ac7f2686d7",
+        "max_stack_write_depth": 232
+      }
+    ]
+  },
+  "original_arm_gates": {
+    "cases": 8,
+    "results": [
+      {
+        "image": "original",
+        "function": "header_and_full_outer_checksum",
+        "result": 1,
+        "bytes_summed": 35106716,
+        "checksum_stubbed": false
+      },
+      {
+        "image": "original",
+        "function": "rejected_header_field",
+        "changed_offset": "0x30",
+        "result": 0
+      },
+      {
+        "image": "original",
+        "function": "rejected_header_field",
+        "changed_offset": "0x7c",
+        "result": 0
+      },
+      {
+        "image": "original",
+        "function": "full_inner_checksum",
+        "result": 1,
+        "bytes_summed": 78683892,
+        "checksum_stubbed": false
+      },
+      {
+        "image": "edited",
+        "function": "header_and_full_outer_checksum",
+        "result": 1,
+        "bytes_summed": 78690708,
+        "checksum_stubbed": false
+      },
+      {
+        "image": "edited",
+        "function": "rejected_header_field",
+        "changed_offset": "0x30",
+        "result": 0
+      },
+      {
+        "image": "edited",
+        "function": "rejected_header_field",
+        "changed_offset": "0x7c",
+        "result": 0
+      },
+      {
+        "image": "edited",
+        "function": "full_inner_checksum",
+        "result": 1,
+        "bytes_summed": 78683892,
+        "checksum_stubbed": false
+      }
+    ],
+    "source_range": {
+      "start": "0x52ff4d08",
+      "end": "0x52ff4f88",
+      "sha256": "c69b164b9c2d0c6ed747cd02b735490557ac7a13e141e9c7e9e4895f7c3935a3"
+    },
+    "limits": "Original ARM header and additive checksum loops run over complete buffers. Error diagnostics only are skipped. Hardware transform, decode wrapper, updater, storage and boot are not executed."
+  },
+  "negative_checks": [
+    {
+      "case": "changed_preserved_tail_with_rebalanced_inner_sum",
+      "reason": "Unexpected decoded changes outside code/checksum"
+    },
+    {
+      "case": "bad_outer_sum",
+      "reason": "Outer checksum invalid or bypass sentinel"
+    },
+    {
+      "case": "bad_inner_sum_with_rebalanced_outer_sum",
+      "reason": "Inner checksum invalid or bypass sentinel"
+    }
+  ]
+}

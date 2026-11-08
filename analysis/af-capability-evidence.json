@@ -1,0 +1,2097 @@
+{
+  "image": {
+    "base": "0x52500000",
+    "size": 25483200,
+    "sha256": "342d2f35405e8daf1797dfe431d2e4aa70f4b52a2c242a29df48206672f1dfb4"
+  },
+  "functions": [
+    {
+      "label": "command_metadata",
+      "start": "0x5315a8a0",
+      "end": "0x5315ba7c",
+      "size": 4572,
+      "sha256": "9601eafcf0fc98030084c1ec6114cddf44511010d61d4b0ccda6ef7403555c2a",
+      "assembly_sha256": "97b5f24cdc5018fc9af285f9e25c4cb9e53ce16e7af619f32f5dc92341248cad",
+      "scope": "Genuine bounded angr C, original ARM authoritative; numerical coverage separately specified.",
+      "pseudocode_sha256": "1a156f88ea2de1d70c63e80b4066e592420d8ae75a4d7f47ac719899f33590e6",
+      "angr_version": "10.0.5"
+    },
+    {
+      "label": "command_handler",
+      "start": "0x52f182d4",
+      "end": "0x52f18490",
+      "size": 444,
+      "sha256": "2d4036299608e4347bb6e243f4268f27b77f0056207aca56ad33862ee97f8e95",
+      "assembly_sha256": "dba55285cdbd2fb72ffb4cbf4d5c6ed95454847cd37c21404bee0d63ef6e111d",
+      "scope": "Genuine bounded angr C, original ARM authoritative; numerical coverage separately specified.",
+      "pseudocode_sha256": "eade87ce569cece80488f81f88c12fb66d236c450e254d08707844df3d9514ac",
+      "angr_version": "10.0.5"
+    },
+    {
+      "label": "cache_copy32",
+      "start": "0x5315dc68",
+      "end": "0x5315dc9c",
+      "size": 52,
+      "sha256": "90121071854be046b2ba7bac2a63091085001acc024e6b5b4891653f6cecea74",
+      "assembly_sha256": "3b74b72232fb08c6b6de8a2490bfca97f2d871308e935b726eab2ba889f81997",
+      "scope": "Genuine bounded angr C, original ARM authoritative; numerical coverage separately specified.",
+      "pseudocode_sha256": "50166b3fbda4bddc920278957c08ed5c98a33832925a3c73fea5c8bdebb58cfd",
+      "angr_version": "10.0.5"
+    },
+    {
+      "label": "command_unpack",
+      "start": "0x5315dc9c",
+      "end": "0x5315e2f0",
+      "size": 1620,
+      "sha256": "3a4260a469f00739c86ce3431da28201948f5cc1b9bacadb5974a855e79afa4f",
+      "assembly_sha256": "729c666a9e22d28deaef6c8898a3d36858aa49900a7b400e1a9c88cdd4156e13",
+      "scope": "Genuine bounded angr C, original ARM authoritative; numerical coverage separately specified.",
+      "pseudocode_sha256": "d12396fb75b46c0f01412e6ae038c4ef7c968372e208c22f378c4ac551da011b",
+      "angr_version": "10.0.5"
+    },
+    {
+      "label": "packet63_exchange",
+      "start": "0x52f18128",
+      "end": "0x52f182c8",
+      "size": 416,
+      "sha256": "f94899ec2dc2898b5cf71cd8390e7c8edfe11994e009e079affe56bd8770a85b",
+      "assembly_sha256": "bcbdc93b8d7a6713262eb1719d073077398811191ff8406d87c916ac06185209",
+      "scope": "Genuine bounded angr C, original ARM authoritative; numerical coverage separately specified.",
+      "pseudocode_sha256": "574bad87c9a2e063ba3d8d07d8dd3670e88961df2961a4cebb6f89d857e8badb",
+      "angr_version": "10.0.5"
+    },
+    {
+      "label": "communication_bind",
+      "start": "0x5315c058",
+      "end": "0x5315c11c",
+      "size": 196,
+      "sha256": "2774c19e2122d25c6a457268fe5bef72620c6eab8ad841fb17cc8dca21cb4302",
+      "assembly_sha256": "605d3e0879c9df6a1b468b01c6e1c4c3b8e9b3aab59b7d478753f85a1d4a14e7",
+      "scope": "Genuine bounded angr C, original ARM authoritative; numerical coverage separately specified.",
+      "pseudocode_sha256": "3928702456cc70d01351838d0bf4a379d0ceb117904aee58b04eaeda528a8bdb",
+      "angr_version": "10.0.5"
+    }
+  ],
+  "fragments": [
+    {
+      "label": "metadata_singleton",
+      "start": "0x5315a894",
+      "end": "0x5315a8a0",
+      "size": 12,
+      "sha256": "4d0a21cc12e316cd87ac44916b274b70f094beb9a3b20a8ebb460bce43b045dd",
+      "assembly_sha256": "1f28f5166ceda456537175e34a6b64d32b010e345df673ff4d5d9a9cfd233039",
+      "scope": "All source words retained; literals are not necessarily instructions. Supporting static range, not a new full-function test."
+    },
+    {
+      "label": "reader_aux_alias",
+      "start": "0x52f17ad8",
+      "end": "0x52f17af4",
+      "size": 28,
+      "sha256": "623cb69bff99a3467456f7a2b7d6ac12297577d2bcb99047b049fd4a2a980a9d",
+      "assembly_sha256": "b11ab9de8bccecbc05fdb81dd5ee54e249db0d69a729b0619d91b98899fd457d",
+      "scope": "All source words retained; literals are not necessarily instructions. Supporting static range, not a new full-function test."
+    },
+    {
+      "label": "reader_comm_alias",
+      "start": "0x52f17b30",
+      "end": "0x52f17b4c",
+      "size": 28,
+      "sha256": "0c9d69509caaef349de98e05063e8cc0b818fead7d0187fdaf898e0ef43973be",
+      "assembly_sha256": "870a74ba506cc7eaab71cc475a6732a179a86086f54c135d003193deb9190773",
+      "scope": "All source words retained; literals are not necessarily instructions. Supporting static range, not a new full-function test."
+    },
+    {
+      "label": "edge_packer",
+      "start": "0x5313432c",
+      "end": "0x531347c8",
+      "size": 1180,
+      "sha256": "a364e4baa7dd696ed5f663b357d97d33d216d662db762c9db57f1221fde65684",
+      "assembly_sha256": "be7a63dab90391111e635c5d21a3434588f369093587a2b1280252d9b37e4da1",
+      "scope": "All source words retained; literals are not necessarily instructions. Supporting static range, not a new full-function test."
+    },
+    {
+      "label": "edge_wrappers",
+      "start": "0x5313542c",
+      "end": "0x531354b4",
+      "size": 136,
+      "sha256": "ff886b561c4314a83ca4ac78d498a8e114ef4311490d5677d982eccf22e9215f",
+      "assembly_sha256": "cd6e6e4b1511424b33492c949d9d319fed8ea2ad294d947a2addf23b474e786e",
+      "scope": "All source words retained; literals are not necessarily instructions. Supporting static range, not a new full-function test."
+    },
+    {
+      "label": "image_tuning_caller",
+      "start": "0x5312b57c",
+      "end": "0x5312b58c",
+      "size": 16,
+      "sha256": "8637eb0a185206f45ed953c781462f5e37b58b1cd887987ff8230e779b410b66",
+      "assembly_sha256": "54d53e8a27dbcc8f4de281588ff97951f5ec998b6dd7a607cdae9a60aad610df",
+      "scope": "All source words retained; literals are not necessarily instructions. Supporting static range, not a new full-function test."
+    },
+    {
+      "label": "command_wrapper",
+      "start": "0x52f18490",
+      "end": "0x52f18544",
+      "size": 180,
+      "sha256": "86477ad2a03821c660a980833dd16492efa35637054c36995e4b7cb5aff897d3",
+      "assembly_sha256": "28a963b0b2c7244a9a739e3a023c3c2ea6d83d2b7e76bdb3d745a3d43b94e88a",
+      "scope": "All source words retained; literals are not necessarily instructions. Supporting static range, not a new full-function test."
+    },
+    {
+      "label": "command_forwarder",
+      "start": "0x52f15100",
+      "end": "0x52f15178",
+      "size": 120,
+      "sha256": "72fbfeff2268a8cce205c2f66ad26767bec29a15710f7cab10a4687552375738",
+      "assembly_sha256": "88315d078df80c5856aadcc69d3825f12c54473e8b1c519699e6b1eb1b16e6ed",
+      "scope": "All source words retained; literals are not necessarily instructions. Supporting static range, not a new full-function test."
+    },
+    {
+      "label": "wait_packet63",
+      "start": "0x52f180a0",
+      "end": "0x52f18128",
+      "size": 136,
+      "sha256": "6e17de4ad9c708a05a4dcbacaf94209673313dca0c43b37554b4a178c9595df0",
+      "assembly_sha256": "20b5772136116f467de1bd9765bad3ebfd6cc88870327125541b8b932867bd9f",
+      "scope": "All source words retained; literals are not necessarily instructions. Supporting static range, not a new full-function test."
+    },
+    {
+      "label": "wait_info62",
+      "start": "0x52f18018",
+      "end": "0x52f180a0",
+      "size": 136,
+      "sha256": "92b97eed9602e7b238bcc1c99fdd0fa60397c8916e7f3d5e4b85a7f708adaab1",
+      "assembly_sha256": "674b8e2167072939c9a26291c55d50a14effcbcf6981a87b60067aac3e7bbe3d",
+      "scope": "All source words retained; literals are not necessarily instructions. Supporting static range, not a new full-function test."
+    },
+    {
+      "label": "info62_wait_to_import",
+      "start": "0x52f186c8",
+      "end": "0x52f1874c",
+      "size": 132,
+      "sha256": "243ee9e80e838165310ced1a25cd5909bafc15c869f3c40e0648a1bcec23a823",
+      "assembly_sha256": "30791a1b9fcbfaeedb3084c70c66e60225384c4afdb47df0f7b09f446f42664b",
+      "scope": "All source words retained; literals are not necessarily instructions. Supporting static range, not a new full-function test."
+    },
+    {
+      "label": "original_byte6_import",
+      "start": "0x52f18808",
+      "end": "0x52f18820",
+      "size": 24,
+      "sha256": "4fe738c889893e6e8fadc24bd5b157fe508036516315a3657abf4c8e5b75e32f",
+      "assembly_sha256": "6287b6981c5d423d9860bcc3142e5c7d732b07342c76eceb1ef006492310b6ad",
+      "scope": "All source words retained; literals are not necessarily instructions. Supporting static range, not a new full-function test."
+    },
+    {
+      "label": "capability_get",
+      "start": "0x52efda40",
+      "end": "0x52efda54",
+      "size": 20,
+      "sha256": "728e29c45f738944d670b19bf9210557a83c0ab94f00147c98713094c291dc0a",
+      "assembly_sha256": "9c4a33ddeade582b7180e1468b5cafdf5f3889ffb618d0267d1cbbdbfc86439d",
+      "scope": "All source words retained; literals are not necessarily instructions. Supporting static range, not a new full-function test."
+    },
+    {
+      "label": "rejected_full_message1",
+      "start": "0x528e77f4",
+      "end": "0x528e7808",
+      "size": 20,
+      "sha256": "2399d0a4444757def571076ce2f4200e67c1517186e028f1f029373450925bec",
+      "assembly_sha256": "e3f7dd77ffd825a0a4b850b5bae8e1e9440190bc099d9507f0917801bdc4d296",
+      "scope": "All source words retained; literals are not necessarily instructions. Supporting static range, not a new full-function test."
+    },
+    {
+      "label": "rejected_full_message2",
+      "start": "0x52a88b44",
+      "end": "0x52a88b4c",
+      "size": 8,
+      "sha256": "75ca7d13f39a8b5dfdb5f7a32cf0f6e32ac3b86afc4322e2217c6f570f7e7f0e",
+      "assembly_sha256": "e2f157e70abc3c60ee132caa153bc503e73539240d999693c9507e10d863ed60",
+      "scope": "All source words retained; literals are not necessarily instructions. Supporting static range, not a new full-function test."
+    },
+    {
+      "label": "rejected_full_message3",
+      "start": "0x53316d38",
+      "end": "0x53316d44",
+      "size": 12,
+      "sha256": "abe6a5d08799b1221a5f78f1d44726e002e4d7f1ae0a8366cf4bf50fe00482b9",
+      "assembly_sha256": "95eb4a5be6da0c1e439407864aeb9d67940dea638342fd379374c863c703be11",
+      "scope": "All source words retained; literals are not necessarily instructions. Supporting static range, not a new full-function test."
+    }
+  ],
+  "resources": [
+    {
+      "label": "communication_source",
+      "address": "0x53c5b91c",
+      "source_address": "0x53c5b91c",
+      "size": 29,
+      "sha256": "2beb8deccd33c84a6597256806a262a4320eacfa38536c4f81c16890d9d5df26",
+      "text": "src/LensCpuCommunication.cpp"
+    },
+    {
+      "label": "command_data_source",
+      "address": "0x53c5b8e4",
+      "source_address": "0x53c5b8e4",
+      "size": 24,
+      "sha256": "d9aee9d0fd33cdff3a3f760a395cff514fc06bc3a9456e9af1b642d826f78185",
+      "text": "src/LensCommandData.cpp"
+    },
+    {
+      "label": "command_lookup_name",
+      "address": "0x53c5b8d8",
+      "source_address": "0x53c5b8d8",
+      "size": 10,
+      "sha256": "4291d7b06bf3246f5d636e1f7b4535ac23fb6ee483d8052f405e0a827681afce",
+      "text": "GetDataId"
+    },
+    {
+      "label": "wait_control_name",
+      "address": "0x538f4430",
+      "source_address": "0x538f4430",
+      "size": 19,
+      "sha256": "4fc32d2f2d9ea79ca0e3935ca4161e92b98094e7a62390c66c87dce19c2eeb2b",
+      "text": "WaitLensCpuControl"
+    },
+    {
+      "label": "wait_info_name",
+      "address": "0x538f44c8",
+      "source_address": "0x538f44c8",
+      "size": 13,
+      "sha256": "46f4f7bfef983426cc8b07f90c1007f100deaf307980706bb60503fb5366675a",
+      "text": "WaitLensInfo"
+    },
+    {
+      "label": "unpack_diagnostic",
+      "address": "0x53c5b9ac",
+      "source_address": "0x53c5b9ac",
+      "size": 39,
+      "sha256": "a27d968259f4274c53e64711e490834e6d7592fd15c098158fd4d04a18f3fd14",
+      "text": "InputDataSettingFunc Not Support.%04X\n"
+    },
+    {
+      "label": "communication_vtable",
+      "address": "0x53c5baf8",
+      "source_address": "0x53c5baf8",
+      "size": 28,
+      "sha256": "d8616038ae5313326e7608c358193c9005f68a0213f5e7c00ba7e07827a4f2f4"
+    },
+    {
+      "label": "communication_rtti",
+      "address": "0x53c5bb94",
+      "source_address": "0x53c5bb94",
+      "size": 8,
+      "sha256": "89a964736441b3393d0fd5a449e9b7ec06a8552b8215ae391d765868292964d1"
+    },
+    {
+      "label": "communication_type",
+      "address": "0x53c5bb7c",
+      "source_address": "0x53c5bb7c",
+      "size": 23,
+      "sha256": "834053475d76bdb38ef98c37e370aa16f733799b5a2ac57f01f0543a7d1d1e96",
+      "text": "20LensCpuCommunication"
+    },
+    {
+      "label": "packet63_send_vptr",
+      "address": "0x52f182cc",
+      "source_address": "0x52f182cc",
+      "size": 4,
+      "sha256": "9cef01436d4836bc939600fa43bbaaa81ed55d0d3c33be2cf0bc18960d6a524a"
+    },
+    {
+      "label": "packet63_receive_vptr",
+      "address": "0x52f182d0",
+      "source_address": "0x52f182d0",
+      "size": 4,
+      "sha256": "50f5959009f7881882869c56dd8db6387cbb32fbf4278602376e2eaf5f4d3dff"
+    },
+    {
+      "label": "communication_constructor_vptr",
+      "address": "0x5315c45c",
+      "source_address": "0x5315c45c",
+      "size": 4,
+      "sha256": "fa88ea1885810d50c4b0c600cedae4a25b868c1ae4b639c11fa84d0d76e4dbca"
+    }
+  ],
+  "pointer_words": [
+    {
+      "label": "communication_vtable",
+      "source_address": "0x53c5baf8",
+      "value": "0x0"
+    },
+    {
+      "label": "communication_vtable",
+      "source_address": "0x53c5bafc",
+      "value": "0x53c5bb94"
+    },
+    {
+      "label": "communication_vtable",
+      "source_address": "0x53c5bb00",
+      "value": "0x5315f0f4"
+    },
+    {
+      "label": "communication_vtable",
+      "source_address": "0x53c5bb04",
+      "value": "0x5315f14c"
+    },
+    {
+      "label": "communication_vtable",
+      "source_address": "0x53c5bb08",
+      "value": "0x5315bf88"
+    },
+    {
+      "label": "communication_vtable",
+      "source_address": "0x53c5bb0c",
+      "value": "0x5315c058"
+    },
+    {
+      "label": "communication_vtable",
+      "source_address": "0x53c5bb10",
+      "value": "0x5315bf30"
+    },
+    {
+      "label": "communication_rtti",
+      "source_address": "0x53c5bb94",
+      "value": "0x53cdccb0"
+    },
+    {
+      "label": "communication_rtti",
+      "source_address": "0x53c5bb98",
+      "value": "0x53c5bb7c"
+    },
+    {
+      "label": "packet63_send_vptr",
+      "source_address": "0x52f182cc",
+      "value": "0x538f43b0"
+    },
+    {
+      "label": "packet63_receive_vptr",
+      "source_address": "0x52f182d0",
+      "value": "0x538f43d0"
+    },
+    {
+      "label": "communication_constructor_vptr",
+      "source_address": "0x5315c45c",
+      "value": "0x53c5bb00"
+    }
+  ],
+  "transfers": [
+    {
+      "site": "0x5315a95c",
+      "kind": "b",
+      "target": "0x5315ac94",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x5315a9d8",
+      "kind": "b",
+      "target": "0x5315ac94",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x5315aa48",
+      "kind": "b",
+      "target": "0x5315ad48",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x5315aab4",
+      "kind": "b",
+      "target": "0x5315ac94",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x5315ab14",
+      "kind": "b",
+      "target": "0x5315ad48",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x5315ab70",
+      "kind": "b",
+      "target": "0x5315ad48",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x5315abc0",
+      "kind": "b",
+      "target": "0x5315ac94",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x5315ac14",
+      "kind": "b",
+      "target": "0x5315ad48",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x5315ac54",
+      "kind": "b",
+      "target": "0x5315ad48",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x5315acac",
+      "kind": "b",
+      "target": "0x5315ad54",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x5315acfc",
+      "kind": "b",
+      "target": "0x5315ad48",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x5315ada0",
+      "kind": "b",
+      "target": "0x5315ad48",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x5315ade8",
+      "kind": "b",
+      "target": "0x5315ad48",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x5315ae30",
+      "kind": "b",
+      "target": "0x5315ad48",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x5315ae78",
+      "kind": "b",
+      "target": "0x5315ad48",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x5315aeb0",
+      "kind": "b",
+      "target": "0x5315ad48",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x5315aef0",
+      "kind": "b",
+      "target": "0x5315ad48",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x5315af28",
+      "kind": "b",
+      "target": "0x5315ad48",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x5315af58",
+      "kind": "b",
+      "target": "0x5315ac94",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x5315af68",
+      "kind": "b",
+      "target": "0x5315ad48",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x5315af78",
+      "kind": "b",
+      "target": "0x5315ad48",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x5315af90",
+      "kind": "b",
+      "target": "0x5315ad48",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x5315afa4",
+      "kind": "b",
+      "target": "0x5315ad48",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x5315afb8",
+      "kind": "b",
+      "target": "0x5315ad48",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x5315afd4",
+      "kind": "b",
+      "target": "0x5315ad48",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x5315afec",
+      "kind": "b",
+      "target": "0x5315ad48",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x5315b000",
+      "kind": "b",
+      "target": "0x5315ad48",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x5315b010",
+      "kind": "b",
+      "target": "0x5315ad48",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x5315b020",
+      "kind": "b",
+      "target": "0x5315ad48",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x5315b038",
+      "kind": "b",
+      "target": "0x5315ad48",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x5315b048",
+      "kind": "b",
+      "target": "0x5315ad48",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x5315b07c",
+      "kind": "b",
+      "target": "0x5315ad48",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x5315b0b8",
+      "kind": "b",
+      "target": "0x5315ad48",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x5315b0f4",
+      "kind": "b",
+      "target": "0x5315ad48",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x5315b128",
+      "kind": "b",
+      "target": "0x5315ad48",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x5315b160",
+      "kind": "b",
+      "target": "0x5315ad48",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x5315b194",
+      "kind": "b",
+      "target": "0x5315ad48",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x5315b1cc",
+      "kind": "b",
+      "target": "0x5315ad48",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x5315b200",
+      "kind": "b",
+      "target": "0x5315ad48",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x5315b234",
+      "kind": "b",
+      "target": "0x5315ad48",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x5315b26c",
+      "kind": "b",
+      "target": "0x5315ad48",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x5315b2a4",
+      "kind": "b",
+      "target": "0x5315ad48",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x5315b2e4",
+      "kind": "b",
+      "target": "0x5315ad48",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x5315b2f8",
+      "kind": "b",
+      "target": "0x5315ad48",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x5315b314",
+      "kind": "b",
+      "target": "0x5315ad48",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x5315b330",
+      "kind": "b",
+      "target": "0x5315ad48",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x5315b34c",
+      "kind": "b",
+      "target": "0x5315ad48",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x5315b360",
+      "kind": "b",
+      "target": "0x5315ad48",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x5315b374",
+      "kind": "b",
+      "target": "0x5315ad48",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x5315b38c",
+      "kind": "b",
+      "target": "0x5315ad48",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x5315b3a8",
+      "kind": "b",
+      "target": "0x5315ad48",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x5315b3c4",
+      "kind": "b",
+      "target": "0x5315ad48",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x5315b3dc",
+      "kind": "b",
+      "target": "0x5315ad48",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x5315b3ec",
+      "kind": "b",
+      "target": "0x5315ad48",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x5315b400",
+      "kind": "b",
+      "target": "0x5315ad48",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x5315b414",
+      "kind": "b",
+      "target": "0x5315ad48",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x5315b428",
+      "kind": "b",
+      "target": "0x5315ad48",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x5315b43c",
+      "kind": "b",
+      "target": "0x5315ad48",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x5315b454",
+      "kind": "b",
+      "target": "0x5315ad48",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x5315b468",
+      "kind": "b",
+      "target": "0x5315ad48",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x5315b47c",
+      "kind": "b",
+      "target": "0x5315ad48",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x5315b490",
+      "kind": "b",
+      "target": "0x5315ad48",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x5315b4a8",
+      "kind": "b",
+      "target": "0x5315ad48",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x5315b4c4",
+      "kind": "b",
+      "target": "0x5315ad48",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x5315b4d4",
+      "kind": "b",
+      "target": "0x5315ad48",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x5315b4e4",
+      "kind": "b",
+      "target": "0x5315ad48",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x5315b4f8",
+      "kind": "b",
+      "target": "0x5315ad48",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x5315b510",
+      "kind": "b",
+      "target": "0x5315ad48",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x5315b524",
+      "kind": "b",
+      "target": "0x5315ad48",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x5315b54c",
+      "kind": "b",
+      "target": "0x5315ad48",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x5315b568",
+      "kind": "b",
+      "target": "0x5315ad48",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x5315b578",
+      "kind": "b",
+      "target": "0x5315ad48",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x5315b58c",
+      "kind": "b",
+      "target": "0x5315ad48",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x5315b5a0",
+      "kind": "b",
+      "target": "0x5315ad48",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x5315b5b4",
+      "kind": "b",
+      "target": "0x5315ad48",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x5315b5c4",
+      "kind": "b",
+      "target": "0x5315ad48",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x5315b5dc",
+      "kind": "b",
+      "target": "0x5315ad48",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x5315b600",
+      "kind": "b",
+      "target": "0x5315ad48",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x5315b618",
+      "kind": "b",
+      "target": "0x5315ad48",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x5315b628",
+      "kind": "b",
+      "target": "0x5315ad48",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x5315b638",
+      "kind": "b",
+      "target": "0x5315ad48",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x5315b64c",
+      "kind": "b",
+      "target": "0x5315ad48",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x5315b660",
+      "kind": "b",
+      "target": "0x5315ad48",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x5315b670",
+      "kind": "b",
+      "target": "0x5315ad48",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x5315b680",
+      "kind": "b",
+      "target": "0x5315ad48",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x5315b690",
+      "kind": "b",
+      "target": "0x5315ad48",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x5315b6a0",
+      "kind": "b",
+      "target": "0x5315ad48",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x5315b6bc",
+      "kind": "b",
+      "target": "0x5315ad48",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x5315b6cc",
+      "kind": "b",
+      "target": "0x5315ad48",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x5315b6e4",
+      "kind": "b",
+      "target": "0x5315ad48",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x5315b700",
+      "kind": "b",
+      "target": "0x5315ad48",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x5315b714",
+      "kind": "b",
+      "target": "0x5315ad48",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x5315b728",
+      "kind": "b",
+      "target": "0x5315ad48",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x5315b740",
+      "kind": "b",
+      "target": "0x5315ad48",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x5315b758",
+      "kind": "b",
+      "target": "0x5315ad48",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x5315b76c",
+      "kind": "b",
+      "target": "0x5315ad48",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x5315b780",
+      "kind": "b",
+      "target": "0x5315ad48",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x5315b790",
+      "kind": "b",
+      "target": "0x5315ad48",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x5315b7a4",
+      "kind": "b",
+      "target": "0x5315ad48",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x5315b7b8",
+      "kind": "b",
+      "target": "0x5315ad48",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x5315b7cc",
+      "kind": "b",
+      "target": "0x5315ad48",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x5315b7ec",
+      "kind": "b",
+      "target": "0x5315ac94",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x5315b800",
+      "kind": "b",
+      "target": "0x5315ad48",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x5315b818",
+      "kind": "b",
+      "target": "0x5315ad48",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x5315b834",
+      "kind": "b",
+      "target": "0x5315ad48",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x5315b848",
+      "kind": "b",
+      "target": "0x5315ad48",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x5315b85c",
+      "kind": "b",
+      "target": "0x5315ad48",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x5315b86c",
+      "kind": "b",
+      "target": "0x5315ad48",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x5315b880",
+      "kind": "b",
+      "target": "0x5315ad48",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x5315b890",
+      "kind": "b",
+      "target": "0x5315ad48",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x5315b8a4",
+      "kind": "b",
+      "target": "0x5315ad48",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x5315b8b8",
+      "kind": "b",
+      "target": "0x5315ad48",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x5315b8cc",
+      "kind": "b",
+      "target": "0x5315ad48",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x5315b8e0",
+      "kind": "b",
+      "target": "0x5315ad48",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x5315b8f4",
+      "kind": "b",
+      "target": "0x5315ad48",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x5315b908",
+      "kind": "b",
+      "target": "0x5315ad48",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x5315b924",
+      "kind": "b",
+      "target": "0x5315ad48",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x5315b938",
+      "kind": "b",
+      "target": "0x5315ad48",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x5315b94c",
+      "kind": "b",
+      "target": "0x5315ad48",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x5315b960",
+      "kind": "b",
+      "target": "0x5315ad48",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x5315b974",
+      "kind": "b",
+      "target": "0x5315ad48",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x5315b984",
+      "kind": "b",
+      "target": "0x5315ad48",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x5315b998",
+      "kind": "b",
+      "target": "0x5315ad48",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x5315b9b4",
+      "kind": "b",
+      "target": "0x5315ad48",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x5315b9c4",
+      "kind": "b",
+      "target": "0x5315ad48",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x5315b9d8",
+      "kind": "b",
+      "target": "0x5315ad48",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x5315b9e8",
+      "kind": "b",
+      "target": "0x5315ad48",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x5315b9f8",
+      "kind": "b",
+      "target": "0x5315ad48",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x5315ba08",
+      "kind": "b",
+      "target": "0x5315ad48",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x5315ba1c",
+      "kind": "b",
+      "target": "0x5315ad48",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x5315ba44",
+      "kind": "bl",
+      "target": "0x530fdfc4",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x5315ba6c",
+      "kind": "bl",
+      "target": "0x530fced4",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x5315ba78",
+      "kind": "b",
+      "target": "0x5315aca8",
+      "source_range": "command_metadata"
+    },
+    {
+      "site": "0x52f1832c",
+      "kind": "bl",
+      "target": "0x5315a894",
+      "source_range": "command_handler"
+    },
+    {
+      "site": "0x52f1834c",
+      "kind": "bl",
+      "target": "0x5315a8a0",
+      "source_range": "command_handler"
+    },
+    {
+      "site": "0x52f183d0",
+      "kind": "bl",
+      "target": "0x5315e2f0",
+      "source_range": "command_handler"
+    },
+    {
+      "site": "0x52f183d4",
+      "kind": "b",
+      "target": "0x52f183b0",
+      "source_range": "command_handler"
+    },
+    {
+      "site": "0x52f183dc",
+      "kind": "bl",
+      "target": "0x531621f0",
+      "source_range": "command_handler"
+    },
+    {
+      "site": "0x52f183e8",
+      "kind": "b",
+      "target": "0x52f183b0",
+      "source_range": "command_handler"
+    },
+    {
+      "site": "0x52f183fc",
+      "kind": "bl",
+      "target": "0x52f18128",
+      "source_range": "command_handler"
+    },
+    {
+      "site": "0x52f18410",
+      "kind": "bl",
+      "target": "0x5315dc68",
+      "source_range": "command_handler"
+    },
+    {
+      "site": "0x52f18428",
+      "kind": "bl",
+      "target": "0x5315e480",
+      "source_range": "command_handler"
+    },
+    {
+      "site": "0x52f1842c",
+      "kind": "b",
+      "target": "0x52f183b0",
+      "source_range": "command_handler"
+    },
+    {
+      "site": "0x52f18440",
+      "kind": "bl",
+      "target": "0x52f18128",
+      "source_range": "command_handler"
+    },
+    {
+      "site": "0x52f18448",
+      "kind": "b",
+      "target": "0x52f183b0",
+      "source_range": "command_handler"
+    },
+    {
+      "site": "0x52f1845c",
+      "kind": "bl",
+      "target": "0x52f18128",
+      "source_range": "command_handler"
+    },
+    {
+      "site": "0x52f18474",
+      "kind": "bl",
+      "target": "0x5315dc68",
+      "source_range": "command_handler"
+    },
+    {
+      "site": "0x52f18484",
+      "kind": "bl",
+      "target": "0x5315dc9c",
+      "source_range": "command_handler"
+    },
+    {
+      "site": "0x52f18488",
+      "kind": "b",
+      "target": "0x52f183b0",
+      "source_range": "command_handler"
+    },
+    {
+      "site": "0x52f1848c",
+      "kind": "bl",
+      "target": "0x532fb9c8",
+      "source_range": "command_handler"
+    },
+    {
+      "site": "0x5315dda0",
+      "kind": "b",
+      "target": "0x5315dd48",
+      "source_range": "command_unpack"
+    },
+    {
+      "site": "0x5315dddc",
+      "kind": "b",
+      "target": "0x5315dd48",
+      "source_range": "command_unpack"
+    },
+    {
+      "site": "0x5315de20",
+      "kind": "b",
+      "target": "0x5315dd48",
+      "source_range": "command_unpack"
+    },
+    {
+      "site": "0x5315de7c",
+      "kind": "b",
+      "target": "0x5315dd48",
+      "source_range": "command_unpack"
+    },
+    {
+      "site": "0x5315dea8",
+      "kind": "b",
+      "target": "0x5315dd48",
+      "source_range": "command_unpack"
+    },
+    {
+      "site": "0x5315def4",
+      "kind": "b",
+      "target": "0x5315dd48",
+      "source_range": "command_unpack"
+    },
+    {
+      "site": "0x5315df2c",
+      "kind": "b",
+      "target": "0x5315dd48",
+      "source_range": "command_unpack"
+    },
+    {
+      "site": "0x5315df88",
+      "kind": "b",
+      "target": "0x5315c4c8",
+      "source_range": "command_unpack"
+    },
+    {
+      "site": "0x5315dfb0",
+      "kind": "b",
+      "target": "0x5315dd48",
+      "source_range": "command_unpack"
+    },
+    {
+      "site": "0x5315dfcc",
+      "kind": "b",
+      "target": "0x5315dd48",
+      "source_range": "command_unpack"
+    },
+    {
+      "site": "0x5315dfec",
+      "kind": "b",
+      "target": "0x5315dd48",
+      "source_range": "command_unpack"
+    },
+    {
+      "site": "0x5315e008",
+      "kind": "b",
+      "target": "0x5315dd48",
+      "source_range": "command_unpack"
+    },
+    {
+      "site": "0x5315e024",
+      "kind": "b",
+      "target": "0x5315dd48",
+      "source_range": "command_unpack"
+    },
+    {
+      "site": "0x5315e040",
+      "kind": "b",
+      "target": "0x5315dd48",
+      "source_range": "command_unpack"
+    },
+    {
+      "site": "0x5315e05c",
+      "kind": "b",
+      "target": "0x5315dd48",
+      "source_range": "command_unpack"
+    },
+    {
+      "site": "0x5315e07c",
+      "kind": "b",
+      "target": "0x5315dd48",
+      "source_range": "command_unpack"
+    },
+    {
+      "site": "0x5315e0f0",
+      "kind": "b",
+      "target": "0x5315dd48",
+      "source_range": "command_unpack"
+    },
+    {
+      "site": "0x5315e148",
+      "kind": "bl",
+      "target": "0x530fced4",
+      "source_range": "command_unpack"
+    },
+    {
+      "site": "0x5315e14c",
+      "kind": "b",
+      "target": "0x5315dd48",
+      "source_range": "command_unpack"
+    },
+    {
+      "site": "0x5315e17c",
+      "kind": "b",
+      "target": "0x5315dd48",
+      "source_range": "command_unpack"
+    },
+    {
+      "site": "0x5315e19c",
+      "kind": "b",
+      "target": "0x5315dd48",
+      "source_range": "command_unpack"
+    },
+    {
+      "site": "0x5315e1cc",
+      "kind": "b",
+      "target": "0x5315dd48",
+      "source_range": "command_unpack"
+    },
+    {
+      "site": "0x5315e1e8",
+      "kind": "b",
+      "target": "0x5315dd48",
+      "source_range": "command_unpack"
+    },
+    {
+      "site": "0x5315e204",
+      "kind": "b",
+      "target": "0x5315dd48",
+      "source_range": "command_unpack"
+    },
+    {
+      "site": "0x5315e220",
+      "kind": "b",
+      "target": "0x5315dd48",
+      "source_range": "command_unpack"
+    },
+    {
+      "site": "0x5315e234",
+      "kind": "b",
+      "target": "0x5315dd48",
+      "source_range": "command_unpack"
+    },
+    {
+      "site": "0x5315e250",
+      "kind": "b",
+      "target": "0x5315dd48",
+      "source_range": "command_unpack"
+    },
+    {
+      "site": "0x5315e278",
+      "kind": "b",
+      "target": "0x5315dd48",
+      "source_range": "command_unpack"
+    },
+    {
+      "site": "0x5315e294",
+      "kind": "b",
+      "target": "0x5315dd48",
+      "source_range": "command_unpack"
+    },
+    {
+      "site": "0x5315e2b0",
+      "kind": "b",
+      "target": "0x5315dd48",
+      "source_range": "command_unpack"
+    },
+    {
+      "site": "0x5315e2cc",
+      "kind": "b",
+      "target": "0x5315dd48",
+      "source_range": "command_unpack"
+    },
+    {
+      "site": "0x5315e2dc",
+      "kind": "b",
+      "target": "0x5315dd48",
+      "source_range": "command_unpack"
+    },
+    {
+      "site": "0x5315e2ec",
+      "kind": "b",
+      "target": "0x5315dd48",
+      "source_range": "command_unpack"
+    },
+    {
+      "site": "0x52f1818c",
+      "kind": "bl",
+      "target": "0x530f2668",
+      "source_range": "packet63_exchange"
+    },
+    {
+      "site": "0x52f1819c",
+      "kind": "bl",
+      "target": "0x526ab2a8",
+      "source_range": "packet63_exchange"
+    },
+    {
+      "site": "0x52f181d4",
+      "kind": "bl",
+      "target": "0x526aac80",
+      "source_range": "packet63_exchange"
+    },
+    {
+      "site": "0x52f181e0",
+      "kind": "bl",
+      "target": "0x530ed0f4",
+      "source_range": "packet63_exchange"
+    },
+    {
+      "site": "0x52f181ec",
+      "kind": "bl",
+      "target": "0x52f3a74c",
+      "source_range": "packet63_exchange"
+    },
+    {
+      "site": "0x52f181f8",
+      "kind": "bl",
+      "target": "0x52f180a0",
+      "source_range": "packet63_exchange"
+    },
+    {
+      "site": "0x52f18228",
+      "kind": "bl",
+      "target": "0x530f2668",
+      "source_range": "packet63_exchange"
+    },
+    {
+      "site": "0x52f18238",
+      "kind": "bl",
+      "target": "0x526ab2a8",
+      "source_range": "packet63_exchange"
+    },
+    {
+      "site": "0x52f1824c",
+      "kind": "bl",
+      "target": "0x52f3a754",
+      "source_range": "packet63_exchange"
+    },
+    {
+      "site": "0x52f18290",
+      "kind": "bl",
+      "target": "0x530f26a4",
+      "source_range": "packet63_exchange"
+    },
+    {
+      "site": "0x52f182a4",
+      "kind": "bl",
+      "target": "0x530f26a4",
+      "source_range": "packet63_exchange"
+    },
+    {
+      "site": "0x52f182c4",
+      "kind": "bl",
+      "target": "0x532fb9c8",
+      "source_range": "packet63_exchange"
+    },
+    {
+      "site": "0x5315c06c",
+      "kind": "bl",
+      "target": "0x52f137f0",
+      "source_range": "communication_bind"
+    },
+    {
+      "site": "0x5315c074",
+      "kind": "bl",
+      "target": "0x52f1390c",
+      "source_range": "communication_bind"
+    },
+    {
+      "site": "0x5315c094",
+      "kind": "bl",
+      "target": "0x533aada0",
+      "source_range": "communication_bind"
+    },
+    {
+      "site": "0x5315c0a0",
+      "kind": "bl",
+      "target": "0x53165454",
+      "source_range": "communication_bind"
+    },
+    {
+      "site": "0x5315c0ac",
+      "kind": "bl",
+      "target": "0x5315beac",
+      "source_range": "communication_bind"
+    },
+    {
+      "site": "0x5315c0b8",
+      "kind": "bl",
+      "target": "0x5315beac",
+      "source_range": "communication_bind"
+    },
+    {
+      "site": "0x5315c0c4",
+      "kind": "bl",
+      "target": "0x5315beac",
+      "source_range": "communication_bind"
+    },
+    {
+      "site": "0x5315c0d0",
+      "kind": "bl",
+      "target": "0x53102ce8",
+      "source_range": "communication_bind"
+    },
+    {
+      "site": "0x5315c104",
+      "kind": "bl",
+      "target": "0x530fdfc4",
+      "source_range": "communication_bind"
+    },
+    {
+      "site": "0x5315c118",
+      "kind": "b",
+      "target": "0x5315c098",
+      "source_range": "communication_bind"
+    },
+    {
+      "site": "0x52f17ad8",
+      "kind": "bl",
+      "target": "0x5315beac",
+      "source_range": "reader_aux_alias"
+    },
+    {
+      "site": "0x52f17b30",
+      "kind": "bl",
+      "target": "0x5315beac",
+      "source_range": "reader_comm_alias"
+    },
+    {
+      "site": "0x53135440",
+      "kind": "bl",
+      "target": "0x53134210",
+      "source_range": "edge_wrappers"
+    },
+    {
+      "site": "0x5313544c",
+      "kind": "bl",
+      "target": "0x5313432c",
+      "source_range": "edge_wrappers"
+    },
+    {
+      "site": "0x53135458",
+      "kind": "bl",
+      "target": "0x531347c8",
+      "source_range": "edge_wrappers"
+    },
+    {
+      "site": "0x53135464",
+      "kind": "bl",
+      "target": "0x53134c64",
+      "source_range": "edge_wrappers"
+    },
+    {
+      "site": "0x53135470",
+      "kind": "bl",
+      "target": "0x53135118",
+      "source_range": "edge_wrappers"
+    },
+    {
+      "site": "0x53135484",
+      "kind": "b",
+      "target": "0x531352b0",
+      "source_range": "edge_wrappers"
+    },
+    {
+      "site": "0x5313549c",
+      "kind": "bl",
+      "target": "0x5313399c",
+      "source_range": "edge_wrappers"
+    },
+    {
+      "site": "0x531354b0",
+      "kind": "b",
+      "target": "0x5313542c",
+      "source_range": "edge_wrappers"
+    },
+    {
+      "site": "0x5312b588",
+      "kind": "bl",
+      "target": "0x53135488",
+      "source_range": "image_tuning_caller"
+    },
+    {
+      "site": "0x52f184f0",
+      "kind": "b",
+      "target": "0x52f182d4",
+      "source_range": "command_wrapper"
+    },
+    {
+      "site": "0x52f15140",
+      "kind": "bl",
+      "target": "0x52f14c9c",
+      "source_range": "command_forwarder"
+    },
+    {
+      "site": "0x52f15160",
+      "kind": "bl",
+      "target": "0x52f18490",
+      "source_range": "command_forwarder"
+    },
+    {
+      "site": "0x52f15174",
+      "kind": "b",
+      "target": "0x52f14db8",
+      "source_range": "command_forwarder"
+    },
+    {
+      "site": "0x52f180d8",
+      "kind": "bl",
+      "target": "0x530ed1ac",
+      "source_range": "wait_packet63"
+    },
+    {
+      "site": "0x52f18104",
+      "kind": "bl",
+      "target": "0x530fdfc4",
+      "source_range": "wait_packet63"
+    },
+    {
+      "site": "0x52f18124",
+      "kind": "bl",
+      "target": "0x532fb9c8",
+      "source_range": "wait_packet63"
+    },
+    {
+      "site": "0x52f18050",
+      "kind": "bl",
+      "target": "0x530ed1ac",
+      "source_range": "wait_info62"
+    },
+    {
+      "site": "0x52f1807c",
+      "kind": "bl",
+      "target": "0x530fdfc4",
+      "source_range": "wait_info62"
+    },
+    {
+      "site": "0x52f1809c",
+      "kind": "bl",
+      "target": "0x532fb9c8",
+      "source_range": "wait_info62"
+    },
+    {
+      "site": "0x52f186d0",
+      "kind": "bl",
+      "target": "0x52f3a74c",
+      "source_range": "info62_wait_to_import"
+    },
+    {
+      "site": "0x52f186d8",
+      "kind": "bl",
+      "target": "0x52f18018",
+      "source_range": "info62_wait_to_import"
+    },
+    {
+      "site": "0x52f18704",
+      "kind": "bl",
+      "target": "0x530f2668",
+      "source_range": "info62_wait_to_import"
+    },
+    {
+      "site": "0x52f18714",
+      "kind": "bl",
+      "target": "0x526ab2a8",
+      "source_range": "info62_wait_to_import"
+    },
+    {
+      "site": "0x52f18728",
+      "kind": "bl",
+      "target": "0x52f3a754",
+      "source_range": "info62_wait_to_import"
+    }
+  ],
+  "conditional_bindings": [],
+  "critical_instructions": [
+    {
+      "site": "0x5315b250",
+      "instruction": "movw r1, #0x8205"
+    },
+    {
+      "site": "0x5315b25c",
+      "instruction": "mov ip, #1"
+    },
+    {
+      "site": "0x5315b260",
+      "instruction": "mov r1, #2"
+    },
+    {
+      "site": "0x5315b264",
+      "instruction": "strb ip, [r0]"
+    },
+    {
+      "site": "0x5315b268",
+      "instruction": "mov r4, #0x26"
+    },
+    {
+      "site": "0x5315ad48",
+      "instruction": "str r4, [r2]"
+    },
+    {
+      "site": "0x5315ad50",
+      "instruction": "strb r1, [r3]"
+    },
+    {
+      "site": "0x52f18368",
+      "instruction": "tst r2, r3"
+    },
+    {
+      "site": "0x52f18378",
+      "instruction": "orreq r3, r3, #1"
+    },
+    {
+      "site": "0x52f18460",
+      "instruction": "subs r7, r0, #0"
+    },
+    {
+      "site": "0x52f18468",
+      "instruction": "bne #0x52f183cc"
+    },
+    {
+      "site": "0x52f18474",
+      "instruction": "bl #0x5315dc68"
+    },
+    {
+      "site": "0x52f18484",
+      "instruction": "bl #0x5315dc9c"
+    },
+    {
+      "site": "0x5315dc68",
+      "instruction": "cmp r1, #0x86"
+    },
+    {
+      "site": "0x5315dc6c",
+      "instruction": "bxgt lr"
+    },
+    {
+      "site": "0x5315dc70",
+      "instruction": "lsl r1, r1, #5"
+    },
+    {
+      "site": "0x5315dc8c",
+      "instruction": "strb r1, [r3, #1]!"
+    },
+    {
+      "site": "0x5315dd70",
+      "instruction": "movw r3, #0x8205"
+    },
+    {
+      "site": "0x5315dd78",
+      "instruction": "beq #0x5315e060"
+    },
+    {
+      "site": "0x5315e060",
+      "instruction": "add r2, r0, r2, lsl #5"
+    },
+    {
+      "site": "0x5315e068",
+      "instruction": "ldrb r1, [r2, #0x38]"
+    },
+    {
+      "site": "0x5315e06c",
+      "instruction": "ldr r3, [r0, #0x260]"
+    },
+    {
+      "site": "0x5315e070",
+      "instruction": "strb r1, [r3, #6]"
+    },
+    {
+      "site": "0x5315e078",
+      "instruction": "strb r3, [r0, #0x272]"
+    },
+    {
+      "site": "0x5315c0bc",
+      "instruction": "ldr r3, [r0, #0xc]"
+    },
+    {
+      "site": "0x5315c0c0",
+      "instruction": "str r3, [r4, #0x260]"
+    },
+    {
+      "site": "0x52f17adc",
+      "instruction": "ldr r0, [r0, #0xc]"
+    },
+    {
+      "site": "0x52f17aec",
+      "instruction": "str r0, [r5, #0x4c]"
+    },
+    {
+      "site": "0x52f17b34",
+      "instruction": "ldr r0, [r0, #0x14]"
+    },
+    {
+      "site": "0x52f17b44",
+      "instruction": "str r0, [r5, #0x54]"
+    },
+    {
+      "site": "0x52f18254",
+      "instruction": "cmp r5, #0x20"
+    },
+    {
+      "site": "0x52f18258",
+      "instruction": "movlo r3, r5"
+    },
+    {
+      "site": "0x52f1825c",
+      "instruction": "movhs r3, #0x20"
+    },
+    {
+      "site": "0x52f18270",
+      "instruction": "ldrbgt r2, [r0, r1]"
+    },
+    {
+      "site": "0x52f18274",
+      "instruction": "strbgt r2, [sb, r1]"
+    },
+    {
+      "site": "0x52f182ac",
+      "instruction": "mov r0, #0"
+    },
+    {
+      "site": "0x53134330",
+      "instruction": "add r3, r1, #0x1000"
+    },
+    {
+      "site": "0x531346e4",
+      "instruction": "strb r2, [r3, #0x272]"
+    },
+    {
+      "site": "0x52f180dc",
+      "instruction": "subs r5, r0, #0"
+    },
+    {
+      "site": "0x52f180e0",
+      "instruction": "bne #0x52f18108"
+    },
+    {
+      "site": "0x52f15110",
+      "instruction": "ldrb ip, [r0, #0x9b]"
+    },
+    {
+      "site": "0x52f15120",
+      "instruction": "cmp ip, #0"
+    },
+    {
+      "site": "0x52f1512c",
+      "instruction": "beq #0x52f15138"
+    },
+    {
+      "site": "0x52f184d4",
+      "instruction": "ldrb ip, [ip, #0x2f3]"
+    },
+    {
+      "site": "0x52f184e4",
+      "instruction": "cmp ip, #0xa000"
+    },
+    {
+      "site": "0x52f184e8",
+      "instruction": "bne #0x52f1853c"
+    }
+  ],
+  "relationships": [
+    {
+      "kind": "alias",
+      "sites": [
+        "0x5315c0b8",
+        "0x5315c0bc",
+        "0x5315c0c0",
+        "0x52f17ad8",
+        "0x52f17adc",
+        "0x52f17aec"
+      ],
+      "expression": "C.ptr[5260]=LensFactory.ptr[c]=reader.ptr[4c]"
+    },
+    {
+      "kind": "alias",
+      "sites": [
+        "0x52f17b30",
+        "0x52f17b34",
+        "0x52f17b44",
+        "0x52f18464"
+      ],
+      "expression": "reader.ptr[54]=LensFactory.ptr[14]=C; command handler passes this C"
+    },
+    {
+      "kind": "metadata",
+      "sites": [
+        "0x5315b250",
+        "0x5315b25c",
+        "0x5315b268",
+        "0x5315ad48",
+        "0x5315ad50"
+      ],
+      "expression": "cmd8205 => return1,index26hex,type2,additional_byte1,required_mask0"
+    },
+    {
+      "kind": "copy-unpack",
+      "sites": [
+        "0x52f18474",
+        "0x52f18484",
+        "0x5315dc8c",
+        "0x5315dd78",
+        "0x5315e060",
+        "0x5315e070",
+        "0x5315e078"
+      ],
+      "expression": "32-byte source -> C+38+32*index; cmd8205 takes first cache byte and copies entire byte to C+5272 and C.ptr[5260]+6; index26 => cache C+4f8"
+    },
+    {
+      "kind": "status-gate",
+      "sites": [
+        "0x52f1845c",
+        "0x52f18460",
+        "0x52f18468",
+        "0x52f18474",
+        "0x52f18484"
+      ],
+      "expression": "type2 exchange return0 permits cache/unpack; nonzero branches to5315e2f0; observed ordinary exchange return is0 at52f182ac"
+    },
+    {
+      "kind": "separate-object",
+      "sites": [
+        "0x5312b588",
+        "0x53135498",
+        "0x531354b0",
+        "0x5313544c",
+        "0x53134330",
+        "0x531346e4"
+      ],
+      "expression": "ImageTuning packs output argument through53135488->5313542c->5313432c. r3=output+1000; store531346e4 is output+1272, not established C+5272."
+    },
+    {
+      "kind": "caller-policy",
+      "sites": [
+        "0x52f15110",
+        "0x52f1512c",
+        "0x52f15160",
+        "0x52f184d4",
+        "0x52f184e8",
+        "0x52f184f0"
+      ],
+      "expression": "Generic forwarding entry suppresses call when its byte9b!=0; wrapper suppresses cmd8205 when C+52f3!=0 (only high-nibblea000 exception). Caller derives cmd from incoming r1, not a fixed8205 literal."
+    }
+  ],
+  "limitations": [
+    "No vendor name for capability bit6, lens ID mapping or safe forced actuator policy is established. Entire capability byte is copied, including bit6; these writers do not mask or force just that bit.",
+    "The metadata command8205 is proven. A concrete upstream UI/event that issues this command has not been identified; generic forwarding accepts incoming r1. Exact MOVW8205 candidates outside lookup/unpack were full26408205 messages and were not equated with this16-bit command.",
+    "Cache copy uses signed index>86hex as its sole observed range rejection. Synthetic index-1 writes C+18 but lookup8205 produces26hex, not-1. No claim of runtime negative index producer.",
+    "Packet63 helper allocates32-byte buffers, sends32 bytes and copies min(requested_length,32) bytes back; handler then caches32 bytes. Input buffer capacity must support that operation. No actual malformed caller or out-of-bounds event was observed.",
+    "Packet63 normal path returns0 after receive/free. Its WaitLensCpuControl return is unused, as is WaitLensInfo at the prior packet62 import call. Assertion/error paths inside wait or lower transport may stop execution; this is not proof that a real failed transaction updates capability.",
+    "Tests execute original selected handler/lookup/exchange/cache/unpack branches with synthetic external allocation, memcpy/memset, event clear, send/receive/wait/free stubs. One forced nonzero exchange test checks a structural branch only; observed original exchange ordinary return is0.",
+    "Four non-AF checks execute two disjoint instruction fragments, not the full EdgeEnhancement packer. Previous R2y evidence independently names the module; this pass establishes the exact output+1272 address expression.",
+    "Genuine angr C retains inferred types and condition-code artifacts. ARM, source hashes and scoped numerical tests are authoritative. No firmware changes, hardware or media IO were performed.",
+    "Bounded searches do not establish absence of additional capability producers or aliases elsewhere."
+  ],
+  "bounded_search": {
+    "direct_call_targets": [
+      "5315dc9c",
+      "5315dc68",
+      "5313432c",
+      "53135488",
+      "52f18490",
+      "52f182d4"
+    ],
+    "followed": "C5260 initialization; reader4c/54 aliases; command8205 metadata and one transport helper; generic forwarder plus wrapper",
+    "rejected_candidates": [
+      {
+        "site": "0x528e77f4",
+        "reason": "MOVW8205 is completed by MOVT2640; full value26408205, no proven16-bit command relation"
+      },
+      {
+        "site": "0x52a88b44",
+        "reason": "MOVW8205 is completed by MOVT2640; full value26408205, no proven16-bit command relation"
+      },
+      {
+        "site": "0x53316d38",
+        "reason": "MOVW8205 is completed by MOVT2640; full value26408205, no proven16-bit command relation"
+      }
+    ],
+    "not_done": "No exhaustive caller/dataflow scan or lens protocol validity reconstruction"
+  },
+  "validation": {
+    "passed": true,
+    "image_sha256": "342d2f35405e8daf1797dfe431d2e4aa70f4b52a2c242a29df48206672f1dfb4",
+    "functions": 6,
+    "fragments": 16,
+    "arm_words": 2372,
+    "transfers": 231,
+    "resources": 12,
+    "pointer_words": 12,
+    "conditional_bindings": 0,
+    "critical_instructions": 46,
+    "arm_cases": 272,
+    "groups": {
+      "full-cache-copy-synthetic-index-boundaries": 5,
+      "full-exchange-copy-length-with-transport-stubs": 5,
+      "full-handler-forced-nonzero-return-branch-only": 1,
+      "full-handler-lookup-exchange-copy-unpack-with-transport-stubs": 256,
+      "full-metadata-8205": 1,
+      "non-AF-packer-two-disjoint-fragments": 4
+    },
+    "hash_scope": "The following three SHA-256 fields identify the private worker's original evidence, numerical verifier and report before public adaptation; they are not hashes of this JSON or the public verifier/report.",
+    "evidence_sha256": "01971ede6b60b6010793bffc1eb5eefc1737dc9c5193d124bd41d1cdf260950f",
+    "numeric_script_sha256": "99aae0df79b31e3587d15534f39d9cadf204c8bb8bb4e05f840b523b7193f002",
+    "report_sha256": "44c8d086fc6256592cb55993bd9a467d9cbb285d033557afa641b3f4cfc74381",
+    "manager_independent_rerun": true
+  }
+}

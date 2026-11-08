@@ -27,7 +27,7 @@ figure{margin:32px 0;padding:24px 0;border-block:1px solid var(--line)}figcaptio
 <li><a href="#재현과-검증-범위">재현과 검증 범위</a></li>
 </ul>
 </div>
-</details></header><main>
+</details></header><main><aside class="review-note" id="drive-followup"><strong>AF 제어 선택 후속 분석 · 2026-11-08</strong><p>렌즈 정보의 생산자 → capability bit → 제어 객체 선택, 서로 다른 이벤트 loop와 일부 요청 바이트 작성을 연결했다. <a href="af-drive-architecture.html">기본 구조·원본 ARM 검사·미확정 범위</a></p></aside>
 <p>K-3 Mark III v2.20 RTOS에서 요청 수신 분기, 이벤트 큐, 셔터 작업 스레드와 GPIO 경로, AF의 상관·디포커스 연산을 추가 추적했다. 각 경로에서 직접 확인한 연결과 현재 제어 객체·스레드 상태에 의존하는 연결을 아래에 표시한다. 분석한 바이트 구간, 직접 호출·분기, 함수 포인터 값과 생성자 근거는 별도 JSON에 기록했다. <a href="deep-evidence.json">기계어 증거</a></p>
 <h2 id="공통-메시지에서-촬영af-이벤트로">공통 메시지에서 촬영·AF 이벤트로</h2>
 <p>기존 제출 경로 <code>0x52c1e4a8 → 0x52c1cc18</code>는 메시지 <code>0x46020102</code>를 만들고 <code>0x5330ae48 → 0x53309c10</code>의 전송 경로를 사용한다. 경로 초기화 함수 <code>0x52c1b1e0</code>은 요청 ID 3의 첫 인수 1·2에 목적지 마스크 2를 기록한다. 별도로 확인한 수신 함수 <code>0x529d26e4</code>는 같은 메시지 번호를 처리하고, <code>0x529ea474</code>에서 요청 ID 3을 선택해 <code>0x529ea1c4</code>로 보낸다. <strong>목적지 마스크 2의 전송 등록과 이 수신기를 연결하는 구간은 미해결이다.</strong> 아래는 수신기에 도달했을 때 확인한 분기다. <a href="deep-evidence.json">경로 초기화·수신기 범위</a></p>

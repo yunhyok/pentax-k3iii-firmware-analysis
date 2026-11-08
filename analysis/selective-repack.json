@@ -1,0 +1,199 @@
+{
+  "schema_version": 1,
+  "checked_local_date": "2026-11-08",
+  "camera": "PENTAX K-3 Mark III",
+  "firmware_version": "2.20",
+  "scope": "Offline package reconstruction and verification of one same-size kind-4 RTOS edit. Camera hardware and updater not executed.",
+  "original": {
+    "package_bytes": 35106716,
+    "package_sha256": "3c9d466b8160689867af2f58ff2cf0bf3363bc3b42daff43685a33171b91eb1a",
+    "decoded_sha256": "7ff301d585ef7adcd620a15575faa39b4227cc5a27eaa8d754efe50f667a30f9",
+    "stream_blocks": 3202
+  },
+  "all_stored_candidate": {
+    "package_bytes": 78690708,
+    "package_sha256": "c8466d5db7e2afb6393790c5ade30b3183c33d37daaae1c184542711ff970984",
+    "stream_blocks": 3203
+  },
+  "selective_candidate": {
+    "package_bytes": 35136788,
+    "package_sha256": "a7e806b1a6143d05bb72f4bcf7039cea6efa7b10338251a2f302c41e4092d1e5",
+    "decoded_bytes": 78683892,
+    "decoded_sha256": "eb4b22845cf697ca7c843e5a57df0b6fba19e47020ecad2eeecde18a715c803b",
+    "package_delta_from_original_bytes": 30072,
+    "package_saved_vs_all_stored_bytes": 43553920,
+    "changed_named_records": [
+      "RTOS"
+    ],
+    "decoded_changed_bytes": 83,
+    "changed_rtos_code_bytes": 79,
+    "changed_inner_checksum_bytes": 4,
+    "decode_byte_identical_to_all_stored": true
+  },
+  "block_selection": {
+    "block_indices_zero_based": true,
+    "maximum_lz_backward_distance": 8191,
+    "history_rule": "For output [s,e), preserve original encoded block if decoded original and target agree over [max(0,s-8191),e).",
+    "original_blocks": 3202,
+    "candidate_blocks": 3202,
+    "preserved_original_blocks_with_exact_encoded_byte_comparison": 3198,
+    "replacement_indices": [
+      523,
+      524,
+      873,
+      3201
+    ],
+    "replacements": [
+      {
+        "index": 523,
+        "decoded_output_start": 12861440,
+        "decoded_output_end_exclusive": 12886016,
+        "changed_bytes_in_output": 79,
+        "changed_bytes_in_history_window": 0,
+        "original_encoding": "lz",
+        "candidate_encoding": "stored",
+        "original_encoded_bytes_with_header": 14812,
+        "candidate_encoded_bytes_with_header": 24578,
+        "selection_reason": "changed decoded RTOS output"
+      },
+      {
+        "index": 524,
+        "decoded_output_start": 12886016,
+        "decoded_output_end_exclusive": 12910592,
+        "changed_bytes_in_output": 0,
+        "changed_bytes_in_history_window": 79,
+        "original_encoding": "lz",
+        "candidate_encoding": "stored",
+        "original_encoded_bytes_with_header": 12499,
+        "candidate_encoded_bytes_with_header": 24578,
+        "selection_reason": "changed bytes in prior history window"
+      },
+      {
+        "index": 873,
+        "decoded_output_start": 21463040,
+        "decoded_output_end_exclusive": 21487616,
+        "changed_bytes_in_output": 0,
+        "changed_bytes_in_history_window": 0,
+        "original_encoding": "lz",
+        "candidate_encoding": "stored",
+        "original_encoded_bytes_with_header": 24233,
+        "candidate_encoded_bytes_with_header": 24578,
+        "selection_reason": "alignment only; decoded output and history unchanged"
+      },
+      {
+        "index": 3201,
+        "decoded_output_start": 78675968,
+        "decoded_output_end_exclusive": 78683892,
+        "changed_bytes_in_output": 4,
+        "changed_bytes_in_history_window": 0,
+        "original_encoding": "lz",
+        "candidate_encoding": "stored",
+        "original_encoded_bytes_with_header": 44,
+        "candidate_encoded_bytes_with_header": 7926,
+        "selection_reason": "changed decoded inner checksum word"
+      }
+    ],
+    "extra_stored_block_for_even_length": 873,
+    "split_replacement_for_word_alignment": null
+  },
+  "verification": {
+    "public_tool_output_identical_to_independent_prototype": true,
+    "public_tool_reopened_candidate_matches_all_stored_input": true,
+    "independent_decoder": {
+      "independent_decoder_sha256": "abc92c0090d2b870f2ec74782d67a2decb8c5a1eb8132f35756a2db81cfe8f50",
+      "candidate_sha256": "a7e806b1a6143d05bb72f4bcf7039cea6efa7b10338251a2f302c41e4092d1e5",
+      "decoded_sha256": "eb4b22845cf697ca7c843e5a57df0b6fba19e47020ecad2eeecde18a715c803b",
+      "stream_end": 35136508,
+      "blocks": 3202,
+      "exact_target_match": true,
+      "repository": "Trimz/Ricoh3x",
+      "commit": "0ed425ad4e31b336624ba4709dc28962ace2d629",
+      "source_url": "https://github.com/Trimz/Ricoh3x/blob/0ed425ad4e31b336624ba4709dc28962ace2d629/tools/pdec.py"
+    },
+    "original_arm": {
+      "cases": 8,
+      "results": [
+        {
+          "image": "original",
+          "function": "header_and_full_outer_checksum",
+          "result": 1,
+          "bytes_summed": 35106716,
+          "checksum_stubbed": false
+        },
+        {
+          "image": "original",
+          "function": "rejected_header_field",
+          "changed_offset": "0x30",
+          "result": 0
+        },
+        {
+          "image": "original",
+          "function": "rejected_header_field",
+          "changed_offset": "0x7c",
+          "result": 0
+        },
+        {
+          "image": "original",
+          "function": "full_inner_checksum",
+          "result": 1,
+          "bytes_summed": 78683892,
+          "checksum_stubbed": false
+        },
+        {
+          "image": "edited",
+          "function": "header_and_full_outer_checksum",
+          "result": 1,
+          "bytes_summed": 35136788,
+          "checksum_stubbed": false
+        },
+        {
+          "image": "edited",
+          "function": "rejected_header_field",
+          "changed_offset": "0x30",
+          "result": 0
+        },
+        {
+          "image": "edited",
+          "function": "rejected_header_field",
+          "changed_offset": "0x7c",
+          "result": 0
+        },
+        {
+          "image": "edited",
+          "function": "full_inner_checksum",
+          "result": 1,
+          "bytes_summed": 78683892,
+          "checksum_stubbed": false
+        }
+      ],
+      "source_range": {
+        "start": "0x52ff4d08",
+        "end": "0x52ff4f88",
+        "sha256": "c69b164b9c2d0c6ed747cd02b735490557ac7a13e141e9c7e9e4895f7c3935a3"
+      },
+      "limits": "Original ARM header and additive checksum loops run over complete buffers. Error diagnostics only are skipped. Hardware transform, decode wrapper, updater, storage and boot are not executed.",
+      "verifier_sha256": "a134af308197798188429bf72bcb0c731a2f28f668832f89a4a77323d2935881",
+      "candidate_sha256": "a7e806b1a6143d05bb72f4bcf7039cea6efa7b10338251a2f302c41e4092d1e5"
+    },
+    "synthetic_tests": {
+      "path": "../tests/test_repack_changed_blocks.py",
+      "passed": 8,
+      "command": "python -B -m unittest discover -s tests -p test_repack_changed_blocks.py -v"
+    },
+    "not_tested": [
+      "device RAM requirements and size limits",
+      "hardware decoder",
+      "complete updater",
+      "storage writes",
+      "boot"
+    ]
+  },
+  "sources": {
+    "official_firmware": "https://www.ricoh-imaging.co.jp/english/support/digital/k-3-3.html",
+    "public_repack_tool": "../tools/repack_changed_blocks.py",
+    "original_host_decoder": "../inspect_firmware.py",
+    "all_stored_candidate_evidence": "recompiled-integration.json",
+    "package_codec_evidence": "package-codec-evidence.json",
+    "original_arm_verifier": "../verify_package_roundtrip.py"
+  }
+}

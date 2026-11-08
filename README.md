@@ -6,7 +6,13 @@
 
 - [세 기종 통합 현황·검증 기준](analysis/research-program.html)
 - [독립 C 코드의 ARM 재컴파일·원본 비교](analysis/recompiled-kernels.html)
+- [재컴파일한 색 행렬 함수의 배치·재패키징](analysis/recompiled-integration.html)
+- [원본 압축 블록을 보존한 작은 수정 패키지](analysis/selective-repack.html)
 - [실제 DNG 표본·DCP 시험 준비](analysis/raw-test-inputs.html)
+- [ColorChecker 24패치·ICC 색차 비교 절차](analysis/color-comparison-protocol.html)
+- [세 기종 색공간 선택 화면의 UI 이식 설계](analysis/ui-port-contract.html)
+- [렌즈 구동 선택·명령·응답의 AF 기초 연구](analysis/af-drive-architecture.html)
+- [ICONBIN 구조·아이콘 렌더링 검증](analysis/icon-resources.html)
 - [전체 안내·펌웨어 구조·재현 절차](index.html)
 - [JPEG·ISP·WB·색공간·클리핑 최신 보고서](analysis/pipeline-report.html)
 - [M0 reset·SRAM remap·bank alias 최신 분석](analysis/startup-storage.html)

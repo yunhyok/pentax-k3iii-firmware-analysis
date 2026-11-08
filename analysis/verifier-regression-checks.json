@@ -1,0 +1,78 @@
+{
+  "passed": true,
+  "fixes": [
+    "Report paths are rejected before input validation when already present; final writes use exclusive open(x), covering hardlink/same path and creation races.",
+    "Header128bytes,version table256bytes,and footer identity/type/decoded length must match; only compressed length and outer checksum may change.",
+    "ICON and new AF verifiers refuse optimized Python to retain assertions.",
+    "Empty stored and empty LZ nonterminal blocks rejected before block metadata append."
+  ],
+  "regression_commands": [
+    "python -m unittest discover -s tests -p test_firmware_verifier_guards.py -v",
+    "python inspect_firmware.py --self-test"
+  ],
+  "regression_results": {
+    "unittest_methods": 4,
+    "passed": true,
+    "same_path_and_hardlink_cli_cases": 8,
+    "optimized_mode_rejections": 3,
+    "metadata_field_mutations": 4,
+    "empty_block_amplification_variants": 2,
+    "decoder_self_checks": 15
+  },
+  "full_package_checks": {
+    "malformed_rejections": 19,
+    "encoder_cases": 7,
+    "original_arm_cases": 8,
+    "passed": true
+  },
+  "full_icon_checks": {
+    "parser_cases": 28,
+    "original_arm_cases": 33,
+    "passed": true
+  },
+  "checksum_recomputed_mutations": [
+    {
+      "mutation": "header_reserved",
+      "offset": 36,
+      "outer_checksum_recomputed": true,
+      "rejected_before_arm": true,
+      "reason": "Outer header changed"
+    },
+    {
+      "mutation": "version_word",
+      "offset": 78690436,
+      "outer_checksum_recomputed": true,
+      "rejected_before_arm": true,
+      "reason": "Version table changed"
+    }
+  ],
+  "decoder_after_empty_guard": [
+    {
+      "image": "original",
+      "package_sha256": "3c9d466b8160689867af2f58ff2cf0bf3363bc3b42daff43685a33171b91eb1a",
+      "decoded_sha256": "7ff301d585ef7adcd620a15575faa39b4227cc5a27eaa8d754efe50f667a30f9",
+      "blocks": 3202,
+      "passed": true
+    },
+    {
+      "image": "edited",
+      "package_sha256": "9531b07d5e0eabb54556e6c47ef285a3e68fe8e10edf7c258263f12e3b5de618",
+      "decoded_sha256": "465686353d4774ed96ad9752daf51b07491916bc3acc9ced44290940ee300d79",
+      "blocks": 3203,
+      "passed": true
+    }
+  ],
+  "sha256": {
+    "verify_package_roundtrip.py": "a134af308197798188429bf72bcb0c731a2f28f668832f89a4a77323d2935881",
+    "verify_icon_resources.py": "8eeffeb9a3d2b37a31c3f7f5c11db0289ee12ec56741e2b4bdb265cc532e6455",
+    "inspect_firmware.py": "e6d3221abd8738b937c0f507007b89acd33b687ae37a0fb4a33cc686b03737af",
+    "tests/test_firmware_verifier_guards.py": "91036e192a79c6862979c9b6f72928ef0282aaf166a4014885d5d722ecfd8954",
+    "verify_af_commands.py": "c1436cf5c236f176f0648d2a51d7bb420a55759dbede7a1a8b0d73b6b94eda19",
+    "verify_af_drive_selection.py": "1b8c76660f454b3466fea053fe360ac210f1a3bd9f8e6a7c17e3f4e4638eae37"
+  },
+  "limits": [
+    "ARM checksum checks rerun after report/invariant fixes; after the final empty-block guard, original/candidate host decode identities were rechecked against those exact previously executed buffers.",
+    "Empty-block growth fixed; no arbitrary block-count cap added. Each retained block must emit at least one byte within output limit.",
+    "No device acceptance, hardware decode or physical camera operation validated."
+  ]
+}

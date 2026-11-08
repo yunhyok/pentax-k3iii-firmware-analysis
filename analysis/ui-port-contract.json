@@ -1,0 +1,186 @@
+{
+  "schema_version": 1,
+  "snapshot_date_kst": "2026-11-08",
+  "status": "proposed_contract_from_existing_evidence",
+  "selection": {
+    "id": "capture_color_space",
+    "label_ko": "촬영 색공간",
+    "options": ["sRGB", "AdobeRGB"],
+    "unit_ko": "설정 한 항목의 두 값 선택 화면과 그 화면을 열고 확정하거나 취소하는 경계",
+    "why_ko": "세 기종이 모두 제공하는 두 값이다. 같은 의미의 설정을 유지하면서 화면과 입력을 기종별로 분리해 확인할 수 있다.",
+    "excluded_candidate": {
+      "item": "RAW File Format PEF/DNG",
+      "reason_ko": "공식 대응표 p.1은 두 K-3 기종의 RAW 파일 형식을 대응시킨다. Q7의 RAW 저장 형식은 DNG로 명시되어 같은 PEF/DNG 선택 화면을 확인할 수 없다. JPEG/RAW/RAW+ 기록 선택은 별도 항목이다.",
+      "sources": ["ricoh_menu_comparison", "ricoh_q7_manual"]
+    }
+  },
+  "sources": {
+    "ricoh_menu_comparison": {
+      "url": "https://www.ricoh-imaging.co.jp/japan/support/pdf/k-3-3_09.pdf",
+      "pages_one_based": [1, 4],
+      "sha256": "123e2018ef6ff8811dd721bee7ccd414549f7cd57c67868d02fc7d958263fe64",
+      "scope_ko": "로컬 PDF와 기존 p.4 렌더를 대조했다. 메뉴 의미와 위치의 대응 근거다."
+    },
+    "ricoh_k3iii_spec": {
+      "url": "https://www.ricoh-imaging.co.jp/english/products/k-3-3/spec/",
+      "locator": "Color Space"
+    },
+    "ricoh_k3ii_manual": {
+      "url": "https://www.ricoh-imaging.co.jp/english/support/man-pdf/k-3-2.pdf",
+      "printed_pages": [26, 84],
+      "locator": "C3 / 20. Color Space and File Name"
+    },
+    "ricoh_q7_manual": {
+      "url": "https://www.ricoh-imaging.co.jp/english/support/man-pdf/q7.pdf",
+      "printed_pages": [20, 66, 78],
+      "locator": "E3 / 13. Color Space, File Name, Main Specifications"
+    },
+    "k3iii_color_path": {
+      "path": "pipeline-report.html#0x145",
+      "verification_path": "colorspace-message-checks.json",
+      "verification_sha256": "e88542ba5cb22a39b83dd2812ecb08e00473c31f3ff102c5d5cbb5c165e50a36"
+    },
+    "k3iii_icon": {
+      "path": "icon-resources.html#gui",
+      "evidence_path": "icon-ui-evidence.json",
+      "verification_path": "icon-ui-checks.json",
+      "evidence_sha256": "090bde0fc144c55f49b47babbae237cf9136309a7e396087829c8992b92d8cfa"
+    },
+    "k3ii_raw_ui": {
+      "repository": "yunhyok/pentax-k3ii-firmware-analysis",
+      "repository_path": "analysis/ui-resources.json",
+      "snapshot_sha256": "c9148394e7a06d1335d9c9bb5f04574026e6b7e7c48038aaef71b67eb88b2a77",
+      "status_at_review": "local manager evidence; publication pending",
+      "context_url": "https://github.com/yunhyok/pentax-k3ii-firmware-analysis/blob/fa79d693e83329429dc79d8841e3ffbe73965691/analysis/hq-status.json",
+      "scope_ko": "RAW File Format의 A32 실행 기록을 읽었다. 선택한 색공간 항목의 증거와 분리한다."
+    },
+    "q7_setting": {
+      "url": "https://github.com/yunhyok/pentax-q7-firmware-analysis/blob/2f850e7f1ef5bd4a4024574f66b035c359bc133d/analysis/deep-evidence.json",
+      "locator": "ColorMatchingService_IsAdobeRGB, DataHelper_GetColorSpace, DataHelper_SetColorSpace",
+      "sha256": "7331273a1cb148c86f35d5c21e19e0130c7cf58b9c207db9ccd3eeef9bf7a598"
+    },
+    "q7_ui": {
+      "url": "https://github.com/yunhyok/pentax-q7-firmware-analysis/blob/2f850e7f1ef5bd4a4024574f66b035c359bc133d/analysis/portability-evidence.json",
+      "locator": "ui.menu_input, ui.display, ui.icons",
+      "sha256": "e4991361de2686c8374c24207df2611aab3990ec8eb0b4ef645d5c1377a774c8"
+    }
+  },
+  "boundary_order": ["meaning", "event", "state", "rendering", "resource"],
+  "models": [
+    {
+      "id": "k3iii",
+      "model": "PENTAX K-3 Mark III",
+      "firmware": "2.20",
+      "address_units": "RTOS virtual addresses unless marked as object/record offsets",
+      "meaning": {"status": "official", "observed_ko": "정지화상 촬영 5 > 색공간", "sources": ["ricoh_menu_comparison", "ricoh_k3iii_spec"]},
+      "event": {
+        "status": "partial",
+        "observed_ko": "파서 0x52aed898은 sRGB/AdobeRGB를 0/1로 변환한다. 설정 요청 0x145는 0x52edd820을 거쳐 0x52ecf4a8로 디스패치된다.",
+        "open_ko": "색공간 화면의 버튼·다이얼·터치 입력에서 요청을 생산하는 위젯과 실제 이벤트 값.",
+        "sources": ["k3iii_color_path"]
+      },
+      "state": {
+        "status": "bounded_replay",
+        "observed_ko": "UserData+0x35b와 common+0x26b5의 연결. 0x52eef408 setter와 0x52edfa40 commit 구간은 합성 객체에서 실행됐다.",
+        "open_ko": "화면의 현재값·포커스·보류값과 읽기/확정/취소의 연결. 전체 큐와 영속 저장.",
+        "sources": ["k3iii_color_path"]
+      },
+      "rendering": {
+        "status": "separate_path",
+        "observed_ko": "IconView ID setter 0x52bf1430, snapshot 0x52bf1338, draw 0x52bf1704와 dispatch 0x528c4780이 확인됐다. 0도 복사 0x528c3ffc는 u32를 옮기며 high byte가 drawObject+7과 같으면 건너뛴다.",
+        "open_ko": "색공간 화면의 문자·포커스 렌더러와 invalidate 경로. 합성 후 LCD 동작.",
+        "sources": ["k3iii_icon"]
+      },
+      "resource": {
+        "status": "separate_path",
+        "observed_ko": "ICONBIN ID 5는 40×40이며 payload [25600,32000). 포인터 배열 0x54521140, ROM 0x53d08e80, 12바이트 descriptor와 32비트 픽셀 단위 offset이 확인됐다.",
+        "open_ko": "ID 5를 선택하는 실제 메뉴와 이 화면에 쓰는 아이콘·문자 ID. 채널 순서와 후단 합성.",
+        "sources": ["k3iii_icon"]
+      }
+    },
+    {
+      "id": "k3ii",
+      "model": "PENTAX K-3 II",
+      "firmware": "1.12",
+      "address_units": "decoded file offsets for code/tables; object offsets and IDs labeled separately",
+      "meaning": {"status": "official", "observed_ko": "커스텀 3(C3) > 20. Color Space", "sources": ["ricoh_menu_comparison", "ricoh_k3ii_manual"]},
+      "event": {
+        "status": "separate_path",
+        "observed_ko": "RAW File Format의 항목 ID 0x0150000a와 PEF/DNG 위젯 ID 0x01500043/0x01500044의 선택·반영 경로를 합성 이벤트로 확인했다.",
+        "open_ko": "C3 색공간 화면 객체, 물리 입력 진입점, 선택/확정/취소 이벤트와 위젯 ID.",
+        "sources": ["k3ii_raw_ui"]
+      },
+      "state": {
+        "status": "separate_path",
+        "observed_ko": "RAW File Format은 객체 +0xf4/+0xf9와 설정 ID 0x97, 기종 내부 bank 선택을 사용한다.",
+        "open_ko": "색공간의 설정 ID, sRGB/AdobeRGB 저장값과 현재·보류 상태의 반영 시점. 0x97은 RAW File Format에만 근거가 있다.",
+        "sources": ["k3ii_raw_ui"]
+      },
+      "rendering": {
+        "status": "separate_path",
+        "observed_ko": "RAW File Format의 텍스트 준비 함수는 디코딩 파일 오프셋 0x873964. 실제 A32는 글리프 코드를 준비한다.",
+        "open_ko": "색공간 위젯에서 이 경로의 사용 여부와 최종 비트맵 합성, 픽셀 포맷·stride·LCD 출력.",
+        "sources": ["k3ii_raw_ui"]
+      },
+      "resource": {
+        "status": "separate_path",
+        "observed_ko": "RAW File Format에서 로케일 행과 1바이트/2바이트 문자 리소스 경로를 확인했다.",
+        "open_ko": "Color Space와 두 선택값의 리소스, 글리프·포커스 표식의 그리기 규칙.",
+        "sources": ["k3ii_raw_ui"]
+      }
+    },
+    {
+      "id": "q7",
+      "model": "PENTAX Q7",
+      "firmware": "1.01",
+      "address_units": "analysis ELF virtual addresses, MIPS32 little-endian",
+      "meaning": {"status": "official", "observed_ko": "커스텀 E3 > 13. Color Space", "sources": ["ricoh_q7_manual"]},
+      "event": {
+        "status": "separate_path",
+        "observed_ko": "물리 스위치 생산자 0x803f9c58와 방향키 edge 0x80ae0614, 컴포넌트 키 분배 0x80ac8594가 다른 범위에서 확인됐다.",
+        "open_ko": "E3 색공간 항목에서 버튼 입력이 어느 핸들러·위젯을 거쳐 반영되는지.",
+        "sources": ["q7_ui"]
+      },
+      "state": {
+        "status": "partial",
+        "observed_ko": "DataHelper_GetColorSpace 0x8043374c 및 SetColorSpace 0x80433768이 사용자 데이터 헬퍼로 연결된다. IsAdobeRGB 0x8041c104는 값 1을 검사한다.",
+        "open_ko": "E3 화면의 getter/setter 호출과 두 선택값의 저장값 매핑, 보류 상태와 확정·취소. 값 1 검사만으로 화면 전체 enum을 확정할 수 없다.",
+        "sources": ["q7_setting"]
+      },
+      "rendering": {
+        "status": "separate_path",
+        "observed_ko": "LCD 아이콘 0x8043f42c는 픽셀당 팔레트 인덱스 1바이트를 쓰며 index 0은 목적지를 보존한다. 원본 그림 2사례는 버퍼 getter 0x80262fd4를 대체해 검증했다. 0x80439428의 960×480은 내부 좌표다.",
+        "open_ko": "E3 색공간의 실제 텍스트·선택 표식 호출자, 해당 화면의 갱신 범위와 물리 LCD.",
+        "sources": ["q7_ui"]
+      },
+      "resource": {
+        "status": "separate_path",
+        "observed_ko": "RLE/Zoran 아이콘 bank가 분리된다. 0x80ac5cb8 및 0x80ac644c는 별도 언어·문자 경로다.",
+        "open_ko": "E3 항목의 문자열·글꼴·팔레트 선택과 리소스 ID. Zoran 전체 디코딩과 재배치.",
+        "sources": ["q7_ui"]
+      }
+    }
+  ],
+  "proposed_contract": {
+    "shared_actions": ["open", "choose", "confirm", "cancel"],
+    "shared_state": ["committed", "pending"],
+    "transition_rules_ko": [
+      "열 때 대상 기종의 현재값을 읽어 확정값과 보류값을 초기화한다.",
+      "선택은 보류값과 화면만 바꾼다.",
+      "확정할 때 값이 달라졌다면 대상 기종의 설정 인터페이스에 한 번 쓰고 읽어 확인한다. 같은 값이면 쓰지 않는다.",
+      "취소는 설정에 쓰지 않는다. 다시 열면 이전 확정값을 표시한다."
+    ],
+    "drawing_ko": "대상 기종의 문자 경로로 두 값과 포커스만 표시한다. 리소스와 출력 포맷·사각형·stride는 대상별 어댑터에서 다룬다.",
+    "scope_ko": "설계 제안이다. 이 상태 모델과 행동을 원본 카메라가 모두 사용한다는 관측은 없다."
+  },
+  "next_experiments": [
+    {"id": "bind_target", "pass_ko": "정확한 색공간 항목에서 양방향 선택을 기록해 기종별 물리 입력·이벤트 ID·위젯·getter/setter와 원본 값의 연결을 재현한다."},
+    {"id": "replay_state", "pass_ko": "양방향 변경·확정, 변경 후 취소, 같은 값 확정에서 쓰기 횟수와 다시 열었을 때의 값을 비교한다. 다른 설정 필드는 보존한다."},
+    {"id": "replay_render", "pass_ko": "실제 색공간 위젯에서 무효화, 문자/표식 리소스, 로케일, 출력 주소·stride·형식까지 연결한다. 합성 버퍼에서 바뀌어야 하는 영역과 양쪽 경계를 대조한다."}
+  ],
+  "limits_ko": [
+    "색공간 항목의 입력부터 그리기까지 연결된 사례는 세 기종 모두 아직 없다.",
+    "기종 간 숫자 event·enum·객체 배치·픽셀 형식은 공통으로 가정하지 않는다.",
+    "기존 보고서를 비교했으며 이번 작업에서 새 펌웨어 실행이나 장치 이식을 수행하지 않았다."
+  ]
+}

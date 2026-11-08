@@ -19,7 +19,7 @@ def sha256(data):
 
 
 def decode(data, start=0x80, limit=256 * 1024 * 1024):
-    """Return payload, stream end and a block-level compressed/output mapping."""
+    """Return payload, stream end and block mapping; reject nonterminal empty blocks."""
     if not 0 <= start <= len(data) or limit < 0:
         raise ValueError("invalid start or output bound")
     output = bytearray()
@@ -83,6 +83,8 @@ def decode(data, start=0x80, limit=256 * 1024 * 1024):
                             raise ValueError("output limit exceeded")
                         output.append(data[cursor])
                         cursor += 1
+        if len(output) == out_start:
+            raise ValueError(f"empty nonterminal block at {block_start:#x}")
         blocks.append({"input_start": block_start, "input_end": end,
                        "output_start": out_start, "output_end": len(output),
                        "kind": "stored" if stored else "lz"})
@@ -112,6 +114,8 @@ def named_records(data):
 
 
 def self_test():
+    if not __debug__:
+        raise RuntimeError('Self-check requires assertions; run without -O or PYTHONOPTIMIZE')
     literal = b"\x00\x05\x00\x00A\x00\x00\x00\x00"
     overlap = b"\x00\x07\x40\x00A\x02\x01\x00\x00\x00\x00"
     extended = b"\x00\x08\x40\x00A\x07\x01\x01\x00\x00\x00\x00"
@@ -121,6 +125,7 @@ def self_test():
         actual, end, blocks = decode(source, 0)
         assert actual == expected and end == len(source) and len(blocks) == 1
     for source in [b"", b"\x00", stored[:-2], literal[:4],
+                   b"\x80\x00\x00\x00", b"\x00\x02\x00\x00\x00\x00",
                    b"\x00\x06\x80\x00\x00\x01\x00\x00\x00\x00",
                    b"\x00\x07\x40\x00A\x07\x01\x00\x00\x00\x00",
                    b"\x00\x05\x00\x00A\x00\x01\x00\x00"]:
@@ -139,7 +144,7 @@ def self_test():
     fixture = b"RTOS\0\0\0\0" + struct.pack("<HHI", 4, 1, 3) + b"abc"
     records, end = named_records(fixture)
     assert records[0]["size"] == 3 and end == len(fixture)
-    print("self-check: 13 checks passed")
+    print("self-check: 15 checks passed")
 
 
 def main():

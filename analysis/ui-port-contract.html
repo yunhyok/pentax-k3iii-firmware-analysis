@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>세 기종 UI 이식의 최소 단위 · 촬영 색공간</title>
+<style>
+  :root { color-scheme: light dark; }
+  body { margin: 0 auto; max-width: 65rem; padding: 2rem 1.25rem; font: 1.04rem/1.7 system-ui, sans-serif;
+         word-break: keep-all; overflow-wrap: anywhere; }
+  h1, h2 { line-height: 1.25; }
+  h2 { margin-top: 2.2rem; }
+  a { text-underline-offset: .16em; }
+  figure { margin: 1.8rem 0; }
+  figcaption { font-weight: 650; }
+  .flow { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 1.5rem; list-style: none; padding: 0; }
+  .flow li { position: relative; border: 1px solid GrayText; border-radius: .45rem; padding: .7rem;
+             background: color-mix(in srgb, CanvasText 5%, Canvas); }
+  .flow li:not(:last-child)::after { content: "→"; position: absolute; right: -1.25rem; top: .8rem; }
+  .flow strong { display: block; }
+  .table-scroll { overflow-x: auto; }
+  table { width: 100%; min-width: 47rem; border-collapse: collapse; }
+  th, td { border-bottom: 1px solid GrayText; text-align: left; padding: .6rem .7rem; vertical-align: top; }
+  tbody th { min-width: 3.6rem; }
+  td small { display: block; margin-top: .3rem; font-size: .85em; }
+  code { font-size: .91em; }
+  @media (max-width: 41rem) {
+    .flow { grid-template-columns: 1fr; }
+    .flow li:not(:last-child)::after { content: "↓"; top: auto; bottom: -1.55rem; right: 50%; }
+  }
+</style>
+</head>
+<body>
+<header>
+<nav aria-label="관련 문서"><a href="research-program.html">세 기종 연구</a> · <a href="icon-resources.html">K-3 III ICONBIN</a> · <a href="ui-port-contract.json">근거 목록과 공통 계약</a></nav>
+<p>PENTAX K-3 Mark III 2.20 · K-3 II 1.12 · Q7 1.01</p>
+<h1>첫 이식 단위는 촬영 색공간 선택 화면</h1>
+<p>한 화면에서 <strong>sRGB와 AdobeRGB</strong>를 선택하는 동작을 공통 단위로 잡았다. 리코 대응표 4쪽에서 K-3 III의 촬영 5와 K-3 II의 커스텀 C3을 연결할 수 있고 Q7 설명서에는 커스텀 E3의 13번에 같은 기능이 있다. K-3 II에서는 PEF/DNG 선택을 더 많이 분석했지만 Q7에는 이에 대응하는 두 값 화면이 없다. Q7의 공식 RAW 저장 형식은 DNG다. <a href="https://www.ricoh-imaging.co.jp/japan/support/pdf/k-3-3_09.pdf#page=4">리코 메뉴 대응표 4쪽</a> · <a href="https://www.ricoh-imaging.co.jp/english/products/k-3-3/spec/">K-3 III 사양</a> · <a href="https://www.ricoh-imaging.co.jp/english/support/man-pdf/k-3-2.pdf">K-3 II 설명서 26·84쪽</a> · <a href="https://www.ricoh-imaging.co.jp/english/support/man-pdf/q7.pdf">Q7 설명서 20·66·78쪽</a></p>
+</header>
+<main>
+<figure>
+<figcaption>한 화면의 제안 흐름</figcaption>
+<ol class="flow">
+  <li><strong>의미</strong>촬영 색공간의 두 값</li>
+  <li><strong>이벤트</strong>열기·선택·확정·취소</li>
+  <li><strong>상태</strong>확정값과 보류값</li>
+  <li><strong>렌더링</strong>두 값과 포커스 표시</li>
+  <li><strong>리소스</strong>기종별 문자·글꼴·출력 형식</li>
+</ol>
+<p>화살표는 확인할 접점을 나타낸다. 메뉴 의미는 공식 문서에서 확인했고 실제 이벤트에서 화면이 다시 그려질 때까지 이어지는 경로는 세 기종 모두 미확인이다.</p>
+</figure>
+
+<h2>기종별로 확인한 접점</h2>
+<p>K-3 III와 Q7 주소는 각각 RTOS와 분석 ELF의 가상 주소다. K-3 II 코드 위치는 디코딩 파일 오프셋이며 객체 필드와 위젯·설정 ID를 별도로 표기했다.</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="기종별 근거와 미확인 경계">
+<table>
+<thead><tr><th scope="col">경계</th><th scope="col">K-3 Mark III</th><th scope="col">K-3 II</th><th scope="col">Q7</th></tr></thead>
+<tbody>
+<tr><th scope="row">의미</th><td>촬영 5의 색공간</td><td>C3의 20번 색공간</td><td>E3의 13번 색공간</td></tr>
+<tr><th scope="row">이벤트</th>
+  <td>파서 <code>0x52aed898</code>과 설정 요청 <code>0x145</code>의 송신 <code>0x52edd820</code>·처리 <code>0x52ecf4a8</code>을 연결했다.<small>미확인 · 실제 색공간 위젯의 입력에서 요청 생성까지.</small></td>
+  <td>다른 화면인 RAW File Format에서 항목·선택 위젯 ID와 합성 이벤트 처리 경로를 확인했다.<small>미확인 · 색공간 화면의 위젯과 물리 입력 이벤트.</small></td>
+  <td>스위치 통지 <code>0x803f9c58</code>, 방향키 edge <code>0x80ae0614</code>, 컴포넌트 분배 <code>0x80ac8594</code>를 확인했다.<small>미확인 · E3 색공간 항목으로 이어지는 전체 경로.</small></td></tr>
+<tr><th scope="row">상태</th>
+  <td>이 경로에서 sRGB/AdobeRGB는 0/1이다. UserData <code>+0x35b</code>와 common <code>+0x26b5</code>의 갱신을 추적했다. setter·commit은 합성 객체에서 검증했다.<small>미확인 · 화면의 읽기, 보류값, 확정·취소 및 영속 저장.</small></td>
+  <td>RAW File Format은 객체 <code>+0xf4/+0xf9</code>와 설정 <code>0x97</code>을 사용한다.<small>미확인 · 색공간의 상태·설정 ID·값 매핑. RAW 화면 값은 별개다.</small></td>
+  <td>Get/SetColorSpace <code>0x8043374c / 0x80433768</code>은 사용자 데이터 헬퍼로 이어진다. <code>0x8041c104</code>는 AdobeRGB 판별에 값 1을 검사한다.<small>미확인 · E3에서의 호출과 화면에서 사용하는 두 값의 매핑.</small></td></tr>
+<tr><th scope="row">그리기</th>
+  <td>IconView ID 변경 <code>0x52bf1430</code> → snapshot <code>0x52bf1338</code> → draw <code>0x52bf1704</code> → dispatch <code>0x528c4780</code>. 0도 blit <code>0x528c3ffc</code>는 u32를 쓰고 상위 바이트가 비교 키와 같으면 건너뛴다.<small>미확인 · 색공간 화면의 문자·포커스 갱신과 LCD 합성.</small></td>
+  <td>RAW 화면의 문자 준비 <code>0x873964</code>는 글리프 코드를 준비한다.<small>미확인 · 색공간 위젯과의 연결, 최종 픽셀 형식·stride·합성.</small></td>
+  <td>LCD 아이콘 <code>0x8043f42c</code>는 픽셀당 인덱스 1바이트를 쓰며 0이면 건너뛴다. 두 원본 코드 사례는 버퍼 getter를 대체해 검증했다.<small>미확인 · E3의 문자·포커스 갱신과 물리 LCD.</small></td></tr>
+<tr><th scope="row">리소스</th>
+  <td>ICONBIN ID 5는 40×40이며 <code>[25600,32000)</code>을 읽는다. 12바이트 descriptor를 가리키는 배열은 <code>0x54521140</code>이다.<small>미확인 · ID 5를 쓰는 메뉴와 색공간 화면의 리소스 ID.</small></td>
+  <td>RAW 화면에서 로케일 행과 1바이트·2바이트 문자 데이터를 확인했다.<small>미확인 · 색공간 제목과 두 값의 리소스 및 글꼴.</small></td>
+  <td>RLE/Zoran 아이콘 bank와 문자 경로 <code>0x80ac5cb8 / 0x80ac644c</code>가 별개다.<small>미확인 · E3의 문자열·글꼴·팔레트와 리소스 ID.</small></td></tr>
+</tbody>
+</table>
+</div>
+<p>K-3 III의 ID 5 검증으로 32비트 리소스의 복사 규칙을 확인했다. Q7에서는 특정 LCD 경로가 팔레트 인덱스를 쓰는 동작을 검증했다. K-3 II의 RAW 화면 검증은 문자 준비와 반영 경로까지다. 세 결과는 각 기종의 렌더링 접점을 찾는 데 쓴다. K-3 II의 RAW 화면 근거는 로컬 관리자 자료 <code>analysis/ui-resources.json</code>의 검토본이며 해시를 함께 기록했다. <a href="pipeline-report.html#0x145">K-3 III 색공간 설정</a> · <a href="icon-resources.html#gui">K-3 III ID 5 렌더링</a> · <a href="https://github.com/yunhyok/pentax-k3ii-firmware-analysis/blob/fa79d693e83329429dc79d8841e3ffbe73965691/analysis/hq-status.json">K-3 II 조사 상태</a> · <a href="https://github.com/yunhyok/pentax-q7-firmware-analysis/blob/2f850e7f1ef5bd4a4024574f66b035c359bc133d/analysis/deep-evidence.json">Q7 설정 주소</a> · <a href="https://github.com/yunhyok/pentax-q7-firmware-analysis/blob/2f850e7f1ef5bd4a4024574f66b035c359bc133d/analysis/portability-evidence.json">Q7 입력·표시 경로</a></p>
+
+<h2>공통으로 구현할 동작과 다음 실험</h2>
+<p>제안 화면을 열 때 대상 기종의 현재값을 읽는다. 선택 중에는 보류값과 표시만 바꾼다. 달라진 값을 확정하면 대상 설정 인터페이스에 한 번 쓰고 다시 읽는다. 취소하거나 같은 값을 확정하면 쓰지 않는다. 버튼 매핑, 숫자 이벤트·값, 리소스 형식은 기종별로 확인해 적용한다.</p>
+<ol>
+  <li>공식 메뉴 위치에서 실제 색공간 항목의 입력을 추적한다. 두 방향의 선택과 확정·취소에 대해 이벤트 값, 화면 객체, 설정 읽기·쓰기, 로케일 리소스의 주소를 기록한다.</li>
+  <li>원본 구간을 합성 상태로 재실행한다. 두 값 사이를 왕복해 반영 횟수와 다시 열었을 때의 값을 확인한다. 취소하거나 같은 값을 확정했을 때는 쓰기가 없는지 확인한다. 원본 동작이 제안과 다르면 차이를 기록한다.</li>
+  <li>그 화면의 무효화부터 실제 문자·포커스 렌더러를 거쳐 출력 버퍼까지 추적한다. 각 기종의 출력 형식과 stride를 사용해 예상 영역과 인접 바이트를 대조한다. 초기 시험의 표식은 새로 그린다.</li>
+</ol>
+<p>이번 결과는 기존 근거를 대조한 화면 설계와 실험 조건이다. 실제 펌웨어 변경, 이식 화면의 실행과 카메라 LCD 검증은 남아 있다. <a href="ui-port-contract.json">상태·주소·시험 조건</a></p>
+</main>
+</body>
+</html>
