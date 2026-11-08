@@ -1,0 +1,418 @@
+{
+  "schema_version": 1,
+  "scope": "Six pinned DCPs with two matrices and optional tone, six actual Lightroom Classic 15.6 exports.",
+  "sdk": {
+    "version": "1.7.1 Build 2768",
+    "archive_sha256": "c1d3a545ed45b150e59af2e6aa0695c1551f0e2bed34ad87436898a05194d2b1",
+    "source_prefix": "dng_sdk_1_7_1/dng_sdk/source/",
+    "official": "https://www.adobe.com/support/downloads/dng/dng_sdk.html",
+    "members": {
+      "dng_camera_profile.cpp": {
+        "sha256": "988d3d9531ddfefd0faa0b6b4ebf85276a872a55b1956fd2bb964f89c1dd801f",
+        "lines": "265–315 normalize and set; 510–520 matrix payload; 562–827 fingerprint; 1506–1555,1702–1730 parse; 831–855 separate UniqueID"
+      },
+      "dng_camera_profile.h": {
+        "sha256": "94a7bc7e16fbbfa7d13acff93eea38f8ce5f32ad33fa8abd03c9847b083dcec4",
+        "lines": "691–714 full vs render-data fingerprint; 966–974 model restriction exclusion"
+      },
+      "dng_xy_coord.cpp": {
+        "sha256": "fc28d228f6a8811568d42be52f0d45eb714b45aa11224d6e86b09598b94a490d",
+        "lines": "47–88 PCS xy to XYZ"
+      },
+      "dng_xy_coord.h": {
+        "sha256": "b36fcb3c46e4c273ca0e3e30d59e5274c4371a4fdaaac5b3a1432487c9f9651c",
+        "lines": "145–148 D50 xy"
+      },
+      "dng_matrix.cpp": {
+        "sha256": "a6d53a5e74fb425a17b73c89782c099d01d7f56bd1244f81c91365dd032ef9aa",
+        "lines": "248–275 scale/round; 714–735 max; 970–1003 dot product"
+      },
+      "dng_utils.h": {
+        "sha256": "0eb910dd59b46928d5fee734a0cc096eb1a99bab8594d6d2fec77ae0d6fb11e9",
+        "lines": "651–663 signed rounding"
+      },
+      "dng_rational.cpp": {
+        "sha256": "928d259c79c4c97df2b5191ac58c90a622042f127356d398277b4532c8762992",
+        "lines": "15–24 read rational; 28–71 write rational, canonical zero"
+      },
+      "dng_image_writer.cpp": {
+        "sha256": "2f627124740ea4dc7a6e9400c91d6772f077a00fb447577ecefe313ba4f6bd33",
+        "lines": "320–378 endian handling; 482–501 SRATIONAL matrix encoding"
+      },
+      "dng_shared.cpp": {
+        "sha256": "d0a574d1e9f69379645c95c29b6a8148f3aca19568174608f769ce964a84bb3f",
+        "lines": "111 absent embed policy default"
+      },
+      "dng_tag_values.h": {
+        "sha256": "e6b5e7157c7e7e2a3867c3dd1b51d7d0ed7ae3a762734e26d9e0455fc3d07bdb",
+        "lines": "357 embed policy value"
+      },
+      "dng_fingerprint.h": {
+        "sha256": "ff74d3bdbd4c24a3c3fe2a1cdfd5a5ef233baa1b638726e8b5f1db6819513f77",
+        "lines": "496–508 little-endian MD5 stream"
+      },
+      "dng_parse_utils.cpp": {
+        "sha256": "610d27f9563dcb9e41481600ec18edf733a928266ea4014056688831cd85f5dd",
+        "lines": "3420–3451 row-major matrix parse"
+      },
+      "dng_tone_curve.cpp": {
+        "sha256": "9ea072a234282fc300e7c6271bd324bc0bfa0d8cfae7294dad6aeaf1aea01620",
+        "lines": "73–111 validity of tone coordinates"
+      },
+      "dng_flags.h": {
+        "sha256": "619bee441fd1f844c1c40b6f8228de20b97f5010eaa1aecb2421db511432e704",
+        "lines": "28–31 version 1.7.1 and build 2768"
+      },
+      "dng_sdk_limits.h": {
+        "sha256": "15466f9251c0750b5baf7d6251a320d81a52b045ea677cbdc4ac24ddcfbe1633",
+        "lines": "72 maximum 8192 tone points"
+      }
+    }
+  },
+  "input_layout": {
+    "k3ii-matrix": {
+      "dcp": "pentax-k3ii-1376-matrix-test.dcp",
+      "tiff": "matrix-test-prophoto/pentax-k3ii-1376.tif"
+    },
+    "k3iii-matrix": {
+      "dcp": "pentax-k3iii-4678-matrix-test.dcp",
+      "tiff": "k3iii-matrix-prophoto/pentax-k3iii-4678.tif"
+    },
+    "q7-matrix": {
+      "dcp": "pentax-q7-1760-matrix-test.dcp",
+      "tiff": "q7-matrix-prophoto/pentax-q7-1760.tif"
+    },
+    "k3ii-identity": {
+      "dcp": "pentax-k3ii-1376-tone-identity-v1.dcp",
+      "tiff": "tone-identity-prophoto/pentax-k3ii-1376.tif"
+    },
+    "k3ii-lift": {
+      "dcp": "pentax-k3ii-1376-tone-lift-v1.dcp",
+      "tiff": "tone-lift-prophoto/pentax-k3ii-1376.tif"
+    },
+    "k3ii-acr3": {
+      "dcp": "pentax-k3ii-1376-acr3-control-v1.dcp",
+      "tiff": "tone-acr3-prophoto/pentax-k3ii-1376.tif"
+    }
+  },
+  "synthetic_controls": {
+    "base_full_md5": "165E63559686E0B5290A6466BB7D77E8",
+    "base_render_data_md5": "C8B1D247D8BC25FB6CB704DCE207572B",
+    "mutations": {
+      "name": {
+        "dcp_sha256_changed": true,
+        "full_changed": true,
+        "render_data_changed": false
+      },
+      "model_restriction": {
+        "dcp_sha256_changed": true,
+        "full_changed": false,
+        "render_data_changed": false
+      },
+      "quantized_away_matrix": {
+        "dcp_sha256_changed": true,
+        "full_changed": false,
+        "render_data_changed": false
+      },
+      "matrix_uniform_scale": {
+        "dcp_sha256_changed": true,
+        "full_changed": false,
+        "render_data_changed": false
+      },
+      "matrix": {
+        "dcp_sha256_changed": true,
+        "full_changed": true,
+        "render_data_changed": true
+      },
+      "illuminant": {
+        "dcp_sha256_changed": true,
+        "full_changed": true,
+        "render_data_changed": true
+      },
+      "tone": {
+        "dcp_sha256_changed": true,
+        "full_changed": true,
+        "render_data_changed": true
+      },
+      "tone_removed": {
+        "dcp_sha256_changed": true,
+        "full_changed": true,
+        "render_data_changed": true
+      }
+    },
+    "big_endian_container_keeps_same_little_endian_stream": true,
+    "incorrect_big_endian_stream_changes_both_fingerprints": true,
+    "canonical_zero_count_per_matrix": [
+      6,
+      6
+    ],
+    "legacy_zero_denominator_changes_both": true,
+    "embed_policy_stream_mutation_changes_full_only": true
+  },
+  "profiles": {
+    "k3ii-matrix": {
+      "dcp_sha256": "6aa402a77f6b41f9fa37e99f1bd6911447e74c112eb7f7601c8c3bb116570ee4",
+      "tiff_sha256": "5a65e3b4349d97df77964b2871fb07934b0d1e444753fe8ff8ac5a08de103bef",
+      "profile": "PENTAX RAW matrix test 1376",
+      "xmp_camera_profile_digest": "1C7CF75BBFB3AA224BCEB9DAF7FBBBC9",
+      "computed_full_md5": "1C7CF75BBFB3AA224BCEB9DAF7FBBBC9",
+      "computed_render_data_md5": "78A48678DAEAE16B6C5FAA5BBD529FE3",
+      "dcp_file_md5": "151AC29B503930C1E9B28E9DB6F29D77",
+      "stream_bytes": 179,
+      "stream_sha256": "723852da3b142a5cccae9b73e3226bb844f132800de734d3a53c2cf411b9369d",
+      "stream_segments_in_order": {
+        "illuminant_1": {
+          "bytes": 2,
+          "sha256": "d94e7f1e9bb1f8a9b90996ba12c461b84956f0e7f230145cc594c2f80b067aa0"
+        },
+        "color_matrix_1": {
+          "bytes": 72,
+          "sha256": "1a39ac09df0a43333911df07a47a9a1fd7e5b94c52c3b24e29a02d2a39c46e95"
+        },
+        "illuminant_2": {
+          "bytes": 2,
+          "sha256": "78b4be1f9eeef9da65c393e4385f67edd142709b400ca7d900bd952e0c3cf727"
+        },
+        "color_matrix_2": {
+          "bytes": 72,
+          "sha256": "830ee391d1aee796237954290f06fe409873b0314435f869a535cc06613f90b3"
+        },
+        "profile_name": {
+          "bytes": 27,
+          "sha256": "8c1072499fc6e08aac5040f8624e2a3443f3f0ad7554461beb94c7a6b1d2da48"
+        },
+        "embed_policy": {
+          "bytes": 4,
+          "sha256": "df3f619804a92fdb4057192dc43dd748ea778adc52bc498ce80524c014b81119"
+        }
+      },
+      "normalized_zero_entries_per_matrix": [
+        0,
+        0
+      ]
+    },
+    "k3iii-matrix": {
+      "dcp_sha256": "975eba5a74ad092d97919bdafd97efb56e9ea6aa4b56d57266743fca43f21772",
+      "tiff_sha256": "000b1f328df0853572379d565de0e730393a507841a8ddb7a3eb120214a2f685",
+      "profile": "PENTAX RAW matrix test 4678",
+      "xmp_camera_profile_digest": "5B18C392C48A27F8A693547BA67F895F",
+      "computed_full_md5": "5B18C392C48A27F8A693547BA67F895F",
+      "computed_render_data_md5": "F08A0A3FA799720BD9424B7B3DE31C28",
+      "dcp_file_md5": "B7328D75EF90CBDCE6FE4EAC8AAF7C30",
+      "stream_bytes": 179,
+      "stream_sha256": "7824cebc671b74aafd238dcf09e5203c2fa017e3243c8d5d131c97a281abaf48",
+      "stream_segments_in_order": {
+        "illuminant_1": {
+          "bytes": 2,
+          "sha256": "d94e7f1e9bb1f8a9b90996ba12c461b84956f0e7f230145cc594c2f80b067aa0"
+        },
+        "color_matrix_1": {
+          "bytes": 72,
+          "sha256": "fabbce05f9a38d1af0cc72e169b7cd982d4cc33fcb057b67ebc7c21e6f4a97fa"
+        },
+        "illuminant_2": {
+          "bytes": 2,
+          "sha256": "78b4be1f9eeef9da65c393e4385f67edd142709b400ca7d900bd952e0c3cf727"
+        },
+        "color_matrix_2": {
+          "bytes": 72,
+          "sha256": "aa2d54f8e27ff4e008c4057cbb5dbb324901d8eb99bf461e05511715eefffe9e"
+        },
+        "profile_name": {
+          "bytes": 27,
+          "sha256": "bbe74edc6bffca03f999788f7fb89e5fcde704efa763123d0fa81468721dd260"
+        },
+        "embed_policy": {
+          "bytes": 4,
+          "sha256": "df3f619804a92fdb4057192dc43dd748ea778adc52bc498ce80524c014b81119"
+        }
+      },
+      "normalized_zero_entries_per_matrix": [
+        0,
+        0
+      ]
+    },
+    "q7-matrix": {
+      "dcp_sha256": "fe68b3460a400cf00bf9dfbe49f06f5f1c2cbc1010642d214df375d60504729e",
+      "tiff_sha256": "d1c78064ac8953540a93f8625f83d296f61a08e4d24105fb10eb91547feb864a",
+      "profile": "PENTAX RAW matrix test 1760",
+      "xmp_camera_profile_digest": "978C3B6DB89481CDFF978C45EC62968C",
+      "computed_full_md5": "978C3B6DB89481CDFF978C45EC62968C",
+      "computed_render_data_md5": "562B542F4DB247B8A4DAC43D051E6E82",
+      "dcp_file_md5": "A946C057C3CED00EF355F498493B64A5",
+      "stream_bytes": 179,
+      "stream_sha256": "dfe98a72a489800aa79bd3d833b09653f62717fd7ddb1c371c3325f9a906f1de",
+      "stream_segments_in_order": {
+        "illuminant_1": {
+          "bytes": 2,
+          "sha256": "d94e7f1e9bb1f8a9b90996ba12c461b84956f0e7f230145cc594c2f80b067aa0"
+        },
+        "color_matrix_1": {
+          "bytes": 72,
+          "sha256": "2ac9097885341b77836f64db9135bd766a35537af383abd2fe6328089ba75c48"
+        },
+        "illuminant_2": {
+          "bytes": 2,
+          "sha256": "78b4be1f9eeef9da65c393e4385f67edd142709b400ca7d900bd952e0c3cf727"
+        },
+        "color_matrix_2": {
+          "bytes": 72,
+          "sha256": "d7df0e23fe705b4ffa8e5d2cd0622344b49f228feab1860c55a7dc1d34f69690"
+        },
+        "profile_name": {
+          "bytes": 27,
+          "sha256": "b399dcda9a5748f7c590f2cee2572743d06ab032a16713d3eac0c183a5d4f1e3"
+        },
+        "embed_policy": {
+          "bytes": 4,
+          "sha256": "df3f619804a92fdb4057192dc43dd748ea778adc52bc498ce80524c014b81119"
+        }
+      },
+      "normalized_zero_entries_per_matrix": [
+        0,
+        0
+      ]
+    },
+    "k3ii-identity": {
+      "dcp_sha256": "7fde7d8708ef93324ff5c76e893fa1ecbb2fc4c49ba1269a5d4c3418b65d92f4",
+      "tiff_sha256": "9a3dd45eaa7ab6ba288d8cb5ee4298a37b8c49f474df536bda92ac77223ce615",
+      "profile": "PENTAX 1376 Tone Identity v1",
+      "xmp_camera_profile_digest": "782E03B3FA73C7D0E8D7766B6B2FEB8F",
+      "computed_full_md5": "782E03B3FA73C7D0E8D7766B6B2FEB8F",
+      "computed_render_data_md5": "9D96EF1EDC1DD648C01DB20320540D43",
+      "dcp_file_md5": "9ED8724A6D3B9FEC049C251D089E4BF3",
+      "stream_bytes": 196,
+      "stream_sha256": "9a7447cc922c2a14c5347ba9d0e868a97fe1e08f9390c7c18f14070f000d8f63",
+      "stream_segments_in_order": {
+        "illuminant_1": {
+          "bytes": 2,
+          "sha256": "d94e7f1e9bb1f8a9b90996ba12c461b84956f0e7f230145cc594c2f80b067aa0"
+        },
+        "color_matrix_1": {
+          "bytes": 72,
+          "sha256": "1a39ac09df0a43333911df07a47a9a1fd7e5b94c52c3b24e29a02d2a39c46e95"
+        },
+        "illuminant_2": {
+          "bytes": 2,
+          "sha256": "78b4be1f9eeef9da65c393e4385f67edd142709b400ca7d900bd952e0c3cf727"
+        },
+        "color_matrix_2": {
+          "bytes": 72,
+          "sha256": "830ee391d1aee796237954290f06fe409873b0314435f869a535cc06613f90b3"
+        },
+        "profile_name": {
+          "bytes": 28,
+          "sha256": "1d3b46341db047338b69d6c668509ec79fdf3ea575058e9915e922f718f176b5"
+        },
+        "embed_policy": {
+          "bytes": 4,
+          "sha256": "df3f619804a92fdb4057192dc43dd748ea778adc52bc498ce80524c014b81119"
+        },
+        "tone_curve": {
+          "bytes": 16,
+          "sha256": "d25b949c65312b91424a3cabd3065dfe18bc73e7cd8893229e9494cd75c16d92"
+        }
+      },
+      "normalized_zero_entries_per_matrix": [
+        0,
+        0
+      ]
+    },
+    "k3ii-lift": {
+      "dcp_sha256": "f106554b266df62c4d4a0ba4a86e87143fe872e53963c8e8aa37775466065fbf",
+      "tiff_sha256": "c72fe7978cb6ae0511b27a9b958673377355fb756c9f850cd6c410ece46a9fbb",
+      "profile": "PENTAX 1376 Tone Lift v1",
+      "xmp_camera_profile_digest": "763036625F340E29923B3CBCA99F0C68",
+      "computed_full_md5": "763036625F340E29923B3CBCA99F0C68",
+      "computed_render_data_md5": "D9CF819D24722A0E613DC239AABCE88C",
+      "dcp_file_md5": "4623788A21008B7971B6B8C02D38CDED",
+      "stream_bytes": 200,
+      "stream_sha256": "08704fbeebff13246eb6a6602b6c177f9f2d54147be49f9abb9a9558476b4d6f",
+      "stream_segments_in_order": {
+        "illuminant_1": {
+          "bytes": 2,
+          "sha256": "d94e7f1e9bb1f8a9b90996ba12c461b84956f0e7f230145cc594c2f80b067aa0"
+        },
+        "color_matrix_1": {
+          "bytes": 72,
+          "sha256": "1a39ac09df0a43333911df07a47a9a1fd7e5b94c52c3b24e29a02d2a39c46e95"
+        },
+        "illuminant_2": {
+          "bytes": 2,
+          "sha256": "78b4be1f9eeef9da65c393e4385f67edd142709b400ca7d900bd952e0c3cf727"
+        },
+        "color_matrix_2": {
+          "bytes": 72,
+          "sha256": "830ee391d1aee796237954290f06fe409873b0314435f869a535cc06613f90b3"
+        },
+        "profile_name": {
+          "bytes": 24,
+          "sha256": "e849d14d4d324cc8077ad6e0383b400a74d2a95c09a1ebb72570e34f50aafe67"
+        },
+        "embed_policy": {
+          "bytes": 4,
+          "sha256": "df3f619804a92fdb4057192dc43dd748ea778adc52bc498ce80524c014b81119"
+        },
+        "tone_curve": {
+          "bytes": 24,
+          "sha256": "a572e30ae1e7dd08186e506f2c2223a0edc4e19b9144c98ef978bff1922ad1c1"
+        }
+      },
+      "normalized_zero_entries_per_matrix": [
+        0,
+        0
+      ]
+    },
+    "k3ii-acr3": {
+      "dcp_sha256": "d9bd4d7bfecfcddbbdb3fd88c87bb487bf53af06221fb66b5ada8adb0345cd9f",
+      "tiff_sha256": "0add52b07a6f6f0ec00fdc5f95c2114a3d78f0f3b743848ae9213c8335d7e353",
+      "profile": "PENTAX 1376 ACR3 Control v1",
+      "xmp_camera_profile_digest": "D8DD6BF0BBFA902108D77C408E0D046C",
+      "computed_full_md5": "D8DD6BF0BBFA902108D77C408E0D046C",
+      "computed_render_data_md5": "00DE692BCDE871F9C5478D0A637BBAAB",
+      "dcp_file_md5": "600EA268C1D69FED3941A8E5146917A8",
+      "stream_bytes": 8379,
+      "stream_sha256": "620f765fc9f89601565e7365fc638bf87d01f42b65fd65670febed9ade05e3dc",
+      "stream_segments_in_order": {
+        "illuminant_1": {
+          "bytes": 2,
+          "sha256": "d94e7f1e9bb1f8a9b90996ba12c461b84956f0e7f230145cc594c2f80b067aa0"
+        },
+        "color_matrix_1": {
+          "bytes": 72,
+          "sha256": "1a39ac09df0a43333911df07a47a9a1fd7e5b94c52c3b24e29a02d2a39c46e95"
+        },
+        "illuminant_2": {
+          "bytes": 2,
+          "sha256": "78b4be1f9eeef9da65c393e4385f67edd142709b400ca7d900bd952e0c3cf727"
+        },
+        "color_matrix_2": {
+          "bytes": 72,
+          "sha256": "830ee391d1aee796237954290f06fe409873b0314435f869a535cc06613f90b3"
+        },
+        "profile_name": {
+          "bytes": 27,
+          "sha256": "c900bd8883fe607b63ea1b843f127dee98c2e8c727c7ffffe3a4c7a7000a862a"
+        },
+        "embed_policy": {
+          "bytes": 4,
+          "sha256": "df3f619804a92fdb4057192dc43dd748ea778adc52bc498ce80524c014b81119"
+        },
+        "tone_curve": {
+          "bytes": 8200,
+          "sha256": "51dac135a83970b08279dcdcc59839b851c66c7069501aabbbd014ba57715b01"
+        }
+      },
+      "normalized_zero_entries_per_matrix": [
+        0,
+        0
+      ]
+    }
+  },
+  "profile_scope": {
+    "explicit_embed_policy_tag_supported": false,
+    "absent_embed_policy_value": 0,
+    "synthetic_embed_policy_control": "Changes only the serialized MD5 input, not a DCP tag.",
+    "zero_rational_scope": "Pinned SDK serializes matrix zero as 0/1. No normalized matrix has a zero entry in the six profiles; the zero-denominator comparison is synthetic."
+  }
+}
