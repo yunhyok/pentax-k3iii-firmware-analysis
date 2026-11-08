@@ -4,14 +4,14 @@
   "time_zone": "Asia/Seoul",
   "title": "펜탁스 펌웨어 연구 본부",
   "summary": "K-3 Mark III, K-3 II, Q7의 분석 결과를 네 가지 목표로 비교합니다. 각 항목에 근거가 있는 결과, 아직 넘지 못한 검증 단계, 다음에 확인할 일을 기록합니다.",
-  "boundary": "세 기종 모두 무변경 재포장으로 배포본을 재현했고, 기종별로 함수 하나를 재컴파일해 원본 호출 경로에서 대조했습니다. K-3 II는 DNG 한 장에서 Lightroom TIFF 여섯 개를 내보내 내장 JPEG와 색차를 측정했습니다. 전체 소스 재빌드, 실기 설치·부팅, 독립 촬영을 통한 색 재현 검증, 렌즈 구동 변경과 UI 이식은 아직 검증하지 않았습니다.",
+  "boundary": "세 기종 모두 무변경 재포장으로 배포본을 재현했고, 기종별로 함수 하나를 재컴파일해 원본 호출 경로에서 대조했습니다. K-3 II DNG 한 장으로 Lightroom과 카메라 내장 JPEG의 색차를 측정하고 톤 곡선 조건도 비교했습니다. 전체 소스 재빌드, 실기 설치·부팅, 독립 촬영에서의 색 재현, 렌즈 구동 변경과 UI 이식은 검증이 남아 있습니다.",
   "cameras": [
     {
       "id": "k3iii",
       "name": "K-3 Mark III",
       "firmware_version": "2.20",
       "firmware_sha256": "3c9d466b8160689867af2f58ff2cf0bf3363bc3b42daff43685a33171b91eb1a",
-      "commit": "c55c107e47594218b48678ce8bdb8d8ef2c984da",
+      "commit": "10897976cbccfd6c5c5b31a6a5d7060850294975",
       "digest_source": "iii-input",
       "digest_field": "input_sha256",
       "report_source": "iii-integration"
@@ -21,7 +21,7 @@
       "name": "K-3 II",
       "firmware_version": "1.12",
       "firmware_sha256": "a33485f351019960192891ef69ddc5d4904ef9e298671d9d9955679e4c901a9a",
-      "commit": "10bbb414e19f21152a19d3e61026681d7c85768c",
+      "commit": "0a62a1b36545b11e82eb5ae2a6eae7ee602abd73",
       "digest_source": "ii-input",
       "digest_field": "firmware_sha256",
       "report_source": "ii-rebuild"
@@ -31,7 +31,7 @@
       "name": "Q7",
       "firmware_version": "1.01",
       "firmware_sha256": "8a928b574623c28624127501526d8496a98a42eac3d843def6d3b5ceb074ff3b",
-      "commit": "fae70c2b8ee496880474c34df41d49b96576e639",
+      "commit": "a1d6e463d9b193cd0d4cbcc8b243623e615444f9",
       "digest_source": "q-input",
       "digest_field": "input_sha256",
       "report_source": "q-implementation"
@@ -307,6 +307,57 @@
       "camera": "q7",
       "path": "colorspace-ui-report.html",
       "label": "색공간 화면 선택·확정·취소"
+    },
+    "iii-header-consumer": {
+      "camera": "k3iii",
+      "path": "analysis/header-alias-consumer.html",
+      "label": "부트 헤더 입력·별도 출력 9건"
+    },
+    "iii-update-ui": {
+      "camera": "k3iii",
+      "path": "analysis/update-ui-consumer.html",
+      "label": "완료 UI 큐·컨트롤러 28건"
+    },
+    "iii-ui-timer": {
+      "camera": "k3iii",
+      "path": "analysis/update-ui-timer.html",
+      "label": "완료 UI 타이머와 callback 39건"
+    },
+    "iii-timer-abi": {
+      "camera": "k3iii",
+      "path": "analysis/update-timer-abi.html",
+      "label": "타이머 디스패치·산술 17건"
+    },
+    "iii-lightroom-tone": {
+      "camera": "k3iii",
+      "path": "analysis/lightroom-tone-comparison.html",
+      "label": "Lightroom 톤 실측·그래프·DCP 생성"
+    },
+    "iii-tone-cc0": {
+      "camera": "k3iii",
+      "path": "analysis/lightroom-matrix-1376.json",
+      "label": "CC0 DNG #1376 기준 행렬·광원"
+    },
+    "ii-preserved-record": {
+      "camera": "k3ii",
+      "path": "analysis/preserved-record.html",
+      "label": "보존 섹터 14의 레코드와 저장 요청"
+    },
+    "ii-pixel-policy": {
+      "url": "https://github.com/yunhyok/pentax-k3ii-firmware-analysis/blob/0a62a1b36545b11e82eb5ae2a6eae7ee602abd73/analysis/pixel-policy.html",
+      "label": "픽셀 정책 표 364셀·준비 분기·버퍼 연결"
+    },
+    "ii-pixel-neighbors": {
+      "url": "https://github.com/yunhyok/pentax-k3ii-firmware-analysis/blob/f551e8878ade29813979a5d1e1827ecb0341dc1c/analysis/pixel-records.html",
+      "label": "픽셀 이웃 경계 6건의 별도 고정본"
+    },
+    "q-af-completion": {
+      "url": "https://github.com/yunhyok/pentax-q7-firmware-analysis/blob/a1d6e463d9b193cd0d4cbcc8b243623e615444f9/af-completion-report.html",
+      "label": "AF 명령 응답·이동 완료·시퀀스 정지"
+    },
+    "q-colorspace-render": {
+      "url": "https://github.com/yunhyok/pentax-q7-firmware-analysis/blob/a1d6e463d9b193cd0d4cbcc8b243623e615444f9/colorspace-render-report.html",
+      "label": "색공간 그리기 요청과 선택 아이콘 픽셀"
     }
   },
   "tracks": [
@@ -316,9 +367,9 @@
       "dependency": "수정 이미지를 사용하는 AF·UI 실기 시험의 선행 조건입니다.",
       "cards": {
         "k3iii": {
-          "state": "행렬 교체 후보 · 파일·볼륨·종료 처리",
-          "finding": "무변경 재포장으로 배포본을 재현했습니다. 재컴파일한 Q13 행렬 함수를 넣은 블록 보존 후보는 35,136,788바이트입니다. 해제 결과에서 코드 79바이트와 검사합 4바이트가 달랐으며 원본 ARM 검사 8건을 통과했습니다. 별도 합성 입력으로 파일 인터페이스와 버퍼 수명 82건, 파일명·볼륨과 종료 처리 45건을 원본 ARM에서 재실행했습니다.",
-          "next": "실제 볼륨 등록과 가용 연속 메모리부터 확인합니다. 하위 장치 I/O, 하드웨어 디코더, 부트 인증과 복구는 실기 검증이 남아 있습니다.",
+          "state": "행렬 교체 후보 · 부트 헤더와 출력",
+          "finding": "무변경 재포장으로 배포본을 재현했습니다. Q13 함수 교체 후보는 35,136,788바이트이며, 해제 결과에서 코드 79바이트와 검사합 4바이트가 달랐습니다. 파일·버퍼 수명과 볼륨·종료 처리에 이어 헤더를 읽는 원본 ARM 구간 9건을 실행했습니다. 헤더를 보존하고 별도 출력에 128바이트를 쓰는 동안 슬롯 2의 표도 유지됐습니다.",
+          "next": "헤더 결과가 이후 초기화와 인증으로 이어지는 조건을 추적합니다. 실제 볼륨·가용 메모리, 하드웨어 디코더, 업데이트 수용과 복구는 실기에서 확인합니다.",
           "sources": [
             "iii-package",
             "iii-integration",
@@ -327,17 +378,19 @@
             "iii-q-scope",
             "iii-update-memory",
             "iii-update-files",
-            "iii-update-volume"
+            "iii-update-volume",
+            "iii-header-consumer"
           ]
         },
         "k3ii": {
-          "state": "무변경 XOR 일치 · 톤 함수 교체 재실행",
-          "finding": "고정 크기 XOR 역변환으로 배포본을 재현했습니다. 메뉴 글자 한 바이트를 바꾼 후보는 원본 ARM 복호화와 주·보조 검사합, 명령 7 검사를 통과했습니다. 에뮬레이터에서 64바이트 톤 보간 함수를 C 빌드 결과로 교체해 비교한 결과, 원본 호출 지점 9곳의 2,304회 호출과 출력 2,048개가 일치했습니다. 조건 플래그에는 차이가 있었고 이 함수로 재포장 파일을 만들지는 않았습니다.",
-          "next": "추가 호출부에서 조건 플래그를 사용하는지 확인하고 검사 뒤 기록 대상과 실패 처리 경로를 추적합니다. 설치·부팅·복구는 실기에서 따로 확인합니다.",
+          "state": "톤 함수 교체 · 보존 섹터 14 저장 요청",
+          "finding": "고정 크기 XOR 역변환으로 배포본을 재현했습니다. 메뉴 글자 편집 후보는 원본 ARM 복호화와 검사합·명령 7 검사를 통과했습니다. 에뮬레이터에서 교체한 64바이트 톤 함수는 원본 호출 지점 9곳의 출력과 일치했으나 조건 플래그에는 차이가 있었습니다. 별도 시험에서 보존 섹터 14의 첫 32바이트를 준비 버퍼에 덮어 넣고 전체 섹터의 저장 요청까지 확인했습니다.",
+          "next": "추가 호출부의 조건 플래그 사용과 보존 영역의 실제 기록·복구 경로를 확인합니다. 톤 함수는 에뮬레이터에서 대조했으며 설치·부팅은 실기 검증이 남아 있습니다.",
           "sources": [
             "ii-rebuild",
             "ii-status",
-            "ii-tone-rebuild"
+            "ii-tone-rebuild",
+            "ii-preserved-record"
           ]
         },
         "q7": {
@@ -408,16 +461,20 @@
           ]
         },
         "k3ii": {
-          "state": "Lightroom TIFF 6개 · 24패치 색차 실측",
-          "finding": "펌웨어 1.10의 DNG #1376 한 장을 Lightroom Classic 15.6에서 세 프로파일로 현상해 sRGB와 ProPhoto RGB TIFF를 각각 내보냈습니다. Natural 내장 JPEG의 24패치에 대한 sRGB 평균 ΔE00은 Adobe Standard 3.476, Camera Natural 1.615, 시험 DCP 3.073이었습니다. Camera Natural은 ProPhoto RGB에서도 평균 1.620으로 가장 가까웠습니다. As Shot의 온도·색조 표시값은 Adobe Standard와 Camera Natural에서 5300 K/−2, 시험 DCP에서 5200 K/+2였습니다.",
-          "next": "카메라 보정과 광원을 고정해 톤의 영향을 살핍니다. 펌웨어 1.12 및 다른 조명·노출에서 얻은 촬영 쌍으로 결과를 다시 확인합니다.",
+          "state": "Lightroom 톤 출력 5개 · 기준 DCP 재생성",
+          "finding": "펌웨어 1.10의 DNG #1376 한 장에서는 Camera Natural이 내장 JPEG에 가장 가까웠습니다. ProPhoto RGB TIFF 5개 비교에서 곡선 생략본과 재출력의 픽셀이 같았습니다. 명시 ACR3와 생략 재출력은 픽셀 코드가 달랐고, 24패치 최대 ΔE00은 0.002411이었습니다. CC0 기준 행렬로 만든 생략 DCP와 공식 SDK ZIP으로 항등·Lift·ACR3 DCP를 바이트 단위로 재현했습니다. 별도 원본 실행은 픽셀 보정 정책과 버퍼를 합성 사례 두 건에서 연결했습니다. 이웃 경계 6건에서는 16비트 좌표 절단이 논리 버퍼 밖 읽기로 이어지는 경우도 확인했습니다.",
+          "next": "펌웨어 1.12와 다른 조명·노출의 촬영 쌍으로 색을 검증합니다. Lightroom 내부 기본 곡선과 카메라의 실제 보정표·전체 준비 경로는 미확정입니다.",
           "sources": [
             "iii-color-test",
             "iii-raw",
             "ii-color",
             "iii-neutral",
             "iii-lightroom-render",
-            "ii-tone-rebuild"
+            "ii-tone-rebuild",
+            "iii-lightroom-tone",
+            "iii-tone-cc0",
+            "ii-pixel-policy",
+            "ii-pixel-neighbors"
           ]
         },
         "q7": {
@@ -489,16 +546,17 @@
           ]
         },
         "q7": {
-          "state": "렌즈 능력·명령 · 응답과 이동 상태 분리",
-          "finding": "AF 지원 판정과 검색 명령 전달은 서로 다른 조건을 봅니다. Q 렌즈 탐색·속도·응답·완료를 원본 MIPS/VEX 32건으로 재실행했고, 별도 17건은 합성 입력으로 초기화·실패 응답·리셋·시간 초과를 확인했습니다. 큐 응답과 라이브뷰 이동 상태는 별도 경로에서 처리합니다. 공식 호환표의 K 마운트 Adapter Q는 수동 초점입니다.",
-          "next": "렌즈마다 위치·속도 단위와 늦은 응답·취소의 영향을 확인합니다. 실제 통신, 모터 이동과 광학적 초점은 이후 실기 시험에서 다룹니다.",
+          "state": "렌즈 명령 응답 · 캐시 완료와 정지 대기",
+          "finding": "합성 큐와 링크를 사용한 원본 MIPS/VEX 19건에서 검색·정지 명령의 응답, 캐시 이동값에 따른 완료 알림, AF 시퀀스 종료 대기를 구분했습니다. 검색 응답이 실패해도 준비된 조건에서 이동 확인 상태에 들어갔습니다. 공식 호환표의 K 마운트 Adapter Q는 수동 초점입니다.",
+          "next": "센서 입력과 이동 캐시를 갱신하는 경로, 늦은 응답 뒤의 상태를 추적합니다. 실제 통신, 모터 이동과 광학적 초점은 이후 실기 시험에서 다룹니다.",
           "sources": [
             "q-implementation",
             "q-route",
             "q-lenses",
             "q-status",
             "q-lens-foundation",
-            "q-readiness"
+            "q-readiness",
+            "q-af-completion"
           ]
         }
       },
@@ -527,20 +585,23 @@
       "dependency": "첫 이식 단위는 세 기종에 공통인 촬영 색공간 선택 화면입니다. PC 화면 모형과 대상 기종의 렌더링·입력 연결은 단계별로 검증합니다.",
       "cards": {
         "k3iii": {
-          "state": "색공간 화면 · 합성 방향 입력에서 포커스까지",
-          "finding": "ICONBIN의 픽셀 복사 조건과 ID 5의 44픽셀 편집·원복을 확인했습니다. 합성 객체로 색공간 위젯의 선택·확정·취소와 같은 객체에서의 선택 재구성을 원본 ARM 16건으로 대조했습니다. 별도의 방향 이벤트·리스트 포커스 검사 50건에는 합성 입력과 화면 좌표를 사용했습니다.",
-          "next": "실제 키·다이얼·터치 입력이 어디서 이벤트가 되는지 추적하고 문자와 포커스를 그리는 경로를 확인합니다. 카메라 LCD와 실제 창의 종료·재생성은 확인이 남아 있습니다.",
+          "state": "색공간 위젯 · 업데이트 완료 UI",
+          "finding": "합성 객체와 입력으로 색공간 위젯의 선택·확정·취소, 방향 입력과 포커스를 원본 ARM에서 대조했습니다. 별도 업데이트 완료 경로에서 큐·컨트롤러 28건과 슬롯·이벤트·콜백 39건을 실행했습니다. 하위 커널은 타이머 디스패치와 64비트 시각 계산에 한정해 17건을 대조했습니다.",
+          "next": "물리 입력과 문자·포커스 그리기를 연결합니다. 완료 UI의 실제 이벤트 전달, 타이머 단위, LCD와 재부팅은 확인이 남아 있습니다.",
           "sources": [
             "iii-icon",
             "iii-ui",
             "ui-menu-map",
             "iii-colorspace-ui",
-            "iii-colorspace-input"
+            "iii-colorspace-input",
+            "iii-update-ui",
+            "iii-ui-timer",
+            "iii-timer-abi"
           ]
         },
         "k3ii": {
           "state": "C3 색공간 설정 · B4 화면 요청 전달",
-          "finding": "C3 화면의 상태 전이 8건에서 선택은 임시값을 바꾸고 취소는 설정값을 쓰지 않았습니다. 동일값 확정은 현재 RAM과 미러에 한 번씩 썼으며, 별도 설정 검사 29건에서는 내용이 같은 섹터의 쓰기 요청을 건너뛰었습니다. 준비된 상위 화면에서 논리 동작 0x1D를 전달하고 깨움 비트 0x800을 주입하자 원본 코드가 대기 레코드를 옮겨 B4 화면의 할당 함수 입구에 도달했습니다.",
+          "finding": "C3 화면은 선택값을 임시로 두며 동일값 확정도 현재 RAM과 미러에 씁니다. 별도 저장 검사에서 내용이 같은 섹터의 쓰기 요청은 생략됐습니다. 원본 13바이트 복사에서 키 0x1D의 bit 2만 바뀌는지 대조했습니다. 준비된 화면에 논리 동작 0x1D와 깨움 비트 0x800을 전달하자 대기 레코드가 B4 화면의 할당 함수 입구까지 이어졌습니다.",
           "next": "실제 버튼·다이얼 입력과 RTOS 알림을 연결하고 B4 화면 생성 및 LCD 출력을 확인합니다. 물리 저장과 재부팅 뒤 유지 여부도 별도 검증이 필요합니다.",
           "sources": [
             "iii-ui",
@@ -552,14 +613,15 @@
           ]
         },
         "q7": {
-          "state": "E3 색공간 화면 · 즉시 RAM 쓰기와 취소 복원",
-          "finding": "포커스가 준비된 E3 색공간 행에서 원본 MIPS 화면 경로를 6건 실행했습니다. 선택은 설정 RAM에 즉시 쓰고, 확정은 현재값을 유지하며, 취소는 열 때의 값을 복원했습니다. 다시 연 화면의 읽기 결과까지 확인했고 setter 호출과 바이트 쓰기는 각각 18회였습니다. 입력과 하위 서비스 응답은 합성으로 제공했습니다.",
-          "next": "물리 버튼 스캔과 RTOS 큐를 연결하고 문자·포커스의 LCD 출력과 재부팅 뒤 설정 유지 여부를 확인합니다.",
+          "state": "E3 색공간 화면 · 선택 아이콘 픽셀",
+          "finding": "E3 원본 MIPS 실행에서 선택은 설정 RAM에 즉시 쓰고, 확정은 현재값을 유지하며, 취소는 열 때의 값을 복원했습니다. 별도 그리기 시험에서 원본 경로의 선택 아이콘 좌표 (16, 64)와 (16, 112)를 확인했습니다. 원본 코드는 각 위치의 합성 버퍼에 팔레트 인덱스 330바이트를 썼습니다. 문자와 강조 도형은 그리기 요청까지 확인했습니다.",
+          "next": "물리 버튼과 실제 RTOS 큐, 글리프·팔레트의 LCD 출력, 재부팅 뒤 설정 유지 여부를 확인합니다.",
           "sources": [
             "iii-ui",
             "q-implementation",
             "q-spec",
-            "q-colorspace"
+            "q-colorspace",
+            "q-colorspace-render"
           ]
         }
       },
@@ -590,7 +652,7 @@
     ],
     [
       "색 검증 샘플",
-      "세 기종의 실촬영 DNG와 내장 JPEG를 확보했습니다. K-3 II ColorChecker 표본은 Lightroom TIFF 여섯 개와 내장 JPEG의 색차를 측정했습니다. 기종·펌웨어·모드별로 조명과 노출을 달리한 촬영 쌍이 더 필요합니다."
+      "세 기종의 실촬영 DNG와 내장 JPEG를 확보했습니다. K-3 II ColorChecker 표본 한 장으로 Lightroom 색차와 톤 곡선을 비교했습니다. 기종·펌웨어·모드별로 조명과 노출을 달리한 촬영 쌍이 더 필요합니다."
     ],
     [
       "AF 렌즈와 평가 조건",
