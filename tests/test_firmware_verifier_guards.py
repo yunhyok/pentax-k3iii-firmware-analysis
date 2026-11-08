@@ -57,6 +57,7 @@ class VerifierGuards(unittest.TestCase):
                  ('verify_update_timer_irq.py', 1), ('verify_update_clock_readers.py', 1),
                  ('verify_update_timer_insertion.py', 1), ('verify_update_bank_selection.py', 1),
                  ('verify_m0_board_config.py', 1), ('verify_m0_diagnostic_serial.py', 1),
+                 ('verify_stubby_load_auth.py', 1),
                  ('tools/check_color_mode_boundaries.py', 1)]
         with tempfile.TemporaryDirectory() as directory:
             source = Path(directory)/'source.bin';source.write_bytes(b'input sentinel')
@@ -86,6 +87,7 @@ class VerifierGuards(unittest.TestCase):
                      'verify_update_timer_irq.py', 'verify_update_clock_readers.py',
                      'verify_update_timer_insertion.py', 'verify_update_bank_selection.py',
                      'verify_m0_board_config.py', 'verify_m0_diagnostic_serial.py',
+                     'verify_stubby_load_auth.py',
                      'tools/check_color_mode_boundaries.py'):
             with self.subTest(tool=tool):
                 result = subprocess.run([sys.executable, '-O', str(ROOT/tool), '--help'], capture_output=True, text=True)

@@ -1,0 +1,941 @@
+{
+  "passed": true,
+  "input_sha256": "fcb11ce850f22420ddd6a29d63ef9074ad6322bc021d0ba101e1354d1277b9c2",
+  "linux_sha256": "fcb11ce850f22420ddd6a29d63ef9074ad6322bc021d0ba101e1354d1277b9c2",
+  "case_count": 6,
+  "original_cpu_runs": 6,
+  "cases": [
+    {
+      "label": "bootloader_positive",
+      "events": [
+        [
+          "read",
+          "boot/u-boot.bin"
+        ],
+        [
+          "puts",
+          "  bootloader loaded\n"
+        ],
+        [
+          "puts",
+          " Booting\n"
+        ]
+      ],
+      "io_stubs": [
+        {
+          "offset": "0x894",
+          "role": "print_info (includes privileged CP15 read; entirely skipped)",
+          "args": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "offset": "0xedc",
+          "role": "ROMFS mount",
+          "args": [
+            1090551808,
+            0,
+            0,
+            3735928901
+          ]
+        },
+        {
+          "offset": "0x8bc",
+          "role": "describe",
+          "args": [
+            0,
+            0,
+            0,
+            3735928901
+          ]
+        },
+        {
+          "offset": "0x9fc",
+          "role": "filesystem wrapper: scripted signed read result; no image bytes copied or XIP pointer update",
+          "args": [
+            0,
+            11075,
+            1073774592,
+            1048576
+          ]
+        },
+        {
+          "offset": "0xc84",
+          "role": "puts",
+          "args": [
+            11347,
+            3735928899,
+            3735928900,
+            3735928901
+          ]
+        },
+        {
+          "offset": "0xc84",
+          "role": "puts",
+          "args": [
+            11049,
+            3735928899,
+            3735928900,
+            3735928901
+          ]
+        }
+      ],
+      "instructions": 93,
+      "lookup_index": 1,
+      "property_index": 0,
+      "target_reached": true,
+      "failed_loop": false,
+      "mmio_writes": [
+        [
+          486604800,
+          4,
+          1
+        ]
+      ],
+      "entry_args": [
+        0,
+        4294967295,
+        1115684864
+      ],
+      "events_sha256": "8a1e8166c2485f548b2993c7af3a76302f0df8ff57be4fbaabc045d4729baab5",
+      "selected_pointer": 1073774592,
+      "passed": true
+    },
+    {
+      "label": "kernel_zero",
+      "events": [
+        [
+          "read",
+          "boot/u-boot.bin"
+        ],
+        [
+          "read",
+          "boot/Image-nolpae"
+        ],
+        [
+          "puts",
+          "  failed kernel\n"
+        ],
+        [
+          "puts",
+          "boot failed\r\n\r\n"
+        ]
+      ],
+      "io_stubs": [
+        {
+          "offset": "0x894",
+          "role": "print_info (includes privileged CP15 read; entirely skipped)",
+          "args": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "offset": "0xedc",
+          "role": "ROMFS mount",
+          "args": [
+            1090551808,
+            0,
+            0,
+            3735928901
+          ]
+        },
+        {
+          "offset": "0x8bc",
+          "role": "describe",
+          "args": [
+            0,
+            0,
+            0,
+            3735928901
+          ]
+        },
+        {
+          "offset": "0x9fc",
+          "role": "filesystem wrapper: scripted signed read result; no image bytes copied or XIP pointer update",
+          "args": [
+            0,
+            11075,
+            1073774592,
+            1048576
+          ]
+        },
+        {
+          "offset": "0x9fc",
+          "role": "filesystem wrapper: scripted signed read result; no image bytes copied or XIP pointer update",
+          "args": [
+            0,
+            11091,
+            1073774592,
+            41910272
+          ]
+        },
+        {
+          "offset": "0xc84",
+          "role": "puts",
+          "args": [
+            11109,
+            3735928899,
+            3735928900,
+            3735928901
+          ]
+        },
+        {
+          "offset": "0xc84",
+          "role": "puts",
+          "args": [
+            11059,
+            1,
+            0,
+            3735928901
+          ]
+        }
+      ],
+      "instructions": 101,
+      "lookup_index": 2,
+      "property_index": 0,
+      "target_reached": false,
+      "failed_loop": true,
+      "mmio_writes": [],
+      "events_sha256": "bd0675f304034e61875b97f635e9b85391f886e7e49a543186e90c116c10ff1c",
+      "selected_pointer": 1073774592,
+      "passed": true
+    },
+    {
+      "label": "dtb_zero",
+      "events": [
+        [
+          "read",
+          "boot/u-boot.bin"
+        ],
+        [
+          "read",
+          "boot/Image-nolpae"
+        ],
+        [
+          "read",
+          "boot/sc2000.dtb"
+        ],
+        [
+          "puts",
+          "  failed dtb\n"
+        ],
+        [
+          "puts",
+          "boot failed\r\n\r\n"
+        ]
+      ],
+      "io_stubs": [
+        {
+          "offset": "0x894",
+          "role": "print_info (includes privileged CP15 read; entirely skipped)",
+          "args": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "offset": "0xedc",
+          "role": "ROMFS mount",
+          "args": [
+            1090551808,
+            0,
+            0,
+            3735928901
+          ]
+        },
+        {
+          "offset": "0x8bc",
+          "role": "describe",
+          "args": [
+            0,
+            0,
+            0,
+            3735928901
+          ]
+        },
+        {
+          "offset": "0x9fc",
+          "role": "filesystem wrapper: scripted signed read result; no image bytes copied or XIP pointer update",
+          "args": [
+            0,
+            11075,
+            1073774592,
+            1048576
+          ]
+        },
+        {
+          "offset": "0x9fc",
+          "role": "filesystem wrapper: scripted signed read result; no image bytes copied or XIP pointer update",
+          "args": [
+            0,
+            11091,
+            1073774592,
+            41910272
+          ]
+        },
+        {
+          "offset": "0x9fc",
+          "role": "filesystem wrapper: scripted signed read result; no image bytes copied or XIP pointer update",
+          "args": [
+            0,
+            11126,
+            1115684864,
+            51200
+          ]
+        },
+        {
+          "offset": "0xc84",
+          "role": "puts",
+          "args": [
+            11142,
+            3735928899,
+            3735928900,
+            3735928901
+          ]
+        },
+        {
+          "offset": "0xc84",
+          "role": "puts",
+          "args": [
+            11059,
+            1,
+            0,
+            3735928901
+          ]
+        }
+      ],
+      "instructions": 109,
+      "lookup_index": 3,
+      "property_index": 0,
+      "target_reached": false,
+      "failed_loop": true,
+      "mmio_writes": [],
+      "events_sha256": "f6da9f99c3536cc823a1344e1e46f33d9592b574518ac0e833a019bbd92e86be",
+      "selected_pointer": 1073774592,
+      "passed": true
+    },
+    {
+      "label": "start_missing",
+      "events": [
+        [
+          "read",
+          "boot/u-boot.bin"
+        ],
+        [
+          "read",
+          "boot/Image-nolpae"
+        ],
+        [
+          "read",
+          "boot/sc2000.dtb"
+        ],
+        [
+          "read",
+          "boot/dtb.cfg"
+        ],
+        [
+          "puts",
+          "  kernel + dtb loaded\n"
+        ],
+        [
+          "property",
+          "/chosen/linux,initrd-start"
+        ],
+        [
+          "puts",
+          "no initrd-start in dtb\n"
+        ],
+        [
+          "puts",
+          "boot failed\r\n\r\n"
+        ]
+      ],
+      "io_stubs": [
+        {
+          "offset": "0x894",
+          "role": "print_info (includes privileged CP15 read; entirely skipped)",
+          "args": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "offset": "0xedc",
+          "role": "ROMFS mount",
+          "args": [
+            1090551808,
+            0,
+            0,
+            3735928901
+          ]
+        },
+        {
+          "offset": "0x8bc",
+          "role": "describe",
+          "args": [
+            0,
+            0,
+            0,
+            3735928901
+          ]
+        },
+        {
+          "offset": "0x9fc",
+          "role": "filesystem wrapper: scripted signed read result; no image bytes copied or XIP pointer update",
+          "args": [
+            0,
+            11075,
+            1073774592,
+            1048576
+          ]
+        },
+        {
+          "offset": "0x9fc",
+          "role": "filesystem wrapper: scripted signed read result; no image bytes copied or XIP pointer update",
+          "args": [
+            0,
+            11091,
+            1073774592,
+            41910272
+          ]
+        },
+        {
+          "offset": "0x9fc",
+          "role": "filesystem wrapper: scripted signed read result; no image bytes copied or XIP pointer update",
+          "args": [
+            0,
+            11126,
+            1115684864,
+            51200
+          ]
+        },
+        {
+          "offset": "0x9fc",
+          "role": "filesystem wrapper: scripted signed read result; no image bytes copied or XIP pointer update",
+          "args": [
+            0,
+            11156,
+            1073759288,
+            4095
+          ]
+        },
+        {
+          "offset": "0xc84",
+          "role": "puts",
+          "args": [
+            11169,
+            3735928899,
+            3735928900,
+            3735928901
+          ]
+        },
+        {
+          "offset": "0x25ca",
+          "role": "update_dtb",
+          "args": [
+            1115684864,
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "offset": "0x2616",
+          "role": "process_dtb_config",
+          "args": [
+            1115684864,
+            1073759288,
+            4294967295,
+            3735928901
+          ]
+        },
+        {
+          "offset": "0x24dc",
+          "role": "fdt_find_path",
+          "args": [
+            1115684864,
+            11192,
+            1879109588,
+            3735928901
+          ]
+        },
+        {
+          "offset": "0xc84",
+          "role": "puts",
+          "args": [
+            11219,
+            3735928899,
+            3735928900,
+            3735928901
+          ]
+        },
+        {
+          "offset": "0xc84",
+          "role": "puts",
+          "args": [
+            11059,
+            1,
+            0,
+            3735928901
+          ]
+        }
+      ],
+      "instructions": 146,
+      "lookup_index": 4,
+      "property_index": 1,
+      "target_reached": false,
+      "failed_loop": true,
+      "mmio_writes": [],
+      "events_sha256": "cae751583b1d5d2678b39f0717864d7aa8859702530fab3327872c215501a733",
+      "selected_pointer": 1073774592,
+      "passed": true
+    },
+    {
+      "label": "end_wrong_length",
+      "events": [
+        [
+          "read",
+          "boot/u-boot.bin"
+        ],
+        [
+          "read",
+          "boot/Image-nolpae"
+        ],
+        [
+          "read",
+          "boot/sc2000.dtb"
+        ],
+        [
+          "read",
+          "boot/dtb.cfg"
+        ],
+        [
+          "puts",
+          "  kernel + dtb loaded\n"
+        ],
+        [
+          "property",
+          "/chosen/linux,initrd-start"
+        ],
+        [
+          "property",
+          "/chosen/linux,initrd-end"
+        ],
+        [
+          "puts",
+          "no initrd-end in dtb\n"
+        ],
+        [
+          "puts",
+          "boot failed\r\n\r\n"
+        ]
+      ],
+      "io_stubs": [
+        {
+          "offset": "0x894",
+          "role": "print_info (includes privileged CP15 read; entirely skipped)",
+          "args": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "offset": "0xedc",
+          "role": "ROMFS mount",
+          "args": [
+            1090551808,
+            0,
+            0,
+            3735928901
+          ]
+        },
+        {
+          "offset": "0x8bc",
+          "role": "describe",
+          "args": [
+            0,
+            0,
+            0,
+            3735928901
+          ]
+        },
+        {
+          "offset": "0x9fc",
+          "role": "filesystem wrapper: scripted signed read result; no image bytes copied or XIP pointer update",
+          "args": [
+            0,
+            11075,
+            1073774592,
+            1048576
+          ]
+        },
+        {
+          "offset": "0x9fc",
+          "role": "filesystem wrapper: scripted signed read result; no image bytes copied or XIP pointer update",
+          "args": [
+            0,
+            11091,
+            1073774592,
+            41910272
+          ]
+        },
+        {
+          "offset": "0x9fc",
+          "role": "filesystem wrapper: scripted signed read result; no image bytes copied or XIP pointer update",
+          "args": [
+            0,
+            11126,
+            1115684864,
+            51200
+          ]
+        },
+        {
+          "offset": "0x9fc",
+          "role": "filesystem wrapper: scripted signed read result; no image bytes copied or XIP pointer update",
+          "args": [
+            0,
+            11156,
+            1073759288,
+            4095
+          ]
+        },
+        {
+          "offset": "0xc84",
+          "role": "puts",
+          "args": [
+            11169,
+            3735928899,
+            3735928900,
+            3735928901
+          ]
+        },
+        {
+          "offset": "0x25ca",
+          "role": "update_dtb",
+          "args": [
+            1115684864,
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "offset": "0x2616",
+          "role": "process_dtb_config",
+          "args": [
+            1115684864,
+            1073759288,
+            4294967295,
+            3735928901
+          ]
+        },
+        {
+          "offset": "0x24dc",
+          "role": "fdt_find_path",
+          "args": [
+            1115684864,
+            11192,
+            1879109588,
+            3735928901
+          ]
+        },
+        {
+          "offset": "0x24dc",
+          "role": "fdt_find_path",
+          "args": [
+            1115684864,
+            11243,
+            1879109588,
+            4390912
+          ]
+        },
+        {
+          "offset": "0xc84",
+          "role": "puts",
+          "args": [
+            11268,
+            3735928899,
+            3735928900,
+            8
+          ]
+        },
+        {
+          "offset": "0xc84",
+          "role": "puts",
+          "args": [
+            11059,
+            1,
+            0,
+            3735928901
+          ]
+        }
+      ],
+      "instructions": 168,
+      "lookup_index": 4,
+      "property_index": 2,
+      "target_reached": false,
+      "failed_loop": true,
+      "mmio_writes": [],
+      "events_sha256": "a763c9a305916342d8179509d9016e8ceb7bf0e44249ad2708b2cca977216116",
+      "selected_pointer": 1073774592,
+      "passed": true
+    },
+    {
+      "label": "kernel_dtb_valid",
+      "events": [
+        [
+          "read",
+          "boot/u-boot.bin"
+        ],
+        [
+          "read",
+          "boot/Image-nolpae"
+        ],
+        [
+          "read",
+          "boot/sc2000.dtb"
+        ],
+        [
+          "read",
+          "boot/dtb.cfg"
+        ],
+        [
+          "puts",
+          "  kernel + dtb loaded\n"
+        ],
+        [
+          "property",
+          "/chosen/linux,initrd-start"
+        ],
+        [
+          "property",
+          "/chosen/linux,initrd-end"
+        ],
+        [
+          "puts",
+          " Booting\n"
+        ]
+      ],
+      "io_stubs": [
+        {
+          "offset": "0x894",
+          "role": "print_info (includes privileged CP15 read; entirely skipped)",
+          "args": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "offset": "0xedc",
+          "role": "ROMFS mount",
+          "args": [
+            1090551808,
+            0,
+            0,
+            3735928901
+          ]
+        },
+        {
+          "offset": "0x8bc",
+          "role": "describe",
+          "args": [
+            0,
+            0,
+            0,
+            3735928901
+          ]
+        },
+        {
+          "offset": "0x9fc",
+          "role": "filesystem wrapper: scripted signed read result; no image bytes copied or XIP pointer update",
+          "args": [
+            0,
+            11075,
+            1073774592,
+            1048576
+          ]
+        },
+        {
+          "offset": "0x9fc",
+          "role": "filesystem wrapper: scripted signed read result; no image bytes copied or XIP pointer update",
+          "args": [
+            0,
+            11091,
+            1073774592,
+            41910272
+          ]
+        },
+        {
+          "offset": "0x9fc",
+          "role": "filesystem wrapper: scripted signed read result; no image bytes copied or XIP pointer update",
+          "args": [
+            0,
+            11126,
+            1115684864,
+            51200
+          ]
+        },
+        {
+          "offset": "0x9fc",
+          "role": "filesystem wrapper: scripted signed read result; no image bytes copied or XIP pointer update",
+          "args": [
+            0,
+            11156,
+            1073759288,
+            4095
+          ]
+        },
+        {
+          "offset": "0xc84",
+          "role": "puts",
+          "args": [
+            11169,
+            3735928899,
+            3735928900,
+            3735928901
+          ]
+        },
+        {
+          "offset": "0x25ca",
+          "role": "update_dtb",
+          "args": [
+            1115684864,
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "offset": "0x2616",
+          "role": "process_dtb_config",
+          "args": [
+            1115684864,
+            1073759288,
+            4294967295,
+            3735928901
+          ]
+        },
+        {
+          "offset": "0x24dc",
+          "role": "fdt_find_path",
+          "args": [
+            1115684864,
+            11192,
+            1879109588,
+            3735928901
+          ]
+        },
+        {
+          "offset": "0x24dc",
+          "role": "fdt_find_path",
+          "args": [
+            1115684864,
+            11243,
+            1879109588,
+            4390912
+          ]
+        },
+        {
+          "offset": "0xc84",
+          "role": "puts",
+          "args": [
+            11049,
+            1124073600,
+            60000,
+            4294767296
+          ]
+        }
+      ],
+      "instructions": 186,
+      "lookup_index": 4,
+      "property_index": 2,
+      "target_reached": true,
+      "failed_loop": false,
+      "mmio_writes": [
+        [
+          486604800,
+          4,
+          1
+        ]
+      ],
+      "entry_args": [
+        0,
+        4294967295,
+        1115684864
+      ],
+      "events_sha256": "8ec7752ea3148bea235f980e841ac20a669694328f7117ddfd0da45bfb9dc6f2",
+      "selected_pointer": 1073774592,
+      "passed": true
+    }
+  ],
+  "source_ranges": [
+    {
+      "start": "0xcec",
+      "end": "0xcf4",
+      "sha256": "118c07b56064a355a8c900fcba2371dca28eb651d76cf898d3acc4472052ab4e"
+    },
+    {
+      "start": "0x984",
+      "end": "0x9be",
+      "sha256": "1d2cefc031380c84133490e18673fadcbd802c89e520c28fdb871d1e7e869211"
+    },
+    {
+      "start": "0x930",
+      "end": "0x976",
+      "sha256": "f5925fd9de716d34ea00c0fb1454c8aa13060807b2eff361e1fdc7b43f367df9"
+    },
+    {
+      "start": "0x928",
+      "end": "0x930",
+      "sha256": "a68d0a87d69f408f7c7657f63089e233c7df9e43ea0edc88577219a3dfdfb214"
+    },
+    {
+      "start": "0xa68",
+      "end": "0xc00",
+      "sha256": "9408ab441cfe68231e29c05278dc1a4e8e3b044e7fdda3185fb00a5d01493f80"
+    },
+    {
+      "start": "0x9c8",
+      "end": "0x9ec",
+      "sha256": "75ea66e04e1fc107731224843ad41a9027fc79815c5bb75fb249cc0935061738"
+    },
+    {
+      "start": "0x1208",
+      "end": "0x1218",
+      "sha256": "560c9c56074aeb247459e1653a222c5c49f35f7ba2ab26bc1f97a6a7daf48476"
+    }
+  ],
+  "explicit_stubs": {
+    "0x894": "print_info (includes privileged CP15 read; entirely skipped)",
+    "0xc84": "puts",
+    "0x8bc": "describe",
+    "0xedc": "ROMFS mount",
+    "0x9fc": "filesystem wrapper: scripted signed read result; no image bytes copied or XIP pointer update",
+    "0x25ca": "update_dtb",
+    "0x2616": "process_dtb_config",
+    "0x24dc": "fdt_find_path"
+  },
+  "scope": [
+    "Emulation atpayload-relativebase0 isanalysisfixture, notproof ofruntimebase.",
+    "Entry0xcec executesoriginalARM BLX984, thenBLX9c8 onlyif984returns. Privilegedearlierstartup notexecuted.",
+    "Original930/928/a68/1208 execute; entirefilesystemwrapper9fc,DTBhelpers andprinting areexplicitstubs.",
+    "FilesystemwrapperXIPpointer updates andindirectbackend arenotCPUtested; staticASM evidence only. Native9fc attempt encounteredUnicornITstate behavior; nofirmwarebug inference.",
+    "Synthetic1d010000 MMIO write; stopbeforeselectedENTRY instruction. NoLinux/kernel/deviceexecution.",
+    "Combinedinitramfslength43000068 andread1800003c arefixturezero; laterDTBadjustmentbranch notcovered.",
+    "These conditional acceptancechecks donotprove package/M0/BOOT/ROM authentication policy ormodifiedfirmwareacceptance."
+  ]
+}
