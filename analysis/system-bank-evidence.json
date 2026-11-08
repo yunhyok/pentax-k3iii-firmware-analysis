@@ -1,0 +1,1923 @@
+{
+  "image": {
+    "record": "RTOS",
+    "base": "0x52500000",
+    "payload_offset": 115100,
+    "size": 25483200,
+    "sha256": "342d2f35405e8daf1797dfe431d2e4aa70f4b52a2c242a29df48206672f1dfb4"
+  },
+  "functions": [
+    {
+      "label": "system_storage_guard_a",
+      "start": "0x53317920",
+      "end": "0x53317960",
+      "size": 64,
+      "sha256": "e8b1f6f51a1bcb8226572649e5fd8a9b5ee3986cd0a067f76bf75435f55ad95c",
+      "assembly_sha256": "ebcaf168ae8a6311f2880473e6a73eda319c46d4e9efc0dca026f52e432304fa",
+      "pseudocode_sha256": "32d2e69e31745d46b34632ed1069a934535aa948f7cf28622e90e31803e25a18",
+      "angr_version": "10.0.5",
+      "scope": "Bounded genuine angr C. ARM determines semantics."
+    },
+    {
+      "label": "system_storage_guard_b",
+      "start": "0x53317dfc",
+      "end": "0x53317e3c",
+      "size": 64,
+      "sha256": "52c3ab35673a644959fb176114742c0f3aea12d3120d1ad2bc31b941eee0e118",
+      "assembly_sha256": "7c1cb9404d9fbb3e3b8bef6869abea88dbd077bd2a954e54c94310463c6842b8",
+      "pseudocode_sha256": "0e700d009f99d8a49ac0ef7682e8d10bfa350c800f424ac4e9babf123c4d9b16",
+      "angr_version": "10.0.5",
+      "scope": "Bounded genuine angr C. ARM determines semantics."
+    },
+    {
+      "label": "system_power_save_disable",
+      "start": "0x53317960",
+      "end": "0x533179a8",
+      "size": 72,
+      "sha256": "a66e289ebdc1172bb1292541030f44d890e1f2edca5250bbd7202b771ceebde6",
+      "assembly_sha256": "b277b0bae8c544b310a522b0e70341c4a07d473e15bc2a788815e79fa6ea9fa0",
+      "pseudocode_sha256": "da4d51dda86d52aa474eb81ca4374a9e066877b986ed5b1c05cd91040864a61b",
+      "angr_version": "10.0.5",
+      "scope": "Bounded genuine angr C. ARM determines semantics."
+    },
+    {
+      "label": "system_power_save_update",
+      "start": "0x53317ef0",
+      "end": "0x53317f58",
+      "size": 104,
+      "sha256": "ed6b7c15e6209440546e7f7dbd56a7b6a82aef14c978b0a0ab717125ec2f539a",
+      "assembly_sha256": "e3779cf50ac422b84b692f7fb8c99fb6303788d15ea1e4985747d7bfe13469ff",
+      "pseudocode_sha256": "686b151c152d78938181a132c400297517869e3b2c9fcafdf38d9537ce209d17",
+      "angr_version": "10.0.5",
+      "scope": "Bounded genuine angr C. ARM determines semantics."
+    },
+    {
+      "label": "emmc_mutex_lock",
+      "start": "0x530f1a68",
+      "end": "0x530f1bbc",
+      "size": 340,
+      "sha256": "d91ff817c6277c3ff122343ea00f68fcf3a0cf639f50ba30b51cb707d1f014f7",
+      "assembly_sha256": "9565b8201bd3bb991b311ed08bfd2ad04859fecda7fc8412897595413619062e",
+      "pseudocode_sha256": "5e7514f9282ee9aed696c11a1c6c6ebe493edbc39821f5bc2bf8724f4e6b020d",
+      "angr_version": "10.0.5",
+      "scope": "Bounded genuine angr C. ARM determines semantics."
+    },
+    {
+      "label": "emmc_mutex_unlock",
+      "start": "0x530f1bbc",
+      "end": "0x530f1cc0",
+      "size": 260,
+      "sha256": "6230596efdc90bd478c26ecb2819c6323be1d58499e68f77ec8f926b9ff738f8",
+      "assembly_sha256": "b389d1714e42a06003d5dde277f7fd03c43649684afb0919e7ad5d3e81c9c675",
+      "pseudocode_sha256": "982cec8459fd8fb741de1613f14615608aff3c6548db4ad7f0da8121f1b4cc14",
+      "angr_version": "10.0.5",
+      "scope": "Bounded genuine angr C. ARM determines semantics."
+    }
+  ],
+  "fragments": [
+    {
+      "label": "system_initialize_selector",
+      "start": "0x53314a60",
+      "end": "0x53314a80",
+      "size": 32,
+      "sha256": "b4b0f0fccdd5c0dd2ec04ea1858b50ccd13f15eb98d9040060005f2ea4cb534c",
+      "assembly_sha256": "bba1ff40aca29da6ef61ebf137b176e4fd6417b1f45a0097eaadec621a9c7b51"
+    },
+    {
+      "label": "system_initialize_storage_case",
+      "start": "0x53314dc8",
+      "end": "0x53314f24",
+      "size": 348,
+      "sha256": "d8fadd62c3e77f6e9d71757ac690ccef118bf6e3abc04afb0b6283e35d7df3d1",
+      "assembly_sha256": "acdbc51a11ed674cd7b68ec263895f54d6e26f7500cf2470d3ec10dd3c25dc9a"
+    },
+    {
+      "label": "system_constructor_context",
+      "start": "0x53315018",
+      "end": "0x53315170",
+      "size": 344,
+      "sha256": "825ccff4983b2a94832ef17da54ce91871c2fd1d29eb3adca9dfb8689062f98f",
+      "assembly_sha256": "8ba8522ca6f191e88b7d3ca5be5d2f676dad6d28052cab9db11e498a342ab7b1"
+    },
+    {
+      "label": "system_destructor_context",
+      "start": "0x53314f50",
+      "end": "0x53314fd0",
+      "size": 128,
+      "sha256": "a8eb51bb794e448d22ce3f50d8b8a50020ecd132668a0da7e1155ba71c367d70",
+      "assembly_sha256": "be7094ab98a912b468bec805378df18fa9fa9b7cfa69364057f36586b2b815de"
+    },
+    {
+      "label": "system_low_power_prepare",
+      "start": "0x533179a8",
+      "end": "0x533179fc",
+      "size": 84,
+      "sha256": "c136a099b0c0d75c5ba4ccd5eb492b3eeb0a1113ba4938c25aff778984674b2e",
+      "assembly_sha256": "5d503855d65aa6435b8fa9007901b6372ccb2e20f6c127cfc3625bc044ee2c3c"
+    },
+    {
+      "label": "system_low_power_state_gates",
+      "start": "0x53317d24",
+      "end": "0x53317dfc",
+      "size": 216,
+      "sha256": "cb392744d25117b0542d506d9692a0e6729836d7e5bddc93cffc6a344fa96645",
+      "assembly_sha256": "592017042a078696133dba068b745b9e8117fefea7ae7fada07d8855b9f0b9f1"
+    },
+    {
+      "label": "system_low_power_notify",
+      "start": "0x53317e3c",
+      "end": "0x53317e70",
+      "size": 52,
+      "sha256": "494b7080dc07e586adfe1b88edfa62c9a470e250bf9b9baba3e521e489cd8ccf",
+      "assembly_sha256": "163449a0c5b82ca4bff7a66363794cf3b5f36992ce4054a2dea2e10848532420"
+    },
+    {
+      "label": "system_low_power_ready",
+      "start": "0x53317e70",
+      "end": "0x53317ef0",
+      "size": 128,
+      "sha256": "8323e5fec7e2915fce28c985a069436ec2b0d52163e61565f2ea82d06eb13ae4",
+      "assembly_sha256": "591f57ad4c64586d90eb2139c9ccf974310371773e809623da529f39f185f399"
+    },
+    {
+      "label": "system_power_management_flags",
+      "start": "0x5310570c",
+      "end": "0x5310576c",
+      "size": 96,
+      "sha256": "79f2e2d7f3dc7308fc50cc5e33c752d6763f591cb97c3e7f930533f4034cf444",
+      "assembly_sha256": "04e08185e01928875ce6296210285712686acc22bb8087d2073df508e5806dbd"
+    },
+    {
+      "label": "system_file_factory_power",
+      "start": "0x52f3f7ec",
+      "end": "0x52f3f86c",
+      "size": 128,
+      "sha256": "826aa82a26f0c40923d51909c73fb79daf75503a8f0ab8f739408f79c377578c",
+      "assembly_sha256": "877e4f0f3f60d946601ddea213738da373a022251d4452cd45c7b384cfae43a6"
+    },
+    {
+      "label": "system_adjust_manager_gate",
+      "start": "0x52edb93c",
+      "end": "0x52edb980",
+      "size": 68,
+      "sha256": "7a46f70302697a7d1b71837c27ba76c3ffb5f567274c9f60704b160012b355dc",
+      "assembly_sha256": "ce75d50f90515897694bb805a83526ea9ce50b4590940d7cdb2dc841fb19f2e9"
+    },
+    {
+      "label": "system_adjust_manager_state_read",
+      "start": "0x52edf918",
+      "end": "0x52edf928",
+      "size": 16,
+      "sha256": "20ed0da28ff1b5855daa7ec44bddd7ec6ba07cc055a7caa29d7dc077f6b3a734",
+      "assembly_sha256": "520e304bba42b68b1d4421e1f1275a56a62ef2f02ce5ec6cc580eecebe6c4f17"
+    },
+    {
+      "label": "fw_manager_singleton",
+      "start": "0x52fee52c",
+      "end": "0x52fee5a0",
+      "size": 116,
+      "sha256": "19dacdc8871bf1853b2865af6620d9b2f75249da0e9a90d4613cb270d6311876",
+      "assembly_sha256": "1e8a8fc1affaf2e8a074df2f576bd2821646d35cd75299823fb5e778ecce9b2f"
+    },
+    {
+      "label": "fw_manager_create_fwpartition",
+      "start": "0x52fee260",
+      "end": "0x52fee2a8",
+      "size": 72,
+      "sha256": "8cffaa8db5f67d58bcb1770cb5479a46059f118edbc8f0e6939195157719e0c8",
+      "assembly_sha256": "b264f72c31abd71b1207e1831b6e86e6cfc7dd8865010a6462bf0e11f3801e2c"
+    },
+    {
+      "label": "fw_manager_release_fwpartition",
+      "start": "0x52fee430",
+      "end": "0x52fee4b8",
+      "size": 136,
+      "sha256": "c3e84f785d495840071fbd37c6c1f73e940ef9be67408fc08007966a1d4a37a9",
+      "assembly_sha256": "e2abb31bb45c492793534fb1f3e1e44b03a13a36bf5ee4529eb86448bd62313c"
+    },
+    {
+      "label": "fwpartition_constructor",
+      "start": "0x52ff52d4",
+      "end": "0x52ff5300",
+      "size": 44,
+      "sha256": "b0e80c520adae7747671efe8dbed5319add25fccf75913fe70d7a7c826581794",
+      "assembly_sha256": "4a9994da0b130f1c656ba6befec2d8e4eef821bee21e82f896bad171e40a8176"
+    },
+    {
+      "label": "fwpartition_storage_binding",
+      "start": "0x52ff51f0",
+      "end": "0x52ff52d4",
+      "size": 228,
+      "sha256": "9df7d0fdfbb699bca5cf09798d1accd943eb2289c403f24b6d9f4c60358ceaf8",
+      "assembly_sha256": "b20339dc1d508796c725a1898db6e81dae7d58a41ef929517d7c2057995eec14"
+    },
+    {
+      "label": "fwpartition_lock_unlock_thunks",
+      "start": "0x52ff5bac",
+      "end": "0x52ff5bcc",
+      "size": 32,
+      "sha256": "50430bb045f8458edfb73394587840b4b04c2cf50fffc9e5dc5f36566be35a28",
+      "assembly_sha256": "9fa2c277acd0d039628ff86d3e8bd5b8920e98e501610901e7e238fbbe33ea7c"
+    },
+    {
+      "label": "emmc_lock_unlock_thunks",
+      "start": "0x532971e4",
+      "end": "0x53297200",
+      "size": 28,
+      "sha256": "abf10a24aacf5c38bc9f8e14319462a157675ba034bab664c42628f1e47e73da",
+      "assembly_sha256": "5c7a759aa5c03b1b25d57a9cf1cad09ca0c860ced2f169ab37b53cdabb2f5305"
+    },
+    {
+      "label": "emmc_mutex_allocation",
+      "start": "0x53297284",
+      "end": "0x532972f0",
+      "size": 108,
+      "sha256": "71dc9d9441a281300799e72a8ce8cdc695d2a7e75bba6c3839cb5c5ac09be8ad",
+      "assembly_sha256": "d9d8fd4e7cd320525df0352e07dc72a8f4acfbbde3b24740eda61fdc301dc236"
+    },
+    {
+      "label": "mutex_constructor",
+      "start": "0x530f19b4",
+      "end": "0x530f19ec",
+      "size": 56,
+      "sha256": "8c3c4bbe7f66c2e8975f9f88d531c21db1c20edabc46df8982906b5b6b27ed69",
+      "assembly_sha256": "8d17059ae6980970e3c3c7c42b83a14284ae0ca4f5abcfab82b910ceb3e9a46f"
+    },
+    {
+      "label": "mutex_create_state",
+      "start": "0x530f236c",
+      "end": "0x530f23b4",
+      "size": 72,
+      "sha256": "ed5f1649bcd969f34b3f35c52a80ca5f916c3a0ee9bb15c553fa1d9710a49648",
+      "assembly_sha256": "eb642d1edcf11f4250e8800694d43027e383d266ac8d1e51d75c287e3d9cfe03"
+    },
+    {
+      "label": "file_factory_driver_power_thunks",
+      "start": "0x52f50ff0",
+      "end": "0x52f51028",
+      "size": 56,
+      "sha256": "4910b88200ba92a018f0095b06711839babc9b128b4909f71aa039c54767f6ba",
+      "assembly_sha256": "707aed693c62dda68cd1507d7793559d559c1bec0650ec4126aa739fa26173ca"
+    },
+    {
+      "label": "driver_factory_emmc_create_site",
+      "start": "0x5327ff14",
+      "end": "0x5327ffa0",
+      "size": 140,
+      "sha256": "3b9c2a945301adcac009892eed59cab2f2055b2695d3fe8d0f2276d70b6e52f9",
+      "assembly_sha256": "93cf82afa8bc6751626426c59338a832d2289ddb2eb0dc443bdf69fab48cc5a1"
+    },
+    {
+      "label": "driver_factory_emmc_publish",
+      "start": "0x5327f954",
+      "end": "0x5327fa0c",
+      "size": 184,
+      "sha256": "f6b33f5c8320c580598a1ed1798ecde0aa36db7a2fd24dded567796dd0b2aee0",
+      "assembly_sha256": "408dc33203a0ec48118fa0cb93e75521866633c494b26af4dfb7fa2645dc766d"
+    },
+    {
+      "label": "driver_factory_power_a",
+      "start": "0x53280004",
+      "end": "0x53280078",
+      "size": 116,
+      "sha256": "fe2df87984ff7f7d3451ddc93669a6a6563ac323cbfa74c54411e37c8800a0af",
+      "assembly_sha256": "b73fa404f3e49bb86e2c91d4bd358b1534007e2706ffb3d537c6bb1897af9a07"
+    },
+    {
+      "label": "driver_factory_power_b",
+      "start": "0x5328007c",
+      "end": "0x532800f4",
+      "size": 120,
+      "sha256": "e204ff60cba2d42ecad3a3595e62181b69fd0e0bddfbbe9ea9cf3a8f3f4cf10e",
+      "assembly_sha256": "629536ef1df844ced0d70257c503b94077e5b9c64ba15d64425ec8b8795e04b8"
+    },
+    {
+      "label": "emmc_power_a",
+      "start": "0x53297408",
+      "end": "0x53297454",
+      "size": 76,
+      "sha256": "eeb6b40b253586b0abaf04d00ee477e03f7cec14b8eb7fe638043c8ca8a0718d",
+      "assembly_sha256": "11870d9d3c18f9b40d10b01c0b123c94eee17d94260a54256e7feff12ad94b20"
+    },
+    {
+      "label": "emmc_power_b",
+      "start": "0x53297f38",
+      "end": "0x53297f88",
+      "size": 80,
+      "sha256": "a9df68476db8eacde9b4f0f0207e09311b847d80f046049cbd579d82e297b6c9",
+      "assembly_sha256": "0da61e9073831eb49e1a4070d8e9ed23a77ce40eb9979cdd8587d0d125c9b2e0"
+    },
+    {
+      "label": "emmc_clock_a",
+      "start": "0x53297258",
+      "end": "0x53297284",
+      "size": 44,
+      "sha256": "d93ae9f1186d6f67f514c38f8f5fd99905946c29ecc56d7ac15818892b91ac85",
+      "assembly_sha256": "c3df2185c2a76b4484b501a4b4cc3d1bd39618cb7872c074520af67d80696b5e"
+    },
+    {
+      "label": "emmc_clock_b",
+      "start": "0x532978cc",
+      "end": "0x5329790c",
+      "size": 64,
+      "sha256": "1a088f83aaf12ee65df497500bc1d6d5318dc378a711af7f5f79ea718e039446",
+      "assembly_sha256": "a8a2b0a7812905fba08a5430a4c5488a256d31e6076aaf7c7bcd54b24714b333"
+    },
+    {
+      "label": "emmc_clock_register_write",
+      "start": "0x53334dec",
+      "end": "0x53334e4c",
+      "size": 96,
+      "sha256": "32d8e98bd540ba5173d2b1f3e6019e64596495acb954c972e3363576635ead87",
+      "assembly_sha256": "7752cdf2cc25e30e19207317830ac9973f28d8667fbe57c50c057cd67a5709e3"
+    },
+    {
+      "label": "partition_boot1_write_lock_sites",
+      "start": "0x52ff5ad0",
+      "end": "0x52ff5b54",
+      "size": 132,
+      "sha256": "493423c9e5b4fbf8d772acd586f560e24a8630b7c2abf3e96a82d25ad5531d5f",
+      "assembly_sha256": "95e7a8abcd3405af23f5544003ff8f94764d4bf7caa2ff32204fd395fc7a030c"
+    }
+  ],
+  "resources": [
+    {
+      "label": "system_initialize_jump_words",
+      "start": "0x53314a80",
+      "end": "0x53314ab0",
+      "size": 48,
+      "sha256": "07c93b28c27fb0b1308a5448bc048137c8c67797a99e2cb1ebc3acf984b479fd",
+      "text": null
+    },
+    {
+      "label": "system_control_cpp",
+      "start": "0x53cc27e0",
+      "end": "0x53cc27f5",
+      "size": 21,
+      "sha256": "87b10cf918a2de807a2f15317151a8856e88642f1a89d9ade4914f5ddc7ad98b",
+      "text": "src/SystemControl.cpp"
+    },
+    {
+      "label": "fw_partition_member",
+      "start": "0x538e6268",
+      "end": "0x538e6275",
+      "size": 13,
+      "sha256": "3be3109721905b6879cabb9d04f06bc5e4c0c3daa60684245fdb97838717cc47",
+      "text": "m_fwPartition"
+    },
+    {
+      "label": "system_initialize_name",
+      "start": "0x53cc33d0",
+      "end": "0x53cc33da",
+      "size": 10,
+      "sha256": "ad5f8e737e6beecc7182d9f205c068ca0360506fd7955bebaf0b49f1f634217d",
+      "text": "Initialize"
+    },
+    {
+      "label": "power_save_enable_name",
+      "start": "0x53cc291c",
+      "end": "0x53cc292d",
+      "size": 17,
+      "sha256": "f0b0f8dcb91b1f82c0e28b057b33b2bea21f5a962324e5fa89afbad216509706",
+      "text": "POWER_SAVE_ENABLE"
+    },
+    {
+      "label": "power_save_disable_name",
+      "start": "0x53cc2c54",
+      "end": "0x53cc2c66",
+      "size": 18,
+      "sha256": "7e127c0c3a95bbcd12eabda6cd809424d4ee559d35305e025f4069515a810182",
+      "text": "POWER_SAVE_DISABLE"
+    },
+    {
+      "label": "low_power_mode_level3_name",
+      "start": "0x53cc2c68",
+      "end": "0x53cc2c7d",
+      "size": 21,
+      "sha256": "ef11538cb5a4830f561722067e906b181da93249fa918ec4a23838696a1e4db3",
+      "text": "LOW_POWER_MODE_LEVEL3"
+    },
+    {
+      "label": "low_power_mode_going_to_level3_name",
+      "start": "0x53cc2a74",
+      "end": "0x53cc2a92",
+      "size": 30,
+      "sha256": "efc70c0141d214c84783dc25f07bdbc1bcc48dd57d9d1071282e9122c0989d28",
+      "text": "LOW_POWER_MODE_GOING_TO_LEVEL3"
+    },
+    {
+      "label": "mutex_lock_name",
+      "start": "0x53a6b140",
+      "end": "0x53a6b144",
+      "size": 4,
+      "sha256": "db44b8db4f05d720ef1a57abadeed0c164d47b17416c7dd7d136d8f10fba91c9",
+      "text": "Lock"
+    },
+    {
+      "label": "mutex_unlock_name",
+      "start": "0x53a6b118",
+      "end": "0x53a6b11e",
+      "size": 6,
+      "sha256": "4ac709aa58bcfe5dca223072cd22986a2ad4e15f577c344466851b65322e416c",
+      "text": "Unlock"
+    },
+    {
+      "label": "slot2_initial_resource",
+      "start": "0x53d0d2d8",
+      "end": "0x53d0d2e8",
+      "size": 16,
+      "sha256": "298e4429e22ce69e7192a8077588e167668c5e18a9bb013d0cb988afcd47a6b0",
+      "text": null
+    }
+  ],
+  "transfers": [
+    {
+      "site": "0x53317934",
+      "size": 4,
+      "kind": "bl",
+      "target": "0x52ff5bac"
+    },
+    {
+      "site": "0x53317944",
+      "size": 4,
+      "kind": "bl",
+      "target": "0x5310570c"
+    },
+    {
+      "site": "0x5331794c",
+      "size": 4,
+      "kind": "bl",
+      "target": "0x52f3f82c"
+    },
+    {
+      "site": "0x5331795c",
+      "size": 4,
+      "kind": "b",
+      "target": "0x52ff5bbc"
+    },
+    {
+      "site": "0x53317e10",
+      "size": 4,
+      "kind": "bl",
+      "target": "0x52ff5bac"
+    },
+    {
+      "site": "0x53317e20",
+      "size": 4,
+      "kind": "bl",
+      "target": "0x53317d74"
+    },
+    {
+      "site": "0x53317e28",
+      "size": 4,
+      "kind": "bl",
+      "target": "0x53317da4"
+    },
+    {
+      "site": "0x53317e38",
+      "size": 4,
+      "kind": "b",
+      "target": "0x52ff5bbc"
+    },
+    {
+      "site": "0x53317988",
+      "size": 4,
+      "kind": "bl",
+      "target": "0x53105564"
+    },
+    {
+      "site": "0x53317990",
+      "size": 4,
+      "kind": "bl",
+      "target": "0x53317920"
+    },
+    {
+      "site": "0x53317f04",
+      "size": 4,
+      "kind": "beq",
+      "target": "0x53317f48"
+    },
+    {
+      "site": "0x53317f2c",
+      "size": 4,
+      "kind": "bl",
+      "target": "0x53317d24"
+    },
+    {
+      "site": "0x53317f34",
+      "size": 4,
+      "kind": "bl",
+      "target": "0x53317dfc"
+    },
+    {
+      "site": "0x53317f44",
+      "size": 4,
+      "kind": "b",
+      "target": "0x53317e3c"
+    },
+    {
+      "site": "0x53317f54",
+      "size": 4,
+      "kind": "b",
+      "target": "0x53317960"
+    },
+    {
+      "site": "0x530f1ac0",
+      "size": 4,
+      "kind": "bl",
+      "target": "0x530feb20"
+    },
+    {
+      "site": "0x530f1acc",
+      "size": 4,
+      "kind": "bl",
+      "target": "0x525b7358"
+    },
+    {
+      "site": "0x530f1adc",
+      "size": 4,
+      "kind": "beq",
+      "target": "0x530f1b68"
+    },
+    {
+      "site": "0x530f1ae4",
+      "size": 4,
+      "kind": "beq",
+      "target": "0x530f1b44"
+    },
+    {
+      "site": "0x530f1aec",
+      "size": 4,
+      "kind": "beq",
+      "target": "0x530f1b88"
+    },
+    {
+      "site": "0x530f1b34",
+      "size": 4,
+      "kind": "bl",
+      "target": "0x530feb20"
+    },
+    {
+      "site": "0x530f1b4c",
+      "size": 4,
+      "kind": "beq",
+      "target": "0x530f1ba0"
+    },
+    {
+      "site": "0x530f1b64",
+      "size": 4,
+      "kind": "b",
+      "target": "0x530f1b04"
+    },
+    {
+      "site": "0x530f1b84",
+      "size": 4,
+      "kind": "b",
+      "target": "0x530f1b04"
+    },
+    {
+      "site": "0x530f1b9c",
+      "size": 4,
+      "kind": "b",
+      "target": "0x530f1b04"
+    },
+    {
+      "site": "0x530f1ba4",
+      "size": 4,
+      "kind": "bl",
+      "target": "0x530f19f0"
+    },
+    {
+      "site": "0x530f1bb4",
+      "size": 4,
+      "kind": "beq",
+      "target": "0x530f1b04"
+    },
+    {
+      "site": "0x530f1bb8",
+      "size": 4,
+      "kind": "b",
+      "target": "0x530f1b50"
+    },
+    {
+      "site": "0x530f1c10",
+      "size": 4,
+      "kind": "bl",
+      "target": "0x530feb20"
+    },
+    {
+      "site": "0x530f1c1c",
+      "size": 4,
+      "kind": "bne",
+      "target": "0x530f1c84"
+    },
+    {
+      "site": "0x530f1c30",
+      "size": 4,
+      "kind": "ble",
+      "target": "0x530f1cac"
+    },
+    {
+      "site": "0x530f1c74",
+      "size": 4,
+      "kind": "bl",
+      "target": "0x530feb20"
+    },
+    {
+      "site": "0x530f1c88",
+      "size": 4,
+      "kind": "bl",
+      "target": "0x530f19f0"
+    },
+    {
+      "site": "0x530f1ca8",
+      "size": 4,
+      "kind": "bgt",
+      "target": "0x530f1c34"
+    },
+    {
+      "site": "0x530f1cb8",
+      "size": 4,
+      "kind": "bl",
+      "target": "0x525b7940"
+    },
+    {
+      "site": "0x530f1cbc",
+      "size": 4,
+      "kind": "b",
+      "target": "0x530f1c34"
+    },
+    {
+      "site": "0x53314a7c",
+      "size": 4,
+      "kind": "b",
+      "target": "0x53314f24"
+    },
+    {
+      "site": "0x53314dc8",
+      "size": 4,
+      "kind": "bl",
+      "target": "0x52fee52c"
+    },
+    {
+      "site": "0x53314dfc",
+      "size": 4,
+      "kind": "bl",
+      "target": "0x530fdfc4"
+    },
+    {
+      "site": "0x53314e00",
+      "size": 4,
+      "kind": "bl",
+      "target": "0x52fee52c"
+    },
+    {
+      "site": "0x53314e2c",
+      "size": 4,
+      "kind": "bl",
+      "target": "0x530fdfc4"
+    },
+    {
+      "site": "0x53314e30",
+      "size": 4,
+      "kind": "bl",
+      "target": "0x53103a64"
+    },
+    {
+      "site": "0x53314e58",
+      "size": 4,
+      "kind": "bl",
+      "target": "0x530fdfc4"
+    },
+    {
+      "site": "0x53314e5c",
+      "size": 4,
+      "kind": "bl",
+      "target": "0x531592fc"
+    },
+    {
+      "site": "0x53314e88",
+      "size": 4,
+      "kind": "bl",
+      "target": "0x530fdfc4"
+    },
+    {
+      "site": "0x53314e8c",
+      "size": 4,
+      "kind": "bl",
+      "target": "0x52f3f764"
+    },
+    {
+      "site": "0x53314eb4",
+      "size": 4,
+      "kind": "bl",
+      "target": "0x530fdfc4"
+    },
+    {
+      "site": "0x53314eb8",
+      "size": 4,
+      "kind": "bl",
+      "target": "0x52f3f764"
+    },
+    {
+      "site": "0x53314ee4",
+      "size": 4,
+      "kind": "bl",
+      "target": "0x530fdfc4"
+    },
+    {
+      "site": "0x53314ee8",
+      "size": 4,
+      "kind": "bl",
+      "target": "0x53157868"
+    },
+    {
+      "site": "0x53314f14",
+      "size": 4,
+      "kind": "bl",
+      "target": "0x530fdfc4"
+    },
+    {
+      "site": "0x5331503c",
+      "size": 4,
+      "kind": "bl",
+      "target": "0x530eefc4"
+    },
+    {
+      "site": "0x53314f78",
+      "size": 4,
+      "kind": "bl",
+      "target": "0x530ef028"
+    },
+    {
+      "site": "0x53314f88",
+      "size": 4,
+      "kind": "b",
+      "target": "0x53314f50"
+    },
+    {
+      "site": "0x53314fb4",
+      "size": 4,
+      "kind": "bl",
+      "target": "0x530ef028"
+    },
+    {
+      "site": "0x53314fbc",
+      "size": 4,
+      "kind": "bl",
+      "target": "0x530f2630"
+    },
+    {
+      "site": "0x53314fcc",
+      "size": 4,
+      "kind": "b",
+      "target": "0x53314f8c"
+    },
+    {
+      "site": "0x533179bc",
+      "size": 4,
+      "kind": "bl",
+      "target": "0x531055e0"
+    },
+    {
+      "site": "0x533179dc",
+      "size": 4,
+      "kind": "bl",
+      "target": "0x53105564"
+    },
+    {
+      "site": "0x533179e4",
+      "size": 4,
+      "kind": "bl",
+      "target": "0x53317920"
+    },
+    {
+      "site": "0x533179f8",
+      "size": 4,
+      "kind": "b",
+      "target": "0x5331773c"
+    },
+    {
+      "site": "0x53317d60",
+      "size": 4,
+      "kind": "bl",
+      "target": "0x53105c98"
+    },
+    {
+      "site": "0x53317d70",
+      "size": 4,
+      "kind": "b",
+      "target": "0x53105678"
+    },
+    {
+      "site": "0x53317da0",
+      "size": 4,
+      "kind": "b",
+      "target": "0x52f3f7ec"
+    },
+    {
+      "site": "0x53317de0",
+      "size": 4,
+      "kind": "bl",
+      "target": "0x52edb93c"
+    },
+    {
+      "site": "0x53317df8",
+      "size": 4,
+      "kind": "b",
+      "target": "0x5310573c"
+    },
+    {
+      "site": "0x53317e6c",
+      "size": 4,
+      "kind": "b",
+      "target": "0x53105564"
+    },
+    {
+      "site": "0x53317eb8",
+      "size": 4,
+      "kind": "bl",
+      "target": "0x52f2a758"
+    },
+    {
+      "site": "0x53317ec0",
+      "size": 4,
+      "kind": "bl",
+      "target": "0x53105610"
+    },
+    {
+      "site": "0x53317ed4",
+      "size": 4,
+      "kind": "bl",
+      "target": "0x53317d24"
+    },
+    {
+      "site": "0x53317edc",
+      "size": 4,
+      "kind": "bl",
+      "target": "0x53317dfc"
+    },
+    {
+      "site": "0x53317eec",
+      "size": 4,
+      "kind": "b",
+      "target": "0x53317e3c"
+    },
+    {
+      "site": "0x5310572c",
+      "size": 4,
+      "kind": "bl",
+      "target": "0x53272224"
+    },
+    {
+      "site": "0x5310575c",
+      "size": 4,
+      "kind": "bl",
+      "target": "0x53272260"
+    },
+    {
+      "site": "0x52f3f808",
+      "size": 4,
+      "kind": "bl",
+      "target": "0x52f97824"
+    },
+    {
+      "site": "0x52f3f80c",
+      "size": 4,
+      "kind": "bl",
+      "target": "0x52f97bd4"
+    },
+    {
+      "site": "0x52f3f810",
+      "size": 4,
+      "kind": "bl",
+      "target": "0x52f590b4"
+    },
+    {
+      "site": "0x52f3f814",
+      "size": 4,
+      "kind": "bl",
+      "target": "0x52f59128"
+    },
+    {
+      "site": "0x52f3f818",
+      "size": 4,
+      "kind": "bl",
+      "target": "0x52f50f6c"
+    },
+    {
+      "site": "0x52f3f81c",
+      "size": 4,
+      "kind": "bl",
+      "target": "0x52f50ff0"
+    },
+    {
+      "site": "0x52f3f848",
+      "size": 4,
+      "kind": "bl",
+      "target": "0x52f50f6c"
+    },
+    {
+      "site": "0x52f3f84c",
+      "size": 4,
+      "kind": "bl",
+      "target": "0x52f5100c"
+    },
+    {
+      "site": "0x52f3f850",
+      "size": 4,
+      "kind": "bl",
+      "target": "0x52f590b4"
+    },
+    {
+      "site": "0x52f3f854",
+      "size": 4,
+      "kind": "bl",
+      "target": "0x52f59158"
+    },
+    {
+      "site": "0x52f3f858",
+      "size": 4,
+      "kind": "bl",
+      "target": "0x52f97824"
+    },
+    {
+      "site": "0x52f3f85c",
+      "size": 4,
+      "kind": "bl",
+      "target": "0x52f97bd8"
+    },
+    {
+      "site": "0x52edb960",
+      "size": 4,
+      "kind": "bl",
+      "target": "0x530f1a68"
+    },
+    {
+      "site": "0x52edb968",
+      "size": 4,
+      "kind": "bl",
+      "target": "0x52edf918"
+    },
+    {
+      "site": "0x52edb974",
+      "size": 4,
+      "kind": "bl",
+      "target": "0x530f1bbc"
+    },
+    {
+      "site": "0x52fee548",
+      "size": 4,
+      "kind": "beq",
+      "target": "0x52fee558"
+    },
+    {
+      "site": "0x52fee55c",
+      "size": 4,
+      "kind": "bl",
+      "target": "0x533aaeb4"
+    },
+    {
+      "site": "0x52fee564",
+      "size": 4,
+      "kind": "beq",
+      "target": "0x52fee54c"
+    },
+    {
+      "site": "0x52fee58c",
+      "size": 4,
+      "kind": "bl",
+      "target": "0x533aaf1c"
+    },
+    {
+      "site": "0x52fee598",
+      "size": 4,
+      "kind": "bl",
+      "target": "0x526aaa50"
+    },
+    {
+      "site": "0x52fee59c",
+      "size": 4,
+      "kind": "b",
+      "target": "0x52fee54c"
+    },
+    {
+      "site": "0x52fee264",
+      "size": 4,
+      "kind": "bl",
+      "target": "0x530f25f4"
+    },
+    {
+      "site": "0x52fee26c",
+      "size": 4,
+      "kind": "bl",
+      "target": "0x52ff52d4"
+    },
+    {
+      "site": "0x52fee29c",
+      "size": 4,
+      "kind": "bl",
+      "target": "0x530fdfc4"
+    },
+    {
+      "site": "0x52fee2a4",
+      "size": 4,
+      "kind": "b",
+      "target": "0x52fee248"
+    },
+    {
+      "site": "0x52fee440",
+      "size": 4,
+      "kind": "beq",
+      "target": "0x52fee478"
+    },
+    {
+      "site": "0x52fee458",
+      "size": 4,
+      "kind": "beq",
+      "target": "0x52fee478"
+    },
+    {
+      "site": "0x52fee470",
+      "size": 4,
+      "kind": "bne",
+      "target": "0x52fee49c"
+    },
+    {
+      "site": "0x52fee474",
+      "size": 4,
+      "kind": "bl",
+      "target": "0x530f2630"
+    },
+    {
+      "site": "0x52fee488",
+      "size": 4,
+      "kind": "beq",
+      "target": "0x52fee490"
+    },
+    {
+      "site": "0x52fee48c",
+      "size": 4,
+      "kind": "bl",
+      "target": "0x530f2630"
+    },
+    {
+      "site": "0x52fee4a0",
+      "size": 4,
+      "kind": "b",
+      "target": "0x52fee478"
+    },
+    {
+      "site": "0x52fee4a8",
+      "size": 4,
+      "kind": "b",
+      "target": "0x52fee3cc"
+    },
+    {
+      "site": "0x52fee4b4",
+      "size": 4,
+      "kind": "b",
+      "target": "0x52fee430"
+    },
+    {
+      "site": "0x52ff51f0",
+      "size": 4,
+      "kind": "bl",
+      "target": "0x52f137f0"
+    },
+    {
+      "site": "0x52ff51f8",
+      "size": 4,
+      "kind": "bl",
+      "target": "0x52f1390c"
+    },
+    {
+      "site": "0x52ff5200",
+      "size": 4,
+      "kind": "beq",
+      "target": "0x52ff5284"
+    },
+    {
+      "site": "0x52ff5218",
+      "size": 4,
+      "kind": "bl",
+      "target": "0x533aada0"
+    },
+    {
+      "site": "0x52ff5244",
+      "size": 4,
+      "kind": "bl",
+      "target": "0x530fdfc4"
+    },
+    {
+      "site": "0x52ff5248",
+      "size": 4,
+      "kind": "bl",
+      "target": "0x52fee52c"
+    },
+    {
+      "site": "0x52ff5274",
+      "size": 4,
+      "kind": "bl",
+      "target": "0x530fdfc4"
+    },
+    {
+      "site": "0x52ff5288",
+      "size": 4,
+      "kind": "b",
+      "target": "0x52ff5228"
+    },
+    {
+      "site": "0x52ff529c",
+      "size": 4,
+      "kind": "b",
+      "target": "0x52ff52a4"
+    },
+    {
+      "site": "0x52ff52a0",
+      "size": 4,
+      "kind": "bl",
+      "target": "0x530f3e1c"
+    },
+    {
+      "site": "0x52ff52ac",
+      "size": 4,
+      "kind": "bl",
+      "target": "0x52ff8ed0"
+    },
+    {
+      "site": "0x52ff52b8",
+      "size": 4,
+      "kind": "beq",
+      "target": "0x52ff52a0"
+    },
+    {
+      "site": "0x52ff52c4",
+      "size": 4,
+      "kind": "bl",
+      "target": "0x52ff8de4"
+    },
+    {
+      "site": "0x532971f4",
+      "size": 4,
+      "kind": "b",
+      "target": "0x530f1a68"
+    },
+    {
+      "site": "0x532971fc",
+      "size": 4,
+      "kind": "b",
+      "target": "0x530f1bbc"
+    },
+    {
+      "site": "0x5329729c",
+      "size": 4,
+      "kind": "bl",
+      "target": "0x530ef264"
+    },
+    {
+      "site": "0x532972a8",
+      "size": 4,
+      "kind": "bl",
+      "target": "0x530f25f4"
+    },
+    {
+      "site": "0x532972b0",
+      "size": 4,
+      "kind": "bl",
+      "target": "0x530f19b4"
+    },
+    {
+      "site": "0x532972ec",
+      "size": 4,
+      "kind": "bl",
+      "target": "0x530f2258"
+    },
+    {
+      "site": "0x530f23b0",
+      "size": 4,
+      "kind": "beq",
+      "target": "0x530f23bc"
+    },
+    {
+      "site": "0x52f50ffc",
+      "size": 4,
+      "kind": "bl",
+      "target": "0x5327f6b0"
+    },
+    {
+      "site": "0x52f51008",
+      "size": 4,
+      "kind": "b",
+      "target": "0x53280004"
+    },
+    {
+      "site": "0x52f51018",
+      "size": 4,
+      "kind": "bl",
+      "target": "0x5327f6b0"
+    },
+    {
+      "site": "0x52f51024",
+      "size": 4,
+      "kind": "b",
+      "target": "0x5328007c"
+    },
+    {
+      "site": "0x5327ff40",
+      "size": 4,
+      "kind": "bl",
+      "target": "0x5327f894"
+    },
+    {
+      "site": "0x5327ff54",
+      "size": 4,
+      "kind": "bl",
+      "target": "0x530fdfc4"
+    },
+    {
+      "site": "0x5327ff5c",
+      "size": 4,
+      "kind": "bl",
+      "target": "0x5327fda0"
+    },
+    {
+      "site": "0x5327ff70",
+      "size": 4,
+      "kind": "bl",
+      "target": "0x530fdfc4"
+    },
+    {
+      "site": "0x5327ff78",
+      "size": 4,
+      "kind": "bl",
+      "target": "0x5327f72c"
+    },
+    {
+      "site": "0x5327ff8c",
+      "size": 4,
+      "kind": "bl",
+      "target": "0x530fdfc4"
+    },
+    {
+      "site": "0x5327ff94",
+      "size": 4,
+      "kind": "bl",
+      "target": "0x5327f954"
+    },
+    {
+      "site": "0x5327f96c",
+      "size": 4,
+      "kind": "bl",
+      "target": "0x530f25f4"
+    },
+    {
+      "site": "0x5327f97c",
+      "size": 4,
+      "kind": "bl",
+      "target": "0x53297454"
+    },
+    {
+      "site": "0x5327f9a8",
+      "size": 4,
+      "kind": "bl",
+      "target": "0x530fdfc4"
+    },
+    {
+      "site": "0x5327f9d4",
+      "size": 4,
+      "kind": "bl",
+      "target": "0x530fdfc4"
+    },
+    {
+      "site": "0x5327f9e0",
+      "size": 4,
+      "kind": "bl",
+      "target": "0x52f13774"
+    },
+    {
+      "site": "0x5327f9f8",
+      "size": 4,
+      "kind": "bl",
+      "target": "0x530fdfc4"
+    },
+    {
+      "site": "0x53280048",
+      "size": 4,
+      "kind": "bl",
+      "target": "0x533350ec"
+    },
+    {
+      "site": "0x53280050",
+      "size": 4,
+      "kind": "bl",
+      "target": "0x53334b4c"
+    },
+    {
+      "site": "0x5328005c",
+      "size": 4,
+      "kind": "bl",
+      "target": "0x531063b4"
+    },
+    {
+      "site": "0x532800a0",
+      "size": 4,
+      "kind": "bl",
+      "target": "0x53334b4c"
+    },
+    {
+      "site": "0x532800ac",
+      "size": 4,
+      "kind": "bl",
+      "target": "0x531063b4"
+    },
+    {
+      "site": "0x532800b4",
+      "size": 4,
+      "kind": "bl",
+      "target": "0x533350ec"
+    },
+    {
+      "site": "0x53297428",
+      "size": 4,
+      "kind": "bl",
+      "target": "0x530f1a68"
+    },
+    {
+      "site": "0x53297438",
+      "size": 4,
+      "kind": "bl",
+      "target": "0x53297258"
+    },
+    {
+      "site": "0x53297450",
+      "size": 4,
+      "kind": "b",
+      "target": "0x530f1bbc"
+    },
+    {
+      "site": "0x53297f58",
+      "size": 4,
+      "kind": "bl",
+      "target": "0x530f1a68"
+    },
+    {
+      "site": "0x53297f6c",
+      "size": 4,
+      "kind": "bl",
+      "target": "0x532978cc"
+    },
+    {
+      "site": "0x53297f84",
+      "size": 4,
+      "kind": "b",
+      "target": "0x530f1bbc"
+    },
+    {
+      "site": "0x5329726c",
+      "size": 4,
+      "kind": "bl",
+      "target": "0x53334dec"
+    },
+    {
+      "site": "0x53297280",
+      "size": 4,
+      "kind": "b",
+      "target": "0x531063b4"
+    },
+    {
+      "site": "0x532978e0",
+      "size": 4,
+      "kind": "bne",
+      "target": "0x53297900"
+    },
+    {
+      "site": "0x532978e8",
+      "size": 4,
+      "kind": "bl",
+      "target": "0x53334dec"
+    },
+    {
+      "site": "0x532978fc",
+      "size": 4,
+      "kind": "b",
+      "target": "0x531063b4"
+    },
+    {
+      "site": "0x53297908",
+      "size": 4,
+      "kind": "b",
+      "target": "0x53297258"
+    },
+    {
+      "site": "0x53334e0c",
+      "size": 4,
+      "kind": "bl",
+      "target": "0x525007dc"
+    },
+    {
+      "site": "0x53334e38",
+      "size": 4,
+      "kind": "bl",
+      "target": "0x5250082c"
+    },
+    {
+      "site": "0x53334e40",
+      "size": 4,
+      "kind": "bl",
+      "target": "0x5250074c"
+    },
+    {
+      "site": "0x52ff5b04",
+      "size": 4,
+      "kind": "beq",
+      "target": "0x52ff5b80"
+    },
+    {
+      "site": "0x52ff5b10",
+      "size": 4,
+      "kind": "bl",
+      "target": "0x53297bc0"
+    },
+    {
+      "site": "0x52ff5b18",
+      "size": 4,
+      "kind": "beq",
+      "target": "0x52ff5b5c"
+    },
+    {
+      "site": "0x52ff5b2c",
+      "size": 4,
+      "kind": "bl",
+      "target": "0x52ff5708"
+    },
+    {
+      "site": "0x52ff5b3c",
+      "size": 4,
+      "kind": "bl",
+      "target": "0x53297bc0"
+    }
+  ],
+  "instructions": [
+    {
+      "site": "0x53314a78",
+      "size": 4,
+      "mnemonic": "ldrls",
+      "operands": "pc, [pc, r1, lsl #2]"
+    },
+    {
+      "site": "0x53314e04",
+      "size": 4,
+      "mnemonic": "ldr",
+      "operands": "r0, [r0, #8]"
+    },
+    {
+      "site": "0x53314e14",
+      "size": 4,
+      "mnemonic": "str",
+      "operands": "r0, [r4, #0x48]"
+    },
+    {
+      "site": "0x533150d0",
+      "size": 4,
+      "mnemonic": "str",
+      "operands": "r3, [r4, #0x48]"
+    },
+    {
+      "site": "0x53317930",
+      "size": 4,
+      "mnemonic": "ldr",
+      "operands": "r0, [r0, #0x48]"
+    },
+    {
+      "site": "0x533179a0",
+      "size": 4,
+      "mnemonic": "strb",
+      "operands": "r1, [r4, #0x9a]"
+    },
+    {
+      "site": "0x53317e0c",
+      "size": 4,
+      "mnemonic": "ldr",
+      "operands": "r0, [r0, #0x48]"
+    },
+    {
+      "site": "0x53317e94",
+      "size": 4,
+      "mnemonic": "strb",
+      "operands": "r1, [r0, #0x99]"
+    },
+    {
+      "site": "0x53317f14",
+      "size": 4,
+      "mnemonic": "strb",
+      "operands": "r2, [r0, #0x9a]"
+    },
+    {
+      "site": "0x52fee278",
+      "size": 4,
+      "mnemonic": "str",
+      "operands": "r5, [r4, #8]"
+    },
+    {
+      "site": "0x52fee480",
+      "size": 4,
+      "mnemonic": "str",
+      "operands": "r3, [r4, #8]"
+    },
+    {
+      "site": "0x52ff5228",
+      "size": 4,
+      "mnemonic": "str",
+      "operands": "r3, [r5, #8]"
+    },
+    {
+      "site": "0x52ff52c8",
+      "size": 4,
+      "mnemonic": "str",
+      "operands": "r0, [r4, #0x14]"
+    },
+    {
+      "site": "0x52ff52f4",
+      "size": 4,
+      "mnemonic": "strb",
+      "operands": "r2, [r0, #0x10]"
+    },
+    {
+      "site": "0x52ff5bac",
+      "size": 4,
+      "mnemonic": "ldr",
+      "operands": "r0, [r0, #8]"
+    },
+    {
+      "site": "0x52ff5bb4",
+      "size": 4,
+      "mnemonic": "ldr",
+      "operands": "r3, [r3, #0x6c]"
+    },
+    {
+      "site": "0x52ff5bb8",
+      "size": 4,
+      "mnemonic": "bx",
+      "operands": "r3"
+    },
+    {
+      "site": "0x52ff5bbc",
+      "size": 4,
+      "mnemonic": "ldr",
+      "operands": "r0, [r0, #8]"
+    },
+    {
+      "site": "0x52ff5bc4",
+      "size": 4,
+      "mnemonic": "ldr",
+      "operands": "r3, [r3, #0x70]"
+    },
+    {
+      "site": "0x52ff5bc8",
+      "size": 4,
+      "mnemonic": "bx",
+      "operands": "r3"
+    },
+    {
+      "site": "0x532971e4",
+      "size": 4,
+      "mnemonic": "ldr",
+      "operands": "r0, [r0, #0x24]"
+    },
+    {
+      "site": "0x532971f8",
+      "size": 4,
+      "mnemonic": "ldr",
+      "operands": "r0, [r0, #0x24]"
+    },
+    {
+      "site": "0x532972a4",
+      "size": 4,
+      "mnemonic": "mov",
+      "operands": "r0, #0x14"
+    },
+    {
+      "site": "0x532972b4",
+      "size": 4,
+      "mnemonic": "str",
+      "operands": "r5, [r4, #0x24]"
+    },
+    {
+      "site": "0x530f1b60",
+      "size": 4,
+      "mnemonic": "str",
+      "operands": "r3, [r5, #0x10]"
+    },
+    {
+      "site": "0x530f1b98",
+      "size": 4,
+      "mnemonic": "str",
+      "operands": "r3, [r5, #0x10]"
+    },
+    {
+      "site": "0x530f1ca0",
+      "size": 4,
+      "mnemonic": "strne",
+      "operands": "r3, [r5, #0x10]"
+    },
+    {
+      "site": "0x530f1cb4",
+      "size": 4,
+      "mnemonic": "str",
+      "operands": "r3, [r5, #0x10]"
+    },
+    {
+      "site": "0x5327f9fc",
+      "size": 4,
+      "mnemonic": "str",
+      "operands": "r4, [sb, #0xc]"
+    },
+    {
+      "site": "0x53280064",
+      "size": 4,
+      "mnemonic": "ldr",
+      "operands": "r3, [r0]"
+    },
+    {
+      "site": "0x53280068",
+      "size": 4,
+      "mnemonic": "ldr",
+      "operands": "r3, [r3, #0x74]"
+    },
+    {
+      "site": "0x53280090",
+      "size": 4,
+      "mnemonic": "ldr",
+      "operands": "r3, [r0]"
+    },
+    {
+      "site": "0x53280094",
+      "size": 4,
+      "mnemonic": "ldr",
+      "operands": "r3, [r3, #0x78]"
+    },
+    {
+      "site": "0x53297444",
+      "size": 4,
+      "mnemonic": "strb",
+      "operands": "r3, [r4, #0x44]"
+    },
+    {
+      "site": "0x53297f78",
+      "size": 4,
+      "mnemonic": "strb",
+      "operands": "r3, [r4, #0x44]"
+    },
+    {
+      "site": "0x53334e34",
+      "size": 4,
+      "mnemonic": "str",
+      "operands": "r3, [r2, #0x40]"
+    },
+    {
+      "site": "0x52ff5af8",
+      "size": 4,
+      "mnemonic": "ldr",
+      "operands": "r2, [r2, #0x6c]"
+    },
+    {
+      "site": "0x52ff5b48",
+      "size": 4,
+      "mnemonic": "ldr",
+      "operands": "r3, [r3, #0x70]"
+    }
+  ],
+  "pointer_words": [
+    {
+      "address": "0x52fee5a0",
+      "value": "0x53910f08",
+      "size": 4,
+      "sha256": "562b93c216f63e80550dc69c5a01125266c46c228c66c1323e1789d25a6a5789"
+    },
+    {
+      "address": "0x52ff5300",
+      "value": "0x53912568",
+      "size": 4,
+      "sha256": "2bcdac3957108553fd57edf70d1257f4372871953a5649426b06aed06265f19a"
+    },
+    {
+      "address": "0x530f19ec",
+      "value": "0x53a6b130",
+      "size": 4,
+      "sha256": "4bb5df61189fcbb009ae051bcbf664e6580c7ccc5932aa61557cc4728973bc4c"
+    },
+    {
+      "address": "0x53280078",
+      "value": "0x1d021000",
+      "size": 4,
+      "sha256": "47a40475043c73fbd6f05ff84835dba2890fdcb0ba1ec900c4cfc065e3381f3d"
+    },
+    {
+      "address": "0x532800f4",
+      "value": "0x1d021000",
+      "size": 4,
+      "sha256": "47a40475043c73fbd6f05ff84835dba2890fdcb0ba1ec900c4cfc065e3381f3d"
+    },
+    {
+      "address": "0x53314aa8",
+      "value": "0x53314dc8",
+      "size": 4,
+      "sha256": "2b981e0368a5f1a1b6338609d85719034c0b0957800283c45db105340275e6c0"
+    },
+    {
+      "address": "0x53315170",
+      "value": "0x53873bd0",
+      "size": 4,
+      "sha256": "c573d9ec89cd8b79867b5e49fb369d5c3546ec816fa7a4b14b5f01365bd2cfa1"
+    },
+    {
+      "address": "0x53a6b110",
+      "value": "0xffffffff",
+      "size": 4,
+      "sha256": "ad95131bc0b799c0b1af477fb14fcf26a6a9f76079e48bf090acb7e8367bfd0e"
+    },
+    {
+      "address": "0x53cb1654",
+      "value": "0x53297284",
+      "size": 4,
+      "sha256": "92797c24f01747e7ab422fb4a091d7368470225aebda6bcd1085b9446ca67eab"
+    },
+    {
+      "address": "0x53cb16a4",
+      "value": "0x532971e4",
+      "size": 4,
+      "sha256": "04c4bdb0bb7338c433bd59f5e116dbf2859615be837d9e60791da523349f3395"
+    },
+    {
+      "address": "0x53cb16a8",
+      "value": "0x532971f8",
+      "size": 4,
+      "sha256": "ee6e60ab7865a4e3c6abae374f9e7cab70d9053b90ff2231efcde6d418ea7f34"
+    },
+    {
+      "address": "0x53cb16ac",
+      "value": "0x53297408",
+      "size": 4,
+      "sha256": "f07a29bae93e6abd628c741bca29f681f3690d6b63900809fdec3dbed7af4e18"
+    },
+    {
+      "address": "0x53cb16b0",
+      "value": "0x53297f38",
+      "size": 4,
+      "sha256": "26855130c910005d0fd0daedc496f142504f3266d61be32242d01d3e81e9bc50"
+    },
+    {
+      "address": "0x53cc337c",
+      "value": "0x53314a60",
+      "size": 4,
+      "sha256": "b07d754846f5654ce0c2cb6179d626c69978e8567528a35839152ed1a95a06f7"
+    },
+    {
+      "address": "0x53d0d2dc",
+      "value": "0x10f00",
+      "size": 4,
+      "sha256": "1c6492864fa57763a23e45be3d9921a7a8a2285dcec7566ef4c99cfc2a742154"
+    },
+    {
+      "address": "0x53d0d2e0",
+      "value": "0x50b70100",
+      "size": 4,
+      "sha256": "1632337ee03911668f9c5468cba62a6815ced5449b6766186d7e6203d9a82627"
+    }
+  ],
+  "literal_references": [
+    {
+      "site": "0x52fee568",
+      "address": "0x52fee5a0",
+      "value": "0x53910f08"
+    },
+    {
+      "site": "0x52ff52d4",
+      "address": "0x52ff5300",
+      "value": "0x53912568"
+    },
+    {
+      "site": "0x530f19b4",
+      "address": "0x530f19ec",
+      "value": "0x53a6b130"
+    },
+    {
+      "site": "0x53280034",
+      "address": "0x53280078",
+      "value": "0x1d021000"
+    },
+    {
+      "site": "0x532800b8",
+      "address": "0x532800f4",
+      "value": "0x1d021000"
+    },
+    {
+      "site": "0x53315018",
+      "address": "0x53315170",
+      "value": "0x53873bd0"
+    }
+  ],
+  "conditional_bindings": [
+    {
+      "label": "Initialize selector 10",
+      "callsite": "0x53314a78",
+      "table_slot": "0x53314aa8",
+      "target": "0x53314dc8",
+      "instruction": "ldrls",
+      "condition": "Unsigned selector r1=10 on the SystemControl Initialize function at 0x53314a60."
+    },
+    {
+      "label": "FwPartition lock",
+      "callsite": "0x52ff5bb8",
+      "table_slot": "0x53cb16a4",
+      "target": "0x532971e4",
+      "instruction": "bx",
+      "condition": "FwPartition+8 is the initialized Emmc (registry ID 0x18d) with vptr 0x53cb1638, and its mutex was initialized."
+    },
+    {
+      "label": "FwPartition unlock",
+      "callsite": "0x52ff5bc8",
+      "table_slot": "0x53cb16a8",
+      "target": "0x532971f8",
+      "instruction": "bx",
+      "condition": "FwPartition+8 is the initialized Emmc (registry ID 0x18d) with vptr 0x53cb1638, and its mutex was initialized."
+    },
+    {
+      "label": "Driver power entry",
+      "callsite": "0x53280074",
+      "table_slot": "0x53cb16ac",
+      "target": "0x53297408",
+      "instruction": "bx",
+      "condition": "The driver factory is the initialized 0x547be068 singleton and its +0xc Emmc pointer and vptr remain as published."
+    },
+    {
+      "label": "Driver power exit",
+      "callsite": "0x53280098",
+      "table_slot": "0x53cb16b0",
+      "target": "0x53297f38",
+      "instruction": "blx",
+      "condition": "The driver factory is the initialized 0x547be068 singleton and its +0xc Emmc pointer and vptr remain as published."
+    },
+    {
+      "label": "Boot1 write uses same Emmc lock",
+      "callsite": "0x52ff5afc",
+      "table_slot": "0x53cb16a4",
+      "target": "0x532971e4",
+      "instruction": "blx",
+      "condition": "FwPartition+8 is the initialized Emmc (registry ID 0x18d) with vptr 0x53cb1638, and its mutex was initialized."
+    },
+    {
+      "label": "Boot1 write uses same Emmc unlock",
+      "callsite": "0x52ff5b4c",
+      "table_slot": "0x53cb16a8",
+      "target": "0x532971f8",
+      "instruction": "blx",
+      "condition": "FwPartition+8 is the initialized Emmc (registry ID 0x18d) with vptr 0x53cb1638, and its mutex was initialized."
+    }
+  ],
+  "alias_scan": {
+    "start": "0x53313500",
+    "end": "0x53319710",
+    "scope": "Immediate ARM word LDR/STR with positive 0x48 offset",
+    "matches": [
+      {
+        "site": "0x53314e14",
+        "mnemonic": "str",
+        "operands": "r0, [r4, #0x48]"
+      },
+      {
+        "site": "0x533150d0",
+        "mnemonic": "str",
+        "operands": "r3, [r4, #0x48]"
+      },
+      {
+        "site": "0x53317930",
+        "mnemonic": "ldr",
+        "operands": "r0, [r0, #0x48]"
+      },
+      {
+        "site": "0x53317950",
+        "mnemonic": "ldr",
+        "operands": "r0, [r4, #0x48]"
+      },
+      {
+        "site": "0x53317e0c",
+        "mnemonic": "ldr",
+        "operands": "r0, [r0, #0x48]"
+      },
+      {
+        "site": "0x53317e2c",
+        "mnemonic": "ldr",
+        "operands": "r0, [r4, #0x48]"
+      }
+    ]
+  },
+  "limitations": [
+    "SystemControl retains a pointer. Manager reinitialization and finalization can change manager+8, but no all-order lifetime or runtime stale-pointer conclusion is made.",
+    "Immediate [Rn,#0x48] word-load/store scan covers the named code window. Computed aliases, arbitrary indirect branches and other tasks or cores are outside this scan.",
+    "The observed FwPartition pointer reaches Emmc lock/unlock, not a partition table write. The proven +0x10 word stores target the separately allocated mutex. Power branches observed here update subsystem flags or clock state. The broader effects of external subsystem calls and hardware remain bounded.",
+    "FwPartition byte+0x10 nonzero producer and an actual CPU writer for slot2 record+4 remain unresolved. Prior whole-table read can receive external sector bytes, and actual media values remain unknown.",
+    "Genuine angr C is unmodified. The guard C outputs omit tail unlocks and the state dispatcher C omits external tail calls. ARM instructions and synthetic checks preserve those transfers."
+  ]
+}

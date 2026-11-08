@@ -1,0 +1,749 @@
+{
+  "passed": true,
+  "image_sha256": "342d2f35405e8daf1797dfe431d2e4aa70f4b52a2c242a29df48206672f1dfb4",
+  "cases": 12,
+  "cases_detail": [
+    {
+      "name": "constructor to Initialize selector 10",
+      "bank_input": 0,
+      "trace": [],
+      "writes": [
+        [
+          268439624,
+          4,
+          0
+        ],
+        [
+          268439706,
+          1,
+          0
+        ],
+        [
+          268439732,
+          4,
+          1405888796
+        ],
+        [
+          268439624,
+          4,
+          268443648
+        ]
+      ],
+      "stubs": [
+        {
+          "address": "0x52f3f764",
+          "behavior": "Return a synthetic SystemControl initialization dependency."
+        },
+        {
+          "address": "0x530eefc4",
+          "behavior": "Base task constructor skipped; derived SystemControl constructor executes."
+        },
+        {
+          "address": "0x530fdfc4",
+          "behavior": "Diagnostic call skipped."
+        },
+        {
+          "address": "0x53103a64",
+          "behavior": "Return a synthetic SystemControl initialization dependency."
+        },
+        {
+          "address": "0x53157868",
+          "behavior": "Return a synthetic SystemControl initialization dependency."
+        },
+        {
+          "address": "0x531592fc",
+          "behavior": "Return a synthetic SystemControl initialization dependency."
+        }
+      ],
+      "partition_object_preserved": true,
+      "slot2_table_preserved": true
+    },
+    {
+      "name": "guard A lock failure",
+      "bank_input": 1,
+      "trace": [
+        [
+          "lock",
+          161
+        ]
+      ],
+      "writes": [],
+      "stubs": [
+        {
+          "address": "0x525b7358",
+          "behavior": "Return synthetic kernel lock result for Emmc mutex, or 0 for AdjustManager."
+        },
+        {
+          "address": "0x530feb20",
+          "behavior": "Mutex diagnostic call skipped."
+        }
+      ],
+      "partition_object_preserved": true,
+      "slot2_table_preserved": true
+    },
+    {
+      "name": "guard A lock success",
+      "bank_input": 1,
+      "trace": [
+        [
+          "lock",
+          161
+        ],
+        [
+          "0x53272224"
+        ],
+        [
+          "0x52f5100c"
+        ],
+        [
+          "unlock",
+          161
+        ]
+      ],
+      "writes": [
+        [
+          268451856,
+          4,
+          1
+        ],
+        [
+          268456010,
+          1,
+          1
+        ],
+        [
+          268451856,
+          4,
+          0
+        ],
+        [
+          268451856,
+          4,
+          0
+        ]
+      ],
+      "stubs": [
+        {
+          "address": "0x525b7358",
+          "behavior": "Return synthetic kernel lock result for Emmc mutex, or 0 for AdjustManager."
+        },
+        {
+          "address": "0x525b7940",
+          "behavior": "Record simulated kernel unlock and return 0."
+        },
+        {
+          "address": "0x52f50f6c",
+          "behavior": "Record file-factory dependency lookup, returning synthetic object."
+        },
+        {
+          "address": "0x52f5100c",
+          "behavior": "Record file-factory driver exit as bounded external call."
+        },
+        {
+          "address": "0x52f590b4",
+          "behavior": "Return synthetic sibling subsystem object."
+        },
+        {
+          "address": "0x52f59158",
+          "behavior": "Record sibling subsystem exit."
+        },
+        {
+          "address": "0x52f97824",
+          "behavior": "Return synthetic sibling subsystem object."
+        },
+        {
+          "address": "0x52f97bd8",
+          "behavior": "Record sibling subsystem no-op."
+        },
+        {
+          "address": "0x530f19f0",
+          "behavior": "Synthetic mutex ownership check succeeds for the two selected handles."
+        },
+        {
+          "address": "0x530feb20",
+          "behavior": "Mutex diagnostic call skipped."
+        },
+        {
+          "address": "0x53272224",
+          "behavior": "Record power-management hardware entry; no actual hardware access."
+        }
+      ],
+      "partition_object_preserved": true,
+      "slot2_table_preserved": true
+    },
+    {
+      "name": "guard B first state gate rejects",
+      "bank_input": 1,
+      "trace": [
+        [
+          "lock",
+          161
+        ],
+        [
+          "unlock",
+          161
+        ]
+      ],
+      "writes": [
+        [
+          268451856,
+          4,
+          1
+        ],
+        [
+          268451856,
+          4,
+          0
+        ],
+        [
+          268451856,
+          4,
+          0
+        ]
+      ],
+      "stubs": [
+        {
+          "address": "0x525b7358",
+          "behavior": "Return synthetic kernel lock result for Emmc mutex, or 0 for AdjustManager."
+        },
+        {
+          "address": "0x525b7940",
+          "behavior": "Record simulated kernel unlock and return 0."
+        },
+        {
+          "address": "0x530f19f0",
+          "behavior": "Synthetic mutex ownership check succeeds for the two selected handles."
+        },
+        {
+          "address": "0x530feb20",
+          "behavior": "Mutex diagnostic call skipped."
+        }
+      ],
+      "partition_object_preserved": true,
+      "slot2_table_preserved": true
+    },
+    {
+      "name": "guard B state matches and adjustment idle",
+      "bank_input": 1,
+      "trace": [
+        [
+          "lock",
+          161
+        ],
+        [
+          "0x52f3f7ec"
+        ],
+        [
+          "lock",
+          162
+        ],
+        [
+          "unlock",
+          162
+        ],
+        [
+          "0x53272260"
+        ],
+        [
+          "unlock",
+          161
+        ]
+      ],
+      "writes": [
+        [
+          268451856,
+          4,
+          1
+        ],
+        [
+          268464188,
+          4,
+          1
+        ],
+        [
+          268464188,
+          4,
+          0
+        ],
+        [
+          268464188,
+          4,
+          0
+        ],
+        [
+          268456010,
+          1,
+          0
+        ],
+        [
+          268451856,
+          4,
+          0
+        ],
+        [
+          268451856,
+          4,
+          0
+        ]
+      ],
+      "stubs": [
+        {
+          "address": "0x525b7358",
+          "behavior": "Return synthetic kernel lock result for Emmc mutex, or 0 for AdjustManager."
+        },
+        {
+          "address": "0x525b7940",
+          "behavior": "Record simulated kernel unlock and return 0."
+        },
+        {
+          "address": "0x52f3f7ec",
+          "behavior": "Record file-factory driver entry as bounded external call."
+        },
+        {
+          "address": "0x530f19f0",
+          "behavior": "Synthetic mutex ownership check succeeds for the two selected handles."
+        },
+        {
+          "address": "0x530feb20",
+          "behavior": "Mutex diagnostic call skipped."
+        },
+        {
+          "address": "0x53272260",
+          "behavior": "Record power-management hardware exit; no actual hardware access."
+        }
+      ],
+      "partition_object_preserved": true,
+      "slot2_table_preserved": true
+    },
+    {
+      "name": "guard B state matches and adjustment busy",
+      "bank_input": 1,
+      "trace": [
+        [
+          "lock",
+          161
+        ],
+        [
+          "0x52f3f7ec"
+        ],
+        [
+          "lock",
+          162
+        ],
+        [
+          "unlock",
+          162
+        ],
+        [
+          "unlock",
+          161
+        ]
+      ],
+      "writes": [
+        [
+          268451856,
+          4,
+          1
+        ],
+        [
+          268464188,
+          4,
+          1
+        ],
+        [
+          268464188,
+          4,
+          0
+        ],
+        [
+          268464188,
+          4,
+          0
+        ],
+        [
+          268451856,
+          4,
+          0
+        ],
+        [
+          268451856,
+          4,
+          0
+        ]
+      ],
+      "stubs": [
+        {
+          "address": "0x525b7358",
+          "behavior": "Return synthetic kernel lock result for Emmc mutex, or 0 for AdjustManager."
+        },
+        {
+          "address": "0x525b7940",
+          "behavior": "Record simulated kernel unlock and return 0."
+        },
+        {
+          "address": "0x52f3f7ec",
+          "behavior": "Record file-factory driver entry as bounded external call."
+        },
+        {
+          "address": "0x530f19f0",
+          "behavior": "Synthetic mutex ownership check succeeds for the two selected handles."
+        },
+        {
+          "address": "0x530feb20",
+          "behavior": "Mutex diagnostic call skipped."
+        }
+      ],
+      "partition_object_preserved": true,
+      "slot2_table_preserved": true
+    },
+    {
+      "name": "power-save disable tracks requester after failed storage guard",
+      "bank_input": 1,
+      "trace": [
+        [
+          "0x53105564",
+          268455936,
+          0
+        ],
+        [
+          "lock",
+          161
+        ]
+      ],
+      "writes": [
+        [
+          268439732,
+          4,
+          1405889620
+        ],
+        [
+          268439706,
+          1,
+          10
+        ]
+      ],
+      "stubs": [
+        {
+          "address": "0x525b7358",
+          "behavior": "Return synthetic kernel lock result for Emmc mutex, or 0 for AdjustManager."
+        },
+        {
+          "address": "0x530feb20",
+          "behavior": "Mutex diagnostic call skipped."
+        },
+        {
+          "address": "0x53105564",
+          "behavior": "Record SystemControl power-management state notification."
+        }
+      ],
+      "partition_object_preserved": true,
+      "slot2_table_preserved": true
+    },
+    {
+      "name": "power-save enable with another requester still set",
+      "bank_input": 1,
+      "trace": [],
+      "writes": [
+        [
+          268439706,
+          1,
+          2
+        ]
+      ],
+      "stubs": [],
+      "partition_object_preserved": true,
+      "slot2_table_preserved": true
+    },
+    {
+      "name": "power-save enable releases last requester",
+      "bank_input": 1,
+      "trace": [
+        [
+          "0x53105c98"
+        ],
+        [
+          "0x53105678"
+        ],
+        [
+          "lock",
+          161
+        ],
+        [
+          "0x53105564",
+          268455936,
+          1
+        ]
+      ],
+      "writes": [
+        [
+          268439706,
+          1,
+          0
+        ],
+        [
+          268439732,
+          4,
+          1405888796
+        ]
+      ],
+      "stubs": [
+        {
+          "address": "0x525b7358",
+          "behavior": "Return synthetic kernel lock result for Emmc mutex, or 0 for AdjustManager."
+        },
+        {
+          "address": "0x530feb20",
+          "behavior": "Mutex diagnostic call skipped."
+        },
+        {
+          "address": "0x53105564",
+          "behavior": "Record SystemControl power-management state notification."
+        },
+        {
+          "address": "0x53105678",
+          "behavior": "Record SystemControl power-management prerequisite."
+        },
+        {
+          "address": "0x53105c98",
+          "behavior": "Record SystemControl power-management prerequisite."
+        }
+      ],
+      "partition_object_preserved": true,
+      "slot2_table_preserved": true
+    },
+    {
+      "name": "Emmc clock callback 1",
+      "bank_input": 1,
+      "trace": [
+        [
+          "lock",
+          161
+        ],
+        [
+          "0x531063b4",
+          268455936,
+          1
+        ],
+        [
+          "unlock",
+          161
+        ]
+      ],
+      "writes": [
+        [
+          268451856,
+          4,
+          1
+        ],
+        [
+          454099008,
+          4,
+          2779096485
+        ],
+        [
+          268447812,
+          1,
+          1
+        ],
+        [
+          268451856,
+          4,
+          0
+        ],
+        [
+          268451856,
+          4,
+          0
+        ]
+      ],
+      "stubs": [
+        {
+          "address": "0x5250074c",
+          "behavior": "Synthetic interrupt restore."
+        },
+        {
+          "address": "0x525007dc",
+          "behavior": "Synthetic clock register critical section entry."
+        },
+        {
+          "address": "0x5250082c",
+          "behavior": "Synthetic clock register critical section exit."
+        },
+        {
+          "address": "0x525b7358",
+          "behavior": "Return synthetic kernel lock result for Emmc mutex, or 0 for AdjustManager."
+        },
+        {
+          "address": "0x525b7940",
+          "behavior": "Record simulated kernel unlock and return 0."
+        },
+        {
+          "address": "0x530f19f0",
+          "behavior": "Synthetic mutex ownership check succeeds for the two selected handles."
+        },
+        {
+          "address": "0x530feb20",
+          "behavior": "Mutex diagnostic call skipped."
+        },
+        {
+          "address": "0x531063b4",
+          "behavior": "Record delay multiplier and skip timer loop."
+        }
+      ],
+      "partition_object_preserved": true,
+      "slot2_table_preserved": true
+    },
+    {
+      "name": "Emmc clock callback 2",
+      "bank_input": 1,
+      "trace": [
+        [
+          "lock",
+          161
+        ],
+        [
+          "0x531063b4",
+          268455936,
+          2
+        ],
+        [
+          "unlock",
+          161
+        ]
+      ],
+      "writes": [
+        [
+          268451856,
+          4,
+          1
+        ],
+        [
+          454099008,
+          4,
+          2779095461
+        ],
+        [
+          268447812,
+          1,
+          0
+        ],
+        [
+          268451856,
+          4,
+          0
+        ],
+        [
+          268451856,
+          4,
+          0
+        ]
+      ],
+      "stubs": [
+        {
+          "address": "0x5250074c",
+          "behavior": "Synthetic interrupt restore."
+        },
+        {
+          "address": "0x525007dc",
+          "behavior": "Synthetic clock register critical section entry."
+        },
+        {
+          "address": "0x5250082c",
+          "behavior": "Synthetic clock register critical section exit."
+        },
+        {
+          "address": "0x525b7358",
+          "behavior": "Return synthetic kernel lock result for Emmc mutex, or 0 for AdjustManager."
+        },
+        {
+          "address": "0x525b7940",
+          "behavior": "Record simulated kernel unlock and return 0."
+        },
+        {
+          "address": "0x530f19f0",
+          "behavior": "Synthetic mutex ownership check succeeds for the two selected handles."
+        },
+        {
+          "address": "0x530feb20",
+          "behavior": "Mutex diagnostic call skipped."
+        },
+        {
+          "address": "0x531063b4",
+          "behavior": "Record delay multiplier and skip timer loop."
+        }
+      ],
+      "partition_object_preserved": true,
+      "slot2_table_preserved": true
+    },
+    {
+      "name": "Emmc recursive lock leaves outer owner count",
+      "bank_input": 1,
+      "trace": [
+        [
+          "lock",
+          161
+        ],
+        [
+          "0x531063b4",
+          268455936,
+          1
+        ]
+      ],
+      "writes": [
+        [
+          268451856,
+          4,
+          2
+        ],
+        [
+          454099008,
+          4,
+          2779096485
+        ],
+        [
+          268447812,
+          1,
+          1
+        ],
+        [
+          268451856,
+          4,
+          1
+        ]
+      ],
+      "stubs": [
+        {
+          "address": "0x5250074c",
+          "behavior": "Synthetic interrupt restore."
+        },
+        {
+          "address": "0x525007dc",
+          "behavior": "Synthetic clock register critical section entry."
+        },
+        {
+          "address": "0x5250082c",
+          "behavior": "Synthetic clock register critical section exit."
+        },
+        {
+          "address": "0x525b7358",
+          "behavior": "Return synthetic kernel lock result for Emmc mutex, or 0 for AdjustManager."
+        },
+        {
+          "address": "0x530f19f0",
+          "behavior": "Synthetic mutex ownership check succeeds for the two selected handles."
+        },
+        {
+          "address": "0x530feb20",
+          "behavior": "Mutex diagnostic call skipped."
+        },
+        {
+          "address": "0x531063b4",
+          "behavior": "Record delay multiplier and skip timer loop."
+        }
+      ],
+      "partition_object_preserved": true,
+      "slot2_table_preserved": true
+    }
+  ],
+  "scope": "Original ARM with vtable bytes, synthetic objects, modeled kernel and dependency stubs. MMIO is ordinary mapped RAM. This validates CPU branches and store addresses. Bank inputs are synthetic and do not identify a real bank producer."
+}

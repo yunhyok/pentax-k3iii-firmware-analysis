@@ -1,0 +1,162 @@
+{
+  "schema": 1,
+  "source_url": "https://www.ricoh-imaging.co.jp/japan/products/oss/k-3-3/K3mkIII_220.tar.gz",
+  "archives": [
+    {
+      "name": "K3mkIII_220.tar.gz",
+      "sha256": "359fc5f319c4d0325bafd07b26195a41e51bfc851d381cbc5b7830178296f53c"
+    },
+    {
+      "name": "stubby-1.60.1.tar.gz",
+      "sha256": "2a68ee9b871bb27ab867aa8db92273976f1f2c9b040c0be180d897a63cd4b2eb"
+    },
+    {
+      "name": "linux-kernel-1.60.1.tar.gz",
+      "sha256": "c212c909c78fd8d1de4699ebfc405d9948afd6949e2660172c92d693df83e6c0"
+    }
+  ],
+  "sources": [
+    {
+      "archive": "stubby-1.60.1.tar.gz",
+      "member": "stubby-1.60.1/src/Makefile",
+      "sha256": "b8ef3c2dac82082f9d98268511dc992e6d68cf23a44cebd77c235809124d5da8",
+      "size": 4158,
+      "line_ranges": [
+        {
+          "first": 98,
+          "last": 101,
+          "sha256": "728c0d81d42ee7254bff7aed463e7e83a5f02bdcda511c0467c7bfef40b6a5ad"
+        }
+      ],
+      "interpretation": "CONFIG_M8M gates m8m-clk-io.o inclusion"
+    },
+    {
+      "archive": "stubby-1.60.1.tar.gz",
+      "member": "stubby-1.60.1/configs/config-sc2000-rtos.h",
+      "sha256": "7c6e0171f1d666ab1f4bfca366d3e6f6136af31fefbcf3d6ed706b79534be496",
+      "size": 11589,
+      "line_ranges": [
+        {
+          "first": 4,
+          "last": 6,
+          "sha256": "d38c1d0f5ce3c2e4c0527fe48f015b6a5060ab6223903eec6d1d5ddcfc35897b"
+        },
+        {
+          "first": 43,
+          "last": 49,
+          "sha256": "7bf5015e3ad05ac092d646eba584ef3c3e6666e73688b33b9409bb3a249b233a"
+        },
+        {
+          "first": 138,
+          "last": 142,
+          "sha256": "28a1a0c6cc46ba3a80e3519de336db0244721a883f0e7957ef261d28a2f650cf"
+        }
+      ],
+      "interpretation": "SC2000A / MLB01 defines; RTOS owns IPs; no active CONFIG_M8M define in this configuration file"
+    },
+    {
+      "archive": "stubby-1.60.1.tar.gz",
+      "member": "stubby-1.60.1/src/m8m-clk-io.c",
+      "sha256": "fb35c17f88159bdd402a329009f1591311c5d5cb920c656cf4bfd8e59dcd93d7",
+      "size": 5677,
+      "line_ranges": [
+        {
+          "first": 160,
+          "last": 165,
+          "sha256": "b02c6e7b3a3b670e9a00d380dd20ec85e095ae4deb48df1dfdb2da9befb83628"
+        }
+      ],
+      "interpretation": "M8M-specific GPV and SRAM-to-zero writes, not evidence of the current M0 alias"
+    },
+    {
+      "archive": "stubby-1.60.1.tar.gz",
+      "member": "stubby-1.60.1/src/boot.S",
+      "sha256": "03ba693415d3144ab39009308f5aaccf50aa6a40526caad0e9ecf5c219e9f7b3",
+      "size": 16069,
+      "line_ranges": [
+        {
+          "first": 90,
+          "last": 97,
+          "sha256": "917c9195c195de8c898f59a8fd20aa176525281cb154fe8ccb6dca7a5b801855"
+        },
+        {
+          "first": 460,
+          "last": 461,
+          "sha256": "d9343efe5bd0ffd8d0b92268a78c2627ff7b12e039fa0154c607433ee8a2deaf"
+        },
+        {
+          "first": 485,
+          "last": 489,
+          "sha256": "3ab57006df89baef8139e245bfcfb1dad7117982da4477ab03611abeba4605f6"
+        }
+      ],
+      "interpretation": "GPV peripheral bit names; region-control write excluded when CONFIG_RTOS_OWNS_IPS is defined"
+    },
+    {
+      "archive": "linux-kernel-1.60.1.tar.gz",
+      "member": "linux-kernel-1.60.1/arch/arm/mach-milbeaut/pm_domains.c",
+      "sha256": "8ed5aa4b72d161c375c74a39a793530fc040e3e24f6a7e119e7134bdd7da2d84",
+      "size": 10895,
+      "line_ranges": [
+        {
+          "first": 300,
+          "last": 323,
+          "sha256": "30667161342b86c863f7831a5e7521649a4cd0e351556a68469b33d023484b4b"
+        }
+      ],
+      "interpretation": "m8m-pd compatible node must exist before the INTEG_NIC remap write"
+    },
+    {
+      "archive": "linux-kernel-1.60.1.tar.gz",
+      "member": "linux-kernel-1.60.1/arch/arm/boot/dts/sc2000.dtsi",
+      "sha256": "cddd1bcc0745449f0be2aebfb5c1671d1e2680df474c06a0ec4b66dd87386fbb",
+      "size": 27007,
+      "line_ranges": [
+        {
+          "first": 1,
+          "last": 16,
+          "sha256": "987d02e7291bce751c5b45c105bfb448d2cc52243026e7e9f58675393ccc5f62"
+        }
+      ],
+      "interpretation": "SC2000 source comparison; current packaged DTB independently checked"
+    }
+  ],
+  "dtb": {
+    "decoded_offset": "0x1f4d55c",
+    "linux_payload_offset": "0x2e3be0",
+    "size": 32694,
+    "sha256": "b7968478e48fd492678512ef0efaee63f0fb298ad5d3781bc9975994c0d3b70b",
+    "root_properties": [
+      {
+        "name": "compatible",
+        "decoded_offset": "0x1f4d5c8",
+        "size": 40,
+        "strings": [
+          "milbeaut,sc2000a",
+          "socionext,milbeaut-evb"
+        ],
+        "sha256": "047df8fd48f6800af31c852a26410da13157a3a225b0d5343b14c96c28f191da"
+      },
+      {
+        "name": "model",
+        "decoded_offset": "0x1f4d60c",
+        "size": 41,
+        "strings": [
+          "Socionext SC2000A EVB w/ RTOS and NETSEC"
+        ],
+        "sha256": "0990c8baacc963af2dfb003919f46e023f3e7e0592615b7850a6b2ef2280ea52"
+      }
+    ],
+    "absent_nul_terminated_strings": [
+      "socionext,m8m-pd",
+      "socionext,smp-trampoline"
+    ]
+  },
+  "conclusions": {
+    "current_sram_alias_verified": false,
+    "sc2000_config_defines_m8m": false,
+    "packaged_dtb_has_m8m_pd_compatible": false,
+    "runtime_dtb_or_bootloader_modification_excluded": false
+  },
+  "scope": "Static source/configuration guards and packaged DTB only. No firmware compile, execution, runtime tree capture, hardware register semantics, Boot ROM authentication or physical SRAM alias proof."
+}
