@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>K-3 Mark III 색 모드의 행렬과 감마 경계</title>
+<style>
+:root{color-scheme:light dark;--bg:#f7f8fa;--paper:#fff;--ink:#182332;--muted:#48596b;--line:#d2dbe5;--accent:#124b8e;--soft:#edf3fa}
+@media(prefers-color-scheme:dark){:root{--bg:#111821;--paper:#18222d;--ink:#e8edf4;--muted:#b4c2d2;--line:#405369;--accent:#98c8ff;--soft:#223348}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.75 system-ui,"Malgun Gothic",sans-serif;word-break:keep-all;overflow-wrap:anywhere}
+header,main{max-width:1060px;margin:auto;padding:clamp(18px,4vw,44px)}main{background:var(--paper);border:1px solid var(--line)}
+h1{font-size:clamp(1.8rem,5vw,2.8rem);line-height:1.25}h2{font-size:1.4rem;margin-top:2.4rem}h2:first-child{margin-top:0}
+small,figcaption{color:var(--muted)}a{color:var(--accent);text-underline-offset:.18em}nav a{display:inline-block;margin:4px 16px 4px 0}
+figure{margin:1.5rem 0}.branches{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:.6rem 0}
+.branches div{padding:14px 18px;background:var(--soft);border:1px solid var(--line);border-radius:5px}.branches strong{display:block}
+.table-scroll{overflow-x:auto;margin:1.25rem 0}table{border-collapse:collapse;width:100%;min-width:32rem;font-size:.92rem}
+th,td{padding:.55em .75em;border:1px solid var(--line);text-align:left;vertical-align:top}thead th{background:var(--soft)}caption{text-align:left;margin-bottom:.4rem;color:var(--muted)}
+pre{background:var(--soft);padding:16px;overflow:auto;font-size:.84rem}code{font-family:ui-monospace,Consolas,monospace}
+@media(max-width:34rem){.branches{grid-template-columns:1fr}}
+@media print{header,main{max-width:none;padding:12pt}.table-scroll{overflow:visible}table{min-width:0}figure,table{break-inside:avoid}}
+</style>
+</head>
+<body>
+<header>
+<small>2026-11-08 · PENTAX K-3 MARK III 2.20 · 원본 ARM 격리 실행</small>
+<h1>색 모드에서 행렬과 감마가 달라지는 조건</h1>
+<p>네 모드에서 채도와 대비를 하나씩 바꿔 설정 출력을 비교했다. 채도를 바꾸면 준비된 색 행렬이 달라졌고, 대비를 바꾸면 일반 감마의 곡선이 달라졌다. 같은 제어값에서 Natural과 Portrait는 감마 곡선이 같아도 행렬이 달랐다.</p>
+<nav aria-label="관련 보고서"><a href="research-program.html">세 기종 연구</a><a href="color-algorithms.html">색 처리 수식</a><a href="lightroom-bridge.html">DCP 구조</a><a href="color-mode-boundaries.json">재현 결과 JSON</a></nav>
+</header>
+<main>
+<h2>한 번에 한 값을 바꿔 비교</h2>
+<p>Natural·Portrait·Bright·Reversal Film, 채도 인덱스 4/5, 대비 필드 4/6을 조합했다. 네 모드는 공통 행렬과 채도 테이블을 공유한다. Natural의 모드 피연산자는 Q13 단위행렬이다. 원본 enum 매핑과 세 프로젝트 행의 디스크립터 포인터를 확인한 뒤 두 함수에 합성 설정을 각각 넘겼다. <a href="color-resources.json">모드별 리소스</a> · <a href="color-mode-boundaries.json">16조건과 범위 해시</a></p>
+<figure aria-labelledby="branches-caption">
+<figcaption id="branches-caption">합성 설정에서 각각 실행한 두 함수와 비교한 출력</figcaption>
+<div class="branches">
+<div><strong>색 행렬 준비</strong><code>0x5312ce30</code><br>공통·모드·채도 피연산자 → 중간 Q13과 준비 계수 9항</div>
+<div><strong>감마 선택과 생성</strong><code>0x53136728</code><br>일반 또는 Reversal 분기와 대비 제어 → 256항 u16 곡선</div>
+</div>
+</figure>
+<div class="table-scroll" role="region" tabindex="0" aria-label="한 변수씩 바꾼 결과">
+<table>
+<caption>달라진 항목 수. 코드 차이는 각 함수의 내부 단위다.</caption>
+<thead><tr><th scope="col">바꾼 값</th><th scope="col">준비된 행렬</th><th scope="col">감마 곡선</th></tr></thead>
+<tbody>
+<tr><th scope="row">채도 4 → 5</th><td>Natural·Portrait·Bright 9/9항, Reversal Film 8/9항</td><td>네 모드 모두 0/256항</td></tr>
+<tr><th scope="row">대비 4 → 6</th><td>네 모드 모두 0/9항</td><td>일반 감마 세 모드 각각 244/256항, Reversal Film 0/256항</td></tr>
+<tr><th scope="row">Natural → Portrait / Bright</th><td>각각 9/9항</td><td>두 비교 모두 0/256항</td></tr>
+<tr><th scope="row">Natural → Reversal Film</th><td>9/9항</td><td>250/256항</td></tr>
+</tbody>
+</table>
+</div>
+<p>단일 제어 변경은 다른 값을 4에 두고 비교했다. 모드끼리는 채도와 대비를 모두 4로 고정했다. Reversal Film은 별도 감마 생성기를 호출했고, 이번 대비 변경에 대한 곡선 차이는 없었다. 이 비교의 출력은 설정 계수와 곡선이다. 실기에서의 톤 적용, 픽셀 처리 순서와 JPEG 색은 별도 확인이 필요하다. <a href="color-mode-boundaries.json">비교별 차이와 최대 코드 편차</a> · <a href="color-algorithms.html">행렬·감마·ToneControl 범위</a></p>
+
+<h2>원본 코드에서 확인한 범위</h2>
+<p>행렬 준비 16회는 기존 검증의 출력 해시와 모두 일치했다. 기존 러너에 등록된 18바이트 복사 대체 함수와 singleton 초기화 대체 함수는 모두 호출 횟수가 0회였다. 감마는 일반 생성기 12회, Reversal 생성기 4회와 원본 32바이트 NEON 복사 16회를 실행했다. 같은 상태에서 다시 호출한 16회는 곡선을 재사용했다. Natural 기준 곡선은 기존 생성기 직접 실행과 일치했다. <a href="color-math-checks.json">기존 행렬 검증</a> · <a href="gamma-tone-checks.json">기존 감마 검증</a> · <a href="color-mode-boundaries.json">호출 수와 원본 코드 해시</a></p>
+<p>모드에 따라 감마 분기 플래그를 설정하고, 출력 색공간 파라미터와 나머지 제어값은 고정했다. 두 함수는 별도로 실행했다. UI에서 합성 블록과 같은 값이 만들어지는지, 실제 노출이나 다른 제어값에서도 같은 차이가 나타나는지는 남아 있다. <a href="../tools/check_color_mode_boundaries.py">고정 입력과 검사 코드</a></p>
+
+<h2>DNG 카메라 보정과 세 기종의 적용 범위</h2>
+<p>기존 Adobe 구조 검사에서는 K-3 III Camera Natural과 Camera Portrait의 <code>ColorMatrix1/2</code>, LookTable, ToneCurve가 같고 <code>ForwardMatrix1/2</code>는 각각 달랐다. DNG의 <code>ColorMatrix</code>는 XYZ를 기준 카메라 채널로 보내며, <code>ForwardMatrix</code>는 화이트밸런스가 적용된 카메라 채널을 XYZ D50으로 보낸다. 이번에 비교한 펌웨어 행렬의 입력 원색과 전달함수는 미확인이다. <a href="lightroom-bridge.html">DNG 변환과 Adobe 태그 대조</a></p>
+<div class="table-scroll" role="region" tabindex="0" aria-label="기종별 근거와 적용 범위">
+<table>
+<thead><tr><th scope="col">기종</th><th scope="col">프로파일 시험에 사용할 근거</th></tr></thead>
+<tbody>
+<tr><th scope="row">K-3 Mark III</th><td>같은 합성 대비에서 Natural과 Portrait는 감마 곡선이 같았고 행렬은 달랐다. 같은 RAW를 모드별로 카메라에서 현상해 실제 출력 차이를 확인할 수 있다. <a href="color-mode-boundaries.json">설정 출력 비교</a></td></tr>
+<tr><th scope="row">K-3 II</th><td>Reversal Film은 이 기종의 selector 6에서 별도 톤 생성기를 사용한다. #1376 Natural 표본은 기존 A·D65 보정을 고정하고 톤 후보를 비교할 첫 자료다. <a href="https://github.com/yunhyok/pentax-k3ii-firmware-analysis/blob/89403125b108aea9070f0b91d5c4aca6b1ae0a39/analysis/pipeline-analysis.html#selector">고정 톤 경로</a> · <a href="color-comparison-protocol.html">#1376 색차 절차</a></td></tr>
+<tr><th scope="row">Q7</th><td>색 행렬 설정과 Cross Process 채널별 감마 합성 근거가 있다. 별도로 추적한 77워드 LUT는 센서 통계용이며 JPEG에 적용되는 곡선은 미확정이다. <a href="https://github.com/yunhyok/pentax-q7-firmware-analysis/blob/2f850e7f1ef5bd4a4024574f66b035c359bc133d/deep-report.html#color">고정 색 연산</a> · <a href="https://github.com/yunhyok/pentax-q7-firmware-analysis/blob/2f850e7f1ef5bd4a4024574f66b035c359bc133d/routing-report.html#gamma">고정 감마 경계</a></td></tr>
+</tbody>
+</table>
+</div>
+<p>기종별 DNG 보정과 내장 JPEG 표본은 별도 보고서에 기록했다. 모드에 따라 카메라가 기록하는 DNG 보정의 변화는 이 실행에서 시험하지 않았다. 같은 RAW에서 화이트밸런스·노출·출력 색공간을 고정하고 채도와 대비를 각각 바꾼 카메라 출력을 확보해야 설정 차이가 픽셀에 어떻게 나타나는지 비교할 수 있다. Lightroom 적용과 색차는 아직 측정하지 않았다. <a href="raw-test-inputs.html">세 기종 RAW 표본</a> · <a href="lightroom-bridge.html">동일 RAW의 모드별 현상</a></p>
+
+<h2>재현</h2>
+<p>Python 3.11 이상과 Unicorn 2.1.4를 사용한다. 입력은 K-3 Mark III 2.20 전체 해제 BIN이며 도구는 파일 크기와 SHA-256을 확인한다. 공개 기준 JSON 네 개는 LF로 정규화한 SHA-256을 확인한다. 결과 경로는 새 파일이어야 한다. <a href="../tools/check_color_mode_boundaries.py">재현 도구</a></p>
+<pre><code>python -B tools/check_color_mode_boundaries.py decoded.bin --output color-mode-boundaries-replay.json</code></pre>
+<p>결과에는 코드 범위와 출력 해시, 변경 항목 수만 기록한다. 재현에는 RAW, DCP, Lightroom이 필요 없다. <a href="color-mode-boundaries.json">고정 결과와 한계</a></p>
+</main>
+</body>
+</html>

@@ -46,7 +46,9 @@ class VerifierGuards(unittest.TestCase):
                  ('verify_af_commands.py', 1), ('verify_af_drive_selection.py', 1),
                  ('verify_af_capability.py', 1), ('verify_af_request_consumer.py', 1),
                  ('verify_colorspace_ui.py', 1), ('verify_colorspace_ui_input.py', 1),
-                 ('verify_update_file_loader.py', 1), ('verify_update_allocator.py', 1)]
+                 ('verify_update_file_loader.py', 1), ('verify_update_allocator.py', 1),
+                 ('verify_update_file_interface.py', 1), ('verify_update_buffer_lifetime.py', 1),
+                 ('tools/check_color_mode_boundaries.py', 1)]
         with tempfile.TemporaryDirectory() as directory:
             source = Path(directory)/'source.bin';source.write_bytes(b'input sentinel')
             alias = Path(directory)/'hardlink.bin';os.link(source, alias)
@@ -56,7 +58,7 @@ class VerifierGuards(unittest.TestCase):
                         result = subprocess.run([sys.executable, str(ROOT/tool), *([str(source)]*nargs),
                                                  '--output', str(output)], capture_output=True, text=True)
                         self.assertNotEqual(result.returncode, 0)
-                        self.assertRegex(result.stderr, '(?i)report.*exists')
+                        self.assertRegex(result.stderr, '(?i)(?:report|output).*exists')
                         self.assertEqual(source.read_bytes(), b'input sentinel')
                         self.assertEqual(alias.read_bytes(), b'input sentinel')
 
@@ -64,11 +66,13 @@ class VerifierGuards(unittest.TestCase):
         for tool in ('verify_icon_resources.py', 'verify_af_commands.py', 'verify_af_drive_selection.py',
                      'verify_af_capability.py', 'verify_af_request_consumer.py', 'verify_colorspace_ui.py',
                      'verify_colorspace_ui_input.py', 'verify_update_file_loader.py',
-                     'verify_update_allocator.py', 'tools/verify_qflag_scope.py'):
+                     'verify_update_allocator.py', 'tools/verify_qflag_scope.py',
+                     'verify_update_file_interface.py', 'verify_update_buffer_lifetime.py',
+                     'tools/check_color_mode_boundaries.py'):
             with self.subTest(tool=tool):
                 result = subprocess.run([sys.executable, '-O', str(ROOT/tool), '--help'], capture_output=True, text=True)
                 self.assertNotEqual(result.returncode, 0)
-                self.assertIn('Verification requires assertions', result.stderr)
+                self.assertIn('requires assertions', result.stderr)
 
 
 if __name__ == '__main__':

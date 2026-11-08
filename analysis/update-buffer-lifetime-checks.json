@@ -1,0 +1,900 @@
+{
+  "passed": true,
+  "image_sha256": "342d2f35405e8daf1797dfe431d2e4aa70f4b52a2c242a29df48206672f1dfb4",
+  "cases": 33,
+  "groups": {
+    "allocation-failure-assertion": 1,
+    "configured-image1-membership": 5,
+    "decoder-lifetime": 7,
+    "input-cleanup": 10,
+    "kind2-connected-validation": 5,
+    "pool-membership-end-exclusive": 5
+  },
+  "scope": "Original ARM buffer ownership with synthetic decoder, allocation and OS release.\nThe input, decoder output and pool metadata occupy small mapped fixtures only.\nNo storage, device, decoder hardware, OS or real large allocations execute.\nAssertions stop on false unless a case explicitly models a returning assertion;\nthat continuation does not establish the camera's fatal-error policy.\n",
+  "stubs": {
+    "0x30000100": "returns a mapped sentinel, records requested size/alignment; no allocation",
+    "0x53100d84": "returns synthetic cache object",
+    "0x53100d90": "cache operation captures pointer/size only",
+    "0x53100e00": "cache completion captures pointer/size only",
+    "0x53102ce8": "returns synthetic decoder context",
+    "0x530fa6b4": "supplies chosen decoder result/length and small authored output bytes; no hardware or codec execution",
+    "0x530fdfc4": "records assertion; false stops unless explicitly configured to return",
+    "0x530feb20": "records assertion; false stops unless explicitly configured to return",
+    "0x530fced4": "records diagnostic only",
+    "0x52ff0b50": "subcomponent validation returns synthetic zero",
+    "0x52ff1248": "subcomponent validation returns synthetic zero",
+    "0x530f1a68": "synthetic mutex result",
+    "0x530f1bbc": "records mutex release",
+    "0x530ef540": "captures pool debug removal only",
+    "0x525b75e0": "records pool handle/raw pointer, returns chosen OS release status",
+    "0x52ff31c4": "component5 reset boundary captured; singleton and resource-slot query not executed"
+  },
+  "ranges": [
+    {
+      "start": "0x52fefb84",
+      "end": "0x52fefd08",
+      "sha256": "03a3516b0511cceee6a01ed9059f875d422fda3524b3df4ea5d1e87251d9d124"
+    },
+    {
+      "start": "0x52ff2dec",
+      "end": "0x52ff2f1c",
+      "sha256": "e79ddc55e68c53773ad707266f5110c05f5d4c756d39d8d66831040b36536c9c"
+    },
+    {
+      "start": "0x52ff4b0c",
+      "end": "0x52ff4b24",
+      "sha256": "50f3b025c0b4749c8d41845e198c484fd73cc3454ddbeb8eff91b9c431d36724"
+    },
+    {
+      "start": "0x52ff4c44",
+      "end": "0x52ff5194",
+      "sha256": "d2b8c5b9185f549e5ba968c1f04c947a28d3b89fa1f491ff0cc53d58945fc903"
+    },
+    {
+      "start": "0x52ff1a18",
+      "end": "0x52ff1a44",
+      "sha256": "cc8c3ed2d6849d85a3f4d3b6959e5e8aeb614cb36a510f19e81d3a553cdae401"
+    },
+    {
+      "start": "0x52ff0934",
+      "end": "0x52ff094c",
+      "sha256": "6906f5366d8b4a020025664d2629b4e8c40fcfee7c2f3196dedd565e9ad1bfef"
+    },
+    {
+      "start": "0x52ff109c",
+      "end": "0x52ff10b4",
+      "sha256": "e8fbe1ffb4a4f33cb31e695a477d27bde98290a617711b9f6771eafd7b840be0"
+    },
+    {
+      "start": "0x52feec18",
+      "end": "0x52feecf8",
+      "sha256": "ae02a8b9a8a04cd2437215006b8a60630a45ac71d36a7b9a7fd026d851b6764c"
+    },
+    {
+      "start": "0x52ff622c",
+      "end": "0x52ff62fc",
+      "sha256": "cabfb232cd7fd21ec9ed6f76030ca4d421b0f236804de65505764fac3c56cc37"
+    },
+    {
+      "start": "0x530efb60",
+      "end": "0x530efb8c",
+      "sha256": "1af88fa28c5fe2371c42d8f401fdac309ade12c90f7942ab8747c897db6b54b6"
+    },
+    {
+      "start": "0x530efee8",
+      "end": "0x530f0080",
+      "sha256": "3e18207b50ad1e06944adb47eadd35297a0a4ddfa6f0daf765275d6600ab00e9"
+    },
+    {
+      "start": "0x530ef2d4",
+      "end": "0x530ef2dc",
+      "sha256": "53361254b393ca67eca38ce64e1cfa81f57842d2babeb48e96bb89ca960207d2"
+    }
+  ],
+  "results": [
+    {
+      "group": "decoder-lifetime",
+      "inputs": {
+        "case": "balanced"
+      },
+      "observed": {
+        "ret": 1,
+        "state_input": 1850740736,
+        "state_kind": 2,
+        "state_path": 1164378112,
+        "state_length": 256,
+        "validator_input": 1850740736,
+        "validator_output": 1850748928,
+        "validator_length": 16,
+        "context_output": 1850757120,
+        "cpu_output": 1850757120,
+        "os_releases": [],
+        "stopped_assert": false,
+        "component5_resets": 0
+      },
+      "result_sha256": "dc4db63d7e1ae51f64e792306e8d327e3181ee636683792fb452ce6539a6afd8"
+    },
+    {
+      "group": "decoder-lifetime",
+      "inputs": {
+        "case": "decoder-failure"
+      },
+      "observed": {
+        "ret": 0,
+        "state_input": 1850740736,
+        "state_kind": 2,
+        "state_path": 1164378112,
+        "state_length": 256,
+        "validator_input": 1850740736,
+        "validator_output": 1850757120,
+        "validator_length": 85,
+        "context_output": 1850757120,
+        "cpu_output": 1850757120,
+        "os_releases": [
+          [
+            4097,
+            1850748864
+          ]
+        ],
+        "stopped_assert": false,
+        "component5_resets": 0
+      },
+      "result_sha256": "02280cd5e4b34e538ebcd2a3b9bbd41a165a94e28433ccabc044e3498e0de908"
+    },
+    {
+      "group": "decoder-lifetime",
+      "inputs": {
+        "case": "length-short"
+      },
+      "observed": {
+        "ret": 0,
+        "state_input": 1850740736,
+        "state_kind": 2,
+        "state_path": 1164378112,
+        "state_length": 256,
+        "validator_input": 1850740736,
+        "validator_output": 1850757120,
+        "validator_length": 85,
+        "context_output": 1850757120,
+        "cpu_output": 1850757120,
+        "os_releases": [
+          [
+            4097,
+            1850748864
+          ]
+        ],
+        "stopped_assert": false,
+        "component5_resets": 0
+      },
+      "result_sha256": "05eff0d360e8a0f47b1d8b7f577b251df759365737b2130fe34bf04d978de90f"
+    },
+    {
+      "group": "decoder-lifetime",
+      "inputs": {
+        "case": "length-long"
+      },
+      "observed": {
+        "ret": 0,
+        "state_input": 1850740736,
+        "state_kind": 2,
+        "state_path": 1164378112,
+        "state_length": 256,
+        "validator_input": 1850740736,
+        "validator_output": 1850757120,
+        "validator_length": 85,
+        "context_output": 1850757120,
+        "cpu_output": 1850757120,
+        "os_releases": [
+          [
+            4097,
+            1850748864
+          ]
+        ],
+        "stopped_assert": false,
+        "component5_resets": 0
+      },
+      "result_sha256": "30fb611f439166eb88d1ba3c44fbb072195114082915a75e757585e70c6dd038"
+    },
+    {
+      "group": "decoder-lifetime",
+      "inputs": {
+        "case": "checksum-failure"
+      },
+      "observed": {
+        "ret": 0,
+        "state_input": 1850740736,
+        "state_kind": 2,
+        "state_path": 1164378112,
+        "state_length": 256,
+        "validator_input": 1850740736,
+        "validator_output": 1850748928,
+        "validator_length": 16,
+        "context_output": 1850757120,
+        "cpu_output": 1850757120,
+        "os_releases": [],
+        "stopped_assert": false,
+        "component5_resets": 0
+      },
+      "result_sha256": "7f329fd5f2a8253ea5199744a44052767c819252cbda2f93275e7fa68c3d0286"
+    },
+    {
+      "group": "decoder-lifetime",
+      "inputs": {
+        "case": "checksum-sentinel-zero"
+      },
+      "observed": {
+        "ret": 1,
+        "state_input": 1850740736,
+        "state_kind": 2,
+        "state_path": 1164378112,
+        "state_length": 256,
+        "validator_input": 1850740736,
+        "validator_output": 1850748928,
+        "validator_length": 16,
+        "context_output": 1850757120,
+        "cpu_output": 1850757120,
+        "os_releases": [],
+        "stopped_assert": false,
+        "component5_resets": 0
+      },
+      "result_sha256": "7a952514a757388de36e331859485027c9502b4cfb43405109445ad083af7da2"
+    },
+    {
+      "group": "decoder-lifetime",
+      "inputs": {
+        "case": "checksum-sentinel-ones"
+      },
+      "observed": {
+        "ret": 1,
+        "state_input": 1850740736,
+        "state_kind": 2,
+        "state_path": 1164378112,
+        "state_length": 256,
+        "validator_input": 1850740736,
+        "validator_output": 1850748928,
+        "validator_length": 16,
+        "context_output": 1850757120,
+        "cpu_output": 1850757120,
+        "os_releases": [],
+        "stopped_assert": false,
+        "component5_resets": 0
+      },
+      "result_sha256": "5875a91aea766c2d6b508d794b07e04dd8d15932c95bc745a94718e9a0228112"
+    },
+    {
+      "group": "allocation-failure-assertion",
+      "inputs": {},
+      "observed": {
+        "ret": 0,
+        "state_input": 1850740736,
+        "state_kind": 2,
+        "state_path": 1164378112,
+        "state_length": 256,
+        "validator_input": 1850740736,
+        "validator_output": 1850757120,
+        "validator_length": 85,
+        "context_output": 1850757120,
+        "cpu_output": 1850757120,
+        "os_releases": [],
+        "stopped_assert": true,
+        "component5_resets": 0
+      },
+      "result_sha256": "71475f4c26d30415830d5049019b4462dcff3c668b36c6ad8d8adffa104da949"
+    },
+    {
+      "group": "kind2-connected-validation",
+      "inputs": {
+        "invalid": null
+      },
+      "observed": {
+        "ret": 1,
+        "state_input": 1850740736,
+        "state_kind": 2,
+        "state_path": 1164378112,
+        "state_length": 256,
+        "validator_input": 1850740736,
+        "validator_output": 1850748928,
+        "validator_length": 32,
+        "context_output": 1850748928,
+        "cpu_output": 1850748928,
+        "os_releases": [],
+        "stopped_assert": false,
+        "component5_resets": 0
+      },
+      "result_sha256": "22dba19a391b7ce79c24bc6b4ef04f35bd766443192ff35c9819f68fa13aa35f"
+    },
+    {
+      "group": "kind2-connected-validation",
+      "inputs": {
+        "invalid": "project"
+      },
+      "observed": {
+        "ret": 0,
+        "state_input": 1850740736,
+        "state_kind": 2,
+        "state_path": 1164378112,
+        "state_length": 256,
+        "validator_input": 1850740736,
+        "validator_output": 1850757120,
+        "validator_length": 85,
+        "context_output": 1850757120,
+        "cpu_output": 1850757120,
+        "os_releases": [],
+        "stopped_assert": false,
+        "component5_resets": 0
+      },
+      "result_sha256": "4f934f83114202a2b2d77897c3ee9e54288c988f6876a32c9a8badd123a32914"
+    },
+    {
+      "group": "kind2-connected-validation",
+      "inputs": {
+        "invalid": "footer-type"
+      },
+      "observed": {
+        "ret": 0,
+        "state_input": 1850740736,
+        "state_kind": 2,
+        "state_path": 1164378112,
+        "state_length": 256,
+        "validator_input": 1850740736,
+        "validator_output": 1850757120,
+        "validator_length": 85,
+        "context_output": 1850757120,
+        "cpu_output": 1850757120,
+        "os_releases": [],
+        "stopped_assert": false,
+        "component5_resets": 0
+      },
+      "result_sha256": "4f934f83114202a2b2d77897c3ee9e54288c988f6876a32c9a8badd123a32914"
+    },
+    {
+      "group": "kind2-connected-validation",
+      "inputs": {
+        "invalid": "missing-section7"
+      },
+      "observed": {
+        "ret": 0,
+        "state_input": 1850740736,
+        "state_kind": 2,
+        "state_path": 1164378112,
+        "state_length": 256,
+        "validator_input": 1850740736,
+        "validator_output": 1850748928,
+        "validator_length": 32,
+        "context_output": 1850748928,
+        "cpu_output": 1850748928,
+        "os_releases": [],
+        "stopped_assert": false,
+        "component5_resets": 0
+      },
+      "result_sha256": "37104cf7f4bc38b156eb6f72f4b0af1e5e34d306a294e25616317e0e2a1c4868"
+    },
+    {
+      "group": "kind2-connected-validation",
+      "inputs": {
+        "invalid": "inner-checksum"
+      },
+      "observed": {
+        "ret": 0,
+        "state_input": 1850740736,
+        "state_kind": 2,
+        "state_path": 1164378112,
+        "state_length": 256,
+        "validator_input": 1850740736,
+        "validator_output": 1850748928,
+        "validator_length": 32,
+        "context_output": 1850757120,
+        "cpu_output": 1850757120,
+        "os_releases": [],
+        "stopped_assert": false,
+        "component5_resets": 0
+      },
+      "result_sha256": "938c692f8291eb41d7bbe60bb173fc35e9568d81ea4b1ec486d4b6a47e9cf532"
+    },
+    {
+      "group": "input-cleanup",
+      "inputs": {
+        "flag": 0,
+        "pointer": "0x6e501000",
+        "mutex": 1,
+        "os_release_status": 0,
+        "assertion_returns": false
+      },
+      "observed": {
+        "ret": 1,
+        "state_input": 0,
+        "state_kind": 8,
+        "state_path": 0,
+        "state_length": 0,
+        "validator_input": 1850740736,
+        "validator_output": 1850757120,
+        "validator_length": 85,
+        "context_output": 1850757120,
+        "cpu_output": 1850757120,
+        "os_releases": [],
+        "stopped_assert": false,
+        "component5_resets": 1
+      },
+      "result_sha256": "373eadc4274a61a5a79b3a3c50f23109f5a84cc79d8cf86da3da7862f12a8172"
+    },
+    {
+      "group": "input-cleanup",
+      "inputs": {
+        "flag": 1,
+        "pointer": "0x6e501000",
+        "mutex": 1,
+        "os_release_status": 0,
+        "assertion_returns": false
+      },
+      "observed": {
+        "ret": 1,
+        "state_input": 0,
+        "state_kind": 8,
+        "state_path": 0,
+        "state_length": 0,
+        "validator_input": 1850740736,
+        "validator_output": 1850757120,
+        "validator_length": 85,
+        "context_output": 1850757120,
+        "cpu_output": 1850757120,
+        "os_releases": [
+          [
+            4097,
+            1850740672
+          ]
+        ],
+        "stopped_assert": false,
+        "component5_resets": 1
+      },
+      "result_sha256": "1684cff2086213c63a05953e5ef43d6c0dc44e11515dd502cbb9941c2066e288"
+    },
+    {
+      "group": "input-cleanup",
+      "inputs": {
+        "flag": 1,
+        "pointer": "0x6e501000",
+        "mutex": 0,
+        "os_release_status": 0,
+        "assertion_returns": false
+      },
+      "observed": {
+        "ret": 0,
+        "state_input": 1850740736,
+        "state_kind": 2,
+        "state_path": 1164378112,
+        "state_length": 256,
+        "validator_input": 1850740736,
+        "validator_output": 1850757120,
+        "validator_length": 85,
+        "context_output": 1850757120,
+        "cpu_output": 1850757120,
+        "os_releases": [],
+        "stopped_assert": false,
+        "component5_resets": 0
+      },
+      "result_sha256": "74e6e438169ae219bbee46c2c4069c37b868b9aeebc6fb003fcf51588f20eb6b"
+    },
+    {
+      "group": "input-cleanup",
+      "inputs": {
+        "flag": 1,
+        "pointer": "0x0",
+        "mutex": 1,
+        "os_release_status": 0,
+        "assertion_returns": false
+      },
+      "observed": {
+        "ret": 1,
+        "state_input": 0,
+        "state_kind": 8,
+        "state_path": 0,
+        "state_length": 0,
+        "validator_input": 1850740736,
+        "validator_output": 1850757120,
+        "validator_length": 85,
+        "context_output": 1850757120,
+        "cpu_output": 1850757120,
+        "os_releases": [],
+        "stopped_assert": false,
+        "component5_resets": 1
+      },
+      "result_sha256": "373eadc4274a61a5a79b3a3c50f23109f5a84cc79d8cf86da3da7862f12a8172"
+    },
+    {
+      "group": "input-cleanup",
+      "inputs": {
+        "flag": 0,
+        "pointer": "0x0",
+        "mutex": 0,
+        "os_release_status": 0,
+        "assertion_returns": false
+      },
+      "observed": {
+        "ret": 1,
+        "state_input": 0,
+        "state_kind": 8,
+        "state_path": 0,
+        "state_length": 0,
+        "validator_input": 1850740736,
+        "validator_output": 1850757120,
+        "validator_length": 85,
+        "context_output": 1850757120,
+        "cpu_output": 1850757120,
+        "os_releases": [],
+        "stopped_assert": false,
+        "component5_resets": 1
+      },
+      "result_sha256": "a4a250e2be65484bea32402fc0972385e8b02eaf7f3ad70623dcf1cb04cc94b3"
+    },
+    {
+      "group": "input-cleanup",
+      "inputs": {
+        "flag": 1,
+        "pointer": "0x16001000",
+        "mutex": 1,
+        "os_release_status": 0,
+        "assertion_returns": false
+      },
+      "observed": {
+        "ret": 1,
+        "state_input": 0,
+        "state_kind": 8,
+        "state_path": 0,
+        "state_length": 0,
+        "validator_input": 1850740736,
+        "validator_output": 1850757120,
+        "validator_length": 85,
+        "context_output": 1850757120,
+        "cpu_output": 1850757120,
+        "os_releases": [
+          [
+            4098,
+            369102784
+          ]
+        ],
+        "stopped_assert": false,
+        "component5_resets": 1
+      },
+      "result_sha256": "7ef0a984f8d50ef3c1346d8e41890bfec5e794c65b8f671a2c180e94b3a95363"
+    },
+    {
+      "group": "input-cleanup",
+      "inputs": {
+        "flag": 1,
+        "pointer": "0x6e501000",
+        "mutex": 1,
+        "os_release_status": 4294901761,
+        "assertion_returns": false
+      },
+      "observed": {
+        "ret": 0,
+        "state_input": 1850740736,
+        "state_kind": 2,
+        "state_path": 1164378112,
+        "state_length": 256,
+        "validator_input": 1850740736,
+        "validator_output": 1850757120,
+        "validator_length": 85,
+        "context_output": 1850757120,
+        "cpu_output": 1850757120,
+        "os_releases": [
+          [
+            4097,
+            1850740672
+          ]
+        ],
+        "stopped_assert": true,
+        "component5_resets": 0
+      },
+      "result_sha256": "af7fd728893256eba6fd662167c24dea20989f36d187b14c93f4fab9f811f16f"
+    },
+    {
+      "group": "input-cleanup",
+      "inputs": {
+        "flag": 1,
+        "pointer": "0x6e501000",
+        "mutex": 1,
+        "os_release_status": 4294901761,
+        "assertion_returns": true
+      },
+      "observed": {
+        "ret": 1,
+        "state_input": 0,
+        "state_kind": 8,
+        "state_path": 0,
+        "state_length": 0,
+        "validator_input": 1850740736,
+        "validator_output": 1850757120,
+        "validator_length": 85,
+        "context_output": 1850757120,
+        "cpu_output": 1850757120,
+        "os_releases": [
+          [
+            4097,
+            1850740672
+          ]
+        ],
+        "stopped_assert": false,
+        "component5_resets": 1
+      },
+      "result_sha256": "1c64b48f6f9ef686423faed3f0a2d059bdf1ae95e58850c7ecec8e26fec81693"
+    },
+    {
+      "group": "input-cleanup",
+      "inputs": {
+        "flag": 1,
+        "pointer": "0x10000e00",
+        "mutex": 1,
+        "os_release_status": 0,
+        "assertion_returns": false
+      },
+      "observed": {
+        "ret": 0,
+        "state_input": 268439040,
+        "state_kind": 2,
+        "state_path": 1164378112,
+        "state_length": 256,
+        "validator_input": 1850740736,
+        "validator_output": 1850757120,
+        "validator_length": 85,
+        "context_output": 1850757120,
+        "cpu_output": 1850757120,
+        "os_releases": [],
+        "stopped_assert": true,
+        "component5_resets": 0
+      },
+      "result_sha256": "1440a0cd927543f9640936b00fceb911db2a74db982d5eafe4746ffb9b40ba3e"
+    },
+    {
+      "group": "input-cleanup",
+      "inputs": {
+        "flag": 1,
+        "pointer": "0x10000e00",
+        "mutex": 1,
+        "os_release_status": 0,
+        "assertion_returns": true
+      },
+      "observed": {
+        "ret": 1,
+        "state_input": 0,
+        "state_kind": 8,
+        "state_path": 0,
+        "state_length": 0,
+        "validator_input": 1850740736,
+        "validator_output": 1850757120,
+        "validator_length": 85,
+        "context_output": 1850757120,
+        "cpu_output": 1850757120,
+        "os_releases": [],
+        "stopped_assert": false,
+        "component5_resets": 1
+      },
+      "result_sha256": "92576d5fca93b700973452fee4141f41e7cc9e21045caaf19dc0948fd2496b03"
+    },
+    {
+      "group": "pool-membership-end-exclusive",
+      "inputs": {
+        "pointer": "0x6e4fffff"
+      },
+      "observed": {
+        "ret": 0,
+        "state_input": 1850740736,
+        "state_kind": 2,
+        "state_path": 1164378112,
+        "state_length": 256,
+        "validator_input": 1850740736,
+        "validator_output": 1850757120,
+        "validator_length": 85,
+        "context_output": 1850757120,
+        "cpu_output": 1850757120,
+        "os_releases": [],
+        "stopped_assert": false,
+        "component5_resets": 0
+      },
+      "result_sha256": "58eb75edd6b8b54324e1c855cebadec4a32be09b93bafd73683aba5c7fad1794"
+    },
+    {
+      "group": "pool-membership-end-exclusive",
+      "inputs": {
+        "pointer": "0x6e500000"
+      },
+      "observed": {
+        "ret": 1,
+        "state_input": 1850740736,
+        "state_kind": 2,
+        "state_path": 1164378112,
+        "state_length": 256,
+        "validator_input": 1850740736,
+        "validator_output": 1850757120,
+        "validator_length": 85,
+        "context_output": 1850757120,
+        "cpu_output": 1850757120,
+        "os_releases": [],
+        "stopped_assert": false,
+        "component5_resets": 0
+      },
+      "result_sha256": "885321586f20941e23d098a2c17748184edc9ac2b5d4cc200109aa8337eebc06"
+    },
+    {
+      "group": "pool-membership-end-exclusive",
+      "inputs": {
+        "pointer": "0x6e50ffff"
+      },
+      "observed": {
+        "ret": 1,
+        "state_input": 1850740736,
+        "state_kind": 2,
+        "state_path": 1164378112,
+        "state_length": 256,
+        "validator_input": 1850740736,
+        "validator_output": 1850757120,
+        "validator_length": 85,
+        "context_output": 1850757120,
+        "cpu_output": 1850757120,
+        "os_releases": [],
+        "stopped_assert": false,
+        "component5_resets": 0
+      },
+      "result_sha256": "885321586f20941e23d098a2c17748184edc9ac2b5d4cc200109aa8337eebc06"
+    },
+    {
+      "group": "pool-membership-end-exclusive",
+      "inputs": {
+        "pointer": "0x6e510000"
+      },
+      "observed": {
+        "ret": 0,
+        "state_input": 1850740736,
+        "state_kind": 2,
+        "state_path": 1164378112,
+        "state_length": 256,
+        "validator_input": 1850740736,
+        "validator_output": 1850757120,
+        "validator_length": 85,
+        "context_output": 1850757120,
+        "cpu_output": 1850757120,
+        "os_releases": [],
+        "stopped_assert": false,
+        "component5_resets": 0
+      },
+      "result_sha256": "58eb75edd6b8b54324e1c855cebadec4a32be09b93bafd73683aba5c7fad1794"
+    },
+    {
+      "group": "pool-membership-end-exclusive",
+      "inputs": {
+        "pointer": "0xffffffff"
+      },
+      "observed": {
+        "ret": 0,
+        "state_input": 1850740736,
+        "state_kind": 2,
+        "state_path": 1164378112,
+        "state_length": 256,
+        "validator_input": 1850740736,
+        "validator_output": 1850757120,
+        "validator_length": 85,
+        "context_output": 1850757120,
+        "cpu_output": 1850757120,
+        "os_releases": [],
+        "stopped_assert": false,
+        "component5_resets": 0
+      },
+      "result_sha256": "58eb75edd6b8b54324e1c855cebadec4a32be09b93bafd73683aba5c7fad1794"
+    },
+    {
+      "group": "configured-image1-membership",
+      "inputs": {
+        "pointer": "0x6e4fffff",
+        "pool_size": 833617904
+      },
+      "observed": {
+        "ret": 0,
+        "state_input": 1850740736,
+        "state_kind": 2,
+        "state_path": 1164378112,
+        "state_length": 256,
+        "validator_input": 1850740736,
+        "validator_output": 1850757120,
+        "validator_length": 85,
+        "context_output": 1850757120,
+        "cpu_output": 1850757120,
+        "os_releases": [],
+        "stopped_assert": false,
+        "component5_resets": 0
+      },
+      "result_sha256": "58eb75edd6b8b54324e1c855cebadec4a32be09b93bafd73683aba5c7fad1794"
+    },
+    {
+      "group": "configured-image1-membership",
+      "inputs": {
+        "pointer": "0x6e500000",
+        "pool_size": 833617904
+      },
+      "observed": {
+        "ret": 1,
+        "state_input": 1850740736,
+        "state_kind": 2,
+        "state_path": 1164378112,
+        "state_length": 256,
+        "validator_input": 1850740736,
+        "validator_output": 1850757120,
+        "validator_length": 85,
+        "context_output": 1850757120,
+        "cpu_output": 1850757120,
+        "os_releases": [],
+        "stopped_assert": false,
+        "component5_resets": 0
+      },
+      "result_sha256": "885321586f20941e23d098a2c17748184edc9ac2b5d4cc200109aa8337eebc06"
+    },
+    {
+      "group": "configured-image1-membership",
+      "inputs": {
+        "pointer": "0x9fffffef",
+        "pool_size": 833617904
+      },
+      "observed": {
+        "ret": 1,
+        "state_input": 1850740736,
+        "state_kind": 2,
+        "state_path": 1164378112,
+        "state_length": 256,
+        "validator_input": 1850740736,
+        "validator_output": 1850757120,
+        "validator_length": 85,
+        "context_output": 1850757120,
+        "cpu_output": 1850757120,
+        "os_releases": [],
+        "stopped_assert": false,
+        "component5_resets": 0
+      },
+      "result_sha256": "885321586f20941e23d098a2c17748184edc9ac2b5d4cc200109aa8337eebc06"
+    },
+    {
+      "group": "configured-image1-membership",
+      "inputs": {
+        "pointer": "0x9ffffff0",
+        "pool_size": 833617904
+      },
+      "observed": {
+        "ret": 0,
+        "state_input": 1850740736,
+        "state_kind": 2,
+        "state_path": 1164378112,
+        "state_length": 256,
+        "validator_input": 1850740736,
+        "validator_output": 1850757120,
+        "validator_length": 85,
+        "context_output": 1850757120,
+        "cpu_output": 1850757120,
+        "os_releases": [],
+        "stopped_assert": false,
+        "component5_resets": 0
+      },
+      "result_sha256": "58eb75edd6b8b54324e1c855cebadec4a32be09b93bafd73683aba5c7fad1794"
+    },
+    {
+      "group": "configured-image1-membership",
+      "inputs": {
+        "pointer": "0xa0000000",
+        "pool_size": 833617904
+      },
+      "observed": {
+        "ret": 0,
+        "state_input": 1850740736,
+        "state_kind": 2,
+        "state_path": 1164378112,
+        "state_length": 256,
+        "validator_input": 1850740736,
+        "validator_output": 1850757120,
+        "validator_length": 85,
+        "context_output": 1850757120,
+        "cpu_output": 1850757120,
+        "os_releases": [],
+        "stopped_assert": false,
+        "component5_resets": 0
+      },
+      "result_sha256": "58eb75edd6b8b54324e1c855cebadec4a32be09b93bafd73683aba5c7fad1794"
+    }
+  ]
+}

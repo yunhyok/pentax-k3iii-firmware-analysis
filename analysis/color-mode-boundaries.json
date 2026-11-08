@@ -1,0 +1,373 @@
+{
+  "schema_version": 1,
+  "firmware": "K-3 Mark III 2.20",
+  "decoded_sha256": "7ff301d585ef7adcd620a15575faa39b4227cc5a27eaa8d754efe50f667a30f9",
+  "rtos_sha256": "342d2f35405e8daf1797dfe431d2e4aa70f4b52a2c242a29df48206672f1dfb4",
+  "emulator": {
+    "engine": "Unicorn",
+    "version": "2.1.4",
+    "cpu": "Cortex-A7"
+  },
+  "source_reports_canonical_lf_sha256": {
+    "analysis/color-resources.json": "7aa1a50ecaead22896462623390811af654eb328d77d0bdf59771ac8d91df475",
+    "analysis/color-math-checks.json": "514c2aef004798c1cd7a9a6c910c5cdddd483ac8260a77f5674187197a72d21d",
+    "analysis/gamma-tone-checks.json": "2037797ab030723517df7395c44233ae346af431648c8a8e2deb1f0bf0e0b152",
+    "analysis/lightroom-bridge.json": "aa2355a06376b589de9295659995c3d046a086e5bb3352f0fae393ec725e8952"
+  },
+  "original_code_ranges": [
+    {
+      "name": "matrix_core",
+      "start": "0x5312cd40",
+      "end_exclusive": "0x5312d344",
+      "sha256": "ef925ae716aea20210bc1389a3f89442db2bbc80974eaa223650777cc3d332c1"
+    },
+    {
+      "name": "regular_generator",
+      "start": "0x53135da0",
+      "end_exclusive": "0x53136518",
+      "sha256": "8f717feb480893254b33cdfac334feef77237d0a2f14fc326c6699cc57c7eb55"
+    },
+    {
+      "name": "reversal_generator",
+      "start": "0x53136518",
+      "end_exclusive": "0x53136728",
+      "sha256": "65edd501969fae59ba18bc7ef9ccfb5b6eaae74d8dee0a8739b085c9e3b5f7cd"
+    },
+    {
+      "name": "selector",
+      "start": "0x53136728",
+      "end_exclusive": "0x531368e0",
+      "sha256": "ac603c21ef2c21b5dedc243fb196075f935ffd42d8229e3f054124899ce2e186"
+    },
+    {
+      "name": "udiv_nonzero",
+      "start": "0x526a8330",
+      "end_exclusive": "0x526a8340",
+      "sha256": "c7d1d71906329593ec9d2ef2fb65b89c950fa0a162d8de5e82d55f31f97647fe"
+    },
+    {
+      "name": "sdiv_nonzero",
+      "start": "0x526a8364",
+      "end_exclusive": "0x526a8374",
+      "sha256": "1be7464d9da20674e82ef805517ae16bfab577b4e2583bef9d5054a556c1e0a7"
+    },
+    {
+      "name": "memcpy_short",
+      "start": "0x526aac80",
+      "end_exclusive": "0x526aacf4",
+      "sha256": "f094891f1a7cfe00a944958a7a70d976d028f76df729cae1582b40718db669d2"
+    }
+  ],
+  "matrix_stub_scope": {
+    "0x526aac80": {
+      "modeled_bytes": 18,
+      "calls": 0
+    },
+    "0x5313eb50": {
+      "role": "singleton initializer",
+      "calls": 0
+    }
+  },
+  "gamma_original_calls": {
+    "regular": 12,
+    "memcpy32": 16,
+    "warm_hits": 16,
+    "reversal": 4
+  },
+  "baseline_matches": {
+    "matrix_prepare_cases": 16,
+    "gamma_direct_generator_cases": 1,
+    "adobe_camera_natural_vs_portrait": {
+      "same_tag_payload": [
+        "ColorMatrix1",
+        "ColorMatrix2",
+        "ProfileToneCurve",
+        "ProfileLookTableData"
+      ],
+      "different_tag_payload": [
+        "ForwardMatrix1",
+        "ForwardMatrix2"
+      ]
+    }
+  },
+  "synthetic_fixed_controls": {
+    "color_space_parameter_0x52": 1,
+    "matrix_gain": 256,
+    "matrix_key": 8,
+    "manual_and_filter_override": 0,
+    "gamma_numerator": 8192,
+    "gamma_denominator": 8192,
+    "gamma_key_and_high_low_fields": 4
+  },
+  "cases": [
+    {
+      "mode": "Natural",
+      "mode_enum": 1,
+      "descriptor": "0x54526f54",
+      "saturation_index": 4,
+      "contrast_control": 4,
+      "intermediate_q13_sha256": "a0c8d4baa90fd0b2e0a0bd5e9612890b573df520a11a55fdc11600d285af0dc5",
+      "prepared_coefficients_sha256": "8c64734711200279ea68fd32ec82be72e097143772842b9f85008903d30a83a6",
+      "gamma_u16_sha256": "bcde9efcbdf6c1fb748ac057a7c9f8a91ea1a9bd1c8c3d03e94c40afa93307e4"
+    },
+    {
+      "mode": "Natural",
+      "mode_enum": 1,
+      "descriptor": "0x54526f54",
+      "saturation_index": 4,
+      "contrast_control": 6,
+      "intermediate_q13_sha256": "a0c8d4baa90fd0b2e0a0bd5e9612890b573df520a11a55fdc11600d285af0dc5",
+      "prepared_coefficients_sha256": "8c64734711200279ea68fd32ec82be72e097143772842b9f85008903d30a83a6",
+      "gamma_u16_sha256": "ef6e0621d204fc1926268e92c1a46275e7cefd5ef56ae876b0ffd54d6e1a3fb1"
+    },
+    {
+      "mode": "Natural",
+      "mode_enum": 1,
+      "descriptor": "0x54526f54",
+      "saturation_index": 5,
+      "contrast_control": 4,
+      "intermediate_q13_sha256": "520c0171363a4a8142ec18f10f8384468d87bb703bf1a61d2b1943f0c6f935cc",
+      "prepared_coefficients_sha256": "b5fc8cb4fb858170ca4948b91e92cf43297f4d9779624fe389e5efa0f36ced3a",
+      "gamma_u16_sha256": "bcde9efcbdf6c1fb748ac057a7c9f8a91ea1a9bd1c8c3d03e94c40afa93307e4"
+    },
+    {
+      "mode": "Natural",
+      "mode_enum": 1,
+      "descriptor": "0x54526f54",
+      "saturation_index": 5,
+      "contrast_control": 6,
+      "intermediate_q13_sha256": "520c0171363a4a8142ec18f10f8384468d87bb703bf1a61d2b1943f0c6f935cc",
+      "prepared_coefficients_sha256": "b5fc8cb4fb858170ca4948b91e92cf43297f4d9779624fe389e5efa0f36ced3a",
+      "gamma_u16_sha256": "ef6e0621d204fc1926268e92c1a46275e7cefd5ef56ae876b0ffd54d6e1a3fb1"
+    },
+    {
+      "mode": "Portrait",
+      "mode_enum": 3,
+      "descriptor": "0x54527050",
+      "saturation_index": 4,
+      "contrast_control": 4,
+      "intermediate_q13_sha256": "3c7d6403e47b1233d4f9cfb1c874eeab055631003f06787457bbe5e67100a181",
+      "prepared_coefficients_sha256": "f9ca90ed9db3483161f412610b82b8aff19033413847f8f74c06871ca6824b71",
+      "gamma_u16_sha256": "bcde9efcbdf6c1fb748ac057a7c9f8a91ea1a9bd1c8c3d03e94c40afa93307e4"
+    },
+    {
+      "mode": "Portrait",
+      "mode_enum": 3,
+      "descriptor": "0x54527050",
+      "saturation_index": 4,
+      "contrast_control": 6,
+      "intermediate_q13_sha256": "3c7d6403e47b1233d4f9cfb1c874eeab055631003f06787457bbe5e67100a181",
+      "prepared_coefficients_sha256": "f9ca90ed9db3483161f412610b82b8aff19033413847f8f74c06871ca6824b71",
+      "gamma_u16_sha256": "ef6e0621d204fc1926268e92c1a46275e7cefd5ef56ae876b0ffd54d6e1a3fb1"
+    },
+    {
+      "mode": "Portrait",
+      "mode_enum": 3,
+      "descriptor": "0x54527050",
+      "saturation_index": 5,
+      "contrast_control": 4,
+      "intermediate_q13_sha256": "ad4f85b791f9dd2703d8ee610203705d6314ea9f18c0d0882e34cf425971b468",
+      "prepared_coefficients_sha256": "2171f200fc4836ba342d76124e2a57411a376bdc5dac17cf7f4c6583c13af1eb",
+      "gamma_u16_sha256": "bcde9efcbdf6c1fb748ac057a7c9f8a91ea1a9bd1c8c3d03e94c40afa93307e4"
+    },
+    {
+      "mode": "Portrait",
+      "mode_enum": 3,
+      "descriptor": "0x54527050",
+      "saturation_index": 5,
+      "contrast_control": 6,
+      "intermediate_q13_sha256": "ad4f85b791f9dd2703d8ee610203705d6314ea9f18c0d0882e34cf425971b468",
+      "prepared_coefficients_sha256": "2171f200fc4836ba342d76124e2a57411a376bdc5dac17cf7f4c6583c13af1eb",
+      "gamma_u16_sha256": "ef6e0621d204fc1926268e92c1a46275e7cefd5ef56ae876b0ffd54d6e1a3fb1"
+    },
+    {
+      "mode": "Bright",
+      "mode_enum": 2,
+      "descriptor": "0x54526bc4",
+      "saturation_index": 4,
+      "contrast_control": 4,
+      "intermediate_q13_sha256": "6c72e99d92692407cc03a789ffc203362f422b471656f3f850200797fa9561a8",
+      "prepared_coefficients_sha256": "1756bdf34ee1f56198c93df9f884cdc849739ad7708decfb9fedc02156c73c99",
+      "gamma_u16_sha256": "bcde9efcbdf6c1fb748ac057a7c9f8a91ea1a9bd1c8c3d03e94c40afa93307e4"
+    },
+    {
+      "mode": "Bright",
+      "mode_enum": 2,
+      "descriptor": "0x54526bc4",
+      "saturation_index": 4,
+      "contrast_control": 6,
+      "intermediate_q13_sha256": "6c72e99d92692407cc03a789ffc203362f422b471656f3f850200797fa9561a8",
+      "prepared_coefficients_sha256": "1756bdf34ee1f56198c93df9f884cdc849739ad7708decfb9fedc02156c73c99",
+      "gamma_u16_sha256": "ef6e0621d204fc1926268e92c1a46275e7cefd5ef56ae876b0ffd54d6e1a3fb1"
+    },
+    {
+      "mode": "Bright",
+      "mode_enum": 2,
+      "descriptor": "0x54526bc4",
+      "saturation_index": 5,
+      "contrast_control": 4,
+      "intermediate_q13_sha256": "3a33bc12126c53236a43e90744f916f7837d0fdfb62ef41105185c2bf2d82135",
+      "prepared_coefficients_sha256": "569c0abd06d5d660f932f7220f9cbfe5a433602c9f9d74d7cac2fc6843220c3f",
+      "gamma_u16_sha256": "bcde9efcbdf6c1fb748ac057a7c9f8a91ea1a9bd1c8c3d03e94c40afa93307e4"
+    },
+    {
+      "mode": "Bright",
+      "mode_enum": 2,
+      "descriptor": "0x54526bc4",
+      "saturation_index": 5,
+      "contrast_control": 6,
+      "intermediate_q13_sha256": "3a33bc12126c53236a43e90744f916f7837d0fdfb62ef41105185c2bf2d82135",
+      "prepared_coefficients_sha256": "569c0abd06d5d660f932f7220f9cbfe5a433602c9f9d74d7cac2fc6843220c3f",
+      "gamma_u16_sha256": "ef6e0621d204fc1926268e92c1a46275e7cefd5ef56ae876b0ffd54d6e1a3fb1"
+    },
+    {
+      "mode": "Reversal Film",
+      "mode_enum": 10,
+      "descriptor": "0x545272e4",
+      "saturation_index": 4,
+      "contrast_control": 4,
+      "intermediate_q13_sha256": "96d10b1fd5c80d036a1334bd0ef86db16acf41e038535f1a5bfcacf8897f2bca",
+      "prepared_coefficients_sha256": "79e026e481491e7895a06a5b2d229bd185b94a529715c90674b02aa735ec44b1",
+      "gamma_u16_sha256": "215d73c8e04740920c6b2b89759e731befe9745870dd262344c9994a27dc342f"
+    },
+    {
+      "mode": "Reversal Film",
+      "mode_enum": 10,
+      "descriptor": "0x545272e4",
+      "saturation_index": 4,
+      "contrast_control": 6,
+      "intermediate_q13_sha256": "96d10b1fd5c80d036a1334bd0ef86db16acf41e038535f1a5bfcacf8897f2bca",
+      "prepared_coefficients_sha256": "79e026e481491e7895a06a5b2d229bd185b94a529715c90674b02aa735ec44b1",
+      "gamma_u16_sha256": "215d73c8e04740920c6b2b89759e731befe9745870dd262344c9994a27dc342f"
+    },
+    {
+      "mode": "Reversal Film",
+      "mode_enum": 10,
+      "descriptor": "0x545272e4",
+      "saturation_index": 5,
+      "contrast_control": 4,
+      "intermediate_q13_sha256": "78dca429e93d7059b221361684fb51b8659d0fa73335730255087d4898b09346",
+      "prepared_coefficients_sha256": "90b31df1472598d2abd539660fb607e7d462cc4f54aaa178f90d89c45c000d37",
+      "gamma_u16_sha256": "215d73c8e04740920c6b2b89759e731befe9745870dd262344c9994a27dc342f"
+    },
+    {
+      "mode": "Reversal Film",
+      "mode_enum": 10,
+      "descriptor": "0x545272e4",
+      "saturation_index": 5,
+      "contrast_control": 6,
+      "intermediate_q13_sha256": "78dca429e93d7059b221361684fb51b8659d0fa73335730255087d4898b09346",
+      "prepared_coefficients_sha256": "90b31df1472598d2abd539660fb607e7d462cc4f54aaa178f90d89c45c000d37",
+      "gamma_u16_sha256": "215d73c8e04740920c6b2b89759e731befe9745870dd262344c9994a27dc342f"
+    }
+  ],
+  "within_mode_deltas": {
+    "Natural": {
+      "only_saturation_intermediate_q13": {
+        "different_entries": 9,
+        "max_abs_code_delta": 727
+      },
+      "only_saturation_prepared": {
+        "different_entries": 9,
+        "max_abs_code_delta": 34
+      },
+      "only_contrast_gamma": {
+        "different_entries": 244,
+        "max_abs_code_delta": 516
+      }
+    },
+    "Portrait": {
+      "only_saturation_intermediate_q13": {
+        "different_entries": 9,
+        "max_abs_code_delta": 723
+      },
+      "only_saturation_prepared": {
+        "different_entries": 9,
+        "max_abs_code_delta": 33
+      },
+      "only_contrast_gamma": {
+        "different_entries": 244,
+        "max_abs_code_delta": 516
+      }
+    },
+    "Bright": {
+      "only_saturation_intermediate_q13": {
+        "different_entries": 9,
+        "max_abs_code_delta": 912
+      },
+      "only_saturation_prepared": {
+        "different_entries": 9,
+        "max_abs_code_delta": 41
+      },
+      "only_contrast_gamma": {
+        "different_entries": 244,
+        "max_abs_code_delta": 516
+      }
+    },
+    "Reversal Film": {
+      "only_saturation_intermediate_q13": {
+        "different_entries": 9,
+        "max_abs_code_delta": 833
+      },
+      "only_saturation_prepared": {
+        "different_entries": 8,
+        "max_abs_code_delta": 38
+      },
+      "only_contrast_gamma": {
+        "different_entries": 0,
+        "max_abs_code_delta": 0
+      }
+    }
+  },
+  "mode_deltas_relative_to_natural_at_saturation4_contrast4": {
+    "Portrait": {
+      "intermediate_q13": {
+        "different_entries": 9,
+        "max_abs_code_delta": 1035
+      },
+      "prepared": {
+        "different_entries": 9,
+        "max_abs_code_delta": 64
+      },
+      "gamma": {
+        "different_entries": 0,
+        "max_abs_code_delta": 0
+      }
+    },
+    "Bright": {
+      "intermediate_q13": {
+        "different_entries": 9,
+        "max_abs_code_delta": 1104
+      },
+      "prepared": {
+        "different_entries": 9,
+        "max_abs_code_delta": 67
+      },
+      "gamma": {
+        "different_entries": 0,
+        "max_abs_code_delta": 0
+      }
+    },
+    "Reversal Film": {
+      "intermediate_q13": {
+        "different_entries": 9,
+        "max_abs_code_delta": 928
+      },
+      "prepared": {
+        "different_entries": 9,
+        "max_abs_code_delta": 46
+      },
+      "gamma": {
+        "different_entries": 250,
+        "max_abs_code_delta": 1138
+      }
+    }
+  },
+  "limits": [
+    "Mode enum and resource descriptor checked against the RTOS. Upstream UI/parameter producer not executed.",
+    "Separate calls use synthetic configuration, not a connected image-processing pipeline.",
+    "The matrix runner registers two stubs; neither is reached. No external callbacks are executed.",
+    "Gamma executes original 32-byte NEON copy and nonzero division helpers, with no stubs or external callbacks.",
+    "Neither call runs pixel processing, camera hardware, or Lightroom. No RAW, DCP, or profile payload is read or exported."
+  ]
+}

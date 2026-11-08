@@ -1,0 +1,92 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>업데이트 파일 시스템과 버퍼 수명</title><style>
+:root{color-scheme:light dark;--bg:#f7f8fa;--paper:#fff;--ink:#182332;--muted:#48596b;--line:#d2dbe5;--accent:#124b8e;--soft:#edf3fa;--focus:#d75f00}
+@media(prefers-color-scheme:dark){:root{--bg:#111821;--paper:#18222d;--ink:#e8edf4;--muted:#b4c2d2;--line:#405369;--accent:#98c8ff;--soft:#223348;--focus:#ffb374}}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.85 system-ui,-apple-system,"Malgun Gothic",sans-serif;word-break:keep-all;overflow-wrap:anywhere}
+a{color:var(--accent);text-underline-offset:.18em}a:hover{text-decoration-thickness:2px}:focus-visible{outline:3px solid var(--focus);outline-offset:4px}
+header,main,footer{max-width:1120px;margin:auto;padding:36px clamp(18px,4vw,56px)}header{padding-top:56px;padding-bottom:24px}main{background:var(--paper);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.eyebrow{color:var(--muted);font-size:.84rem;letter-spacing:.06em}h1{font-size:clamp(1.85rem,4.5vw,3rem);line-height:1.35;letter-spacing:-.025em;margin:12px 0 18px}h2{font-size:1.5rem;line-height:1.5;margin:3.6rem 0 1rem;padding-top:1.2rem;border-top:1px solid var(--line)}h2:first-child{margin-top:0}h3{font-size:1.12rem;margin-top:2rem}p{margin:1rem 0}strong{font-weight:650}.intro{max-width:55em;color:var(--muted)}
+nav{margin-top:25px}nav ul{display:flex;flex-wrap:wrap;gap:8px 22px;list-style:none;padding:0;margin:0}nav ul ul{display:none}nav a{font-size:.9rem}code{font: .88em/1.6 ui-monospace,Consolas,monospace;overflow-wrap:anywhere}pre{background:var(--soft);padding:18px;overflow-x:auto;white-space:pre-wrap;border-radius:5px}pre code{font-size:.82rem}
+.table-scroll{overflow-x:auto;margin:24px 0}table{border-collapse:collapse;width:100%;font-size:.92rem;min-width:530px}th,td{text-align:left;vertical-align:top;padding:14px 16px;border-bottom:1px solid var(--line)}th{background:var(--soft);font-weight:650}td:first-child{min-width:125px}details{border-block:1px solid var(--line);margin-top:24px;padding:16px 0}summary{cursor:pointer;font-weight:650;padding:6px 0}.caption,.meta{font-size:.86rem;color:var(--muted)}
+figure{margin:32px 0;padding:24px 0;border-block:1px solid var(--line)}figcaption{font-size:.95rem;font-weight:650;margin-bottom:20px}.flow{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:32px;list-style:none;padding:0;margin:18px 0}.flow li{position:relative;padding:18px;background:var(--soft);border-radius:6px;line-height:1.6}.flow strong{display:block;font-size:1rem}.flow span{display:block;color:var(--muted);font-size:.86rem;margin-top:9px}.flow li:not(:last-child)::after{content:"→";position:absolute;right:-27px;top:40%;font-size:22px;color:var(--muted)}.second{margin-top:24px}footer{font-size:.88rem;color:var(--muted)}
+@media(max-width:620px){body{font-size:16px}header,main,footer{padding-inline:20px}.flow{grid-template-columns:1fr;gap:26px}.flow li:not(:last-child)::after{content:"↓";right:auto;left:calc(50% - 8px);top:auto;bottom:-28px}.flow li{padding:15px 18px}h2{font-size:1.3rem}nav ul{gap:10px 18px}table{font-size:.87rem}th,td{padding:12px}header{padding-top:30px}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+@media print{body{background:white;color:black;font-size:10pt}header,main,footer{max-width:none;padding:12pt}nav{display:none}a{color:inherit}h2,figure,table{break-inside:avoid}h2{break-after:avoid}main{border:0}.flow li{background:#f1f3f5}.table-scroll{overflow:visible}table{min-width:0}details>*{display:block!important}}
+
+.site-nav{border-block:1px solid var(--line);padding:14px 0;margin:20px 0}.site-nav a{display:inline-block;margin:4px 16px 4px 0}
+.review-note{background:var(--soft);padding:16px 20px;margin:24px 0}.toc{font-size:.92rem}.toc ul{list-style:none;padding-left:0}.toc ul ul{padding-left:20px}
+.branch{margin:18px 0;padding:0 0 0 24px;border-left:3px solid var(--line)}.branch p{margin:8px 0}.diagram-line{padding:12px 16px;background:var(--soft);border-radius:4px}
+td code{white-space:nowrap}
+</style></head><body><header><div class="eyebrow">PENTAX K-3 MARK III · FIRMWARE 2.20 · 2026-11-08</div><h1>업데이트 파일 시스템과 버퍼 수명</h1><p class="intro">실제 FileSystem 객체부터 FAT·exFAT 분기까지 연결하고 압축 입력과 decoded 출력이 함께 존재하는 구간 및 실패 후 정리 조건을 확인했다.</p><nav aria-label="관련 문서"><a href="../index.html">연구 개요</a> · <a href="update-memory.html">입력 로더·메모리 설정</a> · <a href="update-resources.html">검증·리소스</a> · <a href="#lifetime">버퍼 수명</a> · <a href="#verification">검증 범위</a></nav></header><main>
+
+
+<p><code>resourceManager+0x38</code>은 factory singleton <code>0x54787088</code>의 <code>+0x14</code>에 저장된 <code>FileSystem</code> primary 객체다. factory 초기화 함수에서 0x30바이트 객체를 생성하고 그 생성자가 vptr <code>0x53901308</code>을 설치한다. open/close/read/stat은 이 객체의 실제 함수로 연결되며 경로에서 구한 volume index에 따라 FatFileSystem, ExFatFileSystem 또는 VirtualFileSystem의 secondary interface로 전달된다.</p>
+<p><a href="update-file-interface-evidence.json">원본 범위·해시·조건부 연결</a> · <a href="update-file-interface-evidence.json">검증 결과</a> · <a href="update-file-interface-checks.json">원본 ARM 49사례</a>. 원본 RTOS SHA-256: <code>342d2f35405e8daf1797dfe431d2e4aa70f4b52a2c242a29df48206672f1dfb4</code>.</p>
+<h2>객체 생산과 alias</h2>
+<p>singleton <code>52f50f6c</code>은 <code>54787088</code>을 반환하며 최초 생성 시 <code>52f50fc8</code>에서 +14를 0으로 만든다. 해당 factory vptr는 <code>539014c0</code>, +8 slot은 <code>52f510e8</code>이다. 이 초기화 함수의 <code>52f51644..165c</code>는 size=0x30 할당 → ctor <code>52f4e66c</code> → factory+14 저장을 수행한다. 이번 조사는 factory 초기화 함수의 상위 task/startup 호출자까지 닫지는 않았다. 실제 생산자 본문과 vtable 등록을 확인한 것이다. <a href="update-file-interface-evidence.json">singleton</a> · <a href="update-file-interface-evidence.json">초기화 주소·해시</a> · <a href="update-file-interface-evidence.json">FileSystem ctor</a></p>
+<div class="table-scroll"><table><thead><tr><th>생산자</th><th>저장 관계</th></tr></thead><tbody>
+<tr><td>52f5165c</td><td>factory+14 ← FileSystem primary pointer; ctor52f4e6a0에서 vptr53901308</td></tr>
+<tr><td>52f51688</td><td>FileSystem+8 ← factory+4의 volume manager pointer</td></tr>
+<tr><td>52f5169c</td><td>FileSystem+c ← factory+8 FatFileSystem 객체+4; null이면0</td></tr>
+<tr><td>52f516b0</td><td>FileSystem+10 ← factory+c ExFatFileSystem 객체+4; null이면0</td></tr>
+<tr><td>52f516c4</td><td>FileSystem+14 ← factory+10 VirtualFileSystem 객체+4; null이면0</td></tr>
+<tr><td>52ff5c7c/80/90</td><td>factory singleton → factory+14 → resourceManager+38</td></tr>
+</tbody></table></div>
+<p>class 이름은 진단 문자열 추측이 아니라 vtable−4 → RTTI → name pointer로 확인했다: FileSystem <code>539012c8→539012b8:10FileSystem</code>, Fat <code>53900e84→53901000:13FatFileSystem</code>, ExFat <code>538fe2c4→538fe2b0:15ExFatFileSystem</code>, Virtual <code>53910674→5391063c:17VirtualFileSystem</code>. 모든 이름은 ASCII와 NUL 경계를 확인했다.</p>
+<h2>확인된 facade dispatch</h2>
+<div class="table-scroll"><table><thead><tr><th>operation</th><th>loader callsite</th><th>FileSystem slot → 함수</th><th>lower interface slot</th></tr></thead><tbody>
+<tr><td>open</td><td>52ff6e2c</td><td>+20 /53901328 →52f50398</td><td>+8 at52f5043c</td></tr>
+<tr><td>close</td><td>52ff6e74</td><td>+24 /5390132c →52f50864</td><td>+c at52f508e4</td></tr>
+<tr><td>read</td><td>52ff6e54</td><td>+28 /53901330 →52f4e7b4</td><td>+10 at52f4e84c</td></tr>
+<tr><td>stat</td><td>52ff7c8c</td><td>+54 /5390135c →52f4f068</td><td>+48 at52f4f0f8</td></tr>
+</tbody></table></div>
+<p>위 연결은 factory 생성·초기화가 수행되고 vptr가 유지된 조건이다. <code>FileSystem+18</code>의 backend 배열은 초기화 <code>52f4e14c</code>에서 할당·0 초기화한다. mount 경로 <code>52f50144</code>가 <code>52f50264</code>에서 selector <code>52f4fd70</code>을 호출하고 mount 실패 경로는 <code>52f502b8</code>에서 해당 entry를 다시 0으로 지울 수 있다. 현재 카메라에서 어느 volume이 mount되어 있는지는 확인하지 않았다.</p>
+<h2>backend 선택의 정확한 조건</h2>
+<p><code>52f52554</code>는 문자열이 비어 있지 않으면 첫 byte를 읽고 a–z를 A–Z로 정규화한다. volume manager+14 배열의 0x18바이트 record에서 +4의 문자와 비교하고 manager+20의 개수 안에서 index를 반환한다. 일치가 없으면 −1이다. 이 함수만으로는 colon이나 전체 경로 문법을 확인하지 않으며 합성 <code>Cat</code>도 C entry와 일치한다. 실제 update filename과 그 첫 글자의 런타임 생산자는 이 조사 범위 밖이다. <a href="update-file-interface-evidence.json">경로 index 주소·해시</a></p>
+<p><code>52f52630</code>은 index의 record+0에서 descriptor pointer를 얻는다. <code>52f4fd70</code>의 <code>52f4fdd0..fe0c</code>는 아래 조건으로 선택한 pointer를 <code>FileSystem+18[index]</code>에 저장한다. <a href="update-file-interface-evidence.json">selector 주소·해시</a></p>
+<div class="table-scroll"><table><thead><tr><th>조건</th><th>선택 pointer</th><th>secondary vptr</th></tr></thead><tbody>
+<tr><td>signed byte descriptor+14 ==4</td><td>FileSystem+14, VirtualFileSystem+4</td><td>53910748</td></tr>
+<tr><td>그 외, unsigned word descriptor+18 &gt;0403ffff</td><td>FileSystem+10, ExFatFileSystem+4</td><td>538fe210</td></tr>
+<tr><td>그 외, unsigned word descriptor+18 ≤0403ffff</td><td>FileSystem+c, FatFileSystem+4</td><td>53900f58</td></tr>
+</tbody></table></div>
+<aside>descriptor+14/+18은 여기서 수치 필드로만 부른다. 용량 단위, sector 수, 매체 종류, 실제 SD 카드와의 대응을 정하지 않았다. class 이름이 파일시스템 transport 또는 syscall 구현을 입증하지도 않는다.</aside>
+<h2>handle·크기·오류 전달</h2>
+<p>open이 lower callback 성공을 받으면 <code>52f50498</code>에서 8바이트 wrapper를 할당하고 <code>52f504d4</code>에 raw lower handle, <code>52f504e0</code>에 volume index를 기록한다. <code>52f504e4</code>는 그 wrapper pointer를 caller의 output에 저장한다. read와 close는 wrapper+4로 backend를 선택하고 wrapper+0을 lower handle로 전달한다. 성공 시 카운터 증가와 close 성공 시 감소도 이 층에 있다. open의 wrapper 할당 실패 처리는 합성 검사에서 실행하지 않았다.</p>
+<p>read는 buffer/size를 lower+10으로 그대로 전달하고 lower 반환값과 error word를 반환한다. null handle, 음수 index, null backend에서는 lower 호출 없이 반환0과 error12가 나온다. stat은 경로 index와 lower+48을 사용하며 invalid path는 반환0과 error2다. 합성 stat callback이 쓴 FileInfo+18은 caller가 읽을 크기 필드로 유지된다. close는 lower 실패에서도 wrapper 해제 helper를 호출한다. 반환값은 lower가 0이면 0, 비제로이면 1로 정규화한다. open도 wrapper 할당 성공 시 같은 방식으로 정규화하며 read·stat은 lower의 32비트 반환값을 유지한다. 이 차이는 합성 반환값 0·1·2·0xffffffff로 확인했다. 실제 lower close 동작은 실행하지 않았다.</p>
+<p>이 facade의 read/stat은 내부 mutex acquire 반환값을 분기 조건으로 쓰지 않는다. 합성 lock 반환0에서도 lower callback과 unlock이 호출됐다. 상위 loader의 mutex gate는 별도이며 이 관찰을 실제 동시성 오류나 잠금 정책 부재로 확대하지 않는다.</p>
+<h2>하위 함수와 남은 경계</h2>
+<div class="table-scroll"><table><thead><tr><th>backend</th><th>open thunk → target</th><th>close thunk → target</th><th>read thunk → target</th><th>stat thunk → target</th></tr></thead><tbody>
+<tr><td>Fat</td><td><code>52f4a9ec</code> → <code>52f4a934</code></td><td><code>52f4a4e4</code> → <code>52f4a46c</code></td><td><code>52f4a56c</code> → <code>52f4a4ec</code></td><td><code>52f4afc0</code> → <code>52f4aea4</code></td></tr>
+<tr><td>ExFat</td><td><code>52f459c8</code> → <code>52f458e8</code></td><td><code>52f45a3c</code> → <code>52f459d0</code></td><td><code>52f45abc</code> → <code>52f45a44</code></td><td><code>52f47364</code> → <code>52f47210</code></td></tr>
+<tr><td>Virtual</td><td><code>52fecdb4</code> → <code>52fec94c</code></td><td><code>52fec1a4</code> → <code>52fec114</code></td><td><code>52fec29c</code> → <code>52fec1ac</code></td><td><code>52fed5c4</code> → <code>52fed4ec</code></td></tr>
+</tbody></table></div>
+<p>모든 위 thunk는 r0에서4를 빼 primary 객체를 복원한 뒤 branch한다. 추가로 Fat read의 <code>52f4a510→533681c4</code>, ExFat read의 <code>52f45a84→5337f554</code> 직접 호출까지 확인했다. lower library 내부·IPC·장치 driver는 추적하거나 실행하지 않았다. 이 두 호출은 검증 가능한 소프트웨어 경계이며 실제 I/O 증거가 아니다. <a href="update-file-interface-evidence.json">Fat read</a> · <a href="update-file-interface-evidence.json">ExFat read</a></p>
+<h2>재현과 검증 범위</h2>
+<p><a href="../verify_update_file_interface.py">파일 인터페이스 재현 도구</a>는 pinned RTOS 또는 decoded.bin SHA를 검증한다. 원본 ARM 49사례는 factory fragment/실제 ctor alias4, 첫문자 index10, backend 분기8, open 반환값4 및 invalid1, read7 및 invalid3, stat7 및 invalid1, close4다. factory의 vptr와 네 alias 필드는 예상값과 다른 값으로 채운 뒤 실제 저장 결과를 확인했다. factory fragment는 <code>52f51644..16d8</code>이며 합성 r4와 frame을 주입했다. factory의 전체 시작 경로나 mount 전체를 실행한 검사는 아니다.</p>
+<p>명시적 stub은 lower FS callbacks, factory/handle 할당, mutex, assertion, handle bookkeeping/free, strlen, FileSystem initialize 경계다. 문자열 길이는 합성 NUL 문자열에서만 계산한다. 요청된 수천만 바이트를 실제로 할당하거나 읽지 않는다. CPU 모델은 Unicorn Cortex-A15이며 카메라 재현 정확도를 주장하지 않는다. genuine angr C8개는 그대로 보존하되 ARM을 조건·주소의 기준으로 사용한다.</p>
+
+
+<h2 id="lifetime">압축 입력과 decoded 출력의 공존</h2>
+<p>종류 2의 검증 진입점 <code>52fefb84</code>는 state+48의 입력 포인터와 +44의 길이를 packageContext+1c/+20으로 전달한다. <code>52ff2e04 → 52ff4b0c → 52ff5168</code>을 거쳐 validator+8/+c에 같은 입력을 연결한다. 원본 함수는 헤더·종류·외부 합계를 검사한 뒤 <code>52ff4f88</code>이 별도의 출력 버퍼를 할당하고 기존 입력의 +80 주소를 디코더에 넘긴다. 이 구간에는 입력 해제 호출이 없다. 공개 연결 검사의 외부 합계 필드는 <code>0xffffffff</code> sentinel이므로 실제 합계 비교를 건너뛴다. 별도 비공개 검토에서 실제 외부 합계의 일치·불일치 2사례를 검사했다. <a href="update-buffer-lifetime-evidence.json">연결 주소·해시·공존 근거</a></p>
+<figure><figcaption>종류 2의 입력·출력 소유 관계</figcaption><ol class="flow"><li><strong>입력 버퍼 유지</strong><span>state+48 → packageContext+1c<br>→ validator+8<br>압축 본문은 input+80</span></li><li><strong>별도 출력 할당</strong><span>같은 IMAGE1 pool<br>footer+10 길이 요청<br>디코더 실행 시 입력·출력 공존</span></li><li><strong>검증 후 인계</strong><span>validator+10/+14<br>→ packageContext+24/+28<br>→ CPU context+24/+28</span></li></ol></figure>
+<p>앞선 <a href="update-memory.html">메모리 할당 조사</a>에서 구한 입력·출력의 OS 요청 합계는 원본 <strong>113,790,848바이트</strong>, 선택 블록만 바꾼 후보 <strong>113,820,928바이트</strong>, 전체 stored 후보 <strong>157,374,848바이트</strong>다. 이제 이 합계를 두 요청이 공존하는 시점과 연결할 수 있다. 이는 전체 업데이트의 최고 메모리 사용량이 아니다. 디코더 작업 공간, 다른 할당, OS 내부 오버헤드, 현재 가용 연속 공간은 포함하지 않았다.</p>
+<h2 id="failure">디코더·체크섬 실패에 따른 출력 수명</h2>
+<div class="table-scroll"><table><thead><tr><th>분기</th><th>새 출력 해제 요청</th><th>validator+10/+14</th><th>근거</th></tr></thead><tbody>
+<tr><td>할당 실패</td><td>디코더 진입 전 false assertion</td><td>기존 값</td><td>52ff5014; 검사는 이 경계에서 정지</td></tr>
+<tr><td>디코더 반환 0</td><td>pool slot+c 호출</td><td>기존 값</td><td>52ff5058 → 52ff515c</td></tr>
+<tr><td>출력 길이 불일치</td><td>pool slot+c 호출</td><td>기존 값</td><td>52ff5064 → 52ff50ac</td></tr>
+<tr><td>내부 체크섬 실패</td><td>이 함수에서는 호출하지 않음</td><td>새 출력 포인터·길이 유지</td><td>52ff50e4/50ec 기록 후 52ff50f0 검사</td></tr>
+<tr><td>검증 성공</td><td>이 함수에서는 호출하지 않음</td><td>새 출력 포인터·길이 유지</td><td>52ff4c44 getter로 상위 context에 인계</td></tr>
+</tbody></table></div>
+<p>실패 시 기존 필드가 보존되는 조건은 sentinel을 넣은 원본 ARM 실행으로 확인했다. 내부 체크섬 실패는 출력 필드 기록 이후에 발생한다. 따라서 반환값 0만 보고 출력 할당이 모두 회수됐다고 볼 수 없다. 이후 전체 상태 전환이나 재부팅에서의 회수, 반복 검증 호출의 실제 도달 가능성은 미확정이므로 전역 메모리 누수로 단정하지 않는다. <a href="update-buffer-lifetime-checks.json">실패·인계 13사례</a></p>
+<p>성공 경로에서는 packageContext와 CPU context로 decoded 출력이 전달된다. 그 다음 하위 section 7 검색이 실패하면 상위 함수는 0을 반환해도 이미 전달한 포인터는 유지한다. 여기서 공개 성공 사례는 외부 합계의 sentinel 경로를 통과했다. 하위 section 검증 함수 두 개는 합성 반환값으로 대체했으며 실제 부속 펌웨어나 장치의 검증을 수행하지 않았다.</p>
+<h2 id="cleanup">입력 정리와 pool 해제의 반환값</h2>
+<p><code>52feec18(state, flag)</code>에서 입력이 없으면 해제 요청을 생략한다. 입력이 있고 flag가 0이면 포인터를 지우되 pool에 반환하지 않는다. flag가 0이 아니면 <code>52ff622c</code>에 해제를 요청하고 반환값이 0일 때는 포인터와 종류·경로·길이의 초기화 전에 종료한다. 비제로 반환을 받으면 먼저 state+48을 0으로 지우고 각 component의 입력 setter를 호출한다. 그 뒤 종류=8, 경로·길이=0을 기록한다. flag=0인 실제 호출 위치 <code>533164c0</code>도 존재한다. flag의 소유권 의미를 다른 진입 경로 전체로 확장하지 않았다. <a href="update-buffer-lifetime-evidence.json">정리 함수·호출자</a></p>
+<p><code>52ff622c</code>는 resourceManager+30 pool의 slot+18로 주소 소속을 확인하고 아니면 +34 pool을 검사한다. 일치한 pool의 slot+c를 호출한 뒤 반환하는 값은 저장해 둔 mutex 획득 결과다. pool 해제 함수의 성공 여부는 이 반환값에 반영하지 않는다. 어느 pool에도 속하지 않으면 false assertion에 도달한다. 두 실패 사례에서는 assertion이 반환한다고 가정해 이후 흐름을 확인했지만 실제 카메라의 실패 처리 정책은 재현하지 않았다.</p>
+<p>IMAGE1의 slot+18 대상 <code>530efb60</code>은 unsigned <code>base ≤ pointer &lt; base+size</code>를 검사한다. 확인된 필드 base=<code>6e500000</code>, size=<code>31affff0</code>를 대입하면 끝 경계는 <code>9ffffff0</code>이며 그 주소 자체는 제외된다. 앞서 초기 설정 영역의 끝을 <code>a0000000</code>으로 기록한 것과 구분해야 한다. 마지막 16바이트는 이 소프트웨어 소속 검사 범위 밖이다. 이는 물리 DRAM 매핑이나 실제 가용 공간을 입증하지 않는다.</p>
+<p>slot+c의 실제 대상 <code>530efee8</code>은 aligned 포인터 −8의 debug 포인터를 읽고 그 소속을 확인한 후 backpointer를 0으로 지운다. debug 포인터에서 <code>0x18</code>을 빼 raw 주소를 복원하고 <code>525b75e0(handle, raw)</code>에 전달한다. OS 반환값이 0이면 pool 함수는 1을 반환한다. 이 검사는 OS 호출을 합성 함수로 대체했으므로 실제 메모리 반환을 증명하지 않는다. <a href="../verify_update_buffer_lifetime.py">버퍼 수명 재현 도구</a></p>
+<p>현재 확인한 setter와 정리 구간은 validator의 decoded 필드와 상위 context의 decoded 필드를 지우지 않는다. 다만 component 5의 reset 함수 <code>52ff31c4</code>는 호출 인자만 확인하는 경계로 남겼다. 이후 리소스 슬롯 조회와 전체 업데이트 종료 과정까지 따라가야 최종 출력 회수 시점을 확정할 수 있다.</p>
+<h2 id="verification">검증 결과와 남은 조사</h2>
+<p>파일 인터페이스 49사례와 버퍼 수명 33사례, 합계 <strong>82사례</strong>를 원본 ARM으로 실행했다. 두 재현 도구 모두 RTOS 이미지와 통합 decoded 이미지에서 같은 결과를 냈다. 새 genuine C 17개와 원본 ARM 2,422 words의 주소·해시를 로컬에 보존했다. 공개 자료에는 바이너리·의사코드 본문 대신 분석과 검사 도구를 싣는다. 두 도구는 입력 SHA-256을 확인하고 기존 결과 덮어쓰기와 assert 비활성 실행을 거부한다.</p>
+<p>실제 시작 호출자와 mount 상태, update filename→volume 연결, descriptor 필드의 단위, FAT/exFAT 하위 드라이버, decoded 출력의 최종 회수와 반복 검증 조건이 다음 조사 대상이다. 이번 결과는 파일 입력 경로와 메모리 수명을 좁혀 준다. 카메라에서 수정 펌웨어를 수용하거나 정상 실행한다는 근거로 사용할 수는 없다.</p>
+<pre><code>python verify_update_file_interface.py rtos.bin --output interface-checks.json
+python verify_update_buffer_lifetime.py rtos.bin --output lifetime-checks.json</code></pre></main><footer>정적 분석과 합성 CPU 실행 결과다. 실제 장치·저장소·OS·디코더 하드웨어는 실행하지 않았다. HTML 구조·링크를 검사했다. HQ가 주소 줄바꿈 수정본을 Edge 157.0.4341.42의 390px·1280px에서 재검사했다. 전체 가로 넘침은 없었고 표 5개의 마지막 열에 접근할 수 있었다. 8자리 주소 토큰 61개의 중간 줄바꿈도 없었다. 검사 판본의 해시는 연결된 메타데이터에 기록했다.</footer></body></html>

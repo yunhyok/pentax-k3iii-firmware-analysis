@@ -1,0 +1,2882 @@
+{
+  "schema_version": 1,
+  "image": {
+    "base": "0x52500000",
+    "size": 25483200,
+    "sha256": "342d2f35405e8daf1797dfe431d2e4aa70f4b52a2c242a29df48206672f1dfb4"
+  },
+  "functions": [
+    {
+      "label": "factory_initialize",
+      "start": "0x52f510e8",
+      "end": "0x52f51790",
+      "size": 1704,
+      "sha256": "b769a056ebcc2d0ecddb48c27f1c77a0cab76f0a373750263cb54b4d1f6eb2ba",
+      "assembly_sha256": "8248477a49b014fd6537381e013602bf0aa308bb01dcea0066ece852d0e2da89",
+      "pseudocode_sha256": "ce4ccdad25fb93e33dbc57761e0753bc27e7a6c6183632883cf173e9117a7734",
+      "angr_version": "10.0.5",
+      "scope": "bounded static analysis; bounds manually selected from returns and neighboring prologues; unresolved indirect calls assumed returning"
+    },
+    {
+      "label": "filesystem_ctor",
+      "start": "0x52f4e66c",
+      "end": "0x52f4e6d4",
+      "size": 104,
+      "sha256": "2f43edd5bb265f3a8180ae639f50f828e33000366b921f529005f48464cc0120",
+      "assembly_sha256": "e557ee1f4eb772e45e44257cea9c924522289481f9e110c8ca6b290dc7d2de0f",
+      "pseudocode_sha256": "69bd42b440338067896a9479b928bc83ce3d1faecfa2e8e2b0ed3bd725b20e28",
+      "angr_version": "10.0.5",
+      "scope": "bounded static analysis; bounds manually selected from returns and neighboring prologues; unresolved indirect calls assumed returning"
+    },
+    {
+      "label": "filesystem_open",
+      "start": "0x52f50398",
+      "end": "0x52f50518",
+      "size": 384,
+      "sha256": "3916685bbe2326b0ab49bddf89d4a73e3a0c38155d278325af77656b97a09ac4",
+      "assembly_sha256": "cb75c386788153c3ee7589f66fef4e835a8f7417ccb79dd79d26a49f242cd81d",
+      "pseudocode_sha256": "6f4de4bdd4f471e57b4cedf8c9f17676323890799393a0128abfd55be40501c0",
+      "angr_version": "10.0.5",
+      "scope": "bounded static analysis; bounds manually selected from returns and neighboring prologues; unresolved indirect calls assumed returning"
+    },
+    {
+      "label": "filesystem_close",
+      "start": "0x52f50864",
+      "end": "0x52f509a4",
+      "size": 320,
+      "sha256": "f08ce4e178104cf27690878193dfff409d4202c2f670950961ca162098097443",
+      "assembly_sha256": "e1b0e3b621a421ab3425f0d25ffffc79da638f6c32150bfe23f13929a7ef99ff",
+      "pseudocode_sha256": "8f771536a3baa1b0f4ac8b730efba6c61b0dd839e569d913d866e05437c27997",
+      "angr_version": "10.0.5",
+      "scope": "bounded static analysis; bounds manually selected from returns and neighboring prologues; unresolved indirect calls assumed returning"
+    },
+    {
+      "label": "filesystem_read",
+      "start": "0x52f4e7b4",
+      "end": "0x52f4e898",
+      "size": 228,
+      "sha256": "effd2c7820a7781824346df80f006d83e043b0c35b148aa2a4747618a6c526ef",
+      "assembly_sha256": "3b73cacd740a89506623ad9c562f9f8eeb419915bfd2a6187a1decd66fca1fe1",
+      "pseudocode_sha256": "5c45267654a9b401d27576e37fdd265602fcdc294113bc77e4a709bd63ec5904",
+      "angr_version": "10.0.5",
+      "scope": "bounded static analysis; bounds manually selected from returns and neighboring prologues; unresolved indirect calls assumed returning"
+    },
+    {
+      "label": "filesystem_stat",
+      "start": "0x52f4f068",
+      "end": "0x52f4f13c",
+      "size": 212,
+      "sha256": "918ca09b930edfaaf2080184982e897fc635d5a23f3ab2af79ebf78057a2bd66",
+      "assembly_sha256": "68b51abcef94a97d15e387f5d7623a27c6c6ef8ec5781860ea3bc3261f26f763",
+      "pseudocode_sha256": "d4e04c541136bf263fed121a089a743338878e01111733ab02395e6bef446c44",
+      "angr_version": "10.0.5",
+      "scope": "bounded static analysis; bounds manually selected from returns and neighboring prologues; unresolved indirect calls assumed returning"
+    },
+    {
+      "label": "filesystem_backend_select",
+      "start": "0x52f4fd70",
+      "end": "0x52f4fe18",
+      "size": 168,
+      "sha256": "56aff2040769ffb02d0ff3ceec44eab7b2cfba41ca8f4e22c40c5b671d40408c",
+      "assembly_sha256": "ebfd7bd1f2b3b598ce85e761198016c1e8e073d2b7e4a4b12d3b60510a061899",
+      "pseudocode_sha256": "c72f6369a3c7767e9090df816a996ead6805e60429638f206ea25bda6e1aa2ea",
+      "angr_version": "10.0.5",
+      "scope": "bounded static analysis; bounds manually selected from returns and neighboring prologues; unresolved indirect calls assumed returning"
+    },
+    {
+      "label": "volume_path_index",
+      "start": "0x52f52554",
+      "end": "0x52f52630",
+      "size": 220,
+      "sha256": "7b96fc646c98c9e182d6af196e102d7aa2252a6a031de8375134f133e152b49f",
+      "assembly_sha256": "0c1b1117b65ff82d066fd8cf1607136435aa6f17c5c93917d0cd01636e672e6c",
+      "pseudocode_sha256": "fe0b2974e5425ce7065e8e3a7255503078a444dfa079f7705f2896824eef56dd",
+      "angr_version": "10.0.5",
+      "scope": "bounded static analysis; bounds manually selected from returns and neighboring prologues; unresolved indirect calls assumed returning"
+    }
+  ],
+  "fragments": [
+    {
+      "label": "factory_singleton",
+      "start": "0x52f50f6c",
+      "end": "0x52f50ff0",
+      "size": 132,
+      "sha256": "fce04658f0b74ff65d76dd22122df16acba6dcc8758fc56ef114f89c9d1d0e13",
+      "assembly_sha256": "932d64115b6b53ba35a594ba0e7fc7b98a8d5905c943475353991c82844d015a",
+      "scope": "Supporting original range including literals when present; no additional genuine C claim"
+    },
+    {
+      "label": "filesystem_base_ctor",
+      "start": "0x52f51790",
+      "end": "0x52f517b8",
+      "size": 40,
+      "sha256": "31dd0469796f9cc543f627361e9e7efd32f3655801689f3fdadeeb021742a396",
+      "assembly_sha256": "38a89b76c6e2bd0aebdb44491bf2078b6d3b05813d99dde33ecbb7a6d5996b34",
+      "scope": "Supporting original range including literals when present; no additional genuine C claim"
+    },
+    {
+      "label": "interface_base_ctor",
+      "start": "0x52f4e074",
+      "end": "0x52f4e088",
+      "size": 20,
+      "sha256": "db548ef043f7ed371125e6de8808740b23f9d70bd3a1a2801d0fde1d62f1a04e",
+      "assembly_sha256": "cb1f633e7535e299c42c890ef2174bfa152afb62f1a77eac53047d8de9b04827",
+      "scope": "Supporting original range including literals when present; no additional genuine C claim"
+    },
+    {
+      "label": "filesystem_ctor_literal",
+      "start": "0x52f4e6d4",
+      "end": "0x52f4e6d8",
+      "size": 4,
+      "sha256": "c573d9ec89cd8b79867b5e49fb369d5c3546ec816fa7a4b14b5f01365bd2cfa1",
+      "assembly_sha256": "1b226053d0573b0323af70c42c3b2bd62c25d63c2334273a3b8b8495e14664d1",
+      "scope": "Supporting original range including literals when present; no additional genuine C claim"
+    },
+    {
+      "label": "filesystem_initialize",
+      "start": "0x52f4e14c",
+      "end": "0x52f4e4e8",
+      "size": 924,
+      "sha256": "17238bfafd9a58e28ea92c65f446bbed96c1fd486cccc14961c9aaf4008cc425",
+      "assembly_sha256": "c9a33dd34c83dde32ee0b2c863dbd856758f6658b556f59b5953b44b3564ded5",
+      "scope": "Supporting original range including literals when present; no additional genuine C claim"
+    },
+    {
+      "label": "filesystem_mount",
+      "start": "0x52f50144",
+      "end": "0x52f50328",
+      "size": 484,
+      "sha256": "d8c43e5865b2ccd16e2e4d35f83d45136d347a2a0834d62e56933b19af9ff613",
+      "assembly_sha256": "f68c952a0725bc36cf68d3565b7b8c6aa71be039617fdc2b2c7548e620db1278",
+      "scope": "Supporting original range including literals when present; no additional genuine C claim"
+    },
+    {
+      "label": "volume_descriptor_get",
+      "start": "0x52f52630",
+      "end": "0x52f52674",
+      "size": 68,
+      "sha256": "ff51b2ce65d1098aa2c6d6190e3ed6556779c3af599eaee133d66b6ef17c7277",
+      "assembly_sha256": "fb59544f9de83e2eb7c062ef020ef44ec9566d6bdfd35e094c3cd55d02296654",
+      "scope": "Supporting original range including literals when present; no additional genuine C claim"
+    },
+    {
+      "label": "volume_mutex_get",
+      "start": "0x52f4e750",
+      "end": "0x52f4e7b4",
+      "size": 100,
+      "sha256": "c0e6dc5c0c2455dcbac0cf185c99d32fb0c9dee2c6fbb67d2e3b128fb945b0f2",
+      "assembly_sha256": "2cf4219e7fa95e86add9b59d63d9195471e1df6c4a60ca26f47d6076af5f729d",
+      "scope": "Supporting original range including literals when present; no additional genuine C claim"
+    },
+    {
+      "label": "fat_ctor",
+      "start": "0x52f49894",
+      "end": "0x52f498f4",
+      "size": 96,
+      "sha256": "9eab9195d243860599ef0b81724d056d6cbc1f4372fe63fbdbed36540f01a8bb",
+      "assembly_sha256": "16c5b5b6aa49c55bcfb08217d8effa222bee2d327223aa5c3dbc3c89ac26daec",
+      "scope": "Supporting original range including literals when present; no additional genuine C claim"
+    },
+    {
+      "label": "exfat_ctor",
+      "start": "0x52f453d0",
+      "end": "0x52f45430",
+      "size": 96,
+      "sha256": "14e00491b6395384964ba8494904b346ee94a9a64946aace6613ee96861d0e88",
+      "assembly_sha256": "389aba8eacbdb6dfe2392849f2a9ef1eca4792c221341f9c0229bac2ccb17ccd",
+      "scope": "Supporting original range including literals when present; no additional genuine C claim"
+    },
+    {
+      "label": "virtual_ctor",
+      "start": "0x52fec39c",
+      "end": "0x52fec3ec",
+      "size": 80,
+      "sha256": "d68a044b3f2632f5c77c8adf175d3751d577e2e38e0dfb7854ef6a2c6368b027",
+      "assembly_sha256": "80fb57fb89d8762e8f6e3ea8b484ca5a1b8ace2a1f2a1f2f4e76af2da4d32d07",
+      "scope": "Supporting original range including literals when present; no additional genuine C claim"
+    },
+    {
+      "label": "fat_read_library_boundary",
+      "start": "0x52f4a4ec",
+      "end": "0x52f4a56c",
+      "size": 128,
+      "sha256": "0f385e28729fc87274aa5a8efc2d211267c40e583d8adadd2b31ba45d52986a6",
+      "assembly_sha256": "391c1890273a911e86db3c80d02c59e77a707dbc651a0ebce5ca8ba542540d9e",
+      "scope": "Supporting original range including literals when present; no additional genuine C claim"
+    },
+    {
+      "label": "exfat_read_library_boundary",
+      "start": "0x52f45a44",
+      "end": "0x52f45abc",
+      "size": 120,
+      "sha256": "26cd870d79800d1685d2f55df8040d269775489fdf587d52164a2acb332f5e43",
+      "assembly_sha256": "d6c96b9a503803aea7df2e29b747d9dc2bb9456ab00ad1d330b834b736addddc",
+      "scope": "Supporting original range including literals when present; no additional genuine C claim"
+    },
+    {
+      "label": "resource_manager_factory_alias",
+      "start": "0x52ff5c7c",
+      "end": "0x52ff5c94",
+      "size": 24,
+      "sha256": "3c4eeb855ec2b591642bc486190dc772690e90c0f58bdda6021967a1ae0413fa",
+      "assembly_sha256": "762d4ad3b69bf65bf6adef359cf50879a3690de1ba53e71e7a62edfacda56555",
+      "scope": "Supporting original range including literals when present; no additional genuine C claim"
+    },
+    {
+      "label": "loader_file_dispatch",
+      "start": "0x52ff6dd4",
+      "end": "0x52ff6ef8",
+      "size": 292,
+      "sha256": "f090d05403c506674a1f632f2a4dc9c243e808161ce298a38405488e4fdfce24",
+      "assembly_sha256": "fe44aa75ac8cfd9302b22ae4858cf4f5109db7d44d10c80b574944fde6df882a",
+      "scope": "Supporting original range including literals when present; no additional genuine C claim"
+    },
+    {
+      "label": "loader_stat_dispatch",
+      "start": "0x52ff7c38",
+      "end": "0x52ff7d10",
+      "size": 216,
+      "sha256": "583e98fb93dc545893f6208b98fae4b7b4e3a4356f3588b876ca93c7c7d4f120",
+      "assembly_sha256": "8fb6c3c9fff46a0e18fabcbec38dcbfa466230ffe6608bf9b79662e972e99b11",
+      "scope": "Supporting original range including literals when present; no additional genuine C claim"
+    },
+    {
+      "label": "backend_thunk_52f4a9ec",
+      "start": "0x52f4a9ec",
+      "end": "0x52f4a9f4",
+      "size": 8,
+      "sha256": "b4c39bd7dd059827fd1ea723eece709cacd03ee5a7ef8f4405ff17a05f896f61",
+      "assembly_sha256": "7149b18d3d9ab15eb68593d89e527e36afe7bd78e156d0434e93e7e7d0f34bf7",
+      "scope": "Supporting original range including literals when present; no additional genuine C claim"
+    },
+    {
+      "label": "backend_thunk_52f4a4e4",
+      "start": "0x52f4a4e4",
+      "end": "0x52f4a4ec",
+      "size": 8,
+      "sha256": "44ffffadcf1ba4477501303abb38a9f36433ed9bae7afbd36b91d5e4a59fe10e",
+      "assembly_sha256": "c12a20edcb0c73c6a4624818846393cc0125a4b83762621ab515340150bd3c79",
+      "scope": "Supporting original range including literals when present; no additional genuine C claim"
+    },
+    {
+      "label": "backend_thunk_52f4a56c",
+      "start": "0x52f4a56c",
+      "end": "0x52f4a574",
+      "size": 8,
+      "sha256": "d85b2b1b393c63fec0f9cfae5158a9ffa52a52a4c2abd7ff41732e9e2d151d8c",
+      "assembly_sha256": "799333e8804294cecf132793b0a94660114416eacfbf28940830ad322ba8d156",
+      "scope": "Supporting original range including literals when present; no additional genuine C claim"
+    },
+    {
+      "label": "backend_thunk_52f4afc0",
+      "start": "0x52f4afc0",
+      "end": "0x52f4afc8",
+      "size": 8,
+      "sha256": "b5df7c80ea1cb822096cb821e8dbb2b027e04ef3ce5469676133a4e415bf5d7b",
+      "assembly_sha256": "9d4f389fae3711a3495dd81542fdd34fc53ca2cc487e6bf7edfc8ce7915d5fbc",
+      "scope": "Supporting original range including literals when present; no additional genuine C claim"
+    },
+    {
+      "label": "backend_thunk_52f459c8",
+      "start": "0x52f459c8",
+      "end": "0x52f459d0",
+      "size": 8,
+      "sha256": "b12c5bec5ffa9f3a09d526c2634bfe93cc32ea58f31d8ced73d6cdd8e7a524e2",
+      "assembly_sha256": "cb01953aba3c08d68291415cdc84c0f60bb490deb13bce310f44aa900c39f575",
+      "scope": "Supporting original range including literals when present; no additional genuine C claim"
+    },
+    {
+      "label": "backend_thunk_52f45a3c",
+      "start": "0x52f45a3c",
+      "end": "0x52f45a44",
+      "size": 8,
+      "sha256": "15054574e79ec03d0a8ae7d4daea4442323a708e3757db147b55c448ebaa1208",
+      "assembly_sha256": "0ba0ce1f5cd96e9e5daf406eb2a1712ba409152f05d6355e4208d64e820a4220",
+      "scope": "Supporting original range including literals when present; no additional genuine C claim"
+    },
+    {
+      "label": "backend_thunk_52f45abc",
+      "start": "0x52f45abc",
+      "end": "0x52f45ac4",
+      "size": 8,
+      "sha256": "44ffffadcf1ba4477501303abb38a9f36433ed9bae7afbd36b91d5e4a59fe10e",
+      "assembly_sha256": "f432cfa1d6b1a993d24e4e42981464e6cc19528189b2b86efd9679a2f0a2a505",
+      "scope": "Supporting original range including literals when present; no additional genuine C claim"
+    },
+    {
+      "label": "backend_thunk_52f47364",
+      "start": "0x52f47364",
+      "end": "0x52f4736c",
+      "size": 8,
+      "sha256": "1487dc3923a01168c8c8875767b53f61175c7901cfb2f0df232683b9e6923c2b",
+      "assembly_sha256": "69296458c0ab75cbe7f4768acd053af4592d45251416bd6e379c5c0f83b1bab4",
+      "scope": "Supporting original range including literals when present; no additional genuine C claim"
+    },
+    {
+      "label": "backend_thunk_52fecdb4",
+      "start": "0x52fecdb4",
+      "end": "0x52fecdbc",
+      "size": 8,
+      "sha256": "edcaeed50c38fcaa7e4cda0a4da675dc70b8b9f5e96a255663995eb9d4e4869d",
+      "assembly_sha256": "83dea22c3a80cfb6b8259302a772e365d0c64fe3e5a3569a756faf2db3ee4c6f",
+      "scope": "Supporting original range including literals when present; no additional genuine C claim"
+    },
+    {
+      "label": "backend_thunk_52fec1a4",
+      "start": "0x52fec1a4",
+      "end": "0x52fec1ac",
+      "size": 8,
+      "sha256": "a6334e85965558cdff68d24713458371322abac2f22424452e3a84e9cc22c348",
+      "assembly_sha256": "7aac0e238450b79e29bded56cb39e45b3734f157eac5ec3859a64724ff52ce27",
+      "scope": "Supporting original range including literals when present; no additional genuine C claim"
+    },
+    {
+      "label": "backend_thunk_52fec29c",
+      "start": "0x52fec29c",
+      "end": "0x52fec2a4",
+      "size": 8,
+      "sha256": "6608019eec018f336a5bc731cb53d931c33b0a0e48d9d955222f491e730ae7dd",
+      "assembly_sha256": "30e789fb6162339c9334ddbcfd350d09b7b2247cce20cefd71868019d2fe31bd",
+      "scope": "Supporting original range including literals when present; no additional genuine C claim"
+    },
+    {
+      "label": "backend_thunk_52fed5c4",
+      "start": "0x52fed5c4",
+      "end": "0x52fed5cc",
+      "size": 8,
+      "sha256": "b15fce4f8ed2dd031702293f98ee64d73fa745be267928a88031acce356167b0",
+      "assembly_sha256": "bd42f8150a79a5facb385a88df07f79d2f9d455f0bd4d0e7979a8d8ec3e362ca",
+      "scope": "Supporting original range including literals when present; no additional genuine C claim"
+    }
+  ],
+  "resources": [
+    {
+      "label": "FileSystemFactory_primary_header",
+      "address": "0x539014b8",
+      "source_address": "0x539014b8",
+      "size": 32,
+      "sha256": "891f146dc82b7b8af217781e108110a839c1efac4670fa0da58c2ed5b16df51b"
+    },
+    {
+      "label": "FileSystemFactory_rtti",
+      "address": "0x53901494",
+      "source_address": "0x53901494",
+      "size": 32,
+      "sha256": "32ace77917b1386c53257f9dd546662ca20baf399ec29181930a799520313fef"
+    },
+    {
+      "label": "FileSystemFactory_name",
+      "address": "0x539014d8",
+      "source_address": "0x539014d8",
+      "size": 20,
+      "sha256": "1dad12c15c11f27f476bea4b67cf67636f5c2643e759b13e79ff216c46033914",
+      "text": "17FileSystemFactory"
+    },
+    {
+      "label": "FileSystem_primary_header",
+      "address": "0x53901300",
+      "source_address": "0x53901300",
+      "size": 168,
+      "sha256": "b22a0e487e152fcf38de636c1934d963509869eb7354278560b48dea0a8911b0"
+    },
+    {
+      "label": "FileSystem_rtti",
+      "address": "0x539012c8",
+      "source_address": "0x539012c8",
+      "size": 32,
+      "sha256": "063ca83175d9e8d8b15d43219f5f5e01b0bc7116a6f8572c0fcb4ae9ea8353e0"
+    },
+    {
+      "label": "FileSystem_name",
+      "address": "0x539012b8",
+      "source_address": "0x539012b8",
+      "size": 13,
+      "sha256": "7c0bc2dde2391a4d193d63fd3e94f103e8a7eae73591d5ad21d76b2b3ef99217",
+      "text": "10FileSystem"
+    },
+    {
+      "label": "FileSystem_secondary",
+      "address": "0x539013a8",
+      "source_address": "0x539013a8",
+      "size": 160,
+      "sha256": "5be5d8ef0005970442ce66813bba73b8709152e49f019d99c2b5953ff42f1d3e"
+    },
+    {
+      "label": "FatFileSystem_primary_header",
+      "address": "0x53900ea8",
+      "source_address": "0x53900ea8",
+      "size": 168,
+      "sha256": "b1cf4f159373d7de1a0f01fdde3b75626a7d2827c3b29329857a0fa348fe4515"
+    },
+    {
+      "label": "FatFileSystem_rtti",
+      "address": "0x53900e84",
+      "source_address": "0x53900e84",
+      "size": 32,
+      "sha256": "776b2969af9267dc828732b86162158ee0518e5ef80de5384d9ed90aad403797"
+    },
+    {
+      "label": "FatFileSystem_name",
+      "address": "0x53901000",
+      "source_address": "0x53901000",
+      "size": 16,
+      "sha256": "25fd7e04a27264189fa9ac4ad29ffbc1d349e47777dbe9b49cfccfc9363ea536",
+      "text": "13FatFileSystem"
+    },
+    {
+      "label": "FatFileSystem_secondary",
+      "address": "0x53900f50",
+      "source_address": "0x53900f50",
+      "size": 160,
+      "sha256": "11ef032bf14555755c43ad5bed6a28262fa948f0c533feaa9e69c28ab6348a36"
+    },
+    {
+      "label": "ExFatFileSystem_primary_header",
+      "address": "0x538fe160",
+      "source_address": "0x538fe160",
+      "size": 168,
+      "sha256": "2b02fbfc520da5ccf9349c184eb06270626e38d493ef0d6a684367b782e90303"
+    },
+    {
+      "label": "ExFatFileSystem_rtti",
+      "address": "0x538fe2c4",
+      "source_address": "0x538fe2c4",
+      "size": 32,
+      "sha256": "36a9c5a99370aaf40c70647ec222fd4efd83739805707d675948bb02af41d710"
+    },
+    {
+      "label": "ExFatFileSystem_name",
+      "address": "0x538fe2b0",
+      "source_address": "0x538fe2b0",
+      "size": 18,
+      "sha256": "77b5fdd1fa8a8d019513f1c1b2ff52ab861f40adeafe469b2ddc7d8d0021f1ee",
+      "text": "15ExFatFileSystem"
+    },
+    {
+      "label": "ExFatFileSystem_secondary",
+      "address": "0x538fe208",
+      "source_address": "0x538fe208",
+      "size": 160,
+      "sha256": "835c4e5fa0f99869d87e24f3eff7839fea74c6e80ccc01a0bac7f4fe9448d55c"
+    },
+    {
+      "label": "VirtualFileSystem_primary_header",
+      "address": "0x53910698",
+      "source_address": "0x53910698",
+      "size": 168,
+      "sha256": "ec5a7cbc3a0a7d3d1ec36cd42f1e8b67b4d5001ff4509890d3e38ca14337dc22"
+    },
+    {
+      "label": "VirtualFileSystem_rtti",
+      "address": "0x53910674",
+      "source_address": "0x53910674",
+      "size": 32,
+      "sha256": "964234ec4c43600f2b9998b41bb4d7277ca83ab966b0233a86db5a731492d0d1"
+    },
+    {
+      "label": "VirtualFileSystem_name",
+      "address": "0x5391063c",
+      "source_address": "0x5391063c",
+      "size": 20,
+      "sha256": "e5d282a673c27ed4d6b0c38ad2b905565ed3efe7b6488fb1501a5a4369754fdf",
+      "text": "17VirtualFileSystem"
+    },
+    {
+      "label": "VirtualFileSystem_secondary",
+      "address": "0x53910740",
+      "source_address": "0x53910740",
+      "size": 160,
+      "sha256": "b07a64ecec85c5c59a783a64dba3c4a071a785c3b956fd25942274a34b53ce74"
+    }
+  ],
+  "pointer_words": [
+    {
+      "source_address": "0x539014bc",
+      "value": "0x53901494"
+    },
+    {
+      "source_address": "0x53901498",
+      "value": "0x539014d8"
+    },
+    {
+      "source_address": "0x53901304",
+      "value": "0x539012c8"
+    },
+    {
+      "source_address": "0x539012cc",
+      "value": "0x539012b8"
+    },
+    {
+      "source_address": "0x53900eac",
+      "value": "0x53900e84"
+    },
+    {
+      "source_address": "0x53900e88",
+      "value": "0x53901000"
+    },
+    {
+      "source_address": "0x538fe164",
+      "value": "0x538fe2c4"
+    },
+    {
+      "source_address": "0x538fe2c8",
+      "value": "0x538fe2b0"
+    },
+    {
+      "source_address": "0x5391069c",
+      "value": "0x53910674"
+    },
+    {
+      "source_address": "0x53910678",
+      "value": "0x5391063c"
+    },
+    {
+      "source_address": "0x53901328",
+      "value": "0x52f50398"
+    },
+    {
+      "source_address": "0x5390132c",
+      "value": "0x52f50864"
+    },
+    {
+      "source_address": "0x53901330",
+      "value": "0x52f4e7b4"
+    },
+    {
+      "source_address": "0x5390135c",
+      "value": "0x52f4f068"
+    },
+    {
+      "source_address": "0x53901310",
+      "value": "0x52f4e14c"
+    },
+    {
+      "source_address": "0x53900f60",
+      "value": "0x52f4a9ec"
+    },
+    {
+      "source_address": "0x53900f64",
+      "value": "0x52f4a4e4"
+    },
+    {
+      "source_address": "0x53900f68",
+      "value": "0x52f4a56c"
+    },
+    {
+      "source_address": "0x53900fa0",
+      "value": "0x52f4afc0"
+    },
+    {
+      "source_address": "0x538fe218",
+      "value": "0x52f459c8"
+    },
+    {
+      "source_address": "0x538fe21c",
+      "value": "0x52f45a3c"
+    },
+    {
+      "source_address": "0x538fe220",
+      "value": "0x52f45abc"
+    },
+    {
+      "source_address": "0x538fe258",
+      "value": "0x52f47364"
+    },
+    {
+      "source_address": "0x53910750",
+      "value": "0x52fecdb4"
+    },
+    {
+      "source_address": "0x53910754",
+      "value": "0x52fec1a4"
+    },
+    {
+      "source_address": "0x53910758",
+      "value": "0x52fec29c"
+    },
+    {
+      "source_address": "0x53910790",
+      "value": "0x52fed5c4"
+    },
+    {
+      "source_address": "0x52f50fec",
+      "value": "0x539014c0"
+    },
+    {
+      "source_address": "0x539014c8",
+      "value": "0x52f510e8"
+    },
+    {
+      "source_address": "0x52f4e6d4",
+      "value": "0x53873bd0"
+    },
+    {
+      "source_address": "0x52f517b4",
+      "value": "0x539014f8"
+    },
+    {
+      "source_address": "0x52f4e080",
+      "value": "0x53901278"
+    },
+    {
+      "source_address": "0x52f498f0",
+      "value": "0x53873bd0"
+    },
+    {
+      "source_address": "0x52f4542c",
+      "value": "0x53873bd0"
+    },
+    {
+      "source_address": "0x52fec3e8",
+      "value": "0x53873bd0"
+    }
+  ],
+  "transfers": [
+    {
+      "site": "0x52f51114",
+      "kind": "bl",
+      "target": "0x532980e8",
+      "source_range": "factory_initialize"
+    },
+    {
+      "site": "0x52f51140",
+      "kind": "bl",
+      "target": "0x530fdfc4",
+      "source_range": "factory_initialize"
+    },
+    {
+      "site": "0x52f5114c",
+      "kind": "bl",
+      "target": "0x530f25f4",
+      "source_range": "factory_initialize"
+    },
+    {
+      "site": "0x52f51158",
+      "kind": "bl",
+      "target": "0x52f52334",
+      "source_range": "factory_initialize"
+    },
+    {
+      "site": "0x52f51180",
+      "kind": "bl",
+      "target": "0x530fdfc4",
+      "source_range": "factory_initialize"
+    },
+    {
+      "site": "0x52f511b4",
+      "kind": "bl",
+      "target": "0x530fdfc4",
+      "source_range": "factory_initialize"
+    },
+    {
+      "site": "0x52f511b8",
+      "kind": "bl",
+      "target": "0x5327f6b0",
+      "source_range": "factory_initialize"
+    },
+    {
+      "site": "0x52f511c0",
+      "kind": "bl",
+      "target": "0x5327f710",
+      "source_range": "factory_initialize"
+    },
+    {
+      "site": "0x52f511ec",
+      "kind": "bl",
+      "target": "0x530fdfc4",
+      "source_range": "factory_initialize"
+    },
+    {
+      "site": "0x52f51200",
+      "kind": "bl",
+      "target": "0x52f524b8",
+      "source_range": "factory_initialize"
+    },
+    {
+      "site": "0x52f5121c",
+      "kind": "bl",
+      "target": "0x530fdfc4",
+      "source_range": "factory_initialize"
+    },
+    {
+      "site": "0x52f51228",
+      "kind": "bl",
+      "target": "0x52f51028",
+      "source_range": "factory_initialize"
+    },
+    {
+      "site": "0x52f51244",
+      "kind": "bl",
+      "target": "0x530fdfc4",
+      "source_range": "factory_initialize"
+    },
+    {
+      "site": "0x52f51280",
+      "kind": "bl",
+      "target": "0x530fdfc4",
+      "source_range": "factory_initialize"
+    },
+    {
+      "site": "0x52f51288",
+      "kind": "bne",
+      "target": "0x52f5177c",
+      "source_range": "factory_initialize"
+    },
+    {
+      "site": "0x52f51298",
+      "kind": "bl",
+      "target": "0x5327f6b0",
+      "source_range": "factory_initialize"
+    },
+    {
+      "site": "0x52f512a4",
+      "kind": "bl",
+      "target": "0x5327f710",
+      "source_range": "factory_initialize"
+    },
+    {
+      "site": "0x52f512d0",
+      "kind": "bl",
+      "target": "0x530fdfc4",
+      "source_range": "factory_initialize"
+    },
+    {
+      "site": "0x52f512e4",
+      "kind": "bl",
+      "target": "0x52f524b8",
+      "source_range": "factory_initialize"
+    },
+    {
+      "site": "0x52f51300",
+      "kind": "bl",
+      "target": "0x530fdfc4",
+      "source_range": "factory_initialize"
+    },
+    {
+      "site": "0x52f5130c",
+      "kind": "bl",
+      "target": "0x52f51028",
+      "source_range": "factory_initialize"
+    },
+    {
+      "site": "0x52f51328",
+      "kind": "bl",
+      "target": "0x530fdfc4",
+      "source_range": "factory_initialize"
+    },
+    {
+      "site": "0x52f51368",
+      "kind": "bl",
+      "target": "0x530fdfc4",
+      "source_range": "factory_initialize"
+    },
+    {
+      "site": "0x52f51374",
+      "kind": "bne",
+      "target": "0x52f51784",
+      "source_range": "factory_initialize"
+    },
+    {
+      "site": "0x52f51378",
+      "kind": "bl",
+      "target": "0x5327f6b0",
+      "source_range": "factory_initialize"
+    },
+    {
+      "site": "0x52f51384",
+      "kind": "bl",
+      "target": "0x5327f710",
+      "source_range": "factory_initialize"
+    },
+    {
+      "site": "0x52f513b0",
+      "kind": "bl",
+      "target": "0x530fdfc4",
+      "source_range": "factory_initialize"
+    },
+    {
+      "site": "0x52f513b4",
+      "kind": "b",
+      "target": "0x52f513c0",
+      "source_range": "factory_initialize"
+    },
+    {
+      "site": "0x52f513c4",
+      "kind": "beq",
+      "target": "0x52f513b8",
+      "source_range": "factory_initialize"
+    },
+    {
+      "site": "0x52f513d8",
+      "kind": "bl",
+      "target": "0x52f524b8",
+      "source_range": "factory_initialize"
+    },
+    {
+      "site": "0x52f513f4",
+      "kind": "bl",
+      "target": "0x530fdfc4",
+      "source_range": "factory_initialize"
+    },
+    {
+      "site": "0x52f51400",
+      "kind": "bl",
+      "target": "0x52f5107c",
+      "source_range": "factory_initialize"
+    },
+    {
+      "site": "0x52f5141c",
+      "kind": "bl",
+      "target": "0x530fdfc4",
+      "source_range": "factory_initialize"
+    },
+    {
+      "site": "0x52f51428",
+      "kind": "bl",
+      "target": "0x52f51028",
+      "source_range": "factory_initialize"
+    },
+    {
+      "site": "0x52f51444",
+      "kind": "bl",
+      "target": "0x530fdfc4",
+      "source_range": "factory_initialize"
+    },
+    {
+      "site": "0x52f51454",
+      "kind": "bne",
+      "target": "0x52f513b8",
+      "source_range": "factory_initialize"
+    },
+    {
+      "site": "0x52f51458",
+      "kind": "bl",
+      "target": "0x5327f6b0",
+      "source_range": "factory_initialize"
+    },
+    {
+      "site": "0x52f51464",
+      "kind": "bl",
+      "target": "0x5327f710",
+      "source_range": "factory_initialize"
+    },
+    {
+      "site": "0x52f5148c",
+      "kind": "bl",
+      "target": "0x530fdfc4",
+      "source_range": "factory_initialize"
+    },
+    {
+      "site": "0x52f514a4",
+      "kind": "bl",
+      "target": "0x52f524b8",
+      "source_range": "factory_initialize"
+    },
+    {
+      "site": "0x52f514c0",
+      "kind": "bl",
+      "target": "0x530fdfc4",
+      "source_range": "factory_initialize"
+    },
+    {
+      "site": "0x52f514d0",
+      "kind": "bl",
+      "target": "0x52f51028",
+      "source_range": "factory_initialize"
+    },
+    {
+      "site": "0x52f514ec",
+      "kind": "bl",
+      "target": "0x530fdfc4",
+      "source_range": "factory_initialize"
+    },
+    {
+      "site": "0x52f514f4",
+      "kind": "bl",
+      "target": "0x530f25f4",
+      "source_range": "factory_initialize"
+    },
+    {
+      "site": "0x52f51500",
+      "kind": "bl",
+      "target": "0x52f49894",
+      "source_range": "factory_initialize"
+    },
+    {
+      "site": "0x52f51528",
+      "kind": "bl",
+      "target": "0x530fdfc4",
+      "source_range": "factory_initialize"
+    },
+    {
+      "site": "0x52f51560",
+      "kind": "bl",
+      "target": "0x530fdfc4",
+      "source_range": "factory_initialize"
+    },
+    {
+      "site": "0x52f51568",
+      "kind": "bl",
+      "target": "0x530f25f4",
+      "source_range": "factory_initialize"
+    },
+    {
+      "site": "0x52f51574",
+      "kind": "bl",
+      "target": "0x52f453d0",
+      "source_range": "factory_initialize"
+    },
+    {
+      "site": "0x52f5159c",
+      "kind": "bl",
+      "target": "0x530fdfc4",
+      "source_range": "factory_initialize"
+    },
+    {
+      "site": "0x52f515d4",
+      "kind": "bl",
+      "target": "0x530fdfc4",
+      "source_range": "factory_initialize"
+    },
+    {
+      "site": "0x52f515dc",
+      "kind": "bl",
+      "target": "0x530f25f4",
+      "source_range": "factory_initialize"
+    },
+    {
+      "site": "0x52f515e8",
+      "kind": "bl",
+      "target": "0x52fec39c",
+      "source_range": "factory_initialize"
+    },
+    {
+      "site": "0x52f51610",
+      "kind": "bl",
+      "target": "0x530fdfc4",
+      "source_range": "factory_initialize"
+    },
+    {
+      "site": "0x52f51640",
+      "kind": "bl",
+      "target": "0x530fdfc4",
+      "source_range": "factory_initialize"
+    },
+    {
+      "site": "0x52f51648",
+      "kind": "bl",
+      "target": "0x530f25f4",
+      "source_range": "factory_initialize"
+    },
+    {
+      "site": "0x52f51650",
+      "kind": "bl",
+      "target": "0x52f4e66c",
+      "source_range": "factory_initialize"
+    },
+    {
+      "site": "0x52f51678",
+      "kind": "bl",
+      "target": "0x530fdfc4",
+      "source_range": "factory_initialize"
+    },
+    {
+      "site": "0x52f516f0",
+      "kind": "bl",
+      "target": "0x530fdfc4",
+      "source_range": "factory_initialize"
+    },
+    {
+      "site": "0x52f516f8",
+      "kind": "bl",
+      "target": "0x530f25f4",
+      "source_range": "factory_initialize"
+    },
+    {
+      "site": "0x52f51700",
+      "kind": "bl",
+      "target": "0x52f49038",
+      "source_range": "factory_initialize"
+    },
+    {
+      "site": "0x52f51728",
+      "kind": "bl",
+      "target": "0x530fdfc4",
+      "source_range": "factory_initialize"
+    },
+    {
+      "site": "0x52f5175c",
+      "kind": "bl",
+      "target": "0x530fdfc4",
+      "source_range": "factory_initialize"
+    },
+    {
+      "site": "0x52f51770",
+      "kind": "bne",
+      "target": "0x52f5178c",
+      "source_range": "factory_initialize"
+    },
+    {
+      "site": "0x52f51780",
+      "kind": "b",
+      "target": "0x52f511b8",
+      "source_range": "factory_initialize"
+    },
+    {
+      "site": "0x52f51788",
+      "kind": "b",
+      "target": "0x52f51298",
+      "source_range": "factory_initialize"
+    },
+    {
+      "site": "0x52f5178c",
+      "kind": "bl",
+      "target": "0x532fb9c8",
+      "source_range": "factory_initialize"
+    },
+    {
+      "site": "0x52f4e684",
+      "kind": "bl",
+      "target": "0x52f51790",
+      "source_range": "filesystem_ctor"
+    },
+    {
+      "site": "0x52f503d8",
+      "kind": "bl",
+      "target": "0x52f52554",
+      "source_range": "filesystem_open"
+    },
+    {
+      "site": "0x52f503e4",
+      "kind": "blt",
+      "target": "0x52f5045c",
+      "source_range": "filesystem_open"
+    },
+    {
+      "site": "0x52f503f4",
+      "kind": "beq",
+      "target": "0x52f5045c",
+      "source_range": "filesystem_open"
+    },
+    {
+      "site": "0x52f50400",
+      "kind": "bl",
+      "target": "0x52f4e750",
+      "source_range": "filesystem_open"
+    },
+    {
+      "site": "0x52f50410",
+      "kind": "bl",
+      "target": "0x530f1a68",
+      "source_range": "filesystem_open"
+    },
+    {
+      "site": "0x52f50448",
+      "kind": "bne",
+      "target": "0x52f50484",
+      "source_range": "filesystem_open"
+    },
+    {
+      "site": "0x52f50454",
+      "kind": "bl",
+      "target": "0x52f4e750",
+      "source_range": "filesystem_open"
+    },
+    {
+      "site": "0x52f50458",
+      "kind": "bl",
+      "target": "0x530f1bbc",
+      "source_range": "filesystem_open"
+    },
+    {
+      "site": "0x52f50478",
+      "kind": "bne",
+      "target": "0x52f50514",
+      "source_range": "filesystem_open"
+    },
+    {
+      "site": "0x52f50498",
+      "kind": "bl",
+      "target": "0x52f50328",
+      "source_range": "filesystem_open"
+    },
+    {
+      "site": "0x52f504b0",
+      "kind": "beq",
+      "target": "0x52f504ec",
+      "source_range": "filesystem_open"
+    },
+    {
+      "site": "0x52f504c4",
+      "kind": "bl",
+      "target": "0x52f4fb84",
+      "source_range": "filesystem_open"
+    },
+    {
+      "site": "0x52f504d8",
+      "kind": "bl",
+      "target": "0x52f52554",
+      "source_range": "filesystem_open"
+    },
+    {
+      "site": "0x52f504e8",
+      "kind": "b",
+      "target": "0x52f5044c",
+      "source_range": "filesystem_open"
+    },
+    {
+      "site": "0x52f50510",
+      "kind": "b",
+      "target": "0x52f5044c",
+      "source_range": "filesystem_open"
+    },
+    {
+      "site": "0x52f50514",
+      "kind": "bl",
+      "target": "0x532fb9c8",
+      "source_range": "filesystem_open"
+    },
+    {
+      "site": "0x52f50898",
+      "kind": "beq",
+      "target": "0x52f50980",
+      "source_range": "filesystem_close"
+    },
+    {
+      "site": "0x52f508a4",
+      "kind": "blt",
+      "target": "0x52f50980",
+      "source_range": "filesystem_close"
+    },
+    {
+      "site": "0x52f508b4",
+      "kind": "beq",
+      "target": "0x52f50934",
+      "source_range": "filesystem_close"
+    },
+    {
+      "site": "0x52f508bc",
+      "kind": "bl",
+      "target": "0x52f4e750",
+      "source_range": "filesystem_close"
+    },
+    {
+      "site": "0x52f508cc",
+      "kind": "bl",
+      "target": "0x530f1a68",
+      "source_range": "filesystem_close"
+    },
+    {
+      "site": "0x52f508f0",
+      "kind": "bne",
+      "target": "0x52f5095c",
+      "source_range": "filesystem_close"
+    },
+    {
+      "site": "0x52f5090c",
+      "kind": "beq",
+      "target": "0x52f50988",
+      "source_range": "filesystem_close"
+    },
+    {
+      "site": "0x52f50918",
+      "kind": "bne",
+      "target": "0x52f508fc",
+      "source_range": "filesystem_close"
+    },
+    {
+      "site": "0x52f50924",
+      "kind": "bl",
+      "target": "0x52f4e750",
+      "source_range": "filesystem_close"
+    },
+    {
+      "site": "0x52f50928",
+      "kind": "bl",
+      "target": "0x530f1bbc",
+      "source_range": "filesystem_close"
+    },
+    {
+      "site": "0x52f50930",
+      "kind": "bl",
+      "target": "0x52f50830",
+      "source_range": "filesystem_close"
+    },
+    {
+      "site": "0x52f50950",
+      "kind": "bne",
+      "target": "0x52f509a0",
+      "source_range": "filesystem_close"
+    },
+    {
+      "site": "0x52f5097c",
+      "kind": "b",
+      "target": "0x52f508f4",
+      "source_range": "filesystem_close"
+    },
+    {
+      "site": "0x52f50984",
+      "kind": "b",
+      "target": "0x52f50934",
+      "source_range": "filesystem_close"
+    },
+    {
+      "site": "0x52f5099c",
+      "kind": "b",
+      "target": "0x52f5091c",
+      "source_range": "filesystem_close"
+    },
+    {
+      "site": "0x52f509a0",
+      "kind": "bl",
+      "target": "0x532fb9c8",
+      "source_range": "filesystem_close"
+    },
+    {
+      "site": "0x52f4e7f0",
+      "kind": "beq",
+      "target": "0x52f4e864",
+      "source_range": "filesystem_read"
+    },
+    {
+      "site": "0x52f4e800",
+      "kind": "blt",
+      "target": "0x52f4e864",
+      "source_range": "filesystem_read"
+    },
+    {
+      "site": "0x52f4e810",
+      "kind": "beq",
+      "target": "0x52f4e88c",
+      "source_range": "filesystem_read"
+    },
+    {
+      "site": "0x52f4e818",
+      "kind": "bl",
+      "target": "0x52f4e750",
+      "source_range": "filesystem_read"
+    },
+    {
+      "site": "0x52f4e828",
+      "kind": "bl",
+      "target": "0x530f1a68",
+      "source_range": "filesystem_read"
+    },
+    {
+      "site": "0x52f4e85c",
+      "kind": "bl",
+      "target": "0x52f4e750",
+      "source_range": "filesystem_read"
+    },
+    {
+      "site": "0x52f4e860",
+      "kind": "bl",
+      "target": "0x530f1bbc",
+      "source_range": "filesystem_read"
+    },
+    {
+      "site": "0x52f4e880",
+      "kind": "bne",
+      "target": "0x52f4e894",
+      "source_range": "filesystem_read"
+    },
+    {
+      "site": "0x52f4e890",
+      "kind": "b",
+      "target": "0x52f4e864",
+      "source_range": "filesystem_read"
+    },
+    {
+      "site": "0x52f4e894",
+      "kind": "bl",
+      "target": "0x532fb9c8",
+      "source_range": "filesystem_read"
+    },
+    {
+      "site": "0x52f4f0a4",
+      "kind": "bl",
+      "target": "0x52f52554",
+      "source_range": "filesystem_stat"
+    },
+    {
+      "site": "0x52f4f0b0",
+      "kind": "blt",
+      "target": "0x52f4f110",
+      "source_range": "filesystem_stat"
+    },
+    {
+      "site": "0x52f4f0c0",
+      "kind": "beq",
+      "target": "0x52f4f110",
+      "source_range": "filesystem_stat"
+    },
+    {
+      "site": "0x52f4f0cc",
+      "kind": "bl",
+      "target": "0x52f4e750",
+      "source_range": "filesystem_stat"
+    },
+    {
+      "site": "0x52f4f0dc",
+      "kind": "bl",
+      "target": "0x530f1a68",
+      "source_range": "filesystem_stat"
+    },
+    {
+      "site": "0x52f4f108",
+      "kind": "bl",
+      "target": "0x52f4e750",
+      "source_range": "filesystem_stat"
+    },
+    {
+      "site": "0x52f4f10c",
+      "kind": "bl",
+      "target": "0x530f1bbc",
+      "source_range": "filesystem_stat"
+    },
+    {
+      "site": "0x52f4f12c",
+      "kind": "bne",
+      "target": "0x52f4f138",
+      "source_range": "filesystem_stat"
+    },
+    {
+      "site": "0x52f4f138",
+      "kind": "bl",
+      "target": "0x532fb9c8",
+      "source_range": "filesystem_stat"
+    },
+    {
+      "site": "0x52f4fd8c",
+      "kind": "bl",
+      "target": "0x52f52554",
+      "source_range": "filesystem_backend_select"
+    },
+    {
+      "site": "0x52f4fd9c",
+      "kind": "bl",
+      "target": "0x52f52630",
+      "source_range": "filesystem_backend_select"
+    },
+    {
+      "site": "0x52f4fdcc",
+      "kind": "bl",
+      "target": "0x530fdfc4",
+      "source_range": "filesystem_backend_select"
+    },
+    {
+      "site": "0x52f4fdd8",
+      "kind": "beq",
+      "target": "0x52f4fe04",
+      "source_range": "filesystem_backend_select"
+    },
+    {
+      "site": "0x52f52570",
+      "kind": "blx",
+      "target": "0x526ac9c0",
+      "source_range": "volume_path_index"
+    },
+    {
+      "site": "0x52f52578",
+      "kind": "beq",
+      "target": "0x52f52608",
+      "source_range": "volume_path_index"
+    },
+    {
+      "site": "0x52f5258c",
+      "kind": "bhi",
+      "target": "0x52f52618",
+      "source_range": "volume_path_index"
+    },
+    {
+      "site": "0x52f52598",
+      "kind": "ble",
+      "target": "0x52f52608",
+      "source_range": "volume_path_index"
+    },
+    {
+      "site": "0x52f525ac",
+      "kind": "b",
+      "target": "0x52f525c0",
+      "source_range": "volume_path_index"
+    },
+    {
+      "site": "0x52f525bc",
+      "kind": "ble",
+      "target": "0x52f52608",
+      "source_range": "volume_path_index"
+    },
+    {
+      "site": "0x52f525e0",
+      "kind": "bl",
+      "target": "0x530fdfc4",
+      "source_range": "volume_path_index"
+    },
+    {
+      "site": "0x52f525f8",
+      "kind": "bne",
+      "target": "0x52f525b0",
+      "source_range": "volume_path_index"
+    },
+    {
+      "site": "0x52f5262c",
+      "kind": "b",
+      "target": "0x52f52590",
+      "source_range": "volume_path_index"
+    },
+    {
+      "site": "0x52f50f88",
+      "kind": "beq",
+      "target": "0x52f50f98",
+      "source_range": "factory_singleton"
+    },
+    {
+      "site": "0x52f50f9c",
+      "kind": "bl",
+      "target": "0x533aaeb4",
+      "source_range": "factory_singleton"
+    },
+    {
+      "site": "0x52f50fa4",
+      "kind": "beq",
+      "target": "0x52f50f8c",
+      "source_range": "factory_singleton"
+    },
+    {
+      "site": "0x52f50fd8",
+      "kind": "bl",
+      "target": "0x533aaf1c",
+      "source_range": "factory_singleton"
+    },
+    {
+      "site": "0x52f50fe4",
+      "kind": "bl",
+      "target": "0x526aaa50",
+      "source_range": "factory_singleton"
+    },
+    {
+      "site": "0x52f50fe8",
+      "kind": "b",
+      "target": "0x52f50f8c",
+      "source_range": "factory_singleton"
+    },
+    {
+      "site": "0x52f517a0",
+      "kind": "bl",
+      "target": "0x52f4e074",
+      "source_range": "filesystem_base_ctor"
+    },
+    {
+      "site": "0x52f4e18c",
+      "kind": "bl",
+      "target": "0x530fdfc4",
+      "source_range": "filesystem_initialize"
+    },
+    {
+      "site": "0x52f4e1b4",
+      "kind": "bl",
+      "target": "0x530fdfc4",
+      "source_range": "filesystem_initialize"
+    },
+    {
+      "site": "0x52f4e1dc",
+      "kind": "bl",
+      "target": "0x530fdfc4",
+      "source_range": "filesystem_initialize"
+    },
+    {
+      "site": "0x52f4e1ec",
+      "kind": "bhi",
+      "target": "0x52f4e448",
+      "source_range": "filesystem_initialize"
+    },
+    {
+      "site": "0x52f4e1f8",
+      "kind": "bl",
+      "target": "0x530f2668",
+      "source_range": "filesystem_initialize"
+    },
+    {
+      "site": "0x52f4e220",
+      "kind": "bl",
+      "target": "0x530fdfc4",
+      "source_range": "filesystem_initialize"
+    },
+    {
+      "site": "0x52f4e228",
+      "kind": "bl",
+      "target": "0x530f2668",
+      "source_range": "filesystem_initialize"
+    },
+    {
+      "site": "0x52f4e250",
+      "kind": "bl",
+      "target": "0x530fdfc4",
+      "source_range": "filesystem_initialize"
+    },
+    {
+      "site": "0x52f4e258",
+      "kind": "beq",
+      "target": "0x52f4e408",
+      "source_range": "filesystem_initialize"
+    },
+    {
+      "site": "0x52f4e27c",
+      "kind": "bgt",
+      "target": "0x52f4e264",
+      "source_range": "filesystem_initialize"
+    },
+    {
+      "site": "0x52f4e288",
+      "kind": "bls",
+      "target": "0x52f4e408",
+      "source_range": "filesystem_initialize"
+    },
+    {
+      "site": "0x52f4e290",
+      "kind": "bl",
+      "target": "0x530f2668",
+      "source_range": "filesystem_initialize"
+    },
+    {
+      "site": "0x52f4e2b8",
+      "kind": "bl",
+      "target": "0x530fdfc4",
+      "source_range": "filesystem_initialize"
+    },
+    {
+      "site": "0x52f4e2d0",
+      "kind": "bl",
+      "target": "0x530f25f4",
+      "source_range": "filesystem_initialize"
+    },
+    {
+      "site": "0x52f4e2d8",
+      "kind": "bl",
+      "target": "0x530f19b4",
+      "source_range": "filesystem_initialize"
+    },
+    {
+      "site": "0x52f4e30c",
+      "kind": "bl",
+      "target": "0x530fdfc4",
+      "source_range": "filesystem_initialize"
+    },
+    {
+      "site": "0x52f4e334",
+      "kind": "bl",
+      "target": "0x530f2258",
+      "source_range": "filesystem_initialize"
+    },
+    {
+      "site": "0x52f4e364",
+      "kind": "bl",
+      "target": "0x530fdfc4",
+      "source_range": "filesystem_initialize"
+    },
+    {
+      "site": "0x52f4e36c",
+      "kind": "bgt",
+      "target": "0x52f4e2cc",
+      "source_range": "filesystem_initialize"
+    },
+    {
+      "site": "0x52f4e378",
+      "kind": "bl",
+      "target": "0x530f2668",
+      "source_range": "filesystem_initialize"
+    },
+    {
+      "site": "0x52f4e3a4",
+      "kind": "bl",
+      "target": "0x530fdfc4",
+      "source_range": "filesystem_initialize"
+    },
+    {
+      "site": "0x52f4e3ac",
+      "kind": "bl",
+      "target": "0x530f2668",
+      "source_range": "filesystem_initialize"
+    },
+    {
+      "site": "0x52f4e3d4",
+      "kind": "bl",
+      "target": "0x530fdfc4",
+      "source_range": "filesystem_initialize"
+    },
+    {
+      "site": "0x52f4e3e8",
+      "kind": "bl",
+      "target": "0x530f2668",
+      "source_range": "filesystem_initialize"
+    },
+    {
+      "site": "0x52f4e3f8",
+      "kind": "bne",
+      "target": "0x52f4e3d8",
+      "source_range": "filesystem_initialize"
+    },
+    {
+      "site": "0x52f4e40c",
+      "kind": "bl",
+      "target": "0x530f2668",
+      "source_range": "filesystem_initialize"
+    },
+    {
+      "site": "0x52f4e434",
+      "kind": "bl",
+      "target": "0x530fdfc4",
+      "source_range": "filesystem_initialize"
+    },
+    {
+      "site": "0x52f4e43c",
+      "kind": "bgt",
+      "target": "0x52f4e2bc",
+      "source_range": "filesystem_initialize"
+    },
+    {
+      "site": "0x52f4e444",
+      "kind": "b",
+      "target": "0x52f4e370",
+      "source_range": "filesystem_initialize"
+    },
+    {
+      "site": "0x52f4e44c",
+      "kind": "bl",
+      "target": "0x530f2668",
+      "source_range": "filesystem_initialize"
+    },
+    {
+      "site": "0x52f4e474",
+      "kind": "bl",
+      "target": "0x530fdfc4",
+      "source_range": "filesystem_initialize"
+    },
+    {
+      "site": "0x52f4e47c",
+      "kind": "bl",
+      "target": "0x530f2668",
+      "source_range": "filesystem_initialize"
+    },
+    {
+      "site": "0x52f4e4a4",
+      "kind": "bl",
+      "target": "0x530fdfc4",
+      "source_range": "filesystem_initialize"
+    },
+    {
+      "site": "0x52f4e4ac",
+      "kind": "bgt",
+      "target": "0x52f4e25c",
+      "source_range": "filesystem_initialize"
+    },
+    {
+      "site": "0x52f4e4b8",
+      "kind": "bl",
+      "target": "0x530f2668",
+      "source_range": "filesystem_initialize"
+    },
+    {
+      "site": "0x52f4e4e0",
+      "kind": "bl",
+      "target": "0x530fdfc4",
+      "source_range": "filesystem_initialize"
+    },
+    {
+      "site": "0x52f4e4e4",
+      "kind": "b",
+      "target": "0x52f4e370",
+      "source_range": "filesystem_initialize"
+    },
+    {
+      "site": "0x52f5017c",
+      "kind": "bl",
+      "target": "0x52f52554",
+      "source_range": "filesystem_mount"
+    },
+    {
+      "site": "0x52f50188",
+      "kind": "blt",
+      "target": "0x52f501d8",
+      "source_range": "filesystem_mount"
+    },
+    {
+      "site": "0x52f50194",
+      "kind": "bl",
+      "target": "0x52f4e750",
+      "source_range": "filesystem_mount"
+    },
+    {
+      "site": "0x52f501a4",
+      "kind": "bl",
+      "target": "0x530f1a68",
+      "source_range": "filesystem_mount"
+    },
+    {
+      "site": "0x52f501b0",
+      "kind": "bl",
+      "target": "0x52f52744",
+      "source_range": "filesystem_mount"
+    },
+    {
+      "site": "0x52f501b8",
+      "kind": "beq",
+      "target": "0x52f50200",
+      "source_range": "filesystem_mount"
+    },
+    {
+      "site": "0x52f501d0",
+      "kind": "bl",
+      "target": "0x52f4e750",
+      "source_range": "filesystem_mount"
+    },
+    {
+      "site": "0x52f501d4",
+      "kind": "bl",
+      "target": "0x530f1bbc",
+      "source_range": "filesystem_mount"
+    },
+    {
+      "site": "0x52f501f4",
+      "kind": "bne",
+      "target": "0x52f5031c",
+      "source_range": "filesystem_mount"
+    },
+    {
+      "site": "0x52f50208",
+      "kind": "bl",
+      "target": "0x52f52674",
+      "source_range": "filesystem_mount"
+    },
+    {
+      "site": "0x52f50210",
+      "kind": "bne",
+      "target": "0x52f5021c",
+      "source_range": "filesystem_mount"
+    },
+    {
+      "site": "0x52f50218",
+      "kind": "b",
+      "target": "0x52f501c8",
+      "source_range": "filesystem_mount"
+    },
+    {
+      "site": "0x52f50224",
+      "kind": "bl",
+      "target": "0x52f52630",
+      "source_range": "filesystem_mount"
+    },
+    {
+      "site": "0x52f5022c",
+      "kind": "beq",
+      "target": "0x52f50214",
+      "source_range": "filesystem_mount"
+    },
+    {
+      "site": "0x52f5023c",
+      "kind": "bl",
+      "target": "0x52f500f8",
+      "source_range": "filesystem_mount"
+    },
+    {
+      "site": "0x52f50258",
+      "kind": "beq",
+      "target": "0x52f502d0",
+      "source_range": "filesystem_mount"
+    },
+    {
+      "site": "0x52f50264",
+      "kind": "bl",
+      "target": "0x52f4fd70",
+      "source_range": "filesystem_mount"
+    },
+    {
+      "site": "0x52f50274",
+      "kind": "beq",
+      "target": "0x52f502fc",
+      "source_range": "filesystem_mount"
+    },
+    {
+      "site": "0x52f5029c",
+      "kind": "bl",
+      "target": "0x52f500f8",
+      "source_range": "filesystem_mount"
+    },
+    {
+      "site": "0x52f502a4",
+      "kind": "bne",
+      "target": "0x52f501c8",
+      "source_range": "filesystem_mount"
+    },
+    {
+      "site": "0x52f502c8",
+      "kind": "bl",
+      "target": "0x52f526f4",
+      "source_range": "filesystem_mount"
+    },
+    {
+      "site": "0x52f502cc",
+      "kind": "b",
+      "target": "0x52f501c8",
+      "source_range": "filesystem_mount"
+    },
+    {
+      "site": "0x52f502e4",
+      "kind": "beq",
+      "target": "0x52f50310",
+      "source_range": "filesystem_mount"
+    },
+    {
+      "site": "0x52f50308",
+      "kind": "bl",
+      "target": "0x52f500f8",
+      "source_range": "filesystem_mount"
+    },
+    {
+      "site": "0x52f5030c",
+      "kind": "b",
+      "target": "0x52f502a8",
+      "source_range": "filesystem_mount"
+    },
+    {
+      "site": "0x52f50318",
+      "kind": "b",
+      "target": "0x52f502fc",
+      "source_range": "filesystem_mount"
+    },
+    {
+      "site": "0x52f5031c",
+      "kind": "bl",
+      "target": "0x532fb9c8",
+      "source_range": "filesystem_mount"
+    },
+    {
+      "site": "0x52f50324",
+      "kind": "b",
+      "target": "0x52f50144",
+      "source_range": "filesystem_mount"
+    },
+    {
+      "site": "0x52f52640",
+      "kind": "bl",
+      "target": "0x52f52554",
+      "source_range": "volume_descriptor_get"
+    },
+    {
+      "site": "0x52f52648",
+      "kind": "blt",
+      "target": "0x52f5266c",
+      "source_range": "volume_descriptor_get"
+    },
+    {
+      "site": "0x52f52654",
+      "kind": "bge",
+      "target": "0x52f5266c",
+      "source_range": "volume_descriptor_get"
+    },
+    {
+      "site": "0x52f4e764",
+      "kind": "blt",
+      "target": "0x52f4e7a8",
+      "source_range": "volume_mutex_get"
+    },
+    {
+      "site": "0x52f4e798",
+      "kind": "bl",
+      "target": "0x530fdfc4",
+      "source_range": "volume_mutex_get"
+    },
+    {
+      "site": "0x52f4e7b0",
+      "kind": "b",
+      "target": "0x52f4e778",
+      "source_range": "volume_mutex_get"
+    },
+    {
+      "site": "0x52f498b0",
+      "kind": "bl",
+      "target": "0x52f51790",
+      "source_range": "fat_ctor"
+    },
+    {
+      "site": "0x52f453ec",
+      "kind": "bl",
+      "target": "0x52f51790",
+      "source_range": "exfat_ctor"
+    },
+    {
+      "site": "0x52f45420",
+      "kind": "bl",
+      "target": "0x530f19b4",
+      "source_range": "exfat_ctor"
+    },
+    {
+      "site": "0x52fec3b8",
+      "kind": "bl",
+      "target": "0x52f51790",
+      "source_range": "virtual_ctor"
+    },
+    {
+      "site": "0x52f4a500",
+      "kind": "blt",
+      "target": "0x52f4a54c",
+      "source_range": "fat_read_library_boundary"
+    },
+    {
+      "site": "0x52f4a510",
+      "kind": "bl",
+      "target": "0x533681c4",
+      "source_range": "fat_read_library_boundary"
+    },
+    {
+      "site": "0x52f4a520",
+      "kind": "blt",
+      "target": "0x52f4a558",
+      "source_range": "fat_read_library_boundary"
+    },
+    {
+      "site": "0x52f4a52c",
+      "kind": "bl",
+      "target": "0x52f4a3fc",
+      "source_range": "fat_read_library_boundary"
+    },
+    {
+      "site": "0x52f4a540",
+      "kind": "bl",
+      "target": "0x52f49a18",
+      "source_range": "fat_read_library_boundary"
+    },
+    {
+      "site": "0x52f4a554",
+      "kind": "b",
+      "target": "0x52f4a524",
+      "source_range": "fat_read_library_boundary"
+    },
+    {
+      "site": "0x52f4a558",
+      "kind": "bl",
+      "target": "0x5336eed0",
+      "source_range": "fat_read_library_boundary"
+    },
+    {
+      "site": "0x52f4a568",
+      "kind": "b",
+      "target": "0x52f4a524",
+      "source_range": "fat_read_library_boundary"
+    },
+    {
+      "site": "0x52f45a74",
+      "kind": "bl",
+      "target": "0x530f1a68",
+      "source_range": "exfat_read_library_boundary"
+    },
+    {
+      "site": "0x52f45a84",
+      "kind": "bl",
+      "target": "0x5337f554",
+      "source_range": "exfat_read_library_boundary"
+    },
+    {
+      "site": "0x52f45a90",
+      "kind": "bl",
+      "target": "0x533816c4",
+      "source_range": "exfat_read_library_boundary"
+    },
+    {
+      "site": "0x52f45aa4",
+      "kind": "bl",
+      "target": "0x52f455d4",
+      "source_range": "exfat_read_library_boundary"
+    },
+    {
+      "site": "0x52f45aac",
+      "kind": "bl",
+      "target": "0x530f1bbc",
+      "source_range": "exfat_read_library_boundary"
+    },
+    {
+      "site": "0x52ff5c7c",
+      "kind": "bl",
+      "target": "0x52f50f6c",
+      "source_range": "resource_manager_factory_alias"
+    },
+    {
+      "site": "0x52ff6e34",
+      "kind": "beq",
+      "target": "0x52ff6e94",
+      "source_range": "loader_file_dispatch"
+    },
+    {
+      "site": "0x52ff6e5c",
+      "kind": "beq",
+      "target": "0x52ff6ec4",
+      "source_range": "loader_file_dispatch"
+    },
+    {
+      "site": "0x52ff6e88",
+      "kind": "bne",
+      "target": "0x52ff6ef4",
+      "source_range": "loader_file_dispatch"
+    },
+    {
+      "site": "0x52ff6ebc",
+      "kind": "bl",
+      "target": "0x530fced4",
+      "source_range": "loader_file_dispatch"
+    },
+    {
+      "site": "0x52ff6ec0",
+      "kind": "b",
+      "target": "0x52ff6e78",
+      "source_range": "loader_file_dispatch"
+    },
+    {
+      "site": "0x52ff6eec",
+      "kind": "bl",
+      "target": "0x530fced4",
+      "source_range": "loader_file_dispatch"
+    },
+    {
+      "site": "0x52ff6ef0",
+      "kind": "b",
+      "target": "0x52ff6e60",
+      "source_range": "loader_file_dispatch"
+    },
+    {
+      "site": "0x52ff6ef4",
+      "kind": "bl",
+      "target": "0x532fb9c8",
+      "source_range": "loader_file_dispatch"
+    },
+    {
+      "site": "0x52ff7c68",
+      "kind": "bl",
+      "target": "0x52f50b44",
+      "source_range": "loader_stat_dispatch"
+    },
+    {
+      "site": "0x52ff7ca0",
+      "kind": "beq",
+      "target": "0x52ff7ce8",
+      "source_range": "loader_stat_dispatch"
+    },
+    {
+      "site": "0x52ff7cb4",
+      "kind": "beq",
+      "target": "0x52ff7ce8",
+      "source_range": "loader_stat_dispatch"
+    },
+    {
+      "site": "0x52ff7cdc",
+      "kind": "bl",
+      "target": "0x530fced4",
+      "source_range": "loader_stat_dispatch"
+    },
+    {
+      "site": "0x52ff7cec",
+      "kind": "bl",
+      "target": "0x52f50b24",
+      "source_range": "loader_stat_dispatch"
+    },
+    {
+      "site": "0x52ff7d00",
+      "kind": "bne",
+      "target": "0x52ff7d0c",
+      "source_range": "loader_stat_dispatch"
+    },
+    {
+      "site": "0x52ff7d0c",
+      "kind": "bl",
+      "target": "0x532fb9c8",
+      "source_range": "loader_stat_dispatch"
+    },
+    {
+      "site": "0x52f4a9f0",
+      "kind": "b",
+      "target": "0x52f4a934",
+      "source_range": "backend_thunk_52f4a9ec"
+    },
+    {
+      "site": "0x52f4a4e8",
+      "kind": "b",
+      "target": "0x52f4a46c",
+      "source_range": "backend_thunk_52f4a4e4"
+    },
+    {
+      "site": "0x52f4a570",
+      "kind": "b",
+      "target": "0x52f4a4ec",
+      "source_range": "backend_thunk_52f4a56c"
+    },
+    {
+      "site": "0x52f4afc4",
+      "kind": "b",
+      "target": "0x52f4aea4",
+      "source_range": "backend_thunk_52f4afc0"
+    },
+    {
+      "site": "0x52f459cc",
+      "kind": "b",
+      "target": "0x52f458e8",
+      "source_range": "backend_thunk_52f459c8"
+    },
+    {
+      "site": "0x52f45a40",
+      "kind": "b",
+      "target": "0x52f459d0",
+      "source_range": "backend_thunk_52f45a3c"
+    },
+    {
+      "site": "0x52f45ac0",
+      "kind": "b",
+      "target": "0x52f45a44",
+      "source_range": "backend_thunk_52f45abc"
+    },
+    {
+      "site": "0x52f47368",
+      "kind": "b",
+      "target": "0x52f47210",
+      "source_range": "backend_thunk_52f47364"
+    },
+    {
+      "site": "0x52fecdb8",
+      "kind": "b",
+      "target": "0x52fec94c",
+      "source_range": "backend_thunk_52fecdb4"
+    },
+    {
+      "site": "0x52fec1a8",
+      "kind": "b",
+      "target": "0x52fec114",
+      "source_range": "backend_thunk_52fec1a4"
+    },
+    {
+      "site": "0x52fec2a0",
+      "kind": "b",
+      "target": "0x52fec1ac",
+      "source_range": "backend_thunk_52fec29c"
+    },
+    {
+      "site": "0x52fed5c8",
+      "kind": "b",
+      "target": "0x52fed4ec",
+      "source_range": "backend_thunk_52fed5c4"
+    }
+  ],
+  "indirect_links": [
+    {
+      "site": "0x52f51198",
+      "kind": "blx",
+      "operand": "r3",
+      "source_range": "factory_initialize"
+    },
+    {
+      "site": "0x52f51264",
+      "kind": "blx",
+      "operand": "r3",
+      "source_range": "factory_initialize"
+    },
+    {
+      "site": "0x52f5134c",
+      "kind": "blx",
+      "operand": "r3",
+      "source_range": "factory_initialize"
+    },
+    {
+      "site": "0x52f51544",
+      "kind": "blx",
+      "operand": "r3",
+      "source_range": "factory_initialize"
+    },
+    {
+      "site": "0x52f515b8",
+      "kind": "blx",
+      "operand": "r3",
+      "source_range": "factory_initialize"
+    },
+    {
+      "site": "0x52f51624",
+      "kind": "blx",
+      "operand": "r3",
+      "source_range": "factory_initialize"
+    },
+    {
+      "site": "0x52f516d4",
+      "kind": "blx",
+      "operand": "r3",
+      "source_range": "factory_initialize"
+    },
+    {
+      "site": "0x52f5173c",
+      "kind": "blx",
+      "operand": "r3",
+      "source_range": "factory_initialize"
+    },
+    {
+      "site": "0x52f5043c",
+      "kind": "blx",
+      "operand": "sl",
+      "source_range": "filesystem_open"
+    },
+    {
+      "site": "0x52f5050c",
+      "kind": "blx",
+      "operand": "r3",
+      "source_range": "filesystem_open"
+    },
+    {
+      "site": "0x52f508e4",
+      "kind": "blx",
+      "operand": "r3",
+      "source_range": "filesystem_close"
+    },
+    {
+      "site": "0x52f4e84c",
+      "kind": "blx",
+      "operand": "ip",
+      "source_range": "filesystem_read"
+    },
+    {
+      "site": "0x52f4f0f8",
+      "kind": "blx",
+      "operand": "ip",
+      "source_range": "filesystem_stat"
+    },
+    {
+      "site": "0x52f50250",
+      "kind": "blx",
+      "operand": "r3",
+      "source_range": "filesystem_mount"
+    },
+    {
+      "site": "0x52f50288",
+      "kind": "blx",
+      "operand": "r3",
+      "source_range": "filesystem_mount"
+    },
+    {
+      "site": "0x52f502dc",
+      "kind": "blx",
+      "operand": "r3",
+      "source_range": "filesystem_mount"
+    },
+    {
+      "site": "0x52ff6e2c",
+      "kind": "blx",
+      "operand": "r5",
+      "source_range": "loader_file_dispatch"
+    },
+    {
+      "site": "0x52ff6e54",
+      "kind": "blx",
+      "operand": "ip",
+      "source_range": "loader_file_dispatch"
+    },
+    {
+      "site": "0x52ff6e74",
+      "kind": "blx",
+      "operand": "r3",
+      "source_range": "loader_file_dispatch"
+    },
+    {
+      "site": "0x52ff7c8c",
+      "kind": "blx",
+      "operand": "ip",
+      "source_range": "loader_stat_dispatch"
+    }
+  ],
+  "conditional_bindings": [
+    {
+      "callsite": "0x52ff6e2c",
+      "table_slot": "0x53901328",
+      "target": "0x52f50398",
+      "condition": "Factory constructor/initializer has stored FileSystem primary object at factory+14 and resourceManager+38 where applicable; vptr remains53901308"
+    },
+    {
+      "callsite": "0x52ff6e74",
+      "table_slot": "0x5390132c",
+      "target": "0x52f50864",
+      "condition": "Factory constructor/initializer has stored FileSystem primary object at factory+14 and resourceManager+38 where applicable; vptr remains53901308"
+    },
+    {
+      "callsite": "0x52ff6e54",
+      "table_slot": "0x53901330",
+      "target": "0x52f4e7b4",
+      "condition": "Factory constructor/initializer has stored FileSystem primary object at factory+14 and resourceManager+38 where applicable; vptr remains53901308"
+    },
+    {
+      "callsite": "0x52ff7c8c",
+      "table_slot": "0x5390135c",
+      "target": "0x52f4f068",
+      "condition": "Factory constructor/initializer has stored FileSystem primary object at factory+14 and resourceManager+38 where applicable; vptr remains53901308"
+    },
+    {
+      "callsite": "0x52f516d4",
+      "table_slot": "0x53901310",
+      "target": "0x52f4e14c",
+      "condition": "Factory constructor/initializer has stored FileSystem primary object at factory+14 and resourceManager+38 where applicable; vptr remains53901308"
+    },
+    {
+      "callsite": "0x52f5043c",
+      "table_slot": "0x53900f60",
+      "target": "0x52f4a9ec",
+      "condition": "FileSystem+18[index] was bound to FatFileSystem secondary pointer by52f4fd70; its constructor vptr remains unchanged"
+    },
+    {
+      "callsite": "0x52f508e4",
+      "table_slot": "0x53900f64",
+      "target": "0x52f4a4e4",
+      "condition": "FileSystem+18[index] was bound to FatFileSystem secondary pointer by52f4fd70; its constructor vptr remains unchanged"
+    },
+    {
+      "callsite": "0x52f4e84c",
+      "table_slot": "0x53900f68",
+      "target": "0x52f4a56c",
+      "condition": "FileSystem+18[index] was bound to FatFileSystem secondary pointer by52f4fd70; its constructor vptr remains unchanged"
+    },
+    {
+      "callsite": "0x52f4f0f8",
+      "table_slot": "0x53900fa0",
+      "target": "0x52f4afc0",
+      "condition": "FileSystem+18[index] was bound to FatFileSystem secondary pointer by52f4fd70; its constructor vptr remains unchanged"
+    },
+    {
+      "callsite": "0x52f5043c",
+      "table_slot": "0x538fe218",
+      "target": "0x52f459c8",
+      "condition": "FileSystem+18[index] was bound to ExFatFileSystem secondary pointer by52f4fd70; its constructor vptr remains unchanged"
+    },
+    {
+      "callsite": "0x52f508e4",
+      "table_slot": "0x538fe21c",
+      "target": "0x52f45a3c",
+      "condition": "FileSystem+18[index] was bound to ExFatFileSystem secondary pointer by52f4fd70; its constructor vptr remains unchanged"
+    },
+    {
+      "callsite": "0x52f4e84c",
+      "table_slot": "0x538fe220",
+      "target": "0x52f45abc",
+      "condition": "FileSystem+18[index] was bound to ExFatFileSystem secondary pointer by52f4fd70; its constructor vptr remains unchanged"
+    },
+    {
+      "callsite": "0x52f4f0f8",
+      "table_slot": "0x538fe258",
+      "target": "0x52f47364",
+      "condition": "FileSystem+18[index] was bound to ExFatFileSystem secondary pointer by52f4fd70; its constructor vptr remains unchanged"
+    },
+    {
+      "callsite": "0x52f5043c",
+      "table_slot": "0x53910750",
+      "target": "0x52fecdb4",
+      "condition": "FileSystem+18[index] was bound to VirtualFileSystem secondary pointer by52f4fd70; its constructor vptr remains unchanged"
+    },
+    {
+      "callsite": "0x52f508e4",
+      "table_slot": "0x53910754",
+      "target": "0x52fec1a4",
+      "condition": "FileSystem+18[index] was bound to VirtualFileSystem secondary pointer by52f4fd70; its constructor vptr remains unchanged"
+    },
+    {
+      "callsite": "0x52f4e84c",
+      "table_slot": "0x53910758",
+      "target": "0x52fec29c",
+      "condition": "FileSystem+18[index] was bound to VirtualFileSystem secondary pointer by52f4fd70; its constructor vptr remains unchanged"
+    },
+    {
+      "callsite": "0x52f4f0f8",
+      "table_slot": "0x53910790",
+      "target": "0x52fed5c4",
+      "condition": "FileSystem+18[index] was bound to VirtualFileSystem secondary pointer by52f4fd70; its constructor vptr remains unchanged"
+    }
+  ],
+  "critical_instructions": [
+    {
+      "site": "0x52ff5c7c",
+      "instruction": "bl #0x52f50f6c"
+    },
+    {
+      "site": "0x52ff5c80",
+      "instruction": "ldr r0, [r0, #0x14]"
+    },
+    {
+      "site": "0x52ff5c90",
+      "instruction": "str r0, [r6, #0x38]"
+    },
+    {
+      "site": "0x52f50fc8",
+      "instruction": "str r4, [r3, #0x14]"
+    },
+    {
+      "site": "0x52f50fd4",
+      "instruction": "str r2, [r3]"
+    },
+    {
+      "site": "0x52f51644",
+      "instruction": "mov r0, #0x30"
+    },
+    {
+      "site": "0x52f51648",
+      "instruction": "bl #0x530f25f4"
+    },
+    {
+      "site": "0x52f51650",
+      "instruction": "bl #0x52f4e66c"
+    },
+    {
+      "site": "0x52f5165c",
+      "instruction": "str r6, [r4, #0x14]"
+    },
+    {
+      "site": "0x52f51688",
+      "instruction": "str r2, [r3, #8]"
+    },
+    {
+      "site": "0x52f51698",
+      "instruction": "addne r3, r3, #4"
+    },
+    {
+      "site": "0x52f5169c",
+      "instruction": "str r3, [r2, #0xc]"
+    },
+    {
+      "site": "0x52f516ac",
+      "instruction": "addne r3, r3, #4"
+    },
+    {
+      "site": "0x52f516b0",
+      "instruction": "str r3, [r2, #0x10]"
+    },
+    {
+      "site": "0x52f516c0",
+      "instruction": "addne r3, r3, #4"
+    },
+    {
+      "site": "0x52f516c4",
+      "instruction": "str r3, [r2, #0x14]"
+    },
+    {
+      "site": "0x52f516d4",
+      "instruction": "blx r3"
+    },
+    {
+      "site": "0x52f4e6a0",
+      "instruction": "str r1, [r4]"
+    },
+    {
+      "site": "0x52f4e6a8",
+      "instruction": "str r2, [r4, #4]"
+    },
+    {
+      "site": "0x52f4e200",
+      "instruction": "movw r1, #0xe8f8"
+    },
+    {
+      "site": "0x52f4e268",
+      "instruction": "str r2, [r1, r3, lsl #2]"
+    },
+    {
+      "site": "0x52f50264",
+      "instruction": "bl #0x52f4fd70"
+    },
+    {
+      "site": "0x52f502b8",
+      "instruction": "str r3, [r2, r7, lsl #2]"
+    },
+    {
+      "site": "0x52f4fdd0",
+      "instruction": "ldrsb r3, [r5, #0x14]"
+    },
+    {
+      "site": "0x52f4fdd4",
+      "instruction": "cmp r3, #4"
+    },
+    {
+      "site": "0x52f4fde0",
+      "instruction": "movw r3, #0xffff"
+    },
+    {
+      "site": "0x52f4fde4",
+      "instruction": "movt r3, #0x403"
+    },
+    {
+      "site": "0x52f4fde8",
+      "instruction": "cmp r2, r3"
+    },
+    {
+      "site": "0x52f4fdf0",
+      "instruction": "ldrhi r2, [r4, #0x10]"
+    },
+    {
+      "site": "0x52f4fdf4",
+      "instruction": "ldrls r2, [r4, #0xc]"
+    },
+    {
+      "site": "0x52f4fdf8",
+      "instruction": "str r2, [r3, r6, lsl #2]"
+    },
+    {
+      "site": "0x52f4fe04",
+      "instruction": "ldr r2, [r4, #0x14]"
+    },
+    {
+      "site": "0x52f4fe0c",
+      "instruction": "str r2, [r3, r6, lsl #2]"
+    },
+    {
+      "site": "0x52f52570",
+      "instruction": "blx #0x526ac9c0"
+    },
+    {
+      "site": "0x52f5257c",
+      "instruction": "ldrb r5, [r4]"
+    },
+    {
+      "site": "0x52f52588",
+      "instruction": "cmp r2, #0x19"
+    },
+    {
+      "site": "0x52f525e4",
+      "instruction": "ldr r2, [r7, #0x14]"
+    },
+    {
+      "site": "0x52f525ec",
+      "instruction": "mla r3, r3, r4, r2"
+    },
+    {
+      "site": "0x52f525f0",
+      "instruction": "ldrsb r3, [r3, #4]"
+    },
+    {
+      "site": "0x52f525f4",
+      "instruction": "cmp r3, r5"
+    },
+    {
+      "site": "0x52f52620",
+      "instruction": "subls r5, r3, #0x20"
+    },
+    {
+      "site": "0x52f52624",
+      "instruction": "movhi r5, #0"
+    },
+    {
+      "site": "0x52f52664",
+      "instruction": "ldr r0, [r2, r0]"
+    },
+    {
+      "site": "0x52f5043c",
+      "instruction": "blx sl"
+    },
+    {
+      "site": "0x52f50494",
+      "instruction": "str r3, [r2, sb, lsl #2]"
+    },
+    {
+      "site": "0x52f504d4",
+      "instruction": "str r3, [sl]"
+    },
+    {
+      "site": "0x52f504e0",
+      "instruction": "str r0, [sl, #4]"
+    },
+    {
+      "site": "0x52f504e4",
+      "instruction": "str sl, [r3]"
+    },
+    {
+      "site": "0x52f4e7f4",
+      "instruction": "ldr r6, [r5, #4]"
+    },
+    {
+      "site": "0x52f4e834",
+      "instruction": "ldr r1, [r5]"
+    },
+    {
+      "site": "0x52f4e844",
+      "instruction": "ldr ip, [r0, #0x10]"
+    },
+    {
+      "site": "0x52f4e84c",
+      "instruction": "blx ip"
+    },
+    {
+      "site": "0x52f4e850",
+      "instruction": "mov r5, r0"
+    },
+    {
+      "site": "0x52f4e874",
+      "instruction": "strne r3, [r7]"
+    },
+    {
+      "site": "0x52f4f0f8",
+      "instruction": "blx ip"
+    },
+    {
+      "site": "0x52f4f0fc",
+      "instruction": "mov r5, r0"
+    },
+    {
+      "site": "0x52f508e4",
+      "instruction": "blx r3"
+    },
+    {
+      "site": "0x52f50930",
+      "instruction": "bl #0x52f50830"
+    },
+    {
+      "site": "0x52f4a510",
+      "instruction": "bl #0x533681c4"
+    },
+    {
+      "site": "0x52f45a84",
+      "instruction": "bl #0x5337f554"
+    },
+    {
+      "site": "0x52f50440",
+      "instruction": "cmp r0, #0"
+    },
+    {
+      "site": "0x52f50448",
+      "instruction": "bne #0x52f50484"
+    },
+    {
+      "site": "0x52f504c0",
+      "instruction": "mov r6, #1"
+    },
+    {
+      "site": "0x52f50464",
+      "instruction": "mov r0, r6"
+    },
+    {
+      "site": "0x52f508e8",
+      "instruction": "cmp r0, #0"
+    },
+    {
+      "site": "0x52f508f0",
+      "instruction": "bne #0x52f5095c"
+    },
+    {
+      "site": "0x52f50974",
+      "instruction": "movpl sb, #1"
+    },
+    {
+      "site": "0x52f50978",
+      "instruction": "movmi sb, #1"
+    },
+    {
+      "site": "0x52f5093c",
+      "instruction": "mov r0, sb"
+    },
+    {
+      "site": "0x52f4e86c",
+      "instruction": "mov r0, r5"
+    },
+    {
+      "site": "0x52f4f118",
+      "instruction": "mov r0, r5"
+    }
+  ],
+  "classes": [
+    {
+      "name": "FileSystemFactory",
+      "primary_vptr": "0x539014c0",
+      "secondary_vptr": null,
+      "rtti": "0x53901494",
+      "name_address": "0x539014d8",
+      "rtti_name": "17FileSystemFactory"
+    },
+    {
+      "name": "FileSystem",
+      "primary_vptr": "0x53901308",
+      "secondary_vptr": "0x539013b0",
+      "rtti": "0x539012c8",
+      "name_address": "0x539012b8",
+      "rtti_name": "10FileSystem"
+    },
+    {
+      "name": "FatFileSystem",
+      "primary_vptr": "0x53900eb0",
+      "secondary_vptr": "0x53900f58",
+      "rtti": "0x53900e84",
+      "name_address": "0x53901000",
+      "rtti_name": "13FatFileSystem"
+    },
+    {
+      "name": "ExFatFileSystem",
+      "primary_vptr": "0x538fe168",
+      "secondary_vptr": "0x538fe210",
+      "rtti": "0x538fe2c4",
+      "name_address": "0x538fe2b0",
+      "rtti_name": "15ExFatFileSystem"
+    },
+    {
+      "name": "VirtualFileSystem",
+      "primary_vptr": "0x539106a0",
+      "secondary_vptr": "0x53910748",
+      "rtti": "0x53910674",
+      "name_address": "0x5391063c",
+      "rtti_name": "17VirtualFileSystem"
+    }
+  ],
+  "relationships": [
+    {
+      "sites": [
+        "0x52f51644",
+        "0x52f51648",
+        "0x52f51650",
+        "0x52f5165c"
+      ],
+      "description": "Factory initializer allocates0x30 bytes, constructs FileSystem, stores actual primary pointer at factory+14"
+    },
+    {
+      "sites": [
+        "0x52f51688",
+        "0x52f5169c",
+        "0x52f516b0",
+        "0x52f516c4"
+      ],
+      "description": "FileSystem+8 receives factory+4 volume manager; +c/+10/+14 receive factory+8/+c/+10 secondary +4 aliases when non-null"
+    },
+    {
+      "sites": [
+        "0x52f4e200",
+        "0x52f4e268",
+        "0x52f50264",
+        "0x52f4fdf8",
+        "0x52f4fe0c",
+        "0x52f502b8"
+      ],
+      "description": "Initializer allocates/zeros backend pointer array; mount path calls selector to bind selected secondary interface and may clear it on mount failure"
+    },
+    {
+      "sites": [
+        "0x52f4fdd0",
+        "0x52f4fdd4",
+        "0x52f4fde8",
+        "0x52f4fdf0",
+        "0x52f4fdf4",
+        "0x52f4fe04"
+      ],
+      "description": "signed descriptor+14==4 selects Virtual; else unsigned descriptor+18>0403ffff selects ExFat, else Fat. Fields are not named as size or sectors."
+    },
+    {
+      "sites": [
+        "0x52f504d4",
+        "0x52f504e0",
+        "0x52f504e4",
+        "0x52f4e7f4",
+        "0x52f4e834"
+      ],
+      "description": "Open creates eight-byte wrapper{raw lower handle,index}; read uses wrapper+4 to choose backend and wrapper+0 as lower handle"
+    },
+    {
+      "sites": [
+        "0x52f4a510",
+        "0x52f45a84"
+      ],
+      "description": "FAT read directly calls533681c4; exFAT read directly calls5337f554. Lower library/OS transport not traced or executed."
+    },
+    {
+      "sites": [
+        "0x52f50440",
+        "0x52f50448",
+        "0x52f504c0",
+        "0x52f50464",
+        "0x52f508e8",
+        "0x52f508f0",
+        "0x52f50974",
+        "0x52f50978",
+        "0x52f5093c",
+        "0x52f4e850",
+        "0x52f4e86c",
+        "0x52f4f0fc",
+        "0x52f4f118"
+      ],
+      "description": "Open after successful wrapper allocation and close normalize lower0 to0 and lower nonzero to1. Read and stat preserve the lower32-bit result. Synthetic statuses0,1,2,ffffffff prove the distinction; they do not establish backend error conventions."
+    }
+  ],
+  "limitations": [
+    "No actual filesystem/IPC/storage IO, updater acceptance or hardware operation.",
+    "Factory initializer top-level task/startup caller is not resolved in this bounded pass; producer is grounded in its vtable entry and body.",
+    "Backend selection is conditional on established factory/volume objects and mount policy; actual update path first byte and mounted medium are not established.",
+    "descriptor+14 and+18 meanings remain numeric fields; no physical media/sector/byte labeling inferred.",
+    "49 CPU cases use synthetic volume descriptors, backend callbacks, allocator, lock and assertion boundaries; factory is a fragment, not full startup.",
+    "Facade read/stat do not gate lower calls on their inner lock return; outer loader mutex gate is distinct. No concurrency failure claim.",
+    "Lower FAT/exFAT direct calls are software boundaries only; names do not establish syscall or physical driver behavior.",
+    "Genuine angr C is unedited automatic analysis and may contain conditional/type artifacts; original ARM and pinned CPU checks govern claims."
+  ],
+  "artifact_policy": "Original binary, pseudocode and assembly remain local. Public metadata contains addresses, hashes, authored analysis and synthetic replay only.",
+  "manager_validation": {
+    "passed": true,
+    "image_sha256": "342d2f35405e8daf1797dfe431d2e4aa70f4b52a2c242a29df48206672f1dfb4",
+    "functions": 8,
+    "fragments": 28,
+    "arm_words": 1565,
+    "transfers": 255,
+    "indirect_links": 20,
+    "resources": 19,
+    "pointer_words": 35,
+    "conditional_bindings": 17,
+    "critical_instructions": 71,
+    "arm_cases": 49,
+    "groups": {
+      "backend-numeric-selector": 8,
+      "close-result-and-handle-release": 4,
+      "factory-fragment-ctor-secondary-alias": 4,
+      "open-invalid-path": 1,
+      "open-lower-result-handle": 4,
+      "path-first-byte-index": 10,
+      "read-dispatch-size-error": 7,
+      "read-invalid-handle-or-backend": 3,
+      "stat-dispatch-size-error": 7,
+      "stat-invalid-path": 1
+    },
+    "numeric_script_sha256": "453ea1901bc4ab89b2c3b8b28684a3844329b38464ef725872c70d7f63d4d73e",
+    "report_sha256": "f10789c1361293aec4eb9ba7b2823386f0f7e7315dc58bfb8d3ffb3576809fd3",
+    "local_source_evidence_sha256": "6a1e37dac505dab4d027515470b9560df7b863018bae3253895a518433a9ed9e",
+    "numeric_script": "../verify_update_file_interface.py",
+    "report": "update-file-lifetimes.html",
+    "provenance_scope": "numeric_script/report hashes identify the linked public files. local_source_evidence_sha256 identifies the separate locally retained full source metadata; it is not this JSON hash."
+  },
+  "return_value_revision": {
+    "lower_statuses": [
+      0,
+      1,
+      2,
+      4294967295
+    ],
+    "open_after_wrapper_allocation": [
+      0,
+      1,
+      1,
+      1
+    ],
+    "close": [
+      0,
+      1,
+      1,
+      1
+    ],
+    "read_stat": [
+      0,
+      1,
+      2,
+      4294967295
+    ],
+    "factory_vptr_aliases_poisoned_before_execution": true,
+    "scope": "Original49-case replay; lower callbacks remain synthetic. HQ independently observed the close mapping."
+  },
+  "html_render_validation": {
+    "browser": "Edg/157.0.4341.42",
+    "rendered_html_sha256": "ea9f1dcff6718b49e2f8c61ee45fcb76048f2f9ac759fc4b3bbad063f88054fa",
+    "viewports": [
+      390,
+      1280
+    ],
+    "page_overflow": false,
+    "tables": 5,
+    "last_column_reachable": true,
+    "hex_tokens": 61,
+    "hex_token_breaks": 0,
+    "scope": "HQ rendered the address-wrap correction; final subsequent change is this footer verification text only."
+  }
+}
