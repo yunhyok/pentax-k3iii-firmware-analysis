@@ -4,6 +4,8 @@
 
 분석 문서는 HTML로 제공합니다. 저장소를 내려받아 `index.html`을 브라우저에서 열면 표·도식과 문서 간 링크를 오프라인으로 읽을 수 있습니다. GitHub의 HTML 파일 화면은 소스 보기입니다.
 
+첫 연구 릴리스 `v0.1.0`: [K-3 III](https://github.com/yunhyok/pentax-k3iii-firmware-analysis/releases/tag/v0.1.0) · [K-3 II](https://github.com/yunhyok/pentax-k3ii-firmware-analysis/releases/tag/v0.1.0) · [Q7](https://github.com/yunhyok/pentax-q7-firmware-analysis/releases/tag/v0.1.0). 각 릴리스는 보고서·도구의 고정 ZIP과 SHA-256을 제공합니다. 카메라 설치용 펌웨어와 실기 검증 완료를 뜻하지 않습니다.
+
 - [세 기종 통합 현황·검증 기준](analysis/research-program.html)
 - [독립 C 코드의 ARM 재컴파일·원본 비교](analysis/recompiled-kernels.html)
 - [재컴파일한 색 행렬 함수의 배치·재패키징](analysis/recompiled-integration.html)

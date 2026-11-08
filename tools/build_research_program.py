@@ -63,7 +63,7 @@ def ledger(data):
     for camera in data["cameras"]:
         repo = repository(camera["id"])
         entries.append(f'''<section class="card"><h3>{esc(camera["name"])} <small>v{esc(camera["firmware_version"])}</small></h3>
-<p class="project-links">{anchor(repo, "저장소")} · {source_link(data, camera["report_source"])}</p>
+<p class="project-links">{anchor(repo, "저장소")} · {source_link(data, camera["report_source"])} · {anchor(f'{repo}/releases/tag/v0.1.0', '1차 연구 릴리스')}</p>
 <dl><dt>기준 커밋</dt><dd><code>{anchor(f'{repo}/commit/{camera["commit"]}', camera["commit"])}</code></dd>
 <dt>원본 펌웨어 SHA-256</dt><dd><code>{esc(camera["firmware_sha256"])}</code></dd></dl>
 <p class="citations">{source_link(data, camera["digest_source"], pinned=True)}</p></section>''')

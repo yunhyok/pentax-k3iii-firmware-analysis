@@ -11,7 +11,7 @@
       "name": "K-3 Mark III",
       "firmware_version": "2.20",
       "firmware_sha256": "3c9d466b8160689867af2f58ff2cf0bf3363bc3b42daff43685a33171b91eb1a",
-      "commit": "63cd012950d87c037af41cac5ff6a79f8a11f6f1",
+      "commit": "1048c275ec53a6b1ea6c7f9ae57241635ab43d6b",
       "digest_source": "iii-input",
       "digest_field": "input_sha256",
       "report_source": "iii-integration"
@@ -21,7 +21,7 @@
       "name": "K-3 II",
       "firmware_version": "1.12",
       "firmware_sha256": "a33485f351019960192891ef69ddc5d4904ef9e298671d9d9955679e4c901a9a",
-      "commit": "840cc011856868f6b7255025b0be1ac30cd8f5c3",
+      "commit": "6029a63a321f12bfc19825a730282ee7d127f335",
       "digest_source": "ii-input",
       "digest_field": "firmware_sha256",
       "report_source": "ii-rebuild"
@@ -31,7 +31,7 @@
       "name": "Q7",
       "firmware_version": "1.01",
       "firmware_sha256": "8a928b574623c28624127501526d8496a98a42eac3d843def6d3b5ceb074ff3b",
-      "commit": "c8c8a8ed6f5e902e3f6c33006bab004761f2233b",
+      "commit": "19b414fc1ee996ed2deae9ba694a74c0eba9accb",
       "digest_source": "q-input",
       "digest_field": "input_sha256",
       "report_source": "q-implementation"
@@ -339,7 +339,7 @@
       "label": "보존 섹터 14의 레코드와 저장 요청"
     },
     "ii-pixel-policy": {
-      "url": "https://github.com/yunhyok/pentax-k3ii-firmware-analysis/blob/840cc011856868f6b7255025b0be1ac30cd8f5c3/analysis/pixel-policy.html",
+      "url": "https://github.com/yunhyok/pentax-k3ii-firmware-analysis/blob/6029a63a321f12bfc19825a730282ee7d127f335/analysis/pixel-policy.html",
       "label": "픽셀 정책 표 364셀·준비 분기·버퍼 연결"
     },
     "ii-pixel-neighbors": {
@@ -348,11 +348,11 @@
       "label": "픽셀 이웃 주소 경계 6건"
     },
     "q-af-completion": {
-      "url": "https://github.com/yunhyok/pentax-q7-firmware-analysis/blob/c8c8a8ed6f5e902e3f6c33006bab004761f2233b/af-completion-report.html",
+      "url": "https://github.com/yunhyok/pentax-q7-firmware-analysis/blob/19b414fc1ee996ed2deae9ba694a74c0eba9accb/af-completion-report.html",
       "label": "AF 명령 응답·이동 완료·시퀀스 정지"
     },
     "q-colorspace-render": {
-      "url": "https://github.com/yunhyok/pentax-q7-firmware-analysis/blob/15ebcb218fda5058148955f81983bdf349d4cdb1/colorspace-render-report.html",
+      "url": "https://github.com/yunhyok/pentax-q7-firmware-analysis/blob/19b414fc1ee996ed2deae9ba694a74c0eba9accb/colorspace-render-report.html",
       "label": "색공간 그리기 요청과 선택 아이콘 픽셀"
     },
     "iii-model-exports": {
@@ -386,15 +386,15 @@
       "label": "기한 큐 삽입 18건"
     },
     "ii-capture-prepare": {
-      "url": "https://github.com/yunhyok/pentax-k3ii-firmware-analysis/blob/840cc011856868f6b7255025b0be1ac30cd8f5c3/analysis/capture-prepare.html",
+      "url": "https://github.com/yunhyok/pentax-k3ii-firmware-analysis/blob/6029a63a321f12bfc19825a730282ee7d127f335/analysis/capture-prepare.html",
       "label": "촬영 준비 분기·정책·함수 반환"
     },
     "q-burn-continuation": {
-      "url": "https://github.com/yunhyok/pentax-q7-firmware-analysis/blob/c8c8a8ed6f5e902e3f6c33006bab004761f2233b/burn-continuation-report.html",
+      "url": "https://github.com/yunhyok/pentax-q7-firmware-analysis/blob/19b414fc1ee996ed2deae9ba694a74c0eba9accb/burn-continuation-report.html",
       "label": "E01 로더의 NAND 재시도·보호와 종료"
     },
     "q-colorspace-raster": {
-      "url": "https://github.com/yunhyok/pentax-q7-firmware-analysis/blob/15ebcb218fda5058148955f81983bdf349d4cdb1/colorspace-raster-report.html",
+      "url": "https://github.com/yunhyok/pentax-q7-firmware-analysis/blob/19b414fc1ee996ed2deae9ba694a74c0eba9accb/colorspace-raster-report.html",
       "label": "색공간 선택 강조의 픽셀 쓰기 7건"
     },
     "q-burn-terminal": {
@@ -406,6 +406,67 @@
       "camera": "k3iii",
       "path": "analysis/lightroom-profile-fingerprints.html",
       "label": "세 기종 TIFF 6개의 프로파일 지문"
+    },
+    "iii-bank-selection": {
+      "camera": "k3iii",
+      "path": "analysis/update-bank-selection.html",
+      "label": "RTOS 쓰기와 BOOT bank 선택 12건"
+    },
+    "iii-m0-board": {
+      "camera": "k3iii",
+      "path": "analysis/m0-board-config.html",
+      "label": "M0 보드 설정과 쓰기 순서"
+    },
+    "iii-m0-serial": {
+      "camera": "k3iii",
+      "path": "analysis/m0-diagnostic-serial.html",
+      "label": "M0 진단 직렬 분기 8건"
+    },
+    "iii-lightroom-look": {
+      "camera": "k3iii",
+      "path": "analysis/lightroom-look-controls.html",
+      "label": "K-3 II Lightroom LookTable과 반복 출력"
+    },
+    "ii-store-image": {
+      "url": "https://github.com/yunhyok/pentax-k3ii-firmware-analysis/blob/6029a63a321f12bfc19825a730282ee7d127f335/analysis/store-image-records.html",
+      "label": "JPEG 완료 길이와 StoreImage 요청"
+    },
+    "ii-preserved-sector20": {
+      "url": "https://github.com/yunhyok/pentax-k3ii-firmware-analysis/blob/6029a63a321f12bfc19825a730282ee7d127f335/analysis/preserved-sector20.html",
+      "label": "보존 섹터 20·21 적재와 저장 준비"
+    },
+    "q-main-update": {
+      "url": "https://github.com/yunhyok/pentax-q7-firmware-analysis/blob/19b414fc1ee996ed2deae9ba694a74c0eba9accb/update-service-report.html",
+      "label": "MAIN 파일 준비·헤더·반환"
+    },
+    "q-colorspace-glyph": {
+      "url": "https://github.com/yunhyok/pentax-q7-firmware-analysis/blob/19b414fc1ee996ed2deae9ba694a74c0eba9accb/colorspace-glyph-report.html",
+      "label": "원본 글꼴 로딩과 기본 배율"
+    },
+    "q-colorspace-attributes": {
+      "url": "https://github.com/yunhyok/pentax-q7-firmware-analysis/blob/19b414fc1ee996ed2deae9ba694a74c0eba9accb/colorspace-attributes-report.html",
+      "label": "48×48 요청과 별도 축소 실행"
+    },
+    "iii-stubby-load": {
+      "camera": "k3iii",
+      "path": "analysis/stubby-load-auth.html",
+      "label": "Stubby 적재와 진입 분기 6건"
+    },
+    "ii-preserved-config": {
+      "url": "https://github.com/yunhyok/pentax-k3ii-firmware-analysis/blob/6029a63a321f12bfc19825a730282ee7d127f335/analysis/preserved-config.html",
+      "label": "보존 레코드의 설정 바이트와 두 RAM 마커"
+    },
+    "ii-preserved-dispatch": {
+      "url": "https://github.com/yunhyok/pentax-k3ii-firmware-analysis/blob/6029a63a321f12bfc19825a730282ee7d127f335/analysis/preserved-dispatch.html",
+      "label": "보존 작업 계획·개수 갱신·ID 0x63 패킷"
+    },
+    "q-main-prefix": {
+      "url": "https://github.com/yunhyok/pentax-q7-firmware-analysis/blob/19b414fc1ee996ed2deae9ba694a74c0eba9accb/main-burn-prefix-report.html",
+      "label": "별도 MAIN 매체 열기·설치 헤더 요청"
+    },
+    "q-context-binding": {
+      "url": "https://github.com/yunhyok/pentax-q7-firmware-analysis/blob/19b414fc1ee996ed2deae9ba694a74c0eba9accb/analysis/context-binding.json",
+      "label": "합성 등록표의 원본 컨텍스트 선택"
     }
   },
   "tracks": [
@@ -415,9 +476,9 @@
       "dependency": "수정 이미지를 사용하는 AF·UI 실기 시험의 선행 조건입니다.",
       "cards": {
         "k3iii": {
-          "state": "행렬 교체 후보 · 부트 헤더와 출력",
-          "finding": "무변경 재포장으로 배포본을 재현했습니다. Q13 함수 교체 후보는 35,136,788바이트이며, 해제 결과에서 코드 79바이트와 검사합 4바이트가 달랐습니다. 파일·버퍼 수명과 볼륨·종료 처리에 이어 헤더를 읽는 원본 ARM 구간 9건을 실행했습니다. 헤더를 보존하고 별도 출력에 128바이트를 쓰는 동안 슬롯 2의 표도 유지됐습니다.",
-          "next": "헤더 결과가 이후 초기화와 인증으로 이어지는 조건을 추적합니다. 실제 볼륨·가용 메모리, 하드웨어 디코더, 업데이트 수용과 복구는 실기에서 확인합니다.",
+          "state": "행렬 교체 후보 · bank 선택과 Stubby 적재",
+          "finding": "무변경 재포장으로 배포본을 재현했습니다. Q13 교체 후보 35,136,788바이트는 해제 결과에서 코드 79바이트와 검사합 4바이트가 달랐습니다. 같은 합성 표에서도 RTOS 쓰기와 BOOT 읽기는 서로 다른 bank를 고를 수 있었습니다. 별도 Stubby 시험은 모델이 공급한 파일 길이와 DTB 속성에 따른 분기를 대조했습니다. 성공 조건에서는 선택 주소의 첫 명령 직전에 멈췄습니다.",
+          "next": "RTOS와 BOOT의 bank 선택값 생산자와 Stubby 파일 읽기 콜백을 추적합니다. 공개 소스의 RSA 지원·강제 거부 조건과 실제 Boot ROM 인증·실기 부팅은 구분해 검증합니다.",
           "sources": [
             "iii-package",
             "iii-integration",
@@ -427,24 +488,31 @@
             "iii-update-memory",
             "iii-update-files",
             "iii-update-volume",
-            "iii-header-consumer"
+            "iii-header-consumer",
+            "iii-bank-selection",
+            "iii-m0-board",
+            "iii-m0-serial",
+            "iii-stubby-load"
           ]
         },
         "k3ii": {
-          "state": "톤 함수 교체 · 보존 섹터 14 저장 요청",
-          "finding": "고정 크기 XOR 역변환으로 배포본을 재현했습니다. 메뉴 글자 편집 후보는 원본 ARM 복호화와 검사합·명령 7 검사를 통과했습니다. 에뮬레이터에서 교체한 64바이트 톤 함수는 원본 호출 지점 9곳의 출력과 일치했으나 조건 플래그에는 차이가 있었습니다. 별도 시험에서 보존 섹터 14의 첫 32바이트를 준비 버퍼에 덮어 넣고 전체 섹터의 저장 요청까지 확인했습니다.",
-          "next": "추가 호출부의 조건 플래그 사용과 보존 영역의 실제 기록·복구 경로를 확인합니다. 톤 함수는 에뮬레이터에서 대조했으며 설치·부팅은 실기 검증이 남아 있습니다.",
+          "state": "톤 함수 교체 · 보존 레코드의 갱신 명령",
+          "finding": "고정 크기 XOR 역변환으로 배포본을 재현했습니다. 교체한 톤 함수는 에뮬레이터에서 원본 호출 9곳의 출력과 일치했으며 조건 플래그에는 차이가 있었습니다. 보존 레코드의 두 그룹이 설정 바이트를 각각 만들고 소비자가 두 RAM 마커를 다시 검사했습니다. 별도 명령 시험은 준비한 계산 결과와 대기 상태로 같은 설정 객체를 갱신했고 ID 0x63 패킷의 공급자 선택과 블록 번호를 구분했습니다.",
+          "next": "명령의 실제 계산·대기 조건과 쓰기 전 상태 검사를 연결합니다. 보존 섹터의 실물 기록·재읽기, 수정 이미지 부팅과 복구는 실기에서 확인합니다.",
           "sources": [
             "ii-rebuild",
             "ii-status",
             "ii-tone-rebuild",
-            "ii-preserved-record"
+            "ii-preserved-record",
+            "ii-preserved-sector20",
+            "ii-preserved-config",
+            "ii-preserved-dispatch"
           ]
         },
         "q7": {
-          "state": "Q13 교체 재포장 · E01 기록 호출과 반환",
-          "finding": "압축 448블록으로 배포본을 재현했고 C로 빌드한 Q13 행렬 함수는 기존 압축 슬롯을 유지해 재포장했습니다. 다시 해제한 ELF는 원본 호출부 대조에 쓴 교체 이미지와 일치했습니다. E01 로더는 모델이 공급한 카드·NAND 응답으로 재시도와 보호 구간을 검사했습니다. 종료 사례 중 모든 저장 요청이 성공한 경우 원본 MIPS가 블록 0 재기록을 요청하고 준비 콜백을 거쳐 0을 반환했습니다.",
-          "next": "별도 구현인 메인 RTOS의 DownloadCard·BurnNand를 따로 추적합니다. 하드웨어 압축 해제, 실제 NAND 기록·복구, 수정 펌웨어 수용과 부팅은 실기에서 확인해야 합니다.",
+          "state": "Q13 교체 재포장 · MAIN Burn의 설치 헤더 입구",
+          "finding": "압축 448블록으로 배포본을 재현했습니다. Q13 함수 교체 뒤 다시 해제한 ELF는 원본 호출부 대조에 쓴 교체 이미지와 일치했습니다. MAIN의 두 별도 초기 상태에서 원본 FileX 열기는 NAND ID 요청 직전까지, 모델이 열기·기하 정보를 공급한 실행은 설치 헤더와 첫 카드 읽기 요청까지 확인했습니다. E01의 블록 0 재기록·종료는 별도 로더의 결과입니다.",
+          "next": "MAIN에서 설치 헤더와 기하 입력을 바꿔 selector 1과 섹션 맵 분기를 추적합니다. 실제 NAND 기록·복구와 수정 펌웨어 수용·부팅은 실기 검증이 남아 있습니다.",
           "sources": [
             "q-implementation",
             "q-rebuild",
@@ -452,7 +520,9 @@
             "q-numeric",
             "q-readiness",
             "q-burn-continuation",
-            "q-burn-terminal"
+            "q-burn-terminal",
+            "q-main-update",
+            "q-main-prefix"
           ]
         }
       },
@@ -512,9 +582,9 @@
           ]
         },
         "k3ii": {
-          "state": "Lightroom 톤 출력 5개 · 기준 DCP 재생성",
-          "finding": "펌웨어 1.10의 DNG #1376 한 장에서는 Camera Natural이 내장 JPEG에 가장 가까웠습니다. 톤 곡선 생략 재출력과 명시 ACR3의 24패치 최대 ΔE00은 0.002411이었고 픽셀 코드에는 차이가 있었습니다. 원본 촬영 준비는 분기까지 21건, 픽셀 정책 반환까지 21건, 준비 함수 자체의 반환까지 별도 3건을 실행했습니다. 반환 대조에서 합성 이미지와 포인터는 유지됐습니다. 별도 합성 경계에서는 이웃 좌표가 16비트로 잘리며 논리 버퍼 밖을 읽는 경우를 확인했습니다.",
-          "next": "펌웨어 1.12와 다른 조명·노출의 촬영 쌍으로 색을 검증합니다. Lightroom 내부 기본 곡선과 실제 보정표의 이웃 주소 제약은 확인이 남아 있습니다.",
+          "state": "Lightroom LookTable 출력 · JPEG 길이 전달",
+          "finding": "펌웨어 1.10의 DNG #1376 한 장에서는 Camera Natural이 내장 JPEG에 가장 가까웠습니다. LookTable 시험에서 같은 프로파일의 반복 출력은 픽셀까지 일치했습니다. 생략본과 항등 표는 24패치 Lab 중앙값이 같았고, 채도 배율 0.8은 항등 표 대비 평균 ΔE00 4.645였습니다. 별도 원본 시험에서는 합성 JPEG 완료 카운터가 같은 촬영 객체의 내장 레코드와 StoreImage 요청에 전달됐습니다. 대기와 큐 전달 경계에서는 별도 호출 프레임을 준비했습니다.",
+          "next": "펌웨어 1.12와 다른 조명·노출의 독립 RAW+JPEG로 색을 검증합니다. 원본 JPEG 경로는 실제 인코더의 완료와 저장 큐가 이어지는 조건을 추적합니다.",
           "sources": [
             "iii-color-test",
             "iii-raw",
@@ -526,7 +596,9 @@
             "iii-tone-cc0",
             "ii-pixel-policy",
             "ii-pixel-neighbors",
-            "ii-capture-prepare"
+            "ii-capture-prepare",
+            "iii-lightroom-look",
+            "ii-store-image"
           ]
         },
         "q7": {
@@ -670,16 +742,19 @@
           ]
         },
         "q7": {
-          "state": "E3 색공간 화면 · 아이콘과 강조 픽셀",
-          "finding": "E3 원본 MIPS 실행에서 선택은 설정 RAM에 즉시 쓰고, 취소는 열 때의 값을 복원했습니다. 합성 버퍼에서 선택 아이콘은 각 위치에 인덱스 330바이트를 썼습니다. 앞선 그리기 요청을 입력으로 쓴 별도 7건에서는 원본 강조 도형의 픽셀 쓰기를 확인했습니다.",
-          "next": "그리기 요청과 픽셀 쓰기를 연속 실행으로 연결합니다. 물리 버튼·RTOS 큐, 실제 글꼴·팔레트·LCD 출력, 재부팅 뒤 설정 유지 여부는 검증이 남아 있습니다.",
+          "state": "E3 색공간 화면 · 글꼴과 조건부 컨텍스트 선택",
+          "finding": "E3 원본 실행에서 선택은 설정 RAM에 즉시 쓰고 취소는 이전값을 복원했습니다. 갱신에서 캡처한 48×48 속성은 별도의 합성 컨텍스트에서 네 글리프의 축소 인덱스 픽셀로 대조했습니다. 후속 시험은 두 컨텍스트를 합성 등록표에 넣고 원본 선택기를 실행해 ID 17·18 교체와 텍스트 ID 0·플래그 1에서 활성 포인터를 읽는 조건을 확인했습니다.",
+          "next": "실제 UI의 등록과 ID 할당을 찾아 갱신부터 글리프 쓰기까지 연결합니다. 물리 입력·RTOS 전달, 팔레트·LCD 출력과 대상 UI 이식은 별도 검증이 남아 있습니다.",
           "sources": [
             "iii-ui",
             "q-implementation",
             "q-spec",
             "q-colorspace",
             "q-colorspace-render",
-            "q-colorspace-raster"
+            "q-colorspace-raster",
+            "q-colorspace-glyph",
+            "q-colorspace-attributes",
+            "q-context-binding"
           ]
         }
       },
@@ -710,7 +785,7 @@
     ],
     [
       "색 검증 샘플",
-      "세 기종에서 실촬영 DNG와 내장 JPEG를 확보했고 시험 DCP를 적용한 Lightroom TIFF도 내보냈습니다. K-3 II 한 장에서 색차와 톤 곡선을 비교했습니다. 분석 대상 버전에서 조명·노출·모드를 달리한 촬영 쌍이 더 필요합니다."
+      "세 기종에서 실촬영 DNG와 내장 JPEG를 확보했고 시험 DCP를 적용한 Lightroom TIFF도 내보냈습니다. K-3 II 한 장에서 색차와 톤·LookTable을 비교했습니다. 분석 대상 버전에서 조명·노출·모드를 달리한 촬영 쌍이 더 필요합니다."
     ],
     [
       "AF 렌즈와 평가 조건",
@@ -740,8 +815,8 @@
     ],
     [
       "다음 병목 선정",
-      "아직 넘지 못한 단계의 첫 질문을 다음 조사로 넘깁니다. 사용량 잔여 10% 초과 시 계속하고 10% 이하이면 근거와 다음 작업을 체크포인트에 남깁니다."
+      "아직 넘지 못한 단계의 첫 질문을 다음 조사로 넘깁니다. 사용량 잔여 5% 초과 시 계속하고 5% 이하이면 근거와 다음 작업을 체크포인트에 남깁니다."
     ]
   ],
-  "refresh_note": "이 페이지는 검토를 마친 결과의 스냅샷입니다. 새 커밋이나 카메라를 자동으로 감시하지 않습니다."
+  "refresh_note": "첫 GitHub 연구 릴리스의 검토 범위와 기종별 다음 과제를 정리했습니다. 단계별 판단은 이 판본에 고정한 코드와 실험 근거를 따릅니다."
 }
