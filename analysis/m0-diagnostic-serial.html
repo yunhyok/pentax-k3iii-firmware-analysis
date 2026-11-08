@@ -1,0 +1,51 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>M0 초기 설정에서 직렬 출력까지</title><style>
+:root{color-scheme:light dark;--bg:#f7f8fa;--paper:#fff;--ink:#182332;--muted:#48596b;--line:#d2dbe5;--accent:#124b8e;--soft:#edf3fa;--focus:#d75f00}
+@media(prefers-color-scheme:dark){:root{--bg:#111821;--paper:#18222d;--ink:#e8edf4;--muted:#b4c2d2;--line:#405369;--accent:#98c8ff;--soft:#223348;--focus:#ffb374}}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.85 system-ui,-apple-system,"Malgun Gothic",sans-serif;word-break:keep-all;overflow-wrap:anywhere}
+a{color:var(--accent);text-underline-offset:.18em}a:hover{text-decoration-thickness:2px}:focus-visible{outline:3px solid var(--focus);outline-offset:4px}
+header,main,footer{max-width:1120px;margin:auto;padding:36px clamp(18px,4vw,56px)}header{padding-top:56px;padding-bottom:24px}main{background:var(--paper);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.eyebrow{color:var(--muted);font-size:.84rem;letter-spacing:.06em}h1{font-size:clamp(1.85rem,4.5vw,3rem);line-height:1.35;letter-spacing:-.025em;margin:12px 0 18px}h2{font-size:1.5rem;line-height:1.5;margin:3.6rem 0 1rem;padding-top:1.2rem;border-top:1px solid var(--line)}h2:first-child{margin-top:0}h3{font-size:1.12rem;margin-top:2rem}p{margin:1rem 0}strong{font-weight:650}.intro{max-width:55em;color:var(--muted)}
+nav{margin-top:25px}nav ul{display:flex;flex-wrap:wrap;gap:8px 22px;list-style:none;padding:0;margin:0}nav ul ul{display:none}nav a{font-size:.9rem}code{font: .88em/1.6 ui-monospace,Consolas,monospace;overflow-wrap:anywhere}pre{background:var(--soft);padding:18px;overflow-x:auto;white-space:pre-wrap;border-radius:5px}pre code{font-size:.82rem}
+.table-scroll{overflow-x:auto;margin:24px 0}table{border-collapse:collapse;width:100%;font-size:.92rem;min-width:530px}th,td{text-align:left;vertical-align:top;padding:14px 16px;border-bottom:1px solid var(--line)}th{background:var(--soft);font-weight:650}td:first-child{min-width:125px}details{border-block:1px solid var(--line);margin-top:24px;padding:16px 0}summary{cursor:pointer;font-weight:650;padding:6px 0}.caption,.meta{font-size:.86rem;color:var(--muted)}
+figure{margin:32px 0;padding:24px 0;border-block:1px solid var(--line)}figcaption{font-size:.95rem;font-weight:650;margin-bottom:20px}.flow{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:32px;list-style:none;padding:0;margin:18px 0}.flow li{position:relative;padding:18px;background:var(--soft);border-radius:6px;line-height:1.6}.flow strong{display:block;font-size:1rem}.flow span{display:block;color:var(--muted);font-size:.86rem;margin-top:9px}.flow li:not(:last-child)::after{content:"→";position:absolute;right:-27px;top:40%;font-size:22px;color:var(--muted)}.second{margin-top:24px}footer{font-size:.88rem;color:var(--muted)}
+@media(max-width:740px){body{font-size:16px}header,main,footer{padding-inline:20px}.flow{grid-template-columns:1fr;gap:26px}.flow li:not(:last-child)::after{content:"↓";right:auto;left:calc(50% - 8px);top:auto;bottom:-28px}.flow li{padding:15px 18px}h2{font-size:1.3rem}nav ul{gap:10px 18px}table{font-size:.87rem}th,td{padding:12px}header{padding-top:30px}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+@media print{body{background:white;color:black;font-size:10pt}header,main,footer{max-width:none;padding:12pt}nav{display:none}a{color:inherit}h2,figure,table{break-inside:avoid}h2{break-after:avoid}main{border:0}.flow li{background:#f1f3f5}.table-scroll{overflow:visible}table{min-width:0}details>*{display:block!important}}
+
+.site-nav{border-block:1px solid var(--line);padding:14px 0;margin:20px 0}.site-nav a{display:inline-block;margin:4px 16px 4px 0}
+.review-note{background:var(--soft);padding:16px 20px;margin:24px 0}.toc{font-size:.92rem}.toc ul{list-style:none;padding-left:0}.toc ul ul{padding-left:20px}
+.branch{margin:18px 0;padding:0 0 0 24px;border-left:3px solid var(--line)}.branch p{margin:8px 0}.diagram-line{padding:12px 16px;background:var(--soft);border-radius:4px}
+td code{white-space:nowrap}
+</style></head><body>
+<header><div class="eyebrow">PENTAX K-3 MARK III · M0 STATIC ANALYSIS · 2026-11-08</div><h1>M0 초기 설정에서 직렬 출력까지</h1>
+<p class="intro">reset helper 뒤의 설정과 문자 출력 함수가 같은 MMIO 영역을 사용한다. 레지스터 배치와 분주식은 Ricoh 공개 소스의 USIO 직렬 드라이버와 맞는다. 이 비교로 초기 설정의 일부를 직렬 통신 경로로 좁혔지만 실제 출력 핀이나 SRAM remap을 확정한 것은 아니다.</p>
+<nav class="site-nav" aria-label="보고서 탐색"><a href="../index.html">연구 개요</a><a href="m0-board-config.html">보드 설정</a><a href="startup-storage.html#m0-reset-chain">reset 상위 경로</a><a href="#setup">설정과 분주식</a><a href="#output">출력 연결</a><a href="#source">공식 소스 대조</a><a href="#verification">검증 범위</a></nav></header>
+<main><section id="setup"><h2>pin 제어 후보 다음에 직렬 설정이 이어진다</h2>
+<p><code>0x3ffe0838</code>은 <code>0x4dffb208</code>에 OR <code>0x20</code>을 적용한 뒤 <code>0x3ffe7698</code>을 호출한다. 이 하위 함수는 설정을 준비해 <code>0x3fff42e0</code>으로 넘기고 <code>0x3fff4550</code>을 호출한다. 호출 순서는 확인했지만 pin 제어 후보와 실제 전기적 출력의 연결은 확인하지 않았다. <a href="m0-diagnostic-serial-evidence.json">원본 명령과 주소 근거</a> · <a href="m0-board-config.html#source">조건부 pinctrl 해석</a>.</p>
+<figure><figcaption>초기 설정에서 확인한 호출 순서</figcaption><ol class="flow"><li><strong>초기 helper</strong><span><code>0x3ffe0838</code><br>pin 제어 후보 OR <code>0x20</code></span></li><li><strong>설정 준비</strong><span><code>0x3ffe7698</code><br>상태 bit에 따라 설정값 선택</span></li><li><strong>설정 적용</strong><span><code>0x3fff42e0</code><br>분주값과 제어 레지스터 기록</span></li><li><strong>출력 활성화 후보</strong><span><code>0x3fff4550</code><br>상태 저장과 제어 bit 설정</span></li></ol></figure>
+<p>상위 함수와 설정 적용 함수는 각각 <code>0x4dffe000</code>의 bit 24를 읽는다. 상위는 bit가 0이면 설정 첫 word에 115200을, 1이면 1200을 넣는다. 하위는 이 bit에 따라 100000000 또는 32768을 선택하고 <code>0x4dffe100</code>의 하위 byte에 1을 더한 값으로 먼저 나눈다. 이어 설정 첫 word로 나누고 1을 뺀 값을 <code>0x4de00006</code>에 halfword로 기록한 뒤 bit 15를 지운다. 두 상태 읽기 사이에 하드웨어 값이 유지되는지는 이번 분석으로 보장하지 않는다.</p>
+<pre>Q = ((N / (low8(clock_divider) + 1)) / config[0]) - 1
+write16(0x4de00006, low16(Q))
+write16(0x4de00006, read16(0x4de00006) &amp; 0x7fff)</pre>
+<p>위 식은 유효한 양의 입력에서 정수 나눗셈을 순서대로 수행하는 경로를 나타낸다. 115200·1200을 설정 목표값 후보로 해석할 수 있지만 실제 baud rate를 측정한 것은 아니다. 100000000·32768도 코드에 쓰인 분자이며 해당 보드의 실제 입력 클록을 확인한 값은 아니다. <a href="m0-diagnostic-serial-evidence.json">분기·나눗셈·기록 위치</a>.</p>
+<p><code>0x3fff4550</code>은 상태 영역에 인자를 저장하고 <code>0x4de00001</code>의 bit 0을 설정한다. 두 번째 인자가 비제로일 때는 bit 4도 설정한다. 공개 USIO 드라이버에서는 같은 offset과 bit를 각각 송신 활성화와 수신 인터럽트 허용으로 부른다. 하위 함수의 실제 효과는 레지스터 대응이 성립한다는 조건에서 해석한다.</p>
+</section><section id="output"><h2>출력 callback 등록과 포맷터 내부 호출은 구분한다</h2>
+<div class="table-scroll"><table><thead><tr><th scope="col">연결</th><th scope="col">확인 내용</th><th scope="col">범위</th></tr></thead><tbody>
+<tr><td><code>Board ver → 0x3fff0630 → 0x3fff0ba0</code></td><td>진단 호출과 포맷터 진입</td><td>정적 연결</td></tr>
+<tr><td><code>0x3fff070c → stream+0x28</code></td><td>write callback으로 Thumb 주소 <code>0x3fff11dd</code> 등록</td><td>등록 사실</td></tr>
+<tr><td>포맷터 내부 → write callback</td><td>해당 간접 호출 지점 미확정</td><td>연결을 단정하지 않음</td></tr>
+<tr><td><code>0x3fff11dc → 0x3fff12fc → 0x3ffe0860 → 0x3ffe7710 → 0x3fff4800</code></td><td>하위 출력 호출과 데이터 기록</td><td>선택한 함수 경로</td></tr>
+</tbody></table></div>
+<p><code>0x3ffe7710</code>은 LF 앞에 CR을 출력한다. <code>0x3ffe0860</code>은 하위 반환값과 무관하게 요청 길이를 반환한다. 따라서 이 반환값만으로 실제 카메라의 직렬 전송 성공을 판단할 수 없다. <a href="m0-diagnostic-serial-evidence.json">callback과 출력 함수의 명령 근거</a>.</p>
+<p>마지막 함수 <code>0x3fff4800</code>은 <code>0x4de00003</code>의 bit 1을 기다리고 <code>0x4de00004</code>에 halfword를 기록한 뒤 다시 같은 상태 bit를 기다린다. 기록값은 <code>(읽은 halfword &amp; 0xfe00) | r0</code>의 하위 16bit다. 직접 인자의 높은 bit가 켜져 있으면 기존 상위 7bit에도 OR 결과가 반영된다. 상위 line writer는 문자 인자를 byte로 읽는다. 공개 소스의 SSR·DR 배치와 일치하지만 읽기·기록 레지스터의 실제 하드웨어 동작은 별도로 확인해야 한다. 이 함수에는 timeout이 없다. 상태 bit를 합성 RAM에서 바꾸는 CPU 검사는 분기와 접근 순서를 확인할 뿐 실제 송신 완료나 전압 파형을 재현하지 않는다.</p>
+</section><section id="source"><h2>공식 USIO 소스와 일치하는 부분</h2>
+<p>Ricoh의 <code>K3mkIII_220.tar.gz</code> 안에 있는 Linux 소스의 <code>drivers/tty/serial/usio.c</code>를 대조했다. 해당 소스는 SCR offset 1, SSR offset 3, DR offset 4, BGR offset 6을 정의한다. SCR bit 0은 TXE, bit 4는 RIE이고 SSR bit 1은 TDRE다. <a href="https://www.ricoh-imaging.co.jp/japan/products/oss/k-3-3/K3mkIII_220.tar.gz">Ricoh 배포본</a> · <a href="m0-diagnostic-serial-evidence.json">archive·member 해시와 행 번호</a>.</p>
+<p>같은 소스의 390–394행은 baud가 1보다 클 때 <code>uartclk / baud - 1</code>을 계산하고 417행은 그 값을 BGR에 쓴다. 이 구조와 여러 레지스터 offset의 일치가 직렬 설정 해석을 뒷받침한다. 다만 이 소스에서 M0의 정확한 base 주소와 입력 클록을 확인한 것은 아니므로 레지스터 호환성 비교와 물리 주소 매핑을 구분한다.</p>
+<p>이 경로는 <code>0x4dffb208</code>을 SRAM remap 레지스터로 볼 근거를 추가하지 않는다. 앞선 pinctrl 비교와 이번 직렬 초기화의 연속 호출은 pin 기능 설정이라는 해석을 뒷받침하는 단서다. 실제 pin multiplexing 표, <code>CLK_CRRRS</code> bit 정의, <code>0x2000fffc</code>와 <code>0x0100fffc</code>의 물리적 관계는 여전히 필요하다. <a href="m0-board-config.html">보드별 기록 순서와 한계</a>.</p>
+</section><section id="verification"><h2>검증과 후속 경계</h2>
+<p>설정 적용·활성화·문자 출력의 genuine C 3개를 추가해 로컬에 저장했다. 원본 Thumb, literal, 분기와 호출 대상이 판단의 기준이며 원시 C를 빌드 가능한 복원 소스로 취급하지 않았다. 활성화 함수의 C에서 unsupported로 남은 명령은 원본의 DSB이고 문자 출력 C의 상수 반환은 남은 r0 값이므로 전송 결과 API로 해석하지 않았다. 공개 자료에는 분석 설명과 재현 도구, 코드 범위와 해시를 남겼다.</p>
+<p>8사례의 합성 CPU 검사에서 원본 함수의 상태 분기와 기록 순서를 검증했다. 원본 MMIO 주소에는 독립 RAM을 배치했으며 카메라나 OS 장치에는 접근하지 않았다. 입력의 해시를 고정하고 직접 M0 파일과 decoded 컨테이너에서 같은 결과를 확인했다. <a href="m0-diagnostic-serial-checks.json">검사 결과</a> · <a href="../verify_m0_diagnostic_serial.py">재현 도구</a>.</p>
+<pre>python verify_m0_diagnostic_serial.py m0.bin --output m0-serial-direct.json
+python verify_m0_diagnostic_serial.py decoded.bin --output m0-serial-decoded.json</pre>
+<p>이 결과는 직렬 초기화의 일부를 구분한 것이며 수정 펌웨어의 수락을 입증하지 않는다. 비제로 bank의 실제 생산자, resource record+4의 값 결정 정책, 선행 Boot ROM의 인증과 SRAM remap은 미확정이다. <a href="update-bank-selection.html">현재까지 검증한 bank 선택 조건</a>.</p>
+</section></main><footer>정적 코드와 독립 RAM을 사용한 CPU 검사다. HTML 구조·로컬 링크와 320–1280px 화면 배치를 확인했다. 실제 통신·핀·SRAM alias·인증은 미검증이며 빌드·플래시는 수행하지 않았다.</footer></body></html>

@@ -1,0 +1,55 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>M0 보드 설정과 SRAM remap의 남은 경계</title><style>
+:root{color-scheme:light dark;--bg:#f7f8fa;--paper:#fff;--ink:#182332;--muted:#48596b;--line:#d2dbe5;--accent:#124b8e;--soft:#edf3fa;--focus:#d75f00}
+@media(prefers-color-scheme:dark){:root{--bg:#111821;--paper:#18222d;--ink:#e8edf4;--muted:#b4c2d2;--line:#405369;--accent:#98c8ff;--soft:#223348;--focus:#ffb374}}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.85 system-ui,-apple-system,"Malgun Gothic",sans-serif;word-break:keep-all;overflow-wrap:anywhere}
+a{color:var(--accent);text-underline-offset:.18em}a:hover{text-decoration-thickness:2px}:focus-visible{outline:3px solid var(--focus);outline-offset:4px}
+header,main,footer{max-width:1120px;margin:auto;padding:36px clamp(18px,4vw,56px)}header{padding-top:56px;padding-bottom:24px}main{background:var(--paper);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.eyebrow{color:var(--muted);font-size:.84rem;letter-spacing:.06em}h1{font-size:clamp(1.85rem,4.5vw,3rem);line-height:1.35;letter-spacing:-.025em;margin:12px 0 18px}h2{font-size:1.5rem;line-height:1.5;margin:3.6rem 0 1rem;padding-top:1.2rem;border-top:1px solid var(--line)}h2:first-child{margin-top:0}h3{font-size:1.12rem;margin-top:2rem}p{margin:1rem 0}strong{font-weight:650}.intro{max-width:55em;color:var(--muted)}
+nav{margin-top:25px}nav ul{display:flex;flex-wrap:wrap;gap:8px 22px;list-style:none;padding:0;margin:0}nav ul ul{display:none}nav a{font-size:.9rem}code{font: .88em/1.6 ui-monospace,Consolas,monospace;overflow-wrap:anywhere}pre{background:var(--soft);padding:18px;overflow-x:auto;white-space:pre-wrap;border-radius:5px}pre code{font-size:.82rem}
+.table-scroll{overflow-x:auto;margin:24px 0}table{border-collapse:collapse;width:100%;font-size:.92rem;min-width:530px}th,td{text-align:left;vertical-align:top;padding:14px 16px;border-bottom:1px solid var(--line)}th{background:var(--soft);font-weight:650}td:first-child{min-width:125px}details{border-block:1px solid var(--line);margin-top:24px;padding:16px 0}summary{cursor:pointer;font-weight:650;padding:6px 0}.caption,.meta{font-size:.86rem;color:var(--muted)}
+figure{margin:32px 0;padding:24px 0;border-block:1px solid var(--line)}figcaption{font-size:.95rem;font-weight:650;margin-bottom:20px}.flow{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:32px;list-style:none;padding:0;margin:18px 0}.flow li{position:relative;padding:18px;background:var(--soft);border-radius:6px;line-height:1.6}.flow strong{display:block;font-size:1rem}.flow span{display:block;color:var(--muted);font-size:.86rem;margin-top:9px}.flow li:not(:last-child)::after{content:"→";position:absolute;right:-27px;top:40%;font-size:22px;color:var(--muted)}.second{margin-top:24px}footer{font-size:.88rem;color:var(--muted)}
+@media(max-width:620px){body{font-size:16px}header,main,footer{padding-inline:20px}.flow{grid-template-columns:1fr;gap:26px}.flow li:not(:last-child)::after{content:"↓";right:auto;left:calc(50% - 8px);top:auto;bottom:-28px}.flow li{padding:15px 18px}h2{font-size:1.3rem}nav ul{gap:10px 18px}table{font-size:.87rem}th,td{padding:12px}header{padding-top:30px}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+@media print{body{background:white;color:black;font-size:10pt}header,main,footer{max-width:none;padding:12pt}nav{display:none}a{color:inherit}h2,figure,table{break-inside:avoid}h2{break-after:avoid}main{border:0}.flow li{background:#f1f3f5}.table-scroll{overflow:visible}table{min-width:0}details>*{display:block!important}}
+
+.site-nav{border-block:1px solid var(--line);padding:14px 0;margin:20px 0}.site-nav a{display:inline-block;margin:4px 16px 4px 0}
+.review-note{background:var(--soft);padding:16px 20px;margin:24px 0}.toc{font-size:.92rem}.toc ul{list-style:none;padding-left:0}.toc ul ul{padding-left:20px}
+.branch{margin:18px 0;padding:0 0 0 24px;border-left:3px solid var(--line)}.branch p{margin:8px 0}.diagram-line{padding:12px 16px;background:var(--soft);border-radius:4px}
+td code{white-space:nowrap}
+</style></head><body>
+<header><div class="eyebrow">PENTAX K-3 MARK III · M0 STATIC ANALYSIS · 2026-11-08</div><h1>M0 보드 설정과 SRAM remap의 남은 경계</h1>
+<p class="intro">reset 초기화의 보드 선택기 아래 6개 본체를 확인했다. 모두 같은 주소 순서로 상수를 기록하며 입력 데이터를 검사하는 인증 연산은 이 본체들에 없다. 다만 레지스터 기록의 하드웨어 효과가 미확정이므로 SRAM remap이나 하드웨어 인증과 무관하다는 뜻은 아니다.</p>
+<nav class="site-nav" aria-label="보고서 탐색"><a href="../index.html">연구 개요</a><a href="startup-storage.html#m0-reset-chain">reset 상위 경로</a><a href="update-bank-selection.html">이미지 선택 조건</a><a href="#bodies">보드별 본체</a><a href="#ordering">기록 순서</a><a href="#source">공식 소스 대조</a><a href="#verification">검증 범위</a></nav></header>
+<main><section id="bodies"><h2>분기 이후에는 상수 기록과 고정 반복문이 이어진다</h2>
+<p><code>0x3ffe08b4</code>는 보드 선택값을 읽고 <code>0x3ffe3594</code>를 호출한다. 선택기는 값이 12 이하이면 분기 표를, 그보다 크면 기본 본체를 사용한다. 각 본체의 실행 코드는 진입점부터 <code>0x300</code>바이트이며 그 뒤의 literal·padding은 코드와 분리했다. <a href="m0-board-config-evidence.json">코드·데이터 범위와 해시</a> · <a href="m0-reset-evidence.json">선택값의 생산 경로</a>.</p>
+<div class="table-scroll"><table><thead><tr><th scope="col">구분</th><th scope="col">진입점</th><th scope="col">이번 검증</th></tr></thead><tbody>
+<tr><td>selector 0의 대상</td><td><code>0x3ffe11a0</code></td><td>원본 명령·genuine C·합성 CPU</td></tr>
+<tr><td>selector 3의 대상</td><td><code>0x3ffe17a0</code></td><td>원본 명령과 상수 흐름</td></tr>
+<tr><td>selector 6의 대상</td><td><code>0x3ffe1da4</code></td><td>원본 명령과 상수 흐름</td></tr>
+<tr><td>selector 9의 대상</td><td><code>0x3ffe23a4</code></td><td>원본 명령과 상수 흐름</td></tr>
+<tr><td>selector 12의 대상</td><td><code>0x3ffe29a0</code></td><td>원본 명령과 상수 흐름</td></tr>
+<tr><td>기본 대상</td><td><code>0x3ffe2f98</code></td><td>원본 명령·genuine C·합성 CPU</td></tr>
+</tbody></table></div>
+<p>각 본체는 Thumb 명령 384개로 구성된다. 32비트 store 125회가 고유 주소 123곳에 기록하며 20,000에서 0까지 감소하는 반복문 2개가 있다. 여섯 본체의 store 주소 순서는 같고 일부 기록값이 다르다. 이 구간의 load는 모두 원본 literal을 읽으며 외부 호출이나 MMIO 값에 따른 분기는 없다. 20,000회는 명령상의 횟수이며 실제 대기 시간은 측정하지 않았다.</p>
+<p>여기서 검사한 것은 여섯 본체의 코드 범위다. 실제 카메라의 보드 선택값, 해당 레지스터의 writable bit·readback·side effect는 확인하지 않았다. 본체가 기록하는 주소와 값 전체는 로컬 분석 자료에 보존하고 공개 결과에는 범위·해시·필요한 비교값만 기록했다.</p>
+</section><section id="ordering"><h2>앞선 OR 기록과 뒤의 상수 기록을 구분한다</h2>
+<figure><figcaption>같은 레지스터에 대한 서로 다른 시점의 기록 요청</figcaption><ol class="flow">
+<li><strong>초기 helper</strong><span><code>0x3ffe0838</code><br><code>0x4dffb208</code>을 읽고 OR <code>0x20</code><br>읽은 다른 bit를 기록값에 유지</span></li>
+<li><strong>보드별 본체</strong><span><code>0x4dffb208 ← 0x20</code><br><code>0x4d021090 ← 0x3f</code><br>기존 값을 읽지 않는 직접 store</span></li>
+<li><strong>뒤의 적재 helper</strong><span><code>0x3ffe4db4</code>의 비제로 entry 조건<br>벡터·진입 주소·모드 1 기록 → DSB<br><code>0x4d021090 ← 0xf3f</code></span></li>
+</ol></figure>
+<p>초기 setup은 <code>0x3ffe0838</code> 뒤에 보드 선택기를 호출한다. 따라서 앞의 OR 연산만 보고 최종 기록값이 다른 bit를 유지한다고 설명할 수 없다. 뒤의 보드 본체는 <code>0x4dffb208</code>에 상수 <code>0x20</code>을 쓴다. 실제 레지스터가 모든 bit를 저장하는 일반 RAM처럼 동작하는지는 별도 문제다. <a href="m0-board-config-evidence.json">명령 순서 근거</a>.</p>
+<p>같은 보드 본체는 <code>0x4d021090</code>에 <code>0x3f</code>를 쓴다. 기존에 추적한 적재 helper는 <code>0x3fffa800</code>의 entry가 비제로일 때 벡터 <code>0x20000000</code>, 진입 주소 <code>0x20000020</code>, 모드 <code>0x2000fffc</code>를 준비하고 DSB 뒤에 <code>0xf3f</code>를 쓴다. 두 기록값의 차이는 <code>0xf00</code>이다. 이를 특정 코어의 해제 비트나 remap 비트라고 명명할 근거는 아직 없다. 이 순서는 조건부 코드 연결이며 전체 reset·작업 스케줄링·진입점 실행을 재현한 결과가 아니다. <a href="startup-storage.html#preboot-mode">기존 적재·모드 경로</a>.</p>
+</section><section id="source"><h2>공식 소스의 CLK_CRRRS와 비교할 수 있다</h2>
+<p>Ricoh가 배포한 Linux 소스의 <code>arch/arm/mach-milbeaut/snapshot.c</code>는 46행에서 <code>CLK_CRRRS_OFFSET=0x90</code>을 정의하고 2602행에서 base <code>0x1d021000</code>을 매핑한다. 2630행과 2733행은 그 위치를 읽고 복원한다. 따라서 해당 소스가 사용하는 주소는 <code>0x1d021090</code>이다. <a href="m0-board-config-evidence.json">archive member·SHA-256·행 번호</a>.</p>
+<p>M0의 <code>0x4d021090</code>과는 <code>0x30000000</code> 차이다. 이 비교는 주변장치 주소 대응의 단서이며 동일한 물리 레지스터임을 실측한 결과는 아니다. 특히 SRAM 후보 주소의 차이는 <code>0x1f000000</code>이므로 이 주변장치 차이를 SRAM에 그대로 적용하지 않는다. 공식 소스의 이름도 각 bit의 기능이나 선행 ROM의 인증 정책을 설명하지는 않는다. <a href="startup-storage.html#m0-address-map">SRAM 주소 연결의 기존 근거와 한계</a>.</p>
+<p><code>0x4dffb208</code>에는 pin 제어 후보가 있다. 같은 배포본의 <code>sc2000.dtsi</code>는 주석 처리된 디버그용 CM0 pinctrl 노드에 base <code>0x1dffb000</code>을 적는다. 대응 드라이버 <code>pinctrl-mlb01-cm0.c</code>는 <code>EPCR=0x200</code>, 레지스터당 pin 16개를 정의하며 GPIO 선택 시 해당 bit를 지우고 그 밖에는 설정한다. 이 주변장치 주소 대응이 성립한다면 <code>+0x208</code>의 bit 5는 드라이버의 pin index 37에 해당한다. 이 해석은 조건부 소스 비교이며 활성 DT 노드, 실제 패키지 pin 번호 또는 선택된 주변장치 기능을 확인한 결과가 아니다. <a href="m0-board-config-evidence.json">CM0 pinctrl 소스·주석 범위</a>.</p>
+<p>여섯 보드 본체에는 <code>0x2000fffc</code>·<code>0x0100fffc</code>·<code>0x4dfff0xx</code>의 직접 접근이 없다. 그러나 확인한 상수 기록이 내부 버스나 인증 하드웨어에 어떤 효과를 내는지는 알 수 없다. 다음 연결점은 <code>CLK_CRRRS</code>의 bit 정의와 M0·A7 버스 매핑 문서, 별도의 <code>0x3ffe04a4</code> 설정 및 선행 ROM이다.</p>
+</section><section id="verification"><h2>검증과 로컬 의사코드</h2>
+<p>기본 본체와 selector 0 본체의 genuine C 2개를 추가해 로컬에 저장했다. 원본 Thumb와 CFG 범위를 대조했으며 literal pool을 실행 명령 수에 넣지 않았다. 나머지 네 본체는 정적 코드·상수 흐름으로 비교했다. 원시 C의 표현보다 원본 명령을 결론의 기준으로 삼았다. <a href="m0-board-config-evidence.json">출처·범위</a>.</p>
+<p>합성 CPU 4사례는 두 본체에 대해 MMIO RAM의 초기값을 각각 0과 <code>0xffffffff</code>로 둔 경우다. 외부 함수를 대체하지 않고 본체를 실행해 원본 리터럴 외 데이터 읽기가 없음을 확인하고, 기록 순서와 최종값을 대조했다. 두 SRAM 후보 주소는 서로 연결하지 않았다. 이 검사는 실제 MMIO의 의미, 물리 시간, 보드 선택기·reset 전체나 인증 하드웨어를 실행하지 않는다. <a href="m0-board-config-checks.json">합성 검사 결과</a> · <a href="../verify_m0_board_config.py">재현 도구</a>.</p>
+<p>독립 검토에서는 selector 3과 selector 12 본체를 각각 초기값 <code>0x5a</code>와 <code>0xa5</code>로 추가 실행했다. 같은 저장 횟수와 선택한 기록값을 확인했다. 이 로컬 2사례는 공개 도구의 4사례에 포함하지 않았다.</p>
+<pre>python verify_m0_board_config.py decoded.bin --output m0-board-decoded.json
+python verify_m0_board_config.py m0.bin --output m0-board-direct.json</pre>
+<p>검증한 원본 SHA-256만 허용하며 결과는 새 경로에 저장한다. 이 분석에서는 펌웨어 빌드·플래시·실제 카메라 조작을 수행하지 않았다. 비제로 bank 및 resource record+4의 실제 값 생성 정책도 이번 M0 본체 분석으로 해결되지 않았다.</p>
+</section></main><footer>정적 코드와 독립 RAM을 사용한 CPU 검증이다. HTML 구조·로컬 링크와 320–1280px 화면 배치를 확인했다. 물리 SRAM alias와 Boot ROM 인증은 미확정이다.</footer></body></html>

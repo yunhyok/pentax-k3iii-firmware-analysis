@@ -1,0 +1,147 @@
+{
+  "input_sha256": "63dd8f3b2668ef68f3ab0f8ecd0f4cda8c46a78c5388646fc9e1fe85e39a070e",
+  "m0_sha256": "63dd8f3b2668ef68f3ab0f8ecd0f4cda8c46a78c5388646fc9e1fe85e39a070e",
+  "case_count": 8,
+  "original_cpu_runs": 8,
+  "passed": true,
+  "source_ranges": [
+    {
+      "start": "0x3ffe7698",
+      "end": "0x3ffe76ea",
+      "sha256": "9b4c4cc08b44d98fba37c20f72b3c9196908dd6721e151bb078dd4e744a66239"
+    },
+    {
+      "start": "0x3fff42e0",
+      "end": "0x3fff450c",
+      "sha256": "325a3cb949f8777bc5d3e5639d055dbdd1dc15edc9ed82eb8fb09e9c00ad29c9"
+    },
+    {
+      "start": "0x3fff4550",
+      "end": "0x3fff457e",
+      "sha256": "5e26aaf9d97d34df5f7bf8b0cc9cd24d68ea273d8a6db8084e99afc4c8f27f0a"
+    },
+    {
+      "start": "0x3fff04e2",
+      "end": "0x3fff04f2",
+      "sha256": "bec2f8c4da2605cdafc9d7313691a9ae099a807a87df4ad7b3b9cfcfcdb80a00"
+    },
+    {
+      "start": "0x3fff1788",
+      "end": "0x3fff188c",
+      "sha256": "88de6a6d14bb5e9208225357eda2f8bf0c5f1782575f0c58aa737a93d4bd74e2"
+    },
+    {
+      "start": "0x3fff4800",
+      "end": "0x3fff482a",
+      "sha256": "44aaeb92aa5fd6d524974d5c103d517d02b3524ea3dbca24db3c734e904da89e"
+    },
+    {
+      "start": "0x3ffe7710",
+      "end": "0x3ffe7742",
+      "sha256": "43bd285d229de0936599e222d867152ade30e1d49eefc71ae12d9e30b9632e30"
+    }
+  ],
+  "cases": [
+    {
+      "label": "setup_bit0_divider0",
+      "clock_select_bit": 0,
+      "divider_byte": 0,
+      "selected_config": 115200,
+      "bgr_result": 867,
+      "instructions": 1749,
+      "mmio_store_count": 16,
+      "mmio_sequence_sha256": "7c6f9f168b6ef4a6f78ed661a26ee41bff39212c6155e2eb00228e5e689bd295",
+      "status_reads": 0,
+      "stub_count": 0,
+      "passed": true
+    },
+    {
+      "label": "setup_bit0_divider255",
+      "clock_select_bit": 0,
+      "divider_byte": 255,
+      "selected_config": 115200,
+      "bgr_result": 2,
+      "instructions": 1661,
+      "mmio_store_count": 16,
+      "mmio_sequence_sha256": "45ab73b99fa5dbd76b6d5feccff3b11f442192ecf57101f2259b2725c38d174b",
+      "status_reads": 0,
+      "stub_count": 0,
+      "passed": true
+    },
+    {
+      "label": "setup_bit1_divider0",
+      "clock_select_bit": 1,
+      "divider_byte": 0,
+      "selected_config": 1200,
+      "bgr_result": 26,
+      "instructions": 1638,
+      "mmio_store_count": 16,
+      "mmio_sequence_sha256": "55b43052ae58e057b8db3cd1bd77ad105c744498362e7675e7480669859677e2",
+      "status_reads": 0,
+      "stub_count": 0,
+      "passed": true
+    },
+    {
+      "label": "setup_bit1_divider255",
+      "clock_select_bit": 1,
+      "divider_byte": 255,
+      "selected_config": 1200,
+      "bgr_result": 32767,
+      "instructions": 1560,
+      "mmio_store_count": 16,
+      "mmio_sequence_sha256": "11f17189e6ec98257ddf103dff71ac7e9914556924c8e4f6507ec57ff4000f86",
+      "status_reads": 0,
+      "stub_count": 0,
+      "passed": true
+    },
+    {
+      "label": "enable_nonzero_argument",
+      "instructions": 20,
+      "mmio_store_count": 2,
+      "mmio_sequence_sha256": "c0e6055934b8c0c5286d6533b5c786276ef09ad5072adc4a7ff6ea71faa77a75",
+      "status_reads": 0,
+      "stub_count": 0,
+      "passed": true
+    },
+    {
+      "label": "byte_pre_post_poll_delays",
+      "input_value": 322,
+      "data_output_sha256": "3f3dae676cea7196d11d45d47377d11ac88ec23ca0c68f20731e910d75d67be8",
+      "instructions": 33,
+      "mmio_store_count": 1,
+      "mmio_sequence_sha256": "3b33313b2feb448a9db3205709a7da2cf0d7489f950250936290a1a3ec31ef09",
+      "status_reads": 5,
+      "stub_count": 0,
+      "passed": true
+    },
+    {
+      "label": "line_crlf",
+      "input_hex": "410a",
+      "emitted_count": 3,
+      "instructions": 87,
+      "mmio_store_count": 3,
+      "mmio_sequence_sha256": "439d96f7d4d66d6b98848a6a7300bffa18914399f52e8a669efca95ee34bc913",
+      "status_reads": 6,
+      "stub_count": 0,
+      "passed": true
+    },
+    {
+      "label": "empty_line",
+      "input_hex": "",
+      "emitted_count": 0,
+      "instructions": 8,
+      "mmio_store_count": 0,
+      "mmio_sequence_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "status_reads": 0,
+      "stub_count": 0,
+      "passed": true
+    }
+  ],
+  "scope": [
+    "Original Thumb functions, Cortex-M0 emulation; no camera execution.",
+    "Synthetic RAM MMIO and status read sequence; no OS/device call or stub.",
+    "Setup executes native positive division and memset. Config zero/negative, negative division, optional format struct and IRQ behavior excluded.",
+    "Line output starts at7710, not Boardver/printf; formatter dispatch remains unproved.",
+    "No physical baud, pin wiring, clockrate, remap or authentication conclusion."
+  ]
+}

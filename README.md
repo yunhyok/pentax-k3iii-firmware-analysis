@@ -17,6 +17,7 @@
 - [TTimPeriod 설정·카운터 증가 20사례](analysis/update-timer-clock.html) · [하위 시간 변환의 32비트 산술·6,754회 실행](analysis/update-subtick-arithmetic.html)
 - [타이머 등록·지연 콜백 20사례](analysis/update-timer-irq.html) · [시각 조회 출력 12사례](analysis/update-clock-readers.html) · [기한 큐 삽입 18사례](analysis/update-timer-insertion.html)
 - [RTOS 쓰기 bank와 BOOT 선택의 합성 표 대조 12사례](analysis/update-bank-selection.html)
+- [M0 보드 설정·상수 기록과 SRAM remap의 남은 경계](analysis/m0-board-config.html) · [M0 직렬 설정·문자 출력](analysis/m0-diagnostic-serial.html)
 - [실제 DNG 표본·DCP 시험 준비](analysis/raw-test-inputs.html)
 - [ColorChecker 24패치·ICC 색차 비교 절차](analysis/color-comparison-protocol.html)
 - [Lightroom 실제 TIFF 6개·프로파일·출력 색공간 비교](analysis/lightroom-render-comparison.html)
