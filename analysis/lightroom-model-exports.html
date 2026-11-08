@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>K-3 III·Q7 Lightroom 시험 프로파일 출력</title>
+<style>
+:root{color-scheme:light dark;--bg:#f7f8fa;--paper:#fff;--ink:#182332;--muted:#48596b;--line:#d2dbe5;--accent:#124b8e;--soft:#edf3fa}
+@media(prefers-color-scheme:dark){:root{--bg:#111821;--paper:#18222d;--ink:#e8edf4;--muted:#b4c2d2;--line:#405369;--accent:#98c8ff;--soft:#223348}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.75 system-ui,"Malgun Gothic",sans-serif;word-break:keep-all;overflow-wrap:anywhere}
+header,main{max-width:1060px;margin:auto;padding:clamp(16px,4vw,44px)}header{padding-top:clamp(26px,6vw,64px);padding-bottom:24px}main{background:var(--paper);border:1px solid var(--line)}
+h1{margin:.3em 0 .5em;font-size:clamp(1.75rem,5vw,2.8rem);line-height:1.25}h2{font-size:1.35rem;margin-top:2rem}h2:first-child{margin-top:0}.intro{max-width:48em}
+small,figcaption,.flow span{color:var(--muted)}nav a{display:inline-block;margin:4px 15px 4px 0}a,summary{color:var(--accent);text-underline-offset:.18em}
+.scroll{overflow:auto;max-width:100%;margin:1em 0}a:focus-visible,summary:focus-visible,.scroll:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+table{border-collapse:collapse;width:100%;min-width:640px;font-variant-numeric:tabular-nums}caption{text-align:left;margin-bottom:.45em}
+th,td{padding:.38em .65em;border:1px solid var(--line);text-align:left}th{background:var(--soft)}td.number{white-space:nowrap}
+.flow{list-style:none;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:24px;margin:1.15em 0;padding:0}
+.flow li{position:relative;min-width:0;background:var(--soft);border-top:3px solid var(--accent);padding:.65em .8em}
+.flow strong,.flow span{display:block}.flow span{font-size:.9em}.flow li:not(:last-child)::after{content:"→";position:absolute;right:-20px;top:30%;color:var(--accent);font-weight:bold}
+.crop{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:24px;align-items:center}
+figure{margin:1em 0}figcaption{font-size:.9em;margin:.4em 0}svg{display:block;width:100%;height:auto}
+pre{background:var(--soft);padding:16px;overflow:auto;font-size:.82rem}code{font-family:ui-monospace,Consolas,monospace}summary{cursor:pointer;font-weight:650}
+@media(max-width:700px){.flow,.crop{grid-template-columns:1fr;gap:14px}.flow{gap:22px}.flow li:not(:last-child)::after{content:"↓";top:auto;right:auto;left:1em;bottom:-23px}}
+</style>
+</head>
+<body>
+<header>
+<small>2026-11-08 · Lightroom Classic 15.6 · raw.pixls.us #4678·#1760</small>
+<h1>K‑3 III와 Q7의 시험 DCP로 TIFF 내보내기</h1>
+<p class="intro">두 카메라의 DNG에서 읽은 색 행렬과 광원 태그로 만든 시험 DCP를 Lightroom에서 선택했다. K‑3 III는 6192×4128, Q7은 4000×2664의 비압축 ProPhoto RGB 16비트 TIFF로 내보냈다. TIFF의 XMP에서 선택한 프로파일을 확인하고 전체 픽셀을 디코딩했다.</p>
+<nav aria-label="문서 탐색"><a href="#results">출력 결과</a><a href="#crop">RAW와 크롭</a><a href="#replay">재현</a><a href="lightroom-model-exports.json">검증 JSON</a></nav>
+</header>
+<main>
+<h2 id="results">RAW에서 TIFF 검증까지</h2>
+<p>표본 RAW의 촬영 펌웨어는 K-3 III 1.01, Q7 1.00이다. 현재 분석 대상인 2.20과 1.01의 색 처리 결과로 일반화하지 않는다. <a href="raw-test-inputs.json">RAW의 Software 태그와 해시</a></p>
+<ol class="flow" aria-label="시험 DCP 생성, 선택 및 검증 흐름">
+<li><strong>01 · RAW 읽기</strong><span>DNG의 모델 태그, 색 행렬 2개와 보정 광원 2개</span></li>
+<li><strong>02 · DCP 작성</strong><span>모델과 보정 태그를 담은 시험 프로파일 두 개</span></li>
+<li><strong>03 · Lightroom 선택</strong><span>기종에 맞는 DCP로 ProPhoto RGB 16비트 TIFF 출력</span></li>
+<li><strong>04 · TIFF 검사</strong><span>XMP 프로파일, ICC, 전체 RGB16 픽셀 해시 대조</span></li>
+</ol>
+<div class="scroll" role="region" tabindex="0" aria-label="기종별 Lightroom 프로파일과 TIFF 출력">
+<table>
+<caption>같은 표본을 가리키는 RAW 모델 태그, 시험 프로파일과 실제 출력</caption>
+<thead><tr><th scope="col">표본</th><th scope="col">Lightroom 프로파일</th><th scope="col">As Shot</th><th scope="col">TIFF 크기</th><th scope="col">디코딩 픽셀</th></tr></thead>
+<tbody>
+<tr><th scope="row">K-3 III #4678</th><td>PENTAX RAW matrix test 4678</td><td class="number">5500 K/+15</td><td class="number">6192×4128</td><td class="number">25,560,576</td></tr>
+<tr><th scope="row">Q7 #1760</th><td>PENTAX RAW matrix test 1760</td><td class="number">4050 K/+22</td><td class="number">4000×2664</td><td class="number">10,656,000</td></tr>
+</tbody>
+</table>
+</div>
+<p>Lightroom의 두 TIFF에는 같은 ProPhoto RGB ICC가 들어 있다. 두 파일 모두 3채널 unsigned 16비트 RGB이며, 비압축 상태로 크기 조정·출력 샤프닝·워터마크를 끄고 내보냈다. XMP에서 노출 0 EV, Process Version 15.4와 HDR 편집 꺼짐을 확인했다. 파일의 SHA-256은 TIFF 전체를, 픽셀 SHA-256은 디코딩 후 행 순서대로 직렬화한 little-endian RGB16 값을 대상으로 계산했다. <a href="lightroom-model-exports.json">TIFF·ICC·픽셀 해시와 설정값</a></p>
+<p>두 RAW의 작업용 사본과 두 DCP의 설치본은 각각 원본과 일치했다. Q7의 일반 Model 태그는 <code>PENTAX Q7</code>이고, DNG와 DCP의 <code>UniqueCameraModel</code>에는 Q7 뒤에 ASCII 공백(0x20)이 하나 있다. 두 파일의 모델 태그는 마지막 NUL까지 일치했다. XMP의 <code>CameraProfileDigest</code>는 Lightroom이 기록한 별도 식별값이다. <a href="raw-test-inputs.html">RAW 출처와 원래 DCP 검사</a> · <a href="lightroom-bridge.html">DCP 태그와 역할</a></p>
+
+<h2 id="crop">RAW 기본 크롭과 XMP에 기록된 크롭</h2>
+<div class="crop">
+<div>
+<p>두 RAW의 방향 태그는 1, DefaultScale은 1×1이다. 내보낼 때 크기를 조정하지 않았으므로 TIFF의 예상 크기는 CFA 배열 전체가 아니라 RAW의 DefaultCropSize에서 계산했다. K‑3 III의 XMP는 <code>HasCrop=False</code>로 좌표가 전체 범위 [0, 0, 1, 1]이다.</p>
+<p>Q7의 XMP는 <code>HasCrop=True</code>다. 좌·상·우·하 경계가 [0, 0.056, 1, 0.944]이며 각도는 0이다. 4000×3000 활성 영역에서 위아래 168행씩 제외한 RAW 기본 크롭과 정확히 일치한다. <a href="https://helpx.adobe.com/content/dam/help/en/camera-raw/digital-negative/jcr_content/root/content/flex/items/position/position-par/download_section_733958301/download-1/DNG_Spec_1_7_1_0.pdf#page=31">Adobe DNG 규격의 기본 크롭</a></p>
+</div>
+<figure>
+<svg viewBox="0 0 380 222" role="img" aria-labelledby="crop-title crop-description">
+<title id="crop-title">Q7의 활성 영역과 기본 크롭</title>
+<desc id="crop-description">4000×3000 활성 영역에서 위아래 각각 168행을 제외하면 4000×2664가 남는다. XMP 상단 0.056, 하단 0.944에 해당한다.</desc>
+<rect x="12" y="18" width="240" height="180" fill="var(--paper)" stroke="var(--muted)" stroke-width="1.5"/>
+<rect x="12" y="28.08" width="240" height="159.84" fill="var(--soft)" stroke="var(--accent)" stroke-width="1.75"/>
+<g stroke="var(--accent)" stroke-width="1.25"><line x1="252" x2="274" y1="28.08" y2="28.08"/><line x1="252" x2="274" y1="187.92" y2="187.92"/></g>
+<g fill="var(--ink)" font-family="system-ui, sans-serif" font-size="15">
+<text x="132" y="98" text-anchor="middle">RAW 기본 크롭</text><text x="132" y="122" text-anchor="middle" font-weight="650">4000 × 2664</text>
+<text x="280" y="33">0.056</text><text x="280" y="193">0.944</text>
+<text x="12" y="217">활성 영역 4000 × 3000</text>
+</g>
+</svg>
+<figcaption>Q7 #1760의 RAW 크롭과 정규화한 XMP 경계. 바깥 사각형은 활성 영역이다.</figcaption>
+</figure>
+</div>
+<p>내장 JPEG는 DNG에서 따로 추출해 확인했다. K‑3 III는 Natural과 Adobe RGB로 기록됐고 Q7은 Bright이며, 내장 미리보기의 DNG 기본 sRGB는 MakerNote와 일치한다. 두 JPEG에 ICC는 없었다. TIFF와 각각 크기가 같지만, 이 검증에서는 카메라 JPEG와의 색 차이나 보정 정확도를 측정하지 않았다. K‑3 II의 별도 실험은 여섯 TIFF와 Natural 미리보기를 패치 단위로 비교했다. <a href="https://helpx.adobe.com/content/dam/help/en/camera-raw/digital-negative/jcr_content/root/content/flex/items/position/position-par/download_section_733958301/download-1/DNG_Spec_1_7_1_0.pdf#page=55">DNG 미리보기 색공간</a> · <a href="lightroom-render-comparison.html">K‑3 II 여섯 TIFF 비교</a></p>
+
+<h2 id="replay">원본 산출물 검증 재현</h2>
+<p>두 RAW는 CC0 표본이다. 정확한 수치 재현에는 JSON에 적힌 SHA-256과 일치하는 RAW, DCP, TIFF가 각각 필요하다. 이 페이지에는 DCP·TIFF·ICC 원본 바이트가 포함되어 있지 않다. 새로 내보낸 TIFF는 픽셀이 같아도 파일 메타데이터가 달라 해시가 달라질 수 있다. <a href="https://raw.pixls.us/">raw.pixls.us 원본 저장소</a> · <a href="https://creativecommons.org/publicdomain/zero/1.0/">CC0 1.0</a> · <a href="lightroom-model-exports.json">원본 URL 및 파일 해시</a></p>
+<p>저장소 루트에서 Python 3.11 이상과 NumPy, Pillow, tifffile을 사용한다. ExifTool 실행 파일은 <code>--exiftool</code>로 지정하거나 PATH에 둔다. 아래 예시의 파일 경로는 각자 보관한 파일 위치로 바꾼다. 출력 JSON은 새 파일이어야 한다. <a href="../tools/check_lightroom_model_exports.py">재현 스크립트</a></p>
+<pre><code>$f = 'model-fixtures'
+python -B tools/check_lightroom_model_exports.py `
+  --k3iii "$f/pentax-k3iii-4678.dng" "$f/pentax-k3iii-4678-matrix-test.dcp" "$f/pentax-k3iii-4678.tif" `
+  --q7 "$f/pentax-q7-1760.dng" "$f/pentax-q7-1760-matrix-test.dcp" "$f/pentax-q7-1760.tif" `
+  --exiftool exiftool --output "$f/model-export-replay.json"
+Get-FileHash -Algorithm SHA256 -LiteralPath "$f/model-export-replay.json", analysis/lightroom-model-exports.json</code></pre>
+</main>
+</body>
+</html>
