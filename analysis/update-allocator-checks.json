@@ -1,0 +1,388 @@
+{
+  "passed": true,
+  "image_sha256": "342d2f35405e8daf1797dfe431d2e4aa70f4b52a2c242a29df48206672f1dfb4",
+  "cases": 35,
+  "groups": {
+    "allocate-size-success-failure": 20,
+    "default-alignment-raw-pointer-caller-fallback": 8,
+    "initializer-fragment-create-registration": 6,
+    "validator-ctor-shared-registry": 1
+  },
+  "scope": "Original ARM pool construction/registration and allocation arithmetic.\nOS create/allocate and debug metadata are explicit stubs; no OS service executes.\nThe initializer fragment receives r5=0x40 and a synthetic frame. This is not a\nfull startup replay. Allocation success returns a small synthetic pointer only;\nrequested large buffers are never allocated. No device, file, or camera IO.\n",
+  "cpu_model": "Unicorn Cortex-A15; no camera fidelity claim",
+  "stubs": {
+    "0x525b6a58": "capture seven creation descriptor words and return synthetic signed handle",
+    "0x525b7214": "capture allocation request and return synthetic OS status/pointer; no allocation",
+    "0x530ef42c": "capture debug metadata arguments only; metadata writes are not executed",
+    "0x530fdfc4": "capture ctor assertion condition and return; fatal policy not emulated"
+  },
+  "ranges": [
+    {
+      "start": "0x530f04ac",
+      "end": "0x530f05cc",
+      "sha256": "917a3f9c467405a06e42565e546803eccca695cd0abe3d29576ced812afa5a1b"
+    },
+    {
+      "start": "0x530ef264",
+      "end": "0x530ef288",
+      "sha256": "7dfdb7d93ca42fa9d9d96cb56e396cb5c96662702083684c3038a644b1e00f01"
+    },
+    {
+      "start": "0x530ef2c4",
+      "end": "0x530ef2d4",
+      "sha256": "98d7ff321df93d2544637327bb95c8c0e0a7e9bb09e6c359ce9c2ad2b1b93f18"
+    },
+    {
+      "start": "0x530efb8c",
+      "end": "0x530efc80",
+      "sha256": "5b52a2fc1e3756033ea4fc3e0efee203a9509749339a92bb5092707bdc55c2ed"
+    },
+    {
+      "start": "0x530f5890",
+      "end": "0x530f58cc",
+      "sha256": "d355adf1a5a1de831d58446302fcb299d0352b0f40c7591dde51eca4660e8b40"
+    },
+    {
+      "start": "0x52ff4a1c",
+      "end": "0x52ff4aa8",
+      "sha256": "f68f7ec124efb4dac8f83cba4f8151b00c9d4ff8126d0f4c98ba86e47f3e28a9"
+    }
+  ],
+  "candidates": [
+    {
+      "name": "original",
+      "file_bytes": 35106716,
+      "allocator_request_bytes": 35106848
+    },
+    {
+      "name": "selected",
+      "file_bytes": 35136788,
+      "allocator_request_bytes": 35136928
+    },
+    {
+      "name": "all_stored",
+      "file_bytes": 78690708,
+      "allocator_request_bytes": 78690848
+    },
+    {
+      "name": "decoded",
+      "file_bytes": 78683892,
+      "allocator_request_bytes": 78684000
+    }
+  ],
+  "results": [
+    {
+      "group": "initializer-fragment-create-registration",
+      "inputs": {
+        "synthetic_os_create_status": 1,
+        "incoming_r5": 64
+      },
+      "result_sha256": "ee4eaeb8f1c9da9acb4523f728908e6fcfdb3aa6291949a71fd66c6cf05f246c"
+    },
+    {
+      "group": "initializer-fragment-create-registration",
+      "inputs": {
+        "synthetic_os_create_status": 4660,
+        "incoming_r5": 64
+      },
+      "result_sha256": "b468bbdcd69efc0f7523db7140e416ad51037ac212af4d761e0d4e46911af955"
+    },
+    {
+      "group": "initializer-fragment-create-registration",
+      "inputs": {
+        "synthetic_os_create_status": 2147483647,
+        "incoming_r5": 64
+      },
+      "result_sha256": "327aa03b94e56ee4fb63bbfacc4d3a429b092f4605177adfa859050aba974239"
+    },
+    {
+      "group": "initializer-fragment-create-registration",
+      "inputs": {
+        "synthetic_os_create_status": 0,
+        "incoming_r5": 64
+      },
+      "result_sha256": "61aa2dc6f65ca5c47e4b8172b9f6ca674925052abcc9b9b758ab768b92234556"
+    },
+    {
+      "group": "initializer-fragment-create-registration",
+      "inputs": {
+        "synthetic_os_create_status": 4294967295,
+        "incoming_r5": 64
+      },
+      "result_sha256": "85904266cb28ae27d005760c8548deb1a088301213b975e127fab2886d0223df"
+    },
+    {
+      "group": "initializer-fragment-create-registration",
+      "inputs": {
+        "synthetic_os_create_status": 2147483648,
+        "incoming_r5": 64
+      },
+      "result_sha256": "dc50d5349cda8acb2e6c54b72a03e5a96986c48f423b22880d69c7ffcc416305"
+    },
+    {
+      "group": "validator-ctor-shared-registry",
+      "inputs": {},
+      "result_sha256": "1463ba79878c740f049848df53b75fbaa445843d39c3050403969a3256c16ffb"
+    },
+    {
+      "group": "allocate-size-success-failure",
+      "inputs": {
+        "requested_bytes": 0,
+        "alignment": 64,
+        "synthetic_os_status": 0
+      },
+      "result_sha256": "9d2b0865703b9625609826effb1dd3be88f8c778e470b423fab1b925f0170e6f"
+    },
+    {
+      "group": "allocate-size-success-failure",
+      "inputs": {
+        "requested_bytes": 0,
+        "alignment": 64,
+        "synthetic_os_status": 4294967295
+      },
+      "result_sha256": "fd73bfd90adbd10b2fc9ca1e77373f238f8d129e97ab639276248fe6c74b56ce"
+    },
+    {
+      "group": "allocate-size-success-failure",
+      "inputs": {
+        "requested_bytes": 1,
+        "alignment": 64,
+        "synthetic_os_status": 0
+      },
+      "result_sha256": "dcc3e06bb6b38f242d50419b827cd0f2c6c589c062ddcbf80c350635973b5629"
+    },
+    {
+      "group": "allocate-size-success-failure",
+      "inputs": {
+        "requested_bytes": 1,
+        "alignment": 64,
+        "synthetic_os_status": 4294967295
+      },
+      "result_sha256": "b170cc5727b86cc2ad30ea1b63e7632bdba18504bdb824aa4f0c57125e2104a3"
+    },
+    {
+      "group": "allocate-size-success-failure",
+      "inputs": {
+        "requested_bytes": 63,
+        "alignment": 64,
+        "synthetic_os_status": 0
+      },
+      "result_sha256": "5e55d604d1b44717b7fcebd844037e55eb12b799884931cd2405f825bd48e576"
+    },
+    {
+      "group": "allocate-size-success-failure",
+      "inputs": {
+        "requested_bytes": 63,
+        "alignment": 64,
+        "synthetic_os_status": 4294967295
+      },
+      "result_sha256": "b170cc5727b86cc2ad30ea1b63e7632bdba18504bdb824aa4f0c57125e2104a3"
+    },
+    {
+      "group": "allocate-size-success-failure",
+      "inputs": {
+        "requested_bytes": 64,
+        "alignment": 64,
+        "synthetic_os_status": 0
+      },
+      "result_sha256": "d6caeb0bdbd077d1a4f511802632c4f007352c271b112119af69831fe74bbf7f"
+    },
+    {
+      "group": "allocate-size-success-failure",
+      "inputs": {
+        "requested_bytes": 64,
+        "alignment": 64,
+        "synthetic_os_status": 4294967295
+      },
+      "result_sha256": "b170cc5727b86cc2ad30ea1b63e7632bdba18504bdb824aa4f0c57125e2104a3"
+    },
+    {
+      "group": "allocate-size-success-failure",
+      "inputs": {
+        "requested_bytes": 65,
+        "alignment": 64,
+        "synthetic_os_status": 0
+      },
+      "result_sha256": "8b539b3d248a862e3c3786e299d1fbaf0cc8b377c381b5ec1e1d03e4f2cd1569"
+    },
+    {
+      "group": "allocate-size-success-failure",
+      "inputs": {
+        "requested_bytes": 65,
+        "alignment": 64,
+        "synthetic_os_status": 4294967295
+      },
+      "result_sha256": "6183cea4f13c6f64cfaee9b0a79126a22528b80d999e7a2eafcb57c6285cef1e"
+    },
+    {
+      "group": "allocate-size-success-failure",
+      "inputs": {
+        "requested_bytes": 524288,
+        "alignment": 64,
+        "synthetic_os_status": 0
+      },
+      "result_sha256": "585f2ffe5f29d638506966a8028071a90c9dcd2da3a4f61b09b90146eb2c2f0c"
+    },
+    {
+      "group": "allocate-size-success-failure",
+      "inputs": {
+        "requested_bytes": 524288,
+        "alignment": 64,
+        "synthetic_os_status": 4294967295
+      },
+      "result_sha256": "b94843ae634e49cc875cbcf0ea95b7fe006bee780fb7224ec3fb233bc910febd"
+    },
+    {
+      "group": "allocate-size-success-failure",
+      "inputs": {
+        "requested_bytes": 35106716,
+        "alignment": 64,
+        "synthetic_os_status": 0
+      },
+      "result_sha256": "e77076b9f1dbbab374a9f7f4918de5e404b1a735029843fc702817662b6d5e6b"
+    },
+    {
+      "group": "allocate-size-success-failure",
+      "inputs": {
+        "requested_bytes": 35106716,
+        "alignment": 64,
+        "synthetic_os_status": 4294967295
+      },
+      "result_sha256": "21d00b0728908a16567753aa6182ee1990b42157dc4cbf661d6c41996daca257"
+    },
+    {
+      "group": "allocate-size-success-failure",
+      "inputs": {
+        "requested_bytes": 35136788,
+        "alignment": 64,
+        "synthetic_os_status": 0
+      },
+      "result_sha256": "47bcfd4904dcec9676a3bde85859510c18e22499f2a2e32f4e4b2e3c2c7272ec"
+    },
+    {
+      "group": "allocate-size-success-failure",
+      "inputs": {
+        "requested_bytes": 35136788,
+        "alignment": 64,
+        "synthetic_os_status": 4294967295
+      },
+      "result_sha256": "645472a6b2943f848a5fb240076229de821e6bfdab80b2e3946dc7d48bdc7fae"
+    },
+    {
+      "group": "allocate-size-success-failure",
+      "inputs": {
+        "requested_bytes": 78690708,
+        "alignment": 64,
+        "synthetic_os_status": 0
+      },
+      "result_sha256": "0702595ad2dae30040f61223936dc82a7645d0d384c299c060a43a3369710aad"
+    },
+    {
+      "group": "allocate-size-success-failure",
+      "inputs": {
+        "requested_bytes": 78690708,
+        "alignment": 64,
+        "synthetic_os_status": 4294967295
+      },
+      "result_sha256": "927e4da215941fb864f3ecfd05c93f4bb44185bf05b984c8f10b1793480d04f8"
+    },
+    {
+      "group": "allocate-size-success-failure",
+      "inputs": {
+        "requested_bytes": 4294967295,
+        "alignment": 64,
+        "synthetic_os_status": 0
+      },
+      "result_sha256": "11417c3ede8081a692bf058d5bbbaee77ae71b3599dccc3e16e32a601de49a93"
+    },
+    {
+      "group": "allocate-size-success-failure",
+      "inputs": {
+        "requested_bytes": 4294967295,
+        "alignment": 64,
+        "synthetic_os_status": 4294967295
+      },
+      "result_sha256": "fd73bfd90adbd10b2fc9ca1e77373f238f8d129e97ab639276248fe6c74b56ce"
+    },
+    {
+      "group": "default-alignment-raw-pointer-caller-fallback",
+      "inputs": {
+        "requested_bytes": 35136788,
+        "raw_offset": 0,
+        "alignment_argument": 0,
+        "caller_argument": 0
+      },
+      "result_sha256": "0fdeedd958fb5ea16511d6de0c2758f4e538d0d66c48742881501260e8607894"
+    },
+    {
+      "group": "default-alignment-raw-pointer-caller-fallback",
+      "inputs": {
+        "requested_bytes": 35136788,
+        "raw_offset": 1,
+        "alignment_argument": 0,
+        "caller_argument": 0
+      },
+      "result_sha256": "fea5007c81f592f5be4e4871d1b0e24d5e970b70e3596fc686ee455855e740c4"
+    },
+    {
+      "group": "default-alignment-raw-pointer-caller-fallback",
+      "inputs": {
+        "requested_bytes": 35136788,
+        "raw_offset": 31,
+        "alignment_argument": 0,
+        "caller_argument": 0
+      },
+      "result_sha256": "48012f5dd0022b5f2302fc2661a6834e6a9c1268a56dce4938d4acd749f691f5"
+    },
+    {
+      "group": "default-alignment-raw-pointer-caller-fallback",
+      "inputs": {
+        "requested_bytes": 35136788,
+        "raw_offset": 32,
+        "alignment_argument": 0,
+        "caller_argument": 0
+      },
+      "result_sha256": "b0dfb5f0863df29c09f860e3d33669ae9e143d43bf01e6f1b117f4b402e2e855"
+    },
+    {
+      "group": "default-alignment-raw-pointer-caller-fallback",
+      "inputs": {
+        "requested_bytes": 35136788,
+        "raw_offset": 63,
+        "alignment_argument": 0,
+        "caller_argument": 0
+      },
+      "result_sha256": "77b7bca3ee7e22f8dadde26873070f4869e80b1f7bec7fd185c174dd910ec908"
+    },
+    {
+      "group": "default-alignment-raw-pointer-caller-fallback",
+      "inputs": {
+        "requested_bytes": 35136788,
+        "raw_offset": 64,
+        "alignment_argument": 0,
+        "caller_argument": 0
+      },
+      "result_sha256": "d878c3b0d42c1ccabd5ce355aca7a8ae63a2662e0370ad9777ac61e25fbd4400"
+    },
+    {
+      "group": "default-alignment-raw-pointer-caller-fallback",
+      "inputs": {
+        "requested_bytes": 35136788,
+        "raw_offset": 127,
+        "alignment_argument": 0,
+        "caller_argument": 0
+      },
+      "result_sha256": "4491e8253adecb23d3c1d20cdcb36aa4ea520a3c3eb1a23b8f38f735235a5cef"
+    },
+    {
+      "group": "default-alignment-raw-pointer-caller-fallback",
+      "inputs": {
+        "requested_bytes": 78683892,
+        "raw_offset": 0,
+        "alignment_argument": 0,
+        "caller_argument": 0
+      },
+      "result_sha256": "b156fd35fcbb9eb8c2e4ad46f4f2cdb014c2e02a619840b2cfc7ec2e86d35b72"
+    }
+  ]
+}

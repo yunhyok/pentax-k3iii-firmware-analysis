@@ -1,0 +1,1920 @@
+{
+  "schema_version": 1,
+  "topic": "Update input and decoded-output allocator configuration",
+  "image": {
+    "base": "0x52500000",
+    "size": 25483200,
+    "sha256": "342d2f35405e8daf1797dfe431d2e4aa70f4b52a2c242a29df48206672f1dfb4"
+  },
+  "functions": [
+    {
+      "label": "variable_pool_ctor",
+      "start": "0x530f04ac",
+      "end": "0x530f0504",
+      "size": 88,
+      "sha256": "b718d55c372cd2cac3879ee9e1e303aa6201d35cdfffa29a6cfd099111c94e83",
+      "assembly_sha256": "d4fd1c538d9b01a3da73844ad3654115e267a269ed6512cebc3647b38e1ba310",
+      "pseudocode_sha256": "7ecc7337e3a004657952376e8e60d3565bc1b4b7766356494ca0a5eff94bfd56",
+      "angr_version": "10.0.5",
+      "scope": "bounded static analysis; bounds manually selected from returns and neighboring prologues; unresolved indirect calls assumed returning"
+    },
+    {
+      "label": "variable_pool_create",
+      "start": "0x530f0504",
+      "end": "0x530f05cc",
+      "size": 200,
+      "sha256": "982e2478942c917bab26a9947c60c45b3a4d42afcb1dd1f154ceb6b28f8500f0",
+      "assembly_sha256": "66c07753c6a9fa48e66902d860ff1b3d8fc6060c03ca10e85840a765c4a1f469",
+      "pseudocode_sha256": "40bc38dce81efc69552869ac0dd1ba4e5dc8b8487fa1be7b94ceb9de6b5809a7",
+      "angr_version": "10.0.5",
+      "scope": "bounded static analysis; bounds manually selected from returns and neighboring prologues; unresolved indirect calls assumed returning"
+    },
+    {
+      "label": "variable_pool_allocate",
+      "start": "0x530efb8c",
+      "end": "0x530efc80",
+      "size": 244,
+      "sha256": "5b52a2fc1e3756033ea4fc3e0efee203a9509749339a92bb5092707bdc55c2ed",
+      "assembly_sha256": "5ca68280d16136b6f95752e3cc0132e69bdb7195af5748da5f30f8b572f1546d",
+      "pseudocode_sha256": "624fc36514980dbdb8da210a8978da6fc0374ac996bd267882c0623523bb5ad1",
+      "angr_version": "10.0.5",
+      "scope": "bounded static analysis; bounds manually selected from returns and neighboring prologues; unresolved indirect calls assumed returning"
+    },
+    {
+      "label": "variable_pool_free_query",
+      "start": "0x530efc80",
+      "end": "0x530efd88",
+      "size": 264,
+      "sha256": "9910dc777845c3d04eb15ede0f4128e00b153b9a6ddfc12a1941fb64bb8c9e60",
+      "assembly_sha256": "457ff7c33b8fd3858a89b66e2f9b6bd346acda15611fda2ea0d98ea6b67acdfe",
+      "pseudocode_sha256": "27092a9e4846b0279cf6f93be62f99741b2e3c258a815a9c4b019e43b8bf948b",
+      "angr_version": "10.0.5",
+      "scope": "bounded static analysis; bounds manually selected from returns and neighboring prologues; unresolved indirect calls assumed returning"
+    },
+    {
+      "label": "allocator_initialize",
+      "start": "0x530f5430",
+      "end": "0x530f5d38",
+      "size": 2312,
+      "sha256": "2bf0504512096970f2b09bf820e6cca44a6dfc60672ff9bc8832e2f8b1747227",
+      "assembly_sha256": "643a1885cdc2d577a63447f6869a9b8a1044ac0d8d2e0145544b30e3b7052ca5",
+      "pseudocode_sha256": "c92f0eef261e10ba7c0065d3c7bbea49bf743df5cfc1cff5ca11a6b6860300d5",
+      "angr_version": "10.0.5",
+      "scope": "bounded static analysis; bounds manually selected from returns and neighboring prologues; unresolved indirect calls assumed returning"
+    },
+    {
+      "label": "validator_ctor",
+      "start": "0x52ff4a1c",
+      "end": "0x52ff4aa8",
+      "size": 140,
+      "sha256": "f68f7ec124efb4dac8f83cba4f8151b00c9d4ff8126d0f4c98ba86e47f3e28a9",
+      "assembly_sha256": "0a751a56778935a8de5c7dcecd8705c0677781aea87d6f4159d2a7577e5cb24d",
+      "pseudocode_sha256": "97d250c6e5473bc1fceede3fb2c8b104622c7a2368c1021cb228b19e4d4eb551",
+      "angr_version": "10.0.5",
+      "scope": "bounded static analysis; bounds manually selected from returns and neighboring prologues; unresolved indirect calls assumed returning"
+    }
+  ],
+  "fragments": [
+    {
+      "label": "registry_get_and_set",
+      "start": "0x530ef264",
+      "end": "0x530ef288",
+      "size": 36,
+      "sha256": "7dfdb7d93ca42fa9d9d96cb56e396cb5c96662702083684c3038a644b1e00f01",
+      "assembly_sha256": "efe8bdcf2422d30c9c681be9620cb403b0e185083d658c93a19865bb2e302703",
+      "scope": "Supporting original ARM range; not a separately decompiled full function claim"
+    },
+    {
+      "label": "allocation_header_helpers",
+      "start": "0x530ef2c4",
+      "end": "0x530ef2d4",
+      "size": 16,
+      "sha256": "98d7ff321df93d2544637327bb95c8c0e0a7e9bb09e6c359ce9c2ad2b1b93f18",
+      "assembly_sha256": "7ea6d2f29650e4939e2f44920fbcc7996bc48cdc33b4acc06b691bb489319b38",
+      "scope": "Supporting original ARM range; not a separately decompiled full function claim"
+    },
+    {
+      "label": "pool_contains_address",
+      "start": "0x530efb60",
+      "end": "0x530efb8c",
+      "size": 44,
+      "sha256": "1af88fa28c5fe2371c42d8f401fdac309ade12c90f7942ab8747c897db6b54b6",
+      "assembly_sha256": "3bf92d8cf70de54ddd0a3725602264ae4723d899ad692ed59539d0dd5d61cbb3",
+      "scope": "Supporting original ARM range; not a separately decompiled full function claim"
+    },
+    {
+      "label": "os_create_boundary",
+      "start": "0x525b6a58",
+      "end": "0x525b6a7c",
+      "size": 36,
+      "sha256": "2b77ede39b6003fd7912320d9ad97f3ad7ced07eeba1234390029f8132a077dc",
+      "assembly_sha256": "775e38dd63dd0939e8465043892f3f3e0df52d56e6a2e65b7a34ad3e3556fc8d",
+      "scope": "Supporting original ARM range; not a separately decompiled full function claim"
+    },
+    {
+      "label": "os_allocate_boundary",
+      "start": "0x525b7214",
+      "end": "0x525b7238",
+      "size": 36,
+      "sha256": "53184fafc5609b1d8e3505b56fc64210dffb9be481ab6c06a6d0a062b8380132",
+      "assembly_sha256": "844f8790a0216fc2e56c2bb594476db1b0ed26ba370ae13f156bed46b9241ddf",
+      "scope": "Supporting original ARM range; not a separately decompiled full function claim"
+    },
+    {
+      "label": "allocator_manager_singleton",
+      "start": "0x530f53ac",
+      "end": "0x530f5430",
+      "size": 132,
+      "sha256": "4dab31019b911980c5cb243ff5dfb86c9fd4c646a37dfec0ff39452c41294939",
+      "assembly_sha256": "961870bb89d0569e235c090886f9b489834396510b6f22019da489e07ba67187",
+      "scope": "Supporting original ARM range; not a separately decompiled full function claim"
+    },
+    {
+      "label": "initializer_caller_prefix",
+      "start": "0x52ef4258",
+      "end": "0x52ef4284",
+      "size": 44,
+      "sha256": "a2fe31d832d8bfb7184b150edd5eebe02905ed7d0d07ef388839aedcb8e78d89",
+      "assembly_sha256": "f5a455af540ebc5af2e587362469539ca28838b86f0a746391468b1076445503",
+      "scope": "Supporting original ARM range; not a separately decompiled full function claim"
+    },
+    {
+      "label": "resource_manager_allocator_fields",
+      "start": "0x52ff5c00",
+      "end": "0x52ff5c7c",
+      "size": 124,
+      "sha256": "76b3d480ac2243852ceca5d0a372a51807b7841aaf4866e3bfd373b7fb1b6b4e",
+      "assembly_sha256": "367b142717ab89fd50853394df4d439bf37eea685aa4f559f339d98f8793411e",
+      "scope": "Supporting original ARM range; not a separately decompiled full function claim"
+    },
+    {
+      "label": "file_loader_allocator_dispatch",
+      "start": "0x52ff7014",
+      "end": "0x52ff7058",
+      "size": 68,
+      "sha256": "0f721bf1cc3ffb80c4b363b8c0e740774c2c2088c69f03386425957bd7a0e92f",
+      "assembly_sha256": "3703b9ddb94c6e0fd1d668dd859faa882b28ffdad0f9bb4194a964163337046d",
+      "scope": "Supporting original ARM range; not a separately decompiled full function claim"
+    },
+    {
+      "label": "validator_ctor_literal",
+      "start": "0x52ff4aa8",
+      "end": "0x52ff4aac",
+      "size": 4,
+      "sha256": "20b495dc834f121a2778e9e68ff3d160f7c26b72fbe36a698cfe18a307ff9d51",
+      "assembly_sha256": "a32a131395ca2258488897dc95d5775ee98168fd748f7c70e12e3a1a37191734",
+      "scope": "Supporting original ARM range; not a separately decompiled full function claim"
+    },
+    {
+      "label": "validator_singleton",
+      "start": "0x52ff4aac",
+      "end": "0x52ff4b0c",
+      "size": 96,
+      "sha256": "eb59f9cf7a6fa90e0dd98f44e03491f38faf1582ed490f3e27055cf7ad57554d",
+      "assembly_sha256": "d0749bc50896c689c34724c9b2c52acf0aeb88e92b8c787588aeaee430cdc4db",
+      "scope": "Supporting original ARM range; not a separately decompiled full function claim"
+    },
+    {
+      "label": "validator_allocate_prefix",
+      "start": "0x52ff4f88",
+      "end": "0x52ff4fe4",
+      "size": 92,
+      "sha256": "d0daf2e7ec03f2806012b0aeee2cd212d856617ce3cbb006f8b753190102e55f",
+      "assembly_sha256": "e10cde2b82ff6ed381b4b7129d56eb838285a11b9e9fbeb48af32d3e8562bcce",
+      "scope": "Supporting original ARM range; not a separately decompiled full function claim"
+    }
+  ],
+  "resources": [
+    {
+      "label": "variable_pool_primary_and_secondary_vtables",
+      "address": "0x53a6b030",
+      "source_address": "0x53a6b030",
+      "size": 64,
+      "sha256": "ebc40b291de853058fda2a1025ecb08a6a8db5c94c58c6edb53a2e0c990b4938"
+    },
+    {
+      "label": "variable_pool_rtti",
+      "address": "0x53a6b078",
+      "source_address": "0x53a6b078",
+      "size": 24,
+      "sha256": "eafbb1f61f121b6cac51d8879e24822212d627da6614cb84cec0adf82ee18c0d"
+    },
+    {
+      "label": "os_create_service_word",
+      "address": "0x525b6a78",
+      "source_address": "0x525b6a78",
+      "size": 4,
+      "sha256": "aab9b6bad3dc76b6c42db88d81bb54f4c656b634d7993825c132b19cab446a57"
+    },
+    {
+      "label": "os_allocate_service_word",
+      "address": "0x525b7234",
+      "source_address": "0x525b7234",
+      "size": 4,
+      "sha256": "5406a7e790257e4cb809775caafa6e2276b77778a68bec327ab60189aaa32c1d"
+    },
+    {
+      "label": "variable_pool_rtti_name",
+      "address": "0x53a6b018",
+      "source_address": "0x53a6b018",
+      "size": 21,
+      "sha256": "4578637a63e0ca519a93cae11003cd467c8e47076905bdfacdcc7229169454b6",
+      "text": "18VariableMemoryPool"
+    },
+    {
+      "label": "image1_name",
+      "address": "0x53a6ad50",
+      "source_address": "0x53a6ad50",
+      "size": 7,
+      "sha256": "469d2a1a7f2edfef9bca1fc7be42750f80c9f7697ce3ad4936101a8ae122eea3",
+      "text": "IMAGE1"
+    },
+    {
+      "label": "free_query_name",
+      "address": "0x53a6b068",
+      "source_address": "0x53a6b068",
+      "size": 13,
+      "sha256": "ec6d87574b1681a708e0e90e0a422653cb3d463627ac6dc97ecf47fa1db3e160",
+      "text": "GetFreeSpace"
+    }
+  ],
+  "pointer_words": [
+    {
+      "source_address": "0x53a6b034",
+      "value": "0x53a6b078"
+    },
+    {
+      "source_address": "0x53a6b038",
+      "value": "0x530f07a4"
+    },
+    {
+      "source_address": "0x53a6b03c",
+      "value": "0x530f07f0"
+    },
+    {
+      "source_address": "0x53a6b040",
+      "value": "0x530efb8c"
+    },
+    {
+      "source_address": "0x53a6b044",
+      "value": "0x530efee8"
+    },
+    {
+      "source_address": "0x53a6b048",
+      "value": "0x530efc80"
+    },
+    {
+      "source_address": "0x53a6b04c",
+      "value": "0x530f0080"
+    },
+    {
+      "source_address": "0x53a6b050",
+      "value": "0x530efb60"
+    },
+    {
+      "source_address": "0x53a6b07c",
+      "value": "0x53a6b018"
+    },
+    {
+      "source_address": "0x52ff4aa8",
+      "value": "0x53912538"
+    },
+    {
+      "source_address": "0x530f542c",
+      "value": "0x53a6bfd8"
+    },
+    {
+      "source_address": "0x525b6a78",
+      "value": "0x80450100"
+    },
+    {
+      "source_address": "0x525b7234",
+      "value": "0x80470400"
+    }
+  ],
+  "transfers": [
+    {
+      "site": "0x530f0560",
+      "kind": "bl",
+      "target": "0x525b6a58",
+      "source_range": "variable_pool_create"
+    },
+    {
+      "site": "0x530f0568",
+      "kind": "ble",
+      "target": "0x530f05a4",
+      "source_range": "variable_pool_create"
+    },
+    {
+      "site": "0x530f059c",
+      "kind": "bl",
+      "target": "0x530ef274",
+      "source_range": "variable_pool_create"
+    },
+    {
+      "site": "0x530f05bc",
+      "kind": "bne",
+      "target": "0x530f05c8",
+      "source_range": "variable_pool_create"
+    },
+    {
+      "site": "0x530f05c8",
+      "kind": "bl",
+      "target": "0x532fb9c8",
+      "source_range": "variable_pool_create"
+    },
+    {
+      "site": "0x530efbe4",
+      "kind": "bl",
+      "target": "0x530ef2c4",
+      "source_range": "variable_pool_allocate"
+    },
+    {
+      "site": "0x530efc08",
+      "kind": "bl",
+      "target": "0x525b7214",
+      "source_range": "variable_pool_allocate"
+    },
+    {
+      "site": "0x530efc14",
+      "kind": "bne",
+      "target": "0x530efc60",
+      "source_range": "variable_pool_allocate"
+    },
+    {
+      "site": "0x530efc20",
+      "kind": "bl",
+      "target": "0x530ef2cc",
+      "source_range": "variable_pool_allocate"
+    },
+    {
+      "site": "0x530efc5c",
+      "kind": "bl",
+      "target": "0x530ef42c",
+      "source_range": "variable_pool_allocate"
+    },
+    {
+      "site": "0x530efc70",
+      "kind": "bne",
+      "target": "0x530efc7c",
+      "source_range": "variable_pool_allocate"
+    },
+    {
+      "site": "0x530efc7c",
+      "kind": "bl",
+      "target": "0x532fb9c8",
+      "source_range": "variable_pool_allocate"
+    },
+    {
+      "site": "0x530efd00",
+      "kind": "bl",
+      "target": "0x530feb20",
+      "source_range": "variable_pool_free_query"
+    },
+    {
+      "site": "0x530efd0c",
+      "kind": "bl",
+      "target": "0x525b74c0",
+      "source_range": "variable_pool_free_query"
+    },
+    {
+      "site": "0x530efd64",
+      "kind": "bl",
+      "target": "0x530feb20",
+      "source_range": "variable_pool_free_query"
+    },
+    {
+      "site": "0x530efd78",
+      "kind": "bne",
+      "target": "0x530efd84",
+      "source_range": "variable_pool_free_query"
+    },
+    {
+      "site": "0x530efd84",
+      "kind": "bl",
+      "target": "0x532fb9c8",
+      "source_range": "variable_pool_free_query"
+    },
+    {
+      "site": "0x530f5454",
+      "kind": "beq",
+      "target": "0x530f5d04",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f5468",
+      "kind": "beq",
+      "target": "0x530f5cd0",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f547c",
+      "kind": "beq",
+      "target": "0x530f5c9c",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f5490",
+      "kind": "beq",
+      "target": "0x530f5c68",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f54a4",
+      "kind": "beq",
+      "target": "0x530f5c34",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f54b8",
+      "kind": "beq",
+      "target": "0x530f5c00",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f54cc",
+      "kind": "beq",
+      "target": "0x530f5bcc",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f54e0",
+      "kind": "beq",
+      "target": "0x530f5b98",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f54f4",
+      "kind": "beq",
+      "target": "0x530f5b64",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f5508",
+      "kind": "beq",
+      "target": "0x530f5b30",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f551c",
+      "kind": "beq",
+      "target": "0x530f5afc",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f5530",
+      "kind": "beq",
+      "target": "0x530f5ac8",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f5544",
+      "kind": "beq",
+      "target": "0x530f5a94",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f5558",
+      "kind": "beq",
+      "target": "0x530f5a60",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f556c",
+      "kind": "beq",
+      "target": "0x530f5a2c",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f5580",
+      "kind": "beq",
+      "target": "0x530f59f8",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f5584",
+      "kind": "bl",
+      "target": "0x530ef1ec",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f558c",
+      "kind": "bl",
+      "target": "0x530ef2b0",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f55c0",
+      "kind": "bl",
+      "target": "0x530f13b8",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f55ec",
+      "kind": "bl",
+      "target": "0x530f0504",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f5630",
+      "kind": "bl",
+      "target": "0x530f0504",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f5674",
+      "kind": "bl",
+      "target": "0x530f0504",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f56a8",
+      "kind": "bl",
+      "target": "0x530f0504",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f56e0",
+      "kind": "bl",
+      "target": "0x530f0504",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f5714",
+      "kind": "bl",
+      "target": "0x530f0504",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f5748",
+      "kind": "bl",
+      "target": "0x530f0504",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f5774",
+      "kind": "bl",
+      "target": "0x530f0504",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f57a8",
+      "kind": "bl",
+      "target": "0x530f0504",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f57e0",
+      "kind": "bl",
+      "target": "0x530f0504",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f5824",
+      "kind": "bl",
+      "target": "0x530f0504",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f5858",
+      "kind": "bl",
+      "target": "0x530f0504",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f588c",
+      "kind": "bl",
+      "target": "0x530f0504",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f58c8",
+      "kind": "bl",
+      "target": "0x530f0504",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f58f0",
+      "kind": "bl",
+      "target": "0x530f0504",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f58f4",
+      "kind": "bl",
+      "target": "0x530f0f1c",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f58f8",
+      "kind": "bl",
+      "target": "0x530f016c",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f5900",
+      "kind": "bl",
+      "target": "0x530f1838",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f5908",
+      "kind": "bl",
+      "target": "0x530f0ae0",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f5914",
+      "kind": "bl",
+      "target": "0x530f0ae0",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f591c",
+      "kind": "bl",
+      "target": "0x530f0ae0",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f5924",
+      "kind": "bl",
+      "target": "0x530f0ae0",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f592c",
+      "kind": "bl",
+      "target": "0x530f0ae0",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f5934",
+      "kind": "bl",
+      "target": "0x530f0ae0",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f593c",
+      "kind": "bl",
+      "target": "0x530f0ae0",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f5944",
+      "kind": "bl",
+      "target": "0x530f0ae0",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f594c",
+      "kind": "bl",
+      "target": "0x530f0ae0",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f5954",
+      "kind": "bl",
+      "target": "0x530f0ae0",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f595c",
+      "kind": "bl",
+      "target": "0x530f0ae0",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f5964",
+      "kind": "bl",
+      "target": "0x530f0ae0",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f5974",
+      "kind": "bl",
+      "target": "0x530f0ae0",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f597c",
+      "kind": "bl",
+      "target": "0x530f0ae0",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f5984",
+      "kind": "bl",
+      "target": "0x530f0ae0",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f59fc",
+      "kind": "bl",
+      "target": "0x533aaeb4",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f5a04",
+      "kind": "beq",
+      "target": "0x530f5584",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f5a10",
+      "kind": "bl",
+      "target": "0x530f04ac",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f5a18",
+      "kind": "bl",
+      "target": "0x533aaf1c",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f5a24",
+      "kind": "bl",
+      "target": "0x526aaa50",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f5a28",
+      "kind": "b",
+      "target": "0x530f5584",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f5a30",
+      "kind": "bl",
+      "target": "0x533aaeb4",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f5a38",
+      "kind": "beq",
+      "target": "0x530f5570",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f5a44",
+      "kind": "bl",
+      "target": "0x530f04ac",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f5a4c",
+      "kind": "bl",
+      "target": "0x533aaf1c",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f5a58",
+      "kind": "bl",
+      "target": "0x526aaa50",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f5a5c",
+      "kind": "b",
+      "target": "0x530f5570",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f5a64",
+      "kind": "bl",
+      "target": "0x533aaeb4",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f5a6c",
+      "kind": "beq",
+      "target": "0x530f555c",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f5a78",
+      "kind": "bl",
+      "target": "0x530f04ac",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f5a80",
+      "kind": "bl",
+      "target": "0x533aaf1c",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f5a8c",
+      "kind": "bl",
+      "target": "0x526aaa50",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f5a90",
+      "kind": "b",
+      "target": "0x530f555c",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f5a98",
+      "kind": "bl",
+      "target": "0x533aaeb4",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f5aa0",
+      "kind": "beq",
+      "target": "0x530f5548",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f5aac",
+      "kind": "bl",
+      "target": "0x530f04ac",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f5ab4",
+      "kind": "bl",
+      "target": "0x533aaf1c",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f5ac0",
+      "kind": "bl",
+      "target": "0x526aaa50",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f5ac4",
+      "kind": "b",
+      "target": "0x530f5548",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f5acc",
+      "kind": "bl",
+      "target": "0x533aaeb4",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f5ad4",
+      "kind": "beq",
+      "target": "0x530f5534",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f5ae0",
+      "kind": "bl",
+      "target": "0x530f04ac",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f5ae8",
+      "kind": "bl",
+      "target": "0x533aaf1c",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f5af4",
+      "kind": "bl",
+      "target": "0x526aaa50",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f5af8",
+      "kind": "b",
+      "target": "0x530f5534",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f5b00",
+      "kind": "bl",
+      "target": "0x533aaeb4",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f5b08",
+      "kind": "beq",
+      "target": "0x530f5520",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f5b14",
+      "kind": "bl",
+      "target": "0x530f04ac",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f5b1c",
+      "kind": "bl",
+      "target": "0x533aaf1c",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f5b28",
+      "kind": "bl",
+      "target": "0x526aaa50",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f5b2c",
+      "kind": "b",
+      "target": "0x530f5520",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f5b34",
+      "kind": "bl",
+      "target": "0x533aaeb4",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f5b3c",
+      "kind": "beq",
+      "target": "0x530f550c",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f5b48",
+      "kind": "bl",
+      "target": "0x530f04ac",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f5b50",
+      "kind": "bl",
+      "target": "0x533aaf1c",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f5b5c",
+      "kind": "bl",
+      "target": "0x526aaa50",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f5b60",
+      "kind": "b",
+      "target": "0x530f550c",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f5b68",
+      "kind": "bl",
+      "target": "0x533aaeb4",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f5b70",
+      "kind": "beq",
+      "target": "0x530f54f8",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f5b7c",
+      "kind": "bl",
+      "target": "0x530f04ac",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f5b84",
+      "kind": "bl",
+      "target": "0x533aaf1c",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f5b90",
+      "kind": "bl",
+      "target": "0x526aaa50",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f5b94",
+      "kind": "b",
+      "target": "0x530f54f8",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f5b9c",
+      "kind": "bl",
+      "target": "0x533aaeb4",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f5ba4",
+      "kind": "beq",
+      "target": "0x530f54e4",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f5bb0",
+      "kind": "bl",
+      "target": "0x530f04ac",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f5bb8",
+      "kind": "bl",
+      "target": "0x533aaf1c",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f5bc4",
+      "kind": "bl",
+      "target": "0x526aaa50",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f5bc8",
+      "kind": "b",
+      "target": "0x530f54e4",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f5bd0",
+      "kind": "bl",
+      "target": "0x533aaeb4",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f5bd8",
+      "kind": "beq",
+      "target": "0x530f54d0",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f5be4",
+      "kind": "bl",
+      "target": "0x530f04ac",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f5bec",
+      "kind": "bl",
+      "target": "0x533aaf1c",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f5bf8",
+      "kind": "bl",
+      "target": "0x526aaa50",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f5bfc",
+      "kind": "b",
+      "target": "0x530f54d0",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f5c04",
+      "kind": "bl",
+      "target": "0x533aaeb4",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f5c0c",
+      "kind": "beq",
+      "target": "0x530f54bc",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f5c18",
+      "kind": "bl",
+      "target": "0x530f04ac",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f5c20",
+      "kind": "bl",
+      "target": "0x533aaf1c",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f5c2c",
+      "kind": "bl",
+      "target": "0x526aaa50",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f5c30",
+      "kind": "b",
+      "target": "0x530f54bc",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f5c38",
+      "kind": "bl",
+      "target": "0x533aaeb4",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f5c40",
+      "kind": "beq",
+      "target": "0x530f54a8",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f5c4c",
+      "kind": "bl",
+      "target": "0x530f04ac",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f5c54",
+      "kind": "bl",
+      "target": "0x533aaf1c",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f5c60",
+      "kind": "bl",
+      "target": "0x526aaa50",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f5c64",
+      "kind": "b",
+      "target": "0x530f54a8",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f5c6c",
+      "kind": "bl",
+      "target": "0x533aaeb4",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f5c74",
+      "kind": "beq",
+      "target": "0x530f5494",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f5c80",
+      "kind": "bl",
+      "target": "0x530f04ac",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f5c88",
+      "kind": "bl",
+      "target": "0x533aaf1c",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f5c94",
+      "kind": "bl",
+      "target": "0x526aaa50",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f5c98",
+      "kind": "b",
+      "target": "0x530f5494",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f5ca0",
+      "kind": "bl",
+      "target": "0x533aaeb4",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f5ca8",
+      "kind": "beq",
+      "target": "0x530f5480",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f5cb4",
+      "kind": "bl",
+      "target": "0x530f04ac",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f5cbc",
+      "kind": "bl",
+      "target": "0x533aaf1c",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f5cc8",
+      "kind": "bl",
+      "target": "0x526aaa50",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f5ccc",
+      "kind": "b",
+      "target": "0x530f5480",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f5cd4",
+      "kind": "bl",
+      "target": "0x533aaeb4",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f5cdc",
+      "kind": "beq",
+      "target": "0x530f546c",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f5ce8",
+      "kind": "bl",
+      "target": "0x530f04ac",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f5cf0",
+      "kind": "bl",
+      "target": "0x533aaf1c",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f5cfc",
+      "kind": "bl",
+      "target": "0x526aaa50",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f5d00",
+      "kind": "b",
+      "target": "0x530f546c",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f5d08",
+      "kind": "bl",
+      "target": "0x533aaeb4",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f5d10",
+      "kind": "beq",
+      "target": "0x530f5458",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f5d1c",
+      "kind": "bl",
+      "target": "0x530f1370",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f5d24",
+      "kind": "bl",
+      "target": "0x533aaf1c",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f5d30",
+      "kind": "bl",
+      "target": "0x526aaa50",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x530f5d34",
+      "kind": "b",
+      "target": "0x530f5458",
+      "source_range": "allocator_initialize"
+    },
+    {
+      "site": "0x52ff4a68",
+      "kind": "bl",
+      "target": "0x530ef264",
+      "source_range": "validator_ctor"
+    },
+    {
+      "site": "0x52ff4a98",
+      "kind": "bl",
+      "target": "0x530fdfc4",
+      "source_range": "validator_ctor"
+    },
+    {
+      "site": "0x530efb68",
+      "kind": "blo",
+      "target": "0x530efb84",
+      "source_range": "pool_contains_address"
+    },
+    {
+      "site": "0x530f53c8",
+      "kind": "beq",
+      "target": "0x530f53d8",
+      "source_range": "allocator_manager_singleton"
+    },
+    {
+      "site": "0x530f53d8",
+      "kind": "bl",
+      "target": "0x533aaeb4",
+      "source_range": "allocator_manager_singleton"
+    },
+    {
+      "site": "0x530f53e0",
+      "kind": "beq",
+      "target": "0x530f53cc",
+      "source_range": "allocator_manager_singleton"
+    },
+    {
+      "site": "0x530f540c",
+      "kind": "bne",
+      "target": "0x530f5404",
+      "source_range": "allocator_manager_singleton"
+    },
+    {
+      "site": "0x530f5418",
+      "kind": "bl",
+      "target": "0x533aaf1c",
+      "source_range": "allocator_manager_singleton"
+    },
+    {
+      "site": "0x530f5424",
+      "kind": "bl",
+      "target": "0x526aaa50",
+      "source_range": "allocator_manager_singleton"
+    },
+    {
+      "site": "0x530f5428",
+      "kind": "b",
+      "target": "0x530f53cc",
+      "source_range": "allocator_manager_singleton"
+    },
+    {
+      "site": "0x52ef4274",
+      "kind": "bl",
+      "target": "0x532f9dec",
+      "source_range": "initializer_caller_prefix"
+    },
+    {
+      "site": "0x52ef4278",
+      "kind": "bl",
+      "target": "0x5310b570",
+      "source_range": "initializer_caller_prefix"
+    },
+    {
+      "site": "0x52ef427c",
+      "kind": "bl",
+      "target": "0x530f53ac",
+      "source_range": "initializer_caller_prefix"
+    },
+    {
+      "site": "0x52ef4280",
+      "kind": "bl",
+      "target": "0x530f5430",
+      "source_range": "initializer_caller_prefix"
+    },
+    {
+      "site": "0x52ff5c18",
+      "kind": "bl",
+      "target": "0x530ef264",
+      "source_range": "resource_manager_allocator_fields"
+    },
+    {
+      "site": "0x52ff5c4c",
+      "kind": "bl",
+      "target": "0x530fdfc4",
+      "source_range": "resource_manager_allocator_fields"
+    },
+    {
+      "site": "0x52ff5c54",
+      "kind": "bl",
+      "target": "0x530ef264",
+      "source_range": "resource_manager_allocator_fields"
+    },
+    {
+      "site": "0x52ff5c78",
+      "kind": "bl",
+      "target": "0x530fdfc4",
+      "source_range": "resource_manager_allocator_fields"
+    },
+    {
+      "site": "0x52ff4ac8",
+      "kind": "beq",
+      "target": "0x52ff4ad8",
+      "source_range": "validator_singleton"
+    },
+    {
+      "site": "0x52ff4adc",
+      "kind": "bl",
+      "target": "0x533aaeb4",
+      "source_range": "validator_singleton"
+    },
+    {
+      "site": "0x52ff4ae4",
+      "kind": "beq",
+      "target": "0x52ff4acc",
+      "source_range": "validator_singleton"
+    },
+    {
+      "site": "0x52ff4af0",
+      "kind": "bl",
+      "target": "0x52ff4a1c",
+      "source_range": "validator_singleton"
+    },
+    {
+      "site": "0x52ff4af8",
+      "kind": "bl",
+      "target": "0x533aaf1c",
+      "source_range": "validator_singleton"
+    },
+    {
+      "site": "0x52ff4b04",
+      "kind": "bl",
+      "target": "0x526aaa50",
+      "source_range": "validator_singleton"
+    },
+    {
+      "site": "0x52ff4b08",
+      "kind": "b",
+      "target": "0x52ff4acc",
+      "source_range": "validator_singleton"
+    }
+  ],
+  "indirect_links": [
+    {
+      "site": "0x52ff7054",
+      "kind": "blx",
+      "operand": "ip",
+      "source_range": "file_loader_allocator_dispatch"
+    },
+    {
+      "site": "0x52ff4fe0",
+      "kind": "blx",
+      "operand": "r8",
+      "source_range": "validator_allocate_prefix"
+    }
+  ],
+  "critical_instructions": [
+    {
+      "site": "0x52ef427c",
+      "instruction": "bl #0x530f53ac"
+    },
+    {
+      "site": "0x52ef4280",
+      "instruction": "bl #0x530f5430"
+    },
+    {
+      "site": "0x530f555c",
+      "instruction": "movw r5, #0xa624"
+    },
+    {
+      "site": "0x530f556c",
+      "instruction": "beq #0x530f5a2c"
+    },
+    {
+      "site": "0x530f5594",
+      "instruction": "mov r5, #0x40"
+    },
+    {
+      "site": "0x530f5890",
+      "instruction": "str r5, [sp]"
+    },
+    {
+      "site": "0x530f5894",
+      "instruction": "mov r3, #0"
+    },
+    {
+      "site": "0x530f5898",
+      "instruction": "movt r3, #0x6e50"
+    },
+    {
+      "site": "0x530f589c",
+      "instruction": "movw r6, #0xa638"
+    },
+    {
+      "site": "0x530f58a0",
+      "instruction": "str r3, [sp, #4]"
+    },
+    {
+      "site": "0x530f58a4",
+      "instruction": "movt r6, #0x547b"
+    },
+    {
+      "site": "0x530f58a8",
+      "instruction": "str r6, [fp, #-0x50]"
+    },
+    {
+      "site": "0x530f58ac",
+      "instruction": "movw r2, #0xad50"
+    },
+    {
+      "site": "0x530f58b0",
+      "instruction": "mov r3, #0"
+    },
+    {
+      "site": "0x530f58b4",
+      "instruction": "mov r0, r6"
+    },
+    {
+      "site": "0x530f58b8",
+      "instruction": "movt r2, #0x53a6"
+    },
+    {
+      "site": "0x530f58bc",
+      "instruction": "movt r3, #0x31b0"
+    },
+    {
+      "site": "0x530f58c0",
+      "instruction": "mov r1, #0xe"
+    },
+    {
+      "site": "0x530f58c8",
+      "instruction": "bl #0x530f0504"
+    },
+    {
+      "site": "0x530f5a3c",
+      "instruction": "movw r0, #0xa638"
+    },
+    {
+      "site": "0x530f5a40",
+      "instruction": "movt r0, #0x547b"
+    },
+    {
+      "site": "0x530f5a44",
+      "instruction": "bl #0x530f04ac"
+    },
+    {
+      "site": "0x530f04c8",
+      "instruction": "str ip, [r0, #0x14]"
+    },
+    {
+      "site": "0x530f04d4",
+      "instruction": "str r1, [r0]"
+    },
+    {
+      "site": "0x530f0530",
+      "instruction": "sub sl, r3, #0x10"
+    },
+    {
+      "site": "0x530f0534",
+      "instruction": "str sb, [fp, #-0x40]"
+    },
+    {
+      "site": "0x530f053c",
+      "instruction": "str sl, [fp, #-0x44]"
+    },
+    {
+      "site": "0x530f055c",
+      "instruction": "str r3, [fp, #-0x48]"
+    },
+    {
+      "site": "0x530f0560",
+      "instruction": "bl #0x525b6a58"
+    },
+    {
+      "site": "0x530f0564",
+      "instruction": "subs r7, r0, #0"
+    },
+    {
+      "site": "0x530f0568",
+      "instruction": "ble #0x530f05a4"
+    },
+    {
+      "site": "0x530f0574",
+      "instruction": "str sl, [r4, #0x1c]"
+    },
+    {
+      "site": "0x530f057c",
+      "instruction": "str sb, [r4, #0x24]"
+    },
+    {
+      "site": "0x530f0594",
+      "instruction": "str r6, [r4, #0x18]"
+    },
+    {
+      "site": "0x530f0598",
+      "instruction": "str r3, [r4, #0x20]"
+    },
+    {
+      "site": "0x530f059c",
+      "instruction": "bl #0x530ef274"
+    },
+    {
+      "site": "0x530f05a0",
+      "instruction": "strb r8, [r4, #0xc]"
+    },
+    {
+      "site": "0x530ef274",
+      "instruction": "strb r1, [r0, #4]"
+    },
+    {
+      "site": "0x530ef280",
+      "instruction": "str r0, [r3, r1, lsl #2]"
+    },
+    {
+      "site": "0x530efbb0",
+      "instruction": "ldreq r4, [r0, #0x20]"
+    },
+    {
+      "site": "0x530efbc4",
+      "instruction": "sub r6, r1, #1"
+    },
+    {
+      "site": "0x530efbd8",
+      "instruction": "rsb sl, r4, #0"
+    },
+    {
+      "site": "0x530efbe0",
+      "instruction": "add r6, r6, r4"
+    },
+    {
+      "site": "0x530efbe4",
+      "instruction": "bl #0x530ef2c4"
+    },
+    {
+      "site": "0x530efbec",
+      "instruction": "and r6, r6, sl"
+    },
+    {
+      "site": "0x530efbf8",
+      "instruction": "add r6, r0, r6"
+    },
+    {
+      "site": "0x530efc08",
+      "instruction": "bl #0x525b7214"
+    },
+    {
+      "site": "0x530efc14",
+      "instruction": "bne #0x530efc60"
+    },
+    {
+      "site": "0x530efc20",
+      "instruction": "bl #0x530ef2cc"
+    },
+    {
+      "site": "0x530efc3c",
+      "instruction": "and sl, sl, r4"
+    },
+    {
+      "site": "0x530efc4c",
+      "instruction": "str ip, [sl, #-8]"
+    },
+    {
+      "site": "0x530efc5c",
+      "instruction": "bl #0x530ef42c"
+    },
+    {
+      "site": "0x52ff4a48",
+      "instruction": "mov r0, #0xe"
+    },
+    {
+      "site": "0x52ff4a68",
+      "instruction": "bl #0x530ef264"
+    },
+    {
+      "site": "0x52ff4a6c",
+      "instruction": "str r0, [r4, #4]"
+    },
+    {
+      "site": "0x52ff4af0",
+      "instruction": "bl #0x52ff4a1c"
+    },
+    {
+      "site": "0x52ff4fa8",
+      "instruction": "ldr r0, [r0, #4]"
+    },
+    {
+      "site": "0x52ff4fb0",
+      "instruction": "ldr sb, [ip, #0x10]"
+    },
+    {
+      "site": "0x52ff4fb4",
+      "instruction": "mov r2, r4"
+    },
+    {
+      "site": "0x52ff4fc4",
+      "instruction": "mov r1, sb"
+    },
+    {
+      "site": "0x52ff4fcc",
+      "instruction": "ldr r8, [r8, #8]"
+    },
+    {
+      "site": "0x52ff4fe0",
+      "instruction": "blx r8"
+    },
+    {
+      "site": "0x52ff5c14",
+      "instruction": "mov r0, #0xe"
+    },
+    {
+      "site": "0x52ff5c18",
+      "instruction": "bl #0x530ef264"
+    },
+    {
+      "site": "0x52ff5c1c",
+      "instruction": "str r0, [r6, #0x30]"
+    },
+    {
+      "site": "0x52ff702c",
+      "instruction": "cmp r5, #0x80000"
+    },
+    {
+      "site": "0x52ff7030",
+      "instruction": "movhi r4, r0"
+    },
+    {
+      "site": "0x52ff7054",
+      "instruction": "blx ip"
+    },
+    {
+      "site": "0x530efd0c",
+      "instruction": "bl #0x525b74c0"
+    },
+    {
+      "site": "0x530efd20",
+      "instruction": "ldreq r2, [fp, #-0x30]"
+    },
+    {
+      "site": "0x530efd28",
+      "instruction": "ldreq r3, [fp, #-0x2c]"
+    },
+    {
+      "site": "0x530efd2c",
+      "instruction": "streq r2, [r7]"
+    },
+    {
+      "site": "0x530efd34",
+      "instruction": "streq r3, [r6]"
+    }
+  ],
+  "conditional_bindings": [
+    {
+      "callsite": "0x52ff7054",
+      "table_slot": "0x53a6b040",
+      "target": "0x530efb8c",
+      "condition": "File size >0x80000; resourceManager+30 is ID0e registry result; IMAGE1 create successfully registered object547ba638 and vptr remains ctor53a6b038"
+    },
+    {
+      "callsite": "0x52ff4fe0",
+      "table_slot": "0x53a6b040",
+      "target": "0x530efb8c",
+      "condition": "Validator constructed by52ff4a1c with successful ID0e registry lookup; object vptr remains ctor value"
+    }
+  ],
+  "relationships": [
+    {
+      "sites": [
+        "0x52ef427c",
+        "0x52ef4280"
+      ],
+      "description": "Initializer caller obtains allocator manager then calls530f5430; not a replay of actual startup"
+    },
+    {
+      "sites": [
+        "0x530f5a3c",
+        "0x530f5a40",
+        "0x530f5a44",
+        "0x530f58c8"
+      ],
+      "description": "Guarded ctor and create use same IMAGE1 object547ba638"
+    },
+    {
+      "sites": [
+        "0x530f5890",
+        "0x530f58a0",
+        "0x530f58bc",
+        "0x530f58c0",
+        "0x530f58c8"
+      ],
+      "description": "IMAGE1 id14, name53a6ad50, base6e500000,size31b00000,alignment40; creation descriptor subtracts16"
+    },
+    {
+      "sites": [
+        "0x52ff5c18",
+        "0x52ff5c1c",
+        "0x52ff4a68",
+        "0x52ff4a6c"
+      ],
+      "description": "Input resourceManager+30 and validator+4 both receive registry ID0e"
+    },
+    {
+      "sites": [
+        "0x530efd0c",
+        "0x530efd2c",
+        "0x530efd34"
+      ],
+      "description": "GetFreeSpace asks OS report boundary and copies report words+8/+c only on status0; no live report obtained and exact per-word meaning not independently named"
+    }
+  ],
+  "configured_pool": {
+    "registry_id": 14,
+    "object": "0x547ba638",
+    "name": "IMAGE1",
+    "vptr": "0x53a6b038",
+    "base": "0x6e500000",
+    "configured_bytes": 833617920,
+    "configured_end_exclusive": "0xa0000000",
+    "os_descriptor_bytes": 833617904,
+    "alignment": 64,
+    "registration_condition": "signed OS create return >0"
+  },
+  "allocation": {
+    "formula": "u32((((N + A - 1) mod 2^32) & (-A mod 2^32)) + A + 0x20)",
+    "loader_alignment": 64,
+    "normal_candidate_formula": "roundUp64(N)+96",
+    "success_pointer": "u32(raw+0x18+A+7) & u32(-A)",
+    "back_pointer": "[aligned-8]=raw+0x18"
+  },
+  "limitations": [
+    "Addresses are software configuration addresses; physical DRAM mapping not established here.",
+    "OS create and allocate SVC6 are not executed; configured size is not runtime free space or successful allocation.",
+    "Initializer ignores returned booleans; registry is populated only if create returns signed-positive.",
+    "Input and decoded allocation share the pool after successful initialization; other users, fragmentation and contiguous availability are unknown.",
+    "Numeric initializer replay starts at530f5890 with r5=0x40 and a synthetic frame; full initialization is static only.",
+    "All size arithmetic is u32; extreme numeric inputs test arithmetic only and do not establish accepted file sizes.",
+    "GetFreeSpace output meanings beyond the two OS-report words are not independently mapped.",
+    "No hardware/GUI/device IO, patch, build or flash; no publicly exported proprietary source bytes.",
+    "Unmodified genuine angr C has name-null conditional-load and pointer/canary typing artifacts; full ARM and replay are authoritative for formulas and conditions."
+  ],
+  "searched_scope": {
+    "starting_points": [
+      "resourceManager+30/+34",
+      "registry530ef264/274",
+      "direct BL callers530f059c and530f1464"
+    ],
+    "positive_path": [
+      "VariableMemoryPool ctor/create",
+      "allocator initializer and guarded IMAGE1 constructor",
+      "file-loader dispatch",
+      "validator ctor and decoded allocation"
+    ],
+    "rejected_candidates": [
+      "530f13b8 FixedMemoryPool create is called for ID0 at530f55c0; not ID0e"
+    ],
+    "boundary": [
+      "SVC6 create525b6a58",
+      "SVC6 allocate525b7214",
+      "OS free-space report525b74c0"
+    ]
+  },
+  "candidate_requests": [
+    {
+      "name": "original",
+      "file_bytes": 35106716,
+      "allocator_request_bytes": 35106848
+    },
+    {
+      "name": "selected",
+      "file_bytes": 35136788,
+      "allocator_request_bytes": 35136928
+    },
+    {
+      "name": "all_stored",
+      "file_bytes": 78690708,
+      "allocator_request_bytes": 78690848
+    },
+    {
+      "name": "decoded",
+      "file_bytes": 78683892,
+      "allocator_request_bytes": 78684000
+    }
+  ],
+  "two_request_arithmetic": [
+    {
+      "input_name": "original",
+      "combined_os_request_bytes": 113790848
+    },
+    {
+      "input_name": "selected",
+      "combined_os_request_bytes": 113820928
+    },
+    {
+      "input_name": "all_stored",
+      "combined_os_request_bytes": 157374848
+    }
+  ],
+  "provenance": {
+    "binary_ranges": "Hashes refer to private original RTOS bytes.",
+    "artifact_hashes": "Assembly and pseudocode hashes identify private unedited artifacts; contents are not distributed.",
+    "validation_hashes": "Validation hashes identify private worker evidence/script/report before public sanitization."
+  },
+  "validation": {
+    "passed": true,
+    "image_sha256": "342d2f35405e8daf1797dfe431d2e4aa70f4b52a2c242a29df48206672f1dfb4",
+    "functions": 6,
+    "fragments": 12,
+    "arm_words": 994,
+    "transfers": 190,
+    "indirect_links": 2,
+    "resources": 7,
+    "pointer_words": 13,
+    "conditional_bindings": 2,
+    "critical_instructions": 73,
+    "arm_cases": 35,
+    "groups": {
+      "allocate-size-success-failure": 20,
+      "default-alignment-raw-pointer-caller-fallback": 8,
+      "initializer-fragment-create-registration": 6,
+      "validator-ctor-shared-registry": 1
+    },
+    "evidence_sha256": "d65b4a26b52a1ad53b38bc87c58b6f6899126372cfff065e5054b4565df5789a",
+    "numeric_script_sha256": "192675141f1e5f77cf67706ac8dcd9ced4bcfaafd20ae1b72a8e3d4d629f5a2b",
+    "report_sha256": "6a1e80db7e22dbf10c152619d245be7cb654b39cd0ed5dd3e15d33bc311ec7ef",
+    "manager_independent_rerun": true
+  }
+}

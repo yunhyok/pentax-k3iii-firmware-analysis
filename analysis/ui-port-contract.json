@@ -40,24 +40,39 @@
       "verification_path": "colorspace-message-checks.json",
       "verification_sha256": "e88542ba5cb22a39b83dd2812ecb08e00473c31f3ff102c5d5cbb5c165e50a36"
     },
+    "k3iii_color_ui": {
+      "path": "colorspace-ui.html",
+      "report_sha256": "2cfcd0f1f3121956f4ad5e7e03cca6f83734680caa30891a272811b8fb5cf12a",
+      "evidence_path": "colorspace-ui-evidence.json",
+      "evidence_sha256": "843cbc1a52007cf39b0c7ed90c65b0a8d98e6111501f02fbc9b6be2c4a109dcb",
+      "verification_path": "colorspace-ui-checks.json",
+      "verification_sha256": "b7a70ece679e1af941de3dc0dfbd215e8a3f0d26b49df8875ffa8433761fbed4",
+      "scope_ko": "합성 객체와 포커스를 사용한 원본 ARM 16사례. 레이아웃과 일부 그리기 호출을 대체해 인수를 확인했다."
+    },
     "k3iii_icon": {
       "path": "icon-resources.html#gui",
       "evidence_path": "icon-ui-evidence.json",
       "verification_path": "icon-ui-checks.json",
       "evidence_sha256": "090bde0fc144c55f49b47babbae237cf9136309a7e396087829c8992b92d8cfa"
     },
-    "k3ii_raw_ui": {
-      "repository": "yunhyok/pentax-k3ii-firmware-analysis",
-      "repository_path": "analysis/ui-resources.json",
-      "snapshot_sha256": "c9148394e7a06d1335d9c9bb5f04574026e6b7e7c48038aaef71b67eb88b2a77",
-      "status_at_review": "local manager evidence; publication pending",
-      "context_url": "https://github.com/yunhyok/pentax-k3ii-firmware-analysis/blob/fa79d693e83329429dc79d8841e3ffbe73965691/analysis/hq-status.json",
-      "scope_ko": "RAW File Format의 A32 실행 기록을 읽었다. 선택한 색공간 항목의 증거와 분리한다."
+    "k3ii_color_ui": {
+      "url": "https://github.com/yunhyok/pentax-k3ii-firmware-analysis/blob/89403125b108aea9070f0b91d5c4aca6b1ae0a39/analysis/color-ui.html",
+      "report_sha256": "67c2fd38901306785481c96c8d04287967848b7b6229ed0ee2d3438817804cab",
+      "evidence_url": "https://github.com/yunhyok/pentax-k3ii-firmware-analysis/blob/89403125b108aea9070f0b91d5c4aca6b1ae0a39/analysis/color-ui.json",
+      "evidence_sha256": "058d42aa85c4a87c394432a7fd34bf102352e33f57638b25e0b228a108d12f97",
+      "scope_ko": "원본 A32에서 논리 이벤트로 설정과 화면 상태의 전이 8사례를 확인했다."
+    },
+    "k3ii_settings_storage": {
+      "url": "https://github.com/yunhyok/pentax-k3ii-firmware-analysis/blob/89403125b108aea9070f0b91d5c4aca6b1ae0a39/analysis/settings-storage.html",
+      "report_sha256": "50901bb9ba32963ede2ac6965d666f0318394033de45f6ad0d7ed60e847657d8",
+      "evidence_url": "https://github.com/yunhyok/pentax-k3ii-firmware-analysis/blob/89403125b108aea9070f0b91d5c4aca6b1ae0a39/analysis/settings-storage.json",
+      "evidence_sha256": "79269728cc4ef054ccc38155955222527cbbbaf677d1c23ce70527bf4131e30d",
+      "scope_ko": "설정 저장의 원본 A32 검사 29사례. 플래시 쓰기 함수는 검증용 대체 호출로 처리했다."
     },
     "q7_setting": {
       "url": "https://github.com/yunhyok/pentax-q7-firmware-analysis/blob/2f850e7f1ef5bd4a4024574f66b035c359bc133d/analysis/deep-evidence.json",
       "locator": "ColorMatchingService_IsAdobeRGB, DataHelper_GetColorSpace, DataHelper_SetColorSpace",
-      "sha256": "7331273a1cb148c86f35d5c21e19e0130c7cf58b9c207db9ccd3eeef9bf7a598"
+      "sha256": "40be3bc856df72900c5b78dab896915a011b92348a7d6abfb96d392cfcdcf3a5"
     },
     "q7_ui": {
       "url": "https://github.com/yunhyok/pentax-q7-firmware-analysis/blob/2f850e7f1ef5bd4a4024574f66b035c359bc133d/analysis/portability-evidence.json",
@@ -74,28 +89,28 @@
       "address_units": "RTOS virtual addresses unless marked as object/record offsets",
       "meaning": {"status": "official", "observed_ko": "정지화상 촬영 5 > 색공간", "sources": ["ricoh_menu_comparison", "ricoh_k3iii_spec"]},
       "event": {
-        "status": "partial",
-        "observed_ko": "파서 0x52aed898은 sRGB/AdobeRGB를 0/1로 변환한다. 설정 요청 0x145는 0x52edd820을 거쳐 0x52ecf4a8로 디스패치된다.",
-        "open_ko": "색공간 화면의 버튼·다이얼·터치 입력에서 요청을 생산하는 위젯과 실제 이벤트 값.",
-        "sources": ["k3iii_color_path"]
+        "status": "bounded_replay",
+        "observed_ko": "항목 0x0200009f는 descriptor 72로 이어진다. 선택 행의 +0x17a가 0이면 0xe7은 descriptor의 반영 콜백을 부른 뒤 화면 닫기를 요청한다. 0이 아니면 둘 다 생략한다. 0xe9는 이 항목에서 setter 호출 없이 닫기를 요청한다.",
+        "open_ko": "물리 입력에서 해당 이벤트로 이어지는 경로와 실제 포커스 이동.",
+        "sources": ["k3iii_color_ui"]
       },
       "state": {
         "status": "bounded_replay",
-        "observed_ko": "UserData+0x35b와 common+0x26b5의 연결. 0x52eef408 setter와 0x52edfa40 commit 구간은 합성 객체에서 실행됐다.",
-        "open_ko": "화면의 현재값·포커스·보류값과 읽기/확정/취소의 연결. 전체 큐와 영속 저장.",
-        "sources": ["k3iii_color_path"]
+        "observed_ko": "mode 1은 UserData+0x3b7의 현재값으로 화면을 채운다. 확정할 값은 list+0x1ce의 보류값이며 sRGB/AdobeRGB는 0/1이다. setter는 선택된 record+0x35b와 캐시가 모두 새 값과 같을 때 record 기록과 observer 생성을 생략한다. 설정 요청 0x145의 수신 경로는 별도 검증 범위다.",
+        "open_ko": "전체 창을 닫고 다시 열 때의 상태, 실제 스케줄러와 영속 저장.",
+        "sources": ["k3iii_color_ui", "k3iii_color_path"]
       },
       "rendering": {
-        "status": "separate_path",
-        "observed_ko": "IconView ID setter 0x52bf1430, snapshot 0x52bf1338, draw 0x52bf1704와 dispatch 0x528c4780이 확인됐다. 0도 복사 0x528c3ffc는 u32를 옮기며 high byte가 drawObject+7과 같으면 건너뛴다.",
-        "open_ko": "색공간 화면의 문자·포커스 렌더러와 invalidate 경로. 합성 후 LCD 동작.",
-        "sources": ["k3iii_icon"]
+        "status": "partial",
+        "observed_ko": "색공간 행의 일부 레이아웃과 그리기 호출에서 리소스 인수를 확인했다. 별도 IconView 경로의 0도 복사 0x528c3ffc는 u32를 옮기며 상위 바이트가 drawObject+7과 같으면 건너뛴다.",
+        "open_ko": "색공간 화면 전체의 무효화·문자·포커스 합성과 물리 LCD.",
+        "sources": ["k3iii_color_ui", "k3iii_icon"]
       },
       "resource": {
-        "status": "separate_path",
-        "observed_ko": "ICONBIN ID 5는 40×40이며 payload [25600,32000). 포인터 배열 0x54521140, ROM 0x53d08e80, 12바이트 descriptor와 32비트 픽셀 단위 offset이 확인됐다.",
-        "open_ko": "ID 5를 선택하는 실제 메뉴와 이 화면에 쓰는 아이콘·문자 ID. 채널 순서와 후단 합성.",
-        "sources": ["k3iii_icon"]
+        "status": "bounded_replay",
+        "observed_ko": "sRGB/AdobeRGB 순으로 문자열 ID 0x1f6/0x1f7을 확인했다. 아이콘 ID는 스타일 0에서 0x539/0x537, 스타일이 0이 아니면 0x305/0x330이다.",
+        "open_ko": "이 ID의 전체 렌더링과 후단 합성.",
+        "sources": ["k3iii_color_ui"]
       }
     },
     {
@@ -105,28 +120,28 @@
       "address_units": "decoded file offsets for code/tables; object offsets and IDs labeled separately",
       "meaning": {"status": "official", "observed_ko": "커스텀 3(C3) > 20. Color Space", "sources": ["ricoh_menu_comparison", "ricoh_k3ii_manual"]},
       "event": {
-        "status": "separate_path",
-        "observed_ko": "RAW File Format의 항목 ID 0x0150000a와 PEF/DNG 위젯 ID 0x01500043/0x01500044의 선택·반영 경로를 합성 이벤트로 확인했다.",
-        "open_ko": "C3 색공간 화면 객체, 물리 입력 진입점, 선택/확정/취소 이벤트와 위젯 ID.",
-        "sources": ["k3ii_raw_ui"]
+        "status": "bounded_replay",
+        "observed_ko": "상위 위젯 0x0140b043에서 논리 동작 0x1d는 상세 화면 0xb4를 통지한다. 상세 화면에서 동작 6은 확정, 3은 취소이며 동작 0x11에도 별도 반영 경로가 있다.",
+        "open_ko": "물리 입력과 통지 소비자에서 상세 화면으로 이어지는 전체 경로.",
+        "sources": ["k3ii_color_ui"]
       },
       "state": {
-        "status": "separate_path",
-        "observed_ko": "RAW File Format은 객체 +0xf4/+0xf9와 설정 ID 0x97, 기종 내부 bank 선택을 사용한다.",
-        "open_ko": "색공간의 설정 ID, sRGB/AdobeRGB 저장값과 현재·보류 상태의 반영 시점. 0x97은 RAW File Format에만 근거가 있다.",
-        "sources": ["k3ii_raw_ui"]
+        "status": "bounded_replay",
+        "observed_ko": "설정 0x15c에서 sRGB/AdobeRGB는 0/1이며 screen+0xe7이 보류값이다. 확정은 같은 값이어도 RAM의 현재값과 미러를 기록한다. 취소는 설정을 기록하지 않으며 보류값은 화면 상태를 다시 초기화할 때 현재값으로 돌아간다. 별도 저장 검사에서 섹터 13·22의 준비 내용이 같으면 쓰기 요청을 생략한다.",
+        "open_ko": "전체 창을 닫고 다시 열 때의 상태, 메뉴에서 저장 스케줄러까지의 연결, 실제 플래시 기록과 재부팅 후 유지.",
+        "sources": ["k3ii_color_ui", "k3ii_settings_storage"]
       },
       "rendering": {
-        "status": "separate_path",
-        "observed_ko": "RAW File Format의 텍스트 준비 함수는 디코딩 파일 오프셋 0x873964. 실제 A32는 글리프 코드를 준비한다.",
-        "open_ko": "색공간 위젯에서 이 경로의 사용 여부와 최종 비트맵 합성, 픽셀 포맷·stride·LCD 출력.",
-        "sources": ["k3ii_raw_ui"]
+        "status": "partial",
+        "observed_ko": "색공간 화면에서 텍스트 항목 5개와 선택 이미지 2개를 확인했다. 원본 A32에서 글리프 코드와 선택 이미지의 wrapper 상태를 준비하는 구간을 확인했다.",
+        "open_ko": "전체 창의 최종 픽셀 합성, 출력 형식·stride와 물리 LCD.",
+        "sources": ["k3ii_color_ui"]
       },
       "resource": {
-        "status": "separate_path",
-        "observed_ko": "RAW File Format에서 로케일 행과 1바이트/2바이트 문자 리소스 경로를 확인했다.",
-        "open_ko": "Color Space와 두 선택값의 리소스, 글리프·포커스 표식의 그리기 규칙.",
-        "sources": ["k3ii_raw_ui"]
+        "status": "bounded_replay",
+        "observed_ko": "제목 위젯은 0x01913009다. 선택·텍스트 위젯 ID는 각각 0x0191300a/0x0191300c와 0x0191300e/0x01913010이며 선택 이미지 ID는 0x34b/0x34f다.",
+        "open_ko": "글리프와 포커스 표식이 최종 화면에 합성되는 규칙.",
+        "sources": ["k3ii_color_ui"]
       }
     },
     {
@@ -167,19 +182,19 @@
     "transition_rules_ko": [
       "열 때 대상 기종의 현재값을 읽어 확정값과 보류값을 초기화한다.",
       "선택은 보류값과 화면만 바꾼다.",
-      "확정할 때 값이 달라졌다면 대상 기종의 설정 인터페이스에 한 번 쓰고 읽어 확인한다. 같은 값이면 쓰지 않는다.",
-      "취소는 설정에 쓰지 않는다. 다시 열면 이전 확정값을 표시한다."
+      "확정할 때는 같은 값이어도 대상 기종의 setter와 콜백 조건을 보존한다. RAM 기록과 섹터 쓰기 요청은 따로 확인한다.",
+      "취소할 때는 대상 기종의 닫기와 통지 동작을 보존한다. 화면을 다시 열면 대상 설정의 현재값을 읽는다."
     ],
     "drawing_ko": "대상 기종의 문자 경로로 두 값과 포커스만 표시한다. 리소스와 출력 포맷·사각형·stride는 대상별 어댑터에서 다룬다.",
     "scope_ko": "설계 제안이다. 이 상태 모델과 행동을 원본 카메라가 모두 사용한다는 관측은 없다."
   },
   "next_experiments": [
-    {"id": "bind_target", "pass_ko": "정확한 색공간 항목에서 양방향 선택을 기록해 기종별 물리 입력·이벤트 ID·위젯·getter/setter와 원본 값의 연결을 재현한다."},
-    {"id": "replay_state", "pass_ko": "양방향 변경·확정, 변경 후 취소, 같은 값 확정에서 쓰기 횟수와 다시 열었을 때의 값을 비교한다. 다른 설정 필드는 보존한다."},
+    {"id": "bind_target", "pass_ko": "두 K-3 기종에서 물리 입력이 색공간 위젯의 논리 이벤트로 이어지는 경로를 확인한다. Q7은 E3 화면을 기존 입력·설정 경로에 연결해 검증한다."},
+    {"id": "replay_state", "pass_ko": "양방향 변경·확정, 변경 후 취소, 같은 값 확정에서 setter 호출, RAM 기록, 콜백·하위 요청과 섹터 쓰기 요청을 구분해 기록한다. 창을 닫고 다시 열 때의 값과 재부팅 후 값은 따로 확인한다."},
     {"id": "replay_render", "pass_ko": "실제 색공간 위젯에서 무효화, 문자/표식 리소스, 로케일, 출력 주소·stride·형식까지 연결한다. 합성 버퍼에서 바뀌어야 하는 영역과 양쪽 경계를 대조한다."}
   ],
   "limits_ko": [
-    "색공간 항목의 입력부터 그리기까지 연결된 사례는 세 기종 모두 아직 없다.",
+    "두 K-3 기종에서 보류 선택의 확정·취소 경계를 확인했다. 물리 입력부터 전체 창 표시와 LCD 출력, 영속 저장까지 이어지는 동작은 세 기종 모두 미확인이다.",
     "기종 간 숫자 event·enum·객체 배치·픽셀 형식은 공통으로 가정하지 않는다.",
     "기존 보고서를 비교했으며 이번 작업에서 새 펌웨어 실행이나 장치 이식을 수행하지 않았다."
   ]

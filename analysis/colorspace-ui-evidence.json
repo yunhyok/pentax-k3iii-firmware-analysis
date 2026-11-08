@@ -1,0 +1,1210 @@
+{
+  "image": {
+    "base": "0x52500000",
+    "size": 25483200,
+    "sha256": "342d2f35405e8daf1797dfe431d2e4aa70f4b52a2c242a29df48206672f1dfb4"
+  },
+  "functions": [
+    {
+      "label": "color_option_count",
+      "start": "0x5277620c",
+      "end": "0x52776214",
+      "range_sha256": "14e29d8546e16c2862278bddeb80beb41b4943971c5e1bf329c9fce4245d8913",
+      "pseudocode_sha256": "19184481c49b98a16dc975a58d633099ac350825815d6f75a2023d434e10e382",
+      "assembly_sha256": "49fa888eba23da5939699fdab706cb4be299b2019d3a8b075945920a2d552814",
+      "angr_version": "10.0.5",
+      "scope": "bounded static analysis; bounds manually selected from returns and neighboring prologues; unresolved indirect calls assumed returning",
+      "static_edges": []
+    },
+    {
+      "label": "color_header",
+      "start": "0x52776a08",
+      "end": "0x52776a18",
+      "range_sha256": "42d5dab59f4b4586a39ee30a82ab82d0110b1e6e57929db18d9fc41a6546c4ed",
+      "pseudocode_sha256": "7df871ef421c7eaf30e39d44edeaf7d28ae2dbf1b0771b1dc2a25a4b134b3be3",
+      "assembly_sha256": "2ef029228af4617b5f83b191d0db6c710ab9f0db08dcc195979aa7de0a164593",
+      "angr_version": "10.0.5",
+      "scope": "bounded static analysis; bounds manually selected from returns and neighboring prologues; unresolved indirect calls assumed returning",
+      "static_edges": [
+        {
+          "site": "0x52776a14",
+          "kind": "b",
+          "target": "0x52bee8f8",
+          "operand": "#0x52bee8f8"
+        }
+      ]
+    },
+    {
+      "label": "color_row_prepare",
+      "start": "0x52779a58",
+      "end": "0x52779ae0",
+      "range_sha256": "8213c5f72c37933637c8bfce0e77b291816c2d5d55eff2834ed03725ad6ada57",
+      "pseudocode_sha256": "5caf92ca7dba89dc54cba12b3e7ef6ad88700ce7ea4540362ed5b8a1a4c8a194",
+      "assembly_sha256": "bddb7740caf64cfbca26dbcab7d22de78a37d3014c1a56b4d0290f33687aae39",
+      "angr_version": "10.0.5",
+      "scope": "bounded static analysis; bounds manually selected from returns and neighboring prologues; unresolved indirect calls assumed returning",
+      "static_edges": [
+        {
+          "site": "0x52779a6c",
+          "kind": "bl",
+          "target": "0x528c4fcc",
+          "operand": "#0x528c4fcc"
+        },
+        {
+          "site": "0x52779a80",
+          "kind": "bl",
+          "target": "0x528c5980",
+          "operand": "#0x528c5980"
+        },
+        {
+          "site": "0x52779a94",
+          "kind": "bl",
+          "target": "0x529f137c",
+          "operand": "#0x529f137c"
+        },
+        {
+          "site": "0x52779aa4",
+          "kind": "bl",
+          "target": "0x529ed53c",
+          "operand": "#0x529ed53c"
+        },
+        {
+          "site": "0x52779ab4",
+          "kind": "bl",
+          "target": "0x52c10aec",
+          "operand": "#0x52c10aec"
+        },
+        {
+          "site": "0x52779abc",
+          "kind": "bl",
+          "target": "0x528c55c0",
+          "operand": "#0x528c55c0"
+        },
+        {
+          "site": "0x52779ac4",
+          "kind": "bl",
+          "target": "0x5291b8b8",
+          "operand": "#0x5291b8b8"
+        },
+        {
+          "site": "0x52779adc",
+          "kind": "b",
+          "target": "0x52c0f844",
+          "operand": "#0x52c0f844"
+        }
+      ]
+    },
+    {
+      "label": "color_apply_option",
+      "start": "0x527826f4",
+      "end": "0x52782724",
+      "range_sha256": "89c5f78e6458365971a7ba75f7b158e17b0fa591de4220ed2d7dab4bd4babb15",
+      "pseudocode_sha256": "1f7130fc6680be09bb422bd7226ed4500e1a2b3a8392e4a3b8e4f9702237987e",
+      "assembly_sha256": "d1fae7a79ee9964bb649a6daf58812d862cdc664bf2918954f42a7f3ff628c5c",
+      "angr_version": "10.0.5",
+      "scope": "bounded static analysis; bounds manually selected from returns and neighboring prologues; unresolved indirect calls assumed returning",
+      "static_edges": [
+        {
+          "site": "0x52782704",
+          "kind": "bl",
+          "target": "0x528c4fcc",
+          "operand": "#0x528c4fcc"
+        },
+        {
+          "site": "0x52782708",
+          "kind": "bl",
+          "target": "0x528c55c0",
+          "operand": "#0x528c55c0"
+        },
+        {
+          "site": "0x52782720",
+          "kind": "b",
+          "target": "0x52954be0",
+          "operand": "#0x52954be0"
+        }
+      ]
+    },
+    {
+      "label": "color_option_current",
+      "start": "0x52785f5c",
+      "end": "0x52785f90",
+      "range_sha256": "d0f8eb28c53414ffc4c2915a080566027ea231efdeaae356363378673e481ec3",
+      "pseudocode_sha256": "2d11217db2165641c4347eb632da106bb66585bbb1399f40310f0f22a2278ac0",
+      "assembly_sha256": "49e2896eb6bc06e44fb79d07d27077294cae44bcc9097e546f2a22d6dc6e4c49",
+      "angr_version": "10.0.5",
+      "scope": "bounded static analysis; bounds manually selected from returns and neighboring prologues; unresolved indirect calls assumed returning",
+      "static_edges": [
+        {
+          "site": "0x52785f74",
+          "kind": "bl",
+          "target": "0x528c4fcc",
+          "operand": "#0x528c4fcc"
+        },
+        {
+          "site": "0x52785f78",
+          "kind": "bl",
+          "target": "0x528c55c0",
+          "operand": "#0x528c55c0"
+        },
+        {
+          "site": "0x52785f7c",
+          "kind": "bl",
+          "target": "0x529184bc",
+          "operand": "#0x529184bc"
+        }
+      ]
+    },
+    {
+      "label": "color_string_id",
+      "start": "0x529ed53c",
+      "end": "0x529ed55c",
+      "range_sha256": "cb1887beff222c6989d53d3bd60f597830945644c371ca7e33db4174e2a50deb",
+      "pseudocode_sha256": "034dfca99fc5c2c8930980fec88be0ea4c7ec94e3c3d90f08e718ff96f0c68bb",
+      "assembly_sha256": "75b2b60dcbfa8b4d0a22fb8bfa9fef6a6cfe676ff3deca909797bd6437525880",
+      "angr_version": "10.0.5",
+      "scope": "bounded static analysis; bounds manually selected from returns and neighboring prologues; unresolved indirect calls assumed returning",
+      "static_edges": []
+    },
+    {
+      "label": "color_icon_id",
+      "start": "0x529f137c",
+      "end": "0x529f13e0",
+      "range_sha256": "56e371a0946255f3f7fd0502a9e804d9a6f7b59732ab0065f473f2ec8b725703",
+      "pseudocode_sha256": "9c18ff333b978ba9667be1dca89955c4aa69670cd986b5ba66a107481679bbe9",
+      "assembly_sha256": "2556067fd8e4e4dcf361f802a8bbb7d187c4af2b7968109464c00bfe6ca59b1a",
+      "angr_version": "10.0.5",
+      "scope": "bounded static analysis; bounds manually selected from returns and neighboring prologues; unresolved indirect calls assumed returning",
+      "static_edges": []
+    },
+    {
+      "label": "select_menu_apply",
+      "start": "0x5278dac0",
+      "end": "0x5278db30",
+      "range_sha256": "f1704c523ab08ac81624534d95cb3eccdca72342d6e166f9d6ad1bba6a25d912",
+      "pseudocode_sha256": "962a3f2e6f3208030e3e04833fe58f61687c59ff2e4c987c2fe84ddc792b8943",
+      "assembly_sha256": "c8ccb5499e82bd5025493256cb52b0392b90d57c7835ecd6c54621d506121907",
+      "angr_version": "10.0.5",
+      "scope": "bounded static analysis; bounds manually selected from returns and neighboring prologues; unresolved indirect calls assumed returning",
+      "static_edges": [
+        {
+          "site": "0x5278dad0",
+          "kind": "bl",
+          "target": "0x526d95bc",
+          "operand": "#0x526d95bc"
+        },
+        {
+          "site": "0x5278dae8",
+          "kind": "bl",
+          "target": "0x52c0dbb8",
+          "operand": "#0x52c0dbb8"
+        }
+      ]
+    },
+    {
+      "label": "select_menu_confirm",
+      "start": "0x5278db30",
+      "end": "0x5278db7c",
+      "range_sha256": "ef98f509208a89452fa81707dfc90da97a1ce2b9f2c7fe5c0a25fa2ce5f52506",
+      "pseudocode_sha256": "2550d3cb169f16d0d9e266950daa5e814c514ca37b4276187ecd87e1d78c68cb",
+      "assembly_sha256": "5a5ae5712a9575ea9319716a6269c8cc1de0d3c10bed9cea40fdcb84c179a247",
+      "angr_version": "10.0.5",
+      "scope": "bounded static analysis; bounds manually selected from returns and neighboring prologues; unresolved indirect calls assumed returning",
+      "static_edges": [
+        {
+          "site": "0x5278db48",
+          "kind": "bl",
+          "target": "0x52c0dbb8",
+          "operand": "#0x52c0dbb8"
+        },
+        {
+          "site": "0x5278db54",
+          "kind": "bl",
+          "target": "0x52c0da38",
+          "operand": "#0x52c0da38"
+        },
+        {
+          "site": "0x5278db68",
+          "kind": "bl",
+          "target": "0x5278dac0",
+          "operand": "#0x5278dac0"
+        },
+        {
+          "site": "0x5278db78",
+          "kind": "b",
+          "target": "0x526d8b28",
+          "operand": "#0x526d8b28"
+        }
+      ]
+    },
+    {
+      "label": "select_menu_cancel_hook",
+      "start": "0x5278db88",
+      "end": "0x5278dbdc",
+      "range_sha256": "14da1a83f4517024aaf6def58d6ceb8f848e3e654c5725a4736c8a7ceafa8b64",
+      "pseudocode_sha256": "8d5096a18f63b7509c17efbe9957de2c7be19b2f94490cecacced131543d2da0",
+      "assembly_sha256": "be85844afa7b6a23857b94a8f4cf8d6f49931f4d7912d54975cdee145b26a6ae",
+      "angr_version": "10.0.5",
+      "scope": "bounded static analysis; bounds manually selected from returns and neighboring prologues; unresolved indirect calls assumed returning",
+      "static_edges": []
+    },
+    {
+      "label": "select_menu_cancel_callback",
+      "start": "0x5278dbdc",
+      "end": "0x5278dc08",
+      "range_sha256": "87b21cdaaeb520258871cf171898609d43ef5ba5aeeb4f027ebe465b126a2368",
+      "pseudocode_sha256": "b9d60cfe8e1721ab206262eade1f1c3286f199ac61e28f4bfcff19f979af4b19",
+      "assembly_sha256": "0b67a83dd85a401eab761df48961976e895e811b498d57ae6a196fea127de1a9",
+      "angr_version": "10.0.5",
+      "scope": "bounded static analysis; bounds manually selected from returns and neighboring prologues; unresolved indirect calls assumed returning",
+      "static_edges": [
+        {
+          "site": "0x5278dbf4",
+          "kind": "bl",
+          "target": "0x5278db88",
+          "operand": "#0x5278db88"
+        },
+        {
+          "site": "0x5278dc04",
+          "kind": "b",
+          "target": "0x526d8b28",
+          "operand": "#0x526d8b28"
+        }
+      ]
+    },
+    {
+      "label": "select_menu_bind_actions",
+      "start": "0x5278dcd0",
+      "end": "0x5278de30",
+      "range_sha256": "6cfbd393bbb384a13b2423b65b52bc43951f2f822bd6bfc3039473bd69f37aa5",
+      "pseudocode_sha256": "6debaf3918ae278a38ec15293637ea45fa7288e60f2ebaebc15aa51f4fd76ee3",
+      "assembly_sha256": "e4951152d7d45b4b4a3852eedcf69ce34e96d26326b67d60c5c0c9340d806cf8",
+      "angr_version": "10.0.5",
+      "scope": "bounded static analysis; bounds manually selected from returns and neighboring prologues; unresolved indirect calls assumed returning",
+      "static_edges": [
+        {
+          "site": "0x5278dd04",
+          "kind": "bl",
+          "target": "0x530f25f4",
+          "operand": "#0x530f25f4"
+        },
+        {
+          "site": "0x5278dd34",
+          "kind": "bl",
+          "target": "0x52c0dfcc",
+          "operand": "#0x52c0dfcc"
+        },
+        {
+          "site": "0x5278dd50",
+          "kind": "blx",
+          "target": null,
+          "operand": "r3"
+        },
+        {
+          "site": "0x5278dd64",
+          "kind": "bl",
+          "target": "0x530f25f4",
+          "operand": "#0x530f25f4"
+        },
+        {
+          "site": "0x5278dd94",
+          "kind": "bl",
+          "target": "0x52c00d54",
+          "operand": "#0x52c00d54"
+        },
+        {
+          "site": "0x5278ddb0",
+          "kind": "blx",
+          "target": null,
+          "operand": "r3"
+        },
+        {
+          "site": "0x5278ddc4",
+          "kind": "bl",
+          "target": "0x530f25f4",
+          "operand": "#0x530f25f4"
+        },
+        {
+          "site": "0x5278ddf4",
+          "kind": "bl",
+          "target": "0x52c00d54",
+          "operand": "#0x52c00d54"
+        },
+        {
+          "site": "0x5278de10",
+          "kind": "blx",
+          "target": null,
+          "operand": "r3"
+        },
+        {
+          "site": "0x5278de2c",
+          "kind": "bl",
+          "target": "0x532fb9c8",
+          "operand": "#0x532fb9c8"
+        }
+      ]
+    },
+    {
+      "label": "select_menu_populate",
+      "start": "0x5278e05c",
+      "end": "0x5278e2d8",
+      "range_sha256": "3bd18a82803c4de71585a7b0d28bc9c1614404b0398436e4863960c37a0f5533",
+      "pseudocode_sha256": "39c4cbf512585708d0a0faa0b1ba82b80095550faa822b682eabda5b38cfd615",
+      "assembly_sha256": "d0097d57a7dc24e74e263fd9834ca739f32d4c30ecf263426737cd4939da2053",
+      "angr_version": "10.0.5",
+      "scope": "bounded static analysis; bounds manually selected from returns and neighboring prologues; unresolved indirect calls assumed returning",
+      "static_edges": [
+        {
+          "site": "0x5278e088",
+          "kind": "bl",
+          "target": "0x526d95bc",
+          "operand": "#0x526d95bc"
+        },
+        {
+          "site": "0x5278e0e8",
+          "kind": "blx",
+          "target": null,
+          "operand": "r3"
+        },
+        {
+          "site": "0x5278e104",
+          "kind": "b",
+          "target": "0x5278e20c",
+          "operand": "#0x5278e20c"
+        },
+        {
+          "site": "0x5278e130",
+          "kind": "blx",
+          "target": null,
+          "operand": "r2"
+        },
+        {
+          "site": "0x5278e144",
+          "kind": "bl",
+          "target": "0x52c108f0",
+          "operand": "#0x52c108f0"
+        },
+        {
+          "site": "0x5278e170",
+          "kind": "bl",
+          "target": "0x52c0da38",
+          "operand": "#0x52c0da38"
+        },
+        {
+          "site": "0x5278e1a8",
+          "kind": "blx",
+          "target": null,
+          "operand": "ip"
+        },
+        {
+          "site": "0x5278e1cc",
+          "kind": "bl",
+          "target": "0x52c108f0",
+          "operand": "#0x52c108f0"
+        },
+        {
+          "site": "0x5278e1d0",
+          "kind": "b",
+          "target": "0x5278e154",
+          "operand": "#0x5278e154"
+        },
+        {
+          "site": "0x5278e1e0",
+          "kind": "bl",
+          "target": "0x52c02114",
+          "operand": "#0x52c02114"
+        },
+        {
+          "site": "0x5278e208",
+          "kind": "b",
+          "target": "0x5278e0e8",
+          "operand": "#0x5278e0e8"
+        },
+        {
+          "site": "0x5278e214",
+          "kind": "bl",
+          "target": "0x52c0f638",
+          "operand": "#0x52c0f638"
+        },
+        {
+          "site": "0x5278e258",
+          "kind": "bl",
+          "target": "0x52c01cbc",
+          "operand": "#0x52c01cbc"
+        },
+        {
+          "site": "0x5278e264",
+          "kind": "bl",
+          "target": "0x530fa17c",
+          "operand": "#0x530fa17c"
+        },
+        {
+          "site": "0x5278e274",
+          "kind": "bl",
+          "target": "0x530fa23c",
+          "operand": "#0x530fa23c"
+        },
+        {
+          "site": "0x5278e288",
+          "kind": "blx",
+          "target": null,
+          "operand": "r3"
+        },
+        {
+          "site": "0x5278e29c",
+          "kind": "bl",
+          "target": "0x530fa05c",
+          "operand": "#0x530fa05c"
+        },
+        {
+          "site": "0x5278e2a4",
+          "kind": "b",
+          "target": "0x5278e1dc",
+          "operand": "#0x5278e1dc"
+        },
+        {
+          "site": "0x5278e2c0",
+          "kind": "b",
+          "target": "0x5278e248",
+          "operand": "#0x5278e248"
+        },
+        {
+          "site": "0x5278e2cc",
+          "kind": "bl",
+          "target": "0x52c0ec04",
+          "operand": "#0x52c0ec04"
+        },
+        {
+          "site": "0x5278e2d0",
+          "kind": "b",
+          "target": "0x5278e298",
+          "operand": "#0x5278e298"
+        },
+        {
+          "site": "0x5278e2d4",
+          "kind": "bl",
+          "target": "0x532fb9c8",
+          "operand": "#0x532fb9c8"
+        }
+      ]
+    },
+    {
+      "label": "select_menu_event",
+      "start": "0x5278ef84",
+      "end": "0x5278f10c",
+      "range_sha256": "b912dffbdde583f62b2cccf656e28730149d50714439773c2cdceb13c24ba75a",
+      "pseudocode_sha256": "8a563b93eb61cd9eb5ad3e0fd6dac4500f0c8764e5474819a7e122628de131d8",
+      "assembly_sha256": "8261aca562859a4e7d3aac0021411441ca88ed12ae843368c6bf5ded256f1ba4",
+      "angr_version": "10.0.5",
+      "scope": "bounded static analysis; bounds manually selected from returns and neighboring prologues; unresolved indirect calls assumed returning",
+      "static_edges": [
+        {
+          "site": "0x5278f008",
+          "kind": "bl",
+          "target": "0x5278b6e8",
+          "operand": "#0x5278b6e8"
+        },
+        {
+          "site": "0x5278f00c",
+          "kind": "b",
+          "target": "0x5278f038",
+          "operand": "#0x5278f038"
+        },
+        {
+          "site": "0x5278f034",
+          "kind": "bl",
+          "target": "0x5278d9b0",
+          "operand": "#0x5278d9b0"
+        },
+        {
+          "site": "0x5278f058",
+          "kind": "bl",
+          "target": "0x5278dc8c",
+          "operand": "#0x5278dc8c"
+        },
+        {
+          "site": "0x5278f05c",
+          "kind": "b",
+          "target": "0x5278f038",
+          "operand": "#0x5278f038"
+        },
+        {
+          "site": "0x5278f060",
+          "kind": "bl",
+          "target": "0x5278e7ac",
+          "operand": "#0x5278e7ac"
+        },
+        {
+          "site": "0x5278f064",
+          "kind": "b",
+          "target": "0x5278f038",
+          "operand": "#0x5278f038"
+        },
+        {
+          "site": "0x5278f068",
+          "kind": "bl",
+          "target": "0x5278ed3c",
+          "operand": "#0x5278ed3c"
+        },
+        {
+          "site": "0x5278f06c",
+          "kind": "b",
+          "target": "0x5278f038",
+          "operand": "#0x5278f038"
+        },
+        {
+          "site": "0x5278f088",
+          "kind": "bl",
+          "target": "0x5278db30",
+          "operand": "#0x5278db30"
+        },
+        {
+          "site": "0x5278f08c",
+          "kind": "b",
+          "target": "0x5278f038",
+          "operand": "#0x5278f038"
+        },
+        {
+          "site": "0x5278f09c",
+          "kind": "bl",
+          "target": "0x5278e9b8",
+          "operand": "#0x5278e9b8"
+        },
+        {
+          "site": "0x5278f0a0",
+          "kind": "b",
+          "target": "0x5278f038",
+          "operand": "#0x5278f038"
+        },
+        {
+          "site": "0x5278f0a4",
+          "kind": "bl",
+          "target": "0x5278dc08",
+          "operand": "#0x5278dc08"
+        },
+        {
+          "site": "0x5278f0a8",
+          "kind": "b",
+          "target": "0x5278f038",
+          "operand": "#0x5278f038"
+        },
+        {
+          "site": "0x5278f0b8",
+          "kind": "bl",
+          "target": "0x5278e2d8",
+          "operand": "#0x5278e2d8"
+        },
+        {
+          "site": "0x5278f0bc",
+          "kind": "b",
+          "target": "0x5278f038",
+          "operand": "#0x5278f038"
+        },
+        {
+          "site": "0x5278f0c0",
+          "kind": "bl",
+          "target": "0x5278db88",
+          "operand": "#0x5278db88"
+        },
+        {
+          "site": "0x5278f0c8",
+          "kind": "bl",
+          "target": "0x526d8b28",
+          "operand": "#0x526d8b28"
+        },
+        {
+          "site": "0x5278f0cc",
+          "kind": "b",
+          "target": "0x5278f038",
+          "operand": "#0x5278f038"
+        },
+        {
+          "site": "0x5278f0d0",
+          "kind": "bl",
+          "target": "0x5278d8ac",
+          "operand": "#0x5278d8ac"
+        },
+        {
+          "site": "0x5278f0d4",
+          "kind": "b",
+          "target": "0x5278f038",
+          "operand": "#0x5278f038"
+        },
+        {
+          "site": "0x5278f0dc",
+          "kind": "bl",
+          "target": "0x5278da1c",
+          "operand": "#0x5278da1c"
+        },
+        {
+          "site": "0x5278f0e0",
+          "kind": "b",
+          "target": "0x5278f038",
+          "operand": "#0x5278f038"
+        },
+        {
+          "site": "0x5278f0e8",
+          "kind": "bl",
+          "target": "0x5278da1c",
+          "operand": "#0x5278da1c"
+        },
+        {
+          "site": "0x5278f0ec",
+          "kind": "b",
+          "target": "0x5278f038",
+          "operand": "#0x5278f038"
+        },
+        {
+          "site": "0x5278f0f0",
+          "kind": "bl",
+          "target": "0x5278d914",
+          "operand": "#0x5278d914"
+        },
+        {
+          "site": "0x5278f0f4",
+          "kind": "b",
+          "target": "0x5278f038",
+          "operand": "#0x5278f038"
+        },
+        {
+          "site": "0x5278f0fc",
+          "kind": "bl",
+          "target": "0x5278d9b0",
+          "operand": "#0x5278d9b0"
+        },
+        {
+          "site": "0x5278f100",
+          "kind": "b",
+          "target": "0x5278f038",
+          "operand": "#0x5278f038"
+        },
+        {
+          "site": "0x5278f104",
+          "kind": "bl",
+          "target": "0x5278dc48",
+          "operand": "#0x5278dc48"
+        },
+        {
+          "site": "0x5278f108",
+          "kind": "b",
+          "target": "0x5278f038",
+          "operand": "#0x5278f038"
+        }
+      ]
+    }
+  ],
+  "supporting_ranges": [
+    {
+      "label": "route_selector",
+      "start": "0x5278bb44",
+      "end": "0x5278d7ec",
+      "sha256": "52dc04f8ecab848aef257a3ad30e21d7991594a60a6b5e922350aa173fa778ac",
+      "assembly_sha256": "249a6868617890a2904bbfae5d92911fc0ea26dce5ca6e19a4ea062402357874",
+      "scope": "All words retained; may include jump-table/literal words, not all treated as reachable instructions."
+    },
+    {
+      "label": "controller_constructor",
+      "start": "0x5278df54",
+      "end": "0x5278e05c",
+      "sha256": "215fad2b6482a9035ff1dfa3d90f87a8e10f57ac07a0fe1cd19bcfd0386d878c",
+      "assembly_sha256": "b3ae4d618b2b137104e296d0d5c9a5331d2e191a5029d24219cefdc4a507c525",
+      "scope": "All words retained; may include jump-table/literal words, not all treated as reachable instructions."
+    },
+    {
+      "label": "open_populate_callers",
+      "start": "0x5278ecdc",
+      "end": "0x5278ef84",
+      "sha256": "481eff30d683aae43252fc5fcdefbd7adcc5046a04651626a5305a6e6de12173",
+      "assembly_sha256": "73af0d841f8604614d4d1e0dbfc5e2231c4543340d13f29b3b9ee818de6b90eb",
+      "scope": "All words retained; may include jump-table/literal words, not all treated as reachable instructions."
+    },
+    {
+      "label": "list_index_getter",
+      "start": "0x52c0dbb8",
+      "end": "0x52c0dbc4",
+      "sha256": "37becb2f51871ae61de15814f0b1e98d919c41214beda67e115ee6cecb7fb893",
+      "assembly_sha256": "285d2ea01a432e2a16b76204afd32adc2fe74581550bd30bf462775a52974f94",
+      "scope": "All words retained; may include jump-table/literal words, not all treated as reachable instructions."
+    },
+    {
+      "label": "list_item_getter",
+      "start": "0x52c0da38",
+      "end": "0x52c0da44",
+      "sha256": "c35e44b4274090ccf354dbb65a0d8db5b2380207c12804482810e684c084f5f0",
+      "assembly_sha256": "3a43d561e24d8a8ce5e20c83b3d475a5436ccc5ad51dd2ec224d47acfc817e27",
+      "scope": "All words retained; may include jump-table/literal words, not all treated as reachable instructions."
+    },
+    {
+      "label": "row_render",
+      "start": "0x52c10aec",
+      "end": "0x52c10b70",
+      "sha256": "42d2a5a314de42cc0536f464569c67832d3e8b40b2724e2261150f1f31fcb36a",
+      "assembly_sha256": "3c066ef32e4f4828fbc1005148e249a2a7b3d7464443a0a41be576b2916d1b44",
+      "scope": "All words retained; may include jump-table/literal words, not all treated as reachable instructions."
+    },
+    {
+      "label": "UserData_current_getter",
+      "start": "0x529184bc",
+      "end": "0x529184c4",
+      "sha256": "15899151a802f96eab31c9cb017d73df956812d88229f9afa52f65c54e8ae58c",
+      "assembly_sha256": "af42e6240a3f039154a20f02cc623209720cf176ffe6c74a9421f850d27c065b",
+      "scope": "All words retained; may include jump-table/literal words, not all treated as reachable instructions."
+    },
+    {
+      "label": "row_availability",
+      "start": "0x5291b8b8",
+      "end": "0x5291b8c0",
+      "sha256": "007f34a6c3441b0240da53f253e513b959105da2d8803255e1856aa48f48db47",
+      "assembly_sha256": "7b19c567a507f331caaf164cadba2896cecd617a9424fa95a6365813253de377",
+      "scope": "All words retained; may include jump-table/literal words, not all treated as reachable instructions."
+    },
+    {
+      "label": "row_disabled_setter",
+      "start": "0x52c0f844",
+      "end": "0x52c0f870",
+      "sha256": "e44689d6414b8691deafadb41a9c6e1f89c88713a063f1017a426404f83ca674",
+      "assembly_sha256": "bc2bdeec46858d196c46e1c7397ce034522365e1597eaaca99a2a32271293385",
+      "scope": "All words retained; may include jump-table/literal words, not all treated as reachable instructions."
+    },
+    {
+      "label": "UserData_setter_and_wrapper",
+      "start": "0x52954afc",
+      "end": "0x52954c98",
+      "sha256": "9fd520084a3052536ae7384c1c577e8fff17ec0ac3029ed53a3fa6a51732e1a1",
+      "assembly_sha256": "68dd8f5c62f5b2d5f9e45ccda2675100466fcf098b58ccc87ed896aa857804ff",
+      "scope": "All words retained; may include jump-table/literal words, not all treated as reachable instructions."
+    },
+    {
+      "label": "UserData_observer",
+      "start": "0x5290e520",
+      "end": "0x5290e574",
+      "sha256": "ce90b8a91ed350790d34e4ce213a698515f14561177a50620fef9f5bb7fc18c2",
+      "assembly_sha256": "821602aa8b540372abb1c278f5266f77d235ec4890aae86887dadf303907a15e",
+      "scope": "All words retained; may include jump-table/literal words, not all treated as reachable instructions."
+    },
+    {
+      "label": "callback_closure_manager",
+      "start": "0x52915e48",
+      "end": "0x52915ecc",
+      "sha256": "218d9457141725953bc586ada19f92b728134e221b2530765ea82a32daac813e",
+      "assembly_sha256": "baef222a38a4e3383b47ea4236c83ffddc05e3695d639b769ff6c85d7b19f37c",
+      "scope": "All words retained; may include jump-table/literal words, not all treated as reachable instructions."
+    }
+  ],
+  "resources": [
+    {
+      "label": "color_menu_descriptor",
+      "address": "0x536453c0",
+      "size": 92,
+      "sha256": "3e3eb830762db05259c40daa78bbcf9efaba1cad6a1f605381e51103378d442b"
+    },
+    {
+      "label": "option_enum_map",
+      "address": "0x536a6250",
+      "size": 2,
+      "sha256": "b413f47d13ee2fe6c845b2ee141af81de858df4ec549a58b7970bb96645bc8d2"
+    },
+    {
+      "label": "controller_vtable",
+      "address": "0x5364ad60",
+      "size": 140,
+      "sha256": "2548a2fadfc857e856871d826db5b3400cb35839f38386cbbdd9b798dce529ff"
+    },
+    {
+      "label": "controller_typeinfo",
+      "address": "0x5364aab8",
+      "size": 8,
+      "sha256": "1228b601f1bd4294bcfeda47a7001ebbf98f29089c902dc287132df17e9a8c31"
+    },
+    {
+      "label": "controller_type_name",
+      "address": "0x5364adec",
+      "size": 23,
+      "sha256": "e0f682278bb356387b536e0fa3b79fad7784fcf15ef66c2ea647e45a1ab667ab"
+    },
+    {
+      "label": "route_jump_slot",
+      "address": "0x5278bc5c",
+      "size": 4,
+      "sha256": "943b66b47966bb98004884245cbb1ced20dba71785222a0bc137a735684a5803"
+    }
+  ],
+  "pointer_words": [
+    {
+      "source_address": "0x5278bc5c",
+      "value": "0x5278d4c0"
+    },
+    {
+      "source_address": "0x5364aabc",
+      "value": "0x5364adec"
+    },
+    {
+      "source_address": "0x5364ad64",
+      "value": "0x5364aab8"
+    },
+    {
+      "source_address": "0x5364ad80",
+      "value": "0x5278ed80"
+    },
+    {
+      "source_address": "0x5364ad90",
+      "value": "0x5278ef84"
+    },
+    {
+      "source_address": "0x536453c8",
+      "value": "0x5277620c"
+    },
+    {
+      "source_address": "0x536453cc",
+      "value": "0x0"
+    },
+    {
+      "source_address": "0x536453d0",
+      "value": "0x52779a58"
+    },
+    {
+      "source_address": "0x536453d4",
+      "value": "0x0"
+    },
+    {
+      "source_address": "0x536453d8",
+      "value": "0x52776a08"
+    },
+    {
+      "source_address": "0x536453dc",
+      "value": "0x0"
+    },
+    {
+      "source_address": "0x536453e0",
+      "value": "0x527826f4"
+    },
+    {
+      "source_address": "0x536453e4",
+      "value": "0x0"
+    },
+    {
+      "source_address": "0x536453e8",
+      "value": "0x0"
+    },
+    {
+      "source_address": "0x536453ec",
+      "value": "0x0"
+    },
+    {
+      "source_address": "0x536453f0",
+      "value": "0x52785f5c"
+    },
+    {
+      "source_address": "0x536453f4",
+      "value": "0x0"
+    },
+    {
+      "source_address": "0x536453f8",
+      "value": "0x0"
+    },
+    {
+      "source_address": "0x536453fc",
+      "value": "0x0"
+    },
+    {
+      "source_address": "0x53645400",
+      "value": "0x0"
+    },
+    {
+      "source_address": "0x53645404",
+      "value": "0x0"
+    },
+    {
+      "source_address": "0x53645408",
+      "value": "0x0"
+    },
+    {
+      "source_address": "0x5364540c",
+      "value": "0x0"
+    },
+    {
+      "source_address": "0x53645410",
+      "value": "0x0"
+    },
+    {
+      "source_address": "0x53645414",
+      "value": "0x5278960c"
+    }
+  ],
+  "critical_instructions": [
+    {
+      "address": "0x5278bb48",
+      "instruction": "mov ip, sp"
+    },
+    {
+      "address": "0x5278bb50",
+      "instruction": "movw r2, #0x227"
+    },
+    {
+      "address": "0x5278d4c4",
+      "instruction": "mov r3, #0x48"
+    },
+    {
+      "address": "0x5278d4c8",
+      "instruction": "strh r3, [r0]"
+    },
+    {
+      "address": "0x5278db04",
+      "instruction": "mla r3, ip, r2, r3"
+    },
+    {
+      "address": "0x5278db08",
+      "instruction": "ldr r0, [r3, #0x24]"
+    },
+    {
+      "address": "0x5278db0c",
+      "instruction": "ldr r3, [r3, #0x20]"
+    },
+    {
+      "address": "0x5278db2c",
+      "instruction": "bx r3"
+    },
+    {
+      "address": "0x5278db58",
+      "instruction": "ldrb r3, [r0, #0x17a]"
+    },
+    {
+      "address": "0x5278db70",
+      "instruction": "sub sp, fp, #0x14"
+    },
+    {
+      "address": "0x5278db78",
+      "instruction": "b #0x526d8b28"
+    },
+    {
+      "address": "0x5278e130",
+      "instruction": "blx r2"
+    },
+    {
+      "address": "0x5278e150",
+      "instruction": "strbne r4, [r6, #0x1d6]"
+    },
+    {
+      "address": "0x5278e1a8",
+      "instruction": "blx ip"
+    },
+    {
+      "address": "0x5278e2cc",
+      "instruction": "bl #0x52c0ec04"
+    },
+    {
+      "address": "0x5278f088",
+      "instruction": "bl #0x5278db30"
+    },
+    {
+      "address": "0x5278f0c0",
+      "instruction": "bl #0x5278db88"
+    },
+    {
+      "address": "0x5278f0c8",
+      "instruction": "bl #0x526d8b28"
+    },
+    {
+      "address": "0x52782714",
+      "instruction": "ldrb r1, [r3, r4]"
+    },
+    {
+      "address": "0x52782720",
+      "instruction": "b #0x52954be0"
+    },
+    {
+      "address": "0x52779a7c",
+      "instruction": "ldrb r4, [r3, r4]"
+    },
+    {
+      "address": "0x52779a94",
+      "instruction": "bl #0x529f137c"
+    },
+    {
+      "address": "0x52779aa4",
+      "instruction": "bl #0x529ed53c"
+    },
+    {
+      "address": "0x52779ab4",
+      "instruction": "bl #0x52c10aec"
+    },
+    {
+      "address": "0x52779ac4",
+      "instruction": "bl #0x5291b8b8"
+    },
+    {
+      "address": "0x52779adc",
+      "instruction": "b #0x52c0f844"
+    },
+    {
+      "address": "0x52c10b20",
+      "instruction": "bl #0x52bf1430"
+    },
+    {
+      "address": "0x52c10b3c",
+      "instruction": "bl #0x52bee8f8"
+    },
+    {
+      "address": "0x52954b34",
+      "instruction": "ldrb r0, [r3, #0x35b]"
+    },
+    {
+      "address": "0x52954b38",
+      "instruction": "cmp r0, r1"
+    },
+    {
+      "address": "0x52954b3c",
+      "instruction": "beq #0x52954bcc"
+    },
+    {
+      "address": "0x52954b40",
+      "instruction": "strb r1, [r3, #0x35b]"
+    },
+    {
+      "address": "0x52954b64",
+      "instruction": "str r2, [r3]"
+    },
+    {
+      "address": "0x52954b74",
+      "instruction": "str r5, [r3, #8]"
+    },
+    {
+      "address": "0x52954b90",
+      "instruction": "bl #0x5292e804"
+    },
+    {
+      "address": "0x52954bcc",
+      "instruction": "ldrb r2, [r5, #0x3b7]"
+    },
+    {
+      "address": "0x52954bd0",
+      "instruction": "cmp r2, r1"
+    },
+    {
+      "address": "0x52954bd4",
+      "instruction": "bne #0x52954b40"
+    },
+    {
+      "address": "0x5290e544",
+      "instruction": "ldrb r2, [r3, #0x35b]"
+    },
+    {
+      "address": "0x5290e548",
+      "instruction": "ldrb r3, [r3, #0x2c]"
+    },
+    {
+      "address": "0x5290e550",
+      "instruction": "strbne r2, [r0, #0x3b7]"
+    },
+    {
+      "address": "0x5290e558",
+      "instruction": "ldmne sp, {r3, r4, fp, sp, pc}"
+    },
+    {
+      "address": "0x5290e570",
+      "instruction": "b #0x52edd820"
+    }
+  ],
+  "relationships": [
+    {
+      "kind": "route",
+      "sites": [
+        "0x5278bc5c",
+        "0x5278d4c4",
+        "0x5278d4c8"
+      ],
+      "expression": "route0200009f minus02000063 gives jump index3c; table target5278d4c0 writes controller.u16[1d4]=72decimal. Descriptor536439e0+72*5c=536453c0."
+    },
+    {
+      "kind": "member-callbacks",
+      "expression": "descriptor+8=count5277620c; +10=row52779a58; +18=header52776a08; +20=apply527826f4; +30=current52785f5c; +40=cancelHook0. Each listed member-pointer adjustment word is0."
+    },
+    {
+      "kind": "state",
+      "sites": [
+        "0x5278e150",
+        "0x5278e2cc",
+        "0x529184bc"
+      ],
+      "expression": "population mode1 compares mapped options with UserData.byte3b7; matching option updates controller.byte1d6. list.u16[1ce] is selected/pending index. Confirm reads list index, not controller.byte1d6."
+    },
+    {
+      "kind": "confirm",
+      "sites": [
+        "0x5278f088",
+        "0x5278db58",
+        "0x5278db70",
+        "0x5278db78"
+      ],
+      "expression": "evente7 invokes5278db30; row.byte17a nonzero prevents apply and close. Otherwise5278dac0 dispatches descriptor+20 then close526d8b28."
+    },
+    {
+      "kind": "cancel",
+      "sites": [
+        "0x5278f0c0",
+        "0x5278f0c8"
+      ],
+      "expression": "evente9 invokes cancel hook5278db88; descriptor+40 is0 for row72. Close follows without setter."
+    },
+    {
+      "kind": "option-values",
+      "expression": "map536a6250=[0,1]. Earlier parser52aed898 establishes0=sRGB and1=AdobeRGB; no cross-model enum equivalence is assumed."
+    },
+    {
+      "kind": "write-condition",
+      "sites": [
+        "0x52954b34",
+        "0x52954b40",
+        "0x52954bcc",
+        "0x52954bd4"
+      ],
+      "expression": "Write selected record.byte35b iff record.byte35b!=new OR UserData.byte3b7!=new. Same-value consistent confirm still enters setter but does not write."
+    },
+    {
+      "kind": "observer",
+      "sites": [
+        "0x5290e544",
+        "0x5290e550",
+        "0x5290e558",
+        "0x5290e570"
+      ],
+      "expression": "Generated callback5290e520 updates cache3b7 when different. record.byte2c nonzero suppresses property request52edd820 after cache update."
+    },
+    {
+      "kind": "rendering",
+      "sites": [
+        "0x52779a94",
+        "0x52779aa4",
+        "0x52779ab4",
+        "0x52c10b20",
+        "0x52c10b3c"
+      ],
+      "expression": "row prepare picks enum0/1 string IDs1f6/1f7; style.byte0=0 icon539/537, otherwise305/330. rowrender assigns IconView through52bf1430 and text through52bee8f8. Exact glyph/pixel rendering and physical input mapping are not established here."
+    }
+  ],
+  "limits": [
+    "Genuine C preserved locally, not original buildable vendor source. populate C loses STRBNE condition at5278e150; confirm C omits close tail call at5278db78. ARM and bounded CPU execution are authoritative.",
+    "16 synthetic original-ARM cases use focus assignment, layout/render capture, heap and callback collection/delivery stubs. No full constructor/open/destroy/reopen lifecycle or physical input/IO.",
+    "Same-object population reconstructs displayed selection. It does not prove full window reopening or storage persistence.",
+    "Property request boundary52edd820 stops current tests; earlier message145 dispatcher proof is independently stored in colorspace-message-checks.json.",
+    "Descriptor title1f3 and header helper text1f5 are separate IDs; translated text/actual layout not extracted in this pass.",
+    "Cross-model UI port requires separate event, descriptor, widget ABI, resource and storage mapping on K-3 II/Q7."
+  ],
+  "provenance": {
+    "private_artifacts": "Pseudocode and assembly hashes identify local artifacts, not distributed firmware code.",
+    "image": "All addresses/hashes refer to supplied RTOS image.",
+    "source_words": 2803,
+    "new_genuine_c": 14
+  },
+  "independent_review": {
+    "original_cases": 8,
+    "additional_cases": 6,
+    "original_pseudocode_files": 14,
+    "assembly_words_checked": 5194,
+    "P1_P2_findings": 0,
+    "P3_fixes": [
+      "Route descriptor reset toffff before checking route writes72.",
+      "Second population named reconstructed_selection, not full reopen."
+    ],
+    "scope": "Review preceded manager extension to16cases; additional cases independently rerun by manager."
+  }
+}

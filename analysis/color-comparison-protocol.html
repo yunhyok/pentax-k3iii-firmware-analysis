@@ -55,6 +55,29 @@ tificc -t1 '-i*sRGB' '-o*Lab4' -w32 preview-rgb8.tif preview-lab.tif</code></pre
 
 <h2>이 시험에서 판정할 수 있는 범위</h2>
 <p>이 표본으로 같은 노출과 조명에서 어느 Lightroom 프로파일의 출력이 Natural 미리보기에 가까운지 재현 가능하게 비교할 수 있다. 실물 차트의 제작 시기, 보관 상태, 조명 스펙트럼과 공간 분포는 확인되지 않았다. 따라서 제조사 표준값과의 절대 색 정확도, 다른 조명과 노출에서의 성능, 별도 촬영 JPEG와의 일치 여부에는 추가 시험이 필요하다. 이번 기록에는 Lightroom 출력과의 ΔE<sub>00</sub> 실측이 없다. <a href="https://www.xrite.com/service-support/new_color_specifications_for_colorchecker_sg_and_classic_charts">X-Rite의 차트 제조 시기별 색 규격</a> · <a href="raw-test-inputs.html">표본의 촬영 조건과 범위</a></p>
+
+<section aria-labelledby="neutral-axis">
+<h2 id="neutral-axis">중립 패치 여섯 개의 밝기 순서</h2>
+<p>정합한 200×200 영역에서 R·G1·G2·B 위상마다 10,000개를 집계했다. CFA를 재표본화하지 않고 위상별 RAW 중앙값을 <code>(DN−1)/(16317−1)</code>로 정규화했다. RAW G는 두 녹색 위상 중앙값의 평균이다. JPEG Y는 해시가 일치한 내장 JPEG의 선형 sRGB 휘도 중앙값이며 기존 좌표 기록에서 가져왔다. <a href="color-comparison-protocol.json">정합 좌표와 JPEG 휘도</a> · <a href="https://helpx.adobe.com/content/dam/help/en/camera-raw/digital-negative/jcr_content/root/content/flex/items/position/position-par/download_section_733958301/download-1/DNG_Spec_1_7_1_0.pdf#page=99">Adobe DNG 명세의 정규화 단계</a></p>
+<div style="overflow-x:auto" tabindex="0" role="region" aria-label="중립 패치 밝기 비교">
+<table>
+<caption>중립 패치별 RAW 녹색과 내장 JPEG 휘도</caption>
+<thead><tr><th scope="col">패치</th><th scope="col">RAW G</th><th scope="col">JPEG Y</th><th scope="col">(G1−G2)/G</th></tr></thead>
+<tbody>
+<tr><th scope="row">19 흰색</th><td>0.825876</td><td>0.943028</td><td>−0.267%</td></tr>
+<tr><th scope="row">20 중성 8</th><td>0.540574</td><td>0.721154</td><td>−0.363%</td></tr>
+<tr><th scope="row">21 중성 6.5</th><td>0.337430</td><td>0.503248</td><td>−0.418%</td></tr>
+<tr><th scope="row">22 중성 5</th><td>0.168485</td><td>0.266724</td><td>−0.509%</td></tr>
+<tr><th scope="row">23 중성 3.5</th><td>0.077899</td><td>0.110053</td><td>−0.472%</td></tr>
+<tr><th scope="row">24 검정</th><td>0.026171</td><td>0.021704</td><td>−0.937%</td></tr>
+</tbody>
+</table>
+</div>
+<p>두 지표 모두 19번에서 24번까지 차례로 낮아져 Spearman ρ는 1.0이었다. G1과 G2의 상대 차이 절댓값은 검정에서 0.937%로 가장 컸다. 비율의 최댓값과 최솟값 차이를 여섯 패치에서 구한 그 비율의 중앙값으로 나누면 R/G는 3.00%, B/G는 4.12%다. RAW G는 센서 지표다. JPEG Y와 물리량이 다르며 DCP 톤 커브에 들어가는 값도 아니다. 이 한 장에서 밝기 순서를 확인했으며 WB 보정값이나 DCP 톤은 추정하지 않았다. <a href="neutral-roi-checks.json">위상별 중앙값과 사분면 통계</a></p>
+<pre><code>python -B tools/check_neutral_rois.py --self-test
+python -B tools/check_neutral_rois.py sample-1376.dng sample-1376-preview.jpg --output neutral-replay.json</code></pre>
+<p>명령의 파일명에는 내려받은 DNG와 그 파일에서 추출한 미리보기의 경로를 넣는다. 검사에는 NumPy, tifffile, imagecodecs가 필요하다. <a href="../tools/check_neutral_rois.py">재현 코드</a> · <a href="raw-test-inputs.html">원본과 미리보기 추출 방법</a></p>
+</section>
 </main>
 </body>
 </html>

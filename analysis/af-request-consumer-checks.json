@@ -1,0 +1,270 @@
+{
+  "passed": true,
+  "image_sha256": "342d2f35405e8daf1797dfe431d2e4aa70f4b52a2c242a29df48206672f1dfb4",
+  "cases": 18,
+  "groups": {
+    "all-32-slots-busy": 1,
+    "completion-descriptor-command-mismatch": 1,
+    "constructor-slot-loop-fragment": 1,
+    "entry-through-one-queue-drain-and-completion": 5,
+    "full-builder-copy-request-enqueue-with-OS-push-stub": 6,
+    "full-queue-pop-with-synthetic-OS-result": 3,
+    "null-extra-preserves-synthetic-existing-field": 1
+  },
+  "scope": "Original ARM request-copy/queue-consumer checks with synthetic buffers.\nNo device access or firmware changes. Unicorn Cortex-A15 is not camera fidelity.\nThe OS queue is synthetic: enqueue captures a request, receive supplies its node.\nThe task loop runs through one wake/drain and stops at its second wait. Packet\nexchange and completion children are explicit stubs, not physical completion.\n",
+  "cpu_model": "Unicorn Cortex-A15; not camera fidelity",
+  "stubs": {
+    "0x530f1a68": "mutex lock returns0",
+    "0x530f1bbc": "mutex unlock returns0",
+    "0x526ab2a8": "memset used only by original constructor loop",
+    "0x530edc60": "queue-push captures request, returns1; no real OS queue",
+    "0x530ed03c": "event-set records only",
+    "0x530ecb88": "task-event setup returns0",
+    "0x530ed1ac": "first wait supplies mask 0x1 (bit 0); second wait stops bounded task run",
+    "0x530ed0f4": "event-clear records only",
+    "0x530ee680": "queue count returns1 then0",
+    "0x525b73a0": "receive injects synthetic node or chosen failure status",
+    "0x30000100": "synthetic allocator free records only",
+    "0x530feb20": "assert/log records only",
+    "0x530fced4": "diagnostic log records only",
+    "0x52f14c9c": "arbitration returns selected synthetic 0/1",
+    "0x52f14db8": "arbitration release records only",
+    "0x52f18128": "packet-exchange boundary records args and returns selected status; no transport",
+    "0x5315dc68": "cache child records args only",
+    "0x5315e480": "post-exchange child records args only",
+    "0x52efde0c": "completion payload child records args only",
+    "0x52eff2c8": "completion cleanup child records args only"
+  },
+  "ranges": [
+    {
+      "start": "0x52efc7a0",
+      "end": "0x52efc858",
+      "sha256": "7a8922a21c048750010ea62eb93db7bbc022994120b74bb5283bf390da5e9002"
+    },
+    {
+      "start": "0x52eff608",
+      "end": "0x52eff618",
+      "sha256": "cd7590ed32dc8cbde0ef5b26b325053aef0674667bc9994ddeafd925915770a4"
+    },
+    {
+      "start": "0x52efeec0",
+      "end": "0x52eff17c",
+      "sha256": "40b9936df34a444f171a3e84f91cd71a530f4013189e83ae3cce27e30b48c66c"
+    },
+    {
+      "start": "0x52eff524",
+      "end": "0x52eff5e0",
+      "sha256": "7a31c5ada488848d7812549fa1fc4227f2be5d099b7dabb9f0f98b65d773391f"
+    },
+    {
+      "start": "0x52f148fc",
+      "end": "0x52f14a08",
+      "sha256": "da066905368e2d588c7b3b9fb919fa22811b08b41eb8ce737ccd68843e3d889a"
+    },
+    {
+      "start": "0x52efebdc",
+      "end": "0x52efec34",
+      "sha256": "b7bd29f0706f9cffeeaabd09897ac37fda4905eaba08cd2aa55dca704c9fcdb6"
+    },
+    {
+      "start": "0x530f3c10",
+      "end": "0x530f3c50",
+      "sha256": "47f2f49cc7b1fafad9b662448850c686b6dd2e4c11b3b4ca0f09884bc4189bb0"
+    },
+    {
+      "start": "0x52f16588",
+      "end": "0x52f166f4",
+      "sha256": "783b04c09a2ba59f18621e97824de604ebdaf28559b44fd3127458340e749e33"
+    },
+    {
+      "start": "0x530edfa0",
+      "end": "0x530ee30c",
+      "sha256": "501a71ff63c0154833747da3b044a913f316632900e51656f2763236d0a6082b"
+    },
+    {
+      "start": "0x52f15e2c",
+      "end": "0x52f16588",
+      "sha256": "542b456961acb861760f3e2b4da50125480cd4d56d003641b66c207bd4c81d40"
+    },
+    {
+      "start": "0x52eff330",
+      "end": "0x52eff444",
+      "sha256": "35e90a3d5d7c54cceb9133c4b3858e3d846bc40a259d71465d05c6dd5e68cf0c"
+    },
+    {
+      "start": "0x52f15100",
+      "end": "0x52f15178",
+      "sha256": "72fbfeff2268a8cce205c2f66ad26767bec29a15710f7cab10a4687552375738"
+    },
+    {
+      "start": "0x52f182d4",
+      "end": "0x52f18544",
+      "sha256": "e8804a9013d7fa63e2aa001fb039dffd3337203e8260a8874df2d7c36d26782f"
+    },
+    {
+      "start": "0x5315a894",
+      "end": "0x5315ba7c",
+      "sha256": "e8e4bc414a0f0722ff8f0f668625189c59e06cf97dec7538d0a845bf05eb09f6"
+    }
+  ],
+  "results": [
+    {
+      "group": "constructor-slot-loop-fragment",
+      "inputs": {
+        "slots": 32
+      },
+      "result_sha256": "de14966d4eea6fa885b75b3def2790039fddd7dc2aba9b81361073f1000ec611"
+    },
+    {
+      "group": "full-builder-copy-request-enqueue-with-OS-push-stub",
+      "inputs": {
+        "slot": 0,
+        "value": 0,
+        "direction": 0,
+        "option_word4": 0
+      },
+      "result_sha256": "98dcb63d0c26857d78c36f0d7c71c5a40661672d6c069e74016275ac4c629954"
+    },
+    {
+      "group": "full-builder-copy-request-enqueue-with-OS-push-stub",
+      "inputs": {
+        "slot": 1,
+        "value": 1,
+        "direction": 1,
+        "option_word4": 0
+      },
+      "result_sha256": "fd51c5554c85b24b88ba967da487191f0d2274817a6202e3a61738c4d02ac0f9"
+    },
+    {
+      "group": "full-builder-copy-request-enqueue-with-OS-push-stub",
+      "inputs": {
+        "slot": 31,
+        "value": 16383,
+        "direction": 2,
+        "option_word4": 0
+      },
+      "result_sha256": "3ddcd8a305e58b36f581f48698f42d3a8642328d58d426647f0f5cad7095518a"
+    },
+    {
+      "group": "full-builder-copy-request-enqueue-with-OS-push-stub",
+      "inputs": {
+        "slot": 0,
+        "value": 16384,
+        "direction": 0,
+        "option_word4": 1
+      },
+      "result_sha256": "b4a8faff65a6643624a61aec3ef8ae3500494c7c19e252e5fa6a99507c6d1f26"
+    },
+    {
+      "group": "full-builder-copy-request-enqueue-with-OS-push-stub",
+      "inputs": {
+        "slot": 1,
+        "value": 65535,
+        "direction": 1,
+        "option_word4": 255
+      },
+      "result_sha256": "4be01f097cf8bc59bce3275c639921e08326f86e427c3b27f3a675cdfb3acd22"
+    },
+    {
+      "group": "full-builder-copy-request-enqueue-with-OS-push-stub",
+      "inputs": {
+        "slot": 31,
+        "value": 305419896,
+        "direction": 0,
+        "option_word4": 66
+      },
+      "result_sha256": "5b9b4d4f2e15c0c7023c950a7a24fc7ebec15d8806c6acb768b41bd1260e2bf2"
+    },
+    {
+      "group": "null-extra-preserves-synthetic-existing-field",
+      "inputs": {},
+      "result_sha256": "816e0eee2414a7105d3bef1ecda946ba35b808cd8542cc319cdaf414cd6f36f8"
+    },
+    {
+      "group": "all-32-slots-busy",
+      "inputs": {},
+      "result_sha256": "d6cbcf086607311bc6ae3d5fe549c19414bc56daab012d0f80c6adc50343ed2a"
+    },
+    {
+      "group": "full-queue-pop-with-synthetic-OS-result",
+      "inputs": {
+        "status": 0
+      },
+      "result_sha256": "844926c208bc1ad61becc7383c21ab81462fcea06d3d0f5c4815082f92dfa5c7"
+    },
+    {
+      "group": "full-queue-pop-with-synthetic-OS-result",
+      "inputs": {
+        "status": 1
+      },
+      "result_sha256": "1a8394301adfe89250b0443f10baf10398e47682c59cd1a230bea4a8524faf7e"
+    },
+    {
+      "group": "full-queue-pop-with-synthetic-OS-result",
+      "inputs": {
+        "status": 4291690496
+      },
+      "result_sha256": "1a8394301adfe89250b0443f10baf10398e47682c59cd1a230bea4a8524faf7e"
+    },
+    {
+      "group": "entry-through-one-queue-drain-and-completion",
+      "inputs": {
+        "case": "normal",
+        "context_gate": 0,
+        "arbitration": 1,
+        "communication_gate": 0,
+        "synthetic_exchange_status": 0
+      },
+      "result_sha256": "f71725aaa26c5f3741d0e4c95f812baeba730601eabcde5e49aad2ac7cbb3f45"
+    },
+    {
+      "group": "entry-through-one-queue-drain-and-completion",
+      "inputs": {
+        "case": "context-gate",
+        "context_gate": 1,
+        "arbitration": 1,
+        "communication_gate": 0,
+        "synthetic_exchange_status": 0
+      },
+      "result_sha256": "62c9f21368c7a119504d6b1fbade7924250b93d993421f2d1e194dff62392895"
+    },
+    {
+      "group": "entry-through-one-queue-drain-and-completion",
+      "inputs": {
+        "case": "arbitration-denied",
+        "context_gate": 0,
+        "arbitration": 0,
+        "communication_gate": 0,
+        "synthetic_exchange_status": 0
+      },
+      "result_sha256": "ddabcb58dddfedc78f3e0d0b58ba7d588e78fd4c14504c51db94024fe71b82b1"
+    },
+    {
+      "group": "entry-through-one-queue-drain-and-completion",
+      "inputs": {
+        "case": "communication-gate",
+        "context_gate": 0,
+        "arbitration": 1,
+        "communication_gate": 1,
+        "synthetic_exchange_status": 0
+      },
+      "result_sha256": "d5fada8a71645b0a35fc1cbd93d9b9a9b90f76bdda724672f1a729ea3bf283c1"
+    },
+    {
+      "group": "entry-through-one-queue-drain-and-completion",
+      "inputs": {
+        "case": "synthetic-exchange-error",
+        "context_gate": 0,
+        "arbitration": 1,
+        "communication_gate": 0,
+        "synthetic_exchange_status": 7
+      },
+      "result_sha256": "73a758fcbb8918e53c7dc4bfca3f7b55467a662e28713f7ce0c5ca3fb3ecdacf"
+    },
+    {
+      "group": "completion-descriptor-command-mismatch",
+      "inputs": {},
+      "result_sha256": "e546a56d2fdc8b98e5825c508758c798d615106a7d8ff0bba6b32f75bc146013"
+    }
+  ]
+}

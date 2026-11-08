@@ -43,7 +43,10 @@ class VerifierGuards(unittest.TestCase):
         if importlib.util.find_spec('unicorn') is None:
             self.skipTest('Unicorn is required to import the ICON/AF verification CLIs')
         tools = [('verify_package_roundtrip.py', 4), ('verify_icon_resources.py', 1),
-                 ('verify_af_commands.py', 1), ('verify_af_drive_selection.py', 1)]
+                 ('verify_af_commands.py', 1), ('verify_af_drive_selection.py', 1),
+                 ('verify_af_capability.py', 1), ('verify_af_request_consumer.py', 1),
+                 ('verify_colorspace_ui.py', 1), ('verify_colorspace_ui_input.py', 1),
+                 ('verify_update_file_loader.py', 1), ('verify_update_allocator.py', 1)]
         with tempfile.TemporaryDirectory() as directory:
             source = Path(directory)/'source.bin';source.write_bytes(b'input sentinel')
             alias = Path(directory)/'hardlink.bin';os.link(source, alias)
@@ -58,7 +61,10 @@ class VerifierGuards(unittest.TestCase):
                         self.assertEqual(alias.read_bytes(), b'input sentinel')
 
     def test_optimized_interpreter_is_rejected_before_loading_unicorn(self):
-        for tool in ('verify_icon_resources.py', 'verify_af_commands.py', 'verify_af_drive_selection.py'):
+        for tool in ('verify_icon_resources.py', 'verify_af_commands.py', 'verify_af_drive_selection.py',
+                     'verify_af_capability.py', 'verify_af_request_consumer.py', 'verify_colorspace_ui.py',
+                     'verify_colorspace_ui_input.py', 'verify_update_file_loader.py',
+                     'verify_update_allocator.py', 'tools/verify_qflag_scope.py'):
             with self.subTest(tool=tool):
                 result = subprocess.run([sys.executable, '-O', str(ROOT/tool), '--help'], capture_output=True, text=True)
                 self.assertNotEqual(result.returncode, 0)

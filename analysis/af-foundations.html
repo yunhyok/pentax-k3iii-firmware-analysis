@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>세 기종의 AF 변경을 위한 기초 경계</title>
+<style>
+:root{color-scheme:light dark;--bg:#f5f7fa;--paper:#fff;--ink:#172737;--muted:#526273;--line:#cbd7e1;--accent:#155990;--soft:#eaf1f7}
+@media(prefers-color-scheme:dark){:root{--bg:#111922;--paper:#18232e;--ink:#e9eef4;--muted:#b5c3d0;--line:#405364;--accent:#9acbfa;--soft:#213747}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.75 system-ui,"Malgun Gothic",sans-serif;word-break:keep-all;overflow-wrap:anywhere}header,main{max-width:1140px;margin:auto;padding:clamp(20px,4vw,48px)}main{background:var(--paper)}h1{font-size:clamp(1.8rem,5vw,2.8rem);line-height:1.3}h2{margin-top:2em;font-size:1.4rem}a{color:var(--accent)}small,.note{color:var(--muted)}nav a{display:inline-block;margin:4px 18px 4px 0}.flow{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;list-style-position:inside;padding:0}.flow li{background:var(--soft);padding:16px}.flow strong,.flow span{display:block}.flow span{margin-top:6px;font-size:.92rem}.table-scroll{overflow:auto}table{width:100%;min-width:750px;border-collapse:collapse}th,td{padding:13px;text-align:left;vertical-align:top;border-bottom:1px solid var(--line)}th{background:var(--soft)}th[scope=row]{min-width:76px}caption{text-align:left;margin:12px 0}code{font-family:ui-monospace,Consolas,monospace}figure{margin:24px 0}figcaption{font-weight:600}li{margin-bottom:.55em}@media(max-width:800px){.flow{grid-template-columns:1fr}.flow li{display:block}}
+</style></head><body>
+<header><small>2026-11-08 · K-3 Mark III 2.20 / K-3 II 1.12 / Q7 1.01</small><h1>AF 계산부터 렌즈 이동 완료까지</h1>
+<p>AF 변경은 향후 과제다. 지금은 계산, 렌즈의 구동 능력, 명령 전달, 실제 이동을 구분하고 각 단계 사이의 조건을 확인한다. 특정 렌즈를 정하거나 모터를 움직이지 않아도 이 기초 연구는 계속할 수 있다.</p>
+<nav aria-label="관련 보고서"><a href="research-program.html#af">연구 본부</a><a href="af-foundations.json">고정 커밋·검증 기록</a><a href="af-drive-architecture.html">K-3 III 세부 구조</a></nav></header>
+<main><h2>알고리즘 하나를 바꿔도 이어져야 하는 다섯 단계</h2>
+<figure><figcaption>세 기종에 적용한 공통 분석 모형. 내부 API는 기종별로 확인한다.</figcaption><ol class="flow">
+<li><strong>초점 추정</strong><span>대비·상관·디포커스 계산과 유효성</span></li>
+<li><strong>렌즈 조건</strong><span>지원 동작, 위치·속도 한계, 구동 방식</span></li>
+<li><strong>요청 작성</strong><span>방향·크기·명령 번호와 바이트 순서</span></li>
+<li><strong>전달 응답</strong><span>큐와 통신 상태, 취소·재시도·대기</span></li>
+<li><strong>이동과 초점 확인</strong><span>모터 상태와 광학적 초점의 별도 확인</span></li>
+</ol></figure>
+<p>같은 숫자나 bit 위치가 보여도 기종 간 ABI가 같다고 가정하지 않는다. 펌웨어 버전, 주소 체계, 호출 인자와 객체 수명이 함께 맞아야 한다. 표에는 합성 메모리에서 실행한 원본 코드의 결과가 들어 있다. 실물 렌즈의 응답은 측정하지 않았다. <a href="af-foundations.json">검사별 입력과 한계</a></p>
+
+<h2>현재 확인한 경계</h2>
+<div class="table-scroll" tabindex="0" role="region" aria-label="세 기종 AF 경계 비교"><table><caption>모바일에서는 표를 옆으로 이동할 수 있다.</caption><thead><tr><th scope="col">관찰</th><th scope="col">K-3 Mark III</th><th scope="col">K-3 II</th><th scope="col">Q7</th></tr></thead><tbody>
+<tr><th scope="row">구동 능력</th><td><code>C+5272</code>의 bit 6으로 InMotor·Joint 객체를 선택한다. SDM만을 가리키는 비트라는 결론은 아직 없다.</td><td><code>0x8205</code> 응답을 lens object+6에 저장한다. bit 6 판정 이후 렌즈 명령과 바디 드라이버 준비로 갈린다.</td><td>AF-enable getter는 통신 상태 bit 3과 group 2 operation 4를 모두 확인한다. 별도의 search 전송 gate는 map-read-OK가 1일 때 operation 허용만 검사하며 통신 비트를 재검사하지 않는다.</td></tr>
+<tr><th scope="row">명령 인자</th><td><code>0x8900</code> 명령을 만드는 루틴은 값의 하위 14비트와 방향 플래그를 조합해 2바이트로 만든다. 실제 거리 단위와 방향 극성은 미확정이다.</td><td>별도 producer·consumer가 pulse 상태를 구동 요청으로 바꾼다. 렌즈 계산에는 <code>0x8211</code>의 2바이트 응답도 사용한다.</td><td>탐색·정지·위치 구동의 메시지는 각각 6·8·7이다. mode 3 탐색은 별도 VD 동기화를 거친다.</td></tr>
+<tr><th scope="row">완료의 의미</th><td>선택·명령 작성에서 하위 큐·물리 전송으로 이어지는 경계를 분리해 조사한다. 작성된 바이트만으로 이동 완료를 판단하지 않는다.</td><td>구동 준비와 계산 상태 전달을 확인했다. 실제 이동량·모터 정지·초점 판정은 별도 검증 대상이다.</td><td>큐 응답과 라이브 뷰의 motion 상태는 각각 다른 경로에서 처리한다. 요청 조건에 따라 소프트웨어 완료 알림을 즉시 보내는 분기도 있다.</td></tr>
+<tr><th scope="row">재현 근거</th><td>선택 587 + 명령 408 + capability 272 = 1,267건. RTOS와 전체 디코딩 이미지에서 각각 일치.</td><td>획득 8 + 바디 제어 14 + 렌즈 제어 3건과 앞선 구동 선택 사례. 본부 재실행 일치.</td><td>탐색·캐시·속도·응답·완료 총 32건. 원본 MIPS/VEX 실행과 본부 재실행 통과.</td></tr>
+</tbody></table></div>
+<p>근거: <a href="https://github.com/yunhyok/pentax-k3iii-firmware-analysis/blob/c0dae9cf1032309115330478328617f56b5dd8f5/analysis/af-drive-architecture.html">K-3 III 고정 보고서</a> · <a href="https://github.com/yunhyok/pentax-k3ii-firmware-analysis/blob/f9577d502dc84778114d2df83de7a91143259a29/analysis/af-control.json">K-3 II 계산·전달 기록</a> · <a href="https://github.com/yunhyok/pentax-k3ii-firmware-analysis/blob/f9577d502dc84778114d2df83de7a91143259a29/analysis/af-drive.json">K-3 II 구동 선택</a> · <a href="https://github.com/yunhyok/pentax-q7-firmware-analysis/blob/bc141e5dd5bdd856f780893da4a71f623ace7dbf/analysis/lens-foundation.json">Q7 능력·완료 기록</a></p>
+
+<h2>구형 SDM 렌즈의 바디 모터 강제 사용을 연구한다면</h2>
+<p>리코는 구형 <em>smc PENTAX-DA★16–50mm F2.8 ED AL[IF] SDM</em>이 SDM 지원 바디에서는 렌즈 모터를, 비지원 바디에서는 바디 모터를 사용하는 것으로 설명한다. 이 모델은 두 방식의 비교 사례가 될 수 있다. 모든 SDM 렌즈에 기계적 연결이 있다는 근거로 넓혀 해석할 수는 없다. <a href="https://www.ricoh-imaging.co.jp/english/products/lens/k/standard/smcpentax-das16-50/">공식 렌즈 설명</a></p>
+<p>SDM·DC·PLM은 렌즈 안의 모터 방식이고 Body AF는 바디 모터를 사용하는 방식이다. 향후 정책 변경에서는 렌즈의 실제 연결 구조, 바디 지원, 구동 단위와 정지 조건을 확인해야 한다. capability 비트 하나를 바꾸는 것만으로 이 조건이 충족되지는 않는다. <a href="https://www.ricoh-imaging.co.jp/english/products/lens/common/annotation-focus-k.html">공식 초점 구동 정의</a></p>
+<p>Q7 공식 호환표에서 K 마운트용 Adapter Q의 초점 방식은 수동으로 표시된다. 따라서 K-3 계열의 바디 구동 선택을 Q7에 그대로 적용할 수 있다는 근거는 없다. Q7 연구는 Q 렌즈의 명령·능력·이동 상태를 따로 확인한다. <a href="https://www.ricoh-imaging.co.jp/english/support/qa/q7/index.html">Q7 공식 렌즈 호환표</a></p>
+
+<h2>다음에 확인할 것</h2><ul>
+<li>추정값이 명령 인자로 바뀌는 모든 관찰 경로에서 부호, 단위, 제한값을 기록한다.</li>
+<li>렌즈 연결 변경, 전송 실패, 늦은 응답, 취소 후의 상태와 기존 값 보존을 구분한다.</li>
+<li>큐 응답·모터 상태·광학적 초점의 완료 조건을 별도로 재현한다.</li>
+<li>이후 알고리즘을 교체할 때는 확인한 호출 규약과 렌즈 제한을 유지하는 최소 사례부터 검증한다.</li>
+</ul><p class="note">이번 결과에는 렌즈별 패치, EEPROM 수정, 카메라 설치·모터 구동 시험이 포함되지 않는다. 실제 이동과 촬영 검증은 향후 구현 단계에 남아 있다.</p>
+</main></body></html>

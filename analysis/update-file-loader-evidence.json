@@ -1,0 +1,875 @@
+{
+  "image": {
+    "base": "0x52500000",
+    "size": 25483200,
+    "sha256": "342d2f35405e8daf1797dfe431d2e4aa70f4b52a2c242a29df48206672f1dfb4"
+  },
+  "functions": [
+    {
+      "label": "update_load_input",
+      "start": "0x52fee900",
+      "end": "0x52fee9b4",
+      "range_sha256": "4d686e4149a08f4b368d1aa393e0505473cd6b5828391e3e1cb718b8c76b6937",
+      "pseudocode_sha256": "8da2227df8e3c94d2200a42a773cc7acb515924420aa11903107462c53459efd",
+      "assembly_sha256": "634bc9cc73df6bfd168671891831c546a9027d89118c3c4228893a3929f99cd1",
+      "angr_version": "10.0.5",
+      "scope": "bounded static analysis; bounds manually selected from returns and neighboring prologues; unresolved indirect calls assumed returning",
+      "static_edges": [
+        {
+          "site": "0x52fee934",
+          "kind": "bl",
+          "target": "0x52ff7160",
+          "operand": "#0x52ff7160"
+        },
+        {
+          "site": "0x52fee974",
+          "kind": "bl",
+          "target": "0x530fced4",
+          "operand": "#0x530fced4"
+        },
+        {
+          "site": "0x52fee9a8",
+          "kind": "bl",
+          "target": "0x530fced4",
+          "operand": "#0x530fced4"
+        },
+        {
+          "site": "0x52fee9b0",
+          "kind": "b",
+          "target": "0x52fee924",
+          "operand": "#0x52fee924"
+        }
+      ]
+    },
+    {
+      "label": "file_read_with_close",
+      "start": "0x52ff6dd4",
+      "end": "0x52ff6ef8",
+      "range_sha256": "f090d05403c506674a1f632f2a4dc9c243e808161ce298a38405488e4fdfce24",
+      "pseudocode_sha256": "2900243e1ef3260ab44878a9053778ab7cec65250bbf205b55020f705049711a",
+      "assembly_sha256": "fe44aa75ac8cfd9302b22ae4858cf4f5109db7d44d10c80b574944fde6df882a",
+      "angr_version": "10.0.5",
+      "scope": "bounded static analysis; bounds manually selected from returns and neighboring prologues; unresolved indirect calls assumed returning",
+      "static_edges": [
+        {
+          "site": "0x52ff6e2c",
+          "kind": "blx",
+          "target": null,
+          "operand": "r5"
+        },
+        {
+          "site": "0x52ff6e54",
+          "kind": "blx",
+          "target": null,
+          "operand": "ip"
+        },
+        {
+          "site": "0x52ff6e74",
+          "kind": "blx",
+          "target": null,
+          "operand": "r3"
+        },
+        {
+          "site": "0x52ff6ebc",
+          "kind": "bl",
+          "target": "0x530fced4",
+          "operand": "#0x530fced4"
+        },
+        {
+          "site": "0x52ff6ec0",
+          "kind": "b",
+          "target": "0x52ff6e78",
+          "operand": "#0x52ff6e78"
+        },
+        {
+          "site": "0x52ff6eec",
+          "kind": "bl",
+          "target": "0x530fced4",
+          "operand": "#0x530fced4"
+        },
+        {
+          "site": "0x52ff6ef0",
+          "kind": "b",
+          "target": "0x52ff6e60",
+          "operand": "#0x52ff6e60"
+        },
+        {
+          "site": "0x52ff6ef4",
+          "kind": "bl",
+          "target": "0x532fb9c8",
+          "operand": "#0x532fb9c8"
+        }
+      ]
+    },
+    {
+      "label": "file_allocate_and_read",
+      "start": "0x52ff7014",
+      "end": "0x52ff70a0",
+      "range_sha256": "a5c93c7418e907d519ffd1d91b534d9b1df3c5d3a2a85026ebf8224a0318b064",
+      "pseudocode_sha256": "047a18a64c4889d7a660402bde4e9b0cb3a23fa613935a239a769a481f61058b",
+      "assembly_sha256": "5193a779eb749d89c97f2bbbcfe9153915ad02650114dcd5d904b676c8307564",
+      "angr_version": "10.0.5",
+      "scope": "bounded static analysis; bounds manually selected from returns and neighboring prologues; unresolved indirect calls assumed returning",
+      "static_edges": [
+        {
+          "site": "0x52ff7054",
+          "kind": "blx",
+          "target": null,
+          "operand": "ip"
+        },
+        {
+          "site": "0x52ff7070",
+          "kind": "bl",
+          "target": "0x52ff6dd4",
+          "operand": "#0x52ff6dd4"
+        },
+        {
+          "site": "0x52ff7098",
+          "kind": "blx",
+          "target": null,
+          "operand": "r3"
+        },
+        {
+          "site": "0x52ff709c",
+          "kind": "b",
+          "target": "0x52ff707c",
+          "operand": "#0x52ff707c"
+        }
+      ]
+    },
+    {
+      "label": "file_load_retries",
+      "start": "0x52ff70a0",
+      "end": "0x52ff7160",
+      "range_sha256": "93d1136d7c0813f2fd2a13524a73c9111f3adcc562c6f05e542da25077663b71",
+      "pseudocode_sha256": "66a8841068267819f9e52d962b7b33749e5a11250eedf16c4c0fd84cc0ea0ffb",
+      "assembly_sha256": "2f9b9cf237c1e4949655176f382f1ab04346245cf748a5132d88bef371cdc736",
+      "angr_version": "10.0.5",
+      "scope": "bounded static analysis; bounds manually selected from returns and neighboring prologues; unresolved indirect calls assumed returning",
+      "static_edges": [
+        {
+          "site": "0x52ff70d8",
+          "kind": "bl",
+          "target": "0x52ff7014",
+          "operand": "#0x52ff7014"
+        },
+        {
+          "site": "0x52ff70f8",
+          "kind": "bl",
+          "target": "0x530fced4",
+          "operand": "#0x530fced4"
+        },
+        {
+          "site": "0x52ff7138",
+          "kind": "bl",
+          "target": "0x530feb20",
+          "operand": "#0x530feb20"
+        },
+        {
+          "site": "0x52ff714c",
+          "kind": "b",
+          "target": "0x52ff7108",
+          "operand": "#0x52ff7108"
+        }
+      ]
+    },
+    {
+      "label": "file_load_mutex",
+      "start": "0x52ff7160",
+      "end": "0x52ff71bc",
+      "range_sha256": "bc8772722a1ea53207f8183d2feb5fdaa0c6fe482b6fe1ddae76b2c38d7629a2",
+      "pseudocode_sha256": "6e120ffddd8a33501b03e73ebbcdd66971709be0aeecfb0ef789682b83c26064",
+      "assembly_sha256": "248f7ed4d70aad0a28d0bc9f077fe72075e60715e34d60def807eb23a6ad5e33",
+      "angr_version": "10.0.5",
+      "scope": "bounded static analysis; bounds manually selected from returns and neighboring prologues; unresolved indirect calls assumed returning",
+      "static_edges": [
+        {
+          "site": "0x52ff7188",
+          "kind": "bl",
+          "target": "0x530f1a68",
+          "operand": "#0x530f1a68"
+        },
+        {
+          "site": "0x52ff71a4",
+          "kind": "bl",
+          "target": "0x52ff70a0",
+          "operand": "#0x52ff70a0"
+        },
+        {
+          "site": "0x52ff71b0",
+          "kind": "bl",
+          "target": "0x530f1bbc",
+          "operand": "#0x530f1bbc"
+        }
+      ]
+    },
+    {
+      "label": "update_select_kind",
+      "start": "0x52fef240",
+      "end": "0x52fef488",
+      "range_sha256": "431913074d553d65105a89d233d6af6de7f3fed9a70fd45d3dd98a046e3cbc89",
+      "pseudocode_sha256": "cd72f8c65c8865686e64c72ce0074cb040e965d72d8862b37e2b6734478d5cba",
+      "assembly_sha256": "97e46664416e0e6394e82413cd18ab2cfcfbfc52a808ba48df9e5d057aec1588",
+      "angr_version": "10.0.5",
+      "scope": "bounded static analysis; bounds manually selected from returns and neighboring prologues; unresolved indirect calls assumed returning",
+      "static_edges": [
+        {
+          "site": "0x52fef25c",
+          "kind": "b",
+          "target": "0x52fef444",
+          "operand": "#0x52fef444"
+        },
+        {
+          "site": "0x52fef284",
+          "kind": "bl",
+          "target": "0x52ff3450",
+          "operand": "#0x52ff3450"
+        },
+        {
+          "site": "0x52fef294",
+          "kind": "bl",
+          "target": "0x52ff7d10",
+          "operand": "#0x52ff7d10"
+        },
+        {
+          "site": "0x52fef2b0",
+          "kind": "bl",
+          "target": "0x52ff342c",
+          "operand": "#0x52ff342c"
+        },
+        {
+          "site": "0x52fef2c0",
+          "kind": "bl",
+          "target": "0x52ff7d10",
+          "operand": "#0x52ff7d10"
+        },
+        {
+          "site": "0x52fef2d8",
+          "kind": "bl",
+          "target": "0x52ff342c",
+          "operand": "#0x52ff342c"
+        },
+        {
+          "site": "0x52fef2e8",
+          "kind": "b",
+          "target": "0x52fef2a4",
+          "operand": "#0x52fef2a4"
+        },
+        {
+          "site": "0x52fef2f0",
+          "kind": "bl",
+          "target": "0x52ff3438",
+          "operand": "#0x52ff3438"
+        },
+        {
+          "site": "0x52fef300",
+          "kind": "bl",
+          "target": "0x52ff7d10",
+          "operand": "#0x52ff7d10"
+        },
+        {
+          "site": "0x52fef318",
+          "kind": "bl",
+          "target": "0x52ff3438",
+          "operand": "#0x52ff3438"
+        },
+        {
+          "site": "0x52fef328",
+          "kind": "b",
+          "target": "0x52fef2a4",
+          "operand": "#0x52fef2a4"
+        },
+        {
+          "site": "0x52fef330",
+          "kind": "bl",
+          "target": "0x52ff3474",
+          "operand": "#0x52ff3474"
+        },
+        {
+          "site": "0x52fef340",
+          "kind": "bl",
+          "target": "0x52ff7d10",
+          "operand": "#0x52ff7d10"
+        },
+        {
+          "site": "0x52fef358",
+          "kind": "bl",
+          "target": "0x52ff3474",
+          "operand": "#0x52ff3474"
+        },
+        {
+          "site": "0x52fef368",
+          "kind": "b",
+          "target": "0x52fef2a4",
+          "operand": "#0x52fef2a4"
+        },
+        {
+          "site": "0x52fef370",
+          "kind": "bl",
+          "target": "0x52ff345c",
+          "operand": "#0x52ff345c"
+        },
+        {
+          "site": "0x52fef380",
+          "kind": "bl",
+          "target": "0x52ff7d10",
+          "operand": "#0x52ff7d10"
+        },
+        {
+          "site": "0x52fef398",
+          "kind": "bl",
+          "target": "0x52ff345c",
+          "operand": "#0x52ff345c"
+        },
+        {
+          "site": "0x52fef3a8",
+          "kind": "b",
+          "target": "0x52fef2a4",
+          "operand": "#0x52fef2a4"
+        },
+        {
+          "site": "0x52fef3b0",
+          "kind": "bl",
+          "target": "0x52ff3468",
+          "operand": "#0x52ff3468"
+        },
+        {
+          "site": "0x52fef3c0",
+          "kind": "bl",
+          "target": "0x52ff7d10",
+          "operand": "#0x52ff7d10"
+        },
+        {
+          "site": "0x52fef3d8",
+          "kind": "bl",
+          "target": "0x52ff3468",
+          "operand": "#0x52ff3468"
+        },
+        {
+          "site": "0x52fef3e8",
+          "kind": "b",
+          "target": "0x52fef2a4",
+          "operand": "#0x52fef2a4"
+        },
+        {
+          "site": "0x52fef3ec",
+          "kind": "bl",
+          "target": "0x52fef1d8",
+          "operand": "#0x52fef1d8"
+        },
+        {
+          "site": "0x52fef400",
+          "kind": "b",
+          "target": "0x52fef2a0",
+          "operand": "#0x52fef2a0"
+        },
+        {
+          "site": "0x52fef408",
+          "kind": "bl",
+          "target": "0x52ff3444",
+          "operand": "#0x52ff3444"
+        },
+        {
+          "site": "0x52fef418",
+          "kind": "bl",
+          "target": "0x52ff7d10",
+          "operand": "#0x52ff7d10"
+        },
+        {
+          "site": "0x52fef430",
+          "kind": "bl",
+          "target": "0x52ff3444",
+          "operand": "#0x52ff3444"
+        },
+        {
+          "site": "0x52fef440",
+          "kind": "b",
+          "target": "0x52fef2a4",
+          "operand": "#0x52fef2a4"
+        },
+        {
+          "site": "0x52fef460",
+          "kind": "bl",
+          "target": "0x530fced4",
+          "operand": "#0x530fced4"
+        },
+        {
+          "site": "0x52fef464",
+          "kind": "b",
+          "target": "0x52fef2a0",
+          "operand": "#0x52fef2a0"
+        },
+        {
+          "site": "0x52fef474",
+          "kind": "bl",
+          "target": "0x52ff3450",
+          "operand": "#0x52ff3450"
+        },
+        {
+          "site": "0x52fef484",
+          "kind": "b",
+          "target": "0x52fef2a4",
+          "operand": "#0x52fef2a4"
+        }
+      ]
+    },
+    {
+      "label": "file_stat_size",
+      "start": "0x52ff7c38",
+      "end": "0x52ff7d10",
+      "range_sha256": "583e98fb93dc545893f6208b98fae4b7b4e3a4356f3588b876ca93c7c7d4f120",
+      "pseudocode_sha256": "b6b570a552752a1c0e61633b83123f42b0536d7d21a114be9e4d741835248052",
+      "assembly_sha256": "8fb6c3c9fff46a0e18fabcbec38dcbfa466230ffe6608bf9b79662e972e99b11",
+      "angr_version": "10.0.5",
+      "scope": "bounded static analysis; bounds manually selected from returns and neighboring prologues; unresolved indirect calls assumed returning",
+      "static_edges": [
+        {
+          "site": "0x52ff7c68",
+          "kind": "bl",
+          "target": "0x52f50b44",
+          "operand": "#0x52f50b44"
+        },
+        {
+          "site": "0x52ff7c8c",
+          "kind": "blx",
+          "target": null,
+          "operand": "ip"
+        },
+        {
+          "site": "0x52ff7cdc",
+          "kind": "bl",
+          "target": "0x530fced4",
+          "operand": "#0x530fced4"
+        },
+        {
+          "site": "0x52ff7cec",
+          "kind": "bl",
+          "target": "0x52f50b24",
+          "operand": "#0x52f50b24"
+        },
+        {
+          "site": "0x52ff7d0c",
+          "kind": "bl",
+          "target": "0x532fb9c8",
+          "operand": "#0x532fb9c8"
+        }
+      ]
+    },
+    {
+      "label": "file_stat_mutex",
+      "start": "0x52ff7d10",
+      "end": "0x52ff7d6c",
+      "range_sha256": "a4ec6ba81bb39956e1502f3a5eaf819d278e424aec8c6ed5d4dbd1b8578c55bd",
+      "pseudocode_sha256": "4a972a4320385c8d45213e04fe8f857c145e12c23cb5d524bf2d173e8b4e1bb7",
+      "assembly_sha256": "57e15f1b0713d42dbdb9a3b39b6a99ae8084b62809a16fb5f0306f6731ca1410",
+      "angr_version": "10.0.5",
+      "scope": "bounded static analysis; bounds manually selected from returns and neighboring prologues; unresolved indirect calls assumed returning",
+      "static_edges": [
+        {
+          "site": "0x52ff7d38",
+          "kind": "bl",
+          "target": "0x530f1a68",
+          "operand": "#0x530f1a68"
+        },
+        {
+          "site": "0x52ff7d54",
+          "kind": "bl",
+          "target": "0x52ff7c38",
+          "operand": "#0x52ff7c38"
+        },
+        {
+          "site": "0x52ff7d60",
+          "kind": "bl",
+          "target": "0x530f1bbc",
+          "operand": "#0x530f1bbc"
+        }
+      ]
+    }
+  ],
+  "supporting_ranges": [
+    {
+      "label": "resource_initialize",
+      "start": "0x52ff5c00",
+      "end": "0x52ff5d98",
+      "sha256": "7397c30214b6ff4e86dd11e8832f7055c3a6fbce24392a0e36562d73fba35c3b",
+      "assembly_sha256": "610778928f62634f23e4fcac8a340187532c4f04d7ca0fc91f7b77ed71aa47ab",
+      "scope": "Static source range, not all paths executed. Literal/jump-table words retained."
+    },
+    {
+      "label": "resource_constructor",
+      "start": "0x52ff5dd8",
+      "end": "0x52ff5e40",
+      "sha256": "6b540eee566de7932a4df51c173b7cf7b97c4beea3157c4390a9b3b75563a9a1",
+      "assembly_sha256": "e278cb77712980079a8af2ba19f1aa161048b9a43fd8def027fd5ca4d60c4c48",
+      "scope": "Static source range, not all paths executed. Literal/jump-table words retained."
+    },
+    {
+      "label": "allocator_registry_get_set",
+      "start": "0x530ef264",
+      "end": "0x530ef288",
+      "sha256": "7dfdb7d93ca42fa9d9d96cb56e396cb5c96662702083684c3038a644b1e00f01",
+      "assembly_sha256": "efe8bdcf2422d30c9c681be9620cb403b0e185083d658c93a19865bb2e302703",
+      "scope": "Static source range, not all paths executed. Literal/jump-table words retained."
+    },
+    {
+      "label": "firmware_filename_getter",
+      "start": "0x52ff3474",
+      "end": "0x52ff3480",
+      "sha256": "7cf17a34a597062250f71cb6da0900fb3886b79eb2455376b71a6ced6660a7b3",
+      "assembly_sha256": "678c78a6f19cd7c7a3d739795029111a05d9ab745b4b3e4aaad72bf3d81323c9",
+      "scope": "Static source range, not all paths executed. Literal/jump-table words retained."
+    },
+    {
+      "label": "fileinfo_destructor_noop",
+      "start": "0x52f50b24",
+      "end": "0x52f50b28",
+      "sha256": "379bec29dccd0a93c94826144d7ef6e42fab64ef195a3b8313a16926f66f388f",
+      "assembly_sha256": "281e1e787ce860516d52c098247fde0661a235407d016846b4633eba416e32c6",
+      "scope": "Static source range, not all paths executed. Literal/jump-table words retained."
+    },
+    {
+      "label": "fileinfo_constructor",
+      "start": "0x52f50b44",
+      "end": "0x52f50bf4",
+      "sha256": "9019b326679d8c0be346c498d2272d4fc4d0a69d8105d98886c02c4bd75cddb4",
+      "assembly_sha256": "4a8e0b8d11acee7f60aa35846b6af4efbc333e3141b5c926f4ddbe78526d7f23",
+      "scope": "Static source range, not all paths executed. Literal/jump-table words retained."
+    }
+  ],
+  "critical_instructions": [
+    {
+      "address": "0x52fef330",
+      "instruction": "bl #0x52ff3474"
+    },
+    {
+      "address": "0x52fef340",
+      "instruction": "bl #0x52ff7d10"
+    },
+    {
+      "address": "0x52fef344",
+      "instruction": "subs r5, r0, #0"
+    },
+    {
+      "address": "0x52fef348",
+      "instruction": "beq #0x52fef2a0"
+    },
+    {
+      "address": "0x52fef354",
+      "instruction": "str r3, [r4, #0x3c]"
+    },
+    {
+      "address": "0x52fef35c",
+      "instruction": "str r0, [r4, #0x40]"
+    },
+    {
+      "address": "0x52fef364",
+      "instruction": "str r5, [r4, #0x44]"
+    },
+    {
+      "address": "0x52ff7c84",
+      "instruction": "ldr ip, [r2, #0x54]"
+    },
+    {
+      "address": "0x52ff7c8c",
+      "instruction": "blx ip"
+    },
+    {
+      "address": "0x52ff7c98",
+      "instruction": "ldrne r5, [fp, #-0x44]"
+    },
+    {
+      "address": "0x52fee910",
+      "instruction": "ldr r2, [r0, #0x44]"
+    },
+    {
+      "address": "0x52fee91c",
+      "instruction": "moveq r0, r2"
+    },
+    {
+      "address": "0x52fee934",
+      "instruction": "bl #0x52ff7160"
+    },
+    {
+      "address": "0x52fee938",
+      "instruction": "str r0, [r5, #0x48]"
+    },
+    {
+      "address": "0x52ff717c",
+      "instruction": "ldr r0, [r0, #0x40]"
+    },
+    {
+      "address": "0x52ff7188",
+      "instruction": "bl #0x530f1a68"
+    },
+    {
+      "address": "0x52ff7194",
+      "instruction": "beq #0x52ff71b4"
+    },
+    {
+      "address": "0x52ff71a4",
+      "instruction": "bl #0x52ff70a0"
+    },
+    {
+      "address": "0x52ff71b0",
+      "instruction": "bl #0x530f1bbc"
+    },
+    {
+      "address": "0x52ff70bc",
+      "instruction": "beq #0x52ff7150"
+    },
+    {
+      "address": "0x52ff70c4",
+      "instruction": "mov r5, #3"
+    },
+    {
+      "address": "0x52ff70d8",
+      "instruction": "bl #0x52ff7014"
+    },
+    {
+      "address": "0x52ff70fc",
+      "instruction": "subs r5, r5, #1"
+    },
+    {
+      "address": "0x52ff7100",
+      "instruction": "bne #0x52ff70cc"
+    },
+    {
+      "address": "0x52ff7138",
+      "instruction": "bl #0x530feb20"
+    },
+    {
+      "address": "0x52ff7020",
+      "instruction": "ldr r0, [r0, #0x30]"
+    },
+    {
+      "address": "0x52ff7028",
+      "instruction": "ldr r4, [r6, #0x34]"
+    },
+    {
+      "address": "0x52ff702c",
+      "instruction": "cmp r5, #0x80000"
+    },
+    {
+      "address": "0x52ff7030",
+      "instruction": "movhi r4, r0"
+    },
+    {
+      "address": "0x52ff7044",
+      "instruction": "mov r1, r2"
+    },
+    {
+      "address": "0x52ff704c",
+      "instruction": "mov r2, #0x40"
+    },
+    {
+      "address": "0x52ff7054",
+      "instruction": "blx ip"
+    },
+    {
+      "address": "0x52ff7070",
+      "instruction": "bl #0x52ff6dd4"
+    },
+    {
+      "address": "0x52ff7078",
+      "instruction": "beq #0x52ff7084"
+    },
+    {
+      "address": "0x52ff7094",
+      "instruction": "ldr r3, [r3, #0xc]"
+    },
+    {
+      "address": "0x52ff7098",
+      "instruction": "blx r3"
+    },
+    {
+      "address": "0x52ff6e14",
+      "instruction": "ldr r5, [r5, #0x20]"
+    },
+    {
+      "address": "0x52ff6e2c",
+      "instruction": "blx r5"
+    },
+    {
+      "address": "0x52ff6e34",
+      "instruction": "beq #0x52ff6e94"
+    },
+    {
+      "address": "0x52ff6e50",
+      "instruction": "ldr ip, [ip, #0x28]"
+    },
+    {
+      "address": "0x52ff6e54",
+      "instruction": "blx ip"
+    },
+    {
+      "address": "0x52ff6e58",
+      "instruction": "subs r5, r0, #0"
+    },
+    {
+      "address": "0x52ff6e70",
+      "instruction": "ldr r3, [r3, #0x24]"
+    },
+    {
+      "address": "0x52ff6e74",
+      "instruction": "blx r3"
+    },
+    {
+      "address": "0x52ff6e7c",
+      "instruction": "mov r0, r5"
+    },
+    {
+      "address": "0x52ff5c14",
+      "instruction": "mov r0, #0xe"
+    },
+    {
+      "address": "0x52ff5c18",
+      "instruction": "bl #0x530ef264"
+    },
+    {
+      "address": "0x52ff5c1c",
+      "instruction": "str r0, [r6, #0x30]"
+    },
+    {
+      "address": "0x52ff5c50",
+      "instruction": "mov r0, #1"
+    },
+    {
+      "address": "0x52ff5c54",
+      "instruction": "bl #0x530ef264"
+    },
+    {
+      "address": "0x52ff5c60",
+      "instruction": "str r0, [r6, #0x34]"
+    },
+    {
+      "address": "0x52ff5c7c",
+      "instruction": "bl #0x52f50f6c"
+    },
+    {
+      "address": "0x52ff5c80",
+      "instruction": "ldr r0, [r0, #0x14]"
+    },
+    {
+      "address": "0x52ff5c90",
+      "instruction": "str r0, [r6, #0x38]"
+    },
+    {
+      "address": "0x530ef26c",
+      "instruction": "ldr r0, [r3, r0, lsl #2]"
+    },
+    {
+      "address": "0x530ef280",
+      "instruction": "str r0, [r3, r1, lsl #2]"
+    }
+  ],
+  "relationships": [
+    {
+      "kind": "input-size",
+      "sites": [
+        "0x52fef330",
+        "0x52fef340",
+        "0x52ff7c8c",
+        "0x52ff7c98",
+        "0x52fef364"
+      ],
+      "expression": "kind2 selects filename getter52ff3474 ->54796104; file-stat virtual slot54 fills info;52ff7c98 consumes u32(info+18), stores nonzero size at updateState+44 and filename at+40. Actual file-stat implementation unresolved."
+    },
+    {
+      "kind": "load",
+      "sites": [
+        "0x52fee910",
+        "0x52fee934",
+        "0x52fee938",
+        "0x52ff71a4"
+      ],
+      "expression": "52fee900 passes resourceManager=state+10,path=state+40,N=state+44 to52ff7160; stores returned buffer at state+48. N0 returns before clearing previous state+48; no actual stale-state failure claimed."
+    },
+    {
+      "kind": "retry",
+      "sites": [
+        "0x52ff70c4",
+        "0x52ff70d8",
+        "0x52ff70fc",
+        "0x52ff7100",
+        "0x52ff7138"
+      ],
+      "expression": "At most3 attempts through52ff7014. All-null attempts reach assertion/log boundary530feb20 with condition0; synthetic tests allow return, not actual failure continuation proof."
+    },
+    {
+      "kind": "allocator",
+      "sites": [
+        "0x52ff7020",
+        "0x52ff7028",
+        "0x52ff702c",
+        "0x52ff7030",
+        "0x52ff7044",
+        "0x52ff704c",
+        "0x52ff7054"
+      ],
+      "expression": "unsigned N>80000hex selects resourceManager+30; otherwise+34. vslot8 args(size=N,alignment40hex,tag=callerLR). No larger cap at this selection site; actual allocator capacity handled separately."
+    },
+    {
+      "kind": "allocator-source",
+      "sites": [
+        "0x52ff5c14",
+        "0x52ff5c18",
+        "0x52ff5c1c",
+        "0x52ff5c50",
+        "0x52ff5c54",
+        "0x52ff5c60",
+        "0x530ef26c"
+      ],
+      "expression": "Initialization obtains+30 from registry ID0e and+34 from ID1.530ef264 reads547ba300[id]. Actual registered object requires successful initialization; do not infer available space."
+    },
+    {
+      "kind": "file-interface",
+      "sites": [
+        "0x52ff5c7c",
+        "0x52ff5c80",
+        "0x52ff5c90",
+        "0x52ff6e2c",
+        "0x52ff6e54",
+        "0x52ff6e74"
+      ],
+      "expression": "Manager+38 is factory52f50f6c singleton+14. Open(vslot20,mode1), read(vslot28,buffer,N), close(vslot24); concrete interface vptr/transport remains unresolved."
+    },
+    {
+      "kind": "read-error",
+      "sites": [
+        "0x52ff6e34",
+        "0x52ff6e58",
+        "0x52ff6e74",
+        "0x52ff6e7c",
+        "0x52ff7078",
+        "0x52ff7098"
+      ],
+      "expression": "Open failure skips close; read failure after successful open still closes. Return follows read/open result, not close result. Failed read helper frees allocated buffer through chosen allocator vslot+c before retry."
+    }
+  ],
+  "limits": [
+    "27 synthetic original-ARM checks: metadata5,size/selector11,retries9,mutex1,close-return1. No real allocation, file reads, updater/device acceptance or live memory availability.",
+    "Allocator stubs return one mapped sentinel regardless of requested size; huge-u32 cases check argument/control flow only, not supported firmware sizes.",
+    "Allocation/free, OS file-stat/open/read/close, mutex, logging/assertion, FileInfo initialization are explicit stubs. FileInfo constructor stub zeroes0x3c bytes and does not run date conversion.",
+    "Concrete file-interface vptr and stat/read transport, full updater bounds and hardware decompression remain unresolved. A small compressed-size increase alone is not camera compatibility proof.",
+    "ResourceManager and validator aliases must be initialized before registry consumers. Pool initialization/capacity is separately evidenced, not executed by loader tests.",
+    "Genuine bounded angr C retained locally, not original vendor build sources. ARM is authoritative for predicates and implicit/tail call behavior."
+  ],
+  "provenance": {
+    "source_words": 632,
+    "new_genuine_c": 8,
+    "private_artifacts": "Assembly/pseudocode hashes identify locally retained unedited artifacts; contents are not distributed."
+  },
+  "validation": {
+    "rtos_decoded_results_equal": true,
+    "cases": 27,
+    "groups": {
+      "close-return-not-propagated": 1,
+      "kind2-metadata-size-to-state": 5,
+      "mutex-denied": 1,
+      "size-selection-argument-flow": 11,
+      "synthetic-retry-alloc": 3,
+      "synthetic-retry-open": 3,
+      "synthetic-retry-read": 3
+    }
+  }
+}

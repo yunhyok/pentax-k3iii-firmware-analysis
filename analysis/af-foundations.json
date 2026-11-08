@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-08",
+  "scope": "Cross-camera AF foundations for future changes. No current lens-specific patch, physical motor operation or EEPROM write.",
+  "layers": ["focus estimation", "lens capability and limits", "request construction", "queue and transport acknowledgement", "motion and focus completion"],
+  "sources": {
+    "k3iii_selection": "https://github.com/yunhyok/pentax-k3iii-firmware-analysis/blob/c0dae9cf1032309115330478328617f56b5dd8f5/analysis/af-drive-selection-evidence.json",
+    "k3iii_command": "https://github.com/yunhyok/pentax-k3iii-firmware-analysis/blob/c0dae9cf1032309115330478328617f56b5dd8f5/analysis/af-command-evidence.json",
+    "k3iii_capability": "https://github.com/yunhyok/pentax-k3iii-firmware-analysis/blob/c0dae9cf1032309115330478328617f56b5dd8f5/analysis/af-capability-evidence.json",
+    "k3ii_drive": "https://github.com/yunhyok/pentax-k3ii-firmware-analysis/blob/f9577d502dc84778114d2df83de7a91143259a29/analysis/af-drive.json",
+    "k3ii_control": "https://github.com/yunhyok/pentax-k3ii-firmware-analysis/blob/f9577d502dc84778114d2df83de7a91143259a29/analysis/af-control.json",
+    "q7_lens": "https://github.com/yunhyok/pentax-q7-firmware-analysis/blob/bc141e5dd5bdd856f780893da4a71f623ace7dbf/analysis/lens-foundation.json",
+    "dual_drive_example": "https://www.ricoh-imaging.co.jp/english/products/lens/k/standard/smcpentax-das16-50/",
+    "drive_definitions": "https://www.ricoh-imaging.co.jp/english/products/lens/common/annotation-focus-k.html",
+    "q7_compatibility": "https://www.ricoh-imaging.co.jp/english/support/qa/q7/index.html"
+  },
+  "camera_contracts": [
+    {
+      "camera": "K-3 Mark III",
+      "firmware": "2.20",
+      "address_domain": "RTOS virtual addresses",
+      "capability": "bit 6 of communication object C+5272 selects InMotor versus Joint. This is not an established SDM-only flag or a lens compatibility guarantee.",
+      "producer": "Response byte 6 via 0x52f18638 updates the field on mode 3 or mode 0/submode 3. Command 0x8205/type 2 copies cache byte 0 after exchange returns 0. Both update the same field; distinct inputs are not assumed equal.",
+      "request": "The 0x8900 builder at 0x52efc7a0 masks value to 14 bits and places a nonzero direction flag in bit 15, then emits two big-endian payload bytes. Queue entry and physical frame are separate boundaries.",
+      "validated_cases": 1267,
+      "validation_scope": "Original selected ARM functions/fragments with synthetic replies and explicit allocator, queue, transport, event and wait substitutes; repeated from both RTOS and decoded-image carriers.",
+      "unresolved": ["numeric units and polarity", "complete physical completion path", "lens-specific mechanical eligibility"]
+    },
+    {
+      "camera": "K-3 II",
+      "firmware": "1.12",
+      "address_domain": "Decoded file offsets unless explicitly labeled VA",
+      "capability": "Command 0x8205 stores a one-byte response at lens object+6 on accepted transport status 0. Predicate 0x4c500 tests bit 6 before lens command versus body-driver preparation.",
+      "request": "A separate producer/consumer path transforms pulse bookkeeping into drive requests; its thresholds and signed low-16-bit behavior are version-specific. Lens calculation query 0x8211 reads a two-byte big-endian response.",
+      "validation_scope": "Original ARM acquisition 8, body control 14 and lens control 3 cases, plus prior drive selection cases. In the 25 control cases, prepared objects and memory values supply fixture inputs; the sole execution replacement is the 0x93f94 lens-transfer hook.",
+      "unresolved": ["physical pulse units and calibration", "all focus mode callers", "actual motion and optical focus completion"]
+    },
+    {
+      "camera": "Q7",
+      "firmware": "1.01",
+      "address_domain": "Expanded analysis ELF virtual addresses",
+      "capability": "Discovery maps supported groups/operations. The AF-enable getter requires communication bit 3 and group 2 operation 4. The separate search transport gate checks the operation map only when map-read-OK equals 1 and does not repeat the communication-bit test. Extended specification query depends on group 8 operation 7.",
+      "request": "Search, stop and location drive use distinct messages 6, 8 and 7. Mode 3 defers search to VD synchronization. Position and speed limits are distinct from actuator inhibition.",
+      "acknowledgement": "Mode-2 setter returns the worker's status after pending clears; synthetic acknowledgement at wait 101 is late. This counter is not a measured duration or physical motion result.",
+      "completion": "A separate live-view callback consumes synthetic motion telemetry. State 1 can advance by motion, a poll count or a bypass byte; state 2 emits completion on motion==0. Another request branch can notify immediately.",
+      "validated_cases": 32,
+      "validation_scope": "Original MIPS/VEX discovery, cached data, speed, acknowledgement and completion with synthetic lens replies/scheduler/telemetry. Optional Unicorn was unavailable and not used.",
+      "unresolved": ["physical units and speed accuracy", "real lens attach and timing", "complete lens-specific policy lifecycle"]
+    }
+  ],
+  "interpretation_rules": [
+    "Similar field bits or command numbers across models do not establish a shared ABI.",
+    "A capability override cannot establish absent mechanical coupling or compatible optics.",
+    "Queue acceptance, transport response, motion stop and optical focus are different observations.",
+    "Retain lens limits, direction, cancellation, stale response and timeout behavior when later replacing an estimator.",
+    "The official older smc DA-star 16-50 SDM is an example of both SDM and body-motor support, not proof that every SDM lens supports both.",
+    "Ricoh's Q7 table lists its official K-mount adapter as manual-focus-only; a body-drive policy from K-3 cameras cannot be assumed applicable."
+  ],
+  "hq_validation": {
+    "k3iii": "Independent worker replay of all three public AF CLIs against pinned RTOS and decoded image, byte-identical check JSON; source fragments and branches cross-checked.",
+    "k3ii": "HQ replayed verify_af_control.py with --emulate --compare on pinned decoded image; snapshot matched. Twenty repository unit tests passed.",
+    "q7": "HQ replayed check_lens_policy.py on pinned analysis ELF; reference validation passed. Twenty-eight repository unit tests passed.",
+    "hardware_tested": false
+  }
+}

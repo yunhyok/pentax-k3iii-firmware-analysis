@@ -1,0 +1,474 @@
+{
+  "passed": true,
+  "image_sha256": "342d2f35405e8daf1797dfe431d2e4aa70f4b52a2c242a29df48206672f1dfb4",
+  "cases": 27,
+  "groups": {
+    "close-return-not-propagated": 1,
+    "kind2-metadata-size-to-state": 5,
+    "mutex-denied": 1,
+    "size-selection-argument-flow": 11,
+    "synthetic-retry-alloc": 3,
+    "synthetic-retry-open": 3,
+    "synthetic-retry-read": 3
+  },
+  "scope": "Original ARM update input-loader control flow with synthetic allocation/file IO.\nAllocation callbacks only return a small mapped sentinel, never allocate the requested\nsize. File callbacks capture arguments; no firmware contents or storage are read.\nFailure assertion/log boundaries return synthetically; actual fatal policy is unknown.\n",
+  "cpu_model": "Unicorn Cortex-A15; not camera fidelity",
+  "stubs": {
+    "0x530f1a68": "mutex returns selected synthetic status",
+    "0x530f1bbc": "mutex release only records",
+    "0x530fced4": "log records only",
+    "0x530feb20": "assertion/log records even false and returns; actual fatal policy is not emulated",
+    "0x30000100": "synthetic file open captures path/mode and supplies handle",
+    "0x30000120": "synthetic read captures requested size/buffer, no IO or buffer fill",
+    "0x30000140": "synthetic close records handle",
+    "0x30000200": "large allocator captures size/alignment; returns sentinel only",
+    "0x30000220": "small allocator captures size/alignment; returns sentinel only",
+    "0x30000240": "release captures pointer only",
+    "0x30000260": "file stat supplies synthetic info+18 size, no IO",
+    "0x52f50b44": "file-info constructor replaced by zero initialization of0x3c bytes; no date conversion"
+  },
+  "ranges": [
+    {
+      "start": "0x52fee900",
+      "end": "0x52fee9b4",
+      "sha256": "4d686e4149a08f4b368d1aa393e0505473cd6b5828391e3e1cb718b8c76b6937"
+    },
+    {
+      "start": "0x52ff6dd4",
+      "end": "0x52ff6ef8",
+      "sha256": "f090d05403c506674a1f632f2a4dc9c243e808161ce298a38405488e4fdfce24"
+    },
+    {
+      "start": "0x52ff7014",
+      "end": "0x52ff71bc",
+      "sha256": "ecb2b03dd1eb9e4c7eea03d4612411542c9146eee127392aa44e8aa8600f9e96"
+    },
+    {
+      "start": "0x52fef240",
+      "end": "0x52fef488",
+      "sha256": "431913074d553d65105a89d233d6af6de7f3fed9a70fd45d3dd98a046e3cbc89"
+    },
+    {
+      "start": "0x52ff7c38",
+      "end": "0x52ff7d6c",
+      "sha256": "c7d30e54596e17da9704ce16528c5bc681c1b956ab055648190e35ae8c8cf312"
+    },
+    {
+      "start": "0x52ff3474",
+      "end": "0x52ff3480",
+      "sha256": "7cf17a34a597062250f71cb6da0900fb3886b79eb2455376b71a6ced6660a7b3"
+    },
+    {
+      "start": "0x52f50b24",
+      "end": "0x52f50b28",
+      "sha256": "379bec29dccd0a93c94826144d7ef6e42fab64ef195a3b8313a16926f66f388f"
+    }
+  ],
+  "results": [
+    {
+      "group": "size-selection-argument-flow",
+      "inputs": {
+        "size": 0,
+        "allocation_is_stub": true
+      },
+      "result_sha256": "f16bb93abf980c4794eb7965f49ea1f8c8e29470f046866672cb2bd6493349f4",
+      "allocations": 0,
+      "opens": 0,
+      "reads": 0,
+      "closes": 0,
+      "frees": 0,
+      "assert_conditions": []
+    },
+    {
+      "group": "size-selection-argument-flow",
+      "inputs": {
+        "size": 1,
+        "allocation_is_stub": true
+      },
+      "result_sha256": "427bc275914e9f62b9819e2807c0d1c1545287d3f5c6ad6599b8873e86434865",
+      "allocations": 1,
+      "opens": 1,
+      "reads": 1,
+      "closes": 1,
+      "frees": 0,
+      "assert_conditions": [
+        1
+      ]
+    },
+    {
+      "group": "size-selection-argument-flow",
+      "inputs": {
+        "size": 524287,
+        "allocation_is_stub": true
+      },
+      "result_sha256": "23fec486c323b657d0768280097334d41a1a1cb9d935061a7b8f862880f29491",
+      "allocations": 1,
+      "opens": 1,
+      "reads": 1,
+      "closes": 1,
+      "frees": 0,
+      "assert_conditions": [
+        1
+      ]
+    },
+    {
+      "group": "size-selection-argument-flow",
+      "inputs": {
+        "size": 524288,
+        "allocation_is_stub": true
+      },
+      "result_sha256": "0be241446153d8dbe05d8f857ad4621104d43ed0a2d757e4a9ebe18c714e9c0a",
+      "allocations": 1,
+      "opens": 1,
+      "reads": 1,
+      "closes": 1,
+      "frees": 0,
+      "assert_conditions": [
+        1
+      ]
+    },
+    {
+      "group": "size-selection-argument-flow",
+      "inputs": {
+        "size": 524289,
+        "allocation_is_stub": true
+      },
+      "result_sha256": "048e94187909bf078fc8e4e3a4bd86c617db9de808fd75ba510f63874b5683ac",
+      "allocations": 1,
+      "opens": 1,
+      "reads": 1,
+      "closes": 1,
+      "frees": 0,
+      "assert_conditions": [
+        1
+      ]
+    },
+    {
+      "group": "size-selection-argument-flow",
+      "inputs": {
+        "size": 35106716,
+        "allocation_is_stub": true
+      },
+      "result_sha256": "0df9baa1980ac18f0a945769f06897f40dd453d13fa4aebc107ad4fb627bdfe6",
+      "allocations": 1,
+      "opens": 1,
+      "reads": 1,
+      "closes": 1,
+      "frees": 0,
+      "assert_conditions": [
+        1
+      ]
+    },
+    {
+      "group": "size-selection-argument-flow",
+      "inputs": {
+        "size": 35136788,
+        "allocation_is_stub": true
+      },
+      "result_sha256": "c27f9f867c788b24a9932f20503dc16062494cb91cad1fbdba23084e7c9bd464",
+      "allocations": 1,
+      "opens": 1,
+      "reads": 1,
+      "closes": 1,
+      "frees": 0,
+      "assert_conditions": [
+        1
+      ]
+    },
+    {
+      "group": "size-selection-argument-flow",
+      "inputs": {
+        "size": 78690708,
+        "allocation_is_stub": true
+      },
+      "result_sha256": "27595b86e3f63631f7bdb9ae47327a884347005a53e7111dbfc6ca69a88f60d8",
+      "allocations": 1,
+      "opens": 1,
+      "reads": 1,
+      "closes": 1,
+      "frees": 0,
+      "assert_conditions": [
+        1
+      ]
+    },
+    {
+      "group": "size-selection-argument-flow",
+      "inputs": {
+        "size": 2147483647,
+        "allocation_is_stub": true
+      },
+      "result_sha256": "c5bf8f76d9bef847c917821cdc8136bf756e9325ae824a2704802446280aa8b7",
+      "allocations": 1,
+      "opens": 1,
+      "reads": 1,
+      "closes": 1,
+      "frees": 0,
+      "assert_conditions": [
+        1
+      ]
+    },
+    {
+      "group": "size-selection-argument-flow",
+      "inputs": {
+        "size": 2147483648,
+        "allocation_is_stub": true
+      },
+      "result_sha256": "0e4a4ec5f3307aa34ea551390d19778e25df983f6bc388e672b707dc399efd82",
+      "allocations": 1,
+      "opens": 1,
+      "reads": 1,
+      "closes": 1,
+      "frees": 0,
+      "assert_conditions": [
+        1
+      ]
+    },
+    {
+      "group": "size-selection-argument-flow",
+      "inputs": {
+        "size": 4294967295,
+        "allocation_is_stub": true
+      },
+      "result_sha256": "df630a1d5fd6c81223728a835810d60a6384c211599cb3d8b3c5b90f3c9db736",
+      "allocations": 1,
+      "opens": 1,
+      "reads": 1,
+      "closes": 1,
+      "frees": 0,
+      "assert_conditions": [
+        1
+      ]
+    },
+    {
+      "group": "synthetic-retry-alloc",
+      "inputs": {
+        "failures": 1
+      },
+      "result_sha256": "25e7e80342769144db25a1aa7f666c8668e57e7c1a5db08cbff2c48697dd3fcf",
+      "allocations": 2,
+      "opens": 1,
+      "reads": 1,
+      "closes": 1,
+      "frees": 0,
+      "assert_conditions": [
+        1
+      ]
+    },
+    {
+      "group": "synthetic-retry-alloc",
+      "inputs": {
+        "failures": 2
+      },
+      "result_sha256": "07d13a7ae589cd89b053ffbbea7e7fd8eca1917cbe98f9ef9dbb479a20ddce8f",
+      "allocations": 3,
+      "opens": 1,
+      "reads": 1,
+      "closes": 1,
+      "frees": 0,
+      "assert_conditions": [
+        1
+      ]
+    },
+    {
+      "group": "synthetic-retry-alloc",
+      "inputs": {
+        "failures": 3
+      },
+      "result_sha256": "f51d015bc5d3b74c47e09bb9a934c236e73cb9b66d36c71235aa1afab8186768",
+      "allocations": 3,
+      "opens": 0,
+      "reads": 0,
+      "closes": 0,
+      "frees": 0,
+      "assert_conditions": [
+        0
+      ]
+    },
+    {
+      "group": "synthetic-retry-open",
+      "inputs": {
+        "failures": 1
+      },
+      "result_sha256": "4de884e1cc88c5850b2a3e30291a78b1d012e844575a08fd2471ce69d0562586",
+      "allocations": 2,
+      "opens": 2,
+      "reads": 1,
+      "closes": 1,
+      "frees": 1,
+      "assert_conditions": [
+        1
+      ]
+    },
+    {
+      "group": "synthetic-retry-open",
+      "inputs": {
+        "failures": 2
+      },
+      "result_sha256": "28300109d387823bd66c38e306d7321d5e443e35b2cfdb60f2f4ebe7c46dad21",
+      "allocations": 3,
+      "opens": 3,
+      "reads": 1,
+      "closes": 1,
+      "frees": 2,
+      "assert_conditions": [
+        1
+      ]
+    },
+    {
+      "group": "synthetic-retry-open",
+      "inputs": {
+        "failures": 3
+      },
+      "result_sha256": "e1faab7aa75ed5bc4b96c8b23de9ea775c51e945ed3700b8d8c69546de232738",
+      "allocations": 3,
+      "opens": 3,
+      "reads": 0,
+      "closes": 0,
+      "frees": 3,
+      "assert_conditions": [
+        0
+      ]
+    },
+    {
+      "group": "synthetic-retry-read",
+      "inputs": {
+        "failures": 1
+      },
+      "result_sha256": "bf9aaa6dfec0e3267eff330ab9c2d2a9a00cafc8d98293c83d8f2d2ef6d52a23",
+      "allocations": 2,
+      "opens": 2,
+      "reads": 2,
+      "closes": 2,
+      "frees": 1,
+      "assert_conditions": [
+        1
+      ]
+    },
+    {
+      "group": "synthetic-retry-read",
+      "inputs": {
+        "failures": 2
+      },
+      "result_sha256": "0e7ce2cdab4b560e4eb8616b13a8d8768f0b87581185a4809626002913267f26",
+      "allocations": 3,
+      "opens": 3,
+      "reads": 3,
+      "closes": 3,
+      "frees": 2,
+      "assert_conditions": [
+        1
+      ]
+    },
+    {
+      "group": "synthetic-retry-read",
+      "inputs": {
+        "failures": 3
+      },
+      "result_sha256": "8700407d3cb9562bf03141497444586b90d350db8da907728a1c79dc0d72b00c",
+      "allocations": 3,
+      "opens": 3,
+      "reads": 3,
+      "closes": 3,
+      "frees": 3,
+      "assert_conditions": [
+        0
+      ]
+    },
+    {
+      "group": "mutex-denied",
+      "inputs": {},
+      "result_sha256": "258bf9b5d49cd274723b27a7587d40b3697d950627b86a0fa794a70f4ab60fff",
+      "allocations": 0,
+      "opens": 0,
+      "reads": 0,
+      "closes": 0,
+      "frees": 0,
+      "assert_conditions": []
+    },
+    {
+      "group": "close-return-not-propagated",
+      "inputs": {
+        "synthetic_close_return": 0
+      },
+      "result_sha256": "0487827cf7366247bb1cf0e06340be388547fbe20c6ec3dcff14c41f159c84d6",
+      "allocations": 1,
+      "opens": 1,
+      "reads": 1,
+      "closes": 1,
+      "frees": 0,
+      "assert_conditions": [
+        1
+      ]
+    },
+    {
+      "group": "kind2-metadata-size-to-state",
+      "inputs": {
+        "size": 0,
+        "stat_success": 1
+      },
+      "result_sha256": "0542624ad88a6f2a916bc671e3a2193f4a60fe35146e7958d897614219fb8b56",
+      "allocations": 0,
+      "opens": 0,
+      "reads": 0,
+      "closes": 0,
+      "frees": 0,
+      "assert_conditions": []
+    },
+    {
+      "group": "kind2-metadata-size-to-state",
+      "inputs": {
+        "size": 35106716,
+        "stat_success": 1
+      },
+      "result_sha256": "356a31730939c6fc0c8e36a6a4b4329053ac15d345c2a3e66da077a401dd84f2",
+      "allocations": 0,
+      "opens": 0,
+      "reads": 0,
+      "closes": 0,
+      "frees": 0,
+      "assert_conditions": []
+    },
+    {
+      "group": "kind2-metadata-size-to-state",
+      "inputs": {
+        "size": 35136788,
+        "stat_success": 1
+      },
+      "result_sha256": "b25b111c30392a6e0f1c06054c7a0636ac13f8724b7d6d7434fa389d906a0dc4",
+      "allocations": 0,
+      "opens": 0,
+      "reads": 0,
+      "closes": 0,
+      "frees": 0,
+      "assert_conditions": []
+    },
+    {
+      "group": "kind2-metadata-size-to-state",
+      "inputs": {
+        "size": 78690708,
+        "stat_success": 1
+      },
+      "result_sha256": "bc84ea34cd56dc54845a47d64ed2048eb3932de0fc7656d9c0c7231a464fbc72",
+      "allocations": 0,
+      "opens": 0,
+      "reads": 0,
+      "closes": 0,
+      "frees": 0,
+      "assert_conditions": []
+    },
+    {
+      "group": "kind2-metadata-size-to-state",
+      "inputs": {
+        "size": 35136788,
+        "stat_success": 0
+      },
+      "result_sha256": "1c39e697149f477b923dd85591eeb119bb18c65abc4e5297339c1800c6e7c254",
+      "allocations": 0,
+      "opens": 0,
+      "reads": 0,
+      "closes": 0,
+      "frees": 0,
+      "assert_conditions": []
+    }
+  ]
+}
