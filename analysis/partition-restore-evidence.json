@@ -1,0 +1,61 @@
+{
+  "relations": [
+    {
+      "name": "Restore return suppression",
+      "site": "0x52ff5b3c",
+      "saved_write_result": "r4",
+      "return_site": "0x52ff5b50",
+      "consequence": "The BOOT1 wrapper returns the write result after restore and unlock."
+    },
+    {
+      "name": "Partition cache and card-shadow commit",
+      "select": "0x533593a0",
+      "cache": "0x520c25e0",
+      "cache_commit": "0x53359454",
+      "error_bypass": "0x53359484",
+      "switch": "0x53360428",
+      "ext_csd_index": 179,
+      "change_mask": 7,
+      "command6": "0x53360250",
+      "command13": "0x53360264",
+      "shadow_commit": "0x5335eecc",
+      "shadow_address": "0x520c23b3",
+      "consequence": "Same cached partition bypasses the switch. The software cache and shadow keep prior values when CMD6 or CMD13 returns an error."
+    },
+    {
+      "name": "Ordinary write",
+      "capacity_lookup": "0x53358d20",
+      "cached_partition": "0x520c25e0",
+      "range_check": "0x533590d0",
+      "card_rca_call": "0x5335a36c",
+      "write_command": "0x5335a3c4",
+      "consequence": "The traced normal write checks capacity from the cached partition and submits CMD24 or CMD25. The CMD7 helper uses the card RCA and does not reset partition access.",
+      "write_retries_max_attempts": 3
+    },
+    {
+      "name": "Walker result",
+      "initial_select_user": "0x52ff29f4",
+      "initial_failure": "0x52ff2c38",
+      "initial_failure_reason_argument": 2,
+      "commit_failure": "0x52ff2bf4",
+      "commit_failure_reason_argument": 3,
+      "success": "0x52ff2b50",
+      "consequence": "The new walker explicitly selects user partition and aborts on failure. The header/image wrappers propagate their BOOT1 wrapper return without separate restore-error handling."
+    }
+  ],
+  "scope": "Bounded static ARM and mocked CPU-only replay. Physical card state after errors, writes to media, all callers and live recovery remain unverified.",
+  "image_sha256": "342d2f35405e8daf1797dfe431d2e4aa70f4b52a2c242a29df48206672f1dfb4",
+  "code_metadata": "deep-evidence.json; source partition-restore",
+  "reference": {
+    "url": "https://raw.githubusercontent.com/torvalds/linux/master/include/linux/mmc/mmc.h",
+    "accessed": "2026-11-08",
+    "verified_definitions": [
+      "CMD6=SWITCH",
+      "CMD13=SEND_STATUS",
+      "EXT_CSD_PART_CONFIG=179",
+      "EXT_CSD_PART_CONFIG_ACC_MASK=0x7",
+      "EXT_CSD_PART_CONFIG_ACC_BOOT0=1"
+    ],
+    "scope": "Protocol naming/field correspondence only. Firmware calls selection1 boot1; this does not establish driver provenance."
+  }
+}

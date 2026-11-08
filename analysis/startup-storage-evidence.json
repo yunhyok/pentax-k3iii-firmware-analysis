@@ -154,7 +154,7 @@
       },
       {
         "name": "Slot2 table binding",
-        "proven": "52ff528c loops readygetter52ff8ed0(resource,2), yields530f3e1c(1) whilefalse, then basegetter52ff8de4(resource,2) result\u2192FwPartition+14 at52ff52c8. Initial slot2 record is length0x10f00,base50b70100,markerpointer50adf000.",
+        "proven": "52ff528c loops readygetter52ff8ed0(resource,2), yields530f3e1c(1) whilefalse, then basegetter52ff8de4(resource,2) result→FwPartition+14 at52ff52c8. Initial slot2 record is length0x10f00,base50b70100,markerpointer50adf000.",
         "dependency": "boot section of this document",
         "limitation": "BOOT population and marker producer are owned by HQ and not revalidated here. FwPartition.byte10 is distinct from BOOT per-record halfword+4 bank choice and device-header table-copy selector."
       },
@@ -1028,6 +1028,9 @@
     "message_route": "message-queue-evidence.json",
     "bank_serialization_and_write_order": "bank-switch-evidence.json",
     "boot_transport_status": "boot-controller-evidence.json",
-    "scope": "The earlier receiver unknowns describe its original coverage. Group registration, mailbox object identity and one active query sender are connected in the follow-up. Nonzero bank producers, kernel SVC internals, device behavior and global authentication policy remain unresolved."
+    "scope": "The earlier receiver unknowns describe its original coverage. Group registration, mailbox object identity and one active query sender are connected in the follow-up. Nonzero bank producers, kernel SVC internals, device behavior and global authentication policy remain unresolved.",
+    "resource_table_producer": "bank-record-evidence.json",
+    "restore_failure": "partition-restore-evidence.json",
+    "boot_entry_boundary": "boot-entry-evidence.json"
   }
 }

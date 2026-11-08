@@ -44,8 +44,8 @@ def verify_code(image, evidence, base=BASE):
         target = int(binding["target"], 16)
         instruction = struct.unpack("<I", section(site, 4))[0]
         if binding.get("dispatch") == "pc-indexed-ldr":
-            # Recorded switches use LDRLS pc,[pc,r1/r3,lsl #2].
-            require(instruction in (0x979FF101, 0x979FF103),
+            # Recorded switches use LDRLS pc,[pc,r1/r2/r3,lsl #2].
+            require(instruction in (0x979FF101, 0x979FF102, 0x979FF103),
                     "Binding site is not a recorded table-load instruction")
             index = binding["table_index"]
             require(isinstance(index, int) and index >= 0 and slot == site + 8 + 4 * index,

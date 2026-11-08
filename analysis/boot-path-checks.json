@@ -1,7 +1,7 @@
 {
   "passed": true,
   "image_sha256": "0a9c086818b9d6e7531b93710c2cab2782c7f2c32bb5b1c26e3b5b5b69695900",
-  "cases": 28,
+  "cases": 37,
   "cases_detail": [
     {
       "group": "partition_copy_order",
@@ -236,6 +236,51 @@
     {
       "group": "mode2_skips_read",
       "bank": 1
+    },
+    {
+      "group": "record5_primary_entry",
+      "bank": 0,
+      "entry": "0x0"
+    },
+    {
+      "group": "record5_primary_entry",
+      "bank": 0,
+      "entry": "0x52500000"
+    },
+    {
+      "group": "record5_primary_entry",
+      "bank": 0,
+      "entry": "0x10000000"
+    },
+    {
+      "group": "record5_primary_entry",
+      "bank": 1,
+      "entry": "0x0"
+    },
+    {
+      "group": "record5_primary_entry",
+      "bank": 1,
+      "entry": "0x52500000"
+    },
+    {
+      "group": "record5_primary_entry",
+      "bank": 1,
+      "entry": "0x10000000"
+    },
+    {
+      "group": "primary_entry_guard",
+      "entry": "0x0",
+      "stop": "0x50b00230"
+    },
+    {
+      "group": "primary_entry_guard",
+      "entry": "0x52500000",
+      "stop": "0x52500000"
+    },
+    {
+      "group": "primary_entry_guard",
+      "entry": "0x10000000",
+      "stop": "0x10000000"
     }
   ],
   "ranges": [
@@ -258,12 +303,27 @@
       "start": "0x50b00c84",
       "end": "0x50b00cdc",
       "sha256": "9e36cf20015b13fa87e4a8303b670f3343720856fc04635042f861f1a78eae1e"
+    },
+    {
+      "start": "0x50b00f38",
+      "end": "0x50b00f58",
+      "sha256": "a15a11577b5d44dcf113c281b878965e7be75b2ff46cd53f8844095175e302d5"
+    },
+    {
+      "start": "0x50b00220",
+      "end": "0x50b00238",
+      "sha256": "3b77defd2618808c5394a08771de0cb0488049f2c12d7b50606bb837c301ea9c"
     }
   ],
-  "scope": "Original A32 fragments, synthetic RAM. Stops before storage calls, fallback body or entry release. No hardware, boot, authentication or full-loader execution.",
+  "scope": "Original A32 fragments, synthetic RAM. Stops before storage calls and fallback bodies. Entry-copy tail assumes prior read success; entry guard executes BXNE but stops before handoff-target instructions or WFE. No hardware, authentication or full-loader execution.",
   "source_verification": {
     "ranges": 7,
     "transfers": 133,
     "words": 6
+  },
+  "entry_source_verification": {
+    "ranges": 15,
+    "transfers": 69,
+    "words": 10
   }
 }

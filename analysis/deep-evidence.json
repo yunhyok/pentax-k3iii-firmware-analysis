@@ -188,6 +188,15 @@
       "method": "instruction-range"
     },
     {
+      "label": "sys_fwtable_reload",
+      "start": "0x52575ce4",
+      "end": "0x52575d18",
+      "sha256": "766019ab7e1c80278743b05e62365089cdd159a39d080238b7dc4973873d4882",
+      "source": "bank-record-writers",
+      "method": "decompiled-window",
+      "pseudocode_sha256": "524660ca09ec58258ea81c2bc817e467cd8ef9abebea2d3b257b0f13fedaa4f3"
+    },
+    {
       "label": "false_pair_low_origin",
       "start": "0x525b07b0",
       "end": "0x525b07e8",
@@ -1862,6 +1871,15 @@
       "method": "instruction-range"
     },
     {
+      "label": "manager_create_object",
+      "start": "0x52fee13c",
+      "end": "0x52fee2a8",
+      "sha256": "ee8a4a4c269e65d04b0f653c81e87d74f5d25fed11fbef965390614c77b3877d",
+      "source": "bank-record-writers",
+      "method": "decompiled-window",
+      "pseudocode_sha256": "d165575a987c36e410f3d2035af695ed21dbd4fff6db0288eadb4a631755d7ba"
+    },
+    {
       "label": "fwpartition_allocation",
       "start": "0x52fee260",
       "end": "0x52fee280",
@@ -1994,6 +2012,14 @@
       "pseudocode_sha256": "ba92d51b99494baef13f9b6f6a8c2a64e8a13dbe28131022cc1597864b962a37"
     },
     {
+      "label": "boot_header_and_image_write",
+      "start": "0x52ff20d0",
+      "end": "0x52ff225c",
+      "sha256": "73d41241394bb0b23024f9a7df8f436de83515889132d590ae9e8b3f5b1e5972",
+      "source": "partition-restore",
+      "method": "instruction-range"
+    },
+    {
       "label": "package_boot_image_write",
       "start": "0x52ff21c8",
       "end": "0x52ff225c",
@@ -2010,6 +2036,22 @@
       "source": "iconbin-loader",
       "method": "decompiled-window",
       "pseudocode_sha256": "062ab1ce52121fea9c7dc8ccf8d3bfce9b3d62448ea0e7609e5e43a94fd7a2b8"
+    },
+    {
+      "label": "walker_finalize",
+      "start": "0x52ff2970",
+      "end": "0x52ff29a8",
+      "sha256": "e7afb007eb1e0637dbac55573fb250c13f049e24e5cac1472d24cd4a426f330e",
+      "source": "partition-restore",
+      "method": "instruction-range"
+    },
+    {
+      "label": "walker_failure_reason",
+      "start": "0x52ff29a8",
+      "end": "0x52ff29c8",
+      "sha256": "78479f2a978251209527db8f3c14b7b8b94c381b61206c0cebe18a12ab8edcab",
+      "source": "partition-restore",
+      "method": "instruction-range"
     },
     {
       "label": "update_select_partition_zero",
@@ -2037,11 +2079,27 @@
       "method": "data-range"
     },
     {
+      "label": "walker_commit_order",
+      "start": "0x52ff2ae0",
+      "end": "0x52ff2b58",
+      "sha256": "457c0254cee409d9c678b3e4af0a20bf2123f9ac2e234f8db913e9413fdf44ec",
+      "source": "partition-restore",
+      "method": "instruction-range"
+    },
+    {
       "label": "completion_commit_order",
       "start": "0x52ff2ae4",
       "end": "0x52ff2b58",
       "sha256": "21f244affebba2d5cfb2080f9c7716fe6d0c6960cc2d05ac091d2f231f913990",
       "source": "bank-write-switch",
+      "method": "instruction-range"
+    },
+    {
+      "label": "walker_failure_blocks",
+      "start": "0x52ff2bf4",
+      "end": "0x52ff2c70",
+      "sha256": "600f136267240702f2907a750ddb33584abe963b091d5e426345e361436e060f",
+      "source": "partition-restore",
       "method": "instruction-range"
     },
     {
@@ -2094,6 +2152,14 @@
       "end": "0x52ff34dc",
       "sha256": "d461647b71853c74f2378070ae34abf441307ef1f03b7d882fe3fdf8c3d25789",
       "source": "update-validation",
+      "method": "instruction-range"
+    },
+    {
+      "label": "walker_notify_and_complete",
+      "start": "0x52ff399c",
+      "end": "0x52ff3a74",
+      "sha256": "a364d8d1c6486d98ea3e0afa34f48e5516b83d6ece4ca512760727052b8f086a",
+      "source": "partition-restore",
       "method": "instruction-range"
     },
     {
@@ -2999,6 +3065,23 @@
       "source": "raw-jpeg",
       "method": "decompiled-window",
       "pseudocode_sha256": "84b08c3e7b42cc272f8784cbb597dece06852e8e1791b3f36cf2a9b996f9a0af"
+    },
+    {
+      "label": "allocator_registry_getter",
+      "start": "0x530ef264",
+      "end": "0x530ef274",
+      "sha256": "664aa2e02cc93168f4c56b74c01f4c2c6c82c1b0706989381932df7b0e62450b",
+      "source": "bank-record-writers",
+      "method": "instruction-range"
+    },
+    {
+      "label": "object_allocator_wrapper",
+      "start": "0x530f25f4",
+      "end": "0x530f2630",
+      "sha256": "b9e47a2d0ffe0a0bb41c898b4154f34f8074abbabc1a0e4c77a0bde4e613002a",
+      "source": "bank-record-writers",
+      "method": "decompiled-window",
+      "pseudocode_sha256": "d2c0d0a43319f059c328b89f6fa4259fac59377c5e71f0415d6eb44474909786"
     },
     {
       "label": "task_initial_virtual_call",
@@ -5673,6 +5756,14 @@
       "method": "instruction-range"
     },
     {
+      "label": "emmc_wrapper_lock_unlock",
+      "start": "0x532971e4",
+      "end": "0x53297200",
+      "sha256": "abf10a24aacf5c38bc9f8e14319462a157675ba034bab664c42628f1e47e73da",
+      "source": "partition-restore",
+      "method": "instruction-range"
+    },
+    {
       "label": "emmc_constructor",
       "start": "0x53297454",
       "end": "0x532974a4",
@@ -6146,11 +6237,27 @@
       "method": "instruction-range"
     },
     {
+      "label": "controller_acquire_release",
+      "start": "0x533244b8",
+      "end": "0x53324550",
+      "sha256": "329913303c70a58f6bc228fe9897a913daab7a354bf8a292f852c5bda9c42757",
+      "source": "partition-restore",
+      "method": "instruction-range"
+    },
+    {
       "label": "table_consumer_two",
       "start": "0x53324574",
       "end": "0x533245a8",
       "sha256": "88874093151200ff14453a2c9896209a6ed07392c6f8ddab4308204e8f250c11",
       "source": "storage-bank-init",
+      "method": "instruction-range"
+    },
+    {
+      "label": "media_write_guard_predicate",
+      "start": "0x5332b2e0",
+      "end": "0x5332b308",
+      "sha256": "73efbaddc4080dcb565bc0688cc69bb96ca520284e9009bee0e701a2e2ff1e85",
+      "source": "partition-restore",
       "method": "instruction-range"
     },
     {
@@ -6204,6 +6311,146 @@
       "source": "update-transform",
       "method": "decompiled-window",
       "pseudocode_sha256": "4fe613efde35714962161639d5ed3bf516d5e84bfe70e3f2f85977b19b7ac05b"
+    },
+    {
+      "label": "partition_capacity",
+      "start": "0x53358d20",
+      "end": "0x53358ed4",
+      "sha256": "ba6bdc70398930e55d8a9a544a19eb80fa36f0a94e158eca6149f89e2d6c5251",
+      "source": "partition-restore",
+      "method": "instruction-range"
+    },
+    {
+      "label": "emmc_write_sector_range",
+      "start": "0x5335908c",
+      "end": "0x53359268",
+      "sha256": "396e4c1cbacc350aaf79df791fbe09c86e57866e84231c8d0b16aed446e8deea",
+      "source": "partition-restore",
+      "method": "decompiled-window",
+      "pseudocode_sha256": "3518761638edeafd6fa9d91f1dc3454d87cecb05d27a135bdedd930ca1839940"
+    },
+    {
+      "label": "emmc_cached_partition_select",
+      "start": "0x533593a0",
+      "end": "0x5335948c",
+      "sha256": "5b5487321aa431a914f51ead152e62d270f238f85e6eb6ae469e2c2c97803715",
+      "source": "partition-restore",
+      "method": "decompiled-window",
+      "pseudocode_sha256": "4ff38c395c5a08ea730c1857c7e5c2d1cd77c6af056b9be75cd31d66a53c5093"
+    },
+    {
+      "label": "media_write_diagnostic",
+      "start": "0x533598d8",
+      "end": "0x5335994c",
+      "sha256": "655f4c7dfd79511895e99f055d6d56f937a7337a9007b3e838e886deabfb6f08",
+      "source": "partition-restore",
+      "method": "instruction-range"
+    },
+    {
+      "label": "write_card_then_data",
+      "start": "0x5335a2d8",
+      "end": "0x5335a5b4",
+      "sha256": "dd042ddf9870309839d57994559e12b523e2eebf57f7475e85b2b5de36da6e83",
+      "source": "partition-restore",
+      "method": "instruction-range"
+    },
+    {
+      "label": "command_issue_path",
+      "start": "0x5335a7f0",
+      "end": "0x5335ad18",
+      "sha256": "9ffb94d9c2ac5ffe1dc4b7cdfdd07a65328db98c7f77e15fb5b7ad6353e4afaa",
+      "source": "partition-restore",
+      "method": "instruction-range"
+    },
+    {
+      "label": "command_completion_wait",
+      "start": "0x5335ad18",
+      "end": "0x5335ade0",
+      "sha256": "0646f06e2c9cee02b45c032c38064004a22fe4e81757a17cb1d84b5eefb1646d",
+      "source": "partition-restore",
+      "method": "instruction-range"
+    },
+    {
+      "label": "command6_switch",
+      "start": "0x5335b438",
+      "end": "0x5335b51c",
+      "sha256": "fab87f10d14b9dc4871264b2a8c2e004acb43bbcd7915ec9c18487398438045e",
+      "source": "partition-restore",
+      "method": "instruction-range"
+    },
+    {
+      "label": "card_rca_select",
+      "start": "0x5335b51c",
+      "end": "0x5335b778",
+      "sha256": "cf434eaa255f09c01fd7f774036105248b42b4c7b7b40e2bcb7c0da4795ea8cb",
+      "source": "partition-restore",
+      "method": "instruction-range"
+    },
+    {
+      "label": "command13_status",
+      "start": "0x5335bb40",
+      "end": "0x5335bc80",
+      "sha256": "1636510617d0820620582df631b7de1bcc1157ea259cd3dd2587a90619135008",
+      "source": "partition-restore",
+      "method": "instruction-range"
+    },
+    {
+      "label": "data_command",
+      "start": "0x5335bdcc",
+      "end": "0x5335c01c",
+      "sha256": "bb2a7959c6fcb4e31e4bd5484a86c210f2eb77e2f1dcb67de5d125db5c1982ae",
+      "source": "partition-restore",
+      "method": "instruction-range"
+    },
+    {
+      "label": "command_status_poll",
+      "start": "0x5335cb70",
+      "end": "0x5335cce8",
+      "sha256": "7a056165e3a1adac8d8b071a568c52b944f22594737fdbd87642172e543a291e",
+      "source": "partition-restore",
+      "method": "instruction-range"
+    },
+    {
+      "label": "response_status_parse",
+      "start": "0x5335d014",
+      "end": "0x5335d230",
+      "sha256": "1c7a231d700c1f3f2d19d3d40c165253776f8414206f25abbe66d423acddb038",
+      "source": "partition-restore",
+      "method": "instruction-range"
+    },
+    {
+      "label": "command_completion_status",
+      "start": "0x5335ebec",
+      "end": "0x5335ee8c",
+      "sha256": "bcf1c29233fc99cfe492147b3f0ec88cc51e2cc787fc0b9c834aa9736359a38a",
+      "source": "partition-restore",
+      "method": "instruction-range"
+    },
+    {
+      "label": "shadow_byte_write",
+      "start": "0x5335ee8c",
+      "end": "0x5335ef6c",
+      "sha256": "3d1c4e834cc3e05aee174c6ef30a1f19ac74d174e4213f120f8dc17fbfabb420",
+      "source": "partition-restore",
+      "method": "instruction-range"
+    },
+    {
+      "label": "emmc_switch_and_shadow_update",
+      "start": "0x533601e8",
+      "end": "0x53360428",
+      "sha256": "091e4a30cd36b863416a1b56b3f80b8f5dd3af1ff555ead4da6715ce775a27e3",
+      "source": "partition-restore",
+      "method": "decompiled-window",
+      "pseudocode_sha256": "7869e2d6a5b454fe95f56ad8f4e853d337ea063adde204a90b9249d49514b7b2"
+    },
+    {
+      "label": "emmc_select_partition_bits",
+      "start": "0x53360428",
+      "end": "0x533605d0",
+      "sha256": "5ef312e18431f24d763728081b7443444be98d616f1f8e3b944c7289135052cb",
+      "source": "partition-restore",
+      "method": "decompiled-window",
+      "pseudocode_sha256": "0c026bf0441ec22d478920b6a2943539995fb93e568fc2dd28fdac9a1d645b47"
     },
     {
       "label": "key_scale",
@@ -6499,6 +6746,14 @@
       "end": "0x539117fe",
       "sha256": "d0549164baa6f83169d2132d006969f642fca3ccd7c61ca14dfb06ac5e739b7d",
       "source": "bank-write-switch",
+      "method": "data-range"
+    },
+    {
+      "label": "resource_0x539119d8",
+      "start": "0x539119d8",
+      "end": "0x539119fc",
+      "sha256": "468a6326fe579169e56dfc661653af844beb8e59aff3fc7b40d69b9684347367",
+      "source": "partition-restore",
       "method": "data-range"
     },
     {
@@ -8547,6 +8802,14 @@
       "end": "0x53cb166c",
       "sha256": "28bb2ed4939a4ecef4ba58f21a529c6e00f77ef2e122ac99e296448957084083",
       "source": "bank-write-switch",
+      "method": "data-range"
+    },
+    {
+      "label": "resource_0x53cb1684",
+      "start": "0x53cb1684",
+      "end": "0x53cb1688",
+      "sha256": "33f4c3addb0a54db0d96fcf57b4213226ccd069f150d0814f0bf1a5a48098409",
+      "source": "bank-record-writers",
       "method": "data-range"
     },
     {
@@ -10966,6 +11229,24 @@
       "kind": "call",
       "target": "0x52c28e3c",
       "source": "message-queue-link"
+    },
+    {
+      "site": "0x52575cf0",
+      "kind": "call",
+      "target": "0x52fee52c",
+      "source": "bank-record-writers"
+    },
+    {
+      "site": "0x52575cfc",
+      "kind": "call",
+      "target": "0x52ff5638",
+      "source": "bank-record-writers"
+    },
+    {
+      "site": "0x52575d0c",
+      "kind": "call",
+      "target": "0x52ff5494",
+      "source": "bank-record-writers"
     },
     {
       "site": "0x525b07bc",
@@ -26340,6 +26621,54 @@
       "source": "bank-write-switch"
     },
     {
+      "site": "0x52fee178",
+      "kind": "call",
+      "target": "0x530f25f4",
+      "source": "bank-record-writers"
+    },
+    {
+      "site": "0x52fee1a8",
+      "kind": "call",
+      "target": "0x530fdfc4",
+      "source": "bank-record-writers"
+    },
+    {
+      "site": "0x52fee1c0",
+      "kind": "call",
+      "target": "0x530f25f4",
+      "source": "bank-record-writers"
+    },
+    {
+      "site": "0x52fee1cc",
+      "kind": "call",
+      "target": "0x52ff5ddc",
+      "source": "bank-record-writers"
+    },
+    {
+      "site": "0x52fee1f4",
+      "kind": "call",
+      "target": "0x530fdfc4",
+      "source": "bank-record-writers"
+    },
+    {
+      "site": "0x52fee210",
+      "kind": "call",
+      "target": "0x530f25f4",
+      "source": "bank-record-writers"
+    },
+    {
+      "site": "0x52fee218",
+      "kind": "call",
+      "target": "0x52fee890",
+      "source": "bank-record-writers"
+    },
+    {
+      "site": "0x52fee240",
+      "kind": "call",
+      "target": "0x530fdfc4",
+      "source": "bank-record-writers"
+    },
+    {
       "site": "0x52fee264",
       "kind": "call",
       "target": "0x530f25f4",
@@ -26350,6 +26679,18 @@
       "kind": "call",
       "target": "0x52ff52d4",
       "source": "storage-bank-init"
+    },
+    {
+      "site": "0x52fee29c",
+      "kind": "call",
+      "target": "0x530fdfc4",
+      "source": "bank-record-writers"
+    },
+    {
+      "site": "0x52fee2a4",
+      "kind": "branch",
+      "target": "0x52fee248",
+      "source": "bank-record-writers"
     },
     {
       "site": "0x52fee7f4",
@@ -27426,6 +27767,12 @@
       "source": "iconbin-loader"
     },
     {
+      "site": "0x52ff29c4",
+      "kind": "branch",
+      "target": "0x52ff3a3c",
+      "source": "partition-restore"
+    },
+    {
       "site": "0x52ff29e8",
       "kind": "call",
       "target": "0x52ff3a54",
@@ -27436,6 +27783,12 @@
       "kind": "call",
       "target": "0x53297bc0",
       "source": "iconbin-loader"
+    },
+    {
+      "site": "0x52ff29fc",
+      "kind": "branch",
+      "target": "0x52ff2c38",
+      "source": "partition-restore"
     },
     {
       "site": "0x52ff2a08",
@@ -27492,6 +27845,12 @@
       "source": "iconbin-loader"
     },
     {
+      "site": "0x52ff2af8",
+      "kind": "branch",
+      "target": "0x52ff2bf4",
+      "source": "partition-restore"
+    },
+    {
       "site": "0x52ff2b04",
       "kind": "call",
       "target": "0x52ff375c",
@@ -27504,6 +27863,12 @@
       "source": "iconbin-loader"
     },
     {
+      "site": "0x52ff2b14",
+      "kind": "branch",
+      "target": "0x52ff2bf4",
+      "source": "partition-restore"
+    },
+    {
       "site": "0x52ff2b20",
       "kind": "call",
       "target": "0x52ff375c",
@@ -27514,6 +27879,12 @@
       "kind": "call",
       "target": "0x52ff21c8",
       "source": "iconbin-loader"
+    },
+    {
+      "site": "0x52ff2b30",
+      "kind": "branch",
+      "target": "0x52ff2bf4",
+      "source": "partition-restore"
     },
     {
       "site": "0x52ff2b3c",
@@ -27790,6 +28161,12 @@
       "kind": "call",
       "target": "0x526ac000",
       "source": "firmware-readiness"
+    },
+    {
+      "site": "0x52ff39ec",
+      "kind": "call",
+      "target": "0x52ff382c",
+      "source": "partition-restore"
     },
     {
       "site": "0x52ff4b48",
@@ -28288,6 +28665,12 @@
       "kind": "call",
       "target": "0x53297bc0",
       "source": "bank-write-switch"
+    },
+    {
+      "site": "0x52ff5b18",
+      "kind": "branch",
+      "target": "0x52ff5b5c",
+      "source": "partition-restore"
     },
     {
       "site": "0x52ff5b2c",
@@ -33646,6 +34029,12 @@
       "kind": "call",
       "target": "0x532fb9c8",
       "source": "raw-jpeg"
+    },
+    {
+      "site": "0x530f260c",
+      "kind": "call",
+      "target": "0x530ef264",
+      "source": "bank-record-writers"
     },
     {
       "site": "0x530f3e48",
@@ -48822,6 +49211,12 @@
       "source": "storage-bank-init"
     },
     {
+      "site": "0x532976a8",
+      "kind": "branch",
+      "target": "0x53297674",
+      "source": "partition-restore"
+    },
+    {
       "site": "0x532976d8",
       "kind": "call",
       "target": "0x530fced4",
@@ -50860,6 +51255,186 @@
       "kind": "call",
       "target": "0x533308a8",
       "source": "wblv-references"
+    },
+    {
+      "site": "0x533590cc",
+      "kind": "call",
+      "target": "0x53358d20",
+      "source": "partition-restore"
+    },
+    {
+      "site": "0x53359164",
+      "kind": "call",
+      "target": "0x5335a2d8",
+      "source": "partition-restore"
+    },
+    {
+      "site": "0x5335942c",
+      "kind": "call",
+      "target": "0x533244b8",
+      "source": "partition-restore"
+    },
+    {
+      "site": "0x5335945c",
+      "kind": "call",
+      "target": "0x53324528",
+      "source": "partition-restore"
+    },
+    {
+      "site": "0x5335947c",
+      "kind": "call",
+      "target": "0x53360428",
+      "source": "partition-restore"
+    },
+    {
+      "site": "0x53359484",
+      "kind": "branch",
+      "target": "0x5335945c",
+      "source": "partition-restore"
+    },
+    {
+      "site": "0x533598e4",
+      "kind": "call",
+      "target": "0x5335908c",
+      "source": "partition-restore"
+    },
+    {
+      "site": "0x5335a36c",
+      "kind": "call",
+      "target": "0x5335b51c",
+      "source": "partition-restore"
+    },
+    {
+      "site": "0x5335a3c4",
+      "kind": "call",
+      "target": "0x5335bdcc",
+      "source": "partition-restore"
+    },
+    {
+      "site": "0x5335ad6c",
+      "kind": "call",
+      "target": "0x5335cb70",
+      "source": "partition-restore"
+    },
+    {
+      "site": "0x5335ad80",
+      "kind": "branch",
+      "target": "0x5335ad60",
+      "source": "partition-restore"
+    },
+    {
+      "site": "0x5335b4a4",
+      "kind": "call",
+      "target": "0x5335a7f0",
+      "source": "partition-restore"
+    },
+    {
+      "site": "0x5335b4b0",
+      "kind": "call",
+      "target": "0x5335ad18",
+      "source": "partition-restore"
+    },
+    {
+      "site": "0x5335bbb0",
+      "kind": "call",
+      "target": "0x5335a7f0",
+      "source": "partition-restore"
+    },
+    {
+      "site": "0x5335bbbc",
+      "kind": "call",
+      "target": "0x5335ad18",
+      "source": "partition-restore"
+    },
+    {
+      "site": "0x5335cbec",
+      "kind": "call",
+      "target": "0x5335ebec",
+      "source": "partition-restore"
+    },
+    {
+      "site": "0x5335ecac",
+      "kind": "call",
+      "target": "0x5335d014",
+      "source": "partition-restore"
+    },
+    {
+      "site": "0x53360250",
+      "kind": "call",
+      "target": "0x5335b438",
+      "source": "partition-restore"
+    },
+    {
+      "site": "0x53360258",
+      "kind": "branch",
+      "target": "0x533602e8",
+      "source": "partition-restore"
+    },
+    {
+      "site": "0x53360264",
+      "kind": "call",
+      "target": "0x5335bb40",
+      "source": "partition-restore"
+    },
+    {
+      "site": "0x5336026c",
+      "kind": "branch",
+      "target": "0x53360388",
+      "source": "partition-restore"
+    },
+    {
+      "site": "0x5336027c",
+      "kind": "call",
+      "target": "0x5335ee8c",
+      "source": "partition-restore"
+    },
+    {
+      "site": "0x533602dc",
+      "kind": "call",
+      "target": "0x5335c190",
+      "source": "partition-restore"
+    },
+    {
+      "site": "0x53360320",
+      "kind": "call",
+      "target": "0x5335c190",
+      "source": "partition-restore"
+    },
+    {
+      "site": "0x533603d0",
+      "kind": "call",
+      "target": "0x5335c190",
+      "source": "partition-restore"
+    },
+    {
+      "site": "0x53360474",
+      "kind": "call",
+      "target": "0x533601e8",
+      "source": "partition-restore"
+    },
+    {
+      "site": "0x5336047c",
+      "kind": "branch",
+      "target": "0x53360500",
+      "source": "partition-restore"
+    },
+    {
+      "site": "0x533604e4",
+      "kind": "branch",
+      "target": "0x5336046c",
+      "source": "partition-restore"
+    },
+    {
+      "site": "0x533604ec",
+      "kind": "branch",
+      "target": "0x5336046c",
+      "source": "partition-restore"
+    },
+    {
+      "site": "0x53360538",
+      "kind": "call",
+      "target": "0x5335c190",
+      "source": "partition-restore"
     }
   ],
   "words": [
@@ -51644,6 +52219,36 @@
       "source": "message-queue-link"
     },
     {
+      "address": "0x53358d44",
+      "value": "0x53358db0",
+      "source": "partition-restore"
+    },
+    {
+      "address": "0x53358d48",
+      "value": "0x53358dbc",
+      "source": "partition-restore"
+    },
+    {
+      "address": "0x53358ec8",
+      "value": "0x520c23d4",
+      "source": "partition-restore"
+    },
+    {
+      "address": "0x53358ecc",
+      "value": "0x520c23e0",
+      "source": "partition-restore"
+    },
+    {
+      "address": "0x53360448",
+      "value": "0x533604e0",
+      "source": "partition-restore"
+    },
+    {
+      "address": "0x5336044c",
+      "value": "0x533604e8",
+      "source": "partition-restore"
+    },
+    {
       "address": "0x53608c6c",
       "value": "0x526d8ccc",
       "source": "deep-af"
@@ -51817,6 +52422,11 @@
       "address": "0x538ef48c",
       "value": "0x52ede7cc",
       "source": "colorspace-message"
+    },
+    {
+      "address": "0x53912498",
+      "value": "0x20100",
+      "source": "partition-restore"
     },
     {
       "address": "0x53912568",
@@ -54225,6 +54835,98 @@
       "condition": "Byte2 bit7 clear and byte3 0x46 select PC+8+(0x46-0x21)*4. Branch body calls 0x533161e8.",
       "dispatch": "pc-indexed-ldr",
       "table_index": 37
+    },
+    {
+      "callsite": "0x52fee25c",
+      "table_slot": "0x53912570",
+      "target": "0x52ff51a4",
+      "instruction": "bx",
+      "condition": "Factory input selector6 takes allocation and FwPartition constructor path; constructor-installed vptr53912568 is unchanged."
+    },
+    {
+      "callsite": "0x52ff5634",
+      "table_slot": "0x53cb1668",
+      "target": "0x53297938",
+      "instruction": "bx",
+      "condition": "FwPartition+8 is the Emmc ID18d instance with vptr53cb1638; byte length is an exact blocksize multiple."
+    },
+    {
+      "callsite": "0x52ff55e0",
+      "table_slot": "0x53cb1668",
+      "target": "0x53297938",
+      "instruction": "blx",
+      "condition": "Same Emmc instance; nonintegral block length scratch-buffer path."
+    },
+    {
+      "callsite": "0x52ff5574",
+      "table_slot": "0x53cb1684",
+      "target": "0x532971dc",
+      "instruction": "blx",
+      "condition": "Same Emmc vptr; returns512."
+    },
+    {
+      "callsite": "0x52ff5afc",
+      "table_slot": "0x53cb16a4",
+      "target": "0x532971e4",
+      "instruction": "blx",
+      "condition": "The FwPartition+8 object is the initialized Emmc registry instance ID 0x18d, with vptr 0x53cb1638."
+    },
+    {
+      "callsite": "0x52ff5b4c",
+      "table_slot": "0x53cb16a8",
+      "target": "0x532971f8",
+      "instruction": "blx",
+      "condition": "The FwPartition+8 object is the initialized Emmc registry instance ID 0x18d, with vptr 0x53cb1638."
+    },
+    {
+      "callsite": "0x52ff57d0",
+      "table_slot": "0x53cb1664",
+      "target": "0x53297a84",
+      "instruction": "blx",
+      "condition": "The FwPartition+8 object is the initialized Emmc registry instance ID 0x18d, with vptr 0x53cb1638."
+    },
+    {
+      "callsite": "0x52ff5814",
+      "table_slot": "0x53cb1664",
+      "target": "0x53297a84",
+      "instruction": "bx",
+      "condition": "The FwPartition+8 object is the initialized Emmc registry instance ID 0x18d, with vptr 0x53cb1638."
+    },
+    {
+      "callsite": "0x53360440",
+      "table_slot": "0x53360448",
+      "target": "0x533604e0",
+      "instruction": "ldrls",
+      "condition": "Partition request 0.",
+      "dispatch": "pc-indexed-ldr",
+      "table_index": 0
+    },
+    {
+      "callsite": "0x53360440",
+      "table_slot": "0x5336044c",
+      "target": "0x533604e8",
+      "instruction": "ldrls",
+      "condition": "Partition request 1.",
+      "dispatch": "pc-indexed-ldr",
+      "table_index": 1
+    },
+    {
+      "callsite": "0x53358d3c",
+      "table_slot": "0x53358d44",
+      "target": "0x53358db0",
+      "instruction": "ldrls",
+      "condition": "Partition cache 0.",
+      "dispatch": "pc-indexed-ldr",
+      "table_index": 0
+    },
+    {
+      "callsite": "0x53358d3c",
+      "table_slot": "0x53358d48",
+      "target": "0x53358dbc",
+      "instruction": "ldrls",
+      "condition": "Partition cache 1.",
+      "dispatch": "pc-indexed-ldr",
+      "table_index": 1
     }
   ],
   "route_mask_assignments": [

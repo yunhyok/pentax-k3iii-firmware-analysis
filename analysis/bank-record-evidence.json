@@ -1,0 +1,55 @@
+{
+  "relations": [
+    {
+      "name": "Whole-table replacement via diagnostic read",
+      "proven": "52575ce4 calls52fee52c;52575cf4 loads manager+8;52575cfc calls52ff5638.52ff564c/5650 loads FwPartition+18/+14;52ff5654 passes startblock0,size,table pointer to52ff553c. With default0x10e00 and512 blocksize, read forwards135blocks andthe same destination at52ff5634 toEmmc read. This includes all32 records0x870 bytes each and their+4 words.",
+      "condition": "Successful driver read supplying full table bytes, stable FwPartition object and vptr binding.",
+      "limitation": "Actual bytes are external storage state; no concrete nonzero resourcebank value is known. No storage IO occurred. Partial writes on real failure are not excluded."
+    },
+    {
+      "name": "Diagnostic control and status",
+      "proven": "52575d0c calls52ff5494 only ifread returnsnonzero.52575d10 returns0 in both branches. Handler and wrappers contain no partition-select call.",
+      "limitation": "Current eMMC partition is inherited runtime state; table reload is not proof of automatic bank switch or user-area selection."
+    },
+    {
+      "name": "Factory replaces the object with a newly initialized instance",
+      "proven": "52fee13c compares inputselector6; branch52fee154\u219252fee260.52fee264 calls530f25f4(size0x1c),52fee26c calls52ff52d4,52fee278 stores pointer atmanager+8, then52fee2a4\u219252fee248 dispatchesvirtual+8 Create at52fee25c. No prior object content is copied along this branch.",
+      "limitation": "Allocation success and Create success remain runtime conditions; constructor safety onnull allocation not assessed."
+    },
+    {
+      "name": "Heap contents cannot supply nonzero bank through this constructor",
+      "proven": "530f25f4 gets allocator ID2 using530ef264; registry getter indexes547ba300+4*2. It delegates to virtual+8 withsize andalignment0. This wrapper hasnozeroing.Regardless of allocation bytes, constructor52ff52e4 setsr2=0 then52ff52f4 writesbyte0 toobject+10.",
+      "limitation": "Allocator target and its clearing policy are unresolved. Constructor+11..13 padding is untouched; those bytes are not the bank byte."
+    },
+    {
+      "name": "Fixed slot2 excludes heap-zeroing table origin in initial state",
+      "proven": "Initial slot2 record base50b70100 is notffffffff.52ff8e04 loads it;52ff8e08/0c skips allocation;52ff8e10/14 returns.52ff52c8 later stores same pointer intoFwPartition+14 afterready2. Thus this path neitherallocates norclears the live partitiontable.",
+      "limitation": "Initial memory population belongsBOOT and subsequent reads, notthis allocator path. Corrupted/changed slotrecord and generic sentinel branch are outside the fixed-slot claim."
+    }
+  ],
+  "search_scope": {
+    "selected_new_routes": [
+      "whole table read caller52575ce4",
+      "factory selector6 allocation/constructor/manager alias",
+      "fixedslot2 basegetter allocation exclusion"
+    ],
+    "limitations": "No exhaustive global alias/copy analysis; prior immediate-store negative scans were not repeated."
+  },
+  "limitations": [
+    "Nonzero FwPartition.byte10 producer remains unresolved.",
+    "Resource record+4 has a conditional whole-table read producer; no concrete bank content or switching policy established.",
+    "Record+4, objectbyte10, headerselector and eMMC partition state remain distinct.",
+    "Actual allocator policy, external storage bytes and failure partial-write behavior not observed.",
+    "No patch/build/flash/camera or storage IO. Synthetic ARM tests intercept all external effects."
+  ],
+  "image_sha256": "342d2f35405e8daf1797dfe431d2e4aa70f4b52a2c242a29df48206672f1dfb4",
+  "code_metadata": "deep-evidence.json; source bank-record-writers",
+  "name_provenance": {
+    "catalogue_ordinal": 580,
+    "handler": "0x52575ce4",
+    "decoded_offset": "0x2d64e7c",
+    "size": 64,
+    "sha256": "5b8d9ae7a5f720b3843b168cfee9db7c06ebfafbac592d96672131193f05c6ef",
+    "meaning": "Source SHELLCMD entry verified with rtos_catalog.catalog; ordinal580 is not a message opcode."
+  }
+}

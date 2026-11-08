@@ -1,0 +1,585 @@
+{
+  "record": "BOOT",
+  "base": "0x50b00000",
+  "image_sha256": "0a9c086818b9d6e7531b93710c2cab2782c7f2c32bb5b1c26e3b5b5b69695900",
+  "code": {
+    "ranges": [
+      {
+        "label": "boot_startup_register_setup",
+        "start": "0x50b002a8",
+        "end": "0x50b0034c",
+        "sha256": "ff4d6dee0eb7368384e73abef3cc9337fa723464b1ed7b057f4d47ce60e0ab8e",
+        "pseudocode_sha256": "383246e8327860045cce81d6d208134fb1980cebe09c09b872c3d2986e980581",
+        "method": "decompiled-window"
+      },
+      {
+        "label": "boot_startup_release",
+        "start": "0x50b0034c",
+        "end": "0x50b00360",
+        "sha256": "85ec5a0c3cf8617ea0c58104fcbc0ca2846c76ccd58bc6b70a5a811ebce83751",
+        "pseudocode_sha256": "48b4bf84b8ae3f61f0e809ca4d09d72cd88ff05b96edb7a9e644468a35f2d333",
+        "method": "decompiled-window"
+      },
+      {
+        "label": "boot_core_register_setup",
+        "start": "0x50b00360",
+        "end": "0x50b00398",
+        "sha256": "e0ddaca05800fc8bb60aefb04a56dbde94695338212988390b43fbf59b89b352",
+        "pseudocode_sha256": "54582840fc39a1b65c1f32a6f33632f770b11ab2e5e0a1e85671145c210e786d",
+        "method": "decompiled-window"
+      },
+      {
+        "label": "boot_core_interface_setup",
+        "start": "0x50b00398",
+        "end": "0x50b003d0",
+        "sha256": "dbb3a65370c99f8f475da8b2c6864ac308a1a50c7f84c5304254956c8cbaa4be",
+        "pseudocode_sha256": "baa51dad26e0bf3438c053629b451970a6f4e39613e430418edadfa4225247cc",
+        "method": "decompiled-window"
+      },
+      {
+        "label": "boot_primary_register_setup",
+        "start": "0x50b003d0",
+        "end": "0x50b004ec",
+        "sha256": "729194882eb7b57c77e38b641b71dc139968939148a9f8221adbd78823191a77",
+        "pseudocode_sha256": "9529dbd428e8898cfdeb9c7b83cc4b52ce8e72e3400eff36d7ffac77044103fa",
+        "method": "decompiled-window"
+      },
+      {
+        "label": "boot_memory_configuration",
+        "start": "0x50b0089c",
+        "end": "0x50b00a48",
+        "sha256": "e210adb69a8a12df6cbf153f51a0a2efd420b513cf5681830830aa28a1fdb5dd",
+        "pseudocode_sha256": "80873e16c8276d10826334d22bdd0b5bb30e076d2dbb90b9772bf4aa7eceb214",
+        "method": "decompiled-window"
+      },
+      {
+        "label": "vectors",
+        "start": "0x50b00000",
+        "end": "0x50b00020",
+        "sha256": "8698faace5b7d1349ec5cc20417b6d96a0b241b42b5906cd45ff3d74bd42320a",
+        "method": "instruction-range"
+      },
+      {
+        "label": "vector_literals",
+        "start": "0x50b00020",
+        "end": "0x50b0003c",
+        "sha256": "6db299f1c435c23cceffa99fe1c40d7307fed0e96c4d3a8818e06554724ad238",
+        "method": "data-range"
+      },
+      {
+        "label": "early_entry_and_handoff",
+        "start": "0x50b0003c",
+        "end": "0x50b00258",
+        "sha256": "a668b6c81cfaf25bef66c257fa01c01928d67578abc78f2cc57da7266664265e",
+        "method": "instruction-range"
+      },
+      {
+        "label": "startup_literals",
+        "start": "0x50b00258",
+        "end": "0x50b002a8",
+        "sha256": "96efffe1059a3e227a37881bbc0e29a319f311ec72cd4d925837f3468a827dfe",
+        "method": "data-range"
+      },
+      {
+        "label": "setup_literals",
+        "start": "0x50b004ec",
+        "end": "0x50b0056c",
+        "sha256": "b9c20740abbed47563eb4eec7376134aa7e55e77b53fa13f65aaadd0f1cc0710",
+        "method": "data-range"
+      },
+      {
+        "label": "entry_wrapper",
+        "start": "0x50b00888",
+        "end": "0x50b0089c",
+        "sha256": "efd35aff31598cf0d20419c5b79aafd4fae7c5f32b60fd23e3275bd4d64fd4a0",
+        "method": "instruction-range"
+      },
+      {
+        "label": "record5_handoff",
+        "start": "0x50b00ebc",
+        "end": "0x50b00f58",
+        "sha256": "e39c43503132458ad2e1860416db3ca662596d0aab3e998f4b0b4de3649625b1",
+        "method": "instruction-range"
+      },
+      {
+        "label": "retained_record5_handoff",
+        "start": "0x50b0110c",
+        "end": "0x50b01124",
+        "sha256": "e29edc94c9ee0359c3db8bfca5f599cd001e11027a6b496da1f78b0830ae5cf2",
+        "method": "instruction-range"
+      },
+      {
+        "label": "mode_and_retained_entry",
+        "start": "0x50b011c4",
+        "end": "0x50b012a4",
+        "sha256": "54950db617db075c20094dd6539fdcc4d7ddf7bf2bf6a9e015b66129b9079d3d",
+        "method": "instruction-range"
+      }
+    ],
+    "transfers": [
+      {
+        "site": "0x50b002cc",
+        "kind": "branch",
+        "target": "0x50b002c4"
+      },
+      {
+        "site": "0x50b002e4",
+        "kind": "branch",
+        "target": "0x50b002dc"
+      },
+      {
+        "site": "0x50b002fc",
+        "kind": "branch",
+        "target": "0x50b002f4"
+      },
+      {
+        "site": "0x50b00314",
+        "kind": "branch",
+        "target": "0x50b0030c"
+      },
+      {
+        "site": "0x50b0032c",
+        "kind": "branch",
+        "target": "0x50b00324"
+      },
+      {
+        "site": "0x50b00344",
+        "kind": "branch",
+        "target": "0x50b0033c"
+      },
+      {
+        "site": "0x50b008b4",
+        "kind": "call",
+        "target": "0x50b04840"
+      },
+      {
+        "site": "0x50b00088",
+        "kind": "branch",
+        "target": "0x50b00090"
+      },
+      {
+        "site": "0x50b0008c",
+        "kind": "branch",
+        "target": "0x50b000b4"
+      },
+      {
+        "site": "0x50b000c0",
+        "kind": "branch",
+        "target": "0x50b000dc"
+      },
+      {
+        "site": "0x50b000c8",
+        "kind": "branch",
+        "target": "0x50b000e4"
+      },
+      {
+        "site": "0x50b000d0",
+        "kind": "branch",
+        "target": "0x50b000ec"
+      },
+      {
+        "site": "0x50b000d8",
+        "kind": "branch",
+        "target": "0x50b000f4"
+      },
+      {
+        "site": "0x50b000e0",
+        "kind": "branch",
+        "target": "0x50b000fc"
+      },
+      {
+        "site": "0x50b000e8",
+        "kind": "branch",
+        "target": "0x50b000fc"
+      },
+      {
+        "site": "0x50b000f0",
+        "kind": "branch",
+        "target": "0x50b000fc"
+      },
+      {
+        "site": "0x50b000f8",
+        "kind": "branch",
+        "target": "0x50b000fc"
+      },
+      {
+        "site": "0x50b00108",
+        "kind": "branch",
+        "target": "0x50b00110"
+      },
+      {
+        "site": "0x50b0010c",
+        "kind": "branch",
+        "target": "0x50b00124"
+      },
+      {
+        "site": "0x50b00110",
+        "kind": "call",
+        "target": "0x50b002a8"
+      },
+      {
+        "site": "0x50b00114",
+        "kind": "call",
+        "target": "0x50b00360"
+      },
+      {
+        "site": "0x50b00118",
+        "kind": "call",
+        "target": "0x50b00398"
+      },
+      {
+        "site": "0x50b0011c",
+        "kind": "call",
+        "target": "0x50b0034c"
+      },
+      {
+        "site": "0x50b00120",
+        "kind": "branch",
+        "target": "0x50b0013c"
+      },
+      {
+        "site": "0x50b00130",
+        "kind": "branch",
+        "target": "0x50b00124"
+      },
+      {
+        "site": "0x50b00134",
+        "kind": "call",
+        "target": "0x50b00360"
+      },
+      {
+        "site": "0x50b00138",
+        "kind": "call",
+        "target": "0x50b00398"
+      },
+      {
+        "site": "0x50b00148",
+        "kind": "branch",
+        "target": "0x50b001d8"
+      },
+      {
+        "site": "0x50b00150",
+        "kind": "branch",
+        "target": "0x50b001d8"
+      },
+      {
+        "site": "0x50b00158",
+        "kind": "branch",
+        "target": "0x50b001d8"
+      },
+      {
+        "site": "0x50b0015c",
+        "kind": "call",
+        "target": "0x50b003d0"
+      },
+      {
+        "site": "0x50b00184",
+        "kind": "branch",
+        "target": "0x50b0017c"
+      },
+      {
+        "site": "0x50b00198",
+        "kind": "branch",
+        "target": "0x50b001ac"
+      },
+      {
+        "site": "0x50b001a8",
+        "kind": "branch",
+        "target": "0x50b0019c"
+      },
+      {
+        "site": "0x50b001b8",
+        "kind": "branch",
+        "target": "0x50b001cc"
+      },
+      {
+        "site": "0x50b001c8",
+        "kind": "branch",
+        "target": "0x50b001c0"
+      },
+      {
+        "site": "0x50b001d0",
+        "kind": "call-reg",
+        "target": null
+      },
+      {
+        "site": "0x50b001d4",
+        "kind": "branch",
+        "target": "0x50b001d4"
+      },
+      {
+        "site": "0x50b001fc",
+        "kind": "branch",
+        "target": "0x50b001f4"
+      },
+      {
+        "site": "0x50b00204",
+        "kind": "call",
+        "target": "0x50b0056c"
+      },
+      {
+        "site": "0x50b00214",
+        "kind": "branch-reg",
+        "target": null
+      },
+      {
+        "site": "0x50b0021c",
+        "kind": "branch",
+        "target": "0x50b00218"
+      },
+      {
+        "site": "0x50b0022c",
+        "kind": "branch-reg",
+        "target": null
+      },
+      {
+        "site": "0x50b00234",
+        "kind": "branch",
+        "target": "0x50b00230"
+      },
+      {
+        "site": "0x50b00238",
+        "kind": "branch-reg",
+        "target": null
+      },
+      {
+        "site": "0x50b0023c",
+        "kind": "branch-reg",
+        "target": null
+      },
+      {
+        "site": "0x50b00240",
+        "kind": "branch-reg",
+        "target": null
+      },
+      {
+        "site": "0x50b00244",
+        "kind": "branch-reg",
+        "target": null
+      },
+      {
+        "site": "0x50b00248",
+        "kind": "branch-reg",
+        "target": null
+      },
+      {
+        "site": "0x50b0024c",
+        "kind": "branch-reg",
+        "target": null
+      },
+      {
+        "site": "0x50b00250",
+        "kind": "branch-reg",
+        "target": null
+      },
+      {
+        "site": "0x50b00254",
+        "kind": "branch-reg",
+        "target": null
+      },
+      {
+        "site": "0x50b0088c",
+        "kind": "call",
+        "target": "0x50b0089c"
+      },
+      {
+        "site": "0x50b00890",
+        "kind": "call",
+        "target": "0x50b011c4"
+      },
+      {
+        "site": "0x50b00898",
+        "kind": "branch",
+        "target": "0x50b00220"
+      },
+      {
+        "site": "0x50b00ec0",
+        "kind": "branch",
+        "target": "0x50b0110c"
+      },
+      {
+        "site": "0x50b00ed0",
+        "kind": "branch",
+        "target": "0x50b00f58"
+      },
+      {
+        "site": "0x50b00f04",
+        "kind": "branch",
+        "target": "0x50b00f1c"
+      },
+      {
+        "site": "0x50b00f20",
+        "kind": "call",
+        "target": "0x50b03f04"
+      },
+      {
+        "site": "0x50b00f2c",
+        "kind": "branch",
+        "target": "0x50b010b0"
+      },
+      {
+        "site": "0x50b01120",
+        "kind": "branch",
+        "target": "0x50b00f68"
+      },
+      {
+        "site": "0x50b011d0",
+        "kind": "call",
+        "target": "0x50b014b0"
+      },
+      {
+        "site": "0x50b011e4",
+        "kind": "branch",
+        "target": "0x50b01218"
+      },
+      {
+        "site": "0x50b01208",
+        "kind": "call",
+        "target": "0x50b00a48"
+      },
+      {
+        "site": "0x50b01210",
+        "kind": "branch",
+        "target": "0x50b012a4"
+      },
+      {
+        "site": "0x50b01228",
+        "kind": "call",
+        "target": "0x50b014b0"
+      },
+      {
+        "site": "0x50b01254",
+        "kind": "call",
+        "target": "0x50b01538"
+      },
+      {
+        "site": "0x50b01264",
+        "kind": "call",
+        "target": "0x50b01538"
+      },
+      {
+        "site": "0x50b01290",
+        "kind": "branch",
+        "target": "0x50b01284"
+      }
+    ],
+    "words": [
+      {
+        "address": "0x50b00020",
+        "value": "0x50b0003c"
+      },
+      {
+        "address": "0x50b00270",
+        "value": "0x1d001000"
+      },
+      {
+        "address": "0x50b0028c",
+        "value": "0x50b054c0"
+      },
+      {
+        "address": "0x50b00290",
+        "value": "0x50b06de8"
+      },
+      {
+        "address": "0x50b00294",
+        "value": "0x50b00888"
+      },
+      {
+        "address": "0x50b0029c",
+        "value": "0xd1c3b5a7"
+      },
+      {
+        "address": "0x50b002a0",
+        "value": "0x50b054c4"
+      },
+      {
+        "address": "0x50b002a4",
+        "value": "0x50b054c8"
+      },
+      {
+        "address": "0x50b004ec",
+        "value": "0x1d001000"
+      },
+      {
+        "address": "0x50b0051c",
+        "value": "0x1d002000"
+      }
+    ],
+    "conditional_bindings": []
+  },
+  "relations": [
+    {
+      "name": "entry_boundary",
+      "sites": [
+        "0x50b00000",
+        "0x50b00020",
+        "0x50b0003c",
+        "0x50b001cc"
+      ],
+      "meaning": "Packaged BOOT vector points to startup0x50b0003c. Startup configures CP15/registers and core-local stacks; primary path invokes0x50b00888 through a fixed literal. A preceding loader and its authentication are outside this observed entry."
+    },
+    {
+      "name": "core_release",
+      "sites": [
+        "0x50b00124",
+        "0x50b00128",
+        "0x50b00350",
+        "0x50b00358"
+      ],
+      "meaning": "Secondary cores wait for value3 at0x1d001000; primary setup writes that value. This is an observed register synchronization condition, not an identified signature verdict."
+    },
+    {
+      "name": "zero_initialization",
+      "sites": [
+        "0x50b001ac",
+        "0x50b001b0",
+        "0x50b001bc",
+        "0x50b0028c",
+        "0x50b00290"
+      ],
+      "meaning": "Primary startup zeroes0x50b054c0..0x50b06de8, including indirect handoff slots0x50b054c4 and0x50b054c8."
+    },
+    {
+      "name": "boot_configuration",
+      "sites": [
+        "0x50b0088c",
+        "0x50b008b4",
+        "0x50b00a3c",
+        "0x50b00a40"
+      ],
+      "meaning": "Entry calls a memory configuration initializer, whose sole BL is local0x50b04840. It clears a256-byte structure at0x4ff00000 and assigns layout values, then clears0x4fffff24/28. No cryptographic verdict identified in this bounded initializer."
+    },
+    {
+      "name": "primary_handoff_producer",
+      "sites": [
+        "0x50b00ed4",
+        "0x50b00edc",
+        "0x50b00f20",
+        "0x50b00f2c",
+        "0x50b00f50",
+        "0x50b00f54",
+        "0x50b00224",
+        "0x50b0022c"
+      ],
+      "meaning": "Successful cold read of resource record index5 takes low16 of record+4, selects0x434-byte bank, and copies selected descriptor entry(record+0xc) into0x50b054c8. Exit loads that slot and BX only if nonzero; zero waits. The target is supplied by resource metadata, not resolved as a Boot ROM API."
+    },
+    {
+      "name": "retained_handoff",
+      "sites": [
+        "0x50b011dc",
+        "0x50b011e0",
+        "0x50b01208",
+        "0x50b0122c",
+        "0x50b0123c",
+        "0x50b01294",
+        "0x50b0129c"
+      ],
+      "meaning": "Mode word0x0100fffc==2 selects retained entries from0x4fffff20 and0x4fffff1c for secondary and primary slots; other modes call the cold loader. Producer/provenance of mode and retained entries is unresolved; these conditions do not establish authentication status."
+    }
+  ],
+  "authentication_boundary": "Packaged BOOT entry and handoff inspected. A mask-ROM image, preceding caller, key policy and authentication success/failure branch have not been identified. No conclusion of absent or disabled Boot ROM authentication follows.",
+  "limitations": [
+    "Static source matching; startup MMIO, CP15, multicore synchronization and camera execution not emulated.",
+    "Address base inferred from vector literals and internal pointers; actual load not observed."
+  ]
+}

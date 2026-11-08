@@ -18,7 +18,7 @@ def run(blob):
     u=Uc(UC_ARCH_ARM,UC_MODE_ARM)
     u.ctl_set_cpu_model(UC_CPU_ARM_CORTEX_A15)
     for a,n in [(BASE,0x10000),(0x50b70000,0x20000),(0x50adf000,0x1000),
-                (0x18004000,0x1000),(0x10000000,0x10000)]:u.mem_map(a,n)
+                (0x18004000,0x1000),(0x10000000,0x10000),(0x52500000,0x1000)]:u.mem_map(a,n)
     u.mem_write(BASE,blob)
     stack=0x1000f000;table=0x50b70100;marker=0x50adf000
     def put(a,v):u.mem_write(a,struct.pack('<I',v))
@@ -70,11 +70,26 @@ def run(blob):
         put(BASE+0x54c0,2)
         execute(0x50b00c84,[0x50b00cdc],{UC_ARM_REG_R4:BASE+0x54c0,UC_ARM_REG_R5:table})
         rows.append(dict(group='mode2_skips_read',bank=bank))
+    # Execute only the entry-copy tail; storage-read success is an input assumption.
+    for bank in [0,1]:
+        for entry in [0,0x52500000,0x10000000]:
+            put(table+bank*0x434+0x2a3c,entry)
+            put(BASE+0x54c8,0xffffffff)
+            execute(0x50b00f38,[0x50b00f58],{UC_ARM_REG_R3:bank,UC_ARM_REG_R6:table,UC_ARM_REG_R4:BASE+0x54c0})
+            require(word(BASE+0x54c8)==entry,'Primary entry producer mismatch')
+            rows.append(dict(group='record5_primary_entry',bank=bank,entry=hex(entry)))
+    for entry in [0,0x52500000,0x10000000]:
+        put(BASE+0x54c8,entry)
+        pc=execute(0x50b00220,[0x50b00230,0x52500000,0x10000000],{})
+        require(pc==(0x50b00230 if entry==0 else entry),'Primary entry zero guard mismatch')
+        require(u.reg_read(UC_ARM_REG_R1)==entry,'Primary entry load mismatch')
+        rows.append(dict(group='primary_entry_guard',entry=hex(entry),stop=hex(pc)))
     ranges=[(0x50b00bd4,0x50b00c0c),(0x50b0101c,0x50b01038),
-            (0x50b00c4c,0x50b00c80),(0x50b00c84,0x50b00cdc)]
+            (0x50b00c4c,0x50b00c80),(0x50b00c84,0x50b00cdc),
+            (0x50b00f38,0x50b00f58),(0x50b00220,0x50b00238)]
     return dict(passed=True,image_sha256=SHA,cases=len(rows),cases_detail=rows,
         ranges=[dict(start=hex(a),end=hex(z),sha256=hashlib.sha256(blob[a-BASE:z-BASE]).hexdigest()) for a,z in ranges],
-        scope='Original A32 fragments, synthetic RAM. Stops before storage calls, fallback body or entry release. No hardware, boot, authentication or full-loader execution.')
+        scope='Original A32 fragments, synthetic RAM. Stops before storage calls and fallback bodies. Entry-copy tail assumes prior read success; entry guard executes BXNE but stops before handoff-target instructions or WFE. No hardware, authentication or full-loader execution.')
 
 def main():
     p=argparse.ArgumentParser(description=__doc__);p.add_argument('decoded',type=Path);p.add_argument('--output',type=Path,required=True);a=p.parse_args()
@@ -87,5 +102,7 @@ def main():
     counts=verify_code(blob,evidence['boot']['code'],base=BASE)
     result=run(blob)
     result['source_verification']=dict(zip(('ranges','transfers','words'),counts))
+    entry=json.loads((Path(__file__).resolve().parent/'analysis/boot-entry-evidence.json').read_text(encoding='utf-8'))
+    result['entry_source_verification']=dict(zip(('ranges','transfers','words'),verify_code(blob,entry['code'],base=BASE)))
     a.output.write_text(json.dumps(result,indent=2)+'\n',encoding='utf-8');print({'passed':True,'cases':result['cases']})
 if __name__=='__main__':main()

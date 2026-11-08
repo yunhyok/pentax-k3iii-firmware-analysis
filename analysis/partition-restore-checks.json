@@ -1,0 +1,173 @@
+{
+  "passed": true,
+  "image_sha256": "342d2f35405e8daf1797dfe431d2e4aa70f4b52a2c242a29df48206672f1dfb4",
+  "count": 7,
+  "cases": [
+    {
+      "label": "restore_cmd6_error",
+      "requested_partition": 0,
+      "return_value": 0,
+      "cache": 1,
+      "shadow": 169,
+      "trace": [
+        [
+          "cmd6",
+          179,
+          168,
+          9
+        ]
+      ]
+    },
+    {
+      "label": "restore_cmd13_error",
+      "requested_partition": 0,
+      "return_value": 0,
+      "cache": 1,
+      "shadow": 169,
+      "trace": [
+        [
+          "cmd6",
+          179,
+          168,
+          0
+        ],
+        [
+          "cmd13",
+          4
+        ]
+      ]
+    },
+    {
+      "label": "restore_success",
+      "requested_partition": 0,
+      "return_value": 1,
+      "cache": 0,
+      "shadow": 168,
+      "trace": [
+        [
+          "cmd6",
+          179,
+          168,
+          0
+        ],
+        [
+          "cmd13",
+          0
+        ]
+      ]
+    },
+    {
+      "label": "controller_acquire_error",
+      "requested_partition": 0,
+      "return_value": 0,
+      "cache": 1,
+      "shadow": 169,
+      "trace": []
+    },
+    {
+      "label": "cache_already_matches",
+      "requested_partition": 1,
+      "return_value": 1,
+      "cache": 1,
+      "shadow": 169,
+      "trace": []
+    },
+    {
+      "label": "write_success_masks_restore_error",
+      "return_value": 1,
+      "cache": 1,
+      "shadow": 169,
+      "trace": [
+        [
+          "cmd6",
+          179,
+          169,
+          0
+        ],
+        [
+          "cmd13",
+          0
+        ],
+        [
+          "write",
+          1
+        ],
+        [
+          "cmd6",
+          179,
+          168,
+          7
+        ]
+      ]
+    },
+    {
+      "label": "next_boot_write_skips_select1",
+      "return_value": 1,
+      "cache": 0,
+      "shadow": 168,
+      "trace": [
+        [
+          "write",
+          1
+        ],
+        [
+          "cmd6",
+          179,
+          168,
+          0
+        ],
+        [
+          "cmd13",
+          0
+        ]
+      ]
+    }
+  ],
+  "scope": "CPU-only synthetic RAM replay. All media commands and RTOS calls are intercepted.",
+  "intercepted": [
+    {
+      "address": "0x533244b8",
+      "name": "controller semaphore/clock acquire"
+    },
+    {
+      "address": "0x53324528",
+      "name": "controller semaphore/clock release"
+    },
+    {
+      "address": "0x5335b438",
+      "name": "CMD6 transaction"
+    },
+    {
+      "address": "0x5335bb40",
+      "name": "CMD13 transaction"
+    },
+    {
+      "address": "0x5335c190",
+      "name": "controller diagnostic"
+    },
+    {
+      "address": "0x530fced4",
+      "name": "update diagnostic"
+    },
+    {
+      "address": "0x530f1a68",
+      "name": "Emmc mutex acquire"
+    },
+    {
+      "address": "0x530f1bbc",
+      "name": "Emmc mutex release"
+    },
+    {
+      "address": "0x532971e4",
+      "name": "wrapper lock"
+    },
+    {
+      "address": "0x532971f8",
+      "name": "wrapper unlock"
+    },
+    {
+      "address": "0x52ff5708",
+      "name": "wrapper media write"
+    }
+  ]
+}
