@@ -4,10 +4,10 @@
 
 - [전체 안내·펌웨어 구조·재현 절차](index.html)
 - [JPEG·ISP·WB·색공간·클리핑 최신 보고서](analysis/pipeline-report.html)
-- [업데이트 메시지·저장소·BOOT 최신 분석](analysis/startup-storage.html)
+- [업데이트 메시지·저장소·BOOT·M0 최신 분석](analysis/startup-storage.html)
 - [업데이트 검사·ICONBIN 적재 최신 분석](analysis/update-resources.html)
 - [수정 펌웨어·UI 이식 선행 연구](analysis/research-roadmap.html)
 - [RTOS 명령 957개](analysis/index.html) · [셔터·AF](analysis/dispatch-af.html)
 - [컬러모드·Lightroom](analysis/color-lightroom.html) · [색 처리 수식](analysis/color-algorithms.html)
 
-이 README만 GitHub 기본 진입 문서로 Markdown을 유지합니다. 공개 자료는 자체 분석·검증 도구와 재배포 조건을 확인한 OSS 소스입니다. 원본 펌웨어·추출 계수·RTOS 디컴파일 C는 로컬에 보관합니다. 원래의 비공개 소스나 전체 펌웨어 빌드 프로젝트를 복구한 결과가 아닙니다.
+이 README만 GitHub 기본 진입 문서로 Markdown을 유지합니다. 공개 자료는 자체 분석·검증 도구와 재배포 조건을 확인한 OSS 소스입니다. 원본 펌웨어·추출 계수·독점 코드의 디컴파일 C는 로컬에 보관합니다. 원래의 비공개 소스나 전체 펌웨어 빌드 프로젝트를 복구한 결과가 아닙니다.

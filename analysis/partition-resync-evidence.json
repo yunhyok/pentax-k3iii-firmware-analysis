@@ -1,0 +1,816 @@
+{
+  "image_sha256": "342d2f35405e8daf1797dfe431d2e4aa70f4b52a2c242a29df48206672f1dfb4",
+  "base": "0x52500000",
+  "functions": [
+    {
+      "label": "controller_context_initialize",
+      "start": "0x5335c770",
+      "end": "0x5335ca04",
+      "sha256": "30c6145c001062c95731eaf507c67e9bdd6cf91b364c16073a425ccff511fcde",
+      "assembly_sha256": "c9dfeb1e5066d508574fb45c7f78cd3e25da569108ba1b97067878805f293721",
+      "pseudocode_sha256": "fe30e12e8058a504e26a45d05ac462d0eb0d9a47bc5a44c2b564172bd829dbdb",
+      "angr_version": "10.0.5",
+      "cfg_blocks": 20
+    },
+    {
+      "label": "device_initialize_then_select_user",
+      "start": "0x5331ff68",
+      "end": "0x5331fff8",
+      "sha256": "51b708771daa5f848c3c9b529f36add1a470a858c45b81f3b5ba82c1c0bf1fa0",
+      "assembly_sha256": "105b6d861133a9418079eec46339ddcbec66a07a8dc925c4cb96e1fac4f7a504",
+      "pseudocode_sha256": "5e13e62190ce7eba75937d0dfdca233d8c52f8e721b049f381596fd3de80e71e",
+      "angr_version": "10.0.5",
+      "cfg_blocks": 8
+    },
+    {
+      "label": "extcsd_refresh",
+      "start": "0x5335d338",
+      "end": "0x5335d4f8",
+      "sha256": "d859f5dbc64c87f7f7fea5f471786e7b19452a26fd3a965df829c8dcdd637c12",
+      "assembly_sha256": "db0b26bf021cd4ff040f41aeaa7137b1adb4debf19cf898ac13a37a154231ac5",
+      "pseudocode_sha256": "6d880ee744e4a86ad05ddd3cea3256eb907701f2d2565e4f43002ed6b19295e7",
+      "angr_version": "10.0.5",
+      "cfg_blocks": 19
+    },
+    {
+      "label": "extcsd_cmd8_descriptor",
+      "start": "0x5335b778",
+      "end": "0x5335b950",
+      "sha256": "471f94ecf9d78e34d11613e2f01578ca1d7178ae695823e8c3c54d8603baa5cc",
+      "assembly_sha256": "dab97b7e8fde89436544840ab81e76307137e74e1e07a31618bf8eef9334d1da",
+      "pseudocode_sha256": "51a08375d98e061b50706b40535b92136b4c66669e3824818be9ea846ed82b46",
+      "angr_version": "10.0.5",
+      "cfg_blocks": 20
+    },
+    {
+      "label": "host_error_recovery",
+      "start": "0x5335e97c",
+      "end": "0x5335ebec",
+      "sha256": "a77a520b1ca5baf5a35007473aa41dcafe92e7685d79b1d47045901b070accd3",
+      "assembly_sha256": "f88986a5d720efacc4de6fae1501856d8f3fde343342b209b2a3b2ff9e4cb8da",
+      "pseudocode_sha256": "d56e86fb661081ac13ec7ed0f4416082df4a1b6210fa57b301bfcc739ed69de4",
+      "angr_version": "10.0.5",
+      "cfg_blocks": 34
+    },
+    {
+      "label": "host_cmd_data_reset",
+      "start": "0x5335dd78",
+      "end": "0x5335de60",
+      "sha256": "81ee2a496180bc088ed34ed589fef81df11fa1e8fe1925cacbbcb47e7846ba28",
+      "assembly_sha256": "d90c3f50743d32fd8e9296946ea8f9461f575b06eadf22338ea39d7eb8e39b30",
+      "pseudocode_sha256": "178f1485fb427104183c5483f4d56ea576d38bf38cbbcc91de4a8cb2a4e29cbf",
+      "angr_version": "10.0.5",
+      "cfg_blocks": 9
+    }
+  ],
+  "fragments": [
+    {
+      "label": "emmc_driver_initialize",
+      "start": "0x532977ac",
+      "end": "0x532978cc",
+      "sha256": "0f6b4c858821364396e7df5b6be21a598686a64532c09a9f60d3099c7da7b648",
+      "assembly_sha256": "21239e731f441698e730ff98389b93261a8dd6da3c01cb90485e639c8d41d047"
+    },
+    {
+      "label": "prior_boot_magic_stub",
+      "start": "0x5310b888",
+      "end": "0x5310b88c",
+      "sha256": "6443572004fd237ba97fec83f6dc17f793b935bfb76341c4fc19f9962c61eb7a",
+      "assembly_sha256": "eb9e6bf1da62af0cc2c45a0e1ac2aab6a0cd9fc26bdaf47b8cba749351c821fc"
+    },
+    {
+      "label": "prior_boot_magic_check",
+      "start": "0x532fb73c",
+      "end": "0x532fb760",
+      "sha256": "ca007ec79d8a096e5066b4b7c2f833013da35329a7709289ccfb1d774f611381",
+      "assembly_sha256": "ce152931546819d81a0691ad506fed79be778f098f6e32c9c4210494442dc962"
+    },
+    {
+      "label": "device_init_guard",
+      "start": "0x5331b968",
+      "end": "0x5331b99c",
+      "sha256": "44b21b1dc5c07eb78ccf6268b532c1166ef4c5f747fc6bbe06dffa154b117d12",
+      "assembly_sha256": "acef00624858fe0f0ec8d08815410e1b59fe41b1c4ef6446d7038e81d271bd6f"
+    },
+    {
+      "label": "device_init_forward",
+      "start": "0x533202f0",
+      "end": "0x53320354",
+      "sha256": "d7864694e189871c69df9c52fe6921cc8652358a5a0dc1a76d57f02e0bf3beae",
+      "assembly_sha256": "8c803a4767d1430850ac3935f91ba537696305b470510c7ac688650ac27c6ea8"
+    },
+    {
+      "label": "device_controller_setup_calls",
+      "start": "0x533595ec",
+      "end": "0x53359724",
+      "sha256": "3bc39bc554202d51eb8d54479e3f19dd65b27a7fe1b7c07fe5bcdab49f1ec55f",
+      "assembly_sha256": "9a6b11d0f8a81400aad795749506fddfd00b32f2230f43048534f67872d9bd62"
+    },
+    {
+      "label": "controller_activate",
+      "start": "0x5335ca04",
+      "end": "0x5335cb70",
+      "sha256": "3f20b98487bdfd68d676ab51f45dd8b1e358f3c5c72bf68cff77062ba2e904a6",
+      "assembly_sha256": "9d12b2cad9efe7a6d5d7170525cf85ccf4250a09254ec4a54f21a5835d7767bd"
+    },
+    {
+      "label": "card_initialization_commands",
+      "start": "0x5335fbec",
+      "end": "0x5335fcd8",
+      "sha256": "70c34dedfa3ed4194cfb57c6698e1a4ebdf71fcd2f9642cbd44ab8445f5321bb",
+      "assembly_sha256": "2aed26d40733abb3ae5423ab74ca10bb981f71da7544c0f3027ecf1329737eea"
+    },
+    {
+      "label": "card_idle_cmd0",
+      "start": "0x5335ade0",
+      "end": "0x5335ae9c",
+      "sha256": "bae83e662c833da03fadda2030b31af3efa05f030fe714cc0ca42115c5f25732",
+      "assembly_sha256": "b3f95ac52936c4db6fec3f76d78262b1276404db8690ee3fee9bda7e5ae338cd"
+    },
+    {
+      "label": "device_init_refresh_caller",
+      "start": "0x53359c84",
+      "end": "0x53359d54",
+      "sha256": "4cb5325ebd946d21138c404e3976aba33cff89757da85ed4974c67cd984c38b4",
+      "assembly_sha256": "26af6218a4a9dd712467b76ed1f9ab42b1f6d44d7cb5db86e255af5fa9e9aef4"
+    },
+    {
+      "label": "extcsd_training_compare",
+      "start": "0x5335e0f4",
+      "end": "0x5335e184",
+      "sha256": "88acf15dc5a9007648e2304705659468584c60da7ab0881dbdccd82e2de528b4",
+      "assembly_sha256": "2f402ffe27aa1a99dd00a42d6d8baffec59e3da894f34a44f31bc35713b5871a"
+    },
+    {
+      "label": "data_buffer_dispatch",
+      "start": "0x5335a9f4",
+      "end": "0x5335aa80",
+      "sha256": "d2ea421bbd601e451fd18307e59842bcf798045523c6d734931900535b059815",
+      "assembly_sha256": "c03592ff4e6a4dc570cda0e2c0000b3da23dd206332cb40c4e9727379ae77878"
+    },
+    {
+      "label": "data_read_pio",
+      "start": "0x5335cd48",
+      "end": "0x5335cd7c",
+      "sha256": "e353c6e7f1beabcb805f839d17bcafa1ed1aff097bd9b79b57ad292d62407704",
+      "assembly_sha256": "8de64fa697db640998f56d033534feda092964cd2d42b830a7cc2f8cddf381fe"
+    },
+    {
+      "label": "controller_poll",
+      "start": "0x5335cb70",
+      "end": "0x5335cce8",
+      "sha256": "7a056165e3a1adac8d8b071a568c52b944f22594737fdbd87642172e543a291e",
+      "assembly_sha256": "d8e223dd85dc5d7c5964b9c3bd7006eab38fba5f1db44774df1ca74efbccb33c"
+    },
+    {
+      "label": "command_completion",
+      "start": "0x5335ebec",
+      "end": "0x5335ee8c",
+      "sha256": "bcf1c29233fc99cfe492147b3f0ec88cc51e2cc787fc0b9c834aa9736359a38a",
+      "assembly_sha256": "0f29689183cb9b1718a1ea5a63bc4a7b16988ca33e1d08365bcfe57ad1673d06"
+    },
+    {
+      "label": "cmd6_and_cmd13_returns",
+      "start": "0x53360250",
+      "end": "0x53360290",
+      "sha256": "aff5de0cdbfbccbb00486ec49cbae2349bb555df226ae8f1fe9db960b216c627",
+      "assembly_sha256": "86b89b542c2462cb0b781fcad8f76368daf29bd547a8d1b34c74b9fe152268f3"
+    },
+    {
+      "label": "partition_cache_select",
+      "start": "0x533593a0",
+      "end": "0x5335948c",
+      "sha256": "5b5487321aa431a914f51ead152e62d270f238f85e6eb6ae469e2c2c97803715",
+      "assembly_sha256": "2a6da01118720becc16e0658c4b84826f29512da9c6555930554ff0f3b9a04d9"
+    },
+    {
+      "label": "partition_capacity_cache_load",
+      "start": "0x53358d20",
+      "end": "0x53358d44",
+      "sha256": "433c8c55b97d90b392aa1319bd6e83a93640af10c2958cace096453aced62a3d",
+      "assembly_sha256": "2783705b9b131a14619c2d8a92b11c648712a99f05bf27f0b888a0108b3dcad5"
+    },
+    {
+      "label": "cmd6_wait",
+      "start": "0x5335b498",
+      "end": "0x5335b4b8",
+      "sha256": "b826091cd1b503801ffaeea24c36617680cc78959df47c4727436b1bef559380",
+      "assembly_sha256": "41c47e4e9dfc7da27e3a5764e86ce60738b99c4503a9fed7313f65408ae15bba"
+    },
+    {
+      "label": "cmd13_wait",
+      "start": "0x5335bba4",
+      "end": "0x5335bbd4",
+      "sha256": "3626124c66e29887ed4f739504d572e64c15f283aa1b1ab2d520df0dfba682a3",
+      "assembly_sha256": "a1c9abd30d8134fe01a864e3bb5e9d6295599063bebbfc441a42d17563343d8b"
+    },
+    {
+      "label": "descriptor_wait",
+      "start": "0x5335ad18",
+      "end": "0x5335ad84",
+      "sha256": "bbc3dd48ecfd43baac4e1c509a65fd82471ee14409b1119c9aef5f4f7c811ed2",
+      "assembly_sha256": "51a9d34ed2c9854c78b82b87ca7de4f4d355c2849df3c9a8aebb0ce0f82f3adc"
+    },
+    {
+      "label": "ordinary_write_completion",
+      "start": "0x5335bea0",
+      "end": "0x5335bf00",
+      "sha256": "f1f0668ab48df1f04517cf586bdf07791b0fc61741a6a5bff5a1ec9ffbc877a5",
+      "assembly_sha256": "b6cba0eea751209f1d412b2f228041c80931a2ef009adc558baff2a48abf5cf5"
+    },
+    {
+      "label": "ordinary_irq_wait_and_recovery",
+      "start": "0x5335a5b4",
+      "end": "0x5335a7f0",
+      "sha256": "0d07feb1cd37d7ce37f05017fe9b717f098d51e478b46eb733a8db3ebe8bb84d",
+      "assembly_sha256": "da4711f482b4cab27346433af7805c0f1f57bef6941c4c30417d3d18706285e2"
+    },
+    {
+      "label": "ordinary_write_attempts",
+      "start": "0x53297640",
+      "end": "0x53297728",
+      "sha256": "132622874d9cc9644a8563980c397e933ecc0770eb8515614308549607c21f13",
+      "assembly_sha256": "cd2f31b3ae235f6958ec83cc6cce259c8bfc0652a5b1f254c6b7390f9f3d3ad6"
+    },
+    {
+      "label": "controller_diagnostic",
+      "start": "0x5335c190",
+      "end": "0x5335c244",
+      "sha256": "b2ffe0fba3befda54c1c0d62de4099dac8c8242cfcea9d697e6cdc8e5885096e",
+      "assembly_sha256": "0e5fdad48df929c4c349c84c29608323c37364f1d2558d08ab36e46ad7160f71"
+    }
+  ],
+  "transfers": [
+    {
+      "site": "0x532977dc",
+      "target": "0x5310b888",
+      "kind": "bl"
+    },
+    {
+      "site": "0x5310b888",
+      "target": "0x532fb73c",
+      "kind": "b"
+    },
+    {
+      "site": "0x532977e8",
+      "target": "0x53297898",
+      "kind": "bne"
+    },
+    {
+      "site": "0x53297808",
+      "target": "0x5331b8c8",
+      "kind": "bl"
+    },
+    {
+      "site": "0x53297824",
+      "target": "0x5331b92c",
+      "kind": "bl"
+    },
+    {
+      "site": "0x53297844",
+      "target": "0x5331b968",
+      "kind": "bl"
+    },
+    {
+      "site": "0x53297870",
+      "target": "0x53297808",
+      "kind": "bne"
+    },
+    {
+      "site": "0x5331b998",
+      "target": "0x5331ff68",
+      "kind": "b"
+    },
+    {
+      "site": "0x5331ff80",
+      "target": "0x533202f0",
+      "kind": "bl"
+    },
+    {
+      "site": "0x5331ff88",
+      "target": "0x5331ffe8",
+      "kind": "bne"
+    },
+    {
+      "site": "0x5331ffd8",
+      "target": "0x533593a0",
+      "kind": "bl"
+    },
+    {
+      "site": "0x53320308",
+      "target": "0x5335948c",
+      "kind": "bl"
+    },
+    {
+      "site": "0x53359630",
+      "target": "0x5335c770",
+      "kind": "bl"
+    },
+    {
+      "site": "0x53359644",
+      "target": "0x5335ca04",
+      "kind": "bl"
+    },
+    {
+      "site": "0x5335c858",
+      "target": "0x5335c848",
+      "kind": "bne"
+    },
+    {
+      "site": "0x5335c8b0",
+      "target": "0x5335d230",
+      "kind": "bl"
+    },
+    {
+      "site": "0x5335ca48",
+      "target": "0x5335fad8",
+      "kind": "bl"
+    },
+    {
+      "site": "0x5335fbf8",
+      "target": "0x5335ade0",
+      "kind": "bl"
+    },
+    {
+      "site": "0x5335ae24",
+      "target": "0x5335a7f0",
+      "kind": "bl"
+    },
+    {
+      "site": "0x5335ae30",
+      "target": "0x5335ad18",
+      "kind": "bl"
+    },
+    {
+      "site": "0x5335fc94",
+      "target": "0x53359c84",
+      "kind": "bl"
+    },
+    {
+      "site": "0x53359cb4",
+      "target": "0x5335d338",
+      "kind": "bl"
+    },
+    {
+      "site": "0x5335d360",
+      "target": "0x5335b51c",
+      "kind": "bl"
+    },
+    {
+      "site": "0x5335d374",
+      "target": "0x5335bc80",
+      "kind": "bl"
+    },
+    {
+      "site": "0x5335d388",
+      "target": "0x5335b778",
+      "kind": "bl"
+    },
+    {
+      "site": "0x5335b830",
+      "target": "0x5335a7f0",
+      "kind": "bl"
+    },
+    {
+      "site": "0x5335b848",
+      "target": "0x5335ad18",
+      "kind": "bl"
+    },
+    {
+      "site": "0x5335e114",
+      "target": "0x5335b778",
+      "kind": "bl"
+    },
+    {
+      "site": "0x5335e154",
+      "target": "0x5335e13c",
+      "kind": "beq"
+    },
+    {
+      "site": "0x5335cd74",
+      "target": "0x5335cd5c",
+      "kind": "bne"
+    },
+    {
+      "site": "0x5335aa7c",
+      "target": "0x5335a8f0",
+      "kind": "b"
+    },
+    {
+      "site": "0x53360250",
+      "target": "0x5335b438",
+      "kind": "bl"
+    },
+    {
+      "site": "0x53360264",
+      "target": "0x5335bb40",
+      "kind": "bl"
+    },
+    {
+      "site": "0x5336027c",
+      "target": "0x5335ee8c",
+      "kind": "bl"
+    },
+    {
+      "site": "0x5335b4b0",
+      "target": "0x5335ad18",
+      "kind": "bl"
+    },
+    {
+      "site": "0x5335bbbc",
+      "target": "0x5335ad18",
+      "kind": "bl"
+    },
+    {
+      "site": "0x5335ad6c",
+      "target": "0x5335cb70",
+      "kind": "bl"
+    },
+    {
+      "site": "0x5335cbec",
+      "target": "0x5335ebec",
+      "kind": "bl"
+    },
+    {
+      "site": "0x5335ec14",
+      "target": "0x5335ed2c",
+      "kind": "bne"
+    },
+    {
+      "site": "0x5335ec64",
+      "target": "0x5335cce8",
+      "kind": "bl"
+    },
+    {
+      "site": "0x5335ed34",
+      "target": "0x5335c5b0",
+      "kind": "bl"
+    },
+    {
+      "site": "0x5335ed40",
+      "target": "0x5335e97c",
+      "kind": "bl"
+    },
+    {
+      "site": "0x5335ea58",
+      "target": "0x5335dd78",
+      "kind": "bl"
+    },
+    {
+      "site": "0x5335ddb4",
+      "target": "0x5335d4f8",
+      "kind": "bl"
+    },
+    {
+      "site": "0x5335ddc8",
+      "target": "0x5335dd90",
+      "kind": "bne"
+    },
+    {
+      "site": "0x5335beec",
+      "target": "0x5335a5b4",
+      "kind": "bl"
+    },
+    {
+      "site": "0x5335a7cc",
+      "target": "0x5335e97c",
+      "kind": "bl"
+    },
+    {
+      "site": "0x5335a7e0",
+      "target": "0x5335e97c",
+      "kind": "bl"
+    },
+    {
+      "site": "0x53297680",
+      "target": "0x5331b99c",
+      "kind": "bl"
+    },
+    {
+      "site": "0x532976a8",
+      "target": "0x53297674",
+      "kind": "bne"
+    },
+    {
+      "site": "0x532976d8",
+      "target": "0x530fced4",
+      "kind": "bl"
+    },
+    {
+      "site": "0x5335947c",
+      "target": "0x53360428",
+      "kind": "bl"
+    }
+  ],
+  "instructions": [
+    {
+      "site": "0x532977bc",
+      "instruction": "ldrb r5, [r0, #0x30]",
+      "bytes": "3050d0e5"
+    },
+    {
+      "site": "0x532fb74c",
+      "instruction": "ldr r0, [r3, #8]",
+      "bytes": "080093e5"
+    },
+    {
+      "site": "0x53297804",
+      "instruction": "mov r4, #3",
+      "bytes": "0340a0e3"
+    },
+    {
+      "site": "0x5331ffd4",
+      "instruction": "mov r0, #0",
+      "bytes": "0000a0e3"
+    },
+    {
+      "site": "0x5331ffe0",
+      "instruction": "movne r0, #1",
+      "bytes": "0100a013"
+    },
+    {
+      "site": "0x53359624",
+      "instruction": "movw r0, #0x2100",
+      "bytes": "000102e3"
+    },
+    {
+      "site": "0x53359628",
+      "instruction": "movt r0, #0x520c",
+      "bytes": "0c0245e3"
+    },
+    {
+      "site": "0x5335c7f4",
+      "instruction": "add lr, r0, #0x1fc",
+      "bytes": "7fef80e2"
+    },
+    {
+      "site": "0x5335c804",
+      "instruction": "mov r2, lr",
+      "bytes": "0e20a0e1"
+    },
+    {
+      "site": "0x5335c80c",
+      "instruction": "sub r3, r0, #4",
+      "bytes": "043040e2"
+    },
+    {
+      "site": "0x5335c848",
+      "instruction": "str ip, [r3, #4]!",
+      "bytes": "04c0a3e5"
+    },
+    {
+      "site": "0x5335c850",
+      "instruction": "cmp r3, lr",
+      "bytes": "0e0053e1"
+    },
+    {
+      "site": "0x5335c854",
+      "instruction": "str ip, [r2, #4]!",
+      "bytes": "04c0a2e5"
+    },
+    {
+      "site": "0x5335ade4",
+      "instruction": "mov r1, #0",
+      "bytes": "0010a0e3"
+    },
+    {
+      "site": "0x5335ae04",
+      "instruction": "mov r2, #0x40",
+      "bytes": "4020a0e3"
+    },
+    {
+      "site": "0x5335d384",
+      "instruction": "add r1, r4, #0x200",
+      "bytes": "021c84e2"
+    },
+    {
+      "site": "0x5335b7d8",
+      "instruction": "mov r1, #8",
+      "bytes": "0810a0e3"
+    },
+    {
+      "site": "0x5335b7e4",
+      "instruction": "str r5, [fp, #-0x5c]",
+      "bytes": "5c500be5"
+    },
+    {
+      "site": "0x5335b7ec",
+      "instruction": "str r3, [fp, #-0x44]",
+      "bytes": "44300be5"
+    },
+    {
+      "site": "0x5335b800",
+      "instruction": "mov r1, #0x200",
+      "bytes": "021ca0e3"
+    },
+    {
+      "site": "0x5335b820",
+      "instruction": "strh r1, [fp, #-0x28]",
+      "bytes": "b8124be1"
+    },
+    {
+      "site": "0x5335e110",
+      "instruction": "mov r1, r4",
+      "bytes": "0410a0e1"
+    },
+    {
+      "site": "0x5335e140",
+      "instruction": "cmp sl, #0x80",
+      "bytes": "80005ae3"
+    },
+    {
+      "site": "0x5335e150",
+      "instruction": "cmp r0, r1",
+      "bytes": "010050e1"
+    },
+    {
+      "site": "0x5335aa04",
+      "instruction": "ldr r2, [r4, #4]",
+      "bytes": "042094e5"
+    },
+    {
+      "site": "0x5335aa0c",
+      "instruction": "str r2, [r4, #8]",
+      "bytes": "082084e5"
+    },
+    {
+      "site": "0x5335cd64",
+      "instruction": "str r0, [r3]",
+      "bytes": "000083e5"
+    },
+    {
+      "site": "0x53359440",
+      "instruction": "ldrb r3, [r6]",
+      "bytes": "0030d6e5"
+    },
+    {
+      "site": "0x53359448",
+      "instruction": "cmp r3, r5",
+      "bytes": "050053e1"
+    },
+    {
+      "site": "0x53359454",
+      "instruction": "strb r5, [r6]",
+      "bytes": "0050c6e5"
+    },
+    {
+      "site": "0x53358d34",
+      "instruction": "ldrb r2, [r3]",
+      "bytes": "0020d3e5"
+    },
+    {
+      "site": "0x5335ec10",
+      "instruction": "ands r7, r1, #0x8000",
+      "bytes": "027911e2"
+    },
+    {
+      "site": "0x5335ed44",
+      "instruction": "strb r0, [r5, #0x3b]",
+      "bytes": "3b00c5e5"
+    },
+    {
+      "site": "0x5335e9c0",
+      "instruction": "ldrb r3, [r5, #0x44c]",
+      "bytes": "4c34d5e5"
+    },
+    {
+      "site": "0x5335ea40",
+      "instruction": "tst r6, #0x700000",
+      "bytes": "070616e3"
+    },
+    {
+      "site": "0x5335ea44",
+      "instruction": "and r3, r6, #0xf0000",
+      "bytes": "0f3806e2"
+    },
+    {
+      "site": "0x5335dd94",
+      "instruction": "mov r1, #0x6000000",
+      "bytes": "0614a0e3"
+    },
+    {
+      "site": "0x5335dda8",
+      "instruction": "str r0, [ip, #0x2c]",
+      "bytes": "2c008ce5"
+    },
+    {
+      "site": "0x5335ea78",
+      "instruction": "str r6, [r2, #0x30]",
+      "bytes": "306082e5"
+    },
+    {
+      "site": "0x5335ea80",
+      "instruction": "str r7, [r2, #0x38]",
+      "bytes": "387082e5"
+    },
+    {
+      "site": "0x5335a7d0",
+      "instruction": "strb r0, [r5, #0x3b]",
+      "bytes": "3b00c5e5"
+    },
+    {
+      "site": "0x5335a7e4",
+      "instruction": "strb r0, [r5, #0x3b]",
+      "bytes": "3b00c5e5"
+    },
+    {
+      "site": "0x532976a4",
+      "instruction": "subs r4, r4, #1",
+      "bytes": "014054e2"
+    },
+    {
+      "site": "0x532976dc",
+      "instruction": "mov r0, r4",
+      "bytes": "0400a0e1"
+    }
+  ],
+  "resources": [
+    {
+      "address": "0x53cb13b0",
+      "source_address": "0x53cb13b0",
+      "size": 32,
+      "sha256": "fff15e3ca9a32346c26c984a1d0815758709bfe0847d5acba6e0ed78e9234cca",
+      "text": "emmc device init error = 0x%04x"
+    },
+    {
+      "address": "0x53cb1348",
+      "source_address": "0x53cb1348",
+      "size": 48,
+      "sha256": "0e67ca2e19171f6534f206b825010597e2223f3a9eca3cc012e223c828a928a5",
+      "text": "emmc write sector error : %d : 0x%08x %d : %p\r\n"
+    },
+    {
+      "address": "0x53ccca38",
+      "source_address": "0x53ccca38",
+      "size": 35,
+      "sha256": "824f762243a55bf4c7b5154864a976108f4037fff654b396d385c7ffe7fe39f7",
+      "text": "MWEM_DeviceInit() failed: ercd=%d\n"
+    }
+  ],
+  "relations": [
+    {
+      "label": "Controller RAM clear",
+      "function": "0x5335c770",
+      "call": "0x53359630",
+      "base": "0x520c2100",
+      "stores": [
+        "0x5335c848",
+        "0x5335c854"
+      ],
+      "bytes_cleared": "0x400",
+      "included_shadow": "0x520c23b3",
+      "excluded_cache": "0x520c25e0"
+    },
+    {
+      "label": "Card initialization then CMD8 refresh",
+      "controller_activate": "0x5335ca48",
+      "command0": "0x5335fbf8",
+      "card_init": "0x5335fad8",
+      "refresh_caller": "0x53359cb4",
+      "cmd8_submit": "0x5335d388",
+      "cmd8_destination": "0x520c2300",
+      "bytes_requested": 512,
+      "pio_destination_store": "0x5335cd64",
+      "training_call": "0x5335e114",
+      "training_destination": "0x520c2100",
+      "training_comparison_words": 128
+    },
+    {
+      "label": "Initialized-device select user",
+      "function": "0x5331ff68",
+      "select_site": "0x5331ffd8",
+      "requested_partition": 0,
+      "same_cache_fast_path": "0x53359448",
+      "software_cache": "0x520c25e0",
+      "condition": "Device initialization returns zero first. The selection helper compares its old cache, independently of the refreshed shadow."
+    },
+    {
+      "label": "Host recovery only on reached error path",
+      "command_completion": "0x5335ed40",
+      "shared_host_recovery": "0x5335e97c",
+      "ordinary_wait_sites": [
+        "0x5335a7cc",
+        "0x5335a7e0"
+      ],
+      "host_reset_site": "0x5335ea58",
+      "host_reset_register_offset": "0x2c",
+      "mask": "0x06000000",
+      "condition": "Host recovery and its reset pulse are conditional on the recorded status and controller flags. The traced path has no CMD8, full device init or partition-cache store."
+    },
+    {
+      "label": "Ordinary retries and final error",
+      "entry": "0x53297640",
+      "retry": "0x532976a8",
+      "final_log": "0x532976d8",
+      "zero_return": "0x532976dc",
+      "condition": "Three attempted writes may each hit shared controller recovery. Exhaustion logs and returns zero without a device-init call in this wrapper."
+    }
+  ],
+  "searches": [
+    {
+      "file": "candidate-scan.json",
+      "sha256": "2303a859ab98453d0e9279ea59260165a6864388de44416d469603b444244fb0"
+    }
+  ],
+  "scope": "Bounded static RTOS and CPU-only synthetic RAM. Physical card state, unseen aliases, external boot image and all asynchronous recovery callers remain open."
+}

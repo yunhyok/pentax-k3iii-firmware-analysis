@@ -1,0 +1,573 @@
+{
+  "image": {
+    "base": "0x52500000",
+    "size": 25483200,
+    "sha256": "342d2f35405e8daf1797dfe431d2e4aa70f4b52a2c242a29df48206672f1dfb4"
+  },
+  "functions": [
+    {
+      "label": "adjust_manager_constructor",
+      "start": "0x52eab078",
+      "end": "0x52eab390",
+      "size": 792,
+      "sha256": "e81cbf920da4303e1503b77fc69e76b04926e42ac3bfaf66e7618c9c7023b05d",
+      "assembly_sha256": "a00200fa873efdeab4062895fcc7415b7668b3213e0ac682116b855ef42105d0",
+      "pseudocode_sha256": "82741b3305d3316a4e61c4dd25df60f14c3c1278b6dded57bc8054309b0b7d8a",
+      "angr_version": "10.0.5",
+      "scope": "Genuine whole-function bounded angr C; manual bounds, original ARM authoritative."
+    },
+    {
+      "label": "adjust_payload_write",
+      "start": "0x52eac328",
+      "end": "0x52eac3e4",
+      "size": 188,
+      "sha256": "5f8f2dcb8ca58d7f4ed096416b64286242d17bec0f8e60ed49f1fb96ae59ba2d",
+      "assembly_sha256": "fd05e7569c57f1df096e7ddccf98c95fe249ef30f458b970bb605c431a2426c6",
+      "pseudocode_sha256": "f75e8ace0a8b348cc68cb20ef61f587b8bb5cdd8ab674470d5c3bdf1658e5888",
+      "angr_version": "10.0.5",
+      "scope": "Genuine whole-function bounded angr C; manual bounds, original ARM authoritative."
+    },
+    {
+      "label": "adjust_partition_clear_commit",
+      "start": "0x52eac5d0",
+      "end": "0x52eac618",
+      "size": 72,
+      "sha256": "053a0f8688675eff7f9f3ead727a5be139daaeb9687877e0c7af49b6b392dd03",
+      "assembly_sha256": "b5c8838d425df31e8163faa0a43cf67c11750b8044583e87af95847cb5603d11",
+      "pseudocode_sha256": "445ec78ee26bdbba8ebe804aff92a35d65a260cb8dc7344f890635d25dace390",
+      "angr_version": "10.0.5",
+      "scope": "Genuine whole-function bounded angr C; manual bounds, original ARM authoritative."
+    },
+    {
+      "label": "fwpartition_clear",
+      "start": "0x52ff5348",
+      "end": "0x52ff5494",
+      "size": 332,
+      "sha256": "c4adac03481218bc5d5efb4562ce000ad6d072f426f5f6b48a790feefc4b4a92",
+      "assembly_sha256": "bcafd409c1ed0e55bb58f71fab4ad2c600b68b2fd4b93d687b40eaa826d3376c",
+      "pseudocode_sha256": "2398bcd42d1e99a6271d584f40e68ffcb0c552de9cd9bcda2721c273a8c7f2ce",
+      "angr_version": "10.0.5",
+      "scope": "Genuine whole-function bounded angr C; manual bounds, original ARM authoritative."
+    }
+  ],
+  "fragments": [
+    {
+      "label": "emmc_blocksize",
+      "start": "0x532971dc",
+      "end": "0x532971e4",
+      "size": 8,
+      "sha256": "732254e783751fcde0d42a21270c5e4b8f2ea029fe41215bd85bfbcc79455a7f",
+      "assembly_sha256": "ca1e24d7541a7aba66f327d7d001b16e93ff6e522731a9242e2156ae1e9c0eca",
+      "scope": "Source supporting ARM context; not new whole-function C."
+    },
+    {
+      "label": "partition_table_persist",
+      "start": "0x52ff5818",
+      "end": "0x52ff586c",
+      "size": 84,
+      "sha256": "74f464d03cf838123060108c9eaf331b39b39576d288762d582bb0cf64f0467e",
+      "assembly_sha256": "de4ffd7751648f8fa94cf54dfac14e5dc3fbddbbcafed9be950b5a8a10a018d9",
+      "scope": "Source supporting ARM context; not new whole-function C."
+    },
+    {
+      "label": "resource_fixed_base",
+      "start": "0x52ff8de4",
+      "end": "0x52ff8e18",
+      "size": 52,
+      "sha256": "7a9c8615d9c4f12468208fd54e52d0c65bc96498cbe06e155653a196fb3d5fca",
+      "assembly_sha256": "3fa0772c8e493b8a04572369cffcac2317d90359977f042a3e89edfb9c6964e2",
+      "scope": "Source supporting ARM context; not new whole-function C."
+    },
+    {
+      "label": "nearby_header_read_candidate",
+      "start": "0x53323ce4",
+      "end": "0x53323d54",
+      "size": 112,
+      "sha256": "0b49e1845a782d26d4a8c82a6de9a1d1689626202198be5033bef3d852766e4d",
+      "assembly_sha256": "7a4ac68fd6ec1015db240b8f8dc75d7106708872859c7b663ae120eab496aa29",
+      "scope": "Source supporting ARM context; not new whole-function C."
+    }
+  ],
+  "transfers": [
+    {
+      "site": "0x52eab08c",
+      "target": "0x52ec0564",
+      "kind": "bl"
+    },
+    {
+      "site": "0x52eab118",
+      "target": "0x52fee52c",
+      "kind": "bl"
+    },
+    {
+      "site": "0x52eab144",
+      "target": "0x530fdfc4",
+      "kind": "bl"
+    },
+    {
+      "site": "0x52eab148",
+      "target": "0x52fee52c",
+      "kind": "bl"
+    },
+    {
+      "site": "0x52eab174",
+      "target": "0x530fdfc4",
+      "kind": "bl"
+    },
+    {
+      "site": "0x52eab178",
+      "target": "0x52fee52c",
+      "kind": "bl"
+    },
+    {
+      "site": "0x52eab1a4",
+      "target": "0x530fdfc4",
+      "kind": "bl"
+    },
+    {
+      "site": "0x52eab1b0",
+      "target": "0x530f25f4",
+      "kind": "bl"
+    },
+    {
+      "site": "0x52eab1b8",
+      "target": "0x530f19b4",
+      "kind": "bl"
+    },
+    {
+      "site": "0x52eab1e8",
+      "target": "0x530f2258",
+      "kind": "bl"
+    },
+    {
+      "site": "0x52eab204",
+      "target": "0x530fdfc4",
+      "kind": "bl"
+    },
+    {
+      "site": "0x52eab210",
+      "target": "0x52ff8de4",
+      "kind": "bl"
+    },
+    {
+      "site": "0x52eab234",
+      "target": "0x52ff8dd0",
+      "kind": "bl"
+    },
+    {
+      "site": "0x52eab268",
+      "target": "0x52ff8de4",
+      "kind": "bl"
+    },
+    {
+      "site": "0x52eab28c",
+      "target": "0x52ff8dd0",
+      "kind": "bl"
+    },
+    {
+      "site": "0x52eab2c0",
+      "target": "0x52ff8de4",
+      "kind": "bl"
+    },
+    {
+      "site": "0x52eab2e4",
+      "target": "0x52ff8dd0",
+      "kind": "bl"
+    },
+    {
+      "site": "0x52eab318",
+      "target": "0x52ff8de4",
+      "kind": "bl"
+    },
+    {
+      "site": "0x52eab338",
+      "target": "0x52ff8dd0",
+      "kind": "bl"
+    },
+    {
+      "site": "0x52eab364",
+      "target": "0x5310b7f0",
+      "kind": "bl"
+    },
+    {
+      "site": "0x52eab380",
+      "target": "0x526ac000",
+      "kind": "bl"
+    },
+    {
+      "site": "0x52eac358",
+      "target": "0x526aac80",
+      "kind": "bl"
+    },
+    {
+      "site": "0x52eac3c8",
+      "target": "0x52ff586c",
+      "kind": "bl"
+    },
+    {
+      "site": "0x52eac3e0",
+      "target": "0x52ff5818",
+      "kind": "b"
+    },
+    {
+      "site": "0x52eac5fc",
+      "target": "0x52ff5348",
+      "kind": "bl"
+    },
+    {
+      "site": "0x52eac60c",
+      "target": "0x52ff5818",
+      "kind": "bl"
+    },
+    {
+      "site": "0x52ff5398",
+      "target": "0x530fced4",
+      "kind": "bl"
+    },
+    {
+      "site": "0x52ff53b0",
+      "target": "0x532974a8",
+      "kind": "bl"
+    },
+    {
+      "site": "0x52ff53fc",
+      "target": "0x526ab2a8",
+      "kind": "bl"
+    },
+    {
+      "site": "0x52ff5490",
+      "target": "0x52ff5378",
+      "kind": "b"
+    },
+    {
+      "site": "0x52ff5834",
+      "target": "0x52ff5708",
+      "kind": "bl"
+    },
+    {
+      "site": "0x52ff585c",
+      "target": "0x530fced4",
+      "kind": "bl"
+    }
+  ],
+  "resources": [
+    {
+      "address": "0x545255e8",
+      "source_address": "0x53d0d328",
+      "size": 16,
+      "sha256": "ef7c3b44f9d5a0161e4556d5dd2b4009affaf15ed8df6dde50fdff03e7cc718a",
+      "role": "Initial adjustment work resource record"
+    },
+    {
+      "address": "0x545255f8",
+      "source_address": "0x53d0d338",
+      "size": 16,
+      "sha256": "e735960a3f44bc569f8d3b11d4bbaa6a47ff1a381e8a737d3b1dcf0fa1f21cb0",
+      "role": "Initial adjustment work resource record"
+    },
+    {
+      "address": "0x54525608",
+      "source_address": "0x53d0d348",
+      "size": 16,
+      "sha256": "8c253c7ee4c9c3b3a124339496606fb8a4ad0ce6789eea026fe5244b64269702",
+      "role": "Initial adjustment work resource record"
+    },
+    {
+      "address": "0x54525618",
+      "source_address": "0x53d0d358",
+      "size": 16,
+      "sha256": "1ecd6ee3836eb34e1a49ffdf41e8764d051c6fdf7f0d8895057eb350bb52b3f8",
+      "role": "Initial adjustment work resource record"
+    },
+    {
+      "address": "0x538e6278",
+      "source_address": "0x538e6278",
+      "size": 22,
+      "sha256": "b799752fe13984310d02653ff9003818c2493baa92d9947c523efd9d1fbdfa1e",
+      "role": "Diagnostic source/class/resource name"
+    },
+    {
+      "address": "0x538e7210",
+      "source_address": "0x538e7210",
+      "size": 14,
+      "sha256": "a45f2ec06d1592348ae2547928c7ad8ddac087b6178863ce4a9cf72e8a5cf5d9",
+      "role": "Diagnostic source/class/resource name"
+    },
+    {
+      "address": "0x53912be0",
+      "source_address": "0x53912be0",
+      "size": 15,
+      "sha256": "0bad45ba7a2d0ca0bcdb44250bf3b743a30e4923f324b38e929e7c7163e190ca",
+      "role": "Diagnostic source/class/resource name"
+    },
+    {
+      "address": "0x53912bf0",
+      "source_address": "0x53912bf0",
+      "size": 18,
+      "sha256": "cba3303a3736772ca3293c34fb4e31533a677d4605adf626f203eb2bcd409b70",
+      "role": "Diagnostic source/class/resource name"
+    },
+    {
+      "address": "0x53912c04",
+      "source_address": "0x53912c04",
+      "size": 16,
+      "sha256": "dc5a5ab6956bdb5489838f56276e9e45b18f607b851a2b5b79f6e7e1c64e3404",
+      "role": "Diagnostic source/class/resource name"
+    },
+    {
+      "address": "0x53912c14",
+      "source_address": "0x53912c14",
+      "size": 21,
+      "sha256": "50e1e579cb53c69edc653438cd9163fbf3cd5a09aefb729777fa3e946977b95f",
+      "role": "Diagnostic source/class/resource name"
+    },
+    {
+      "address": "0x53911f98",
+      "source_address": "0x53911f98",
+      "size": 37,
+      "sha256": "8c6a9ffae9a2da510a0c72675de62decafd6bd433ed61cdf203cabe8d94c2803",
+      "role": "Diagnostic source/class/resource name"
+    },
+    {
+      "address": "0x53cb1664",
+      "source_address": "0x53cb1664",
+      "size": 4,
+      "sha256": "310f5e8154f37bd0e3e40143b16ffbf4418885840ccc10e7fbc6abbb4a30d115",
+      "role": "Emmc vtable slot"
+    },
+    {
+      "address": "0x53cb1684",
+      "source_address": "0x53cb1684",
+      "size": 4,
+      "sha256": "33f4c3addb0a54db0d96fcf57b4213226ccd069f150d0814f0bf1a5a48098409",
+      "role": "Emmc vtable slot"
+    }
+  ],
+  "pointer_words": [
+    {
+      "address": "0x545255e8",
+      "source_address": "0x53d0d328",
+      "value": "0x53912be0"
+    },
+    {
+      "address": "0x545255ec",
+      "source_address": "0x53d0d32c",
+      "value": "0x20000"
+    },
+    {
+      "address": "0x545255f0",
+      "source_address": "0x53d0d330",
+      "value": "0x50b82100"
+    },
+    {
+      "address": "0x545255f4",
+      "source_address": "0x53d0d334",
+      "value": "0x50adf010"
+    },
+    {
+      "address": "0x545255f8",
+      "source_address": "0x53d0d338",
+      "value": "0x53912bf0"
+    },
+    {
+      "address": "0x545255fc",
+      "source_address": "0x53d0d33c",
+      "value": "0x1f0000"
+    },
+    {
+      "address": "0x54525600",
+      "source_address": "0x53d0d340",
+      "value": "0x50ba2100"
+    },
+    {
+      "address": "0x54525604",
+      "source_address": "0x53d0d344",
+      "value": "0x50adf014"
+    },
+    {
+      "address": "0x54525608",
+      "source_address": "0x53d0d348",
+      "value": "0x53912c04"
+    },
+    {
+      "address": "0x5452560c",
+      "source_address": "0x53d0d34c",
+      "value": "0x1210000"
+    },
+    {
+      "address": "0x54525610",
+      "source_address": "0x53d0d350",
+      "value": "0x50d92100"
+    },
+    {
+      "address": "0x54525614",
+      "source_address": "0x53d0d354",
+      "value": "0x50adf018"
+    },
+    {
+      "address": "0x54525618",
+      "source_address": "0x53d0d358",
+      "value": "0x53912c14"
+    },
+    {
+      "address": "0x5452561c",
+      "source_address": "0x53d0d35c",
+      "value": "0x120000"
+    },
+    {
+      "address": "0x54525620",
+      "source_address": "0x53d0d360",
+      "value": "0x51fa2100"
+    },
+    {
+      "address": "0x54525624",
+      "source_address": "0x53d0d364",
+      "value": "0x50adf01c"
+    },
+    {
+      "address": "0x53cb1664",
+      "source_address": "0x53cb1664",
+      "value": "0x53297a84"
+    },
+    {
+      "address": "0x53cb1684",
+      "source_address": "0x53cb1684",
+      "value": "0x532971dc"
+    }
+  ],
+  "conditional_bindings": [
+    {
+      "callsite": "0x52ff542c",
+      "table_slot": "0x53cb1664",
+      "target": "0x53297a84",
+      "instruction": "blx",
+      "condition": "FwPartition+8 is Emmc with vptr53cb1638, prior registry ID18d binding; allocation succeeds and capacity nonzero."
+    },
+    {
+      "callsite": "0x52ff53c4",
+      "table_slot": "0x53cb1684",
+      "target": "0x532971dc",
+      "instruction": "blx",
+      "condition": "Same Emmc instance; blocksize getter returns512."
+    }
+  ],
+  "strings": [
+    {
+      "address": "0x538e6278",
+      "text": "src/AdjustManager.cpp"
+    },
+    {
+      "address": "0x538e7210",
+      "text": "AdjustManager"
+    },
+    {
+      "address": "0x53912be0",
+      "text": "BootAdjustWork"
+    },
+    {
+      "address": "0x53912bf0",
+      "text": "CaptureAdjustWork"
+    },
+    {
+      "address": "0x53912c04",
+      "text": "ImageAdjustWork"
+    },
+    {
+      "address": "0x53912c14",
+      "text": "ModifiableAdjustWork"
+    },
+    {
+      "address": "0x53911f98",
+      "text": "clear fw partition data [%d] NG...\r\n"
+    }
+  ],
+  "slots": [
+    {
+      "slot": 7,
+      "name": "BootAdjustWork",
+      "base": "0x50b82100",
+      "size": 131072
+    },
+    {
+      "slot": 8,
+      "name": "CaptureAdjustWork",
+      "base": "0x50ba2100",
+      "size": 2031616
+    },
+    {
+      "slot": 9,
+      "name": "ImageAdjustWork",
+      "base": "0x50d92100",
+      "size": 18939904
+    },
+    {
+      "slot": 10,
+      "name": "ModifiableAdjustWork",
+      "base": "0x51fa2100",
+      "size": 1179648
+    }
+  ],
+  "relations": [
+    {
+      "name": "Separate adjustment work payload and partition table aliases",
+      "proven": "52eab118\u219252fee52c;52eab11c manager+8 pointer\u219252eab12c AdjustManager+49c. Manager+10 resource object\u2192AdjustManager+4a0 at52eab15c.Constructor basegetter calls52eab210/268/2c0/318 use slots7/8/9/10; results stored at+424/+444/+464/+484. Row stride is32, local indices0..3. Storage indices10/11/12/13 stored at+41c/+43c/+45c/+47c.",
+      "condition": "Constructor initialized object and resource records unchanged; no corruption/alias substitution assumed."
+    },
+    {
+      "name": "Actual plus4 writer targets payload header",
+      "proven": "52eac328 takeslocalindexr1;row=AdjustManager+32*index.52eac348 loads payload=row+424;52eac358 copies4-byte tag fromrow+430;52eac35c storeslocalindex to payload+4.52eac36c writesa55a5aa5 atpayload+8 and52eac364 writeslengthat+c.52eac390..3b0 sums all preceding32-bit words mod2^32 and writesnegative sum atlast4bytes.52eac3c8 writespayload through52ff586c using row.byte41c; success tail52eac3e0 persists partition table.",
+      "limitation": "Payload+4 is local adjustment index, notslot2 PartitionTable record+4. Marker/checksum are data-format fields, notcryptographic authenticity proof. No write IO executed."
+    },
+    {
+      "name": "Actual descriptor clearing stores",
+      "proven": "52ff5348 reads commoncapacity table+870*i, rounds toblocks, allocates/fills scratchwithff, callsEmmc virtual+2c at52ff542c withselectedbank startblock table+870*i+434*object.byte10+10. Onlyifwrite returnsnonzero,52ff5460/5464 storezero tosame descriptor+14/+18.",
+      "limitation": "It doesnotwrite record+4 orobjectbyte10. A nonzero synthetic inputbank is not a producer. No physical erase command or rollback/atomicity inferred fromfilled buffer submission."
+    },
+    {
+      "name": "Clear then persist wrapper",
+      "proven": "52eac5d0 checks row.byte43a; ifalready nonzero returnsit. Otherwise clearsrow.byte439, calls52ff5348 at52eac5fc withrow.byte41c; onlyonsuccess calls52ff5818 at52eac60c, thenstoresresult atrow.byte43a.52ff5818 persists objecttable pointer+14,size+18,startblock0.",
+      "limitation": "These two row status bytes belongAdjustManager, notFwPartition byte10 orresourcebank. Persistence failure aftersuccessfulclear is not rollback."
+    },
+    {
+      "name": "Rejected nearby fixed-address candidate",
+      "proven": "53323ce4 builds50b70020;53323d24 reads+8 (50b70028) andthen testsit. Storesinretainedwindow targetcallers r2 output buffer, notthat fixedsource.",
+      "limitation": "This is not50b70100 livepartitiontable; caller-output aliases outside this window are not audited."
+    }
+  ],
+  "search_scope": {
+    "immediate_search_values": [
+      "0x870",
+      "0x10e00",
+      "0x10f00"
+    ],
+    "immediate_candidates": 73,
+    "pointer_value_window": [
+      "0x50b70000",
+      "0x50b81100"
+    ],
+    "raw_pointer_candidates": 1324,
+    "scope": "Whole RTOS aligned-word candidate generation, followed by bounded contexts and new AdjustManager payload/clear paths. Raw data coincidences are not classified as code references.",
+    "rejected_candidates": [
+      {
+        "site": "0x52eac35c",
+        "reason": "Direct +4 store targets adjustment payload buffers inresource slots7..10, notpartition records."
+      },
+      {
+        "site": "0x52ff5460",
+        "reason": "Directselecteddescriptorstoreis+14; following+18 alsozero. Record+4 andobjectbyte10 untouched."
+      },
+      {
+        "site": "0x53323d24",
+        "reason": "Fixedaddress50b70028 read, outside tablebase50b70100; nofixed-tablewrite inretainedwindow."
+      }
+    ],
+    "remaining": "Unreviewed raw seed matches and inherited/computed aliases remain; noglobal absence claim. PriorSTRB+10 negative scan not repeated."
+  },
+  "limitations": [
+    "Actual nonzeroFwPartition.byte10 producer remains unresolved.",
+    "Actual CPU assignment toslot2 resource record+4 remains unresolved; priorconditionalwhole-table storageimport is separate.",
+    "Actual +4 writer recoveredhere targetsAdjustManager workpayload header, notthepartitiontable.",
+    "Source-backedalias conclusion assumesnormalconstructor state; noall-alias/globalabsence proof.",
+    "No camera/hardware execution, storageIO, patch/build/flash/public/Git/memory edits."
+  ]
+}

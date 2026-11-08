@@ -1,0 +1,178 @@
+{
+  "passed": true,
+  "image_sha256": "342d2f35405e8daf1797dfe431d2e4aa70f4b52a2c242a29df48206672f1dfb4",
+  "count": 6,
+  "cases": [
+    {
+      "label": "controller_1k_clear",
+      "entry": "0x5335c770",
+      "return_value": 0,
+      "cache": 1,
+      "shadow": 0,
+      "zero_1k": true,
+      "events": []
+    },
+    {
+      "label": "cmd8_refresh_only_shadow",
+      "entry": "0x5335d338",
+      "return_value": 0,
+      "cache": 0,
+      "shadow": 169,
+      "zero_1k": false,
+      "events": [
+        [
+          "cmd8",
+          "0x520c2300",
+          512
+        ]
+      ]
+    },
+    {
+      "label": "init_select0_skips_if_cache0",
+      "entry": "0x5331ff68",
+      "return_value": 0,
+      "cache": 0,
+      "shadow": 169,
+      "zero_1k": false,
+      "events": []
+    },
+    {
+      "label": "init_select0_switch_error",
+      "entry": "0x5331ff68",
+      "return_value": 1,
+      "cache": 1,
+      "shadow": 168,
+      "zero_1k": false,
+      "events": [
+        [
+          "switch",
+          0,
+          7
+        ]
+      ]
+    },
+    {
+      "label": "init_failure_skips_select0",
+      "entry": "0x5331ff68",
+      "return_value": 1,
+      "cache": 1,
+      "shadow": 169,
+      "zero_1k": false,
+      "events": []
+    },
+    {
+      "label": "host_reset_leaves_software_partition_fields",
+      "entry": "0x5335e97c",
+      "return_value": 36,
+      "cache": 1,
+      "shadow": 169,
+      "zero_1k": false,
+      "events": [
+        [
+          "host_reset",
+          "0x6000000"
+        ],
+        [
+          "host_reset",
+          "0x6000000"
+        ]
+      ]
+    }
+  ],
+  "scope": "ARM synthetic RAM only. CMD8 data, hardware, clock, and RTOS calls are stubs.",
+  "ranges": [
+    {
+      "start": "0x5335c770",
+      "end": "0x5335ca04",
+      "sha256": "30c6145c001062c95731eaf507c67e9bdd6cf91b364c16073a425ccff511fcde"
+    },
+    {
+      "start": "0x5335d338",
+      "end": "0x5335d4f8",
+      "sha256": "d859f5dbc64c87f7f7fea5f471786e7b19452a26fd3a965df829c8dcdd637c12"
+    },
+    {
+      "start": "0x5335b778",
+      "end": "0x5335b950",
+      "sha256": "471f94ecf9d78e34d11613e2f01578ca1d7178ae695823e8c3c54d8603baa5cc"
+    },
+    {
+      "start": "0x5331ff68",
+      "end": "0x5331fff8",
+      "sha256": "51b708771daa5f848c3c9b529f36add1a470a858c45b81f3b5ba82c1c0bf1fa0"
+    },
+    {
+      "start": "0x533593a0",
+      "end": "0x5335948c",
+      "sha256": "5b5487321aa431a914f51ead152e62d270f238f85e6eb6ae469e2c2c97803715"
+    },
+    {
+      "start": "0x5335e97c",
+      "end": "0x5335ebec",
+      "sha256": "a77a520b1ca5baf5a35007473aa41dcafe92e7685d79b1d47045901b070accd3"
+    },
+    {
+      "start": "0x5335dd78",
+      "end": "0x5335de60",
+      "sha256": "81ee2a496180bc088ed34ed589fef81df11fa1e8fe1925cacbbcb47e7846ba28"
+    }
+  ],
+  "intercepted": [
+    {
+      "address": "0x5335d230",
+      "name": "host descriptor finalization"
+    },
+    {
+      "address": "0x5335b51c",
+      "name": "CMD7"
+    },
+    {
+      "address": "0x5335bc80",
+      "name": "CMD16"
+    },
+    {
+      "address": "0x53323684",
+      "name": "destination maintenance"
+    },
+    {
+      "address": "0x526ab2a8",
+      "name": "RAM fill"
+    },
+    {
+      "address": "0x5335a7f0",
+      "name": "CMD8 capture and synthetic receive"
+    },
+    {
+      "address": "0x5335ad18",
+      "name": "command wait"
+    },
+    {
+      "address": "0x533202f0",
+      "name": "entire underlying device initialization"
+    },
+    {
+      "address": "0x533244b8",
+      "name": "controller acquire"
+    },
+    {
+      "address": "0x53324528",
+      "name": "controller release"
+    },
+    {
+      "address": "0x53360428",
+      "name": "actual partition switch"
+    },
+    {
+      "address": "0x5335c190",
+      "name": "diagnostic"
+    },
+    {
+      "address": "0x5335d4f8",
+      "name": "host reset wait"
+    },
+    {
+      "address": "0x53323614",
+      "name": "delay"
+    }
+  ]
+}
