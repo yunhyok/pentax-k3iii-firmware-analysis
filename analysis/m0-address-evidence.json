@@ -1,0 +1,235 @@
+{
+  "image": {
+    "base": "0x3ffe0300",
+    "size": 92164,
+    "sha256": "63dd8f3b2668ef68f3ab0f8ecd0f4cda8c46a78c5388646fc9e1fe85e39a070e"
+  },
+  "functions": [
+    {
+      "label": "m0_device_register_setup",
+      "start": "0x3ffe36dc",
+      "end": "0x3ffe37ec",
+      "size": 272,
+      "sha256": "1b0c3e9828d1dbfdce2b3d91af53f81d5d8be14ef502c0c58787f020f62cd33e",
+      "assembly_sha256": "27aa8da8eb2d6941b566f087fbf1292865a2e627b3ca489817e685c9ec2617ef",
+      "pseudocode_sha256": "5452750e59a4e5530e90b1243cae597428eddaa62d58f39338f6eac82e39efbc",
+      "angr_version": "10.0.5",
+      "scope": "Genuine bounded Thumb C; manual instructions authoritative, hardware unexecuted."
+    }
+  ],
+  "fragments": [],
+  "transfers": [
+    {
+      "site": "0x3ffe36f6",
+      "size": 2,
+      "kind": "ble",
+      "target": "0x3ffe3704"
+    },
+    {
+      "site": "0x3ffe3702",
+      "size": 2,
+      "kind": "bgt",
+      "target": "0x3ffe36f8"
+    },
+    {
+      "site": "0x3ffe371c",
+      "size": 2,
+      "kind": "beq",
+      "target": "0x3ffe3736"
+    },
+    {
+      "site": "0x3ffe3720",
+      "size": 2,
+      "kind": "beq",
+      "target": "0x3ffe372e"
+    },
+    {
+      "site": "0x3ffe3726",
+      "size": 2,
+      "kind": "bls",
+      "target": "0x3ffe372e"
+    },
+    {
+      "site": "0x3ffe3732",
+      "size": 4,
+      "kind": "bl",
+      "target": "0x3ffe36c0"
+    },
+    {
+      "site": "0x3ffe377a",
+      "size": 2,
+      "kind": "ble",
+      "target": "0x3ffe3788"
+    },
+    {
+      "site": "0x3ffe3786",
+      "size": 2,
+      "kind": "bgt",
+      "target": "0x3ffe377c"
+    },
+    {
+      "site": "0x3ffe37d2",
+      "size": 2,
+      "kind": "ble",
+      "target": "0x3ffe37e0"
+    },
+    {
+      "site": "0x3ffe37de",
+      "size": 2,
+      "kind": "bgt",
+      "target": "0x3ffe37d4"
+    },
+    {
+      "site": "0x3ffe37ea",
+      "size": 2,
+      "kind": "b",
+      "target": "0x3ffe3728"
+    }
+  ],
+  "pointer_words": [
+    {
+      "address": "0x3ffe37ec",
+      "value": "0x4b110000",
+      "size": 4,
+      "sha256": "2f0b0d0a0159790f890c9ad3c36e67e09dda39f661780953f82a7bb5106bdf2a"
+    },
+    {
+      "address": "0x3ffe37f0",
+      "value": "0x7ff",
+      "size": 4,
+      "sha256": "51593c382f4fdfe38d472575c1f2bc766a59ae38e5393f5e25462ebdc56dbbed"
+    },
+    {
+      "address": "0x3ffe37f4",
+      "value": "0x3fff70fc",
+      "size": 4,
+      "sha256": "627931e752819baefb7e8c54369306adc023b52738a072ec9ed33c37c1694416"
+    },
+    {
+      "address": "0x3ffe37f8",
+      "value": "0x49000000",
+      "size": 4,
+      "sha256": "3f08f60bf2a0754139d918d80882ef46cd0257bd2f62ef5d8a1e28175c4360cc"
+    },
+    {
+      "address": "0x3ffe37fc",
+      "value": "0x4d020000",
+      "size": 4,
+      "sha256": "605b8e5564b5694fc453f0801be91201e8e170d06fa1cd226278790d055a6342"
+    },
+    {
+      "address": "0x3ffe3800",
+      "value": "0x1058",
+      "size": 4,
+      "sha256": "227a0f5754cd47ca5ffe1869391b3cc10cd7e53ed6df9f0df5256955961a14ed"
+    },
+    {
+      "address": "0x3ffe3804",
+      "value": "0xfffffbff",
+      "size": 4,
+      "sha256": "fb4d5cab31605a16327d8c9d410bc47719e7375c99768e2423590376457e9657"
+    }
+  ],
+  "boot": {
+    "base": "0x50b00000",
+    "size": 21696,
+    "sha256": "0a9c086818b9d6e7531b93710c2cab2782c7f2c32bb5b1c26e3b5b5b69695900",
+    "ranges": [
+      {
+        "label": "boot_mmu_disable",
+        "start": "0x50b0003c",
+        "end": "0x50b0007c",
+        "size": 64,
+        "sha256": "e9efb8712571078a2fa908716ada64021fca7ae1365733422daa7b3e99c3e245",
+        "assembly_sha256": "232a77b5a3c017ee4ad361546c72029a0eb073a9dc3c8c5e9d952d01b42795f5"
+      }
+    ],
+    "aligned_sctlr_writes": [
+      "0x50b00050"
+    ],
+    "scope": "Aligned ARM decoding of entire supplied BOOT; SCTLR writes with any Rt register. Entry clears M bit. This is not proof against external code or hardware remapping."
+  },
+  "vendor_comparison": {
+    "archive": "K3mkIII_220.tar.gz / stubby-1.60.1.tar.gz",
+    "member": "stubby-1.60.1/RS_MILBCM0-ES3.bin",
+    "sha256": "54814fcd00fce22333a813bc6c0fe12ddf7ae80c054452a20b63cda0070d4ac4",
+    "size": 62556,
+    "base": "0x3ffe0300",
+    "basis": "Entry literal at file+c4 is 3ffe24ed, matching reset code at file+21ec with base3ffe0300.",
+    "fragments": [
+      {
+        "label": "vendor_es3_cold_release_fragment",
+        "start": "0x3ffe4a08",
+        "end": "0x3ffe4a30",
+        "size": 40,
+        "sha256": "552d4f9e573498a24b7b67d023288ba28863b0deee1903b7f5e76a1a4c1df3ef",
+        "assembly_sha256": "5d7cbc64179857ef65cfab5ed760e568037d2b684e8a43cfd9a7fe9af4b5bd4a"
+      },
+      {
+        "label": "vendor_es3_warm_release_fragment",
+        "start": "0x3ffe4e90",
+        "end": "0x3ffe4eec",
+        "size": 92,
+        "sha256": "89cf401860ab5066df9de70eac2743a56bf0aab4d525d25e6abb743a91133452",
+        "assembly_sha256": "d6a4ffb2134e5971cc64af5563f4936f771d3a4089bbbf9a90288998c1cb0068"
+      }
+    ],
+    "literal_words": [
+      {
+        "file_offset": "0x483c",
+        "address": "0x3ffe4b3c",
+        "value": "0xe59ff018"
+      },
+      {
+        "file_offset": "0x4840",
+        "address": "0x3ffe4b40",
+        "value": "0x20000020"
+      },
+      {
+        "file_offset": "0x4844",
+        "address": "0x3ffe4b44",
+        "value": "0x2000fffc"
+      },
+      {
+        "file_offset": "0x4848",
+        "address": "0x3ffe4b48",
+        "value": "0xf3f"
+      },
+      {
+        "file_offset": "0x484c",
+        "address": "0x3ffe4b4c",
+        "value": "0x4d021090"
+      },
+      {
+        "file_offset": "0x4cb0",
+        "address": "0x3ffe4fb0",
+        "value": "0x20000020"
+      },
+      {
+        "file_offset": "0x4cb4",
+        "address": "0x3ffe4fb4",
+        "value": "0x2000fffc"
+      },
+      {
+        "file_offset": "0x4cb8",
+        "address": "0x3ffe4fb8",
+        "value": "0x4d021090"
+      },
+      {
+        "file_offset": "0x4cbc",
+        "address": "0x3ffe4fbc",
+        "value": "0xf3f"
+      }
+    ],
+    "scope": "Older official-source companion binary; supports repeated address convention, not exact 2.20 firmware behavior or electrical alias proof."
+  },
+  "address_conclusion": {
+    "m0_sram": "0x20000000",
+    "a7_sram": "0x01000000",
+    "mode_offsets": "0xfffc",
+    "same_physical_sram": "unverified",
+    "peripheral_offset": "0x30000000",
+    "sram_difference": "0x1f000000",
+    "warning": "Peripheral address offset cannot be applied to these SRAM addresses; no remap-register writer identified."
+  }
+}

@@ -1,0 +1,187 @@
+{
+  "passed": true,
+  "image_sha256": "63dd8f3b2668ef68f3ab0f8ecd0f4cda8c46a78c5388646fc9e1fe85e39a070e",
+  "cases": 11,
+  "cases_detail": [
+    {
+      "name": "zero count",
+      "result": 0,
+      "descriptor_status": [],
+      "commands": [],
+      "pio_words": 0,
+      "dma": [],
+      "chunk_calls": []
+    },
+    {
+      "name": "bounds rejection",
+      "result": 4,
+      "descriptor_status": [],
+      "commands": [],
+      "pio_words": 0,
+      "dma": [],
+      "chunk_calls": []
+    },
+    {
+      "name": "controller unready",
+      "result": 1,
+      "descriptor_status": [],
+      "commands": [],
+      "pio_words": 0,
+      "dma": [],
+      "chunk_calls": []
+    },
+    {
+      "name": "CMD17 block address PIO",
+      "result": 0,
+      "descriptor_status": [
+        0
+      ],
+      "commands": [
+        [
+          17,
+          10,
+          1
+        ]
+      ],
+      "pio_words": 128,
+      "dma": [],
+      "chunk_calls": []
+    },
+    {
+      "name": "CMD18 byte address PIO",
+      "result": 0,
+      "descriptor_status": [
+        0
+      ],
+      "commands": [
+        [
+          18,
+          5120,
+          2
+        ]
+      ],
+      "pio_words": 256,
+      "dma": [],
+      "chunk_calls": []
+    },
+    {
+      "name": "card response bit masked as error",
+      "result": 1,
+      "descriptor_status": [
+        1
+      ],
+      "commands": [
+        [
+          17,
+          10,
+          1
+        ]
+      ],
+      "pio_words": 0,
+      "dma": [],
+      "chunk_calls": []
+    },
+    {
+      "name": "card response bit outside mask",
+      "result": 0,
+      "descriptor_status": [
+        0
+      ],
+      "commands": [
+        [
+          17,
+          10,
+          1
+        ]
+      ],
+      "pio_words": 128,
+      "dma": [],
+      "chunk_calls": []
+    },
+    {
+      "name": "CMD18 DMA descriptor",
+      "result": 0,
+      "descriptor_status": [
+        0
+      ],
+      "commands": [
+        [
+          18,
+          10,
+          2
+        ]
+      ],
+      "pio_words": 0,
+      "dma": [
+        268468224,
+        67108899,
+        268451840
+      ],
+      "chunk_calls": []
+    },
+    {
+      "name": "poll timeout with pending status",
+      "result": 1,
+      "descriptor_status": [
+        255
+      ],
+      "commands": [
+        [
+          17,
+          10,
+          1
+        ]
+      ],
+      "pio_words": 0,
+      "dma": [],
+      "chunk_calls": []
+    },
+    {
+      "name": "65535 plus one sector chunking",
+      "result": 0,
+      "descriptor_status": [],
+      "commands": [],
+      "pio_words": 0,
+      "dma": [],
+      "chunk_calls": [
+        [
+          10,
+          268451840,
+          33553920,
+          2
+        ],
+        [
+          65545,
+          302005760,
+          512,
+          2
+        ]
+      ]
+    },
+    {
+      "name": "first chunk error stops next chunk",
+      "result": 1,
+      "descriptor_status": [],
+      "commands": [],
+      "pio_words": 0,
+      "dma": [],
+      "chunk_calls": [
+        [
+          10,
+          268451840,
+          33553920,
+          2
+        ]
+      ]
+    }
+  ],
+  "scope": "Original Thumb read wrappers and transport driver paths in synthetic RAM. Clock, divide helper, host register behavior and chunk-only leaf calls are modeled. DMA descriptors are inspected without emulating a DMA engine, card or hardware authentication.",
+  "metadata": {
+    "ranges": 23,
+    "transfers": 342,
+    "literal_words": 43,
+    "literal_references": 50,
+    "resources": 1,
+    "key_instructions": 23
+  }
+}

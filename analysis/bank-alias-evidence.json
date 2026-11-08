@@ -1,0 +1,663 @@
+{
+  "image": {
+    "base": "0x52500000",
+    "size": 25483200,
+    "sha256": "342d2f35405e8daf1797dfe431d2e4aa70f4b52a2c242a29df48206672f1dfb4"
+  },
+  "functions": [
+    {
+      "label": "cameralog_create",
+      "start": "0x52ec9b44",
+      "end": "0x52ec9cec",
+      "size": 424,
+      "sha256": "73848776a35c6640548784fbccb52c633504b4bb0676e751c6e5fe30e29cb599",
+      "assembly_sha256": "f9eb974dd7602df9259855b82f55badec803da8a1472f56577d605d2dc44a095",
+      "pseudocode_sha256": "a19b2bcc45bdec0baf99902bdb1e28496fc40eda0da5003b3ebf100dad7418ed",
+      "angr_version": "10.0.5",
+      "scope": "Genuine bounded whole-function angr C; original ARM is authoritative."
+    },
+    {
+      "label": "cameralog_slot6_bind",
+      "start": "0x52eca808",
+      "end": "0x52eca858",
+      "size": 80,
+      "sha256": "b4619841edcba70defbaa70501e5dc6c1c40b3ab5242d36a289aebbd4ef46c76",
+      "assembly_sha256": "0fca347bee4ce41b3143e278082fed2ad81334e856d06b9dd0110fbf2b17b4c5",
+      "pseudocode_sha256": "21f48d3935d45892520794c174cce138a07af88749b0c02d5c6c55f70e1a1062",
+      "angr_version": "10.0.5",
+      "scope": "Genuine bounded whole-function angr C; original ARM is authoritative."
+    },
+    {
+      "label": "cameralog_word_copy",
+      "start": "0x52eca00c",
+      "end": "0x52eca034",
+      "size": 40,
+      "sha256": "a4c0d48b7486ad1316df68ef764126bbe360cd30ab305dd32ed0b4f58fc2ba35",
+      "assembly_sha256": "ac107012fa7ba10b13fcef10e467009a914d718ea8479a6a0cfcee6a86501714",
+      "pseudocode_sha256": "915a38ddf3e636467e7b5f8f5c3023214e48bcdab5ad907a625ebfc0023b8a5d",
+      "angr_version": "10.0.5",
+      "scope": "Genuine bounded whole-function angr C; original ARM is authoritative."
+    },
+    {
+      "label": "cameralog_dual_write",
+      "start": "0x52eca200",
+      "end": "0x52eca26c",
+      "size": 108,
+      "sha256": "21dcf9acad6888b6afc4954ab203f36d9a411e4c83af69d685dbdd44d31fddd0",
+      "assembly_sha256": "fa81e1e3da5b3c6cc03545e6dd58c7bea2f86914f381b838ce910666e66f3c1c",
+      "pseudocode_sha256": "c360b46a7d582d3c5e21b366161117641c106ba9dcb3a92908c21231980c85be",
+      "angr_version": "10.0.5",
+      "scope": "Genuine bounded whole-function angr C; original ARM is authoritative."
+    },
+    {
+      "label": "cameralog_checksum",
+      "start": "0x52eca1a8",
+      "end": "0x52eca200",
+      "size": 88,
+      "sha256": "583d6e0e9e3b71be96661780ebc9122424dcffa4c7b2b2f27d50413035fe8034",
+      "assembly_sha256": "a02769cc328f547fab6a5e18c1a27d677f9b870e90e67d38bb7ee65021bb7421",
+      "pseudocode_sha256": "d1841bce35382b8e0fa9d71c057903943a428f5e976ee71e9d71c293a454cdaf",
+      "angr_version": "10.0.5",
+      "scope": "Genuine bounded whole-function angr C; original ARM is authoritative."
+    },
+    {
+      "label": "exception_partition_cache_init",
+      "start": "0x53107ffc",
+      "end": "0x531080fc",
+      "size": 256,
+      "sha256": "849254b8259c27f263e2e7949b3710ee825be3b13a84a2c9794aa67c3a60422f",
+      "assembly_sha256": "646d2b87f981687944d220deddcd02b660ea71ecf1177e0ca3c035e6bd476bdd",
+      "pseudocode_sha256": "43915d6a95fbe94b357f3c26d33618c9bb36ba4e1453ad0e9d23ef9cf0a825da",
+      "angr_version": "10.0.5",
+      "scope": "Genuine bounded whole-function angr C; original ARM is authoritative."
+    }
+  ],
+  "fragments": [
+    {
+      "label": "cameralog_constructor",
+      "start": "0x52ec9d08",
+      "end": "0x52ec9d40",
+      "size": 56,
+      "sha256": "3d2831ac7bdad51c8b8fe66d5bdf3a314d1296b8278d04b9911f8b8960cc60a2",
+      "assembly_sha256": "c1dc9360fc574cfb0293a1485aa54aaf7f25bc8ed490682c21632cbb5af13058",
+      "scope": "Supporting original ARM window; not counted as new genuine C."
+    },
+    {
+      "label": "cameralog_factory_alias",
+      "start": "0x52eaae34",
+      "end": "0x52eaae70",
+      "size": 60,
+      "sha256": "b1ff6591f2c56da607ca3f051c50f33669d170c476158cd8561df0d44531cabd",
+      "assembly_sha256": "fd066b435785573cad35f1811f786bf603b57060543d5c1ae6b464f99d3ba62e",
+      "scope": "Supporting original ARM window; not counted as new genuine C."
+    },
+    {
+      "label": "word_copy_caller_alias",
+      "start": "0x5330f980",
+      "end": "0x5330f9dc",
+      "size": 92,
+      "sha256": "d2a077b4269bc5aea699fb1a74eae09cdca1dc13b72cbee9dc3ecf8c3213dfa5",
+      "assembly_sha256": "061f6635780c9106884b1905a98f0a704ed6b71779eda823deca349a59b68a2c",
+      "scope": "Supporting original ARM window; not counted as new genuine C."
+    },
+    {
+      "label": "word_copy_caller_branch",
+      "start": "0x5330fca4",
+      "end": "0x5330fce8",
+      "size": 68,
+      "sha256": "5f382e82fddce9c1facf5fe776ababf5b1af45a9d821f9e50468b7c80002965b",
+      "assembly_sha256": "80da394f4724c735ef07a6feeff8e130112cecf6d3aa92af25578c6158b3e539",
+      "scope": "Supporting original ARM window; not counted as new genuine C."
+    },
+    {
+      "label": "cameralog_buffer_reset",
+      "start": "0x52eca284",
+      "end": "0x52eca308",
+      "size": 132,
+      "sha256": "1a4593e8f060f362c15d5f34e61288e6632a00b7ed32a153b266795f2e1e36af",
+      "assembly_sha256": "ba4d222bd66a9c4b90392992c75fffc0fb826ab17e204c83c989802999fb2bae",
+      "scope": "Supporting original ARM window; not counted as new genuine C."
+    },
+    {
+      "label": "cameralog_optional_commit",
+      "start": "0x52eca26c",
+      "end": "0x52eca284",
+      "size": 24,
+      "sha256": "715e529cce31afd624b5fc969d2f3de72218b2a6c5890538e81ac44100edc287",
+      "assembly_sha256": "92832f96c0c76322dffdb5a0f0485f45c82094d14a5784d7f2940054070d69c5",
+      "scope": "Supporting original ARM window; not counted as new genuine C."
+    },
+    {
+      "label": "exception_clear_caller",
+      "start": "0x531086d0",
+      "end": "0x53108748",
+      "size": 120,
+      "sha256": "56f212c3b4235835cb468798c922258b835ae78e2e9e14a87e403fe9110ea4d5",
+      "assembly_sha256": "1817f3d85b7e94c5110d84f6148c814356265dec6aedd39b8afdcfd24045487b",
+      "scope": "Supporting original ARM window; not counted as new genuine C."
+    }
+  ],
+  "transfers": [
+    {
+      "site": "0x52ec9b58",
+      "target": "0x52eaacf4",
+      "kind": "bl"
+    },
+    {
+      "site": "0x52ec9b8c",
+      "target": "0x530fdfc4",
+      "kind": "bl"
+    },
+    {
+      "site": "0x52ec9b90",
+      "target": "0x52fee52c",
+      "kind": "bl"
+    },
+    {
+      "site": "0x52ec9bbc",
+      "target": "0x530fdfc4",
+      "kind": "bl"
+    },
+    {
+      "site": "0x52ec9bc4",
+      "target": "0x530ef264",
+      "kind": "bl"
+    },
+    {
+      "site": "0x52ec9bec",
+      "target": "0x530fdfc4",
+      "kind": "bl"
+    },
+    {
+      "site": "0x52ec9bf0",
+      "target": "0x52fee52c",
+      "kind": "bl"
+    },
+    {
+      "site": "0x52ec9c1c",
+      "target": "0x530fdfc4",
+      "kind": "bl"
+    },
+    {
+      "site": "0x52ec9c30",
+      "target": "0x52ff8dd0",
+      "kind": "bl"
+    },
+    {
+      "site": "0x52ec9c40",
+      "target": "0x52ec9ca4",
+      "kind": "blo"
+    },
+    {
+      "site": "0x52ec9c48",
+      "target": "0x52ff5314",
+      "kind": "bl"
+    },
+    {
+      "site": "0x52ec9c54",
+      "target": "0x52ec9c98",
+      "kind": "bhs"
+    },
+    {
+      "site": "0x52ec9c60",
+      "target": "0x52ff8dc0",
+      "kind": "bl"
+    },
+    {
+      "site": "0x52ec9c90",
+      "target": "0x530fced4",
+      "kind": "bl"
+    },
+    {
+      "site": "0x52ec9cac",
+      "target": "0x52ff8dc0",
+      "kind": "bl"
+    },
+    {
+      "site": "0x52ec9cdc",
+      "target": "0x530fced4",
+      "kind": "bl"
+    },
+    {
+      "site": "0x52ec9ce8",
+      "target": "0x52ec9c44",
+      "kind": "b"
+    },
+    {
+      "site": "0x52eca820",
+      "target": "0x52ff8de4",
+      "kind": "bl"
+    },
+    {
+      "site": "0x52eca828",
+      "target": "0x5310b7f0",
+      "kind": "bl"
+    },
+    {
+      "site": "0x52eca844",
+      "target": "0x526ac000",
+      "kind": "bl"
+    },
+    {
+      "site": "0x52eca84c",
+      "target": "0x52eca724",
+      "kind": "bl"
+    },
+    {
+      "site": "0x52eca02c",
+      "target": "0x52eca020",
+      "kind": "bne"
+    },
+    {
+      "site": "0x52eca22c",
+      "target": "0x52eca1a8",
+      "kind": "bl"
+    },
+    {
+      "site": "0x52eca244",
+      "target": "0x52ff5ad0",
+      "kind": "bl"
+    },
+    {
+      "site": "0x52eca25c",
+      "target": "0x52ff5ad0",
+      "kind": "bl"
+    },
+    {
+      "site": "0x52eca1b0",
+      "target": "0x52eca1f8",
+      "kind": "beq"
+    },
+    {
+      "site": "0x52eca1f0",
+      "target": "0x52eca1c0",
+      "kind": "bhi"
+    },
+    {
+      "site": "0x5310800c",
+      "target": "0x52fee52c",
+      "kind": "bl"
+    },
+    {
+      "site": "0x53108048",
+      "target": "0x530fdfc4",
+      "kind": "bl"
+    },
+    {
+      "site": "0x5310804c",
+      "target": "0x52f137f0",
+      "kind": "bl"
+    },
+    {
+      "site": "0x53108054",
+      "target": "0x52f1390c",
+      "kind": "bl"
+    },
+    {
+      "site": "0x5310805c",
+      "target": "0x531080f0",
+      "kind": "beq"
+    },
+    {
+      "site": "0x53108074",
+      "target": "0x533aada0",
+      "kind": "bl"
+    },
+    {
+      "site": "0x531080a8",
+      "target": "0x530fdfc4",
+      "kind": "bl"
+    },
+    {
+      "site": "0x531080e4",
+      "target": "0x531080d8",
+      "kind": "bne"
+    },
+    {
+      "site": "0x531080f8",
+      "target": "0x53108084",
+      "kind": "b"
+    },
+    {
+      "site": "0x52eaae38",
+      "target": "0x530f25f4",
+      "kind": "bl"
+    },
+    {
+      "site": "0x52eaae40",
+      "target": "0x52ec9d08",
+      "kind": "bl"
+    },
+    {
+      "site": "0x5330f9ac",
+      "target": "0x52eaacf4",
+      "kind": "bl"
+    },
+    {
+      "site": "0x5330f9d8",
+      "target": "0x530fdfc4",
+      "kind": "bl"
+    },
+    {
+      "site": "0x5330fcb4",
+      "target": "0x52f3e964",
+      "kind": "bl"
+    },
+    {
+      "site": "0x5330fcc4",
+      "target": "0x52f3ea00",
+      "kind": "bl"
+    },
+    {
+      "site": "0x5330fcd0",
+      "target": "0x5330fcb8",
+      "kind": "bne"
+    },
+    {
+      "site": "0x5330fce0",
+      "target": "0x52eca00c",
+      "kind": "bl"
+    },
+    {
+      "site": "0x5330fce4",
+      "target": "0x5330fc9c",
+      "kind": "b"
+    },
+    {
+      "site": "0x52eca2a0",
+      "target": "0x526ab2a8",
+      "kind": "bl"
+    },
+    {
+      "site": "0x52eca2ac",
+      "target": "0x52ed7ab0",
+      "kind": "bl"
+    },
+    {
+      "site": "0x52eca2bc",
+      "target": "0x52ed7a6c",
+      "kind": "bl"
+    },
+    {
+      "site": "0x52eca2cc",
+      "target": "0x52ed7a28",
+      "kind": "bl"
+    },
+    {
+      "site": "0x52eca304",
+      "target": "0x52eca200",
+      "kind": "b"
+    },
+    {
+      "site": "0x52eca274",
+      "target": "0x52eca280",
+      "kind": "bne"
+    },
+    {
+      "site": "0x52eca280",
+      "target": "0x52eca200",
+      "kind": "b"
+    },
+    {
+      "site": "0x53108708",
+      "target": "0x52ff5348",
+      "kind": "bl"
+    },
+    {
+      "site": "0x53108724",
+      "target": "0x53108738",
+      "kind": "beq"
+    },
+    {
+      "site": "0x53108734",
+      "target": "0x530fcd50",
+      "kind": "bl"
+    },
+    {
+      "site": "0x5310873c",
+      "target": "0x531086fc",
+      "kind": "bne"
+    }
+  ],
+  "resources": [
+    {
+      "address": "0x545255d8",
+      "source_address": "0x53d0d318",
+      "size": 16,
+      "sha256": "0d1d4eae15d5e1b91a2baeb3706cc99d11d7aab9f82247c2b1b90795fbd08de1",
+      "role": "Initial resource slot6 CameraLog record"
+    },
+    {
+      "address": "0x538eeff0",
+      "source_address": "0x538eeff0",
+      "size": 20,
+      "sha256": "f6047e1d2eb210ad61a655dc05fac963d13cfd23c0b6246a49b93ed1a4262a04",
+      "role": "CameraLog vtable"
+    },
+    {
+      "address": "0x53912bd4",
+      "source_address": "0x53912bd4",
+      "size": 10,
+      "sha256": "f250b8d7273fc5a25058815f01d1f35bb9bbaa4d67b9d6ae0f6695c4f2b96b22",
+      "role": "Firmware diagnostic or resource name"
+    },
+    {
+      "address": "0x538ef008",
+      "source_address": "0x538ef008",
+      "size": 18,
+      "sha256": "2ac6a1fd756035411652f7245a6a852851dfbc84fe68e777530684cdb2348303",
+      "role": "Firmware diagnostic or resource name"
+    },
+    {
+      "address": "0x538eefd8",
+      "source_address": "0x538eefd8",
+      "size": 11,
+      "sha256": "3a2631064f151a2e091095d4f43f50d0849006d24f507c302d5db71f303db7ea",
+      "role": "Firmware diagnostic or resource name"
+    },
+    {
+      "address": "0x53a706a4",
+      "source_address": "0x53a706a4",
+      "size": 25,
+      "sha256": "c2fbf3ca762c531641330177e122476ad0bbf875033ff88ffe74d8d3825a2ffe",
+      "role": "Firmware diagnostic or resource name"
+    },
+    {
+      "address": "0x53a6db50",
+      "source_address": "0x53a6db50",
+      "size": 18,
+      "sha256": "67e700642802b472e8484a1ae377d7b1990760baa1b2e1eeadf84265150269a1",
+      "role": "Firmware diagnostic or resource name"
+    },
+    {
+      "address": "0x53cc2390",
+      "source_address": "0x53cc2390",
+      "size": 10,
+      "sha256": "226e802f2445808a8fb022e158dc2389e7624e4a73715fbf62cc5bb5772e32f4",
+      "role": "Firmware diagnostic or resource name"
+    }
+  ],
+  "pointer_words": [
+    {
+      "address": "0x545255d8",
+      "source_address": "0x53d0d318",
+      "value": "0x53912bd4"
+    },
+    {
+      "address": "0x545255dc",
+      "source_address": "0x53d0d31c",
+      "value": "0x1000"
+    },
+    {
+      "address": "0x545255e0",
+      "source_address": "0x53d0d320",
+      "value": "0x50b81100"
+    },
+    {
+      "address": "0x545255e4",
+      "source_address": "0x53d0d324",
+      "value": "0x50adf028"
+    },
+    {
+      "address": "0x538eeff0",
+      "source_address": "0x538eeff0",
+      "value": "0x52ec9b40"
+    },
+    {
+      "address": "0x538eeff4",
+      "source_address": "0x538eeff4",
+      "value": "0x52ec9cec"
+    },
+    {
+      "address": "0x538eeff8",
+      "source_address": "0x538eeff8",
+      "value": "0x52ec9b44"
+    },
+    {
+      "address": "0x538eeffc",
+      "source_address": "0x538eeffc",
+      "value": "0x52eca808"
+    },
+    {
+      "address": "0x538ef000",
+      "source_address": "0x538ef000",
+      "value": "0x52ec9b3c"
+    }
+  ],
+  "conditional_bindings": [],
+  "strings": [
+    {
+      "address": "0x53912bd4",
+      "text": "CameraLog"
+    },
+    {
+      "address": "0x538ef008",
+      "text": "src/CameraLog.cpp"
+    },
+    {
+      "address": "0x538eefd8",
+      "text": "9CameraLog"
+    },
+    {
+      "address": "0x53a706a4",
+      "text": "Exception_InitializeData"
+    },
+    {
+      "address": "0x53a6db50",
+      "text": "src/Exception.cpp"
+    },
+    {
+      "address": "0x53cc2390",
+      "text": "cameraLog"
+    }
+  ],
+  "critical_instructions": [
+    {
+      "site": "0x52ec9c04",
+      "instruction": "str r0, [r4, #0x14]"
+    },
+    {
+      "site": "0x52eca824",
+      "instruction": "str r0, [r4, #4]"
+    },
+    {
+      "site": "0x52eca024",
+      "instruction": "str r2, [r3, #4]!"
+    },
+    {
+      "site": "0x52eca220",
+      "instruction": "str r3, [r5, #0x108]"
+    },
+    {
+      "site": "0x52eca230",
+      "instruction": "str r0, [r5, #0x10c]"
+    },
+    {
+      "site": "0x52eca260",
+      "instruction": "and r0, r0, r5"
+    },
+    {
+      "site": "0x52eca264",
+      "instruction": "uxtb r0, r0"
+    },
+    {
+      "site": "0x53108028",
+      "instruction": "str r0, [r4]"
+    },
+    {
+      "site": "0x531080b8",
+      "instruction": "ldrb r0, [r1, #0x10]"
+    },
+    {
+      "site": "0x531080d8",
+      "instruction": "ldr r1, [r2], #0x870"
+    },
+    {
+      "site": "0x531080dc",
+      "instruction": "str r1, [r3], #4"
+    },
+    {
+      "site": "0x5330f9b0",
+      "instruction": "ldr r8, [r0, #8]"
+    },
+    {
+      "site": "0x52eaae4c",
+      "instruction": "str r4, [r5, #8]"
+    }
+  ],
+  "relations": [
+    {
+      "name": "Two distinct pointer aliases in CameraLog",
+      "proven": "52ec9bf0 gets firmware manager,52ec9bf4 loads manager+8 FwPartition,52ec9c04 stores it to CameraLog+14. Separate52eca820 calls resource basegetter withslot6 and52eca824 stores buffer to CameraLog+4. Initialslot6base50b81100,size1000,nameCameraLog is distinct fromslot2base50b70100.",
+      "condition": "Constructor/Create/bind lifecycle and unchanged initial resource table; not all possible alias substitution or corruption."
+    },
+    {
+      "name": "Actual wide-copy writer",
+      "proven": "52eca00c signed count<=0 exits. For positive count N,52eca024 writes N u32 source words to [CameraLog+4]+4..+4*N. The word at payload+0 is preserved. Caller5330f9ac/9b0 loads adjustment-manager+8; factory52eaae40/4c installs CameraLog there. Selectedbranch5330fca4..fce4 builds64words onstack andcalls copy at5330fce0.",
+      "limitation": "This is slot6 payload record+4, not slot2 partition record+4. Caller switch identification is not a hardware command execution observation."
+    },
+    {
+      "name": "Actual two-location boot1 payload writer",
+      "proven": "52eca200 writes marker a55a5aa5 to buffer+108, sums floor((logicalsize-8)/4) little-endian u32 words modulo2^32 in52eca1a8,stores sum atbuffer+10c. Calls52ff5ad0 at52eca244(block1000) and52eca25c(block1800) withsame buffer and rounded transferlength. Both calls occur regardless offirstresult; returns low8(firstresult & secondresult).",
+      "condition": "Known normal logicalsize110; source read count is size-8 rounded down. Prior52ff5ad0 binding selects physical eMMC partition1, distinct from FwPartition.byte10 and resource record+4.",
+      "limitation": "No new media IO or atomicity/rollback proof. Marker and additive checksum are not cryptographic authentication."
+    },
+    {
+      "name": "Exception alias is a consumer and separate cache writer",
+      "proven": "5310800c/10 gets FwPartition and53108028 stores global547bb11c.531080b8 reads byte10,531080c0 table+14, then531080d8..e4 copies five words from table+434*bank+db70+870*k to global547bb104+4*k. db70=26*870+10. Thus descriptors26..30 startblocks arecached, not record4 rewritten. Supporting531086d0 loops indices26..30 through prior clear52ff5348.",
+      "limitation": "Global startblock cache may become stale after tablechanges; synchronization not audited. Synthetic bank1 remains a supplied input, not a nonzero producer."
+    },
+    {
+      "name": "Buffer reset is separate from partition initialization",
+      "proven": "52eca294 loads CameraLog+4,52eca2a0 memset buffer forlogicalsize, then sets metadata andmarkers atbuffer+0/+104/+108. Optional persistence is governed by CameraLog.byte18, initialized1 at52ec9d14; it is not FwPartition.byte10.",
+      "limitation": "The broad write is to slot6 payload under the established normal alias. No whole-program alias exclusion claimed."
+    }
+  ],
+  "search_scope": {
+    "method": "New direct-call discovery from52fee52c followed by immediately loaded manager+8 aliases; direct slot2 basegetter callers; then CameraLog and Exception retained aliases. No repeat globalSTRB+10 scan.",
+    "seed_file": "alias-call-seeds.json",
+    "seed_count": 19,
+    "selected_new_paths": [
+      "CameraLog object+14 storage/object+4 payload",
+      "Exception global547bb11c and547bb104 cache"
+    ],
+    "unreviewed_paths": [
+      "Log.cpp alias at530fe2e4 only triaged as consumer, not fully decompiled",
+      "SystemControl alias at53314e14 not exhaustively followed",
+      "arbitrary computed pointer aliases, indirect calls, external CPUs and external storage content"
+    ]
+  },
+  "numeric_checks": "numeric-checks.json",
+  "prior_evidence": [
+    ".private/bank-direct-writers/evidence.json",
+    ".private/bank-record-writers/evidence.json",
+    ".private/bank-write-switch/evidence.json",
+    ".private/research/m0-resync-controller-state.json"
+  ],
+  "limitations": [
+    "FwPartition.byte10 nonzero producer remains unresolved.",
+    "Actual CPU writer of slot2 partition resource record+4 remains unresolved.",
+    "New actual wide-copy and bufferreset writers targetslot6 CameraLog, notpartitiontable.",
+    "No device/media IO, firmware patch/build/flash, public/Git/memory modifications."
+  ]
+}

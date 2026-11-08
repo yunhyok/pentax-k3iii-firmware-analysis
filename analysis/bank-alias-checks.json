@@ -1,0 +1,112 @@
+{
+  "passed": true,
+  "cases": 11,
+  "image_sha256": "342d2f35405e8daf1797dfe431d2e4aa70f4b52a2c242a29df48206672f1dfb4",
+  "ranges": [
+    {
+      "start": "0x52eca00c",
+      "end": "0x52eca034",
+      "sha256": "a4c0d48b7486ad1316df68ef764126bbe360cd30ab305dd32ed0b4f58fc2ba35"
+    },
+    {
+      "start": "0x52eca1a8",
+      "end": "0x52eca26c",
+      "sha256": "6acefcec83f48b641e210b16f581354f64da08c4f606ae340e59d95e3d8212d0"
+    },
+    {
+      "start": "0x53107ffc",
+      "end": "0x531080fc",
+      "sha256": "849254b8259c27f263e2e7949b3710ee825be3b13a84a2c9794aa67c3a60422f"
+    }
+  ],
+  "cases_detail": [
+    {
+      "group": "full_word_copy_no_stubs",
+      "signed_word_count": -1,
+      "payload_sha256": "cc55cc3f1aafe9506a6a7ad190f49caf99c567a094fea0e6cab5136213179e07"
+    },
+    {
+      "group": "full_word_copy_no_stubs",
+      "signed_word_count": 0,
+      "payload_sha256": "cc55cc3f1aafe9506a6a7ad190f49caf99c567a094fea0e6cab5136213179e07"
+    },
+    {
+      "group": "full_word_copy_no_stubs",
+      "signed_word_count": 1,
+      "payload_sha256": "48213a4dcc30279af03a613aff9b5cd64dca6e6fc3f869917a54cc65e3312fe8"
+    },
+    {
+      "group": "full_word_copy_no_stubs",
+      "signed_word_count": 2,
+      "payload_sha256": "927874bc7aa27642a8bc26088a092f4c14cae45780db7dd807a7e81ae92552dd"
+    },
+    {
+      "group": "full_word_copy_no_stubs",
+      "signed_word_count": 64,
+      "payload_sha256": "9f8fd17d5a9fd1714adc3b40373db581ca162c3cff92d9225caaf7b845149cba"
+    },
+    {
+      "group": "full_dual_write_and_checksum_mocked_storage",
+      "first_result": 0,
+      "second_result": 0,
+      "call_order": [
+        4096,
+        6144
+      ],
+      "return_value": 0,
+      "payload_sha256": "b2b33c35b6e850ae7296be6e174c7a0cc547a805354671cd252ae37c9b9076bd"
+    },
+    {
+      "group": "full_dual_write_and_checksum_mocked_storage",
+      "first_result": 0,
+      "second_result": 1,
+      "call_order": [
+        4096,
+        6144
+      ],
+      "return_value": 0,
+      "payload_sha256": "b2b33c35b6e850ae7296be6e174c7a0cc547a805354671cd252ae37c9b9076bd"
+    },
+    {
+      "group": "full_dual_write_and_checksum_mocked_storage",
+      "first_result": 1,
+      "second_result": 0,
+      "call_order": [
+        4096,
+        6144
+      ],
+      "return_value": 0,
+      "payload_sha256": "b2b33c35b6e850ae7296be6e174c7a0cc547a805354671cd252ae37c9b9076bd"
+    },
+    {
+      "group": "full_dual_write_and_checksum_mocked_storage",
+      "first_result": 1,
+      "second_result": 1,
+      "call_order": [
+        4096,
+        6144
+      ],
+      "return_value": 1,
+      "payload_sha256": "b2b33c35b6e850ae7296be6e174c7a0cc547a805354671cd252ae37c9b9076bd"
+    },
+    {
+      "group": "full_exception_cache_init_mocked_registry",
+      "synthetic_bank": 0,
+      "cache_sha256": "d6f855e36d905b0195d91f301e7f4399dcba77c73e35a2911b8b36d0a2f85c85"
+    },
+    {
+      "group": "full_exception_cache_init_mocked_registry",
+      "synthetic_bank": 1,
+      "cache_sha256": "c5a8277afc063373b28999cc0b4986d5129575b1a71c7fe37d67c2441839e225"
+    }
+  ],
+  "explicit_stubs": {
+    "0x52ff5ad0": "capture boot1 write arguments and return chosen boolean; no lower driver or IO",
+    "0x52fee52c": "return synthetic manager",
+    "0x530fdfc4": "diagnostic/assertion no-op; supplied objects nonnull",
+    "0x52f137f0": "return synthetic registry",
+    "0x52f1390c": "return synthetic driver",
+    "0x533aada0": "return synthetic dynamic-cast result"
+  },
+  "scope": "Original complete word-copy, dual-write including checksum, and Exception initialization functions run on Unicorn Cortex-A15 with synthetic buffers. External manager/registry/cast/assertion and storage explicitly stubbed. Synthetic bank1 is an input, not a producer. No lower driver/media IO, full-device behavior, or physical fidelity asserted."
+}
