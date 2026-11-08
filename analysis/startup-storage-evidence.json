@@ -72,7 +72,7 @@
       "52c275f8 formats ver.%d.%02d into caller object+54 only for both nonzero halves, then sets caller event at object+40 to4; otherwise sets8.",
       "Sender52c28cc4 waits object+40 mask0xc, clears returned bits, and returns true iff0x4 set;0x8 alone returns false; neither triggers assertion.",
       "Request hub+0xc and reply updater+3c (initialized from hub+4) use wrappers ending53309c10. For these message IDs router selects group1; lower transport enqueue/dequeue/registration not fully resolved.",
-      "After query,52feec18(state,1) frees/clears loaded input when successful, resets kind8, filename/size0, and zeros component input descriptors through setters. This does not execute update write operations."
+      "After query,52feec18(state,1) tests state+48: NULL skips the release wrapper at52feec34 and proceeds to component setters and kind8/filename/size0 reset. A nonnull pointer calls52ff622c; only a nonzero wrapper return clears state+48 and proceeds. The wrapper preserves its mutex-acquisition status in r6 and returns it; NULL input inside the wrapper skips lower pool-free calls. Synthetic0xffffffff proves caller forwarding only, not an actual lower-free status. Component5 setter52ff31c4 receives0,0 and preserves its prior+c/+10 fields under the initialized slot1 path; not every component descriptor is zeroed. This does not execute update write operations. See update-finalization-evidence.json."
     ],
     "unknowns": [
       "Full subscription/queue registration connecting sender hub+0xc to this initialized dispatcher, and reply group1 to52c17e14, remains unproved. Matching message ID branches and producer/consumer data layout are proven; delivery is conditional.",

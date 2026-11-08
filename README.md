@@ -10,6 +10,7 @@
 - [원본 압축 블록을 보존한 작은 수정 패키지](analysis/selective-repack.html)
 - [업데이트 파일 입력·버퍼 할당 경로](analysis/update-memory.html)
 - [파일 인터페이스와 입력·해제 버퍼 수명](analysis/update-file-lifetimes.html)
+- [업데이트 파일 경로·volume record·종료 처리 45사례](analysis/update-volume-finalization.html)
 - [실제 DNG 표본·DCP 시험 준비](analysis/raw-test-inputs.html)
 - [ColorChecker 24패치·ICC 색차 비교 절차](analysis/color-comparison-protocol.html)
 - [Lightroom 실제 TIFF 6개·프로파일·출력 색공간 비교](analysis/lightroom-render-comparison.html)

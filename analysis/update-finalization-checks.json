@@ -1,0 +1,549 @@
+{
+  "passed": true,
+  "image_sha256": "342d2f35405e8daf1797dfe431d2e4aa70f4b52a2c242a29df48206672f1dfb4",
+  "cases": 26,
+  "groups": {
+    "component5-fixed-slot1": 5,
+    "edge-component-copy-return-forwarded": 1,
+    "edge-kind6-7-nonboolean-result": 2,
+    "edge-null-input-finalization": 2,
+    "edge-postvalidation-result-forwarded": 1,
+    "execute-wrapper-kind-branch": 6,
+    "finalize-release-and-notification": 4,
+    "load-validate-error-byte": 5
+  },
+  "scope": "Original ARM component5 setup and update completion control flow.\nAll file/update execution, notification, release, OS and hardware boundaries are\nsynthetic. Slot1 uses the original ROM-to-RAM initial record; only small authored\nbytes are copied in emulated RAM. No camera, storage or firmware write executes.\n",
+  "stubs": {
+    "0x526aac80": "copies at most16 authored bytes within emulated RAM only",
+    "0x530fced4": "records diagnostic only",
+    "0x52ff622c": "records input-release request and returns selected status; no allocation or OS release",
+    "0x52ff382c": "captures completion message only; no queue or notification dispatch",
+    "0x53156fec": "captures device/event flag argument only",
+    "0x53156fa4": "captures completion boundary and returns chosen sentinel",
+    "0x52eaacf4": "returns synthetic application root",
+    "0x52ff391c": "records update-start notification only",
+    "0x52fefe98": "records update execution boundary and returns chosen status; NO flash/write path executes",
+    "0x52feee48": "preflight boundary returns selected status",
+    "0x52fee900": "file-loader boundary returns selected status; no reads",
+    "0x52fefb84": "validation boundary returns selected status; no decoder or allocations",
+    "0x53302f6c": "postvalidation boundary returns selected status"
+  },
+  "ranges": [
+    {
+      "start": "0x52ff31c4",
+      "end": "0x52ff3214",
+      "sha256": "50886550a1b4109fb2763d9e809852b7873e66928bd681440ae306b3d76377eb"
+    },
+    {
+      "start": "0x52fee52c",
+      "end": "0x52fee558",
+      "sha256": "98ee062df1bfa44225bd7fbdef0466e96cbf8cf84637f84e35e2d8eb3e069730"
+    },
+    {
+      "start": "0x52ff8de4",
+      "end": "0x52ff8ed0",
+      "sha256": "6e85b8290f7c1441eb69f4119e8340bbc778bdd636554048d42769addae5aeff"
+    },
+    {
+      "start": "0x52feffa8",
+      "end": "0x52ff0198",
+      "sha256": "981c315f9f37cca5ca4dd596fe9a9350c19cf0f7ced981efc7de4a123533bac7"
+    },
+    {
+      "start": "0x52ff3960",
+      "end": "0x52ff399c",
+      "sha256": "e456061368d99403be098829caf497b0d425b533cda5b7903c588f516fc13605"
+    },
+    {
+      "start": "0x533031a0",
+      "end": "0x53303224",
+      "sha256": "b317fe67fa83e9ea8fb527ac497eefb1866b3ff81dc69fd8641b23d7ebce4300"
+    }
+  ],
+  "initial_slot1": {
+    "source_start": "0x53d0d2c8",
+    "ram_start": "0x54525588",
+    "size": 16,
+    "sha256": "455b916505517d2a4b958dc73431a939b0d4dd7ebebb7dd8f96a1b407e91545f"
+  },
+  "results": [
+    {
+      "group": "component5-fixed-slot1",
+      "inputs": {
+        "source": "0x0",
+        "length": 0
+      },
+      "outputs": {
+        "return_pointer": "0x509df000",
+        "component_pointer": "0xdead0000",
+        "component_length": 136
+      },
+      "result_sha256": "000523edb073ccab7654ae5769457b59872f2ca18b4733bfdcb9f9d7e25a237f",
+      "call_addresses": []
+    },
+    {
+      "group": "component5-fixed-slot1",
+      "inputs": {
+        "source": "0x0",
+        "length": 16
+      },
+      "outputs": {
+        "return_pointer": "0x509df000",
+        "component_pointer": "0xdead0000",
+        "component_length": 136
+      },
+      "result_sha256": "000523edb073ccab7654ae5769457b59872f2ca18b4733bfdcb9f9d7e25a237f",
+      "call_addresses": []
+    },
+    {
+      "group": "component5-fixed-slot1",
+      "inputs": {
+        "source": "0x12000000",
+        "length": 0
+      },
+      "outputs": {
+        "return_pointer": "0x509df000",
+        "component_pointer": "0xdead0000",
+        "component_length": 136
+      },
+      "result_sha256": "000523edb073ccab7654ae5769457b59872f2ca18b4733bfdcb9f9d7e25a237f",
+      "call_addresses": []
+    },
+    {
+      "group": "component5-fixed-slot1",
+      "inputs": {
+        "source": "0x12000000",
+        "length": 1
+      },
+      "outputs": {
+        "return_pointer": "0x509df000",
+        "component_pointer": "0x509df000",
+        "component_length": 1
+      },
+      "result_sha256": "ceec8277e8387a56ebe144c17f5ed21c177a74e0047970a7b5bfa5a0811273c7",
+      "call_addresses": [
+        "0x526aac80"
+      ]
+    },
+    {
+      "group": "component5-fixed-slot1",
+      "inputs": {
+        "source": "0x12000000",
+        "length": 16
+      },
+      "outputs": {
+        "return_pointer": "0x509df000",
+        "component_pointer": "0x509df000",
+        "component_length": 16
+      },
+      "result_sha256": "f0c3704beec1669f146dc35909c2b3a457ea8db0e69577b4506f35c366f52b06",
+      "call_addresses": [
+        "0x526aac80"
+      ]
+    },
+    {
+      "group": "finalize-release-and-notification",
+      "inputs": {
+        "flag": 0,
+        "release_result": 0
+      },
+      "outputs": {
+        "return_value": 0,
+        "input_pointer": "0x12000000"
+      },
+      "result_sha256": "730356837bbeecda27dde70a88cef406908c69ac919e12e42785c44e3b708ac4",
+      "call_addresses": [
+        "0x530fced4",
+        "0x52ff622c"
+      ]
+    },
+    {
+      "group": "finalize-release-and-notification",
+      "inputs": {
+        "flag": 0,
+        "release_result": 1
+      },
+      "outputs": {
+        "return_value": 1,
+        "input_pointer": "0x12000000"
+      },
+      "result_sha256": "430157b195600d08b8bc4d42837f114b6d5494d0905811759675e65b8a4ac2a5",
+      "call_addresses": [
+        "0x530fced4",
+        "0x52ff622c"
+      ]
+    },
+    {
+      "group": "finalize-release-and-notification",
+      "inputs": {
+        "flag": 1,
+        "release_result": 0
+      },
+      "outputs": {
+        "return_value": 119,
+        "input_pointer": "0x12000000"
+      },
+      "result_sha256": "63f5718e86f607f8d7a1ad551e64a2f7a056ed9d3ead7d8b55c52da3bf57a47c",
+      "call_addresses": [
+        "0x530fced4",
+        "0x52ff622c",
+        "0x52ff382c",
+        "0x53156fec",
+        "0x53156fa4"
+      ]
+    },
+    {
+      "group": "finalize-release-and-notification",
+      "inputs": {
+        "flag": 1,
+        "release_result": 1
+      },
+      "outputs": {
+        "return_value": 119,
+        "input_pointer": "0x12000000"
+      },
+      "result_sha256": "79d61fcd7a945f0a14c28172d5fb6b568568ff6fb8e5a89fd79d048008c49522",
+      "call_addresses": [
+        "0x530fced4",
+        "0x52ff622c",
+        "0x52ff382c",
+        "0x53156fec",
+        "0x53156fa4"
+      ]
+    },
+    {
+      "group": "execute-wrapper-kind-branch",
+      "inputs": {
+        "kind": 2,
+        "operation_result": 0,
+        "release_result": 0
+      },
+      "outputs": {
+        "return_value": 0,
+        "input_pointer": "0x12000000"
+      },
+      "result_sha256": "3e1c2ab5ff736913754e3a681b9f23cb3e7f4c86487f7c4272f48eba1a3c13ff",
+      "call_addresses": [
+        "0x52eaacf4",
+        "0x530fced4",
+        "0x530fced4",
+        "0x530fced4",
+        "0x52ff391c",
+        "0x52fefe98",
+        "0x530fced4",
+        "0x52ff622c"
+      ]
+    },
+    {
+      "group": "execute-wrapper-kind-branch",
+      "inputs": {
+        "kind": 2,
+        "operation_result": 1,
+        "release_result": 0
+      },
+      "outputs": {
+        "return_value": 1,
+        "input_pointer": "0x12000000"
+      },
+      "result_sha256": "d280353b7bf0ddf572250a89b630f04f64b028781c100b3802c17034a6dbe71d",
+      "call_addresses": [
+        "0x52eaacf4",
+        "0x530fced4",
+        "0x530fced4",
+        "0x530fced4",
+        "0x52ff391c",
+        "0x52fefe98",
+        "0x530fced4",
+        "0x52ff622c",
+        "0x52ff382c",
+        "0x53156fec",
+        "0x53156fa4"
+      ]
+    },
+    {
+      "group": "execute-wrapper-kind-branch",
+      "inputs": {
+        "kind": 5,
+        "operation_result": 0,
+        "release_result": 0
+      },
+      "outputs": {
+        "return_value": 0,
+        "input_pointer": "0x12000000"
+      },
+      "result_sha256": "99c28dc3b2dc0d4123234778a44239b064b7be01e92ae5027a1b847eb4c86ac4",
+      "call_addresses": [
+        "0x52eaacf4",
+        "0x530fced4",
+        "0x530fced4",
+        "0x530fced4",
+        "0x52ff391c",
+        "0x52fefe98"
+      ]
+    },
+    {
+      "group": "execute-wrapper-kind-branch",
+      "inputs": {
+        "kind": 5,
+        "operation_result": 1,
+        "release_result": 0
+      },
+      "outputs": {
+        "return_value": 1,
+        "input_pointer": "0x12000000"
+      },
+      "result_sha256": "5044e5dbde0df796c9785db909fbe664154283a43a25a999bb189ab4242c798f",
+      "call_addresses": [
+        "0x52eaacf4",
+        "0x530fced4",
+        "0x530fced4",
+        "0x530fced4",
+        "0x52ff391c",
+        "0x52fefe98"
+      ]
+    },
+    {
+      "group": "execute-wrapper-kind-branch",
+      "inputs": {
+        "kind": 8,
+        "operation_result": 0,
+        "release_result": 0
+      },
+      "outputs": {
+        "return_value": 0,
+        "input_pointer": "0x12000000"
+      },
+      "result_sha256": "7c1a76b483cae7b1999a317478a4795256386ea9f9ee1cb6438fbbbf90bc9db0",
+      "call_addresses": [
+        "0x52eaacf4",
+        "0x530fced4",
+        "0x530fced4",
+        "0x530fced4",
+        "0x52ff391c",
+        "0x530fced4",
+        "0x52ff622c"
+      ]
+    },
+    {
+      "group": "execute-wrapper-kind-branch",
+      "inputs": {
+        "kind": 8,
+        "operation_result": 1,
+        "release_result": 0
+      },
+      "outputs": {
+        "return_value": 0,
+        "input_pointer": "0x12000000"
+      },
+      "result_sha256": "bd6c0305ab255b1daa82838ceaf6cd8a3c1b6bc34cdbb4758c677004a05c4d9c",
+      "call_addresses": [
+        "0x52eaacf4",
+        "0x530fced4",
+        "0x530fced4",
+        "0x530fced4",
+        "0x52ff391c",
+        "0x530fced4",
+        "0x52ff622c"
+      ]
+    },
+    {
+      "group": "load-validate-error-byte",
+      "inputs": {
+        "failing_boundary": null
+      },
+      "outputs": {
+        "return_value": 1,
+        "error_byte": 238,
+        "input_pointer": "0x12000000"
+      },
+      "result_sha256": "71c1933de075d1d7f28925cb574bca46f40c7ee12830b3604b6a6b7dd4cbab41",
+      "call_addresses": [
+        "0x52feee48",
+        "0x52fee900",
+        "0x52fefb84",
+        "0x53302f6c"
+      ]
+    },
+    {
+      "group": "load-validate-error-byte",
+      "inputs": {
+        "failing_boundary": "0x52feee48"
+      },
+      "outputs": {
+        "return_value": 0,
+        "error_byte": 0,
+        "input_pointer": "0x12000000"
+      },
+      "result_sha256": "8561046b753d42a6c0356ec8c9ea3401c77a27b4f4ef02edbdf6156bdc170bb1",
+      "call_addresses": [
+        "0x52feee48"
+      ]
+    },
+    {
+      "group": "load-validate-error-byte",
+      "inputs": {
+        "failing_boundary": "0x52fee900"
+      },
+      "outputs": {
+        "return_value": 0,
+        "error_byte": 3,
+        "input_pointer": "0x12000000"
+      },
+      "result_sha256": "ace5d5a6f176e3e7bd1e53e372e70836006033535586f44ad0790c6a329b8e48",
+      "call_addresses": [
+        "0x52feee48",
+        "0x52fee900"
+      ]
+    },
+    {
+      "group": "load-validate-error-byte",
+      "inputs": {
+        "failing_boundary": "0x52fefb84"
+      },
+      "outputs": {
+        "return_value": 0,
+        "error_byte": 1,
+        "input_pointer": "0x12000000"
+      },
+      "result_sha256": "3b89f339432176b5faa4bf1e6aa45b29a4a2f76e8ff6c4e9060fee59dc6c92f3",
+      "call_addresses": [
+        "0x52feee48",
+        "0x52fee900",
+        "0x52fefb84"
+      ]
+    },
+    {
+      "group": "load-validate-error-byte",
+      "inputs": {
+        "failing_boundary": "0x53302f6c"
+      },
+      "outputs": {
+        "return_value": 0,
+        "error_byte": 3,
+        "input_pointer": "0x12000000"
+      },
+      "result_sha256": "655549dd32b5dba552a63c07195919639fa01375a540235f2c553b0b51e359c6",
+      "call_addresses": [
+        "0x52feee48",
+        "0x52fee900",
+        "0x52fefb84",
+        "0x53302f6c"
+      ]
+    },
+    {
+      "group": "edge-kind6-7-nonboolean-result",
+      "inputs": {
+        "kind": 6,
+        "operation": 2,
+        "release": 0
+      },
+      "outputs": {
+        "return_value": 2
+      },
+      "result_sha256": "879b1e52d1481b2fe53880bd82b37c589b687232e380bdab64c125043031f509",
+      "call_addresses": [
+        "0x52eaacf4",
+        "0x530fced4",
+        "0x530fced4",
+        "0x530fced4",
+        "0x52ff391c",
+        "0x52fefe98",
+        "0x530fced4",
+        "0x52ff622c",
+        "0x52ff382c",
+        "0x53156fec",
+        "0x53156fa4"
+      ]
+    },
+    {
+      "group": "edge-kind6-7-nonboolean-result",
+      "inputs": {
+        "kind": 7,
+        "operation": 2,
+        "release": 0
+      },
+      "outputs": {
+        "return_value": 2
+      },
+      "result_sha256": "267de5d9ca8a987593f39d685273a26c2147d9bdd3dc95f26b00723209021ca8",
+      "call_addresses": [
+        "0x52eaacf4",
+        "0x530fced4",
+        "0x530fced4",
+        "0x530fced4",
+        "0x52ff391c",
+        "0x52fefe98",
+        "0x530fced4",
+        "0x52ff622c",
+        "0x52ff382c",
+        "0x53156fec",
+        "0x53156fa4"
+      ]
+    },
+    {
+      "group": "edge-null-input-finalization",
+      "inputs": {
+        "flag": 0,
+        "release": 4294967295
+      },
+      "outputs": {
+        "return_value": 4294967295
+      },
+      "result_sha256": "e85d6e7ebbe6cae007e948cba7e23dba6183c15327b45c013ec11b3be43f8bbf",
+      "call_addresses": [
+        "0x530fced4",
+        "0x52ff622c"
+      ]
+    },
+    {
+      "group": "edge-null-input-finalization",
+      "inputs": {
+        "flag": 2,
+        "release": 4294967295
+      },
+      "outputs": {
+        "return_value": 119
+      },
+      "result_sha256": "8637549a6ce5c00f3e378a206fc03a59d56ea15f672537a9d59f1a3033afd0ad",
+      "call_addresses": [
+        "0x530fced4",
+        "0x52ff622c",
+        "0x52ff382c",
+        "0x53156fec",
+        "0x53156fa4"
+      ]
+    },
+    {
+      "group": "edge-component-copy-return-forwarded",
+      "inputs": {
+        "synthetic_copy_return": 153
+      },
+      "outputs": {
+        "return_value": 153,
+        "stored_component_base": "0x509df000"
+      },
+      "result_sha256": "d890750d889c0d48f264a7e58bcc3084729c6273263a6d3825a53366ddf486bb",
+      "call_addresses": [
+        "0x526aac80"
+      ]
+    },
+    {
+      "group": "edge-postvalidation-result-forwarded",
+      "inputs": {
+        "early_status": 2,
+        "post_status": 119
+      },
+      "outputs": {
+        "return_value": 119,
+        "error_byte": 238
+      },
+      "result_sha256": "41feac301306680de80614a3e5400bfec0920ef16f3dc43353e981454ed2d82c",
+      "call_addresses": [
+        "0x52feee48",
+        "0x52fee900",
+        "0x52fefb84",
+        "0x53302f6c"
+      ]
+    }
+  ]
+}

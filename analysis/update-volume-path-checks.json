@@ -1,0 +1,352 @@
+{
+  "passed": true,
+  "image_sha256": "342d2f35405e8daf1797dfe431d2e4aa70f4b52a2c242a29df48206672f1dfb4",
+  "cases": 19,
+  "scope": "Original ARM volume registration and authored filename-to-volume CPU checks.\nFactory runs from its real entry to 52f514f0, before backend construction.\nFormatting, allocation, descriptor notifications and factory query helpers are\nexplicit stubs. No filesystem, mount, OS, hardware or device code executes.\n",
+  "groups": {
+    "factory-entry-to-volume-registration": 1,
+    "filename-constructor-to-real-record": 6,
+    "generated-path-record-backend-condition": 8,
+    "kind2-c-path-size-gate": 2,
+    "registration-first-empty-slot": 1,
+    "registration-full": 1
+  },
+  "stubs": {
+    "0x532980e8": "returns synthetic query object",
+    "0x530f25f4": "bounded mapped allocation sentinel for volume manager/default descriptor/counter",
+    "0x530f2668": "array allocation captures requested bytes; mapped buffer only",
+    "0x52f13e70": "base constructor returns; derived code supplies tested fields",
+    "0x5327f4e4": "default descriptor constructor boundary; fields unused by registered C/R routes",
+    "0x530fdfc4": "false assertion stops; success returns",
+    "0x5327f6b0": "returns authored descriptor-provider object; actual indexed getter executes",
+    "0x52f51028": "factory per-volume query/config boundary",
+    "0x52f5107c": "factory descriptor/config query boundary",
+    "0x30000100": "descriptor vslot+c notification returns1",
+    "0x526ac000": "bounded synthetic formatting; captures template, limit and numeric argument, no libc execution",
+    "0x526ac9c0": "bounded strlen of mapped NUL fixture",
+    "0x52ff7d10": "captures selected path and returns chosen synthetic length; no stat/filesystem"
+  },
+  "ranges": [
+    {
+      "start": "0x52f510e8",
+      "end": "0x52f514f0",
+      "sha256": "689f0cf3bed675f3c0d2611c547a493600a1cfc1b3e4589cb8fd5d5562956421"
+    },
+    {
+      "start": "0x52f5177c",
+      "end": "0x52f5178c",
+      "sha256": "c359fc881962d6595a634a9c8bd4e0d8e955b136cb178d27e6edb0fdc6a38d6f"
+    },
+    {
+      "start": "0x52f52334",
+      "end": "0x52f524b0",
+      "sha256": "cbd678c9062e5a3971e17c870f7a1f21e9021146b3f170c906b065db2de14092"
+    },
+    {
+      "start": "0x52f524b8",
+      "end": "0x52f52674",
+      "sha256": "3fde0387682bbcb53030765896b6c465a273ac8b17ba0a979073a509115dd5a5"
+    },
+    {
+      "start": "0x52f5212c",
+      "end": "0x52f521d8",
+      "sha256": "2068309fa02629dfcce798ff0122f78b03f10c9015c1db46c74c4b4a7efa7d5d"
+    },
+    {
+      "start": "0x5327f710",
+      "end": "0x5327f71c",
+      "sha256": "e60473a44fdee87b019a23473b140725b73828a1343b9200333ecd762005442f"
+    },
+    {
+      "start": "0x52ff32ac",
+      "end": "0x52ff33bc",
+      "sha256": "ea3b5de14d56c56eae3f8dc99a110699b75733c1fe9816cfd9cf5e1a2fd4d908"
+    },
+    {
+      "start": "0x5310b748",
+      "end": "0x5310b75c",
+      "sha256": "1207d92bbd166cd1754afc8cc0bb26a02497628963b2c7714c15e8e6c74bcdc8"
+    },
+    {
+      "start": "0x5310b7f0",
+      "end": "0x5310b804",
+      "sha256": "64cef0843663b066dffd22c069f6342e935584fbf547eb6aa0ab49b1ed7e51c9"
+    },
+    {
+      "start": "0x52ff3474",
+      "end": "0x52ff3480",
+      "sha256": "7cf17a34a597062250f71cb6da0900fb3886b79eb2455376b71a6ced6660a7b3"
+    },
+    {
+      "start": "0x52ff34d0",
+      "end": "0x52ff34dc",
+      "sha256": "d461647b71853c74f2378070ae34abf441307ef1f03b7d882fe3fdf8c3d25789"
+    },
+    {
+      "start": "0x52fef240",
+      "end": "0x52fef488",
+      "sha256": "431913074d553d65105a89d233d6af6de7f3fed9a70fd45d3dd98a046e3cbc89"
+    },
+    {
+      "start": "0x52f4fd70",
+      "end": "0x52f4fe18",
+      "sha256": "56aff2040769ffb02d0ff3ceec44eab7b2cfba41ca8f4e22c40c5b671d40408c"
+    }
+  ],
+  "results": [
+    {
+      "group": "factory-entry-to-volume-registration",
+      "inputs": {},
+      "observed": {
+        "letters": "CDXYABEFGHRW",
+        "provider_indices": [
+          0,
+          1,
+          3,
+          4,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          5
+        ],
+        "capacity": 12,
+        "array_bytes": 296
+      },
+      "result_sha256": "311e9f77aaa4f1ce2ec217b4c3390450f9494e506ccd9a163d34760c90eca9ec"
+    },
+    {
+      "group": "filename-constructor-to-real-record",
+      "inputs": {
+        "model_fixture": 0,
+        "path_letter": "C"
+      },
+      "observed": {
+        "path": "C:\\FWDC0B.BIN",
+        "index": 0,
+        "descriptor_provider_index": 0
+      },
+      "result_sha256": "6f6a7b7f03e5e5e29f7e49ce36e605337ea539ef980c55ac55d19cfaf116bab0"
+    },
+    {
+      "group": "filename-constructor-to-real-record",
+      "inputs": {
+        "model_fixture": 0,
+        "path_letter": "R"
+      },
+      "observed": {
+        "path": "R:\\FWDC0B.BIN",
+        "index": 10,
+        "descriptor_provider_index": 2
+      },
+      "result_sha256": "4778bea64f7e8f8aded466cd3b450c03e6d2f5e3d525830b2dc63d8d4742f1c9"
+    },
+    {
+      "group": "filename-constructor-to-real-record",
+      "inputs": {
+        "model_fixture": 9067,
+        "path_letter": "C"
+      },
+      "observed": {
+        "path": "C:\\FWDC9067B.BIN",
+        "index": 0,
+        "descriptor_provider_index": 0
+      },
+      "result_sha256": "f5718e84b337a2ca7fc4beafb22045e0ff87ddc6cedae9457eb814194059c4e7"
+    },
+    {
+      "group": "filename-constructor-to-real-record",
+      "inputs": {
+        "model_fixture": 9067,
+        "path_letter": "R"
+      },
+      "observed": {
+        "path": "R:\\FWDC9067B.BIN",
+        "index": 10,
+        "descriptor_provider_index": 2
+      },
+      "result_sha256": "035064178854ad7ea9b2dad8ec24075f98d8a2ffa06a3e0af7418234acee981f"
+    },
+    {
+      "group": "filename-constructor-to-real-record",
+      "inputs": {
+        "model_fixture": 2147483647,
+        "path_letter": "C"
+      },
+      "observed": {
+        "path": "C:\\FWDC2147483647B.",
+        "index": 0,
+        "descriptor_provider_index": 0
+      },
+      "result_sha256": "dbce98d49e9f3ab0cc931b550d7d6205d5abaa7b584c324297b9d45e3740ea14"
+    },
+    {
+      "group": "filename-constructor-to-real-record",
+      "inputs": {
+        "model_fixture": 2147483647,
+        "path_letter": "R"
+      },
+      "observed": {
+        "path": "R:\\FWDC2147483647B.",
+        "index": 10,
+        "descriptor_provider_index": 2
+      },
+      "result_sha256": "60ac624c05707e7824bce918e3ca639c02381d8165bbdc8a224e45d3ec34fa87"
+    },
+    {
+      "group": "kind2-c-path-size-gate",
+      "inputs": {
+        "synthetic_length": 0
+      },
+      "observed": {
+        "ret": 0,
+        "state": [
+          3735928559,
+          3735928559,
+          3735928559
+        ]
+      },
+      "result_sha256": "1db6aeba6439a696b1f981c2713099975ad64774f99e2b8e40988a067523c20d"
+    },
+    {
+      "group": "kind2-c-path-size-gate",
+      "inputs": {
+        "synthetic_length": 35136788
+      },
+      "observed": {
+        "ret": 1,
+        "state": [
+          2,
+          1417240836,
+          35136788
+        ]
+      },
+      "result_sha256": "6f4d11d23c67cd6e99e54b166358ece85cde3e31b803f7187398a4e7a8b0f0de"
+    },
+    {
+      "group": "generated-path-record-backend-condition",
+      "inputs": {
+        "letter": "C",
+        "descriptor_byte14": 0,
+        "descriptor_word18": 67371007
+      },
+      "observed": {
+        "index": 0,
+        "backend_offset": 256
+      },
+      "result_sha256": "64ad49cae3654e5fee7b57069fd527cfd5744150988e85f0ce714c8f1e5f4a2e"
+    },
+    {
+      "group": "generated-path-record-backend-condition",
+      "inputs": {
+        "letter": "C",
+        "descriptor_byte14": 0,
+        "descriptor_word18": 67371008
+      },
+      "observed": {
+        "index": 0,
+        "backend_offset": 512
+      },
+      "result_sha256": "961a3410d25dfa754f2f23e9994b17270256e214c0747fe052a85494f33f84a8"
+    },
+    {
+      "group": "generated-path-record-backend-condition",
+      "inputs": {
+        "letter": "C",
+        "descriptor_byte14": 4,
+        "descriptor_word18": 67371007
+      },
+      "observed": {
+        "index": 0,
+        "backend_offset": 768
+      },
+      "result_sha256": "fd59fad074927c740d3347014108af1d260bf9e88b82ce675e1c32687a0cb04f"
+    },
+    {
+      "group": "generated-path-record-backend-condition",
+      "inputs": {
+        "letter": "C",
+        "descriptor_byte14": 4,
+        "descriptor_word18": 67371008
+      },
+      "observed": {
+        "index": 0,
+        "backend_offset": 768
+      },
+      "result_sha256": "e553723da4d6034833d0d5c987847048f9d44607304d7752b3f5f10ce18a093f"
+    },
+    {
+      "group": "generated-path-record-backend-condition",
+      "inputs": {
+        "letter": "R",
+        "descriptor_byte14": 0,
+        "descriptor_word18": 67371007
+      },
+      "observed": {
+        "index": 10,
+        "backend_offset": 256
+      },
+      "result_sha256": "8f4ab32439dadcc31cc6779bed61043bfad1132a01685e4df1ecbef3aa928545"
+    },
+    {
+      "group": "generated-path-record-backend-condition",
+      "inputs": {
+        "letter": "R",
+        "descriptor_byte14": 0,
+        "descriptor_word18": 67371008
+      },
+      "observed": {
+        "index": 10,
+        "backend_offset": 512
+      },
+      "result_sha256": "b10cc0764525ec10cb6733d6fb60401a743df54188594d74a3b965b05f037c0f"
+    },
+    {
+      "group": "generated-path-record-backend-condition",
+      "inputs": {
+        "letter": "R",
+        "descriptor_byte14": 4,
+        "descriptor_word18": 67371007
+      },
+      "observed": {
+        "index": 10,
+        "backend_offset": 768
+      },
+      "result_sha256": "0c5c65eaabe738274fadbe4dece83c335d52e30de886e2700e101d1428330708"
+    },
+    {
+      "group": "generated-path-record-backend-condition",
+      "inputs": {
+        "letter": "R",
+        "descriptor_byte14": 4,
+        "descriptor_word18": 67371008
+      },
+      "observed": {
+        "index": 10,
+        "backend_offset": 768
+      },
+      "result_sha256": "705e42ce7ee009653109f6c1ad3dc608549ae7259f467d6ff7232f7bb955e393"
+    },
+    {
+      "group": "registration-full",
+      "inputs": {},
+      "observed": {
+        "ret": 0,
+        "unchanged": true
+      },
+      "result_sha256": "af80f4e124c0f1dafe880709f36caabda6ff3216cae81b6ffc9595e0fc7b2609"
+    },
+    {
+      "group": "registration-first-empty-slot",
+      "inputs": {},
+      "observed": {
+        "index": 4,
+        "capacity_unchanged": 12
+      },
+      "result_sha256": "9e1d239c41a845b02e7f75a3ff8b42c5575575b5e59291c198ac78756cb20e1e"
+    }
+  ]
+}

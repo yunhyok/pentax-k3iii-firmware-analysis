@@ -48,6 +48,7 @@ class VerifierGuards(unittest.TestCase):
                  ('verify_colorspace_ui.py', 1), ('verify_colorspace_ui_input.py', 1),
                  ('verify_update_file_loader.py', 1), ('verify_update_allocator.py', 1),
                  ('verify_update_file_interface.py', 1), ('verify_update_buffer_lifetime.py', 1),
+                 ('verify_update_volume_path.py', 1), ('verify_update_finalization.py', 1),
                  ('tools/check_color_mode_boundaries.py', 1)]
         with tempfile.TemporaryDirectory() as directory:
             source = Path(directory)/'source.bin';source.write_bytes(b'input sentinel')
@@ -68,6 +69,7 @@ class VerifierGuards(unittest.TestCase):
                      'verify_colorspace_ui_input.py', 'verify_update_file_loader.py',
                      'verify_update_allocator.py', 'tools/verify_qflag_scope.py',
                      'verify_update_file_interface.py', 'verify_update_buffer_lifetime.py',
+                     'verify_update_volume_path.py', 'verify_update_finalization.py',
                      'tools/check_color_mode_boundaries.py'):
             with self.subTest(tool=tool):
                 result = subprocess.run([sys.executable, '-O', str(ROOT/tool), '--help'], capture_output=True, text=True)
