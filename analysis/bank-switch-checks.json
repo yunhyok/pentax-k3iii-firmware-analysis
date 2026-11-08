@@ -1,0 +1,222 @@
+{
+  "explicit_stubs": {
+    "0x530fced4": "diagnostic return0",
+    "0x530f25f4": "synthetic fixed allocation",
+    "0x530f2630": "free no-op",
+    "0x526aac80": "synthetic RAM memcpy",
+    "0x52ff5ad0": "header test capture write arguments and synthetic return only",
+    "0x52ff553c": "table read captured, no IO",
+    "0x52ff5708": "table/wrapper write captured, no IO",
+    "0x532971e4": "synthetic lock result",
+    "0x532971f8": "synthetic unlock result",
+    "0x53297bc0": "synthetic partition select/restore result",
+    "0x52ff375c": "progress no-op",
+    "0x52ff2060": "completion test stage return",
+    "0x52ff20d0": "completion test stage return",
+    "0x52ff21c8": "completion test stage return",
+    "0x52ff2970": "completion test finalize no-op",
+    "0x52ff3a64": "completion test progress end no-op"
+  },
+  "passed": true,
+  "cases": 19,
+  "image_sha256": "342d2f35405e8daf1797dfe431d2e4aa70f4b52a2c242a29df48206672f1dfb4",
+  "scope": "Unicorn Cortex-A15 synthetic RAM. Full header/table/wrapper functions with explicit mocked external calls, plus completion ARM fragment. Pure52ff5304 executes actual bytes. No storage driver/controller executes; no camera hardware fidelity claim.",
+  "ranges": [
+    {
+      "start": "0x52ff20d0",
+      "end": "0x52ff21c8",
+      "sha256": "c793a00313933af4fcf805c71c695aadc6f57a440c6a6ce3e0979fbc1eded2c1"
+    },
+    {
+      "start": "0x52ff5304",
+      "end": "0x52ff5314",
+      "sha256": "abb9a29df3286f08fbc7df00d635cab5ca999c9b0e41f58c60a1e87b16bbd5d9"
+    },
+    {
+      "start": "0x52ff5638",
+      "end": "0x52ff568c",
+      "sha256": "e269cfd6e5384f4de61ae8305a45b0ddf1bb6f8d05eeb53ee91a99df6edc17da"
+    },
+    {
+      "start": "0x52ff5818",
+      "end": "0x52ff586c",
+      "sha256": "74f464d03cf838123060108c9eaf331b39b39576d288762d582bb0cf64f0467e"
+    },
+    {
+      "start": "0x52ff5ad0",
+      "end": "0x52ff5bac",
+      "sha256": "19b09f92497eafb3ac00ddce3b3153a0f843371a27faee1d1db2597a0a7bde82"
+    },
+    {
+      "start": "0x52ff2ae4",
+      "end": "0x52ff2b50",
+      "sha256": "d460936a68d4669490ef3db8d6947d6b9500107f4d274e85153c6c05cb8be095"
+    }
+  ],
+  "cases_detail": [
+    {
+      "group": "full_header_staging_mocked_external_calls",
+      "bank": 0,
+      "write_result": 0,
+      "output_sha256": "d7cb0a648733bd7836c460512a3ced89a053de75674b98a2f4a06f5927b4e72d"
+    },
+    {
+      "group": "full_header_staging_mocked_external_calls",
+      "bank": 0,
+      "write_result": 1,
+      "output_sha256": "d7cb0a648733bd7836c460512a3ced89a053de75674b98a2f4a06f5927b4e72d"
+    },
+    {
+      "group": "full_header_staging_mocked_external_calls",
+      "bank": 1,
+      "write_result": 0,
+      "output_sha256": "c9c93ce76a3db790daee58eaceb11e36fe470d52a366e9a6bf0e3432e943a3bb"
+    },
+    {
+      "group": "full_header_staging_mocked_external_calls",
+      "bank": 1,
+      "write_result": 1,
+      "output_sha256": "c9c93ce76a3db790daee58eaceb11e36fe470d52a366e9a6bf0e3432e943a3bb"
+    },
+    {
+      "group": "full_header_staging_mocked_external_calls",
+      "bank": 255,
+      "write_result": 0,
+      "output_sha256": "10d36dcb6e216d9525fc8d07439d77db194953151478d19f761b2f681a13856c"
+    },
+    {
+      "group": "full_header_staging_mocked_external_calls",
+      "bank": 255,
+      "write_result": 1,
+      "output_sha256": "10d36dcb6e216d9525fc8d07439d77db194953151478d19f761b2f681a13856c"
+    },
+    {
+      "group": "full_table_transfer_mocked_IO",
+      "entry": "0x52ff5638",
+      "io_result": 0,
+      "arguments_sha256": "93983946fc4ba4bfa4aadf5a9d658fb201e36e2a009a9d73c799fa4a85166fa4"
+    },
+    {
+      "group": "full_table_transfer_mocked_IO",
+      "entry": "0x52ff5638",
+      "io_result": 1,
+      "arguments_sha256": "93983946fc4ba4bfa4aadf5a9d658fb201e36e2a009a9d73c799fa4a85166fa4"
+    },
+    {
+      "group": "full_table_transfer_mocked_IO",
+      "entry": "0x52ff5818",
+      "io_result": 0,
+      "arguments_sha256": "93983946fc4ba4bfa4aadf5a9d658fb201e36e2a009a9d73c799fa4a85166fa4"
+    },
+    {
+      "group": "full_table_transfer_mocked_IO",
+      "entry": "0x52ff5818",
+      "io_result": 1,
+      "arguments_sha256": "93983946fc4ba4bfa4aadf5a9d658fb201e36e2a009a9d73c799fa4a85166fa4"
+    },
+    {
+      "group": "full_boot1_wrapper_mocked_IO",
+      "lock_result": 0,
+      "select_result": 1,
+      "write_result": 1,
+      "restore_result": 1,
+      "call_order": [
+        "lock"
+      ],
+      "returned": 0
+    },
+    {
+      "group": "full_boot1_wrapper_mocked_IO",
+      "lock_result": 1,
+      "select_result": 0,
+      "write_result": 1,
+      "restore_result": 1,
+      "call_order": [
+        "lock",
+        "select1",
+        "unlock"
+      ],
+      "returned": 0
+    },
+    {
+      "group": "full_boot1_wrapper_mocked_IO",
+      "lock_result": 1,
+      "select_result": 1,
+      "write_result": 0,
+      "restore_result": 1,
+      "call_order": [
+        "lock",
+        "select1",
+        "write",
+        "restore0",
+        "unlock"
+      ],
+      "returned": 0
+    },
+    {
+      "group": "full_boot1_wrapper_mocked_IO",
+      "lock_result": 1,
+      "select_result": 1,
+      "write_result": 1,
+      "restore_result": 1,
+      "call_order": [
+        "lock",
+        "select1",
+        "write",
+        "restore0",
+        "unlock"
+      ],
+      "returned": 1
+    },
+    {
+      "group": "full_boot1_wrapper_mocked_IO",
+      "lock_result": 1,
+      "select_result": 1,
+      "write_result": 1,
+      "restore_result": 0,
+      "call_order": [
+        "lock",
+        "select1",
+        "write",
+        "restore0",
+        "unlock"
+      ],
+      "returned": 1
+    },
+    {
+      "group": "completion_fragment_mocked_stage_returns",
+      "failed_stage": "table",
+      "call_order": [
+        "table"
+      ]
+    },
+    {
+      "group": "completion_fragment_mocked_stage_returns",
+      "failed_stage": "header",
+      "call_order": [
+        "table",
+        "header"
+      ]
+    },
+    {
+      "group": "completion_fragment_mocked_stage_returns",
+      "failed_stage": "image",
+      "call_order": [
+        "table",
+        "header",
+        "image"
+      ]
+    },
+    {
+      "group": "completion_fragment_mocked_stage_returns",
+      "failed_stage": null,
+      "call_order": [
+        "table",
+        "header",
+        "image",
+        "finalize",
+        "progress_end"
+      ]
+    }
+  ]
+}

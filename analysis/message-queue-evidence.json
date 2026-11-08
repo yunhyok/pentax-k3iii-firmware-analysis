@@ -1,0 +1,132 @@
+{
+  "image_sha256": "342d2f35405e8daf1797dfe431d2e4aa70f4b52a2c242a29df48206672f1dfb4",
+  "base": "0x52500000",
+  "scope": "Static route through initialized objects and successful mailbox operations. Kernel SVC bodies and on-target execution were outside scope.",
+  "task_descriptors": [
+    {
+      "index": "0xc",
+      "descriptor": "0x53a6b39c",
+      "name": "DomainController",
+      "name_address": "0x53a6a594"
+    },
+    {
+      "index": "0x70",
+      "descriptor": "0x53a6b9dc",
+      "name": "SystemControl",
+      "name_address": "0x53a6a8c0"
+    },
+    {
+      "index": "0x74",
+      "descriptor": "0x53a6ba1c",
+      "name": "HTControl",
+      "name_address": "0x53a6a8f4"
+    }
+  ],
+  "routes": [
+    {
+      "message": "0x4642010c",
+      "initial_group": 1,
+      "forwarding_mask": 1,
+      "kind": 2
+    },
+    {
+      "message": "0x27408410",
+      "initial_group": 1,
+      "forwarding_mask": 4,
+      "kind": 2
+    }
+  ],
+  "code_metadata": "deep-evidence.json; message-queue-link and update-receiver sources",
+  "connections": [
+    {
+      "name": "fixed_group_registration",
+      "sites": [
+        "0x533045dc",
+        "0x5330463c",
+        "0x53304c20",
+        "0x53304864"
+      ],
+      "description": "Factory registers group1 and group4 in the map referenced at0x547bffdc; send and receive use the same lookup. This is group/mailbox registration, not evidence for a per-message subscription API."
+    },
+    {
+      "name": "request_transport",
+      "sites": [
+        "0x52c28cc4",
+        "0x53309c10",
+        "0x53304910",
+        "0x530edc60",
+        "0x530ede1c",
+        "0x533044cc",
+        "0x53304ae0",
+        "0x530edfa0",
+        "0x530ee07c"
+      ],
+      "description": "Request publishes initially to group1. DomainController loop receives from group1. Low wrappers use mailbox handle+4 for SVC6 send0x525b7820 and receive0x525b73a0."
+    },
+    {
+      "name": "updater_object_identity",
+      "sites": [
+        "0x533197ac",
+        "0x533197c0",
+        "0x532fe4b8",
+        "0x532fe4bc",
+        "0x532fe4c0",
+        "0x53303cd4",
+        "0x53303ce4"
+      ],
+      "description": "Factory stores constructed updater at+0x10. Startup copies the same pointer into DomainController+0x30. Mask1 forwarding loads that pointer and invokes0x53315174."
+    },
+    {
+      "name": "private_updater_mailbox",
+      "sites": [
+        "0x53315190",
+        "0x53315034",
+        "0x5331503c",
+        "0x530ef00c",
+        "0x530ef08c",
+        "0x530eedf8",
+        "0x530eee20",
+        "0x530eeec4",
+        "0x533196e8"
+      ],
+      "description": "Updater secondary object is primary+4. Constructor stores its mailbox at secondary+0x24; send and task receive use the same field. Secondary dispatcher thunk subtracts4 before primary dispatcher. SystemControl task index0x70."
+    },
+    {
+      "name": "reply_group_and_receiver",
+      "sites": [
+        "0x53315494",
+        "0x53304284",
+        "0x53304288",
+        "0x53304294",
+        "0x5330adfc",
+        "0x52c15f50",
+        "0x52c15f58",
+        "0x52c17f20",
+        "0x53309d88",
+        "0x53309d98"
+      ],
+      "description": "Reply initially enters group1; forwarding mask4 routes it to group4. HTControl index0x74 keeps the domain4 interface from hub+0xc and receives via the same group lookup."
+    },
+    {
+      "name": "query_result_object_identity",
+      "sites": [
+        "0x5254042c",
+        "0x52540430",
+        "0x52540438",
+        "0x5254043c",
+        "0x52c28e4c",
+        "0x52c1628c",
+        "0x52c16290",
+        "0x52c16324",
+        "0x52c16328",
+        "0x52c275f8"
+      ],
+      "description": "One active request callsite and both response ownership variants obtain controller through0x52c27260 then load+4; query waits and result setter use that object event+0x40. Identity depends on stable initialized singleton/field."
+    }
+  ],
+  "unresolved": [
+    "Kernel SVC implementation, actual queue delivery and scheduler ordering were not executed.",
+    "Allocation/registration success and singleton/vptr/field stability are conditions, not runtime observations.",
+    "No exhaustive per-message subscription catalogue was reconstructed."
+  ]
+}

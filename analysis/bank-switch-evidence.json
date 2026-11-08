@@ -1,0 +1,48 @@
+{
+  "relations": [
+    {
+      "name": "Separate table read and write",
+      "proven": "52ff5638 loads object+18 size and+14 table, calls52ff553c(object,0,size,table) at52ff5654.52ff5818 uses same inputs but calls52ff5708 at52ff5834. Constructor size0x10e00 means135 sectors for512-byte blocksize.",
+      "limitation": "These functions do not independently select eMMC partition. Normal update walker first calls53297bc0(driver,0); boot1 wrappers select1 separately."
+    },
+    {
+      "name": "Header selector serialization",
+      "proven": "52ff20d0 allocates0x278.52ff2134 reads FwPartition.byte10;52ff2140 stores to stagedheader+40.52ff5304 maps input0 to0, anynonzero toffff; calls52ff2150/2160 with0/1 store+44=0,+48=ffff.52ff2174 copies0x22c bytes context+38 intoheader+4c.52ff2188 calls52ff5ad0(storage,0,0x278,header).",
+      "limitation": "This serializes the existing selector; it is not a nonzero producer. Header+14..3f is not initialized by this function; allocator prior contents are not established."
+    },
+    {
+      "name": "Boot1 partition operation distinct from bank",
+      "proven": "52ff5ad0 locks Emmc virtual+6c, calls53297bc0(driver,1), invokes52ff5708 only when nonzero, then53297bc0(driver,0) and virtual+70 unlock.539121b0 diagnostic explicitly says set emmc partition to boot1. Restore return is ignored; function returns write result.",
+      "limitation": "Emmc partition1 is not FwPartition.byte10 or resourcebank. Driver calls only intercepted in tests; no actual partition switch or IO."
+    },
+    {
+      "name": "Completion order",
+      "proven": "Completion ARM52ff2ae4..2b58:52ff2af0 tablecommit52ff2060; success→52ff2b0c header52ff20d0; success→52ff2b28 bootimage52ff21c8; success→52ff2970 and52ff3a64. Every zero stage result branches52ff2bf4. Ordinary record payload writes occur earlier in walker, retained byiconbin-loader.",
+      "limitation": "CPU submission/call order only. No atomicity, power-fail safety, actual media completion or rollback guarantee established."
+    },
+    {
+      "name": "Boot image arguments",
+      "proven": "52ff21c8 rounds context+3c word+10 to block index via532974a8, then52ff2224 calls52ff5ad0(storage,index,descriptor+0c,context+2c).Diagnostic539117c8 names write boot image.",
+      "limitation": "No payload execution; fields are passed through from accepted package context."
+    },
+    {
+      "name": "Per-resource record+4 not changed in retained layout/write",
+      "proven": "52ff1ea8 writes common capacity table+870*i and chosenbank fields+8,+c,+10,+14,+18.52ff586c writes chosenbank+14/+18 only after successful payloadwrite. Neither retained function assigns record+4. FwPartition.byte10 initial0 remains the only confirmed producer in scopedclasscode.",
+      "limitation": "No global absence claim. BOOT per-resourcebank atrecord+4 may have a producer outside these paths. A nonzero objectbank producer is not found."
+    },
+    {
+      "name": "Bounded search negatives",
+      "proven": "Immediate STRB+10 near directmanagergetter52fee52c yielded constructor plus unrelated object constructors/status functions.53301df0 writes its incoming r0 object+10, while manager return supplies+c to a different r4 object.53901038 SetPartitionTable candidate52f4c840 indexes onlyfour16-byte records atoffset1be, not870-stride FwPartition table. Immediate MOVW434 search identified known consumers and unrelated constants.",
+      "limitation": "Heuristic candidates only; no all-alias/all-store proof. Wider stores, inherited pointers, copies, computed constants, other threads/CPUs and unavailable device state remain outside the search."
+    }
+  ],
+  "limitations": [
+    "No actual hardware/camera/storage IO, patch, build or flash.",
+    "Nonzero FwPartition bank and record+4 producers unresolved; bounded negative search only.",
+    "BOOT table-copy selector, per-resourcebank and Emmc partition selection are different fields.",
+    "No atomic update, redundant-bank transaction, power-loss recovery or safe firmware modification claim.",
+    "Synthetic checks mock external calls; restored partition success and actual media results not verified."
+  ],
+  "image_sha256": "342d2f35405e8daf1797dfe431d2e4aa70f4b52a2c242a29df48206672f1dfb4",
+  "source_code_metadata": "deep-evidence.json; sources bank-write-switch and earlier storage-bank-init/iconbin-loader"
+}

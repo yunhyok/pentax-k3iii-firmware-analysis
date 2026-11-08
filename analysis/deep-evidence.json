@@ -180,6 +180,14 @@
       "pseudocode_sha256": "5e7eb0f222884ec1d852961dea73134bbc036f295542a0dcbe339864fefe1a2b"
     },
     {
+      "label": "query_controller_callsite",
+      "start": "0x5254042c",
+      "end": "0x52540440",
+      "sha256": "23f722e6fb8187d076136887535ebead11b9ada4c805856951bb507e4e9904be",
+      "source": "message-queue-link",
+      "method": "instruction-range"
+    },
+    {
       "label": "false_pair_low_origin",
       "start": "0x525b07b0",
       "end": "0x525b07e8",
@@ -201,6 +209,22 @@
       "end": "0x525b0acc",
       "sha256": "4e882fa7b6f5f728f96e5162c2a590e10459e3eaf6e161d308ea0a9ca72d6281",
       "source": "wblv-references",
+      "method": "instruction-range"
+    },
+    {
+      "label": "mailbox_syscall_receive",
+      "start": "0x525b73a0",
+      "end": "0x525b73c4",
+      "sha256": "46f969bda3c94bd08927aea40099bb4bc7b8d4b6a934613a1ee0769eace794ba",
+      "source": "message-queue-link",
+      "method": "instruction-range"
+    },
+    {
+      "label": "mailbox_syscall_send",
+      "start": "0x525b7820",
+      "end": "0x525b7844",
+      "sha256": "b9bc6922e1ee1a9bdee008716642bd57af44e499fb5990322fce7e958af4f27d",
+      "source": "message-queue-link",
       "method": "instruction-range"
     },
     {
@@ -641,6 +665,31 @@
       "pseudocode_sha256": "aaa2bac6065e31c5d89350fc77fdef6495b3f6063d386868a45b3bdb7eb18421"
     },
     {
+      "label": "ht_control_start",
+      "start": "0x52c15918",
+      "end": "0x52c15934",
+      "sha256": "2679e3501e295c80ee6fc3b32813b683d00d9f56c81052b22cb35e77d0e5a3ec",
+      "source": "message-queue-link",
+      "method": "instruction-range"
+    },
+    {
+      "label": "ht_control_register",
+      "start": "0x52c15eb8",
+      "end": "0x52c15f64",
+      "sha256": "ed90bf69d3bcb66959a903b253bfcb92569a107cee7c6c80073235fa7245bc75",
+      "source": "message-queue-link",
+      "method": "decompiled-window",
+      "pseudocode_sha256": "78f946289c751d98f62423a2a7ddcde94e03088bd35f784890ae3ab9e7855946"
+    },
+    {
+      "label": "ht_control_singleton",
+      "start": "0x52c15f64",
+      "end": "0x52c15fc4",
+      "sha256": "355a543eb7c8aaa55fd3bab1c98bac37f293d8210478eec527a557cc8cb97109",
+      "source": "message-queue-link",
+      "method": "instruction-range"
+    },
+    {
       "label": "update_reply_consumer",
       "start": "0x52c16240",
       "end": "0x52c1635c",
@@ -648,6 +697,30 @@
       "source": "update-receiver",
       "method": "decompiled-window",
       "pseudocode_sha256": "3a30990a621ecb7379f3e87c81b1bf5b003b0c69c38c0a3c4dcf78c2538f5dec"
+    },
+    {
+      "label": "reply_controller_load_owned",
+      "start": "0x52c1628c",
+      "end": "0x52c162a0",
+      "sha256": "81dd09374f46c02b8f38750d5bfe09f0c3653c609a2089f0ccd1f8a7fa11cc85",
+      "source": "message-queue-link",
+      "method": "instruction-range"
+    },
+    {
+      "label": "reply_controller_load_unowned",
+      "start": "0x52c16324",
+      "end": "0x52c16340",
+      "sha256": "ea0eac529ce4cb7d05db99ec3546875d8930d052a2683af303203ef8945949ca",
+      "source": "message-queue-link",
+      "method": "instruction-range"
+    },
+    {
+      "label": "ht_control_receive_and_reply",
+      "start": "0x52c17f18",
+      "end": "0x52c18090",
+      "sha256": "e44f4c83f23619235149703e49f89e17533ddeb0c07d718501234c44d55ae76f",
+      "source": "message-queue-link",
+      "method": "instruction-range"
     },
     {
       "label": "reply_event_branch",
@@ -710,6 +783,14 @@
       "pseudocode_sha256": "6143bebb8bac9149ef07fe1b3166eb549717b9c7e22133c01400b5ddb5dbc983"
     },
     {
+      "label": "reply_controller_set_event",
+      "start": "0x52c27634",
+      "end": "0x52c2763c",
+      "sha256": "86a63195332c44599213abeec073247020a1be8bb386edeaf546f753f8ef3700",
+      "source": "message-queue-link",
+      "method": "instruction-range"
+    },
+    {
       "label": "original_request_send_wait",
       "start": "0x52c28cc4",
       "end": "0x52c28d68",
@@ -725,6 +806,22 @@
       "source": "update-validation",
       "method": "decompiled-window",
       "pseudocode_sha256": "1d8a9bb2c0b2c8c3b1c07bc65e42efc7fb0bd8865a4232ae83a2f04c2858b2a5"
+    },
+    {
+      "label": "query_controller_wrapper",
+      "start": "0x52c28e3c",
+      "end": "0x52c28edc",
+      "sha256": "4a6c58a8af8da77c42579805662710b485dbacb5fccc7afb239d51db57e89023",
+      "source": "message-queue-link",
+      "method": "instruction-range"
+    },
+    {
+      "label": "query_dispatch_alternative",
+      "start": "0x52c29338",
+      "end": "0x52c29344",
+      "sha256": "ef360f95bddce192cc94bab43c97cf6d6b916b06c82933fdfa3af7716362f99b",
+      "source": "message-queue-link",
+      "method": "instruction-range"
     },
     {
       "label": "af_correlation_sad_ssd_u16",
@@ -1757,6 +1854,14 @@
       "pseudocode_sha256": "613fd1ebb29bf1e9483ea6173b94d7d0a3a1e945e3def458a06e63bdc6a6b515"
     },
     {
+      "label": "setpartitiontable_other_format",
+      "start": "0x52f4c840",
+      "end": "0x52f4c8c0",
+      "sha256": "6d23bc9b5f3827b98d85fb2cbbdef9d5322dd5dea42ac718cb24d272d241ecb8",
+      "source": "bank-write-switch",
+      "method": "instruction-range"
+    },
+    {
       "label": "fwpartition_allocation",
       "start": "0x52fee260",
       "end": "0x52fee280",
@@ -1871,6 +1976,33 @@
       "pseudocode_sha256": "8aabdcafb5aa48a91be75a1cdcb611c4c294d76e9cc39ea9a07a46287649463c"
     },
     {
+      "label": "package_table_commit",
+      "start": "0x52ff2060",
+      "end": "0x52ff20d0",
+      "sha256": "5d38dcba66d2aff558c61c5da04f53521808d08132cb1b5f135c67c67be5bd54",
+      "source": "bank-write-switch",
+      "method": "decompiled-window",
+      "pseudocode_sha256": "a9382d917b37670f5596cdfb27b5513f8f3d46da2171735c86583bbedc1bd5c6"
+    },
+    {
+      "label": "package_boot_header_write",
+      "start": "0x52ff20d0",
+      "end": "0x52ff21c8",
+      "sha256": "c793a00313933af4fcf805c71c695aadc6f57a440c6a6ce3e0979fbc1eded2c1",
+      "source": "bank-write-switch",
+      "method": "decompiled-window",
+      "pseudocode_sha256": "ba92d51b99494baef13f9b6f6a8c2a64e8a13dbe28131022cc1597864b962a37"
+    },
+    {
+      "label": "package_boot_image_write",
+      "start": "0x52ff21c8",
+      "end": "0x52ff225c",
+      "sha256": "3fed285075d9a8c011546a7a01c90d0c2c7b96bb7c67cfa9de506bc952964cef",
+      "source": "bank-write-switch",
+      "method": "decompiled-window",
+      "pseudocode_sha256": "759ce9b8eaeca9fccbde7459600268f7005e115da3c6c770b25c76c5a88f8ec9"
+    },
+    {
       "label": "package_partition_write",
       "start": "0x52ff225c",
       "end": "0x52ff2364",
@@ -1878,6 +2010,14 @@
       "source": "iconbin-loader",
       "method": "decompiled-window",
       "pseudocode_sha256": "062ab1ce52121fea9c7dc8ccf8d3bfce9b3d62448ea0e7609e5e43a94fd7a2b8"
+    },
+    {
+      "label": "update_select_partition_zero",
+      "start": "0x52ff29c8",
+      "end": "0x52ff2a24",
+      "sha256": "360b0b545156b9adbb09246a06f208c3b25492d576c4b62c13237bc6515caa9a",
+      "source": "bank-write-switch",
+      "method": "instruction-range"
     },
     {
       "label": "package_record_walk",
@@ -1895,6 +2035,14 @@
       "sha256": "53fab0ec4c88f45381a8570dcc6c6d9c100a7dacfbda6ab5a3fb520f3b0d3d29",
       "source": "iconbin-loader",
       "method": "data-range"
+    },
+    {
+      "label": "completion_commit_order",
+      "start": "0x52ff2ae4",
+      "end": "0x52ff2b58",
+      "sha256": "21f244affebba2d5cfb2080f9c7716fe6d0c6960cc2d05ac091d2f231f913990",
+      "source": "bank-write-switch",
+      "method": "instruction-range"
     },
     {
       "label": "update_version_components",
@@ -2065,12 +2213,29 @@
       "pseudocode_sha256": "75fb2d15bf262b024d42c153d4a900238017ac983b097146f2792928322d9bf5"
     },
     {
+      "label": "bank_default",
+      "start": "0x52ff52d4",
+      "end": "0x52ff5304",
+      "sha256": "8b6d2f17c2c5f47e48d80307da7993141d19f18ad3d801b03310cc50fd255904",
+      "source": "bank-write-switch",
+      "method": "instruction-range"
+    },
+    {
       "label": "fwpartition_constructor_literal",
       "start": "0x52ff5300",
       "end": "0x52ff5304",
       "sha256": "2bcdac3957108553fd57edf70d1257f4372871953a5649426b06aed06265f19a",
       "source": "storage-bank-init",
       "method": "instruction-range"
+    },
+    {
+      "label": "table_copy_location",
+      "start": "0x52ff5304",
+      "end": "0x52ff5314",
+      "sha256": "abb9a29df3286f08fbc7df00d635cab5ca999c9b0e41f58c60a1e87b16bbd5d9",
+      "source": "bank-write-switch",
+      "method": "decompiled-window",
+      "pseudocode_sha256": "e5aef2af2db390d2c258fae91dbded4e1e61f25f10fc7d50e271b7186f889ef7"
     },
     {
       "label": "storage_size_round",
@@ -2091,6 +2256,15 @@
       "pseudocode_sha256": "3b18ef13a6bdb7b53e65a5f32ad32367c6900534f65528ae2c24caeea14a2f04"
     },
     {
+      "label": "partition_table_read",
+      "start": "0x52ff5638",
+      "end": "0x52ff568c",
+      "sha256": "e269cfd6e5384f4de61ae8305a45b0ddf1bb6f8d05eeb53ee91a99df6edc17da",
+      "source": "bank-write-switch",
+      "method": "decompiled-window",
+      "pseudocode_sha256": "5ae215d0077b04b2a00d6c7fed7539e1a14dd43c724f019171d7072642e0b227"
+    },
+    {
       "label": "storage_read_index",
       "start": "0x52ff568c",
       "end": "0x52ff5708",
@@ -2108,6 +2282,15 @@
       "method": "instruction-range"
     },
     {
+      "label": "partition_table_write",
+      "start": "0x52ff5818",
+      "end": "0x52ff586c",
+      "sha256": "74f464d03cf838123060108c9eaf331b39b39576d288762d582bb0cf64f0467e",
+      "source": "bank-write-switch",
+      "method": "decompiled-window",
+      "pseudocode_sha256": "21ba685ec960d34b13beb66c33bccaef6e5ead1edfacd4672f42e6c436ef3c5b"
+    },
+    {
       "label": "storage_write_index",
       "start": "0x52ff586c",
       "end": "0x52ff59f4",
@@ -2115,6 +2298,15 @@
       "source": "iconbin-loader",
       "method": "decompiled-window",
       "pseudocode_sha256": "ff8ce6319f5744ae7d262bdc913a32943f9873f880723c359eac19337c219575"
+    },
+    {
+      "label": "boot1_write_wrapper",
+      "start": "0x52ff5ad0",
+      "end": "0x52ff5bac",
+      "sha256": "19b09f92497eafb3ac00ddce3b3153a0f843371a27faee1d1db2597a0a7bde82",
+      "source": "bank-write-switch",
+      "method": "decompiled-window",
+      "pseudocode_sha256": "938206f4a6c0dfd5cc69634dac1268b4cf753b4e519d21e9b5ed5674d405ff9e"
     },
     {
       "label": "file_info_query",
@@ -2758,6 +2950,14 @@
       "pseudocode_sha256": "5dfafc88211717d7794636ad21f59aeca0be81eba7442c201611f4bf8ff85f19"
     },
     {
+      "label": "mailbox_create_and_register",
+      "start": "0x530eea54",
+      "end": "0x530eec50",
+      "sha256": "b895933ac24a29ba8d9423210dc51fa1928f1c1eb6c8053042daa4c1e930e03d",
+      "source": "message-queue-link",
+      "method": "instruction-range"
+    },
+    {
       "label": "macro_worker",
       "start": "0x530eed94",
       "end": "0x530eefc4",
@@ -2784,6 +2984,14 @@
       "pseudocode_sha256": "d476174922d0ab99cbd4f5d63d4e7da688d8ef5448d461a59d9316ee5acb240b"
     },
     {
+      "label": "mailbox_task_submit",
+      "start": "0x530ef074",
+      "end": "0x530ef128",
+      "sha256": "f24db44d2d513523614886350fe08da2dda0033c5416f8bc07e8e3481c1cdee9",
+      "source": "message-queue-link",
+      "method": "instruction-range"
+    },
+    {
       "label": "module_message_send",
       "start": "0x530ef074",
       "end": "0x530ef1d4",
@@ -2791,6 +2999,14 @@
       "source": "raw-jpeg",
       "method": "decompiled-window",
       "pseudocode_sha256": "84b08c3e7b42cc272f8784cbb597dece06852e8e1791b3f36cf2a9b996f9a0af"
+    },
+    {
+      "label": "task_initial_virtual_call",
+      "start": "0x530f3c10",
+      "end": "0x530f3c50",
+      "sha256": "47f2f49cc7b1fafad9b662448850c686b6dd2e4c11b3b4ca0f09884bc4189bb0",
+      "source": "message-queue-link",
+      "method": "instruction-range"
     },
     {
       "label": "thread_wait",
@@ -2809,6 +3025,22 @@
       "source": "deep-dispatch",
       "method": "decompiled-window",
       "pseudocode_sha256": "ddaedcc4d8dbb58259b441e35b1801dbb4eb26517ce5c93eb574f56bf82b44e8"
+    },
+    {
+      "label": "task_start",
+      "start": "0x530f3f38",
+      "end": "0x530f3fa0",
+      "sha256": "2df57cbef1e79de7af070111121a1be3d5e54a6c0d48b1194b6ccd165085d378",
+      "source": "message-queue-link",
+      "method": "instruction-range"
+    },
+    {
+      "label": "task_launch_and_registration",
+      "start": "0x530f4bc4",
+      "end": "0x530f5074",
+      "sha256": "5e9b4fe6edf5ff875e8769a06d6b0b6ead3ab84bd50ce1a9a04ec687d257f18d",
+      "source": "message-queue-link",
+      "method": "instruction-range"
     },
     {
       "label": "gpio_logical_lookup",
@@ -2899,6 +3131,22 @@
       "source": "update-validation",
       "method": "decompiled-window",
       "pseudocode_sha256": "724517eeff6c688a29177c32749298fdb0fb4c9fdbce9d73fdd521cb0dfd1c49"
+    },
+    {
+      "label": "other_bank_consumers_one",
+      "start": "0x530fe304",
+      "end": "0x530fe350",
+      "sha256": "c270bd8cf3286663dab87bddddfc62f56749c46e9ec17363c3533cb51c4d6914",
+      "source": "bank-write-switch",
+      "method": "instruction-range"
+    },
+    {
+      "label": "other_bank_consumers_two",
+      "start": "0x531080ac",
+      "end": "0x531080e8",
+      "sha256": "5ae8096e7ccb716f0ba5a94399fc28f21388414ac8cb58c4e4869cf4df4a946e",
+      "source": "bank-write-switch",
+      "method": "instruction-range"
     },
     {
       "label": "legacy_version_selector_getter",
@@ -5487,6 +5735,31 @@
       "pseudocode_sha256": "9998c5b7ce8392a1347790cd2cc58c08a40d9da8d23195014dcf9a3af97458ec"
     },
     {
+      "label": "emmc_partition_select_wrapper",
+      "start": "0x53297bc0",
+      "end": "0x53297c40",
+      "sha256": "90d5cd06becc69637d92a0ef275aafb37d73be9ce6fa49f596c7bc78e36e7131",
+      "source": "bank-write-switch",
+      "method": "instruction-range"
+    },
+    {
+      "label": "domain_controller_startup",
+      "start": "0x532fe3a0",
+      "end": "0x532fe52c",
+      "sha256": "b3039bf3f025d91cbfdebfd4f4371e1a520cb1cf5b6a1772c1be50a944e347be",
+      "source": "message-queue-link",
+      "method": "decompiled-window",
+      "pseudocode_sha256": "18cb61d6b2bc2312538dfe4edab02409d7f42479cf014679c79086499981e048"
+    },
+    {
+      "label": "bank_candidate_other_object",
+      "start": "0x53301df0",
+      "end": "0x53301ed8",
+      "sha256": "b42ddafdccb609331ced9f05f45013a96468a6a6952a58b964559a95e09dc205",
+      "source": "bank-write-switch",
+      "method": "instruction-range"
+    },
+    {
       "label": "icon_slot5_load",
       "start": "0x5330279c",
       "end": "0x5330285c",
@@ -5494,6 +5767,32 @@
       "source": "iconbin-loader",
       "method": "decompiled-window",
       "pseudocode_sha256": "29b0284eb228f56daac50fbd386e7cfcb33313afd8de0e19c5c4b8b84ab9b0bc"
+    },
+    {
+      "label": "domain_router_task_constructor",
+      "start": "0x53303b60",
+      "end": "0x53303c98",
+      "sha256": "4c9ad2f2060f8c7a1bf99205bb5a547d6e91c1c3f7ca8589b8e15557e02feee1",
+      "source": "message-queue-link",
+      "method": "instruction-range"
+    },
+    {
+      "label": "dc_message_forward",
+      "start": "0x53303c98",
+      "end": "0x53303d24",
+      "sha256": "bcfb630d23d470e053975c66ac1cc64cbd96b40c43a26824474957c08fa6aecf",
+      "source": "message-queue-link",
+      "method": "decompiled-window",
+      "pseudocode_sha256": "800ac5ee8c798d2cd29f8de7de7299bfaab36c27db2432a7a4e55bbb03b7369a"
+    },
+    {
+      "label": "domain_forward",
+      "start": "0x5330415c",
+      "end": "0x533042d8",
+      "sha256": "9f11088af58eb29868cd6e4ffce010a7fe42ae755bfb62f2c3d4d07de1dba5e4",
+      "source": "message-queue-link",
+      "method": "decompiled-window",
+      "pseudocode_sha256": "8286151a72e5b1f31fd3048f77a81ee0d099e036d1b6ff95f320468166a8856f"
     },
     {
       "label": "descriptor_route_mask",
@@ -5505,6 +5804,82 @@
       "pseudocode_sha256": "2ee6e40041b4ca8d16a6db975991a0239ec12c6fa122d135e1a26c821fd56ba8"
     },
     {
+      "label": "domain_router_stage_select",
+      "start": "0x53304498",
+      "end": "0x533044cc",
+      "sha256": "fb164115ab549c698d2bdac374ac1983cd949b0e804561767fe991d578e4aaf6",
+      "source": "message-queue-link",
+      "method": "instruction-range"
+    },
+    {
+      "label": "domain_controller_receive_loop",
+      "start": "0x533044cc",
+      "end": "0x53304530",
+      "sha256": "21d74bf8a2f9bec86fa63e97fc20d64a33e7eb95fede1c81377d437a715abd7c",
+      "source": "message-queue-link",
+      "method": "decompiled-window",
+      "pseudocode_sha256": "5de0278184d6f4f814e2397dec530ad0459c82eb969abd5e11bf9d8f0b708ba8"
+    },
+    {
+      "label": "domain_group_factory",
+      "start": "0x53304560",
+      "end": "0x533046dc",
+      "sha256": "22c24b9115bad843ccb5909c04b7d54da0df3d2ae100c8821129380737724037",
+      "source": "message-queue-link",
+      "method": "decompiled-window",
+      "pseudocode_sha256": "c18c56843ea3808e8927921eab215c84c4394f13e9926223c8326a2c1a179673"
+    },
+    {
+      "label": "domain_factory_singleton_and_start",
+      "start": "0x533046dc",
+      "end": "0x5330474c",
+      "sha256": "0f68832aba27a6322cb269cbc41b75ab8b932b7876b26118d7adf4fc8ccecb44",
+      "source": "message-queue-link",
+      "method": "instruction-range"
+    },
+    {
+      "label": "group_lookup",
+      "start": "0x53304864",
+      "end": "0x533048dc",
+      "sha256": "56f2d4403ea79bdf049dc051cd24b9b4a0116620c0044bcba05a595d47517d96",
+      "source": "message-queue-link",
+      "method": "decompiled-window",
+      "pseudocode_sha256": "0901ee6206872fcd74cc07a38bba7b46ffe851db53893a452adf6fa049ef01e3"
+    },
+    {
+      "label": "group_submit_and_receive",
+      "start": "0x53304910",
+      "end": "0x53304b2c",
+      "sha256": "64a58fb0d2b322d5f955840ff489f981ed59bb0401a26087b83761e9b7cd9ef0",
+      "source": "message-queue-link",
+      "method": "instruction-range"
+    },
+    {
+      "label": "domain_map_insert",
+      "start": "0x53304b2c",
+      "end": "0x53304bbc",
+      "sha256": "6f0683f9ee54a70a23e59295abeed62edfefe2f61048db2b4fd25111ea1a8cd5",
+      "source": "message-queue-link",
+      "method": "instruction-range"
+    },
+    {
+      "label": "domain_mailbox_register",
+      "start": "0x53304c20",
+      "end": "0x53304d08",
+      "sha256": "9ce13620697428e63b200b687e320cb3187d8d1ff36296cda437b9a66a6e5289",
+      "source": "message-queue-link",
+      "method": "decompiled-window",
+      "pseudocode_sha256": "f2c7ac4c4895c12c0b93c3b68de803afd5b94573bf56e01aae1db75b46c9f871"
+    },
+    {
+      "label": "interface_domain_store",
+      "start": "0x53309a10",
+      "end": "0x53309a48",
+      "sha256": "cc16e95a4b8753c005ba7ec9cfc3eeafeb82d2e6ceb34444ccfd3f82666780ef",
+      "source": "message-queue-link",
+      "method": "instruction-range"
+    },
+    {
       "label": "descriptor_send",
       "start": "0x53309c10",
       "end": "0x53309c68",
@@ -5514,11 +5889,52 @@
       "pseudocode_sha256": "4f7c96bb3980243b3b272d7e2ed1094426dbe272b74059439fb67838be93412e"
     },
     {
+      "label": "ht_domain_receive",
+      "start": "0x53309d74",
+      "end": "0x53309da4",
+      "sha256": "7626bf7ab12877295ef23d363c5aeddce0f10e76420179011b3eda48d82ec3d4",
+      "source": "message-queue-link",
+      "method": "decompiled-window",
+      "pseudocode_sha256": "fe56f134e58c2059563a34a5fc73bd85d31591708c72614450d6f2310b4e4b84"
+    },
+    {
+      "label": "domain_hub_constructor",
+      "start": "0x5330a78c",
+      "end": "0x5330a928",
+      "sha256": "22cfbeaaa920c10be39bafca2e7e1e24b16147946bea442b7723a0337a11e077",
+      "source": "message-queue-link",
+      "method": "instruction-range"
+    },
+    {
+      "label": "domain_hub_singleton",
+      "start": "0x5330aafc",
+      "end": "0x5330ab80",
+      "sha256": "0a0c54c0ed1d160c7e9d8c39dada3734bd59e742cd73b34a3a8b3b26715bf963",
+      "source": "message-queue-link",
+      "method": "instruction-range"
+    },
+    {
+      "label": "dc_interface_domain",
+      "start": "0x5330ab80",
+      "end": "0x5330ac10",
+      "sha256": "3a09593010b630004309a5d3be172f6822ca1e36d2dcd8088faad7735748e50f",
+      "source": "message-queue-link",
+      "method": "instruction-range"
+    },
+    {
       "label": "reply_transport_wrapper",
       "start": "0x5330ac30",
       "end": "0x5330ac38",
       "sha256": "53be65fd5073f03cd85cddbf58c7f6ab8a9044d7237fb75ac3ddd67db3f28505",
       "source": "update-receiver",
+      "method": "instruction-range"
+    },
+    {
+      "label": "ht_interface_domain",
+      "start": "0x5330ad98",
+      "end": "0x5330ae68",
+      "sha256": "382f2230c10f78a24db44933a5e9c403c7b21bf2aa8e828e3ae31396d4ab7228",
+      "source": "message-queue-link",
       "method": "instruction-range"
     },
     {
@@ -5540,6 +5956,14 @@
       "pseudocode_sha256": "dbae7a8467e51e64644d0bd9a1e0f6d8b6184197bb4589e057e3387b544d62bd"
     },
     {
+      "label": "updater_task_register",
+      "start": "0x53314930",
+      "end": "0x53314a60",
+      "sha256": "b7bc8aae639c46fca0b2d4621860df74652869f93b99721d33e68f38f13f30e7",
+      "source": "message-queue-link",
+      "method": "instruction-range"
+    },
+    {
       "label": "updater_reply_channel_init",
       "start": "0x53314a28",
       "end": "0x53314a54",
@@ -5556,6 +5980,14 @@
       "method": "instruction-range"
     },
     {
+      "label": "updater_constructor_vtables",
+      "start": "0x53315018",
+      "end": "0x5331506c",
+      "sha256": "c2c97bc05fd658326695efa659b7cb72d97a2de8f1f3d27c3c5ee58e8e1ef5db",
+      "source": "message-queue-link",
+      "method": "instruction-range"
+    },
+    {
       "label": "updater_object_constructor",
       "start": "0x53315018",
       "end": "0x53315170",
@@ -5563,6 +5995,15 @@
       "source": "update-receiver",
       "method": "decompiled-window",
       "pseudocode_sha256": "2d25da91d40d16688f24f5cf1af67b24a723008675c9f215da4bbc5a67cc7e8a"
+    },
+    {
+      "label": "updater_mailbox_submit",
+      "start": "0x53315174",
+      "end": "0x533152f8",
+      "sha256": "29c2cf2f186f796b78178c442b04b4d74bc41c8b115c295b89d6f770ad27129e",
+      "source": "message-queue-link",
+      "method": "decompiled-window",
+      "pseudocode_sha256": "27668a9435347021c473bfb2d6e907ecb6cc1fa7bd130c451515324bd72a9f73"
     },
     {
       "label": "update_reply_publish",
@@ -5624,11 +6065,44 @@
       "pseudocode_sha256": "610e2abd2a7992d1bc9829bf43075cbd838e3d8c327600131cbb71eb3f9ae03c"
     },
     {
+      "label": "updater_dispatch_group46",
+      "start": "0x533193e0",
+      "end": "0x533196ec",
+      "sha256": "0ce977f069ca85fcd36921d799921257a0fbe0795ec130d9afbe5ea098f41f92",
+      "source": "message-queue-link",
+      "method": "instruction-range"
+    },
+    {
       "label": "dispatch_thunk",
       "start": "0x533196e4",
       "end": "0x533196ec",
       "sha256": "740566343613ff3f5b844a42ad0fb2e58a3d9fb9207a76ed8289ccecb9b6ce36",
       "source": "update-receiver",
+      "method": "instruction-range"
+    },
+    {
+      "label": "updater_factory_create",
+      "start": "0x533196ec",
+      "end": "0x53319838",
+      "sha256": "b4548b59a57c58db779f9920465c93df55c7c434181c35982d9a15e265f76a97",
+      "source": "message-queue-link",
+      "method": "instruction-range"
+    },
+    {
+      "label": "updater_task_start",
+      "start": "0x53319838",
+      "end": "0x53319878",
+      "sha256": "bd34c5d0602398bcea7a1d1d476f08af88d5f4acc01c4d9e9307f6e7fc4a719d",
+      "source": "message-queue-link",
+      "method": "decompiled-window",
+      "pseudocode_sha256": "89cb11812d866cdb94ada5f0e37caa2e9bbf00772e802257474c956563cfdcb9"
+    },
+    {
+      "label": "updater_factory_singleton",
+      "start": "0x53319b08",
+      "end": "0x53319b84",
+      "sha256": "3e2fd15f7675d759db94775f3cf1f90503b5e2416d2d40857f89198e2c69891f",
+      "source": "message-queue-link",
       "method": "instruction-range"
     },
     {
@@ -5980,6 +6454,54 @@
       "method": "data-range"
     },
     {
+      "label": "resource_0x53911728",
+      "start": "0x53911728",
+      "end": "0x5391173e",
+      "sha256": "e8c44c92e5e3a38d43ac4aa9d3d4a7b3581e8ba852472a42638db212637cec52",
+      "source": "bank-write-switch",
+      "method": "data-range"
+    },
+    {
+      "label": "resource_0x53911760",
+      "start": "0x53911760",
+      "end": "0x53911777",
+      "sha256": "70f1f7648faa4174acc2ddbcbdee8af01f3d8cee539fcc1ea9117b8453236009",
+      "source": "bank-write-switch",
+      "method": "data-range"
+    },
+    {
+      "label": "resource_0x53911798",
+      "start": "0x53911798",
+      "end": "0x539117ab",
+      "sha256": "8aaa64e565a3e849325550653d5fbe360e401a29b4d7334a571f1ebe68d9fd77",
+      "source": "bank-write-switch",
+      "method": "data-range"
+    },
+    {
+      "label": "resource_0x539117ac",
+      "start": "0x539117ac",
+      "end": "0x539117c5",
+      "sha256": "cd27233755a12d93810b39c0c879e0725b2850d7a2d077feec2b9b02b73a95fd",
+      "source": "bank-write-switch",
+      "method": "data-range"
+    },
+    {
+      "label": "resource_0x539117c8",
+      "start": "0x539117c8",
+      "end": "0x539117da",
+      "sha256": "69a699dc8c86476a4d87f7e7e21a3caae7ca83c31eba4b30af8d3caa2ac1c980",
+      "source": "bank-write-switch",
+      "method": "data-range"
+    },
+    {
+      "label": "resource_0x539117dc",
+      "start": "0x539117dc",
+      "end": "0x539117fe",
+      "sha256": "d0549164baa6f83169d2132d006969f642fca3ccd7c61ca14dfb06ac5e739b7d",
+      "source": "bank-write-switch",
+      "method": "data-range"
+    },
+    {
       "label": "header_project",
       "start": "0x53911e04",
       "end": "0x53911e33",
@@ -6060,6 +6582,14 @@
       "method": "data-range"
     },
     {
+      "label": "resource_0x53912088",
+      "start": "0x53912088",
+      "end": "0x539120a8",
+      "sha256": "3a264420dff83cb3ecdfbc1c49a1e304c5a68b3021e8410c226de53fd2a207d2",
+      "source": "bank-write-switch",
+      "method": "data-range"
+    },
+    {
       "label": "resource_0x539120a8",
       "start": "0x539120a8",
       "end": "0x539120cc",
@@ -6068,11 +6598,35 @@
       "method": "data-range"
     },
     {
+      "label": "resource_0x539120cc",
+      "start": "0x539120cc",
+      "end": "0x539120ed",
+      "sha256": "65e53a6ea2ba3d4fc3f4e4089bdf634239907d45a0a64c4c1be88e4164176b7f",
+      "source": "bank-write-switch",
+      "method": "data-range"
+    },
+    {
       "label": "resource_0x53912174",
       "start": "0x53912174",
       "end": "0x53912199",
       "sha256": "570baef5e6518f3ce9647db8b77431978f30becf9fbb3575329b949db3eb980d",
       "source": "iconbin-loader",
+      "method": "data-range"
+    },
+    {
+      "label": "resource_0x5391219c",
+      "start": "0x5391219c",
+      "end": "0x539121af",
+      "sha256": "174136be4961c96ffe4e56a07d649243b4414c9a2cd3fc95d2bbe12194ed3dc7",
+      "source": "bank-write-switch",
+      "method": "data-range"
+    },
+    {
+      "label": "resource_0x539121b0",
+      "start": "0x539121b0",
+      "end": "0x539121d6",
+      "sha256": "75876bddaf1d060f7c940694ceb968e8e0c97343471bb1e07725ad199c5c4b6c",
+      "source": "bank-write-switch",
       "method": "data-range"
     },
     {
@@ -7977,6 +8531,38 @@
       "end": "0x53cb16b8",
       "sha256": "0cc5901f62a7d1c9f4550d729d0af54c049fce36294055b6e49cb3ad64c749ec",
       "source": "storage-bank-init",
+      "method": "data-range"
+    },
+    {
+      "label": "resource_0x53cb1664",
+      "start": "0x53cb1664",
+      "end": "0x53cb1668",
+      "sha256": "310f5e8154f37bd0e3e40143b16ffbf4418885840ccc10e7fbc6abbb4a30d115",
+      "source": "bank-write-switch",
+      "method": "data-range"
+    },
+    {
+      "label": "resource_0x53cb1668",
+      "start": "0x53cb1668",
+      "end": "0x53cb166c",
+      "sha256": "28bb2ed4939a4ecef4ba58f21a529c6e00f77ef2e122ac99e296448957084083",
+      "source": "bank-write-switch",
+      "method": "data-range"
+    },
+    {
+      "label": "resource_0x53cb16a4",
+      "start": "0x53cb16a4",
+      "end": "0x53cb16a8",
+      "sha256": "04c4bdb0bb7338c433bd59f5e116dbf2859615be837d9e60791da523349f3395",
+      "source": "bank-write-switch",
+      "method": "data-range"
+    },
+    {
+      "label": "resource_0x53cb16a8",
+      "start": "0x53cb16a8",
+      "end": "0x53cb16ac",
+      "sha256": "ee6e60ab7865a4e3c6abae374f9e7cab70d9053b90ff2231efcde6d418ea7f34",
+      "source": "bank-write-switch",
       "method": "data-range"
     },
     {
@@ -10368,6 +10954,18 @@
       "kind": "call",
       "target": "0x532fb9c8",
       "source": "color-pipeline"
+    },
+    {
+      "site": "0x5254042c",
+      "kind": "call",
+      "target": "0x52c27260",
+      "source": "message-queue-link"
+    },
+    {
+      "site": "0x5254043c",
+      "kind": "call",
+      "target": "0x52c28e3c",
+      "source": "message-queue-link"
     },
     {
       "site": "0x525b07bc",
@@ -13574,6 +14172,30 @@
       "source": "wb-colorspace"
     },
     {
+      "site": "0x52c15930",
+      "kind": "branch",
+      "target": "0x530f3f38",
+      "source": "message-queue-link"
+    },
+    {
+      "site": "0x52c15f48",
+      "kind": "call",
+      "target": "0x530f4f60",
+      "source": "message-queue-link"
+    },
+    {
+      "site": "0x52c15f4c",
+      "kind": "call",
+      "target": "0x5330aafc",
+      "source": "message-queue-link"
+    },
+    {
+      "site": "0x52c15fa8",
+      "kind": "call",
+      "target": "0x52c15eb8",
+      "source": "message-queue-link"
+    },
+    {
       "site": "0x52c16258",
       "kind": "branch",
       "target": "0x52c16324",
@@ -13662,6 +14284,12 @@
       "kind": "branch",
       "target": "0x52c162f8",
       "source": "update-receiver"
+    },
+    {
+      "site": "0x52c17f20",
+      "kind": "call",
+      "target": "0x5330ae60",
+      "source": "message-queue-link"
     },
     {
       "site": "0x52c1808c",
@@ -15570,6 +16198,12 @@
       "kind": "call",
       "target": "0x532fb9c8",
       "source": "update-validation"
+    },
+    {
+      "site": "0x52c28e4c",
+      "kind": "call",
+      "target": "0x52c28cc4",
+      "source": "message-queue-link"
     },
     {
       "site": "0x52c731d4",
@@ -25694,6 +26328,18 @@
       "source": "jpeg-lowlevel"
     },
     {
+      "site": "0x52f4c888",
+      "kind": "call",
+      "target": "0x530fdfc4",
+      "source": "bank-write-switch"
+    },
+    {
+      "site": "0x52f4c8b8",
+      "kind": "call",
+      "target": "0x526aac80",
+      "source": "bank-write-switch"
+    },
+    {
       "site": "0x52fee264",
       "kind": "call",
       "target": "0x530f25f4",
@@ -26654,6 +27300,96 @@
       "source": "iconbin-loader"
     },
     {
+      "site": "0x52ff2090",
+      "kind": "call",
+      "target": "0x530fced4",
+      "source": "bank-write-switch"
+    },
+    {
+      "site": "0x52ff2098",
+      "kind": "call",
+      "target": "0x52ff5818",
+      "source": "bank-write-switch"
+    },
+    {
+      "site": "0x52ff20c0",
+      "kind": "call",
+      "target": "0x530fced4",
+      "source": "bank-write-switch"
+    },
+    {
+      "site": "0x52ff2100",
+      "kind": "call",
+      "target": "0x530fced4",
+      "source": "bank-write-switch"
+    },
+    {
+      "site": "0x52ff2108",
+      "kind": "call",
+      "target": "0x530f25f4",
+      "source": "bank-write-switch"
+    },
+    {
+      "site": "0x52ff2150",
+      "kind": "call",
+      "target": "0x52ff5304",
+      "source": "bank-write-switch"
+    },
+    {
+      "site": "0x52ff2160",
+      "kind": "call",
+      "target": "0x52ff5304",
+      "source": "bank-write-switch"
+    },
+    {
+      "site": "0x52ff2174",
+      "kind": "call",
+      "target": "0x526aac80",
+      "source": "bank-write-switch"
+    },
+    {
+      "site": "0x52ff2188",
+      "kind": "call",
+      "target": "0x52ff5ad0",
+      "source": "bank-write-switch"
+    },
+    {
+      "site": "0x52ff21b0",
+      "kind": "call",
+      "target": "0x530fced4",
+      "source": "bank-write-switch"
+    },
+    {
+      "site": "0x52ff21b8",
+      "kind": "call",
+      "target": "0x530f2630",
+      "source": "bank-write-switch"
+    },
+    {
+      "site": "0x52ff21e8",
+      "kind": "call",
+      "target": "0x532974a8",
+      "source": "bank-write-switch"
+    },
+    {
+      "site": "0x52ff220c",
+      "kind": "call",
+      "target": "0x530fced4",
+      "source": "bank-write-switch"
+    },
+    {
+      "site": "0x52ff2224",
+      "kind": "call",
+      "target": "0x52ff5ad0",
+      "source": "bank-write-switch"
+    },
+    {
+      "site": "0x52ff224c",
+      "kind": "call",
+      "target": "0x530fced4",
+      "source": "bank-write-switch"
+    },
+    {
       "site": "0x52ff22a8",
       "kind": "call",
       "target": "0x532974a8",
@@ -27452,6 +28188,18 @@
       "source": "iconbin-loader"
     },
     {
+      "site": "0x52ff5654",
+      "kind": "call",
+      "target": "0x52ff553c",
+      "source": "bank-write-switch"
+    },
+    {
+      "site": "0x52ff567c",
+      "kind": "call",
+      "target": "0x530fced4",
+      "source": "bank-write-switch"
+    },
+    {
       "site": "0x52ff56cc",
       "kind": "call",
       "target": "0x52ff553c",
@@ -27488,6 +28236,18 @@
       "source": "iconbin-loader"
     },
     {
+      "site": "0x52ff5834",
+      "kind": "call",
+      "target": "0x52ff5708",
+      "source": "bank-write-switch"
+    },
+    {
+      "site": "0x52ff585c",
+      "kind": "call",
+      "target": "0x530fced4",
+      "source": "bank-write-switch"
+    },
+    {
       "site": "0x52ff5894",
       "kind": "call",
       "target": "0x532974a8",
@@ -27522,6 +28282,42 @@
       "kind": "call",
       "target": "0x530fced4",
       "source": "iconbin-loader"
+    },
+    {
+      "site": "0x52ff5b10",
+      "kind": "call",
+      "target": "0x53297bc0",
+      "source": "bank-write-switch"
+    },
+    {
+      "site": "0x52ff5b2c",
+      "kind": "call",
+      "target": "0x52ff5708",
+      "source": "bank-write-switch"
+    },
+    {
+      "site": "0x52ff5b3c",
+      "kind": "call",
+      "target": "0x53297bc0",
+      "source": "bank-write-switch"
+    },
+    {
+      "site": "0x52ff5b78",
+      "kind": "call",
+      "target": "0x530fced4",
+      "source": "bank-write-switch"
+    },
+    {
+      "site": "0x52ff5b7c",
+      "kind": "branch",
+      "target": "0x52ff5b40",
+      "source": "bank-write-switch"
+    },
+    {
+      "site": "0x52ff5b9c",
+      "kind": "call",
+      "target": "0x530fced4",
+      "source": "bank-write-switch"
     },
     {
       "site": "0x52ff7c68",
@@ -32864,6 +33660,30 @@
       "source": "deep-dispatch"
     },
     {
+      "site": "0x530f3f9c",
+      "kind": "call",
+      "target": "0x525b788c",
+      "source": "message-queue-link"
+    },
+    {
+      "site": "0x530f4f08",
+      "kind": "call",
+      "target": "0x525b6ae8",
+      "source": "message-queue-link"
+    },
+    {
+      "site": "0x530f4f34",
+      "kind": "call",
+      "target": "0x530f4bc4",
+      "source": "message-queue-link"
+    },
+    {
+      "site": "0x530f5008",
+      "kind": "call",
+      "target": "0x530f4e80",
+      "source": "message-queue-link"
+    },
+    {
       "site": "0x530f70dc",
       "kind": "branch",
       "target": "0x530f70ec",
@@ -33054,6 +33874,12 @@
       "kind": "call",
       "target": "0x532fb9c8",
       "source": "update-validation"
+    },
+    {
+      "site": "0x530fe328",
+      "kind": "call",
+      "target": "0x532974a8",
+      "source": "bank-write-switch"
     },
     {
       "site": "0x53125b98",
@@ -48134,6 +48960,126 @@
       "source": "storage-bank-init"
     },
     {
+      "site": "0x53297be4",
+      "kind": "call",
+      "target": "0x530f1a68",
+      "source": "bank-write-switch"
+    },
+    {
+      "site": "0x53297c00",
+      "kind": "call",
+      "target": "0x533593a0",
+      "source": "bank-write-switch"
+    },
+    {
+      "site": "0x53297c1c",
+      "kind": "call",
+      "target": "0x530f1bbc",
+      "source": "bank-write-switch"
+    },
+    {
+      "site": "0x53297c2c",
+      "kind": "call",
+      "target": "0x532973e4",
+      "source": "bank-write-switch"
+    },
+    {
+      "site": "0x53297c30",
+      "kind": "branch",
+      "target": "0x53297c18",
+      "source": "bank-write-switch"
+    },
+    {
+      "site": "0x53297c38",
+      "kind": "call",
+      "target": "0x5329790c",
+      "source": "bank-write-switch"
+    },
+    {
+      "site": "0x53297c3c",
+      "kind": "branch",
+      "target": "0x53297bfc",
+      "source": "bank-write-switch"
+    },
+    {
+      "site": "0x532fe4b0",
+      "kind": "call",
+      "target": "0x533046e4",
+      "source": "message-queue-link"
+    },
+    {
+      "site": "0x532fe4b8",
+      "kind": "call",
+      "target": "0x53319b08",
+      "source": "message-queue-link"
+    },
+    {
+      "site": "0x53301e04",
+      "kind": "call",
+      "target": "0x52fee52c",
+      "source": "bank-write-switch"
+    },
+    {
+      "site": "0x53301e2c",
+      "kind": "call",
+      "target": "0x52fef648",
+      "source": "bank-write-switch"
+    },
+    {
+      "site": "0x53301e44",
+      "kind": "branch",
+      "target": "0x53301ed8",
+      "source": "bank-write-switch"
+    },
+    {
+      "site": "0x53301e74",
+      "kind": "call",
+      "target": "0x52feebd0",
+      "source": "bank-write-switch"
+    },
+    {
+      "site": "0x53301e8c",
+      "kind": "branch",
+      "target": "0x53301e70",
+      "source": "bank-write-switch"
+    },
+    {
+      "site": "0x53301e98",
+      "kind": "branch",
+      "target": "0x53301e70",
+      "source": "bank-write-switch"
+    },
+    {
+      "site": "0x53301ea4",
+      "kind": "branch",
+      "target": "0x53301e70",
+      "source": "bank-write-switch"
+    },
+    {
+      "site": "0x53301eb0",
+      "kind": "branch",
+      "target": "0x53301e70",
+      "source": "bank-write-switch"
+    },
+    {
+      "site": "0x53301ebc",
+      "kind": "branch",
+      "target": "0x53301e70",
+      "source": "bank-write-switch"
+    },
+    {
+      "site": "0x53301ec8",
+      "kind": "branch",
+      "target": "0x53301e78",
+      "source": "bank-write-switch"
+    },
+    {
+      "site": "0x53301ed4",
+      "kind": "branch",
+      "target": "0x53301e70",
+      "source": "bank-write-switch"
+    },
+    {
       "site": "0x533027ac",
       "kind": "call",
       "target": "0x52fee52c",
@@ -48186,6 +49132,42 @@
       "kind": "branch",
       "target": "0x533027d0",
       "source": "iconbin-loader"
+    },
+    {
+      "site": "0x53303ce4",
+      "kind": "branch",
+      "target": "0x53315174",
+      "source": "message-queue-link"
+    },
+    {
+      "site": "0x533041a8",
+      "kind": "branch",
+      "target": "0x533042c4",
+      "source": "message-queue-link"
+    },
+    {
+      "site": "0x533041b8",
+      "kind": "branch",
+      "target": "0x53304284",
+      "source": "message-queue-link"
+    },
+    {
+      "site": "0x53304288",
+      "kind": "call",
+      "target": "0x53304864",
+      "source": "message-queue-link"
+    },
+    {
+      "site": "0x53304294",
+      "kind": "call",
+      "target": "0x53304910",
+      "source": "message-queue-link"
+    },
+    {
+      "site": "0x533042c4",
+      "kind": "call",
+      "target": "0x53303c98",
+      "source": "message-queue-link"
     },
     {
       "site": "0x53304328",
@@ -48398,6 +49380,66 @@
       "source": "deep-dispatch"
     },
     {
+      "site": "0x533044ac",
+      "kind": "call",
+      "target": "0x533042d8",
+      "source": "message-queue-link"
+    },
+    {
+      "site": "0x533044c8",
+      "kind": "branch",
+      "target": "0x5330415c",
+      "source": "message-queue-link"
+    },
+    {
+      "site": "0x53304514",
+      "kind": "call",
+      "target": "0x53304864",
+      "source": "message-queue-link"
+    },
+    {
+      "site": "0x5330451c",
+      "kind": "call",
+      "target": "0x53304ae0",
+      "source": "message-queue-link"
+    },
+    {
+      "site": "0x53304528",
+      "kind": "call",
+      "target": "0x53304498",
+      "source": "message-queue-link"
+    },
+    {
+      "site": "0x533045dc",
+      "kind": "call",
+      "target": "0x53304c20",
+      "source": "message-queue-link"
+    },
+    {
+      "site": "0x5330463c",
+      "kind": "call",
+      "target": "0x53304c20",
+      "source": "message-queue-link"
+    },
+    {
+      "site": "0x53304a3c",
+      "kind": "call",
+      "target": "0x530edc60",
+      "source": "message-queue-link"
+    },
+    {
+      "site": "0x53304b20",
+      "kind": "call",
+      "target": "0x530edfa0",
+      "source": "message-queue-link"
+    },
+    {
+      "site": "0x53304ce0",
+      "kind": "call",
+      "target": "0x53304b2c",
+      "source": "message-queue-link"
+    },
+    {
       "site": "0x53309c50",
       "kind": "call",
       "target": "0x53304864",
@@ -48410,10 +49452,46 @@
       "source": "deep-dispatch"
     },
     {
+      "site": "0x53309d88",
+      "kind": "call",
+      "target": "0x53304864",
+      "source": "message-queue-link"
+    },
+    {
+      "site": "0x53309d98",
+      "kind": "call",
+      "target": "0x53304ae0",
+      "source": "message-queue-link"
+    },
+    {
+      "site": "0x5330a7b4",
+      "kind": "call",
+      "target": "0x5330ab80",
+      "source": "message-queue-link"
+    },
+    {
+      "site": "0x5330a824",
+      "kind": "call",
+      "target": "0x5330ad98",
+      "source": "message-queue-link"
+    },
+    {
+      "site": "0x5330abe8",
+      "kind": "call",
+      "target": "0x53309a10",
+      "source": "message-queue-link"
+    },
+    {
       "site": "0x5330ac34",
       "kind": "branch",
       "target": "0x53309c10",
       "source": "update-receiver"
+    },
+    {
+      "site": "0x5330ae00",
+      "kind": "call",
+      "target": "0x53309a10",
+      "source": "message-queue-link"
     },
     {
       "site": "0x5330ae4c",
@@ -48422,10 +49500,22 @@
       "source": "deep-dispatch"
     },
     {
+      "site": "0x5330ae64",
+      "kind": "branch",
+      "target": "0x53309d74",
+      "source": "message-queue-link"
+    },
+    {
       "site": "0x5330b1b4",
       "kind": "branch",
       "target": "0x53309c10",
       "source": "colorspace-message"
+    },
+    {
+      "site": "0x5331499c",
+      "kind": "call",
+      "target": "0x530f4f60",
+      "source": "message-queue-link"
     },
     {
       "site": "0x53314a28",
@@ -48456,6 +49546,12 @@
       "kind": "call",
       "target": "0x530eefc4",
       "source": "update-receiver"
+    },
+    {
+      "site": "0x53315228",
+      "kind": "call",
+      "target": "0x530ef074",
+      "source": "message-queue-link"
     },
     {
       "site": "0x533154e8",
@@ -49694,6 +50790,18 @@
       "source": "update-receiver"
     },
     {
+      "site": "0x533197ac",
+      "kind": "call",
+      "target": "0x53315018",
+      "source": "message-queue-link"
+    },
+    {
+      "site": "0x53319858",
+      "kind": "call",
+      "target": "0x530f3f38",
+      "source": "message-queue-link"
+    },
+    {
       "site": "0x5331b9bc",
       "kind": "call",
       "target": "0x5332b2e0",
@@ -49769,6 +50877,16 @@
       "address": "0x52500458",
       "value": "0x65a80",
       "source": "colorspace-message"
+    },
+    {
+      "address": "0x525b73c0",
+      "value": "0x80350300",
+      "source": "message-queue-link"
+    },
+    {
+      "address": "0x525b7840",
+      "value": "0x80340200",
+      "source": "message-queue-link"
     },
     {
       "address": "0x526d894c",
@@ -50491,6 +51609,21 @@
       "source": "storage-bank-init"
     },
     {
+      "address": "0x53303c94",
+      "value": "0x53cbc390",
+      "source": "message-queue-link"
+    },
+    {
+      "address": "0x53304748",
+      "value": "0x53cbc508",
+      "source": "message-queue-link"
+    },
+    {
+      "address": "0x5330ab7c",
+      "value": "0x53cbd180",
+      "source": "message-queue-link"
+    },
+    {
       "address": "0x533168e8",
       "value": "0x5368dbb8",
       "source": "update-receiver"
@@ -50506,6 +51639,11 @@
       "source": "update-receiver"
     },
     {
+      "address": "0x53319b80",
+      "value": "0x53cc3440",
+      "source": "message-queue-link"
+    },
+    {
       "address": "0x53608c6c",
       "value": "0x526d8ccc",
       "source": "deep-af"
@@ -50514,6 +51652,11 @@
       "address": "0x536ad0fc",
       "value": "0x52a21e28",
       "source": "deep-dispatch"
+    },
+    {
+      "address": "0x53873b90",
+      "value": "0x52c17e14",
+      "source": "message-queue-link"
     },
     {
       "address": "0x53878a20",
@@ -51141,14 +52284,54 @@
       "source": "storage-bank-init"
     },
     {
+      "address": "0x53cbc398",
+      "value": "0x533044cc",
+      "source": "message-queue-link"
+    },
+    {
+      "address": "0x53cbc510",
+      "value": "0x53304560",
+      "source": "message-queue-link"
+    },
+    {
+      "address": "0x53cbc51c",
+      "value": "0x533046dc",
+      "source": "message-queue-link"
+    },
+    {
+      "address": "0x53cbd188",
+      "value": "0x5330a78c",
+      "source": "message-queue-link"
+    },
+    {
+      "address": "0x53cc3378",
+      "value": "0x53314930",
+      "source": "message-queue-link"
+    },
+    {
       "address": "0x53cc3384",
       "value": "0x53319314",
       "source": "update-receiver"
     },
     {
+      "address": "0x53cc3398",
+      "value": "0x530eed94",
+      "source": "message-queue-link"
+    },
+    {
       "address": "0x53cc339c",
       "value": "0x533196e4",
       "source": "update-receiver"
+    },
+    {
+      "address": "0x53cc3448",
+      "value": "0x533196ec",
+      "source": "message-queue-link"
+    },
+    {
+      "address": "0x53cc3454",
+      "value": "0x53319838",
+      "source": "message-queue-link"
     },
     {
       "address": "0x53d0c934",
@@ -52948,6 +54131,100 @@
       "offset": "0x4c",
       "instruction": "blx",
       "condition": "Object is the Emmc instance constructed by53297454 and registered as ID0x18d by5327f954; registration/lookup/cast succeed, vptr unchanged."
+    },
+    {
+      "callsite": "0x52ff5afc",
+      "table_slot": "0x53cb16a4",
+      "target": "0x532971e4",
+      "instruction": "blx",
+      "condition": "FwPartition+8 references Emmc instance with vptr53cb1638, as prior ID0x18d constructor/registry proof; instance and vptr unchanged."
+    },
+    {
+      "callsite": "0x52ff5b4c",
+      "table_slot": "0x53cb16a8",
+      "target": "0x532971f8",
+      "instruction": "blx",
+      "condition": "FwPartition+8 references Emmc instance with vptr53cb1638, as prior ID0x18d constructor/registry proof; instance and vptr unchanged."
+    },
+    {
+      "callsite": "0x52ff57d0",
+      "table_slot": "0x53cb1664",
+      "target": "0x53297a84",
+      "instruction": "blx",
+      "condition": "FwPartition+8 references Emmc instance with vptr53cb1638, as prior ID0x18d constructor/registry proof; instance and vptr unchanged."
+    },
+    {
+      "callsite": "0x52ff5814",
+      "table_slot": "0x53cb1664",
+      "target": "0x53297a84",
+      "instruction": "bx",
+      "condition": "FwPartition+8 references Emmc instance with vptr53cb1638, as prior ID0x18d constructor/registry proof; instance and vptr unchanged."
+    },
+    {
+      "callsite": "0x52ff55e0",
+      "table_slot": "0x53cb1668",
+      "target": "0x53297938",
+      "instruction": "blx",
+      "condition": "FwPartition+8 references Emmc instance with vptr53cb1638, as prior ID0x18d constructor/registry proof; instance and vptr unchanged."
+    },
+    {
+      "callsite": "0x52ff5634",
+      "table_slot": "0x53cb1668",
+      "target": "0x53297938",
+      "instruction": "bx",
+      "condition": "FwPartition+8 references Emmc instance with vptr53cb1638, as prior ID0x18d constructor/registry proof; instance and vptr unchanged."
+    },
+    {
+      "label": "DomainController task",
+      "callsite": "0x530f3c40",
+      "table_slot": "0x53cbc398",
+      "target": "0x533044cc",
+      "instruction": "blx",
+      "init_site": "0x53303b88",
+      "load_site": "0x530f3c20",
+      "condition": "Registered task argument is the DomainController object with vptr 0x53cbc390."
+    },
+    {
+      "label": "SystemControl task",
+      "callsite": "0x530f3c40",
+      "table_slot": "0x53cc3398",
+      "target": "0x530eed94",
+      "instruction": "blx",
+      "init_site": "0x53315058",
+      "load_site": "0x530f3c20",
+      "condition": "Task descriptor 0x70 is registered and started on updater+4 with vptr 0x53cc3390."
+    },
+    {
+      "label": "SystemControl message callback",
+      "callsite": "0x530eeec4",
+      "table_slot": "0x53cc339c",
+      "target": "0x533196e4",
+      "instruction": "blx",
+      "init_site": "0x53315058",
+      "load_site": "0x530eee38",
+      "condition": "Receive succeeded on updater+4's +0x24 mailbox. The thunk adjusts this by -4."
+    },
+    {
+      "label": "HTControl task",
+      "callsite": "0x530f3c40",
+      "table_slot": "0x53873b90",
+      "target": "0x52c17e14",
+      "instruction": "blx",
+      "init_site": "0x52c15ee8",
+      "load_site": "0x530f3c20",
+      "condition": "Task descriptor 0x74 is registered and started on HTControl with vptr 0x53873b88."
+    },
+    {
+      "label": "SystemControl group 0x46 dispatch",
+      "callsite": "0x53319480",
+      "table_slot": "0x5331951c",
+      "target": "0x53319690",
+      "instruction": "ldrls",
+      "init_site": "0x53315058",
+      "load_site": "0x53319480",
+      "condition": "Byte2 bit7 clear and byte3 0x46 select PC+8+(0x46-0x21)*4. Branch body calls 0x533161e8.",
+      "dispatch": "pc-indexed-ldr",
+      "table_index": 37
     }
   ],
   "route_mask_assignments": [
