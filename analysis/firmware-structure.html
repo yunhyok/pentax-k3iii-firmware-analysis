@@ -1,0 +1,514 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>펌웨어 구조와 하드웨어 — PENTAX K-3 Mark III 펌웨어 연구</title>
+<meta name="description" content="PENTAX K-3 Mark III 펌웨어 2.20 파일의 내부 구조를 정리한 참고 문서입니다. 압축을 풀면 나오는 레코드 15개, 장치 트리로 본 SoC와 CPU, 원본 코드와 대조한 동작, 확보한 공개 소스, 재현 절차를 담았습니다.">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-camera="k3iii">
+<!-- chrome:top -->
+<a class="skip" href="#main">본문 바로가기</a>
+<div class="topbar"><div class="topbar-in"><a class="brand" href="../index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="../index.html" aria-current="true">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="https://yunhyok.github.io/pentax-q7-firmware-analysis/">Q7</a></div><nav class="topnav" aria-label="주제"><a href="../index.html" aria-current="true">개요</a><a href="guide-boot.html">부팅·저장소</a><a href="guide-update.html">업데이트</a><a href="guide-rebuild.html">재구축</a><a href="guide-rtos.html">명령·셸</a><a href="guide-color.html">색 처리</a><a href="lightroom-bridge.html">Lightroom</a><a href="af-foundations.html">AF</a><a href="ui-port-contract.html">UI</a></nav></div></div>
+<nav class="crumbs" aria-label="현재 위치"><ol><li><a href="../index.html">PENTAX K-3 Mark III</a></li><li><a href="../index.html">시작하기</a></li><li aria-current="page">펌웨어 구조와 하드웨어</li></ol></nav>
+<!-- /chrome:top -->
+<header class="page-head">
+<p class="eyebrow">시작하기 · 참고 자료</p>
+<h1>펌웨어 구조와 하드웨어</h1>
+<p class="lead">펌웨어 업데이트 파일 한 개 안에 무엇이 들어 있는지, 그 내용으로 카메라의 칩과 소프트웨어 구성을 어디까지 알 수 있는지 정리했습니다. 다른 문서를 읽다가 레코드 이름이나 주소가 나오면 여기로 돌아와 찾아보면 됩니다.</p>
+</header>
+<div class="layout">
+<!-- chrome:toc -->
+<nav class="toc" aria-label="이 문서의 목차"><h2 data-toc="no">이 문서에서</h2><ol><li><a href="#background">배경: 업데이트 파일 한 개가 펌웨어 전체입니다</a></li><li><a href="#package">파일의 겉 구조: 헤더, 압축 스트림, 꼬리</a></li><li><a href="#records">이름이 붙은 레코드 15개</a></li><li><a href="#soc">어떤 칩을 대상으로 만든 펌웨어인가</a></li><li><a href="#code">원본 코드와 대조한 네 가지 동작</a></li><li><a href="#sources">확보한 공개 소스와 라이선스</a></li><li><a href="#limits">한계</a></li><li><a href="#reproduce">재현 방법</a></li><li><a href="#refs">근거 파일과 참고 자료</a></li></ol></nav>
+<!-- /chrome:toc -->
+<main class="doc" id="main">
+
+<section class="summary">
+<h2 data-toc="no">핵심 요약</h2>
+<ul>
+<li>약 35MB인 펌웨어 파일의 압축을 풀면 약 79MB의 스트림이 나오고, 그 안에 <strong>이름이 붙은 레코드 15개</strong>가 차례로 들어 있습니다. 직접 만든 추출기의 결과는 독립된 공개 디코더의 결과와 바이트 단위로 같습니다.</li>
+<li>용량의 대부분은 네 레코드가 차지합니다. 카메라 동작을 맡는 <strong>RTOS</strong>, <strong>Linux</strong>(부트로더·커널·장치 트리), Linux의 초기 파일 시스템, 화면 아이콘 묶음입니다. 한 펌웨어에 RTOS와 Linux가 함께 들어 있습니다.</li>
+<li>Linux의 장치 트리는 이 펌웨어가 <strong>Socionext Milbeaut SC2000A 계열과 Cortex-A7</strong>을 대상으로 만들어졌음을 직접 보여 줍니다. Ricoh는 이 카메라의 영상 엔진을 PRIME V라고 부릅니다. 기판에 실장된 칩의 각인은 확인하지 않았습니다.</li>
+<li>재배포 조건을 확인한 <strong>소스 파일 세 개</strong>(셸 스크립트 둘, 직렬 포트 드라이버 하나)를 확보했습니다. 카메라 전체를 다시 빌드할 수 있는 비공개 소스는 없습니다.</li>
+<li>모든 내용은 파일을 읽고 PC에서 분석한 결과입니다. 카메라에서 실행해 본 것은 없습니다.</li>
+</ul>
+</section>
+
+<div class="scope">
+<div class="ok"><h3><span class="badge ok">확인</span> 파일 바이트를 읽어 대조</h3>
+<ul>
+<li>파일과 레코드 15개의 크기·위치·SHA-256</li>
+<li>압축 해제 결과가 독립 디코더와 일치</li>
+<li>장치 트리 속성, 커널 버전과 내장 설정, 초기 파일 시스템의 파일 수</li>
+<li>셸 스크립트 두 개가 공개 소스와 바이트 단위로 일치</li>
+</ul></div>
+<div class="static"><h3><span class="badge static">정적 분석</span> 읽어서 판단</h3>
+<ul>
+<li>Linux 직렬 포트 함수 한 개와 공개 C 소스의 대응</li>
+<li>RTOS의 적재 주소 추정, HDMI 명령 처리기와 초기화 일부</li>
+<li>초기 파일 시스템에 적힌 서비스 시작 순서</li>
+</ul></div>
+<div class="open"><h3><span class="badge open">미확인</span> 확인하지 못한 것</h3>
+<ul>
+<li>실장된 칩의 각인, 실제 동작 클록, 가속기의 부품 번호</li>
+<li>DSP·SRIC·CPU 등 일부 레코드와 스트림 끝부분의 내용</li>
+<li>카메라의 부팅 로그, HDMI 출력 등 실기 동작</li>
+</ul></div>
+</div>
+
+<section id="background">
+<h2>배경: 업데이트 파일 한 개가 펌웨어 전체입니다</h2>
+<p>Ricoh Imaging은 K-3 Mark III의 펌웨어를 ZIP 파일로 배포합니다. 그 안의 <code>fwdc233b.bin</code>을 SD 카드에 넣고 카메라에서 업데이트를 실행하면 내장 저장소의 펌웨어가 바뀝니다. 이 연구는 이 파일 하나를 대상으로 합니다.</p>
+<p>이 문서는 파일의 지도 역할을 합니다. 각 부분을 깊이 분석한 내용은 주제별 문서에 있습니다.</p>
+<ul>
+<li>부팅 초기 코드(M0, BOOT)와 저장소: <a href="guide-boot.html">부팅과 저장소 안내</a></li>
+<li>카메라가 이 파일을 검사하고 기록하는 과정: <a href="guide-update.html">업데이트 과정 안내</a></li>
+<li>RTOS의 명령과 촬영·AF·영상 처리: <a href="guide-rtos.html">RTOS 명령 안내</a>, <a href="guide-color.html">색 처리 안내</a></li>
+<li>파일을 고쳐 다시 포장하는 실험: <a href="guide-rebuild.html">재구축 안내</a></li>
+</ul>
+<div class="callout plain"><strong class="label">용어</strong>
+<p><dfn title="Real-Time Operating System. 정해진 시간 안에 반응해야 하는 기기 제어에 쓰는 작은 운영체제">RTOS</dfn>는 셔터·AF처럼 시간이 중요한 동작을 맡는 작은 운영체제입니다. <dfn title="System on Chip. CPU와 영상 처리 회로, 주변장치를 한 칩에 넣은 부품">SoC</dfn>는 CPU와 영상 처리 회로를 한 칩에 넣은 부품입니다. <dfn title="기판에 어떤 장치가 어느 주소에 있는지 Linux 커널에 알려 주는 데이터. 파일로 만든 것을 DTB라고 합니다.">장치 트리</dfn>는 Linux 커널에 하드웨어 구성을 알려 주는 데이터입니다.</p></div>
+</section>
+
+<section id="package">
+<h2>파일의 겉 구조: 헤더, 압축 스트림, 꼬리</h2>
+<p class="takeaway">파일은 128바이트 헤더, 압축된 본문, 280바이트 꼬리로 되어 있습니다. 본문을 풀면 레코드 15개가 이어진 78,683,892바이트 스트림이 나옵니다.</p>
+
+<div class="table-wrap"><table>
+<caption>분석 대상 파일</caption>
+<thead><tr><th>항목</th><th>측정 결과</th></tr></thead>
+<tbody>
+<tr><th scope="row">입력</th><td><code>fwdc233b.bin</code>, 35,106,716바이트</td></tr>
+<tr><th scope="row">입력 SHA-256</th><td><code class="wrap">3c9d466b8160689867af2f58ff2cf0bf3363bc3b42daff43685a33171b91eb1a</code></td></tr>
+<tr><th scope="row">패키지 대조</th><td>보유한 <code>k3III_v220.zip</code> 안의 BIN과 SHA-256이 같습니다. ZIP의 나머지 세 파일은 OpenSSL과 ZXing의 라이선스·고지 문서입니다.</td></tr>
+<tr><th scope="row">빌드와 배포</th><td>BIN 헤더의 빌드 시각은 2024-10-08 15:31:16 JST입니다. Ricoh는 2.20을 2024-10-30에 배포했습니다.</td></tr>
+<tr><th scope="row">압축 해제</th><td>BIN의 <code>0x80</code>에서 시작해 블록 3,202개를 풉니다. 결과는 78,683,892바이트이고, 독립 디코더의 출력과 전체 바이트가 같습니다.</td></tr>
+</tbody></table></div>
+
+<figure class="diagram">
+<figcaption>펌웨어 파일과 그 안의 레코드 15개</figcaption>
+<div class="dg-scroll">
+<svg class="dg" viewBox="0 0 800 326" role="img" aria-labelledby="dg-pkg-title dg-pkg-desc">
+<title id="dg-pkg-title">배포 파일의 구간과, 압축을 푼 스트림에 들어 있는 레코드의 크기 비교</title>
+<desc id="dg-pkg-desc">맨 위 막대는 배포 파일입니다. 128바이트 헤더, 35,106,308바이트 압축 스트림, 256바이트 버전 표, 24바이트 꼬리말 순서이며 이 줄은 길이에 비례하지 않습니다. 압축 스트림을 풀면 가운데 막대인 78,683,892바이트 스트림이 됩니다. 이 막대는 길이에 비례합니다. 왼쪽부터 아주 작은 레코드 다섯 개, RTOS 25,483,200바이트, DSP, LINUX 3,062,784바이트, INITFS 14,452,736바이트, 작은 레코드 세 개, ICONBIN 26,219,192바이트, 36바이트짜리 레코드 두 개, 해석하지 않은 꼬리 4,841,096바이트입니다. 아래 두 막대는 작은 레코드 묶음을 확대한 것입니다. 첫째 묶음은 BOOTPARA, DRAMPARA, PARTPARA, M0 92,164바이트, BOOT 21,696바이트입니다. 둘째 묶음은 SRIC 122,880바이트, CPU 131,072바이트, SHELLCMD 61,312바이트입니다.</desc>
+<defs><marker id="dg-pkg-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0 0L10 5L0 10z"/></marker></defs>
+
+<text class="h" x="10" y="20">배포 파일 fwdc233b.bin · 35,106,716바이트 (이 줄은 길이 비례 아님)</text>
+<rect class="b" x="10" y="30" width="96" height="52" rx="8"/>
+<text class="t" x="22" y="52">헤더</text>
+<text class="s" x="22" y="70">128바이트</text>
+<rect class="b" x="106" y="30" width="520" height="52" rx="8"/>
+<text class="t" x="118" y="52">압축 스트림</text>
+<text class="s" x="118" y="70">35,106,308바이트 · 블록 3,202개</text>
+<rect class="b" x="626" y="30" width="94" height="52" rx="8"/>
+<text class="t" x="638" y="52">버전 표</text>
+<text class="s" x="638" y="70">256바이트</text>
+<rect class="b" x="720" y="30" width="70" height="52" rx="8"/>
+<text class="t" x="730" y="52">꼬리말</text>
+<text class="s" x="730" y="70">24바이트</text>
+
+<path class="e" d="M366 82V126" marker-end="url(#dg-pkg-ah)"/>
+<text class="n" x="378" y="104">압축 해제: LZ 2,460블록 + 무압축 742블록</text>
+<text class="h" x="10" y="120">압축을 푼 스트림 · 78,683,892바이트 (길이 비례)</text>
+<text class="n end" x="790" y="120">끝부분 4,841,096바이트</text>
+
+<rect class="b key" x="10" y="128" width="3" height="56"/>
+<rect class="b key" x="13" y="128" width="250" height="56" rx="6"/>
+<text class="t" x="25" y="152">RTOS</text>
+<text class="s" x="25" y="172">25,483,200바이트</text>
+<rect class="b mute" x="263" y="128" width="42" height="56" rx="6"/>
+<text class="t mid" x="284" y="161">DSP</text>
+<rect class="b key" x="305" y="128" width="31" height="56" rx="6"/>
+<rect class="b key" x="336" y="128" width="143" height="56" rx="6"/>
+<text class="t" x="348" y="152">INITFS</text>
+<text class="s" x="348" y="172">14,452,736바이트</text>
+<rect class="b mute" x="479" y="128" width="3" height="56"/>
+<rect class="b key" x="482" y="128" width="260" height="56" rx="6"/>
+<text class="t" x="494" y="152">ICONBIN</text>
+<text class="s" x="494" y="172">26,219,192바이트</text>
+<rect class="b mute" x="742" y="128" width="2" height="56"/>
+<rect class="b open" x="744" y="128" width="46" height="56" rx="6"/>
+<text class="s mid" x="767" y="161">미해석</text>
+
+<path class="e" d="M320 184V198"/>
+<text class="n mid" x="320" y="212">LINUX 3,062,784바이트</text>
+<path class="e" d="M743 184V198"/>
+<text class="n end" x="790" y="212">FDRVPARA · RES (각 36바이트)</text>
+
+<path class="e dash" d="M11 184V236"/>
+<text class="h" x="22" y="230">확대 ① 처음 115,084바이트</text>
+<rect class="b mute" x="10" y="238" width="6" height="52"/>
+<rect class="b key" x="16" y="238" width="302" height="52" rx="6"/>
+<text class="t" x="28" y="260">M0</text>
+<text class="s" x="28" y="278">92,164바이트 · 초기 부트 코드</text>
+<rect class="b key" x="318" y="238" width="72" height="52" rx="6"/>
+<text class="t" x="328" y="260">BOOT</text>
+<text class="s" x="328" y="278">21,696</text>
+<path class="e" d="M13 290V302"/>
+<text class="n" x="10" y="316">BOOTPARA 72 · DRAMPARA 556 · PARTPARA 516바이트</text>
+
+<path class="e dash" d="M480 184V236"/>
+<text class="h" x="492" y="230">확대 ② 315,312바이트</text>
+<rect class="b mute" x="420" y="238" width="144" height="52" rx="6"/>
+<text class="t" x="432" y="260">SRIC</text>
+<text class="s" x="432" y="278">122,880바이트</text>
+<rect class="b mute" x="564" y="238" width="154" height="52" rx="6"/>
+<text class="t" x="576" y="260">CPU</text>
+<text class="s" x="576" y="278">131,072바이트</text>
+<rect class="b key" x="718" y="238" width="72" height="52" rx="6"/>
+<path class="e" d="M754 290V302"/>
+<text class="n end" x="790" y="316">SHELLCMD 61,312바이트</text>
+</svg>
+</div>
+<ul class="dg-legend"><li><i class="key"></i>내용을 분석한 레코드</li><li><i></i>파일의 틀, 이름과 크기만 확인한 레코드</li><li><i class="open"></i>해석하지 않은 영역</li></ul>
+<p>가운데 막대와 확대 막대의 가로 길이는 레코드 헤더 16바이트를 포함한 크기에 비례합니다. 글자로 적은 수는 헤더를 뺀 내용의 크기입니다.</p>
+</figure>
+
+<div class="table-wrap"><table>
+<caption>배포 파일의 네 구간</caption>
+<thead><tr><th>구간</th><th>파일 오프셋</th><th class="n">크기(바이트)</th><th>내용</th></tr></thead>
+<tbody>
+<tr><th scope="row">헤더</th><td><code>0x0</code>–<code>0x7f</code></td><td class="n">128</td><td>프로젝트 식별값, 빌드 시각, 버전 레코드 개수, 고정 표식</td></tr>
+<tr><th scope="row">압축 스트림</th><td><code>0x80</code>–<code>0x217ae83</code></td><td class="n">35,106,308</td><td>블록 3,202개(LZ 압축 2,460개, 무압축 742개)</td></tr>
+<tr><th scope="row">버전 레코드 표</th><td><code>0x217ae84</code>–<code>0x217af83</code></td><td class="n">256</td><td>128바이트 레코드 2개</td></tr>
+<tr><th scope="row">꼬리말</th><td><code>0x217af84</code>–<code>0x217af9b</code></td><td class="n">24</td><td>식별값 반복, 펌웨어 종류, 압축 길이와 해제 길이, 체크섬 워드</td></tr>
+</tbody></table></div>
+<p>헤더와 꼬리의 각 필드를 카메라의 업데이트 코드가 어떻게 검사하는지는 <a href="update-resources.html">업데이트 검사와 ICONBIN</a>에 있습니다. 파일 전체를 32비트 워드로 더한 합의 하위 32비트는 0이며, 이 성질도 그 검사에 쓰입니다.</p>
+
+<div class="callout fix"><strong class="label">정정</strong>
+<p>이전 개요 문서는 압축 스트림 뒤의 280바이트를 “용도를 확정하지 않은 영역”이라고 적었습니다. 그 뒤의 업데이트 검사 분석에서 이 280바이트가 버전 레코드 표 256바이트와 꼬리말 24바이트로 읽힌다는 것을 확인했으므로 위 표처럼 고쳤습니다. 버전 레코드의 나머지 필드는 여전히 해석하지 않았습니다. 압축을 푼 스트림 끝의 4,841,096바이트는 이와 다른 영역이며 용도를 모릅니다.</p></div>
+
+<details class="evidence"><summary>압축 형식과 해시</summary>
+<ul class="small">
+<li>블록은 2바이트 big endian 길이로 시작합니다. 최상위 비트가 1이면 무압축 블록이고, 길이가 0이면 스트림의 끝입니다.</li>
+<li>LZ 블록은 16비트 플래그 워드를 상위 비트부터 읽어 “다음이 1바이트 리터럴인지, 2바이트 복사 토큰인지”를 가립니다. 복사 길이는 3~10이고 10이면 뒤따르는 바이트로 늘어납니다. 복사 거리는 13비트입니다. 블록은 <code>00 00</code>으로 끝납니다.</li>
+<li>압축을 푼 스트림 SHA-256: <code class="wrap">7ff301d585ef7adcd620a15575faa39b4227cc5a27eaa8d754efe50f667a30f9</code></li>
+<li>스트림 뒤 280바이트 SHA-256: <code class="wrap">e65b0144b960c708860bcc64eb75fcf96ae0c8767cc2c1937431416c8d17a152</code></li>
+<li>ZIP SHA-256: <code class="wrap">6175dae81f56d225b9863d656282ead9617ca82b75884532458675a2372d113d</code>, 구성원 <code>k3III_v220/fwdc233b.bin</code>. REA로 확인한 ZIP 증거 ID는 <a href="../evidence.json">evidence.json</a>에 있습니다.</li>
+<li>비교에 쓴 디코더: <a href="https://github.com/Trimz/Ricoh3x/blob/0ed425ad4e31b336624ba4709dc28962ace2d629/tools/pdec.py">Trimz/Ricoh3x의 pdec.py</a>(고정한 커밋). 받은 소스의 SHA-256은 <code class="wrap">abc92c0090d2b870f2ec74782d67a2decb8c5a1eb8132f35756a2db81cfe8f50</code>입니다.</li>
+<li>추출기는 서명이나 진위를 검사하지 않습니다. 한 번에 스트림 하나만 풉니다.</li>
+</ul>
+</details>
+</section>
+
+<section id="records">
+<h2>이름이 붙은 레코드 15개</h2>
+<p class="takeaway">압축을 푼 스트림은 “이름·종류·번호·길이”로 된 16바이트 헤더와 내용이 반복되는 구조입니다. 용량이 큰 레코드는 대부분 내용을 분석했고, 일부는 이름과 크기만 확인했습니다.</p>
+<p>레코드 헤더는 8바이트 이름(대문자, 남는 자리는 0), 16비트 종류(kind), 16비트 번호(index), 32비트 길이 순서입니다. 아래 “시작”은 <strong>압축을 푼 스트림에서 내용이 시작하는 위치</strong>입니다.</p>
+
+<div class="table-wrap"><table class="compact">
+<caption>레코드 목록 (스트림에 놓인 순서)</caption>
+<thead><tr><th class="n">#</th><th>이름</th><th class="n">kind</th><th class="n">index</th><th class="n">시작</th><th class="n">크기(바이트)</th><th>확인한 내용과 다루는 문서</th></tr></thead>
+<tbody>
+<tr><td class="n">1</td><th scope="row">BOOTPARA</th><td class="n">5</td><td class="n">65535</td><td class="n"><code>0x10</code></td><td class="n">72</td><td>+4와 +8의 값이 M0 코드의 내부 벡터와 맞습니다. M0의 분석 기준 주소를 정한 근거입니다(<a href="startup-storage.html#preboot-mode">M0 진입·모드</a>).</td></tr>
+<tr><td class="n">2</td><th scope="row">DRAMPARA</th><td class="n">1</td><td class="n">65535</td><td class="n"><code>0x68</code></td><td class="n">556</td><td>내용을 해석하지 않았습니다.</td></tr>
+<tr><td class="n">3</td><th scope="row">PARTPARA</th><td class="n">2</td><td class="n">65535</td><td class="n"><code>0x2a4</code></td><td class="n">516</td><td>RTOS의 업데이트 코드가 최대 32개 항목의 저장소 배치로 처리합니다(<a href="update-resources.html">업데이트 검사와 ICONBIN</a>).</td></tr>
+<tr><td class="n">4</td><th scope="row">M0</th><td class="n">3</td><td class="n">0</td><td class="n"><code>0x4b8</code></td><td class="n">92,164</td><td>부팅 초기 단계의 Thumb 코드. reset 초기화, 보드 설정, 직렬 출력, 저장소 읽기(<a href="guide-boot.html">부팅과 저장소 안내</a>).</td></tr>
+<tr><td class="n">5</td><th scope="row">BOOT</th><td class="n">4</td><td class="n">0</td><td class="n"><code>0x16ccc</code></td><td class="n">21,696</td><td>파티션 표를 읽고 RTOS를 적재하는 ARM 부트 코드(<a href="startup-storage.html#slot2">BOOT가 채우는 리소스 슬롯 2</a>).</td></tr>
+<tr><td class="n">6</td><th scope="row">RTOS</th><td class="n">4</td><td class="n">1</td><td class="n"><code>0x1c19c</code></td><td class="n">25,483,200</td><td>ARM 예외 벡터, 시작 코드, 카메라 명령 처리기(<a href="guide-rtos.html">RTOS 명령 안내</a>).</td></tr>
+<tr><td class="n">7</td><th scope="row">DSP</th><td class="n">4</td><td class="n">2</td><td class="n"><code>0x186996c</code></td><td class="n">4,194,304</td><td>DSP라는 이름의 별도 내용. 칩 모델과 알고리즘은 확인하지 않았습니다.</td></tr>
+<tr><td class="n">8</td><th scope="row">LINUX</th><td class="n">4</td><td class="n">5</td><td class="n"><code>0x1c6997c</code></td><td class="n">3,062,784</td><td>부트 코드(Stubby), 압축 커널, 장치 트리(<a href="stubby-load-auth.html">Stubby 적재와 인증 경계</a>).</td></tr>
+<tr><td class="n">9</td><th scope="row">INITFS</th><td class="n">4</td><td class="n">6</td><td class="n"><code>0x1f5558c</code></td><td class="n">14,452,736</td><td>ROMFS 안의 gzip 압축 newc CPIO. 일반 파일 396개 중 20개가 셸 스크립트 형식이고, 그중 2개는 라이선스 경로의 소스 사본입니다.</td></tr>
+<tr><td class="n">10</td><th scope="row">SRIC</th><td class="n">9</td><td class="n">0</td><td class="n"><code>0x2d1dd9c</code></td><td class="n">122,880</td><td>내용을 해석하지 않았습니다.</td></tr>
+<tr><td class="n">11</td><th scope="row">CPU</th><td class="n">7</td><td class="n">0</td><td class="n"><code>0x2d3bdac</code></td><td class="n">131,072</td><td>내용을 해석하지 않았습니다.</td></tr>
+<tr><td class="n">12</td><th scope="row">SHELLCMD</th><td class="n">4</td><td class="n">3</td><td class="n"><code>0x2d5bdbc</code></td><td class="n">61,312</td><td>명령 이름과 주소를 적은 표. 서로 다른 RTOS 주소를 가리키는 명령 957개와 주소가 0인 종료 표식 1개(<a href="index.html">RTOS 명령 957개</a>).</td></tr>
+<tr><td class="n">13</td><th scope="row">ICONBIN</th><td class="n">4</td><td class="n">4</td><td class="n"><code>0x2d6ad4c</code></td><td class="n">26,219,192</td><td>화면 아이콘 자원. 업데이트 때 저장소 인덱스 4로 기록됩니다(<a href="icon-resources.html">ICONBIN 아이콘 자원</a>).</td></tr>
+<tr><td class="n">14</td><th scope="row">FDRVPARA</th><td class="n">8</td><td class="n">65535</td><td class="n"><code>0x466c014</code></td><td class="n">36</td><td>내용을 해석하지 않았습니다.</td></tr>
+<tr><td class="n">15</td><th scope="row">RES</th><td class="n">6</td><td class="n">65535</td><td class="n"><code>0x466c048</code></td><td class="n">36</td><td>폰트 경로가 들어 있습니다(<a href="research-roadmap.html">수정·이식 선행 연구</a>).</td></tr>
+</tbody></table></div>
+<p>15번 레코드가 끝나는 <code>0x466c06c</code>부터 스트림 끝까지 4,841,096바이트가 남습니다. 추출기는 이 부분을 해석하지 않고 그대로 보존합니다. 이 영역은 <code>LELR</code> 네 글자로 시작합니다.</p>
+<div class="callout warn"><strong class="label">주의</strong>
+<p>레코드의 이름과 순서는 CPU가 보는 주소나 메모리 배치를 알려 주지 않습니다. RTOS·BOOT·M0의 주소는 각 코드 안의 단서로 따로 추정했고, 문서마다 “정적 분석 기준 주소”라고 밝혀 씁니다.</p></div>
+
+<details class="evidence"><summary>레코드별 SHA-256</summary>
+<div class="table-wrap"><table class="compact">
+<thead><tr><th>이름</th><th>내용의 SHA-256</th></tr></thead>
+<tbody>
+<tr><th scope="row">BOOTPARA</th><td><code class="wrap">e6ab13ff2147fa912214de58f9e8f60001aeeaf08865921399cc842ed88e742c</code></td></tr>
+<tr><th scope="row">DRAMPARA</th><td><code class="wrap">c54a74d461773d01af0f9582ef2783f3917155c01a619b0dea1505c6b9c9aa76</code></td></tr>
+<tr><th scope="row">PARTPARA</th><td><code class="wrap">2c202527871d2ef6677c2daf52a12f9c701c29296727fb5d4ee9d05e298e44bb</code></td></tr>
+<tr><th scope="row">M0</th><td><code class="wrap">63dd8f3b2668ef68f3ab0f8ecd0f4cda8c46a78c5388646fc9e1fe85e39a070e</code></td></tr>
+<tr><th scope="row">BOOT</th><td><code class="wrap">0a9c086818b9d6e7531b93710c2cab2782c7f2c32bb5b1c26e3b5b5b69695900</code></td></tr>
+<tr><th scope="row">RTOS</th><td><code class="wrap">342d2f35405e8daf1797dfe431d2e4aa70f4b52a2c242a29df48206672f1dfb4</code></td></tr>
+<tr><th scope="row">DSP</th><td><code class="wrap">961913b5f80bce8f825b9745228a24dec72709ad4514d55b3708629427790298</code></td></tr>
+<tr><th scope="row">LINUX</th><td><code class="wrap">fcb11ce850f22420ddd6a29d63ef9074ad6322bc021d0ba101e1354d1277b9c2</code></td></tr>
+<tr><th scope="row">INITFS</th><td><code class="wrap">0f230006ec83cf48567977081ac2446072dec58aa5c9c7ddc2d38009a44650a0</code></td></tr>
+<tr><th scope="row">SRIC</th><td><code class="wrap">e4c86ba271cd2135c12845bb308514326cc92ff440bca870b1a4442c947364c1</code></td></tr>
+<tr><th scope="row">CPU</th><td><code class="wrap">f4c7e6df2f9879e2944385fa3cea955aca35a4017a21ef76dbadf48e2bcdde60</code></td></tr>
+<tr><th scope="row">SHELLCMD</th><td><code class="wrap">acc8dfbdf987d85fab839aa00a777e8be3b6c6cb09867536cbfd74a47ef61f78</code></td></tr>
+<tr><th scope="row">ICONBIN</th><td><code class="wrap">9895330cd5d8c52231e96e1d39e883ae22ab35906eaf39d11476d852280b5808</code></td></tr>
+<tr><th scope="row">FDRVPARA</th><td><code class="wrap">7d53444340108a9d54c2bc7bd14da591a44f3481e8f2d85aba0c327751e0e6e3</code></td></tr>
+<tr><th scope="row">RES</th><td><code class="wrap">d1968b4c678ffe3a146eb93dba11ef8fed7c4222c484ff15a5363f59126d0def</code></td></tr>
+</tbody></table></div>
+<p class="small">전체 값(헤더 위치 포함)은 <a href="../evidence.json">evidence.json</a>의 <code>named_records</code>에 있습니다.</p>
+</details>
+
+<h3>LINUX와 INITFS의 안쪽</h3>
+<div class="table-wrap"><table>
+<caption>두 레코드 안에서 위치를 확인한 것</caption>
+<thead><tr><th>레코드</th><th>위치</th><th>내용</th></tr></thead>
+<tbody>
+<tr><th scope="row" rowspan="3">LINUX</th><td>앞부분</td><td>부트 코드 Stubby</td></tr>
+<tr><td><code>+0xc1cf</code></td><td>gzip으로 압축한 커널. 풀면 5,140,480바이트의 Image이고 버전 문자열은 Linux 4.4.15입니다.</td></tr>
+<tr><td><code>+0x2e3be0</code></td><td>장치 트리(DTB), 32,694바이트. 압축을 푼 스트림 기준으로는 <code>+0x1f4d55c</code>입니다.</td></tr>
+<tr><th scope="row">INITFS</th><td><code>+0x80</code></td><td>gzip 스트림. 풀면 newc 형식 CPIO 묶음이고 일반 파일 396개가 들어 있습니다.</td></tr>
+</tbody></table></div>
+<p class="small muted">newc CPIO는 Linux가 초기 파일 시스템에 쓰는 묶음 형식이고, ROMFS는 읽기 전용 파일 시스템 형식입니다. 형식의 정의는 아래 참고 자료의 Linux 커널 문서에 있습니다.</p>
+</section>
+
+<section id="soc">
+<h2>어떤 칩을 대상으로 만든 펌웨어인가</h2>
+<p class="takeaway">펌웨어 안의 장치 트리와 커널 설정은 Socionext Milbeaut SC2000A 계열과 Cortex-A7을 가리킵니다. 이것은 “Linux가 무엇을 대상으로 빌드되었는가”의 직접 증거이고, 실장된 부품을 눈으로 확인한 것은 아닙니다.</p>
+
+<h3>펌웨어 안의 증거</h3>
+<div class="table-wrap"><table>
+<caption>장치 트리와 커널에서 읽은 값</caption>
+<thead><tr><th>항목</th><th>값</th></tr></thead>
+<tbody>
+<tr><th scope="row">루트 <code>compatible</code></th><td><code>milbeaut,sc2000a</code>, <code>socionext,milbeaut-evb</code></td></tr>
+<tr><th scope="row">루트 <code>model</code></th><td><code>Socionext SC2000A EVB w/ RTOS and NETSEC</code></td></tr>
+<tr><th scope="row">CPU 노드</th><td><code>/cpus/cpu@3</code>, <code>compatible</code>은 <code>arm,cortex-a7</code>, <code>reg</code>는 <code>0xf03</code></td></tr>
+<tr><th scope="row">커널 내장 설정</th><td><code>CONFIG_ARCH_MILBEAUT=y</code>, <code>CONFIG_SERIAL_SN_USIO=y</code></td></tr>
+<tr><th scope="row">직렬 포트</th><td>UART 인스턴스 <code>0x1E700010</code>이 활성 상태로 적혀 있습니다.</td></tr>
+</tbody></table></div>
+<p>장치 트리는 <code>LINUX + 0x2E3BE0</code>에서 헤더와 속성을 규격대로 파싱해 읽었습니다. 헤더의 표식 값과 버전(17, 호환 버전 16)이 <a href="https://devicetree-specification.readthedocs.io/en/stable/flattened-format.html">Devicetree 규격</a>과 맞습니다.</p>
+
+<h3>공개 자료와 맞춰 보기</h3>
+<div class="table-wrap"><table>
+<caption>외부 자료가 말하는 것</caption>
+<thead><tr><th>자료</th><th>내용</th></tr></thead>
+<tbody>
+<tr><th scope="row"><a href="https://www.socionext.com/en/pr/sn_pr20170105_01e.pdf">Socionext 보도자료</a> (2017-01-05)</th><td>SC2000은 Milbeaut 영상 프로세서 8세대인 “M10V” 시리즈의 제품입니다. CPU는 “ARM Cortex A7 Quad 660MHz”이고, 컴퓨터 비전에 맞춘 DSP를 갖췄다고 설명합니다.</td></tr>
+<tr><th scope="row"><a href="https://lkml.rescloud.iu.edu/1902.2/02222.html">Linux 커널 메일링 리스트의 SC2000 지원 패치 소개</a> (Socionext, 2019-02)</th><td>“M10V”는 SC2000의 내부 이름이라고 밝힙니다. 구성으로 Cortex-A7 4코어, NEON, DSP, GPU, 최대 3GB DDR3, 전원 제어용 Cortex-M0를 듭니다.</td></tr>
+<tr><th scope="row">Linux 업스트림 소스</th><td><a href="https://github.com/torvalds/linux/blob/master/arch/arm/mach-milbeaut/Kconfig">Kconfig</a>에 “Milbeaut SC2000/M10V platform”이 있습니다. <a href="https://github.com/torvalds/linux/blob/master/arch/arm/boot/dts/socionext/milbeaut-m10v.dtsi">장치 트리 소스</a>의 루트 <code>compatible</code>은 <code>socionext,sc2000a</code>이고, <code>arm,cortex-a7</code> CPU 노드가 넷(<code>reg</code> <code>0xf00</code>~<code>0xf03</code>)이며, 직렬 포트가 <code>0x1e700010</code>에 있습니다.</td></tr>
+<tr><th scope="row">Ricoh Imaging 제품 설명</th><td><a href="https://www.ricoh-imaging.co.jp/english/products/k-3-3/feature/02.html">K-3 Mark III</a>는 “PRIME V imaging engine”과 “second-generation accelerator unit”을 쓴다고 설명합니다. <a href="https://www.ricoh-imaging.co.jp/english/products/k-3-2/feature/05.html">K-3 II</a>의 영상 엔진은 PRIME III입니다.</td></tr>
+<tr><th scope="row"><a href="https://ameblo.jp/akinas/entry-12845980402.html">akinas의 K-3 Mark III 펌웨어 분석</a></th><td>개인 연구자의 독립 분석도 메인 SoC를 Socionext SC2000으로 지목합니다.</td></tr>
+</tbody></table></div>
+<p>펌웨어의 장치 트리에 적힌 CPU 노드 번호(<code>cpu@3</code>, <code>reg 0xf03</code>)와 직렬 포트 주소는 업스트림 SC2000A 장치 트리의 네 번째 CPU와 직렬 포트 주소에 그대로 들어맞습니다. 제조사 접두어만 <code>milbeaut,</code>와 <code>socionext,</code>로 다릅니다.</p>
+
+<figure class="diagram">
+<figcaption>근거가 닿는 범위에서 그린 소프트웨어와 하드웨어 구성</figcaption>
+<div class="dg-scroll">
+<svg class="dg" viewBox="0 0 800 384" role="img" aria-labelledby="dg-stack-title dg-stack-desc">
+<title id="dg-stack-title">펌웨어 레코드로 본 부팅 순서와 그 아래의 하드웨어</title>
+<desc id="dg-stack-desc">위쪽 줄은 RTOS 쪽입니다. M0 레코드의 초기 부트 코드, BOOT 레코드, RTOS 레코드 순서이며 M0에서 BOOT로 넘어가는 주소 연결은 확인하지 못해 점선으로 표시했습니다. BOOT는 파티션 표를 읽고 RTOS를 적재합니다. RTOS는 촬영, AF, 영상 처리, 화면을 맡고 SHELLCMD의 명령 957개와 ICONBIN의 아이콘을 씁니다. 가운데 줄은 Linux 쪽입니다. 카메라가 Stubby에 도달하는 경로는 확인하지 못했습니다. Stubby가 Linux 4.4.15 커널과 장치 트리를 올리고, 커널은 INITFS의 서비스를 시작합니다. 맨 아래 띠는 하드웨어입니다. 장치 트리에 적힌 SoC는 Milbeaut SC2000A 계열이고 CPU는 Cortex-A7입니다. PRIME V와 가속기 유닛은 Ricoh의 제품 명칭이며 부품은 확인하지 않았습니다.</desc>
+<defs><marker id="dg-stack-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0 0L10 5L0 10z"/></marker><marker id="dg-stack-aho" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah open" d="M0 0L10 5L0 10z"/></marker></defs>
+
+<text class="h" x="20" y="22">RTOS 쪽</text>
+<rect class="b key" x="20" y="32" width="170" height="82" rx="8"/>
+<text class="t" x="32" y="56">M0</text>
+<text class="s" x="32" y="76">초기 부트 코드 (Thumb)</text>
+<text class="s" x="32" y="94">클록·메모리·저장소 준비</text>
+<rect class="b key" x="240" y="32" width="170" height="82" rx="8"/>
+<text class="t" x="252" y="56">BOOT</text>
+<text class="s" x="252" y="76">파티션 표 읽기</text>
+<text class="s" x="252" y="94">RTOS 적재</text>
+<rect class="b key" x="460" y="32" width="320" height="82" rx="8"/>
+<text class="t" x="472" y="56">RTOS</text>
+<text class="s" x="472" y="76">촬영 · AF · 영상 처리 · 화면</text>
+<text class="s" x="472" y="94">명령 957개(SHELLCMD), 아이콘(ICONBIN)</text>
+<path class="e open" d="M190 73H238" marker-end="url(#dg-stack-aho)"/>
+<path class="e" d="M410 73H458" marker-end="url(#dg-stack-ah)"/>
+<text class="n topen mid" x="215" y="132">주소 연결 미확정</text>
+
+<text class="h" x="20" y="166">LINUX 쪽</text>
+<rect class="b open" x="20" y="176" width="170" height="66" rx="8"/>
+<text class="t" x="32" y="202">시작 경로</text>
+<text class="s" x="32" y="222">누가 부르는지 미확인</text>
+<rect class="b key" x="240" y="176" width="170" height="66" rx="8"/>
+<text class="t" x="252" y="202">Stubby</text>
+<text class="s" x="252" y="222">LINUX의 부트 코드</text>
+<rect class="b key" x="460" y="176" width="150" height="66" rx="8"/>
+<text class="t" x="472" y="202">Linux 4.4.15</text>
+<text class="s" x="472" y="222">커널 + 장치 트리</text>
+<rect class="b key" x="652" y="176" width="128" height="66" rx="8"/>
+<text class="t" x="664" y="202">INITFS</text>
+<text class="s" x="664" y="222">데몬 · 네트워크</text>
+<path class="e open" d="M190 209H238" marker-end="url(#dg-stack-aho)"/>
+<path class="e" d="M410 209H458" marker-end="url(#dg-stack-ah)"/>
+<path class="e" d="M610 209H650" marker-end="url(#dg-stack-ah)"/>
+
+<rect class="gf" x="8" y="270" width="784" height="104" rx="12"/>
+<text class="h" x="20" y="292">하드웨어 (펌웨어가 대상으로 삼는 것)</text>
+<rect class="b ok" x="20" y="302" width="250" height="60" rx="8"/>
+<text class="t" x="32" y="326">SoC: Milbeaut SC2000A 계열</text>
+<text class="s" x="32" y="346">장치 트리의 compatible</text>
+<rect class="b ok" x="290" y="302" width="220" height="60" rx="8"/>
+<text class="t" x="302" y="326">CPU: Cortex-A7</text>
+<text class="s" x="302" y="346">장치 트리의 CPU 노드 cpu@3</text>
+<rect class="b open" x="530" y="302" width="250" height="60" rx="8"/>
+<text class="t" x="542" y="326">PRIME V + 가속기 유닛</text>
+<text class="s" x="542" y="346">Ricoh의 제품 명칭 · 부품 미확인</text>
+</svg>
+</div>
+<ul class="dg-legend"><li><i class="key"></i>펌웨어 레코드(내용을 분석함)</li><li><i class="ok"></i>파일에서 직접 읽은 값</li><li><i class="open"></i>확인하지 못한 부분, 점선은 확인하지 못한 연결</li></ul>
+<p>화살표는 다음 단계를 준비하거나 적재한다는 뜻입니다. 각 연결의 근거와 한계는 <a href="startup-storage.html">M0 reset·SRAM remap·bank</a>와 <a href="stubby-load-auth.html">Stubby 적재와 인증 경계</a>에 있습니다. DSP·SRIC·CPU 레코드는 쓰임을 확인하지 못해 그림에 넣지 않았습니다.</p>
+</figure>
+
+<h3>이 식별의 한계</h3>
+<ul>
+<li>PRIME V는 Ricoh의 제품 명칭이고 SC2000A는 장치 트리에 적힌 플랫폼 이름입니다. 이 문서는 두 이름을 같은 부품이라고 단정하지 않습니다.</li>
+<li>Ricoh가 공개한 커널에는 R03010 보드와 GR III 보드의 설정 파일이 함께 있습니다. 플랫폼을 공유한다는 근거이지만, 두 카메라의 펌웨어나 기판이 같다거나 K-3 II의 모든 하위 시스템이 교체되었다고 판단할 근거로는 부족합니다.</li>
+<li>실장 패키지의 각인, 카메라의 실제 동작 클록, 별도 가속기의 부품 번호는 확인하지 않았습니다.</li>
+<li>패키지의 <code>M0</code> 레코드와 <code>DSP</code> 레코드가 공개 설명에 나오는 “전원 제어용 Cortex-M0”와 DSP를 위한 코드일 가능성이 있습니다. 그러나 펌웨어에서 확인한 것은 레코드 이름과 M0 코드가 Thumb 명령이라는 점까지이므로, 이 대응은 공개 설명에서 나온 추정입니다.</li>
+</ul>
+</section>
+
+<section id="code">
+<h2>원본 코드와 대조한 네 가지 동작</h2>
+<p class="takeaway">Linux의 셸 스크립트는 원문을 그대로 꺼낼 수 있고, 컴파일된 함수는 기계어를 읽어 동작을 추적할 수 있습니다. 그 예로 Linux 쪽 둘, RTOS 쪽 둘을 확인했습니다.</p>
+
+<h3 id="linux-uart">Linux: 직렬 포트 함수 한 개가 공개 C 소스와 맞습니다</h3>
+<p>커널 Image 안에는 함수 이름과 주소를 담은 압축 심볼 표(<dfn title="Linux 커널이 스스로 갖고 있는 함수·변수 이름 표. 오류 메시지에 함수 이름을 찍는 데 쓰입니다.">kallsyms</dfn>)가 있습니다. 여기서 심볼 43,829개를 복원해 <code>usio_tx_empty</code>의 위치를 찾았습니다.</p>
+<dl class="kv">
+<dt>가상 주소</dt><dd><code>0x8015FDF0</code></dd>
+<dt>Image 오프셋</dt><dd><code>0x157DF0</code> (압축을 푼 커널 Image 기준)</dd>
+<dt>크기</dt><dd>다음 심볼까지 14바이트, Thumb 명령 5개</dd>
+<dt>동작</dt><dd>UART 레지스터 기준 주소에서 오프셋 3의 바이트를 읽고 비트 0을 반환</dd>
+</dl>
+<p>이는 송신기가 비었는지를 돌려주는 공개 C 함수와 같습니다(<a href="../source/usio.c#L61-L62">레지스터 정의</a>, <a href="../source/usio.c#L266-L270">함수</a>). 따로 <code>usio_ops.tx_empty</code> 포인터의 값이 <code>0x8015FDF1</code>임도 확인했습니다(<a href="../source/usio.c#L449-L450">콜백 등록</a>). 마지막 비트 1은 Thumb 코드라는 표시입니다. 같은 장치를 M0 쪽 코드가 쓰는 방식은 <a href="m0-diagnostic-serial.html">M0 진단 직렬 출력</a>에 있습니다.</p>
+
+<h3 id="linux-services">Linux: 카메라 서비스의 시작 순서</h3>
+<p>INITFS에서 꺼낸 <code>etc/rc.local</code>에는 서비스를 시작하는 순서가 적혀 있습니다.</p>
+<ol class="flow">
+<li><strong>무선 드라이버</strong><span>드라이버를 올림</span></li>
+<li><strong>카메라 제어 데몬</strong><span>준비 표식을 기다림</span></li>
+<li><strong>USB·시스템 관리</strong><span>데몬 시작</span></li>
+<li><strong>네트워크·BLE</strong><span>일반 모드에서 시작</span></li>
+<li><strong>웹 API</strong><span>저장장치를 마운트한 뒤</span></li>
+<li><strong>MTP 서비스</strong><span>MTP 장치를 만든 뒤</span></li>
+</ol>
+<p><code>usr/bin/ble_init.sh</code>에는 위 직렬 포트 드라이버의 장치 이름인 <code>/dev/ttyUSI1</code>이 나옵니다. 이것은 파일에 적힌 순서이며, 실제 카메라의 부팅 로그는 수집하지 않았습니다.</p>
+
+<h3 id="rtos-hdmi">RTOS: 적재 주소 추정과 HDMI 명령 처리기</h3>
+<p>RTOS가 메모리의 어느 주소에 놓이는지는 세 가지 단서를 따로 맞춰 <code>0x52500000</code>으로 추정했습니다. 벡터 기준 레지스터에 기록하는 값, 예외 처리기 포인터, SHELLCMD 표의 명령 주소입니다.</p>
+<p>명령 표에서 <code>App_ChangeHdmi</code>의 주소는 <code>0x52508000</code>입니다. RTOS 오프셋 <code>0x8000</code>에서 시작하는 56바이트 전체를 디스어셈블했습니다.</p>
+<ul>
+<li>추가 인수가 있으면 첫 인수를 10진수로 해석하는 경로를 거칩니다.</li>
+<li>그 값의 하위 8비트를 설정 갱신 함수로 넘기고, 처리기는 0을 반환합니다.</li>
+<li>하위 함수는 값을 비교한 결과에 따라 레코드 21개의 <code>+0x970</code> 필드에 그 바이트를 기록합니다.</li>
+</ul>
+<p>실제 HDMI 모드와 출력 신호가 바뀌는지는 확인하지 않았습니다.</p>
+
+<h3 id="rtos-init">RTOS: 초기화 경로의 일부</h3>
+<p>리셋 벡터에서 이어지는 주 코어 초기화 경로의 일부는 <code>0x65A80</code>바이트를 복사하고 메모리 구간을 0으로 채웁니다. 이어서 보조 코어가 확인하는 표식을 기록하고 ARM의 <code>SEV</code> 명령(다른 코어를 깨우는 신호)을 냅니다. 이와 별도로 명령 4개짜리 함수 <code>0x52500508</code>은 <code>0x1D001000</code>에 32비트 값 3을 기록합니다.</p>
+<p>이 레지스터 기록 함수와 HDMI 처리기는 angr로 C 형태의 의사코드를 만들어 ARM 명령과 대조했습니다. HDMI 함수의 스택 프레임과 간접 반환은 도구가 부정확하게 표현했기 때문에, 그 부분은 명령어를 기준으로 읽었습니다.</p>
+
+<details class="evidence"><summary>함수 위치와 해시</summary>
+<div class="table-wrap"><table class="compact">
+<thead><tr><th>대상</th><th>위치</th><th>SHA-256</th></tr></thead>
+<tbody>
+<tr><th scope="row">커널 Image (압축 해제)</th><td>5,140,480바이트, 코드 기준 주소 <code>0x80008000</code></td><td><code class="wrap">92a208ef5717fe54b61ae269d48dc3ae37a7e997d1965d8d28b02df0d982aaf6</code></td></tr>
+<tr><th scope="row"><code>usio_tx_empty</code></th><td>Image <code>0x157df0</code>, 14바이트</td><td><code class="wrap">80097a7f01eb0b9c23fb4baeb4755378e6ed2b0aad88511b32f63111498cba56</code></td></tr>
+<tr><th scope="row"><code>usio_ops</code></th><td>가상 주소 <code>0x804dd22c</code>, Image <code>0x4d522c</code></td><td>—</td></tr>
+<tr><th scope="row">HDMI 처리기</th><td>RTOS <code>0x8000</code>–<code>0x8038</code></td><td><code class="wrap">a0007a3d5173ceff9ad13ae0fd81f2082f643d80a7caba1eb3932125709138fc</code></td></tr>
+<tr><th scope="row">레지스터 기록 함수</th><td><code>0x52500508</code>, 16바이트</td><td>—</td></tr>
+</tbody></table></div>
+<ul class="small">
+<li>심볼 복원 도구는 vmlinux-to-elf 1.4.0입니다. 심볼 개수 값은 Image <code>0x381820</code>에 있습니다.</li>
+<li>RTOS에서 서로 다른 명령 주소 957개와 주소 0인 종료 표식 1개를 셌고, 12개 구간을 Capstone으로 대조했습니다.</li>
+<li>angr 10.0.5가 낸 의사코드의 SHA-256: HDMI 처리기 <code class="wrap">15fe74267e054bd6ee23890d29b4fd930666d1720b4040a6d80b224360d8057c</code>, 레지스터 기록 함수 <code class="wrap">643af7a3c054e465bc2e57fbadc8a3304843e9449f49e117f59a03e74606d575</code>.</li>
+</ul>
+</details>
+</section>
+
+<section id="sources">
+<h2>확보한 공개 소스와 라이선스</h2>
+<p class="takeaway">저장소에 실은 소스는 재배포 조건을 확인한 세 파일뿐입니다. 카메라 전체를 다시 빌드하는 데 필요한 비공개 C/C++ 소스, 원래의 타입·주석·빌드 프로젝트는 확보하지 못했습니다.</p>
+
+<div class="table-wrap"><table>
+<caption>저장소에 실은 소스 파일</caption>
+<thead><tr><th>파일</th><th>출처</th><th>확인한 내용</th><th>라이선스</th></tr></thead>
+<tbody>
+<tr><th scope="row"><a href="../source/update-rc.d">update-rc.d</a></th><td>BIN의 Linux 초기 파일 시스템에 들어 있는 스크립트 원문</td><td>시작·종료 런레벨에 맞춰 init 스크립트 링크를 관리합니다. 꺼낸 4,816바이트가 Ricoh 2.20 OSS 묶음의 <code>update-rc.d-0.7-r5-patched.tar.gz</code> → <code>git/update-rc.d</code>와 같습니다.</td><td>GPL-2.0-or-later</td></tr>
+<tr><th scope="row"><a href="../source/run-postinsts">run-postinsts</a></th><td>같은 파일 시스템에 들어 있는 스크립트 원문</td><td>패키지 설치 후 처리를 맡는 템플릿입니다. 경로를 치환하기 전의 원문 1,773바이트가 OpenEmbedded morty 브랜치의 <a href="https://github.com/openembedded/openembedded-core/blob/morty/meta/recipes-devtools/run-postinsts/run-postinsts/run-postinsts">업스트림 소스</a>와 같습니다.</td><td>MIT</td></tr>
+<tr><th scope="row"><a href="../source/usio.c">usio.c</a></th><td>Ricoh가 2.20용으로 배포한 Linux 커널의 <code>drivers/tty/serial/usio.c</code></td><td>Socionext의 UART 드라이버입니다. 실제 BIN과 대조한 함수·주소·레지스터 비트는 <a href="#linux-uart">위</a>에 적었습니다.</td><td>GPL v2</td></tr>
+</tbody></table></div>
+<p>두 셸 파일이 BIN 안에서 놓인 경로는 <code>license/update-rc.d/update-rc.d.txt</code>와 <code>license/run-postinsts/run-postinsts.txt</code>입니다. 배포용 소스 사본이며, 카메라가 부팅할 때 이 경로에서 실행되었다는 증거는 없습니다. 원저작권 표시와 라이선스 전문을 함께 보존했습니다(<a href="../source/COPYING">GPL</a>, <a href="../source/COPYING.MIT">MIT</a>).</p>
+
+<h3>Ricoh의 오픈소스 묶음</h3>
+<p>Ricoh Imaging은 <a href="https://www.ricoh-imaging.co.jp/english/products/oss/">기종·버전별 오픈소스 목록</a>을 공개하고, K-3 Mark III 2.20용 묶음(<a href="https://www.ricoh-imaging.co.jp/japan/products/oss/k-3-3/K3mkIII_220.tar.gz">K3mkIII_220.tar.gz</a>)을 2024-10-30 날짜로 올려 두었습니다.</p>
+<ul>
+<li>묶음은 195,945,425바이트이고 패키지 아카이브 18개가 들어 있습니다. 커널, Stubby 부트로더, BusyBox, glibc, systemd 등입니다.</li>
+<li><code>linux-kernel-1.60.1.tar.gz</code>의 1.60.1은 패키지 번호입니다. 실제 커널 버전은 <strong>4.4.15</strong>입니다.</li>
+<li>전체 OSS 소스는 제조사에서 받을 수 있으므로 이 저장소에는 대조에 쓴 파일만 실었습니다.</li>
+</ul>
+
+<details class="evidence"><summary>소스 파일과 묶음의 SHA-256</summary>
+<div class="table-wrap"><table class="compact">
+<thead><tr><th>파일</th><th>SHA-256</th></tr></thead>
+<tbody>
+<tr><th scope="row">update-rc.d</th><td><code class="wrap">ffd45322f6ce59a13cb43b2b0437e09ebb6344f99e8188c395455b31a4461ab7</code></td></tr>
+<tr><th scope="row">run-postinsts</th><td><code class="wrap">bcd42401acdb9615ce461c50e2e8bac6f5725d612383f683a8a12ee89da71087</code></td></tr>
+<tr><th scope="row">usio.c</th><td><code class="wrap">9662fb66cbaa245a1091c65226794135bec3c9410b41c6eca88a5df897061027</code></td></tr>
+<tr><th scope="row">COPYING</th><td><code class="wrap">af8067302947c01fd9eee72befa54c7e3ef8a48fecde7fd71277f2290b2bf0f7</code></td></tr>
+<tr><th scope="row">COPYING.MIT</th><td><code class="wrap">a3cf78761a26fb2c850aec855708e83f808617c0c9c4620db58f06cbd2ce4d36</code></td></tr>
+<tr><th scope="row">K3mkIII_220.tar.gz</th><td><code class="wrap">359fc5f319c4d0325bafd07b26195a41e51bfc851d381cbc5b7830178296f53c</code></td></tr>
+</tbody></table></div>
+</details>
+</section>
+
+<section id="limits">
+<h2>한계</h2>
+<ul>
+<li>여기 적은 것은 패키지에 들어 있는 내용과 컴파일된 코드에 관한 정적 근거입니다. 실행 중에 실제로 쓰이는지, 카메라에서 어떻게 동작하는지는 시험하지 않았습니다.</li>
+<li>레코드 15개 가운데 DRAMPARA, DSP, SRIC, CPU, FDRVPARA는 내용을 해석하지 않았습니다. 스트림 끝의 4,841,096바이트도 마찬가지입니다.</li>
+<li>추출기는 서명이나 진위를 검사하지 않습니다. 파일이 Ricoh가 배포한 것과 같은지는 SHA-256으로만 확인했습니다.</li>
+<li>칩의 식별은 장치 트리와 공개 자료를 맞춘 것이며, 기판을 분해해 확인한 것이 아닙니다.</li>
+<li>카메라 플래싱, 실기 실행, 전체 펌웨어 재빌드는 하지 않았습니다.</li>
+</ul>
+</section>
+
+<section id="reproduce">
+<h2>재현 방법</h2>
+<p>기본 절차는 Python 3 표준 라이브러리만 씁니다. 첫 명령의 출력 폴더는 아직 없는 새 경로여야 합니다. 펌웨어 파일을 읽을 수 있는 위치에서 실행합니다.</p>
+<pre><code>python inspect_firmware.py fwdc233b.bin --output-dir .private/my-decode
+python verify_findings.py .private/my-decode/decoded.bin</code></pre>
+<ol class="steps">
+<li><strong>추출</strong> 첫 명령은 압축을 푼 <code>decoded.bin</code>과, 블록마다 원본과 출력의 위치를 적은 <code>inventory.json</code>을 저장합니다.</li>
+<li><strong>검증</strong> 둘째 명령은 이 버전의 <code>decoded.bin</code> SHA-256을 먼저 확인합니다. 그 뒤 장치 트리, 커널 설정, 초기 파일 시스템, 공개 셸 원문, 직렬 포트 함수와 HDMI 처리기의 범위를 검증합니다.</li>
+<li><strong>도구 자체 점검</strong> 입력 파일 없이 도구만 점검하려면 두 스크립트에 각각 <code>--self-test</code>를 붙입니다.</li>
+</ol>
+
+<h3>디컴파일까지 재현하기</h3>
+<p>자동 디컴파일을 재현하려면 별도의 Python 환경에 <code>angr==10.0.5</code>를 설치합니다. 아래 명령은 원본 RTOS의 해시와 함수 범위를 확인한 뒤 디컴파일러의 C 형태 출력을 표준 출력으로 보냅니다. 디컴파일 경고는 표준 오류에 나옵니다.</p>
+<pre><code>python decompile_sample.py .private/my-decode/decoded.bin hdmi
+python decompile_sample.py .private/my-decode/decoded.bin register-write</code></pre>
+
+<h3>사용한 도구</h3>
+<ul>
+<li>압축 해제와 레코드 나누기: 이 저장소의 <a href="../inspect_firmware.py">inspect_firmware.py</a>. 결과를 <a href="https://github.com/Trimz/Ricoh3x/blob/0ed425ad4e31b336624ba4709dc28962ace2d629/tools/pdec.py">공개 디코더</a>와 비교했습니다.</li>
+<li>커널 심볼 복원: <a href="https://github.com/marin-m/vmlinux-to-elf">vmlinux-to-elf</a></li>
+<li>함수 분석: <a href="https://docs.angr.io/en/latest/analyses/decompiler.html">angr 디컴파일러</a>와 디스어셈블러</li>
+<li>배포 ZIP과 구성원의 해시 확인: REA. Windows의 REA 펌웨어 스캐너는 Linux용 Binwalk 공급자가 필요해 실행되지 않았으므로, 위 세 작업은 각각 다른 도구로 했습니다.</li>
+</ul>
+
+<h3>약관과 공개 범위</h3>
+<p><a href="https://www.ricoh-imaging.co.jp/english/support/digital/k-3-3.html">Ricoh의 펌웨어 배포 페이지</a>에 실린 사용 약관 3·4·6항에는 복제, 역분석, 양도를 제한하는 내용이 있습니다. 이 저장소가 공개하는 것은 재배포 조건을 확인한 OSS 파일, 직접 작성한 분석 도구, 측정 결과입니다. 원본 BIN, 추출한 독점 코드, RTOS 디컴파일 출력은 로컬에만 보관합니다. 그래서 재현하려면 펌웨어 파일을 직접 구해야 합니다.</p>
+</section>
+
+<section id="refs">
+<h2>근거 파일과 참고 자료</h2>
+<ul class="refs">
+<li><a href="../evidence.json">evidence.json</a> — 파일과 레코드 15개의 크기·위치·SHA-256, 블록 수, 커널·RTOS의 함수 위치, 공개 소스 해시</li>
+<li><a href="../inspect_firmware.py">inspect_firmware.py</a> — 압축 해제와 레코드 나누기</li>
+<li><a href="../verify_findings.py">verify_findings.py</a> — 장치 트리·커널 설정·초기 파일 시스템·함수 범위 검증</li>
+<li><a href="../decompile_sample.py">decompile_sample.py</a> — angr 디컴파일 재현</li>
+<li><a href="update-resource-layout.json">update-resource-layout.json</a> — 헤더·꼬리말·버전 표의 필드 값</li>
+<li><a href="../source/usio.c">source/usio.c</a> · <a href="../source/update-rc.d">source/update-rc.d</a> · <a href="../source/run-postinsts">source/run-postinsts</a> — 확보한 공개 소스</li>
+<li>제조사 자료: <a href="https://www.ricoh-imaging.co.jp/english/support/digital/k-3-3.html">Ricoh K-3 Mark III 펌웨어 안내</a> · <a href="https://www.ricoh-imaging.co.jp/english/products/oss/">Ricoh 오픈소스 목록</a> · <a href="https://www.ricoh-imaging.co.jp/english/products/k-3-3/feature/02.html">K-3 Mark III 제품 설명</a> · <a href="https://www.socionext.com/en/pr/sn_pr20170105_01e.pdf">Socionext SC2000 보도자료</a></li>
+<li>형식과 규격: <a href="https://devicetree-specification.readthedocs.io/en/stable/flattened-format.html">Devicetree 규격의 DTB 형식</a> · <a href="https://www.kernel.org/doc/html/latest/driver-api/early-userspace/buffer-format.html">Linux 커널 문서의 initramfs(newc CPIO) 형식</a> · <a href="https://www.kernel.org/doc/html/latest/filesystems/romfs.html">ROMFS 형식</a> · <a href="https://man7.org/linux/man-pages/man5/proc_kallsyms.5.html">kallsyms 설명(proc_kallsyms)</a></li>
+<li>Linux 업스트림: <a href="https://github.com/torvalds/linux/blob/master/arch/arm/mach-milbeaut/Kconfig">arch/arm/mach-milbeaut/Kconfig</a> · <a href="https://github.com/torvalds/linux/blob/master/arch/arm/boot/dts/socionext/milbeaut-m10v.dtsi">milbeaut-m10v.dtsi</a> · <a href="https://github.com/torvalds/linux/blob/master/drivers/tty/serial/milbeaut_usio.c">milbeaut_usio.c</a></li>
+</ul>
+</section>
+
+</main>
+</div>
+<!-- chrome:bottom -->
+<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">시작하기 — 이 주제의 문서</h2><ol><li><a href="../index.html">개요</a></li><li><a href="firmware-structure.html" aria-current="page">펌웨어 구조와 하드웨어<span>패키지 15개 레코드, SoC 식별, 재현 절차</span></a></li><li><a href="research-program.html">세 기종 연구 본부<span>네 가지 목표의 현재 상태</span></a></li><li><a href="research-roadmap.html">수정·이식 선행 연구<span>수정 펌웨어 전에 확인할 것</span></a></li><li><a href="../glossary.html">용어집</a></li></ol></nav>
+<nav class="pager" aria-label="이전·다음 문서"><a class="prev" href="../index.html"><small>← 이전</small>개요</a><a class="next" href="research-program.html"><small>다음 →</small>세 기종 연구 본부</a></nav>
+<footer class="sitefoot"><div class="sitefoot-in"><nav aria-label="사이트"><a href="../index.html#map">문서 지도</a><a href="../index.html#levels">검증 수준 읽는 법</a><a href="../glossary.html">용어집</a><a href="research-program.html">세 기종 연구 본부</a><a href="https://github.com/yunhyok/pentax-k3iii-firmware-analysis">GitHub 저장소</a></nav><p>PENTAX K-3 Mark III 펌웨어 2.20 분석 문서. PC에서 수행한 정적 분석과 에뮬레이션 결과이며, 카메라 실기에서 검증한 내용이 아닙니다. 원본 펌웨어와 추출한 독점 코드는 포함하지 않습니다.</p></div></footer>
+<!-- /chrome:bottom -->
+</body>
+</html>

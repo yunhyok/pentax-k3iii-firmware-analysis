@@ -3,78 +3,384 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Lightroom의 DCP 프로파일 지문 재현</title>
-<style>
-:root{color-scheme:light dark;--bg:#f7f8fa;--paper:#fff;--ink:#182332;--muted:#48596b;--line:#d2dbe5;--accent:#124b8e;--soft:#edf3fa}
-@media(prefers-color-scheme:dark){:root{--bg:#111821;--paper:#18222d;--ink:#e8edf4;--muted:#b4c2d2;--line:#405369;--accent:#98c8ff;--soft:#223348}}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.75 system-ui,"Malgun Gothic",sans-serif;word-break:keep-all;overflow-wrap:anywhere}
-header,main{max-width:1060px;margin:auto;padding:clamp(16px,4vw,44px)}header{padding-top:clamp(26px,6vw,64px);padding-bottom:24px}main{background:var(--paper);border:1px solid var(--line)}
-h1{margin:.3em 0 .5em;font-size:clamp(1.75rem,5vw,2.8rem);line-height:1.25}h2{font-size:1.35rem;margin-top:2rem}h2:first-child{margin-top:0}.intro{max-width:46em}
-small,figcaption,.flow span{color:var(--muted)}nav a{display:inline-block;margin:4px 15px 4px 0}a,summary{color:var(--accent);text-underline-offset:.18em}
-.scroll{overflow:auto;max-width:100%;margin:1em 0}a:focus-visible,summary:focus-visible,.scroll:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
-table{border-collapse:collapse;width:100%;min-width:670px;font-variant-numeric:tabular-nums}caption{text-align:left;margin-bottom:.45em}
-th,td{padding:.38em .65em;border:1px solid var(--line);text-align:left}th{background:var(--soft)}td.number{white-space:nowrap;text-align:right}
-.flow{list-style:none;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:24px;margin:1.15em 0;padding:0}
-.flow li{position:relative;min-width:0;background:var(--soft);border-top:3px solid var(--accent);padding:.65em .8em}
-.flow strong,.flow span{display:block}.flow span{font-size:.9em}.flow li:not(:last-child)::after{content:"→";position:absolute;right:-20px;top:30%;color:var(--accent);font-weight:bold}
-figure{margin:1em 0}figcaption{font-size:.9em;margin:.4em 0}pre{background:var(--soft);padding:16px;overflow:auto;font-size:.82rem}code{font-family:ui-monospace,Consolas,monospace}summary{cursor:pointer;font-weight:650}
-@media(max-width:700px){.flow{grid-template-columns:1fr;gap:22px}.flow li:not(:last-child)::after{content:"↓";top:auto;right:auto;left:1em;bottom:-23px}}
-</style>
+<title>Lightroom이 TIFF에 적는 프로파일 지문을 DCP에서 직접 계산하기 — PENTAX K-3 Mark III 펌웨어 연구</title>
+<meta name="description" content="Lightroom Classic이 내보낸 TIFF의 XMP에 남는 CameraProfileDigest 값을, Adobe DNG SDK 소스의 프로파일 지문 계산 절차를 따라 시험 DCP 여섯 개에서 직접 계산해 모두 일치시킨 기록입니다.">
+<link rel="stylesheet" href="../assets/site.css">
 </head>
-<body>
-<header>
-<small>2026-11-08 · Lightroom Classic 15.6 · Adobe DNG SDK 1.7.1 Build 2768</small>
-<h1>Lightroom TIFF의 프로파일 지문 재현</h1>
-<p class="intro">시험 DCP 여섯 개에서 Adobe DNG SDK의 전체 프로파일 지문을 계산했다. 여섯 값 모두 Lightroom이 내보낸 TIFF의 XMP <code>CameraProfileDigest</code>와 일치했다. 계산에는 정규화한 색 행렬과 광원, 프로파일 이름, 정책 값, 곡선이 있을 때의 FLOAT 쌍이 들어갔다.</p>
-<nav aria-label="문서 탐색"><a href="#results">일치 결과</a><a href="#method">계산 방법</a><a href="#scope">포함 범위</a><a href="#replay">재현</a><a href="lightroom-profile-fingerprints.json">검증 JSON</a></nav>
+<body data-camera="k3iii">
+<!-- chrome:top -->
+<a class="skip" href="#main">본문 바로가기</a>
+<div class="topbar"><div class="topbar-in"><a class="brand" href="../index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="../index.html" aria-current="true">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="https://yunhyok.github.io/pentax-q7-firmware-analysis/">Q7</a></div><nav class="topnav" aria-label="주제"><a href="../index.html">개요</a><a href="guide-boot.html">부팅·저장소</a><a href="guide-update.html">업데이트</a><a href="guide-rebuild.html">재구축</a><a href="guide-rtos.html">명령·셸</a><a href="guide-color.html">색 처리</a><a href="lightroom-bridge.html" aria-current="true">Lightroom</a><a href="af-foundations.html">AF</a><a href="ui-port-contract.html">UI</a></nav></div></div>
+<nav class="crumbs" aria-label="현재 위치"><ol><li><a href="../index.html">PENTAX K-3 Mark III</a></li><li><a href="lightroom-bridge.html">Lightroom 색 프로파일</a></li><li aria-current="page">프로파일 지문 재현</li></ol></nav>
+<!-- /chrome:top -->
+<header class="page-head">
+<p class="eyebrow">Lightroom 색 프로파일 · 프로파일 지문</p>
+<h1>Lightroom이 TIFF에 적는 프로파일 지문을 DCP에서 직접 계산하기</h1>
+<p class="lead">Lightroom이 내보낸 파일에는 어떤 프로파일로 현상했는지를 나타내는 32자리 값이 남습니다. 이 값을 프로파일 파일에서 직접 계산할 수 있으면, 출력이 정말 그 프로파일로 만들어졌는지 파일만 보고 확인할 수 있습니다.</p>
 </header>
-<main>
-<h2 id="results">여섯 TIFF의 CameraProfileDigest</h2>
-<div class="scroll" role="region" tabindex="0" aria-label="DCP별 계산한 지문과 TIFF의 지문">
-<table>
-<caption>각 행의 계산값은 해당 TIFF에서 직접 읽은 값과 같다.</caption>
-<thead><tr><th scope="col">시험 DCP</th><th scope="col">전체 프로파일 지문과 CameraProfileDigest</th><th scope="col">직렬화 길이</th></tr></thead>
-<tbody>
-<tr><th scope="row">K‑3 II 행렬</th><td><code>1C7CF75BBFB3AA224BCEB9DAF7FBBBC9</code></td><td class="number">179 B</td></tr>
-<tr><th scope="row">K‑3 III 행렬</th><td><code>5B18C392C48A27F8A693547BA67F895F</code></td><td class="number">179 B</td></tr>
-<tr><th scope="row">Q7 행렬</th><td><code>978C3B6DB89481CDFF978C45EC62968C</code></td><td class="number">179 B</td></tr>
-<tr><th scope="row">K‑3 II 항등</th><td><code>782E03B3FA73C7D0E8D7766B6B2FEB8F</code></td><td class="number">196 B</td></tr>
-<tr><th scope="row">K‑3 II Lift</th><td><code>763036625F340E29923B3CBCA99F0C68</code></td><td class="number">200 B</td></tr>
-<tr><th scope="row">K‑3 II ACR3</th><td><code>D8DD6BF0BBFA902108D77C408E0D046C</code></td><td class="number">8,379 B</td></tr>
-</tbody>
-</table>
-</div>
-<p>여섯 사례 모두에서 렌더 데이터 지문과 DCP 파일 전체의 MD5는 TIFF 값과 달랐다. DCP와 TIFF는 각각 SHA‑256으로 고정했고 TIFF의 XMP에서 프로파일 이름과 지문을 읽었다. <a href="lightroom-profile-fingerprints.json">파일·지문 구간별 해시</a> · <a href="lightroom-model-exports.html">K‑3 III·Q7 실제 출력</a> · <a href="lightroom-tone-comparison.html">K‑3 II 곡선 대조</a></p>
+<div class="layout">
+<!-- chrome:toc -->
+<nav class="toc" aria-label="이 문서의 목차"><h2 data-toc="no">이 문서에서</h2><ol><li><a href="#background">배경: 프로파일 지문이 무엇이고 왜 직접 계산하는가</a></li><li><a href="#results">결과: 여섯 DCP의 계산값이 TIFF의 값과 모두 같았습니다</a></li><li><a href="#method">계산 방법: DCP 태그에서 MD5 입력을 만드는 순서</a></li><li><a href="#scope">지문이 같아도 같은 파일이라는 뜻은 아닙니다</a></li><li><a href="#limits">한계와 남은 과제</a></li><li><a href="#replay">재현 방법</a></li><li><a href="#refs">근거 파일과 참고 자료</a></li></ol></nav>
+<!-- /chrome:toc -->
+<main class="doc" id="main">
 
-<h2 id="method">DCP 태그에서 TIFF 지문까지</h2>
-<figure>
-<ol class="flow" aria-label="DCP 읽기, 행렬 정규화, 직렬화, XMP 대조의 네 단계">
-<li><strong>01 · DCP 읽기</strong><span>광원과 색 행렬 두 쌍, 이름, 선택적 톤 곡선</span></li>
-<li><strong>02 · 행렬 정규화</strong><span>D50 PCS 응답 기준으로 스케일하고 소수 넷째 자리로 반올림</span></li>
-<li><strong>03 · 직렬화와 MD5</strong><span>정해진 필드를 little-endian으로 이어 붙임</span></li>
-<li><strong>04 · XMP 대조</strong><span>계산한 지문과 TIFF의 CameraProfileDigest 비교</span></li>
-</ol>
-<figcaption>검사 대상은 색 행렬 두 개와 선택적 톤 곡선을 가진 이 여섯 DCP다.</figcaption>
-</figure>
-<p>SDK는 각 행렬의 D50 PCS 응답 중 최댓값이 양수이면서 0.99–1.01 범위를 벗어나면 행렬을 그 값으로 나눈다. 원소에는 binary64로 10,000을 곱한 뒤 SDK의 부호 있는 정수 반올림을 적용한다(<code>dng_utils.h</code> 651–663행). 계산 순서는 광원 1(2바이트), 행렬 1(72바이트), 광원 2(2바이트), 행렬 2(72바이트), 이름(NUL 제외), 기본 embed policy(4바이트 값 0), 선택적 톤 곡선 순이다. 행렬 하나에는 SRATIONAL 9개, 곡선에는 FLOAT 좌표 쌍이 들어간다. SDK 소스의 <code>dng_camera_profile.cpp</code> 265–315, 510–520, 562–827행과 <code>dng_image_writer.cpp</code> 482–501행에 해당한다. SDK의 빌드 번호 2768은 <code>dng_flags.h</code> 30행, 곡선 점 한도 8,192는 <code>dng_sdk_limits.h</code> 72행에서 확인했다. <a href="https://www.adobe.com/support/downloads/dng/dng_sdk.html">Adobe SDK 배포</a> · <a href="lightroom-profile-fingerprints.json">고정 ZIP 및 소스 15개 해시</a></p>
-
-<h2 id="scope">같은 지문으로 남는 변화</h2>
-<p>이 태그 조합에서 전체 프로파일 지문(<code>Fingerprint</code>)에는 이름과 embed policy가 들어가고 렌더 데이터 지문(<code>RenderDataFingerprint</code>)에는 빠진다. 모델 제한 문자열은 두 지문에 포함되지 않는다. SDK의 별도 <code>UniqueID</code>는 전체 지문의 16바이트에 모델 제한 문자열을 붙여 MD5를 계산한다. 근거는 <code>dng_camera_profile.h</code> 691–714·966–974행과 <code>dng_camera_profile.cpp</code> 831–855행이다. <a href="lightroom-profile-fingerprints.json">소스 위치와 합성 대조</a></p>
+<section class="summary">
+<h2 data-toc="no">핵심 요약</h2>
 <ul>
-<li>합성 DCP의 이름만 바꾸면 전체 지문만 달라졌다. 모델 제한을 바꾸면 두 지문이 모두 같았다.</li>
-<li>embed policy가 명시된 DCP는 이 검사기의 지원 범위 밖이다. 정책 값 합성 대조는 DCP 태그 대신 MD5 입력 스트림의 정책 값만 바꿨다.</li>
-<li>넷째 자리 반올림에서 사라지는 작은 계수 변화와 정규화에서 상쇄되는 균일 스케일은 지문을 바꾸지 않았다. 유효 자릿수가 달라진 행렬, 광원, 곡선 수정은 두 지문에 반영됐다.</li>
-<li>합성 DCP 파일을 big-endian으로 다시 담아도 읽은 값이 같으면 지문은 같았다. 지문 입력을 big-endian으로 직렬화했을 때는 달라졌다.</li>
+<li>Lightroom Classic 15.6이 내보낸 TIFF의 XMP에는 <code>CameraProfileDigest</code>라는 16진수 32자리 값이 있습니다. Adobe DNG SDK 소스에 있는 “전체 프로파일 지문” 계산 절차를 따라 <strong>시험 DCP 여섯 개에서 이 값을 직접 계산했고, 여섯 개 모두 TIFF의 값과 같았습니다</strong>.</li>
+<li>이 지문은 DCP 파일 전체의 해시가 아닙니다. 광원, 정규화하고 반올림한 색 행렬, 프로파일 이름, 정책 값, 그리고 있으면 톤 곡선을 정해진 순서로 이어 붙인 바이트 열의 MD5입니다.</li>
+<li>그래서 <strong>지문이 같아도 파일은 다를 수 있습니다</strong>. 합성 DCP로 시험했을 때 모델 제한 문자열, 반올림에서 사라지는 작은 계수 차이, 행렬 전체에 곱한 배율, 파일의 바이트 순서는 지문을 바꾸지 않았습니다.</li>
+<li>확인한 대상은 색 행렬 두 개와 선택적 톤 곡선만 가진 DCP 여섯 개입니다. 지문은 프로파일을 구분하는 값일 뿐이며, 파일이 진짜임을 보증하거나 색이 정확함을 뜻하지 않습니다.</li>
 </ul>
-<p>확인한 SDK에서 0인 행렬 원소의 SRATIONAL은 0/1이다. 실제 DCP 여섯 개에는 정규화 뒤 0인 행렬 원소가 없어서 이 출력들만으로 Lightroom의 0 직렬화 규칙은 판별할 수 없다. 동일 지문이라도 DCP 파일 바이트나 모델 제한은 다를 수 있다. 이 대조는 프로파일 지문 재현에 한정되며 파일 인증이나 색 정확도는 다루지 않는다. <a href="lightroom-profile-fingerprints.json">행렬의 0 개수와 합성 대조 결과</a></p>
+</section>
 
-<h2 id="replay">같은 파일로 재현</h2>
-<p>Python 3.11 이상과 tifffile을 사용한다. <code>--sdk</code>에는 Adobe ZIP, <code>--dcps</code>에는 DCP 여섯 개가 있는 폴더, <code>--exports</code>에는 TIFF 하위 폴더를 모아 둔 경로를 준다. 파일 배치는 JSON의 <code>input_layout</code>에 있다. 검사는 정확히 일치하는 파일 해시를 요구하며 결과는 새 경로에만 쓴다. SDK 소스, 원본 DCP·TIFF, 제조사 행렬과 곡선 값은 공개 파일에 포함하지 않았다. <a href="lightroom-profile-fingerprints.json">입력 배치와 해시</a> · <a href="../tools/check_lightroom_profile_fingerprints.py">검사 코드</a></p>
-<pre><code>$f = 'fingerprint-fixtures'
-python -B tools/check_lightroom_profile_fingerprints.py `
-  --sdk "$f/dng-sdk.zip" --dcps "$f/dcps" --exports "$f/exports" `
-  --output "$f/fingerprint-replay.json"
-Get-FileHash -Algorithm SHA256 -LiteralPath "$f/fingerprint-replay.json", analysis/lightroom-profile-fingerprints.json</code></pre>
+<div class="scope">
+<div class="ok"><h3><span class="badge ok">확인</span> 실제 파일로 확인한 것</h3>
+<ul>
+<li>DCP에서 계산한 지문 여섯 개가 Lightroom TIFF의 값 여섯 개와 일치</li>
+<li>같은 DCP의 파일 전체 MD5와 렌더 데이터 지문은 TIFF 값과 다름</li>
+<li>DCP, TIFF, SDK ZIP과 그 안의 소스 15개를 SHA-256으로 고정</li>
+</ul></div>
+<div class="static"><h3><span class="badge static">정적 분석</span> SDK 소스를 읽은 것</h3>
+<ul>
+<li>색 행렬의 정규화·반올림과 직렬화 순서</li>
+<li>전체 지문, 렌더 데이터 지문, UniqueID에 각각 무엇이 들어가는지</li>
+</ul></div>
+<div class="model"><h3><span class="badge model">모델</span> 합성 입력으로 시험한 것</h3>
+<ul>
+<li>합성 DCP를 한 군데씩 바꾼 변형 8가지</li>
+<li>정책 값 시험은 DCP 태그가 아니라 MD5 입력 값만 바꿈</li>
+<li>0인 행렬 원소의 표기 비교</li>
+</ul></div>
+<div class="open"><h3><span class="badge open">미확인</span> 확인하지 않은 것</h3>
+<ul>
+<li>행렬 원소가 0일 때 Lightroom이 쓰는 표기</li>
+<li>ForwardMatrix, HueSatMap, 명시된 정책 태그 등을 가진 DCP</li>
+<li>Lightroom 내부 구현 자체</li>
+</ul></div>
+</div>
+
+<section id="background">
+<h2>배경: 프로파일 지문이 무엇이고 왜 직접 계산하는가</h2>
+<p>이 주제의 실험은 직접 만든 <dfn title="DNG Camera Profile. Lightroom과 Camera Raw가 RAW를 현상할 때 쓰는 카메라별 색 프로파일 파일(.dcp)입니다.">DCP</dfn>를 Lightroom에 넣고 TIFF를 내보내 비교합니다. 이때 “이 TIFF가 정말 그 DCP로 현상됐는가”를 확인할 수단이 필요합니다. Lightroom은 내보낸 파일의 <dfn title="Adobe가 만든 메타데이터 형식. 파일 안에 XML로 들어갑니다.">XMP</dfn> 메타데이터에 프로파일 이름(<code>CameraProfile</code>)과 함께 <code>CameraProfileDigest</code>라는 값을 적습니다. 프로파일 이름은 누구나 같은 이름을 붙일 수 있지만, 이 값은 프로파일의 내용에서 계산됩니다.</p>
+<div class="table-wrap"><table>
+<caption>이 문서에 나오는 용어</caption>
+<thead><tr><th>용어</th><th>뜻</th></tr></thead>
+<tbody>
+<tr><th scope="row"><code>CameraProfileDigest</code></th><td>Lightroom이 XMP의 Camera Raw 설정 영역(<code>crs</code>)에 적는 16진수 32자리 값입니다. Adobe의 <a href="https://developer.adobe.com/xmp/docs/xmp-namespaces/crs/">Camera Raw 네임스페이스 문서</a>에는 <code>CameraProfile</code>만 있고 이 항목은 없습니다. 이 문서에서는 “프로파일 지문”이라고 부릅니다.</td></tr>
+<tr><th scope="row">MD5</th><td>임의 길이의 바이트 열을 16바이트(16진수 32자리)로 줄이는 해시 함수입니다. 입력이 조금만 달라도 결과가 달라집니다.</td></tr>
+<tr><th scope="row">전체 프로파일 지문</th><td>Adobe DNG SDK의 <code>dng_camera_profile::Fingerprint</code>가 돌려주는 값입니다. 프로파일의 내용을 정해진 순서로 MD5에 넣어 만듭니다.</td></tr>
+<tr><th scope="row">렌더 데이터 지문</th><td>SDK의 <code>RenderDataFingerprint</code>입니다. 여기서 다루는 DCP에서는 전체 지문에서 프로파일 이름과 정책 값을 뺀 것입니다.</td></tr>
+<tr><th scope="row">모델 제한 문자열</th><td>DCP의 <code>UniqueCameraModel</code> 태그입니다. 이 프로파일을 쓸 수 있는 카메라 모델을 가리킵니다.</td></tr>
+<tr><th scope="row">embed policy</th><td>프로파일을 다른 파일에 복사·내장해도 되는지를 적는 <code>ProfileEmbedPolicy</code> 태그의 값입니다. 태그가 없으면 기본값 0(복사 허용)입니다.</td></tr>
+</tbody></table></div>
+<p>Adobe는 Lightroom의 코드를 공개하지 않지만 DNG SDK의 소스는 공개합니다. SDK 소스에는 <code>CameraProfileDigest</code>라는 이름이 나오지 않습니다. 그래서 SDK의 지문 계산 절차를 읽고 같은 계산을 Python으로 옮긴 뒤, 결과가 Lightroom이 적은 값과 같은지 실제 TIFF로 확인했습니다. SDK를 컴파일해 실행한 것은 아닙니다.</p>
+</section>
+
+<section id="results">
+<h2>결과: 여섯 DCP의 계산값이 TIFF의 값과 모두 같았습니다</h2>
+<p class="takeaway">SDK의 전체 프로파일 지문 절차로 계산한 값 여섯 개가 Lightroom TIFF의 <code>CameraProfileDigest</code> 여섯 개와 한 글자도 다르지 않았습니다.</p>
+<div class="table-wrap"><table class="compact">
+<caption>DCP에서 계산한 전체 프로파일 지문과 TIFF에서 읽은 값</caption>
+<thead><tr><th>시험 DCP</th><th>프로파일 이름</th><th>계산한 지문 = TIFF의 값</th><th class="n">MD5 입력</th><th>대조</th></tr></thead>
+<tbody>
+<tr><th scope="row" class="nowrap">K-3 II 행렬</th><td><code>PENTAX RAW matrix test 1376</code></td><td><code>1C7CF75BBFB3AA224BCEB9DAF7FBBBC9</code></td><td class="n">179바이트</td><td><span class="badge ok">일치</span></td></tr>
+<tr><th scope="row" class="nowrap">K-3 III 행렬</th><td><code>PENTAX RAW matrix test 4678</code></td><td><code>5B18C392C48A27F8A693547BA67F895F</code></td><td class="n">179바이트</td><td><span class="badge ok">일치</span></td></tr>
+<tr><th scope="row" class="nowrap">Q7 행렬</th><td><code>PENTAX RAW matrix test 1760</code></td><td><code>978C3B6DB89481CDFF978C45EC62968C</code></td><td class="n">179바이트</td><td><span class="badge ok">일치</span></td></tr>
+<tr><th scope="row" class="nowrap">K-3 II 항등</th><td><code>PENTAX 1376 Tone Identity v1</code></td><td><code>782E03B3FA73C7D0E8D7766B6B2FEB8F</code></td><td class="n">196바이트</td><td><span class="badge ok">일치</span></td></tr>
+<tr><th scope="row" class="nowrap">K-3 II Lift</th><td><code>PENTAX 1376 Tone Lift v1</code></td><td><code>763036625F340E29923B3CBCA99F0C68</code></td><td class="n">200바이트</td><td><span class="badge ok">일치</span></td></tr>
+<tr><th scope="row" class="nowrap">K-3 II ACR3</th><td><code>PENTAX 1376 ACR3 Control v1</code></td><td><code>D8DD6BF0BBFA902108D77C408E0D046C</code></td><td class="n">8,379바이트</td><td><span class="badge ok">일치</span></td></tr>
+</tbody></table></div>
+<p class="small muted">대상은 Lightroom Classic 15.6이 내보낸 TIFF와 Adobe DNG SDK 1.7.1 Build 2768의 소스입니다. 기록일은 2026-11-08입니다.</p>
+<p>행렬만 있는 DCP 세 개는 MD5 입력이 179바이트로 같습니다. 톤 곡선이 있는 세 개는 곡선 길이와 이름 길이만큼 늘어납니다. 여섯 DCP는 <a href="lightroom-render-comparison.html">실제 TIFF 6개 비교</a>, <a href="lightroom-model-exports.html">K-3 III·Q7 DCP 내보내기</a>, <a href="lightroom-tone-comparison.html">톤 곡선 비교</a>에서 쓴 것들입니다.</p>
+<p>같은 여섯 DCP에서 다른 두 값도 계산해 봤습니다. 렌더 데이터 지문과 DCP 파일 전체의 MD5는 여섯 경우 모두 TIFF의 값과 달랐습니다. Lightroom이 적는 값은 “전체 프로파일 지문”에 해당합니다.</p>
+<div class="callout"><strong class="label">참고</strong>
+<p>색 보정 표(LookTable)가 든 시험 DCP 두 개도 같은 절차에 표 데이터를 더해 계산했고, 두 값 모두 TIFF와 일치했습니다. 그 결과는 <a href="lightroom-look-controls.html">LookTable 대조 실험</a>에 있습니다.</p></div>
+
+<details class="evidence"><summary>일치하지 않은 두 값: 렌더 데이터 지문과 파일 MD5</summary>
+<div class="table-wrap"><table class="compact">
+<thead><tr><th>시험 DCP</th><th>렌더 데이터 지문</th><th>DCP 파일 전체의 MD5</th></tr></thead>
+<tbody>
+<tr><th scope="row">K-3 II 행렬</th><td><code>78A48678DAEAE16B6C5FAA5BBD529FE3</code></td><td><code>151AC29B503930C1E9B28E9DB6F29D77</code></td></tr>
+<tr><th scope="row">K-3 III 행렬</th><td><code>F08A0A3FA799720BD9424B7B3DE31C28</code></td><td><code>B7328D75EF90CBDCE6FE4EAC8AAF7C30</code></td></tr>
+<tr><th scope="row">Q7 행렬</th><td><code>562B542F4DB247B8A4DAC43D051E6E82</code></td><td><code>A946C057C3CED00EF355F498493B64A5</code></td></tr>
+<tr><th scope="row">K-3 II 항등</th><td><code>9D96EF1EDC1DD648C01DB20320540D43</code></td><td><code>9ED8724A6D3B9FEC049C251D089E4BF3</code></td></tr>
+<tr><th scope="row">K-3 II Lift</th><td><code>D9CF819D24722A0E613DC239AABCE88C</code></td><td><code>4623788A21008B7971B6B8C02D38CDED</code></td></tr>
+<tr><th scope="row">K-3 II ACR3</th><td><code>00DE692BCDE871F9C5478D0A637BBAAB</code></td><td><code>600EA268C1D69FED3941A8E5146917A8</code></td></tr>
+</tbody></table></div>
+</details>
+
+<details class="evidence"><summary>DCP·TIFF 파일과 MD5 입력의 SHA-256</summary>
+<div class="table-wrap"><table class="compact">
+<thead><tr><th>시험 DCP</th><th>대상</th><th>파일과 SHA-256</th></tr></thead>
+<tbody>
+<tr><th scope="row" rowspan="3">K-3 II 행렬</th><td>DCP</td><td><code>pentax-k3ii-1376-matrix-test.dcp</code><br><code class="wrap">6aa402a77f6b41f9fa37e99f1bd6911447e74c112eb7f7601c8c3bb116570ee4</code></td></tr><tr><td>TIFF</td><td><code>matrix-test-prophoto/pentax-k3ii-1376.tif</code><br><code class="wrap">5a65e3b4349d97df77964b2871fb07934b0d1e444753fe8ff8ac5a08de103bef</code></td></tr><tr><td>MD5 입력 전체</td><td><code class="wrap">723852da3b142a5cccae9b73e3226bb844f132800de734d3a53c2cf411b9369d</code></td></tr>
+<tr><th scope="row" rowspan="3">K-3 III 행렬</th><td>DCP</td><td><code>pentax-k3iii-4678-matrix-test.dcp</code><br><code class="wrap">975eba5a74ad092d97919bdafd97efb56e9ea6aa4b56d57266743fca43f21772</code></td></tr><tr><td>TIFF</td><td><code>k3iii-matrix-prophoto/pentax-k3iii-4678.tif</code><br><code class="wrap">000b1f328df0853572379d565de0e730393a507841a8ddb7a3eb120214a2f685</code></td></tr><tr><td>MD5 입력 전체</td><td><code class="wrap">7824cebc671b74aafd238dcf09e5203c2fa017e3243c8d5d131c97a281abaf48</code></td></tr>
+<tr><th scope="row" rowspan="3">Q7 행렬</th><td>DCP</td><td><code>pentax-q7-1760-matrix-test.dcp</code><br><code class="wrap">fe68b3460a400cf00bf9dfbe49f06f5f1c2cbc1010642d214df375d60504729e</code></td></tr><tr><td>TIFF</td><td><code>q7-matrix-prophoto/pentax-q7-1760.tif</code><br><code class="wrap">d1c78064ac8953540a93f8625f83d296f61a08e4d24105fb10eb91547feb864a</code></td></tr><tr><td>MD5 입력 전체</td><td><code class="wrap">dfe98a72a489800aa79bd3d833b09653f62717fd7ddb1c371c3325f9a906f1de</code></td></tr>
+<tr><th scope="row" rowspan="3">K-3 II 항등</th><td>DCP</td><td><code>pentax-k3ii-1376-tone-identity-v1.dcp</code><br><code class="wrap">7fde7d8708ef93324ff5c76e893fa1ecbb2fc4c49ba1269a5d4c3418b65d92f4</code></td></tr><tr><td>TIFF</td><td><code>tone-identity-prophoto/pentax-k3ii-1376.tif</code><br><code class="wrap">9a3dd45eaa7ab6ba288d8cb5ee4298a37b8c49f474df536bda92ac77223ce615</code></td></tr><tr><td>MD5 입력 전체</td><td><code class="wrap">9a7447cc922c2a14c5347ba9d0e868a97fe1e08f9390c7c18f14070f000d8f63</code></td></tr>
+<tr><th scope="row" rowspan="3">K-3 II Lift</th><td>DCP</td><td><code>pentax-k3ii-1376-tone-lift-v1.dcp</code><br><code class="wrap">f106554b266df62c4d4a0ba4a86e87143fe872e53963c8e8aa37775466065fbf</code></td></tr><tr><td>TIFF</td><td><code>tone-lift-prophoto/pentax-k3ii-1376.tif</code><br><code class="wrap">c72fe7978cb6ae0511b27a9b958673377355fb756c9f850cd6c410ece46a9fbb</code></td></tr><tr><td>MD5 입력 전체</td><td><code class="wrap">08704fbeebff13246eb6a6602b6c177f9f2d54147be49f9abb9a9558476b4d6f</code></td></tr>
+<tr><th scope="row" rowspan="3">K-3 II ACR3</th><td>DCP</td><td><code>pentax-k3ii-1376-acr3-control-v1.dcp</code><br><code class="wrap">d9bd4d7bfecfcddbbdb3fd88c87bb487bf53af06221fb66b5ada8adb0345cd9f</code></td></tr><tr><td>TIFF</td><td><code>tone-acr3-prophoto/pentax-k3ii-1376.tif</code><br><code class="wrap">0add52b07a6f6f0ec00fdc5f95c2114a3d78f0f3b743848ae9213c8335d7e353</code></td></tr><tr><td>MD5 입력 전체</td><td><code class="wrap">620f765fc9f89601565e7365fc638bf87d01f42b65fd65670febed9ade05e3dc</code></td></tr>
+</tbody></table></div>
+<p class="small">TIFF 경로는 재현 스크립트의 <code>--exports</code> 폴더 아래 위치입니다. 프로파일 이름과 지문은 TIFF의 XMP에서 직접 읽었습니다.</p>
+</details>
+</section>
+
+<section id="method">
+<h2>계산 방법: DCP 태그에서 MD5 입력을 만드는 순서</h2>
+<p class="takeaway">DCP에서 읽은 값을 정규화하고 정해진 순서로 이어 붙여 MD5에 넣습니다. 파일의 바이트를 그대로 넣지 않습니다.</p>
+
+<figure class="diagram">
+<figcaption>DCP 파일에서 TIFF의 지문까지</figcaption>
+<div class="dg-scroll">
+<svg class="dg" viewBox="0 0 800 318" role="img" aria-labelledby="dg-fp-title dg-fp-desc">
+<title id="dg-fp-title">DCP에서 프로파일 지문을 계산해 TIFF의 값과 비교하는 과정</title>
+<desc id="dg-fp-desc">시험 DCP 파일에서 태그를 읽고 색 행렬을 정규화·반올림합니다. 그다음 광원 1(2바이트), 색 행렬 1(72바이트), 광원 2(2바이트), 색 행렬 2(72바이트), 프로파일 이름(24~28바이트), embed policy 값(4바이트), 톤 곡선(있을 때만) 순서로 little-endian 바이트 열을 만듭니다. 이 바이트 열의 MD5 16바이트를 16진수 32자리로 적은 값이 전체 프로파일 지문이며, Lightroom이 내보낸 TIFF의 XMP CameraProfileDigest와 비교합니다. 모델 제한 문자열과 파일의 바이트 배치는 지문에 들어가지 않습니다.</desc>
+<defs><marker id="dg-fp-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0 0L10 5L0 10z"/></marker></defs>
+<rect class="b" x="8" y="14" width="170" height="60" rx="8"/>
+<text class="t" x="20" y="39">시험 DCP 파일</text>
+<text class="s" x="20" y="59">태그 6~7개</text>
+<rect class="b static" x="226" y="14" width="250" height="60" rx="8"/>
+<text class="t" x="238" y="39">색 행렬 정규화·반올림</text>
+<text class="s" x="238" y="59">SDK 소스의 절차를 그대로 따름</text>
+<rect class="b mute" x="524" y="14" width="268" height="60" rx="8"/>
+<text class="t" x="536" y="39">지문에 들어가지 않는 것</text>
+<text class="s" x="536" y="59">모델 제한 문자열, 파일 바이트 배치</text>
+<path class="e" d="M178 44H224" marker-end="url(#dg-fp-ah)"/>
+<path class="e" d="M351 74V110" marker-end="url(#dg-fp-ah)"/>
+<text class="h" x="8" y="104">MD5에 넣는 바이트 열 (왼쪽부터 순서대로)</text>
+<rect class="g" x="2" y="112" width="796" height="76" rx="8"/>
+<rect class="b key" x="8" y="120" width="80" height="60" rx="4"/>
+<text class="t mid" x="48" y="145">광원 1</text>
+<text class="s mid" x="48" y="165">2바이트</text>
+<rect class="b key" x="88" y="120" width="140" height="60" rx="4"/>
+<text class="t mid" x="158" y="145">색 행렬 1</text>
+<text class="s mid" x="158" y="165">72바이트</text>
+<rect class="b key" x="228" y="120" width="80" height="60" rx="4"/>
+<text class="t mid" x="268" y="145">광원 2</text>
+<text class="s mid" x="268" y="165">2바이트</text>
+<rect class="b key" x="308" y="120" width="140" height="60" rx="4"/>
+<text class="t mid" x="378" y="145">색 행렬 2</text>
+<text class="s mid" x="378" y="165">72바이트</text>
+<rect class="b key" x="448" y="120" width="118" height="60" rx="4"/>
+<text class="t mid" x="507" y="145">프로파일 이름</text>
+<text class="s mid" x="507" y="165">24~28바이트</text>
+<rect class="b key" x="566" y="120" width="116" height="60" rx="4"/>
+<text class="t mid" x="624" y="145">정책 값</text>
+<text class="s mid" x="624" y="165">embed · 4바이트</text>
+<rect class="b key" x="682" y="120" width="110" height="60" rx="4"/>
+<text class="t mid" x="737" y="145">톤 곡선</text>
+<text class="s mid" x="737" y="165">있을 때만</text>
+<path class="e" d="M93 188V242" marker-end="url(#dg-fp-ah)"/>
+<rect class="b" x="8" y="244" width="170" height="60" rx="8"/>
+<text class="t" x="20" y="269">MD5</text>
+<text class="s" x="20" y="289">결과 16바이트</text>
+<rect class="b key" x="226" y="244" width="250" height="60" rx="8"/>
+<text class="t" x="238" y="269">전체 프로파일 지문</text>
+<text class="s" x="238" y="289">16진수 32자리</text>
+<rect class="b ok" x="524" y="244" width="268" height="60" rx="8"/>
+<text class="t" x="536" y="269">TIFF의 CameraProfileDigest</text>
+<text class="s" x="536" y="289">Lightroom 출력 6개 모두 같은 값</text>
+<path class="e" d="M178 274H224" marker-end="url(#dg-fp-ah)"/>
+<path class="e" d="M476 274H522" marker-end="url(#dg-fp-ah)"/>
+</svg>
+</div>
+<ul class="dg-legend"><li><i class="static"></i>SDK 소스에서 읽은 절차</li><li><i class="key"></i>MD5 입력과 계산한 지문</li><li><i class="ok"></i>실제 Lightroom 출력으로 확인</li><li><i class="mute"></i>지문과 무관한 것</li></ul>
+<p>이 그림은 색 행렬 두 개와 선택적 톤 곡선을 가진 여섯 DCP에 해당합니다.</p>
+</figure>
+
+<ol class="steps">
+<li><strong>DCP를 읽습니다</strong> 광원 두 개, 색 행렬 두 개, 프로파일 이름, 그리고 있으면 톤 곡선을 읽습니다. DCP 파일의 바이트 순서(little-endian 또는 big-endian)에 맞춰 값으로 해석합니다.</li>
+<li><strong>색 행렬을 정규화합니다</strong> 행렬에 D50 백색을 곱해 나온 세 값 가운데 최댓값을 구합니다. 그 값이 양수이고 0.99~1.01 범위를 벗어나면 행렬 전체를 그 값으로 나눕니다.</li>
+<li><strong>소수 넷째 자리로 반올림합니다</strong> 각 원소에 배정밀도 실수로 10,000을 곱한 뒤 부호를 고려해 정수로 반올림합니다(양수는 0.5를 더하고, 음수는 0.5를 빼고 소수부를 버림).</li>
+<li><strong>정해진 순서로 이어 붙입니다</strong> 아래 표의 순서대로 little-endian 바이트 열을 만듭니다.</li>
+<li><strong>MD5를 계산합니다</strong> 결과 16바이트를 16진수 대문자 32자리로 적은 것이 전체 프로파일 지문입니다.</li>
+</ol>
+
+<div class="table-wrap"><table>
+<caption>MD5 입력의 구성(위에서 아래 순서)</caption>
+<thead><tr><th>순서</th><th>항목</th><th class="n">크기</th><th>형식</th></tr></thead>
+<tbody>
+<tr><th scope="row">1</th><td>광원 1</td><td class="n">2바이트</td><td>16비트 정수. 여섯 DCP 모두 17(표준광 A)</td></tr>
+<tr><th scope="row">2</th><td>색 행렬 1</td><td class="n">72바이트</td><td>분자·분모 쌍(SRATIONAL) 9개. 분모는 10,000</td></tr>
+<tr><th scope="row">3</th><td>광원 2</td><td class="n">2바이트</td><td>16비트 정수. 여섯 DCP 모두 21(D65)</td></tr>
+<tr><th scope="row">4</th><td>색 행렬 2</td><td class="n">72바이트</td><td>색 행렬 1과 같은 형식</td></tr>
+<tr><th scope="row">5</th><td>프로파일 이름</td><td class="n">24~28바이트</td><td>문자열. 끝의 NUL은 넣지 않음</td></tr>
+<tr><th scope="row">6</th><td>embed policy</td><td class="n">4바이트</td><td>32비트 정수. 태그가 없을 때의 기본값 0</td></tr>
+<tr><th scope="row">7</th><td>톤 곡선(있을 때만)</td><td class="n">16, 24, 8,200바이트</td><td>32비트 실수(FLOAT) 좌표 쌍 (x, y)</td></tr>
+</tbody></table></div>
+<p>행렬만 있는 DCP는 2 + 72 + 2 + 72 + 27 + 4 = 179바이트입니다. 톤 곡선이 있는 DCP는 이름 길이와 곡선 길이에 따라 196, 200, 8,379바이트입니다.</p>
+
+<details class="evidence"><summary>SDK 소스의 해당 위치와 파일 해시</summary>
+<dl class="kv">
+<dt>SDK</dt><dd>Adobe DNG SDK 1.7.1 Build 2768 · 소스 폴더 <code>dng_sdk_1_7_1/dng_sdk/source/</code></dd>
+<dt>SDK ZIP의 SHA-256</dt><dd><code class="wrap">c1d3a545ed45b150e59af2e6aa0695c1551f0e2bed34ad87436898a05194d2b1</code></dd>
+</dl>
+<div class="table-wrap"><table class="compact">
+<caption>참조한 소스 파일 15개</caption>
+<thead><tr><th>파일</th><th>행 번호와 내용</th><th>SHA-256</th></tr></thead>
+<tbody>
+<tr><th scope="row"><code>dng_camera_profile.cpp</code></th><td>265–315 normalize and set; 510–520 matrix payload; 562–827 fingerprint; 1506–1555,1702–1730 parse; 831–855 separate UniqueID</td><td><code class="wrap">988d3d9531ddfefd0faa0b6b4ebf85276a872a55b1956fd2bb964f89c1dd801f</code></td></tr>
+<tr><th scope="row"><code>dng_camera_profile.h</code></th><td>691–714 full vs render-data fingerprint; 966–974 model restriction exclusion</td><td><code class="wrap">94a7bc7e16fbbfa7d13acff93eea38f8ce5f32ad33fa8abd03c9847b083dcec4</code></td></tr>
+<tr><th scope="row"><code>dng_xy_coord.cpp</code></th><td>47–88 PCS xy to XYZ</td><td><code class="wrap">fc28d228f6a8811568d42be52f0d45eb714b45aa11224d6e86b09598b94a490d</code></td></tr>
+<tr><th scope="row"><code>dng_xy_coord.h</code></th><td>145–148 D50 xy</td><td><code class="wrap">b36fcb3c46e4c273ca0e3e30d59e5274c4371a4fdaaac5b3a1432487c9f9651c</code></td></tr>
+<tr><th scope="row"><code>dng_matrix.cpp</code></th><td>248–275 scale/round; 714–735 max; 970–1003 dot product</td><td><code class="wrap">a6d53a5e74fb425a17b73c89782c099d01d7f56bd1244f81c91365dd032ef9aa</code></td></tr>
+<tr><th scope="row"><code>dng_utils.h</code></th><td>651–663 signed rounding</td><td><code class="wrap">0eb910dd59b46928d5fee734a0cc096eb1a99bab8594d6d2fec77ae0d6fb11e9</code></td></tr>
+<tr><th scope="row"><code>dng_rational.cpp</code></th><td>15–24 read rational; 28–71 write rational, canonical zero</td><td><code class="wrap">928d259c79c4c97df2b5191ac58c90a622042f127356d398277b4532c8762992</code></td></tr>
+<tr><th scope="row"><code>dng_image_writer.cpp</code></th><td>320–378 endian handling; 482–501 SRATIONAL matrix encoding</td><td><code class="wrap">2f627124740ea4dc7a6e9400c91d6772f077a00fb447577ecefe313ba4f6bd33</code></td></tr>
+<tr><th scope="row"><code>dng_shared.cpp</code></th><td>111 absent embed policy default</td><td><code class="wrap">d0a574d1e9f69379645c95c29b6a8148f3aca19568174608f769ce964a84bb3f</code></td></tr>
+<tr><th scope="row"><code>dng_tag_values.h</code></th><td>357 embed policy value</td><td><code class="wrap">e6b5e7157c7e7e2a3867c3dd1b51d7d0ed7ae3a762734e26d9e0455fc3d07bdb</code></td></tr>
+<tr><th scope="row"><code>dng_fingerprint.h</code></th><td>496–508 little-endian MD5 stream</td><td><code class="wrap">ff74d3bdbd4c24a3c3fe2a1cdfd5a5ef233baa1b638726e8b5f1db6819513f77</code></td></tr>
+<tr><th scope="row"><code>dng_parse_utils.cpp</code></th><td>3420–3451 row-major matrix parse</td><td><code class="wrap">610d27f9563dcb9e41481600ec18edf733a928266ea4014056688831cd85f5dd</code></td></tr>
+<tr><th scope="row"><code>dng_tone_curve.cpp</code></th><td>73–111 validity of tone coordinates</td><td><code class="wrap">9ea072a234282fc300e7c6271bd324bc0bfa0d8cfae7294dad6aeaf1aea01620</code></td></tr>
+<tr><th scope="row"><code>dng_flags.h</code></th><td>28–31 version 1.7.1 and build 2768</td><td><code class="wrap">619bee441fd1f844c1c40b6f8228de20b97f5010eaa1aecb2421db511432e704</code></td></tr>
+<tr><th scope="row"><code>dng_sdk_limits.h</code></th><td>72 maximum 8192 tone points</td><td><code class="wrap">15466f9251c0750b5baf7d6251a320d81a52b045ea677cbdc4ac24ddcfbe1633</code></td></tr>
+</tbody></table></div>
+<ul class="small">
+<li>정규화와 반올림: <code>dng_camera_profile.cpp</code> 265–315행, 부호 있는 정수 반올림은 <code>dng_utils.h</code> 651–663행</li>
+<li>행렬의 직렬화: <code>dng_camera_profile.cpp</code> 510–520행, <code>dng_image_writer.cpp</code> 482–501행</li>
+<li>지문 계산 전체: <code>dng_camera_profile.cpp</code> 562–827행</li>
+<li>빌드 번호 2768은 <code>dng_flags.h</code> 30행, 톤 곡선 점의 한도 8,192개는 <code>dng_sdk_limits.h</code> 72행</li>
+</ul>
+<p class="small">2026-11-10에 Adobe 배포 링크에서 받은 ZIP의 SHA-256이 위 값과 같았고, 소스 15개의 해시도 표와 같았습니다.</p>
+</details>
+
+<details class="evidence"><summary>여섯 DCP의 MD5 입력을 항목별로 나눈 길이와 해시</summary>
+<div class="table-wrap"><table class="compact">
+<thead><tr><th>시험 DCP</th><th>항목</th><th class="n">바이트</th><th>SHA-256</th></tr></thead>
+<tbody>
+<tr><th scope="row" rowspan="6">K-3 II 행렬</th><td>광원 1</td><td class="n">2</td><td><code class="wrap">d94e7f1e9bb1f8a9b90996ba12c461b84956f0e7f230145cc594c2f80b067aa0</code></td></tr>
+<tr><td>색 행렬 1</td><td class="n">72</td><td><code class="wrap">1a39ac09df0a43333911df07a47a9a1fd7e5b94c52c3b24e29a02d2a39c46e95</code></td></tr>
+<tr><td>광원 2</td><td class="n">2</td><td><code class="wrap">78b4be1f9eeef9da65c393e4385f67edd142709b400ca7d900bd952e0c3cf727</code></td></tr>
+<tr><td>색 행렬 2</td><td class="n">72</td><td><code class="wrap">830ee391d1aee796237954290f06fe409873b0314435f869a535cc06613f90b3</code></td></tr>
+<tr><td>프로파일 이름</td><td class="n">27</td><td><code class="wrap">8c1072499fc6e08aac5040f8624e2a3443f3f0ad7554461beb94c7a6b1d2da48</code></td></tr>
+<tr><td>embed policy</td><td class="n">4</td><td><code class="wrap">df3f619804a92fdb4057192dc43dd748ea778adc52bc498ce80524c014b81119</code></td></tr>
+<tr><th scope="row" rowspan="6">K-3 III 행렬</th><td>광원 1</td><td class="n">2</td><td><code class="wrap">d94e7f1e9bb1f8a9b90996ba12c461b84956f0e7f230145cc594c2f80b067aa0</code></td></tr>
+<tr><td>색 행렬 1</td><td class="n">72</td><td><code class="wrap">fabbce05f9a38d1af0cc72e169b7cd982d4cc33fcb057b67ebc7c21e6f4a97fa</code></td></tr>
+<tr><td>광원 2</td><td class="n">2</td><td><code class="wrap">78b4be1f9eeef9da65c393e4385f67edd142709b400ca7d900bd952e0c3cf727</code></td></tr>
+<tr><td>색 행렬 2</td><td class="n">72</td><td><code class="wrap">aa2d54f8e27ff4e008c4057cbb5dbb324901d8eb99bf461e05511715eefffe9e</code></td></tr>
+<tr><td>프로파일 이름</td><td class="n">27</td><td><code class="wrap">bbe74edc6bffca03f999788f7fb89e5fcde704efa763123d0fa81468721dd260</code></td></tr>
+<tr><td>embed policy</td><td class="n">4</td><td><code class="wrap">df3f619804a92fdb4057192dc43dd748ea778adc52bc498ce80524c014b81119</code></td></tr>
+<tr><th scope="row" rowspan="6">Q7 행렬</th><td>광원 1</td><td class="n">2</td><td><code class="wrap">d94e7f1e9bb1f8a9b90996ba12c461b84956f0e7f230145cc594c2f80b067aa0</code></td></tr>
+<tr><td>색 행렬 1</td><td class="n">72</td><td><code class="wrap">2ac9097885341b77836f64db9135bd766a35537af383abd2fe6328089ba75c48</code></td></tr>
+<tr><td>광원 2</td><td class="n">2</td><td><code class="wrap">78b4be1f9eeef9da65c393e4385f67edd142709b400ca7d900bd952e0c3cf727</code></td></tr>
+<tr><td>색 행렬 2</td><td class="n">72</td><td><code class="wrap">d7df0e23fe705b4ffa8e5d2cd0622344b49f228feab1860c55a7dc1d34f69690</code></td></tr>
+<tr><td>프로파일 이름</td><td class="n">27</td><td><code class="wrap">b399dcda9a5748f7c590f2cee2572743d06ab032a16713d3eac0c183a5d4f1e3</code></td></tr>
+<tr><td>embed policy</td><td class="n">4</td><td><code class="wrap">df3f619804a92fdb4057192dc43dd748ea778adc52bc498ce80524c014b81119</code></td></tr>
+<tr><th scope="row" rowspan="7">K-3 II 항등</th><td>광원 1</td><td class="n">2</td><td><code class="wrap">d94e7f1e9bb1f8a9b90996ba12c461b84956f0e7f230145cc594c2f80b067aa0</code></td></tr>
+<tr><td>색 행렬 1</td><td class="n">72</td><td><code class="wrap">1a39ac09df0a43333911df07a47a9a1fd7e5b94c52c3b24e29a02d2a39c46e95</code></td></tr>
+<tr><td>광원 2</td><td class="n">2</td><td><code class="wrap">78b4be1f9eeef9da65c393e4385f67edd142709b400ca7d900bd952e0c3cf727</code></td></tr>
+<tr><td>색 행렬 2</td><td class="n">72</td><td><code class="wrap">830ee391d1aee796237954290f06fe409873b0314435f869a535cc06613f90b3</code></td></tr>
+<tr><td>프로파일 이름</td><td class="n">28</td><td><code class="wrap">1d3b46341db047338b69d6c668509ec79fdf3ea575058e9915e922f718f176b5</code></td></tr>
+<tr><td>embed policy</td><td class="n">4</td><td><code class="wrap">df3f619804a92fdb4057192dc43dd748ea778adc52bc498ce80524c014b81119</code></td></tr>
+<tr><td>톤 곡선</td><td class="n">16</td><td><code class="wrap">d25b949c65312b91424a3cabd3065dfe18bc73e7cd8893229e9494cd75c16d92</code></td></tr>
+<tr><th scope="row" rowspan="7">K-3 II Lift</th><td>광원 1</td><td class="n">2</td><td><code class="wrap">d94e7f1e9bb1f8a9b90996ba12c461b84956f0e7f230145cc594c2f80b067aa0</code></td></tr>
+<tr><td>색 행렬 1</td><td class="n">72</td><td><code class="wrap">1a39ac09df0a43333911df07a47a9a1fd7e5b94c52c3b24e29a02d2a39c46e95</code></td></tr>
+<tr><td>광원 2</td><td class="n">2</td><td><code class="wrap">78b4be1f9eeef9da65c393e4385f67edd142709b400ca7d900bd952e0c3cf727</code></td></tr>
+<tr><td>색 행렬 2</td><td class="n">72</td><td><code class="wrap">830ee391d1aee796237954290f06fe409873b0314435f869a535cc06613f90b3</code></td></tr>
+<tr><td>프로파일 이름</td><td class="n">24</td><td><code class="wrap">e849d14d4d324cc8077ad6e0383b400a74d2a95c09a1ebb72570e34f50aafe67</code></td></tr>
+<tr><td>embed policy</td><td class="n">4</td><td><code class="wrap">df3f619804a92fdb4057192dc43dd748ea778adc52bc498ce80524c014b81119</code></td></tr>
+<tr><td>톤 곡선</td><td class="n">24</td><td><code class="wrap">a572e30ae1e7dd08186e506f2c2223a0edc4e19b9144c98ef978bff1922ad1c1</code></td></tr>
+<tr><th scope="row" rowspan="7">K-3 II ACR3</th><td>광원 1</td><td class="n">2</td><td><code class="wrap">d94e7f1e9bb1f8a9b90996ba12c461b84956f0e7f230145cc594c2f80b067aa0</code></td></tr>
+<tr><td>색 행렬 1</td><td class="n">72</td><td><code class="wrap">1a39ac09df0a43333911df07a47a9a1fd7e5b94c52c3b24e29a02d2a39c46e95</code></td></tr>
+<tr><td>광원 2</td><td class="n">2</td><td><code class="wrap">78b4be1f9eeef9da65c393e4385f67edd142709b400ca7d900bd952e0c3cf727</code></td></tr>
+<tr><td>색 행렬 2</td><td class="n">72</td><td><code class="wrap">830ee391d1aee796237954290f06fe409873b0314435f869a535cc06613f90b3</code></td></tr>
+<tr><td>프로파일 이름</td><td class="n">27</td><td><code class="wrap">c900bd8883fe607b63ea1b843f127dee98c2e8c727c7ffffe3a4c7a7000a862a</code></td></tr>
+<tr><td>embed policy</td><td class="n">4</td><td><code class="wrap">df3f619804a92fdb4057192dc43dd748ea778adc52bc498ce80524c014b81119</code></td></tr>
+<tr><td>톤 곡선</td><td class="n">8,200</td><td><code class="wrap">51dac135a83970b08279dcdcc59839b851c66c7069501aabbbd014ba57715b01</code></td></tr>
+</tbody></table></div>
+<p class="small">K-3 II의 DCP 네 개는 광원과 색 행렬 항목의 해시가 서로 같습니다. 색 행렬과 톤 곡선의 값 자체는 싣지 않고 해시만 남겼습니다.</p>
+</details>
+</section>
+
+<section id="scope">
+<h2>지문이 같아도 같은 파일이라는 뜻은 아닙니다</h2>
+<p class="takeaway">지문에는 프로파일 내용의 일부만, 그것도 정규화한 뒤에 들어갑니다. 지문에 들어가지 않는 부분이 달라도 지문은 그대로입니다.</p>
+<p>SDK에는 프로파일을 식별하는 값이 세 가지 있습니다. 무엇이 들어가는지가 서로 다릅니다.</p>
+<div class="table-wrap"><table>
+<caption>SDK의 세 가지 식별값에 들어가는 항목 <span class="badge static">정적 분석</span></caption>
+<thead><tr><th>항목</th><th>전체 지문 <code>Fingerprint</code></th><th>렌더 데이터 지문 <code>RenderDataFingerprint</code></th><th><code>UniqueID</code></th></tr></thead>
+<tbody>
+<tr><th scope="row">광원, 색 행렬, 톤 곡선</th><td>포함</td><td>포함</td><td>포함</td></tr>
+<tr><th scope="row">프로파일 이름, embed policy</th><td>포함</td><td>제외</td><td>포함</td></tr>
+<tr><th scope="row">모델 제한 문자열</th><td>제외</td><td>제외</td><td>포함</td></tr>
+</tbody></table></div>
+<p class="small muted"><code>UniqueID</code>는 전체 지문 16바이트 뒤에 모델 제한 문자열을 붙여 다시 MD5를 계산한 값입니다. 근거는 <code>dng_camera_profile.h</code> 691–714행과 966–974행, <code>dng_camera_profile.cpp</code> 831–855행입니다. 이 표는 여섯 DCP가 가진 태그 조합에 한정됩니다.</p>
+
+<h3>합성 DCP로 확인한 변형 8가지</h3>
+<p>단위 행렬 두 개와 점 세 개짜리 톤 곡선을 가진 합성 DCP를 기준으로 삼고, 한 군데씩 바꿔 두 지문이 달라지는지 봤습니다. 여덟 변형 모두 DCP 파일의 SHA-256은 달라졌습니다.</p>
+<div class="table-wrap"><table>
+<caption>한 군데를 바꿨을 때 달라지는 값 <span class="badge model">모델</span></caption>
+<thead><tr><th>바꾼 것</th><th>DCP 파일 해시</th><th>전체 지문</th><th>렌더 데이터 지문</th></tr></thead>
+<tbody>
+<tr><th scope="row">프로파일 이름만 바꿈</th><td><strong>달라짐</strong></td><td><strong>달라짐</strong></td><td><span class="muted">그대로</span></td></tr>
+<tr><th scope="row">모델 제한 문자열(<code>UniqueCameraModel</code>)만 바꿈</th><td><strong>달라짐</strong></td><td><span class="muted">그대로</span></td><td><span class="muted">그대로</span></td></tr>
+<tr><th scope="row">행렬 원소 하나를 0.000001만큼 바꿈 (넷째 자리 반올림에서 사라짐)</th><td><strong>달라짐</strong></td><td><span class="muted">그대로</span></td><td><span class="muted">그대로</span></td></tr>
+<tr><th scope="row">행렬 전체에 2를 곱함 (정규화에서 상쇄됨)</th><td><strong>달라짐</strong></td><td><span class="muted">그대로</span></td><td><span class="muted">그대로</span></td></tr>
+<tr><th scope="row">행렬 원소 하나를 0.01만큼 바꿈</th><td><strong>달라짐</strong></td><td><strong>달라짐</strong></td><td><strong>달라짐</strong></td></tr>
+<tr><th scope="row">광원 1을 17에서 20으로 바꿈</th><td><strong>달라짐</strong></td><td><strong>달라짐</strong></td><td><strong>달라짐</strong></td></tr>
+<tr><th scope="row">톤 곡선의 가운데 점을 0.55에서 0.56으로 바꿈</th><td><strong>달라짐</strong></td><td><strong>달라짐</strong></td><td><strong>달라짐</strong></td></tr>
+<tr><th scope="row">톤 곡선 태그를 뺌</th><td><strong>달라짐</strong></td><td><strong>달라짐</strong></td><td><strong>달라짐</strong></td></tr>
+</tbody></table></div>
+<ul>
+<li><strong>이름과 모델 제한</strong> — 이름만 바꾸면 전체 지문만 달라졌습니다. 모델 제한을 바꾸면 두 지문 모두 그대로였습니다.</li>
+<li><strong>작은 계수와 배율</strong> — 넷째 자리 반올림에서 사라지는 작은 계수 변화, 정규화에서 상쇄되는 균일한 배율은 지문을 바꾸지 않았습니다. 유효 자릿수가 달라지는 행렬 수정, 광원 수정, 곡선 수정은 두 지문에 모두 반영됐습니다.</li>
+<li><strong>파일의 바이트 순서</strong> — 합성 DCP를 big-endian 파일로 다시 담아도 읽은 값이 같으면 지문은 같았습니다. 반대로 MD5 입력 자체를 big-endian으로 직렬화하면 두 지문이 모두 달라졌습니다.</li>
+<li><strong>embed policy</strong> — MD5 입력의 정책 값을 0에서 1로 바꾸면 전체 지문만 달라졌습니다. 이 시험은 DCP의 태그가 아니라 MD5 입력 값만 바꾼 것입니다. 정책 태그가 명시된 DCP는 검사기가 받지 않습니다.</li>
+</ul>
+
+<h3>행렬 원소가 0일 때의 표기는 정하지 못했습니다</h3>
+<p>확인한 SDK는 0인 행렬 원소를 분자 0, 분모 1(0/1)로 적습니다. 분모를 10,000으로 둔 0/10,000으로 바꿔 넣으면 두 지문이 모두 달라집니다. 그런데 실제 DCP 여섯 개에는 정규화한 뒤 0이 되는 행렬 원소가 하나도 없습니다. 따라서 이 여섯 출력만으로는 Lightroom이 0을 어떻게 적는지 판별할 수 없습니다.</p>
+
+<details class="evidence"><summary>합성 대조의 기준값</summary>
+<dl class="kv">
+<dt>기준 합성 DCP의 전체 지문</dt><dd><code>165E63559686E0B5290A6466BB7D77E8</code></dd>
+<dt>기준 합성 DCP의 렌더 데이터 지문</dt><dd><code>C8B1D247D8BC25FB6CB704DCE207572B</code></dd>
+<dt>기준 합성 DCP에서 0인 행렬 원소</dt><dd>행렬마다 6개(단위 행렬)</dd>
+<dt>실제 DCP 여섯 개에서 0인 행렬 원소</dt><dd>행렬마다 0개</dd>
+</dl>
+<p class="small">합성 대조는 <a href="../tests/test_lightroom_profile_fingerprints.py">tests/test_lightroom_profile_fingerprints.py</a>가 실행하고, 결과는 JSON의 <code>synthetic_controls</code>와 같아야 통과합니다.</p>
+</details>
+</section>
+
+<section id="limits">
+<h2>한계와 남은 과제</h2>
+<ul>
+<li><strong>대상이 좁습니다</strong> — 색 행렬 두 개와 선택적 톤 곡선을 가진 DCP 여섯 개, Lightroom Classic 15.6 하나에서 확인했습니다. ForwardMatrix나 HueSatMap, 저작권 문자열, 명시된 정책 태그를 가진 DCP는 이 검사기의 범위 밖입니다.</li>
+<li><strong>계산을 옮겨 적은 것입니다</strong> — SDK 소스를 읽고 Python으로 같은 계산을 구현했습니다. Lightroom이 내부에서 SDK와 같은 코드를 쓴다는 것을 본 것이 아니라, 결과 값이 같다는 것을 확인했습니다.</li>
+<li><strong>0의 표기</strong> — 행렬 원소가 0인 프로파일에서 Lightroom이 어떤 표기를 쓰는지는 확인하지 못했습니다.</li>
+<li><strong>지문의 용도</strong> — 같은 지문이어도 DCP 파일의 바이트나 모델 제한은 다를 수 있습니다. 이 대조는 프로파일 지문의 재현에 한정되며, 파일 인증이나 색 정확도는 다루지 않습니다.</li>
+</ul>
+</section>
+
+<section id="replay">
+<h2>재현 방법</h2>
+<p>Python 3.11 이상과 tifffile을 씁니다. <code>--sdk</code>에는 Adobe DNG SDK ZIP, <code>--dcps</code>에는 DCP 여섯 개가 든 폴더, <code>--exports</code>에는 TIFF의 하위 폴더를 모아 둔 경로를 줍니다. 파일 배치는 JSON의 <code>input_layout</code>에 있습니다. 검사기는 해시가 정확히 일치하는 파일만 받고, 결과는 아직 없는 새 경로에만 씁니다.</p>
+<pre><code>python -B tools/check_lightroom_profile_fingerprints.py \
+  --sdk fingerprint-fixtures/dng-sdk.zip --dcps fingerprint-fixtures/dcps \
+  --exports fingerprint-fixtures/exports \
+  --output fingerprint-fixtures/fingerprint-replay.json</code></pre>
+<p>검사기는 계산 결과가 공개 JSON과 다르면 실패합니다. 만들어진 <code>fingerprint-replay.json</code>의 SHA-256을 <code>analysis/lightroom-profile-fingerprints.json</code>과 비교해도 됩니다. 합성 대조만 다시 돌리려면 파일이 필요 없습니다.</p>
+<pre><code>python -m unittest discover -s tests -p test_lightroom_profile_fingerprints.py -v</code></pre>
+<div class="callout"><strong class="label">공개 자료에 없는 것</strong>
+<p>SDK 소스, 원본 DCP와 TIFF, 제조사의 행렬과 곡선 값은 저장소에 싣지 않았습니다. SDK ZIP은 <a href="https://helpx.adobe.com/camera-raw/desktop/dng-and-file-formats/digital-negative.html">Adobe 배포처</a>에서 받습니다. K-3 II의 DCP 네 개는 <a href="lightroom-tone-comparison.html#replay">톤 곡선 비교의 재현 방법</a>으로 다시 만들 수 있습니다.</p></div>
+</section>
+
+<section id="refs">
+<h2>근거 파일과 참고 자료</h2>
+<ul class="refs">
+<li><a href="lightroom-profile-fingerprints.json">lightroom-profile-fingerprints.json</a> — 여섯 DCP·TIFF의 해시와 지문, MD5 입력의 항목별 길이와 해시, SDK 소스 15개의 해시와 행 번호, 합성 대조 결과</li>
+<li><a href="../tools/check_lightroom_profile_fingerprints.py">tools/check_lightroom_profile_fingerprints.py</a> — DCP를 읽어 지문을 계산하고 TIFF의 XMP와 대조하는 검사기</li>
+<li><a href="../tests/test_lightroom_profile_fingerprints.py">tests/test_lightroom_profile_fingerprints.py</a> — 합성 DCP 변형 시험과 잘못된 입력 거부 시험</li>
+<li>외부 자료: <a href="https://helpx.adobe.com/camera-raw/desktop/dng-and-file-formats/digital-negative.html">Adobe DNG 안내와 SDK 배포</a> · <a href="https://helpx.adobe.com/content/dam/help/en/camera-raw/digital-negative/jcr_content/root/content/flex/items/position/position-par/download_section_733958301/download-1/DNG_Spec_1_7_1_0.pdf#page=48">Adobe DNG 규격 1.7.1.0</a>(48쪽 카메라 프로파일 형식, 51–52쪽 ProfileEmbedPolicy) · <a href="https://developer.adobe.com/xmp/docs/xmp-namespaces/crs/">Adobe XMP 문서의 Camera Raw 네임스페이스</a> · <a href="https://exiv2.org/tags-xmp-crs.html">Exiv2의 crs 태그 목록</a>(CameraProfileDigest를 “XMP 규격에 없고 표본 파일에서 발견”이라고 적음) · <a href="https://registry.color.org/rgb-registry/rommrgb">ICC의 ROMM RGB 등록 정보</a>(D50 백색 x = 0.3457, y = 0.3585)</li>
+</ul>
+</section>
+
 </main>
+</div>
+<!-- chrome:bottom -->
+<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">Lightroom 색 프로파일 — 이 주제의 문서</h2><ol><li><a href="lightroom-bridge.html">Lightroom 프로파일 안내<span>DCP 생성·검증의 전체 흐름</span></a></li><li><a href="raw-test-inputs.html">시험용 RAW 준비</a></li><li><a href="color-comparison-protocol.html">ColorChecker 비교 절차</a></li><li><a href="lightroom-render-comparison.html">실제 TIFF 6개 비교</a></li><li><a href="lightroom-tone-comparison.html">톤 곡선 비교</a></li><li><a href="lightroom-model-exports.html">K-3 III·Q7 DCP 내보내기</a></li><li><a href="lightroom-profile-fingerprints.html" aria-current="page">프로파일 지문 재현</a></li><li><a href="lightroom-look-controls.html">LookTable 대조 실험</a></li></ol></nav>
+<nav class="pager" aria-label="이전·다음 문서"><a class="prev" href="lightroom-model-exports.html"><small>← 이전</small>K-3 III·Q7 DCP 내보내기</a><a class="next" href="lightroom-look-controls.html"><small>다음 →</small>LookTable 대조 실험</a></nav>
+<footer class="sitefoot"><div class="sitefoot-in"><nav aria-label="사이트"><a href="../index.html#map">문서 지도</a><a href="../index.html#levels">검증 수준 읽는 법</a><a href="../glossary.html">용어집</a><a href="research-program.html">세 기종 연구 본부</a><a href="https://github.com/yunhyok/pentax-k3iii-firmware-analysis">GitHub 저장소</a></nav><p>PENTAX K-3 Mark III 펌웨어 2.20 분석 문서. PC에서 수행한 정적 분석과 에뮬레이션 결과이며, 카메라 실기에서 검증한 내용이 아닙니다. 원본 펌웨어와 추출한 독점 코드는 포함하지 않습니다.</p></div></footer>
+<!-- /chrome:bottom -->
 </body>
 </html>

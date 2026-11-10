@@ -99,8 +99,11 @@ class ReportLinks(HTMLParser):
             self.ids.add(attrs["id"])
         if tag == "a":
             self.links.add(attrs["href"])
-        require(tag not in {"link", "script", "iframe", "object", "embed"} and "src" not in attrs,
+        require(tag not in {"script", "iframe", "object", "embed"} and "src" not in attrs,
                 f"unexpected dependency or script: {tag}")
+        if tag == "link":
+            require(attrs.get("rel") == "stylesheet" and attrs.get("href") == "../assets/site.css",
+                    "only the shared stylesheet may be linked")
 
 
 def check_report(data):
@@ -125,7 +128,13 @@ def check_report(data):
 
 
 def check_git_sources(data):
-    directories = {"k3iii": ROOT, "k3ii": ROOT.parent / "Pentax K-3mk2", "q7": ROOT.parent / "Pentax Q7"}
+    siblings = {"k3ii": ("Pentax K-3mk2", "pentax-k3ii-firmware-analysis"),
+                "q7": ("Pentax Q7", "pentax-q7-firmware-analysis")}
+    directories = {"k3iii": ROOT}
+    for camera_id, names in siblings.items():
+        found = [ROOT.parent / name for name in names if (ROOT.parent / name).is_dir()]
+        require(found, f"{camera_id}: no local clone next to this repository (tried {', '.join(names)})")
+        directories[camera_id] = found[0]
     for camera in data["cameras"]:
         camera_id = camera["id"]
         sources = {key: source for key, source in data["sources"].items() if source.get("camera") == camera_id}

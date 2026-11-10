@@ -1,74 +1,398 @@
 <!doctype html>
-<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>수정 이미지의 bank 선택과 부팅 수용 조건</title><style>
-:root{color-scheme:light dark;--bg:#f7f8fa;--paper:#fff;--ink:#182332;--muted:#48596b;--line:#d2dbe5;--accent:#124b8e;--soft:#edf3fa;--focus:#d75f00}
-@media(prefers-color-scheme:dark){:root{--bg:#111821;--paper:#18222d;--ink:#e8edf4;--muted:#b4c2d2;--line:#405369;--accent:#98c8ff;--soft:#223348;--focus:#ffb374}}
-*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.85 system-ui,-apple-system,"Malgun Gothic",sans-serif;word-break:keep-all;overflow-wrap:anywhere}
-a{color:var(--accent);text-underline-offset:.18em}a:hover{text-decoration-thickness:2px}:focus-visible{outline:3px solid var(--focus);outline-offset:4px}
-header,main,footer{max-width:1120px;margin:auto;padding:36px clamp(18px,4vw,56px)}header{padding-top:56px;padding-bottom:24px}main{background:var(--paper);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
-.eyebrow{color:var(--muted);font-size:.84rem;letter-spacing:.06em}h1{font-size:clamp(1.85rem,4.5vw,3rem);line-height:1.35;letter-spacing:-.025em;margin:12px 0 18px}h2{font-size:1.5rem;line-height:1.5;margin:3.6rem 0 1rem;padding-top:1.2rem;border-top:1px solid var(--line)}h2:first-child{margin-top:0}h3{font-size:1.12rem;margin-top:2rem}p{margin:1rem 0}strong{font-weight:650}.intro{max-width:55em;color:var(--muted)}
-nav{margin-top:25px}nav ul{display:flex;flex-wrap:wrap;gap:8px 22px;list-style:none;padding:0;margin:0}nav ul ul{display:none}nav a{font-size:.9rem}code{font: .88em/1.6 ui-monospace,Consolas,monospace;overflow-wrap:anywhere}pre{background:var(--soft);padding:18px;overflow-x:auto;white-space:pre-wrap;border-radius:5px}pre code{font-size:.82rem}
-.table-scroll{overflow-x:auto;margin:24px 0}table{border-collapse:collapse;width:100%;font-size:.92rem;min-width:530px}th,td{text-align:left;vertical-align:top;padding:14px 16px;border-bottom:1px solid var(--line)}th{background:var(--soft);font-weight:650}td:first-child{min-width:125px}details{border-block:1px solid var(--line);margin-top:24px;padding:16px 0}summary{cursor:pointer;font-weight:650;padding:6px 0}.caption,.meta{font-size:.86rem;color:var(--muted)}
-figure{margin:32px 0;padding:24px 0;border-block:1px solid var(--line)}figcaption{font-size:.95rem;font-weight:650;margin-bottom:20px}.flow{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:32px;list-style:none;padding:0;margin:18px 0}.flow li{position:relative;padding:18px;background:var(--soft);border-radius:6px;line-height:1.6}.flow strong{display:block;font-size:1rem}.flow span{display:block;color:var(--muted);font-size:.86rem;margin-top:9px}.flow li:not(:last-child)::after{content:"→";position:absolute;right:-27px;top:40%;font-size:22px;color:var(--muted)}.second{margin-top:24px}footer{font-size:.88rem;color:var(--muted)}
-@media(max-width:620px){body{font-size:16px}header,main,footer{padding-inline:20px}.flow{grid-template-columns:1fr;gap:26px}.flow li:not(:last-child)::after{content:"↓";right:auto;left:calc(50% - 8px);top:auto;bottom:-28px}.flow li{padding:15px 18px}h2{font-size:1.3rem}nav ul{gap:10px 18px}table{font-size:.87rem}th,td{padding:12px}header{padding-top:30px}}
-@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
-@media print{body{background:white;color:black;font-size:10pt}header,main,footer{max-width:none;padding:12pt}nav{display:none}a{color:inherit}h2,figure,table{break-inside:avoid}h2{break-after:avoid}main{border:0}.flow li{background:#f1f3f5}.table-scroll{overflow:visible}table{min-width:0}details>*{display:block!important}}
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>RTOS가 쓰는 bank와 BOOT가 읽는 bank의 선택 조건 — PENTAX K-3 Mark III 펌웨어 연구</title>
+<meta name="description" content="K-3 Mark III 펌웨어에서 RTOS의 쓰기 코드와 BOOT의 적재 코드가 서로 다른 값으로 bank를 고른다는 점을, 같은 합성 파티션 표를 두 원본 코드에 넘긴 12사례로 확인한 기록입니다. 실제 표의 값과 값을 만드는 코드는 확인하지 못했습니다.">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-camera="k3iii">
+<!-- chrome:top -->
+<a class="skip" href="#main">본문 바로가기</a>
+<div class="topbar"><div class="topbar-in"><a class="brand" href="../index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="../index.html" aria-current="true">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="https://yunhyok.github.io/pentax-q7-firmware-analysis/">Q7</a></div><nav class="topnav" aria-label="주제"><a href="../index.html">개요</a><a href="guide-boot.html">부팅·저장소</a><a href="guide-update.html" aria-current="true">업데이트</a><a href="guide-rebuild.html">재구축</a><a href="guide-rtos.html">명령·셸</a><a href="guide-color.html">색 처리</a><a href="lightroom-bridge.html">Lightroom</a><a href="af-foundations.html">AF</a><a href="ui-port-contract.html">UI</a></nav></div></div>
+<nav class="crumbs" aria-label="현재 위치"><ol><li><a href="../index.html">PENTAX K-3 Mark III</a></li><li><a href="guide-update.html">펌웨어 업데이트 과정</a></li><li aria-current="page">쓰기 bank와 BOOT 선택</li></ol></nav>
+<!-- /chrome:top -->
+<header class="page-head">
+<p class="eyebrow">펌웨어 업데이트 과정 · bank 선택</p>
+<h1>RTOS가 쓰는 bank와 BOOT가 읽는 bank의 선택 조건</h1>
+<p class="lead">업데이트가 이미지를 저장소에 쓰는 코드와, 다음 부팅 때 이미지를 읽는 코드는 저장 위치를 서로 다른 값으로 고릅니다. 두 값이 어긋나면 어떻게 되는지 같은 표 하나를 두 코드에 넘겨 시험했습니다.</p>
+</header>
+<div class="layout">
+<!-- chrome:toc -->
+<nav class="toc" aria-label="이 문서의 목차"><h2 data-toc="no">이 문서에서</h2><ol><li><a href="#background">배경: bank와 선택값</a></li><li><a href="#selection">한 표를 함께 써도 두 선택값은 저절로 맞춰지지 않습니다</a></li><li><a href="#boundaries">수정한 이미지가 부팅까지 가려면 거쳐야 하는 단계</a></li><li><a href="#remaining">두 선택값을 만드는 코드는 아직 찾지 못했습니다</a></li><li><a href="#verification">검증 범위와 한계</a></li><li><a href="#reproduce">재현 방법</a></li><li><a href="#refs">근거 파일과 참고 자료</a></li></ol></nav>
+<!-- /chrome:toc -->
+<main class="doc" id="main">
 
-.site-nav{border-block:1px solid var(--line);padding:14px 0;margin:20px 0}.site-nav a{display:inline-block;margin:4px 16px 4px 0}
-.review-note{background:var(--soft);padding:16px 20px;margin:24px 0}.toc{font-size:.92rem}.toc ul{list-style:none;padding-left:0}.toc ul ul{padding-left:20px}
-.branch{margin:18px 0;padding:0 0 0 24px;border-left:3px solid var(--line)}.branch p{margin:8px 0}.diagram-line{padding:12px 16px;background:var(--soft);border-radius:4px}
-td code{white-space:nowrap}
+<section class="summary">
+<h2 data-toc="no">핵심 요약</h2>
+<ul>
+<li>파티션 표에는 리소스마다 저장 위치 설명자가 <strong>bank 0과 bank 1 두 벌</strong> 있습니다. RTOS의 쓰기 함수는 <code>FwPartition</code> 객체 안의 1바이트로, BOOT는 표의 레코드에 든 값으로 bank를 고릅니다. <strong>두 값은 서로 다른 곳에 있습니다.</strong></li>
+<li>같은 합성 표를 RTOS 쓰기 코드와 BOOT 적재 코드에 차례로 넘겨 12사례를 실행했습니다. 두 값이 같으면 BOOT가 새 payload를 읽었습니다. 다르면 쓰기가 성공했어도 BOOT는 다른 bank에 있던 기존 바이트를 읽었습니다.</li>
+<li>쓰기 함수와 그 앞의 배치 준비 함수는 BOOT가 보는 값을 바꾸지 않았습니다. 쓰기가 성공한 뒤 표에서 바뀐 것은 고른 설명자의 길이와 블록 수뿐입니다.</li>
+<li>실제 카메라의 표에 어떤 값이 들어 있는지는 모릅니다. 생성자는 RTOS 쪽 값을 0으로 만들고, 0이 아닌 값을 만드는 코드는 찾지 못했습니다. 실제 표가 bank 0을 가리킨다면 따로 전환하지 않아도 두 값은 맞습니다.</li>
+<li>표를 저장 장치에 기록하고 다시 읽는 과정, 재시작, 인증은 실행하지 않았습니다. 이 결과는 수정한 이미지가 받아들여지거나 부팅된다는 증거가 아닙니다.</li>
+</ul>
+</section>
 
-.flow{grid-template-columns:repeat(4,minmax(0,1fr))}@media(max-width:760px){.flow{grid-template-columns:1fr}}
-</style></head><body>
-<header><div class="eyebrow">PENTAX K-3 MARK III · FIRMWARE 2.20 · 2026-11-08</div>
-<h1>수정 이미지의 bank 선택과 부팅 수용 조건</h1>
-<p class="intro">RTOS가 payload를 쓰는 bank와 BOOT가 읽을 bank는 서로 다른 필드에서 나온다. 같은 합성 파티션 표를 두 원본 경로에 전달해 쓰기 성공 뒤에도 새 payload가 선택되지 않는 조건을 확인했다. 실제 비제로 bank 생산자와 공통 레코드 +4의 값 생성 정책은 아직 찾지 못했다.</p>
-<nav class="site-nav" aria-label="보고서 탐색"><a href="../index.html">연구 개요</a><a href="startup-storage.html">M0·BOOT·저장소</a><a href="#selection">같은 표의 쓰기·읽기</a><a href="#boundaries">수정 이미지 수용 조건</a><a href="#remaining">남은 조사</a><a href="#verification">검증 범위</a></nav></header>
-<main>
-<section id="selection"><h2>한 표를 공유해도 선택값은 자동으로 맞춰지지 않는다</h2>
-<p>원본 생성자 <code>0x52ff52d4</code>는 FwPartition의 byte <code>+0x10</code>을 0으로 만든다. 쓰기 함수 <code>0x52ff586c</code>는 이 byte로 bank 설명자를 고른다. BOOT의 RTOS 적재 분기 <code>0x50b00c88</code>은 리소스 index 1의 공통 레코드 <code>+4</code>를 읽고 하위 16비트로 bank를 고른다. 레코드 간격은 <code>0x870</code>, bank 간격은 <code>0x434</code>다. <a href="update-bank-selection-evidence.json">원본 범위·주소·해시</a>.</p>
-<figure><figcaption>CPU 시험에서 연결한 단계와 생략한 물리 단계</figcaption><ol class="flow">
-<li><strong>RTOS 쓰기</strong><span>object byte+0x10 선택<br>payload 쓰기 반환 확인<br>설명자 길이·블록 수 갱신</span></li>
-<li><strong>합성 표 인계</strong><span>같은 RAM 표를 그대로 유지<br>매체 commit·reload·reset 생략<br>공통 record+4 보존</span></li>
-<li><strong>BOOT 선택</strong><span>record+4의 low16 선택<br>적재 주소·시작 블록 조회<br>합성 읽기 성공 조건 검사</span></li>
-<li><strong>결과 비교</strong><span>새 payload의 RAM 도착 여부<br>진입 주소 저장 여부<br>코드 진입·카메라 실행은 제외</span></li>
-</ol></figure>
-<p>쓰기 성공 후 바뀐 표의 바이트는 선택한 설명자의 <code>+0x14</code>(길이)와 <code>+0x18</code>(블록 수)뿐이었다. 실패·용량 거부에서는 이 두 값도 보존됐다. 앞단 layout 함수 <code>0x52ff1ea8</code>는 용량·주소·크기 필드를 준비하지만 공통 <code>+4</code>를 맞추지는 않는다. 합성 매체는 시작 블록별로 바이트를 저장한다. 시작 블록이 다른 구간의 부분 중첩이나 실제 전송 실패 때의 부분 기록은 이 시험 범위 밖이다. <a href="update-bank-selection-checks.json">12사례의 인수·표 변경·읽기 결과</a>.</p>
-<div class="table-scroll"><table><thead><tr><th scope="col">합성 조건</th><th scope="col">관찰한 결과</th><th scope="col">해석의 한계</th></tr></thead><tbody>
-<tr><td>생성자의 bank 0 / record+4 low16=0</td><td>쓰기 성공 뒤 같은 설명자에서 새 payload를 읽음</td><td>카메라의 실제 표 값은 관측하지 않음</td></tr>
-<tr><td>bank 0 / record+4 low16=1</td><td>bank 0 쓰기는 성공하지만 BOOT는 bank 1의 기존 바이트를 읽음</td><td>두 설명자의 시작 블록과 적재 주소를 다르게 둔 fixture</td></tr>
-<tr><td>record+4 상위 16비트 변경</td><td>하위 16비트가 같으면 선택 bank가 같음</td><td>전체 필드의 다른 소비자나 상위 비트 의미는 미확정</td></tr>
-<tr><td>리소스 존재 필드가 0</td><td>선택한 BOOT 분기에서 읽기와 진입 주소 저장을 건너뜀</td><td>쓰기가 성공했다는 사실만으로 리소스 존재 조건을 채우지 못함</td></tr>
-<tr><td>쓰기 실패 / 읽기 실패 / 용량 거부</td><td>각 반환 분기와 길이·블록 수 보존을 분리해 확인</td><td>주입한 실패값이며 물리 매체의 잔존 바이트를 설명하지 않음</td></tr>
-<tr><td>byte+0x10을 시험 코드로 1에 설정</td><td>record+4 low16=1인 경우 선택한 bank 1 경로가 일치</td><td>비제로 bank 생산자를 발견한 증거가 아님</td></tr>
+<div class="scope">
+<div class="ok"><h3><span class="badge ok">확인</span> 원본 코드 실행으로 확인</h3>
+<ul>
+<li>RTOS 생성자·배치 준비·쓰기 함수와 BOOT 적재 조각 12사례</li>
+<li>쓰기 성공 때 바뀌는 표 바이트는 길이와 블록 수뿐</li>
+<li>BOOT는 레코드 +4의 하위 16비트만 사용</li>
+<li>통합 이미지 입력과 RTOS·BOOT 분리 입력에서 같은 결과</li>
+</ul></div>
+<div class="static"><h3><span class="badge static">정적 분석</span> 코드를 읽어 판단</h3>
+<ul>
+<li>BOOT 진입 경로가 mode 값 2를 다루는 방식</li>
+<li>표 전체를 저장소에서 다시 읽는 경로</li>
+<li>Log·SystemControl 등 후보에서 제외한 코드</li>
+</ul></div>
+<div class="model"><h3><span class="badge model">모델</span> 시험 조건으로 정한 것</h3>
+<ul>
+<li>같은 RAM 표를 두 단계에 그대로 넘김(저장·재읽기·reset 생략)</li>
+<li>레코드 +4의 값, bank 1 강제 설정, mode 2 주입</li>
+<li>저장 매체는 시작 블록별 바이트 사전</li>
+<li>CPU는 Unicorn의 Cortex-A15 모델</li>
+</ul></div>
+<div class="open"><h3><span class="badge open">미확인</span> 확인하지 않은 것</h3>
+<ul>
+<li>실제 표의 초깃값과 레코드 +4를 만드는 코드</li>
+<li>RTOS 쪽 값을 0이 아니게 만드는 코드</li>
+<li>표와 헤더의 영속 기록, 다음 부팅의 재읽기</li>
+<li>Boot ROM 인증과 실제 부팅</li>
+</ul></div>
+</div>
+
+<section id="background">
+<h2>배경: bank와 선택값</h2>
+<p>기기 펌웨어는 이미지를 두 벌 저장할 자리를 두는 경우가 많습니다. 새 이미지를 쓰는 동안 문제가 생겨도 다른 한 벌로 부팅할 수 있게 하려는 설계입니다. Android의 A/B 업데이트 문서는 이 두 벌을 슬롯이라 부르고, 부트로더가 다음에 부팅할 슬롯을 표시 값으로 고른다고 설명합니다. 이런 구조에서는 “어느 쪽에 썼는가”와 “어느 쪽으로 부팅하는가”가 맞아야 새 이미지가 실행됩니다.</p>
+<p>K-3 Mark III의 파티션 표에도 리소스마다 저장 위치 설명자가 두 벌 있습니다. 분석 기록은 이것을 bank라고 부릅니다. 이 카메라가 Android와 같은 전환 정책을 쓴다는 뜻은 아닙니다. bank를 언제 어떻게 바꾸는지는 아직 찾지 못했습니다. 이 문서는 그보다 좁은 질문을 다룹니다. <strong>쓰는 코드와 읽는 코드가 각각 무엇을 보고 bank를 고르는가</strong>입니다.</p>
+
+<h3 id="table-layout">파티션 표의 구조</h3>
+<ul>
+<li>표 전체는 <code>0x10e00</code>바이트이고, <code>0x870</code>바이트짜리 레코드 32개로 이루어집니다. 레코드 하나가 리소스 하나에 대응합니다.</li>
+<li>레코드 안에는 bank 설명자가 <code>0x434</code>바이트 간격으로 놓입니다. 설명자는 적재 주소(+8), 진입 주소(+0x0c), 시작 블록(+0x10), 바이트 길이(+0x14), 블록 수(+0x18)를 담습니다.</li>
+<li>레코드의 공통 필드는 +0과 +4 두 개입니다. +0은 용량 필드이고, BOOT는 이 값이 0이면 리소스가 없다고 보고 지나갑니다. 이 문서에서는 이 쓰임을 존재 표시라고 부릅니다. +4는 bank 선택값입니다.</li>
+<li>RTOS 이미지는 리소스 1번입니다. 부팅 때는 BOOT 단계가 이 레코드를 보고 RTOS를 RAM으로 읽어 옵니다.</li>
+</ul>
+
+<h3 id="four-selectors">이름이 비슷한 네 가지 선택값</h3>
+<p>펌웨어에는 “둘 중 하나를 고르는 값”이 네 군데 있습니다. 서로 뜻이 다르고, 항상 같은 값을 갖는다는 근거도 없습니다. 이 문서가 다루는 것은 앞의 둘입니다.</p>
+<div class="table-wrap"><table>
+<caption>선택값 네 가지 (<a href="startup-storage.html#banks">부팅·저장소 문서</a>의 정리)</caption>
+<thead><tr><th>값이 있는 곳</th><th>고르는 대상</th><th>알고 있는 것</th></tr></thead>
+<tbody>
+<tr><th scope="row">RTOS의 <code>FwPartition</code> 객체 +0x10 (1바이트)</th><td>RTOS가 쓰거나 읽을 bank 설명자</td><td>생성자가 0으로 초기화합니다. 0이 아닌 값을 넣는 코드는 찾지 못했습니다.</td></tr>
+<tr><th scope="row">파티션 표 레코드 +4의 하위 16비트</th><td>부팅 단계가 읽을 bank 설명자</td><td>BOOT가 리소스 1번(RTOS)에서 읽습니다. 값을 만드는 코드는 찾지 못했습니다.</td></tr>
+<tr><th scope="row">부트 헤더 +0x40</th><td>파티션 표 사본 A·B를 시도하는 순서</td><td>0이면 A→B, 1이면 B→A 순서이고 다른 값은 실패합니다. 헤더를 만들 때 <code>FwPartition</code> +0x10이 이 자리로 복사됩니다.</td></tr>
+<tr><th scope="row"><code>Emmc</code> 드라이버의 partition 인수</th><td>eMMC의 일반 영역(0)과 부트 영역(1)</td><td>펌웨어 진단 문자열은 값 1을 boot1이라고 부릅니다. Linux 커널 정의에서는 같은 값 1의 이름이 BOOT0입니다. 리소스의 bank 1과는 관계가 없습니다.</td></tr>
 </tbody></table></div>
-<p>따라서 이번 fixture에서 새 payload를 읽으려면 쓰기가 성공하고 존재 조건을 통과하며 BOOT가 새 바이트를 기록한 위치를 선택하고 읽기가 성공해야 한다. 서로 다른 bank가 같은 저장 위치를 가리키는 경우까지 배제한 결론은 아니다. 실제 정상 표가 bank 0을 가리킨다면 별도의 비제로 전환 없이도 선택값은 맞을 수 있다. 그 런타임 표를 확보하지 못했으므로 현재 카메라의 상태로 단정하지 않는다.</p>
-<p>숫자 mode 2를 주입한 한 사례는 선택한 BOOT 조각의 읽기 생략만 확인했다. BOOT 진입 경로는 <code>0x0100fffc</code>를 처음 읽었을 때 값이 2면 리소스 적재 호출을 생략한다. 그 외에는 모드 값을 다시 읽어 전역 상태에 저장한 뒤 로더를 호출한다. 조각에 mode 2를 직접 넣은 결과를 실제 재부팅 경로의 도달 증거로 사용하지 않는다. <a href="startup-storage.html#boot-entry">BOOT 진입 조건</a>.</p>
+
+<figure class="diagram">
+<figcaption>쓰는 쪽과 읽는 쪽이 bank 설명자를 고르는 방법</figcaption>
+<div class="dg-scroll">
+<svg class="dg" viewBox="0 0 800 340" role="img" aria-labelledby="dg-sel-title dg-sel-desc">
+<title id="dg-sel-title">RTOS 쓰기 함수와 BOOT 적재 코드의 bank 선택</title>
+<desc id="dg-sel-desc">가운데에 파티션 표의 리소스 1번 레코드가 있습니다. 레코드는 공통 필드와 bank 0 설명자, bank 1 설명자로 이루어집니다. 왼쪽의 RTOS 쓰기 함수는 FwPartition 객체 +0x10의 1바이트로 설명자를 고릅니다. 생성자 초깃값 0이면 bank 0 설명자를 쓰고, 시험 코드가 1로 설정한 경우에만 bank 1 설명자를 썼습니다. 오른쪽의 BOOT 적재 코드는 레코드 공통 필드 +4를 읽어 하위 16비트가 0이면 bank 0 설명자, 1이면 bank 1 설명자를 읽습니다.</desc>
+<defs><marker id="dg-sel-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0 0L10 5L0 10z"/></marker>
+<marker id="dg-sel-ahm" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah model" d="M0 0L10 5L0 10z"/></marker></defs>
+<rect class="g" x="244" y="14" width="312" height="312" rx="12"/>
+<text class="h mid" x="400" y="34">파티션 표 · 리소스 1번(RTOS) 레코드</text>
+
+<rect class="b key" x="260" y="46" width="280" height="56" rx="8"/>
+<text class="t" x="272" y="70">레코드 공통 필드</text>
+<text class="s" x="272" y="90">+0 용량(존재 표시) · +4 bank 선택값</text>
+
+<rect class="b" x="260" y="120" width="280" height="84" rx="8"/>
+<text class="t" x="272" y="145">bank 0 설명자</text>
+<text class="s" x="272" y="165">적재 주소 · 진입 주소 · 시작 블록</text>
+<text class="s" x="272" y="184">길이(+0x14) · 블록 수(+0x18)</text>
+
+<rect class="b" x="260" y="222" width="280" height="84" rx="8"/>
+<text class="t" x="272" y="247">bank 1 설명자</text>
+<text class="s" x="272" y="267">bank 0에서 0x434바이트 뒤</text>
+<text class="s" x="272" y="286">같은 필드 구성</text>
+
+<rect class="b ok" x="8" y="40" width="204" height="84" rx="8"/>
+<text class="t" x="20" y="65">RTOS 쓰기 함수</text>
+<text class="s" x="20" y="85">FwPartition +0x10의</text>
+<text class="s" x="20" y="103">1바이트로 설명자를 고름</text>
+
+<rect class="b ok" x="588" y="40" width="204" height="84" rx="8"/>
+<text class="t" x="600" y="65">BOOT 적재 코드</text>
+<text class="s" x="600" y="85">레코드 +4의 하위</text>
+<text class="s" x="600" y="103">16비트로 설명자를 고름</text>
+
+<text class="n" x="96" y="181">값 0 · 생성자 초깃값</text>
+<text class="n tmodel" x="96" y="283">값 1 · 시험 코드가 설정</text>
+<text class="n" x="566" y="181">하위 16비트 = 0</text>
+<text class="n" x="566" y="283">하위 16비트 = 1</text>
+
+<path class="e" d="M540 74H586" marker-end="url(#dg-sel-ah)"/>
+<path class="e" d="M150 124V162H258" marker-end="url(#dg-sel-ah)"/>
+<path class="e model" d="M70 124V264H258" marker-end="url(#dg-sel-ahm)"/>
+<path class="e" d="M650 124V162H542" marker-end="url(#dg-sel-ah)"/>
+<path class="e" d="M730 124V264H542" marker-end="url(#dg-sel-ah)"/>
+</svg>
+</div>
+<ul class="dg-legend"><li><i class="ok"></i>원본 코드 실행으로 확인</li><li><i class="key"></i>BOOT가 읽는 선택값이 든 곳</li><li><i class="model"></i>시험용으로 넣은 값</li></ul>
+<p>부팅 문서에 따르면 M0 단계도 첫 레코드에서, BOOT는 리소스 5번에서도 같은 방식으로 레코드 +4의 하위 16비트를 씁니다.</p>
+</figure>
 </section>
-<section id="boundaries"><h2>수정 이미지 수용 과정과 남은 검증</h2>
-<p>다음 표는 앞선 검증을 단계별로 묶은 것이다. 일부는 원본 ARM 전체 함수, 일부는 선택한 조각과 대체 호출로 검증했다. 각 행의 성공을 전체 업데이트의 성공으로 합산하지 않는다.</p>
-<div class="table-scroll"><table><thead><tr><th scope="col">단계</th><th scope="col">현재 연결한 근거</th><th scope="col">다음에 닫아야 할 경계</th></tr></thead><tbody>
-<tr><td>패키지 생성·검사</td><td>무변경 재패키징은 원본과 동일. 수정 후보의 헤더·내외부 체크섬을 원본 ARM으로 검사. <a href="package-roundtrip-checks.json">결과</a></td><td>기종·버전·정책 조건을 모두 포함한 실제 updater 전체 수용</td></tr>
-<tr><td>교체 코드의 배치</td><td>HQ의 Q13 행렬 함수 재컴파일 후보는 원래 주소와 선택한 실제 호출자 경로에서 출력·보존 상태를 대조. <a href="recompiled-integration.html">별도 오프라인 실험</a></td><td>다른 분기·실제 스택 여유·시간 제약을 포함한 장치 실행</td></tr>
-<tr><td>입력·디코딩</td><td>C 파일명→SdDriver와 파일 인터페이스, 입력·출력의 공존을 연결. <a href="update-media-completion.html#media">매체</a> · <a href="update-file-lifetimes.html">버퍼 수명</a></td><td>실제 mount·연속 메모리 가용량·하드웨어 디코더의 후보 수용</td></tr>
-<tr><td>payload·표·헤더 기록</td><td>payload 후 표→부트 헤더→BOOT 기록 순서, 오류 분기와 선택 설명자 갱신을 확인. <a href="startup-storage.html#write-order">기록 순서</a></td><td>표와 헤더가 일관된 상태로 매체에 남고 다음 부팅에서 다시 읽히는 과정</td></tr>
-<tr><td>resource bank 선택</td><td>RTOS byte+0x10과 BOOT record+4 low16의 독립 선택을 같은 합성 표로 비교. <a href="update-bank-selection-checks.json">이번 12사례</a></td><td>실제 표의 초기값, 비제로 생산자와 record+4의 값 생성·전환 정책</td></tr>
-<tr><td>M0 reset·A7 진입 준비</td><td><code>0x3ffe08b4</code> 초기화와 <code>0x3ffe0808</code> 작업 등록→적재 작업→진입 주소·모드 기록을 연결. <a href="startup-storage.html#m0-reset-chain">reset</a></td><td><code>0x2000fffc</code>와 <code>0x0100fffc</code>의 물리 alias 및 이를 만드는 선행 설정</td></tr>
-<tr><td>BOOT 적재·인증</td><td>표 사본 순서, RTOS 설명자 선택, 카드 응답·전송 검사와 진입 주소 저장을 추적. <a href="startup-storage.html#boot-auth">BOOT 범위</a></td><td>제공 이미지 이전의 Boot ROM·키·fuse 정책과 전체 인증 조건</td></tr>
-<tr><td>완료 통지·UI</td><td>메시지 <code>0x2640820b</code>→모델 상태→작업 <code>0x128</code>을 연결. <a href="update-media-completion.html#completion">메시지</a> · <a href="update-ui-consumer.html">UI 소비</a></td><td>실제 큐 전달·종료·재부팅·촬영 성공. UI 상태값만으로 이를 판정할 수 없음</td></tr>
+
+<section id="selection">
+<h2>한 표를 함께 써도 두 선택값은 저절로 맞춰지지 않습니다</h2>
+<p class="takeaway">쓰기 함수는 객체 안의 1바이트만 보고, BOOT는 레코드 +4만 봅니다. 쓰기 경로의 어떤 코드도 레코드 +4를 고치지 않았습니다.</p>
+
+<h3 id="method">시험 방법</h3>
+<ol class="flow">
+<li class="ok"><strong>RTOS 쓰기</strong><span>객체 +0x10으로 설명자 선택, payload 쓰기, 길이와 블록 수 갱신</span></li>
+<li class="model"><strong>합성 표 인계</strong><span>같은 RAM 표를 그대로 넘김. 저장·재읽기·reset은 생략</span></li>
+<li class="ok"><strong>BOOT 선택과 읽기</strong><span>레코드 +4의 하위 16비트로 설명자 선택, 블록 읽기</span></li>
+<li class="ok"><strong>결과 비교</strong><span>새 payload가 RAM에 도착했는지, 진입 주소가 저장됐는지</span></li>
+</ol>
+<div class="callout model"><strong class="label">시험 조건</strong>
+<p>실제 업데이트에서는 1단계와 3단계 사이에 표를 저장 장치에 기록하고, 카메라를 재시작하고, 부팅 단계가 표를 다시 읽습니다. 시험은 이 과정을 건너뛰고 메모리의 표를 그대로 다음 단계에 넘겼습니다. 저장 매체는 “시작 블록 번호 → 바이트”를 담는 사전으로 흉내 냈습니다. payload는 513바이트(2블록)이고, bank 0과 bank 1의 설명자는 시작 블록과 적재 주소가 서로 다르게 만들었습니다.</p></div>
+
+<h3 id="write-side">쓰는 쪽에서 확인한 것</h3>
+<ul>
+<li><code>FwPartition</code> 생성자는 객체의 +0x10을 0으로 만듭니다. 쓰기 함수는 이 바이트에 <code>0x434</code>를 곱해 설명자를 고릅니다.</li>
+<li>쓰기 함수는 먼저 용량을 검사합니다. 시작 블록에 필요한 블록 수를 더한 값이 다음 번호 리소스의 시작 블록을 넘으면 쓰지 않고 0을 돌려줍니다.</li>
+<li>하위 쓰기가 0이 아닌 값을 돌려주면 고른 설명자의 +0x14(길이)와 +0x18(블록 수)을 고칩니다. 표에서 바뀐 바이트는 이 두 칸뿐이었습니다. 쓰기가 실패하거나 용량 검사에서 거절되면 이 두 값도 그대로 남았습니다.</li>
+<li>쓰기 앞에 실행되는 배치 준비 함수는 용량·주소·크기 필드를 채웁니다. 이 함수도 레코드 +4는 건드리지 않았습니다.</li>
+</ul>
+
+<h3 id="read-side">읽는 쪽에서 확인한 것</h3>
+<ul>
+<li>BOOT의 RTOS 적재 분기는 리소스 1번 레코드의 +0이 0이면 아무것도 읽지 않고 지나갑니다.</li>
+<li>0이 아니면 +4를 읽어 하위 16비트만 남기고, 그 값에 <code>0x434</code>를 곱해 설명자를 고릅니다. 상위 16비트를 바꿔도 고르는 bank는 같았습니다.</li>
+<li>읽을 블록 수는 설명자의 +0x18입니다. 이 값이 0이면 +0x14의 길이를 512로 나눠 올림한 값을 씁니다.</li>
+<li>읽기가 성공하면 설명자의 진입 주소(+0x0c)를 두 곳에 저장합니다. 읽기가 실패하면 저장하지 않고 실패 분기로 갑니다.</li>
+</ul>
+
+<h3 id="conditions">새 payload가 읽히려면 모두 맞아야 하는 조건</h3>
+<figure class="diagram">
+<figcaption>합성 표에서 새 payload가 RAM에 도착하기까지의 조건</figcaption>
+<div class="dg-scroll">
+<svg class="dg" viewBox="0 0 800 516" role="img" aria-labelledby="dg-gate-title dg-gate-desc">
+<title id="dg-gate-title">새 payload가 BOOT의 읽기로 RAM에 도착하는 조건 다섯 가지</title>
+<desc id="dg-gate-desc">위에서 아래로 조건 다섯 개를 차례로 통과해야 합니다. 첫째, 쓰기가 성공해야 합니다. 실패하면 표는 그대로이고 BOOT는 기존 바이트를 읽습니다. 둘째, 리소스 존재 표시가 있어야 합니다. 없으면 BOOT가 읽기와 진입 주소 저장을 모두 건너뜁니다. 셋째, 조각 안의 mode 값이 2가 아니어야 합니다. 2이면 읽기를 건너뛰고 진입 주소만 저장합니다. 넷째, BOOT가 고른 설명자가 새 바이트를 쓴 위치를 가리켜야 합니다. 아니면 다른 bank의 기존 바이트를 읽습니다. 다섯째, 읽기가 성공해야 합니다. 실패하면 진입 주소를 저장하지 않고 실패 분기로 갑니다. 다섯 조건이 모두 맞으면 새 payload가 RAM의 적재 주소에 도착하고 진입 주소가 저장됩니다.</desc>
+<defs><marker id="dg-gate-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0 0L10 5L0 10z"/></marker></defs>
+
+<rect class="b key" x="20" y="16" width="360" height="60" rx="8"/>
+<text class="t" x="32" y="41">쓰기가 성공했는가</text>
+<text class="s" x="32" y="61">용량 검사 통과, 하위 쓰기 반환값이 0이 아님</text>
+<rect class="b" x="450" y="16" width="330" height="60" rx="8"/>
+<text class="s" x="462" y="41">표는 그대로입니다.</text>
+<text class="s" x="462" y="60">BOOT는 기존 바이트를 읽습니다.</text>
+
+<rect class="b key" x="20" y="100" width="360" height="60" rx="8"/>
+<text class="t" x="32" y="125">리소스 존재 표시가 있는가</text>
+<text class="s" x="32" y="145">레코드 +0이 0이 아님</text>
+<rect class="b" x="450" y="100" width="330" height="60" rx="8"/>
+<text class="s" x="462" y="125">BOOT가 읽기와 진입 주소 저장을</text>
+<text class="s" x="462" y="144">모두 건너뜁니다.</text>
+
+<rect class="b key" x="20" y="184" width="360" height="60" rx="8"/>
+<text class="t" x="32" y="209">조각 안의 mode 값이 2가 아닌가</text>
+<text class="s" x="32" y="229">값 2는 시험에서 직접 넣은 경우</text>
+<rect class="b" x="450" y="184" width="330" height="60" rx="8"/>
+<text class="s" x="462" y="209">읽기를 건너뛰고</text>
+<text class="s" x="462" y="228">진입 주소만 저장합니다.</text>
+
+<rect class="b key" x="20" y="268" width="360" height="60" rx="8"/>
+<text class="t" x="32" y="293">고른 설명자가 새 바이트의 위치인가</text>
+<text class="s" x="32" y="313">시험 표에서는 두 선택값이 같을 때</text>
+<rect class="b" x="450" y="268" width="330" height="60" rx="8"/>
+<text class="s" x="462" y="293">다른 bank의 기존 바이트를 읽습니다.</text>
+<text class="s" x="462" y="312">진입 주소는 저장됩니다.</text>
+
+<rect class="b key" x="20" y="352" width="360" height="60" rx="8"/>
+<text class="t" x="32" y="377">읽기가 성공했는가</text>
+<text class="s" x="32" y="397">읽기 함수의 반환값이 0</text>
+<rect class="b" x="450" y="352" width="330" height="60" rx="8"/>
+<text class="s" x="462" y="377">진입 주소를 저장하지 않고</text>
+<text class="s" x="462" y="396">실패 분기로 갑니다.</text>
+
+<rect class="b ok" x="20" y="440" width="760" height="64" rx="8"/>
+<text class="t" x="32" y="466">새 payload가 RAM의 적재 주소에 도착</text>
+<text class="s" x="32" y="487">진입 주소도 저장됩니다. 그 주소로 들어가는 실행은 하지 않았습니다.</text>
+
+<text class="n" x="212" y="93">예</text>
+<text class="n" x="212" y="177">예</text>
+<text class="n" x="212" y="261">예</text>
+<text class="n" x="212" y="345">예</text>
+<text class="n" x="212" y="431">예</text>
+<text class="n mid" x="415" y="39">아니오</text>
+<text class="n mid" x="415" y="123">아니오</text>
+<text class="n mid" x="415" y="207">값이 2</text>
+<text class="n mid" x="415" y="291">아니오</text>
+<text class="n mid" x="415" y="375">아니오</text>
+
+<path class="e" d="M200 76V98" marker-end="url(#dg-gate-ah)"/>
+<path class="e" d="M200 160V182" marker-end="url(#dg-gate-ah)"/>
+<path class="e" d="M200 244V266" marker-end="url(#dg-gate-ah)"/>
+<path class="e" d="M200 328V350" marker-end="url(#dg-gate-ah)"/>
+<path class="e" d="M200 412V438" marker-end="url(#dg-gate-ah)"/>
+<path class="e" d="M380 46H448" marker-end="url(#dg-gate-ah)"/>
+<path class="e" d="M380 130H448" marker-end="url(#dg-gate-ah)"/>
+<path class="e" d="M380 214H448" marker-end="url(#dg-gate-ah)"/>
+<path class="e" d="M380 298H448" marker-end="url(#dg-gate-ah)"/>
+<path class="e" d="M380 382H448" marker-end="url(#dg-gate-ah)"/>
+</svg>
+</div>
+<ul class="dg-legend"><li><i class="key"></i>통과해야 하는 조건</li><li><i></i>조건이 어긋났을 때 관찰한 결과</li><li><i class="ok"></i>모두 맞았을 때의 결과</li></ul>
+<p>조건과 결과는 모두 원본 코드를 실행해 관찰했습니다. 각 조건을 어긋나게 만든 입력은 시험에서 정해 넣은 값입니다.</p>
+</figure>
+
+<p>넷째 조건은 “두 bank 번호가 같아야 한다”와 조금 다릅니다. 필요한 것은 BOOT가 고른 설명자가 새 바이트의 저장 위치를 가리키는 일입니다. 시험 표는 두 bank의 시작 블록을 다르게 두었기 때문에 번호가 같아야만 이 조건이 맞았습니다. 서로 다른 bank가 같은 시작 블록을 가리키면 번호가 달라도 새 payload를 읽을 수 있습니다. 이 경우는 공개 도구 밖의 로컬 검토 사례로 확인했습니다.</p>
+
+<h3 id="cases">12사례의 조건과 결과</h3>
+<div class="table-wrap"><table class="compact">
+<caption>공개 도구의 12사례 <span class="badge ok">확인</span> (조건은 <span class="badge model">모델</span>)</caption>
+<thead><tr><th class="n">번호</th><th>바꾼 조건</th><th class="n">RTOS 쪽 값</th><th>레코드 +4</th><th>새 payload를 읽었는가</th><th>진입 주소 저장</th></tr></thead>
+<tbody>
+<tr><td class="n">1</td><th scope="row">바꾼 것 없음</th><td class="n">0</td><td>0</td><td><strong>예</strong></td><td>예</td></tr>
+<tr><td class="n">2</td><th scope="row">레코드 값만 1</th><td class="n">0</td><td>1</td><td>아니오. bank 1의 기존 바이트를 읽음</td><td>예</td></tr>
+<tr><td class="n">3</td><th scope="row">상위 16비트만 바꿈, 하위는 0</th><td class="n">0</td><td><code>0xa55a0000</code></td><td><strong>예</strong></td><td>예</td></tr>
+<tr><td class="n">4</td><th scope="row">상위 16비트만 바꿈, 하위는 1</th><td class="n">0</td><td><code>0xffff0001</code></td><td>아니오. bank 1의 기존 바이트를 읽음</td><td>예</td></tr>
+<tr><td class="n">5</td><th scope="row">리소스 존재 표시가 0</th><td class="n">0</td><td>0</td><td>아니오. 읽지 않음</td><td>아니오</td></tr>
+<tr><td class="n">6</td><th scope="row">하위 쓰기가 0을 반환</th><td class="n">0</td><td>0</td><td>아니오. 기존 바이트를 읽음</td><td>예</td></tr>
+<tr><td class="n">7</td><th scope="row">용량 검사에서 거절</th><td class="n">0</td><td>0</td><td>아니오. 하위 쓰기를 부르지 않음</td><td>예</td></tr>
+<tr><td class="n">8</td><th scope="row">BOOT의 읽기가 실패</th><td class="n">0</td><td>0</td><td>아니오</td><td>아니오</td></tr>
+<tr><td class="n">9</td><th scope="row">BOOT 조각에 mode 2를 넣음</th><td class="n">0</td><td>0</td><td>아니오. 읽지 않음</td><td>예</td></tr>
+<tr><td class="n">10</td><th scope="row">배치 준비 함수를 먼저 실행</th><td class="n">0</td><td>1</td><td>아니오. 레코드 +4는 1 그대로</td><td>예</td></tr>
+<tr><td class="n">11</td><th scope="row">시험 코드가 RTOS 쪽 값을 1로 설정</th><td class="n">1</td><td>1</td><td><strong>예</strong></td><td>예</td></tr>
+<tr><td class="n">12</td><th scope="row">쓰기 실패, 기존 블록 수 0·길이 513</th><td class="n">0</td><td>0</td><td>아니오. BOOT가 길이를 올림해 2블록을 읽음</td><td>예</td></tr>
+</tbody></table></div>
+
+<div class="callout warn"><strong class="label">결과를 읽을 때 주의할 점</strong>
+<ul>
+<li><strong>11번은 값을 만드는 코드를 찾았다는 뜻이 아닙니다.</strong> 생성자가 0으로 만든 값을 시험 코드가 1로 덮어쓴 것입니다.</li>
+<li><strong>9번은 조각만 본 것입니다.</strong> BOOT의 실제 진입 경로는 <code>0x0100fffc</code>를 처음 읽었을 때 값이 2이면 리소스 적재 호출 자체를 건너뜁니다. 그 밖의 경우에는 mode 값을 다시 읽어 전역 상태에 저장한 뒤 적재 코드를 부릅니다. 조각에 2를 직접 넣은 결과를 실제 재부팅 경로에서 그 분기에 도달한다는 증거로 쓰지 않습니다(<a href="startup-storage.html#boot-entry">BOOT 진입 조건</a>).</li>
+<li><strong>6·7·8번의 “그대로 남는다”는 시험 설정입니다.</strong> 실패를 주입했을 때 매체와 목적지 바이트를 보존하도록 만든 것은 시험 쪽 정책입니다. 실제 저장 매체에 일부만 기록된 상태나 전원이 끊긴 경우는 다루지 않았습니다.</li>
+<li><strong>실제 표의 값은 관측하지 않았습니다.</strong> 실제 표가 bank 0을 가리킨다면 1번과 같은 상황이므로 두 값은 맞습니다. 그 표를 얻지 못했기 때문에 현재 카메라의 상태로 단정하지 않습니다.</li>
+</ul></div>
+
+<details class="evidence"><summary>함수 구간, 표 주소, 시험 값</summary>
+<div class="table-wrap"><table class="compact">
+<thead><tr><th>역할</th><th>이미지</th><th>구간·주소</th><th>비고</th></tr></thead>
+<tbody>
+<tr><th scope="row"><code>FwPartition</code> 생성자</th><td>RTOS</td><td><code>0x52ff52d4</code>–<code>0x52ff5304</code></td><td>+0x10에 0을 쓰는 명령 <code>0x52ff52f4</code></td></tr>
+<tr><th scope="row">표 주소를 객체에 연결</th><td>RTOS</td><td><code>0x52ff528c</code>–<code>0x52ff52d4</code></td><td><code>0x52ff52c8</code>에서 객체 +0x14에 저장. 표의 기준 주소 <code>0x50b70100</code></td></tr>
+<tr><th scope="row">배치 준비 함수</th><td>RTOS</td><td><code>0x52ff1ea8</code>–<code>0x52ff2060</code></td><td>레코드 +0과 고른 설명자의 +8, +0x0c, +0x10, +0x14, +0x18을 씀</td></tr>
+<tr><th scope="row">쓰기 함수</th><td>RTOS</td><td><code>0x52ff586c</code>–<code>0x52ff59f4</code></td><td>하위 쓰기 <code>0x52ff5708</code>, 블록 수 올림 보조 함수 <code>0x532974a8</code></td></tr>
+<tr><th scope="row">리소스 적재 함수</th><td>BOOT</td><td><code>0x50b00a48</code>–<code>0x50b011b0</code></td><td>실행한 조각은 <code>0x50b00c70</code>–<code>0x50b00cf4</code></td></tr>
+<tr><th scope="row">레코드 +4 읽기</th><td>BOOT</td><td><code>0x50b00c88</code></td><td>하위 16비트만 남기는 명령 <code>0x50b00c90</code></td></tr>
+<tr><th scope="row">블록 읽기 함수</th><td>BOOT</td><td><code>0x50b03f04</code></td><td>실패 분기 <code>0x50b01160</code></td></tr>
+<tr><th scope="row">진입 주소 저장</th><td>BOOT</td><td><code>0x4fffff20</code>, <code>0x50b054c4</code></td><td>설명자 +0x0c의 값</td></tr>
+</tbody></table></div>
+<ul class="small">
+<li>레코드 간격 <code>0x870</code>, bank 간격 <code>0x434</code>. 리소스 1번의 bank 0 설명자에서 길이와 블록 수는 <code>0x50b70984</code>, <code>0x50b70988</code>에, bank 1에서는 <code>0x50b70db8</code>, <code>0x50b70dbc</code>에 기록됐습니다.</li>
+<li>시험 표: bank 0은 시작 블록 100, bank 1은 시작 블록 200. 쓰기 전의 블록 수 2, 길이 1,024. payload 513바이트를 쓰면 길이 513, 블록 수 2가 됩니다.</li>
+<li>대체한 함수: 블록 수 올림 <code>0x532974a8</code>, 블록 크기 getter <code>0x532971dc</code>(512), 진단 출력 <code>0x530fced4</code>, 하위 쓰기 <code>0x52ff5708</code>, BOOT 블록 읽기 <code>0x50b03f04</code>. BOOT가 블록 수 0에서 길이를 올림하는 계산은 원본 명령으로 실행됐습니다.</li>
+<li>쓰기 함수의 용량 검사는 32비트 덧셈과 8비트 리소스 번호를 씁니다. 시험은 작은 값과 리소스 1번만 썼으므로 일반적인 범위 안전성을 확인한 것은 아닙니다.</li>
+<li>구간 해시와 명령별 해시는 <a href="update-bank-selection-evidence.json">update-bank-selection-evidence.json</a>, 사례별 인수와 표 변경 기록은 <a href="update-bank-selection-checks.json">update-bank-selection-checks.json</a>에 있습니다.</li>
+</ul>
+</details>
+</section>
+
+<section id="boundaries">
+<h2>수정한 이미지가 부팅까지 가려면 거쳐야 하는 단계</h2>
+<p class="takeaway">bank 선택은 여러 단계 가운데 하나입니다. 단계마다 확인한 범위가 다르므로, 각 줄의 결과를 더해 “업데이트 전체가 성공한다”고 읽으면 안 됩니다.</p>
+<p>아래 표는 지금까지의 검증을 단계별로 묶은 것입니다. 원본 함수 전체를 실행한 단계도 있고, 고른 조각과 대체 호출로만 본 단계도 있습니다.</p>
+<div class="table-wrap"><table>
+<caption>단계별로 연결한 근거와 남은 부분</caption>
+<thead><tr><th>단계</th><th>지금까지 연결한 근거</th><th>아직 확인하지 못한 부분</th></tr></thead>
+<tbody>
+<tr><th scope="row">패키지 생성·검사</th><td>바꾸지 않고 다시 포장하면 원본과 같습니다. 수정 후보의 헤더와 안팎 체크섬을 원본 코드로 검사했습니다(<a href="package-roundtrip-checks.json">결과</a>).</td><td>기종·버전·정책 조건을 모두 포함한 업데이트 프로그램 전체의 수용</td></tr>
+<tr><th scope="row">교체 코드의 배치</th><td>다시 컴파일한 Q13 행렬 함수를 원래 주소에 놓고, 고른 실제 호출자 경로에서 출력과 보존 상태를 대조했습니다(<a href="recompiled-integration.html">재컴파일 함수 배치·재패키징</a>).</td><td>다른 분기, 실제 스택 여유, 시간 제약을 포함한 장치 실행</td></tr>
+<tr><th scope="row">입력·디코딩</th><td>C 파일명에서 <code>SdDriver</code>와 파일 인터페이스까지, 입력과 출력 버퍼의 공존을 연결했습니다(<a href="update-media-completion.html#media">매체 객체</a> · <a href="update-file-lifetimes.html">버퍼 수명</a>).</td><td>실제 mount, 연속 메모리 가용량, 하드웨어 디코더가 후보를 받아들이는지</td></tr>
+<tr><th scope="row">payload·표·헤더 기록</th><td>payload 다음에 표, 부트 헤더, BOOT 이미지 순서로 기록합니다. 오류 분기와 고른 설명자의 갱신을 확인했습니다(<a href="startup-storage.html#write-order">기록 순서</a>).</td><td>표와 헤더가 일관된 상태로 매체에 남고 다음 부팅에서 다시 읽히는 과정</td></tr>
+<tr><th scope="row">리소스 bank 선택</th><td>RTOS의 객체 +0x10과 BOOT의 레코드 +4 하위 16비트가 따로 고른다는 점을 같은 합성 표로 비교했습니다(<a href="update-bank-selection-checks.json">이 문서의 12사례</a>).</td><td>실제 표의 초깃값, 0이 아닌 값을 만드는 코드, 레코드 +4의 생성·전환 정책</td></tr>
+<tr><th scope="row">M0 reset·A7 진입 준비</th><td><code>0x3ffe08b4</code>의 초기화와 <code>0x3ffe0808</code>의 작업 등록에서 적재 작업, 진입 주소·mode 기록까지 연결했습니다(<a href="startup-storage.html#m0-reset-chain">reset</a>).</td><td><code>0x2000fffc</code>와 <code>0x0100fffc</code>가 같은 메모리인지, 그렇게 만드는 선행 설정</td></tr>
+<tr><th scope="row">BOOT 적재·인증</th><td>표 사본 순서, RTOS 설명자 선택, 카드 응답·전송 검사와 진입 주소 저장을 추적했습니다(<a href="startup-storage.html#boot-auth">BOOT 범위</a>).</td><td>제공된 이미지보다 앞 단계인 Boot ROM, 키, fuse 정책과 전체 인증 조건</td></tr>
+<tr><th scope="row">완료 통지·UI</th><td>메시지 <code>0x2640820b</code>에서 모델 상태, 작업 <code>0x128</code>까지 연결했습니다(<a href="update-media-completion.html#completion">완료 통지</a> · <a href="update-ui-consumer.html">완료 후 UI 작업</a>).</td><td>실제 큐 전달, 종료, 재부팅, 촬영 성공. UI 상태 값만으로는 판정할 수 없습니다.</td></tr>
 </tbody></table></div>
 </section>
-<section id="remaining"><h2>비제로 bank와 record+4의 실제 생산자는 어디까지 좁혔는가</h2>
-<p>공통 record <code>+4</code>를 덮는 경로 자체는 확인했다. 초기 BOOT 표 읽기와 RTOS <code>sys_fwtable</code>의 전체 표 재읽기가 매체 바이트를 RAM에 기록한다. 그러나 이는 외부 값의 전달이며 어떤 함수가 그 값을 생성해 저장했는지는 별도 문제다. 이번 쓰기·layout 경로에서도 해당 필드는 유지됐다. <a href="startup-storage.html#record-reload">전체 표 읽기</a> · <a href="bank-record-evidence.json">주소 근거</a>.</p>
-<p>Log의 FwPartition alias는 index 20–25 설명자를 읽어 별도 캐시를 만들며 Log의 <code>+4</code> store는 heap 상태의 사용 바이트 수였다. SystemControl은 보관한 FwPartition으로 잠금·해제를 요청하고 mutex의 카운터를 갱신한다. 이들을 bank 기록자로 분류하지 않았다. Log clear는 설명자 크기 필드를 지울 수 있으므로 “Log 전체가 표를 보존한다”는 결론도 내리지 않는다. <a href="startup-storage.html#log-system-alias">객체별 alias 분석</a>.</p>
-<p>SRAM remap의 공개 소스 후보도 적용 조건을 확인했다. M8M 설정이나 전용 DT 노드를 요구하는 코드를 SC2000A의 실제 설정으로 대입할 근거가 없다. reset에서 관찰한 <code>0x4dffb208</code>과 <code>0x4dfff0xx</code> 기록을 remap 또는 인증 해제로 명명하지 않았다. 다음 정적 조사 대상은 보드 선택 함수 <code>0x3ffe3594</code>의 선택된 본체, 해당 레지스터의 공식 정의, 선행 ROM 설정이다. <a href="startup-storage.html#sram-remap-guards">기종·DT 조건</a> · <a href="m0-reset-evidence.json">M0 원본 근거</a>.</p>
-<p>bank 쪽의 다음 연결점은 매체 표를 만드는 경로와 계산된 FwPartition alias다. 이미 배제한 Log 상태·mutex·다른 헤더의 같은 오프셋을 다시 bank 기록자로 세지 않는다. 패키지 체크섬 통과로 Boot ROM 인증 부재를 추론하지 않는다.</p>
+
+<section id="remaining">
+<h2>두 선택값을 만드는 코드는 아직 찾지 못했습니다</h2>
+<p class="takeaway">레코드 +4를 “덮어쓰는” 경로는 확인했지만, 그 값을 “만들어 내는” 코드는 찾지 못했습니다. 후보로 보였던 코드 몇 개는 다른 객체를 다루는 것으로 판명됐습니다.</p>
+<div class="table-wrap"><table>
+<caption>살펴본 경로와 판단</caption>
+<thead><tr><th>경로</th><th>확인한 것</th><th>판단</th></tr></thead>
+<tbody>
+<tr><th scope="row">BOOT의 초기 표 읽기, RTOS의 <code>sys_fwtable</code> 전체 표 재읽기</th><td>매체의 바이트를 RAM의 표에 기록합니다. 레코드 +4도 함께 덮입니다(<a href="startup-storage.html#record-reload">전체 표 읽기</a> · <a href="bank-record-evidence.json">주소 근거</a>).</td><td>밖에서 온 값을 옮기는 경로입니다. 그 값을 어떤 함수가 만들어 매체에 저장했는지는 별개의 문제입니다.</td></tr>
+<tr><th scope="row">쓰기 함수와 배치 준비 함수</th><td>레코드 +4는 그대로 남았습니다(이 문서의 12사례).</td><td>선택값을 만드는 코드가 아닙니다.</td></tr>
+<tr><th scope="row">Log의 <code>FwPartition</code> 참조</th><td>리소스 20~25번 설명자를 읽어 별도 캐시를 만듭니다. Log가 쓰는 +4는 heap 상태의 사용 바이트 수였습니다(<a href="startup-storage.html#log-system-alias">객체별 분석</a>).</td><td>bank를 기록하는 코드로 분류하지 않습니다. 다만 Log 지우기는 설명자의 크기 필드를 지울 수 있으므로 “Log가 표를 전혀 바꾸지 않는다”고도 하지 않습니다.</td></tr>
+<tr><th scope="row">SystemControl의 <code>FwPartition</code> 참조</th><td>보관한 포인터로 잠금·해제를 요청하고 mutex의 카운터를 갱신합니다.</td><td>bank를 기록하는 코드로 분류하지 않습니다.</td></tr>
+<tr><th scope="row">SRAM remap의 공개 소스 후보</th><td>M8M 설정이나 전용 device tree 노드를 요구하는 코드입니다. SC2000A의 실제 설정으로 대입할 근거가 없습니다(<a href="startup-storage.html#sram-remap-guards">기종·DT 조건</a> · <a href="m0-reset-evidence.json">M0 원본 근거</a>).</td><td>reset에서 본 <code>0x4dffb208</code>과 <code>0x4dfff0xx</code> 기록을 remap이나 인증 해제라고 이름 붙이지 않습니다.</td></tr>
+</tbody></table></div>
+<p>다음에 볼 곳은 두 가지입니다.</p>
+<ul>
+<li><strong>bank 쪽</strong> — 매체에 놓일 표를 만드는 경로와, 계산으로 얻는 <code>FwPartition</code> 포인터를 쓰는 코드입니다. 이미 제외한 Log 상태, mutex, 다른 헤더의 같은 오프셋을 다시 bank 기록 코드로 세지 않습니다.</li>
+<li><strong>부팅 쪽</strong> — 보드 선택 함수 <code>0x3ffe3594</code>가 고르는 본체, 해당 레지스터의 공식 정의, 선행 ROM의 설정입니다.</li>
+</ul>
+<p>패키지 체크섬을 통과한다는 사실에서 Boot ROM 인증이 없다는 결론을 끌어내지 않습니다.</p>
 </section>
-<section id="verification"><h2>저장 자료와 검증 범위</h2>
-<p>원본 RTOS 생성자·layout·indexed writer와 BOOT의 <code>0x50b00c70–0x50b00cf4</code> 조각을 실행했다. 기존 genuine C 3개를 재사용하고 원본과 해시를 대조했다. 새 함수 복구 수로 세지 않았다. 두 선택 경로를 설명하는 의사코드도 별도로 작성해 로컬에 저장했다. 이 의사코드는 분석자가 작성한 설명이며 원본 소스가 아니다. 공개 자료에는 분석·해시·작성한 합성 시험만 포함한다. <a href="update-bank-selection-evidence.json">범위와 대체 호출</a> · <a href="update-bank-selection-checks.json">검사 결과</a> · <a href="../verify_update_bank_selection.py">재현 도구</a>.</p>
-<p>12사례는 단일 decoded 입력과 분리한 RTOS·BOOT 입력에서 같은 결과를 냈다. 실제 표 commit·reload·reset은 실행하지 않고 같은 RAM 표와 합성 바이트 저장소를 인계했다. BOOT 초기화·다른 리소스·실제 모드 전환·진입점 실행·주변장치·인증은 시험 밖이다. 전송 실패 때 바이트를 보존하는 것은 fixture의 정책이며 장치 동작을 뜻하지 않는다.</p>
-<p>별도 로컬 검토 2사례에서는 다른 bank가 같은 시작 블록을 가리키면 새 payload를 읽을 수 있음을 확인했다. 또한 하위 쓰기 반환값 2는 상위에서도 2로 유지됐다. 쓰기 성공을 boolean 1로 정규화한다고 해석하지 않는다. 이 2사례는 공개 도구의 12사례에 포함하지 않았다.</p>
-<pre>python verify_update_bank_selection.py decoded.bin --output bank-decoded.json
-python verify_update_bank_selection.py rtos.bin --boot boot.bin --output bank-split.json</pre>
-<p>입력 SHA-256을 고정하고 기존 파일·hardlink·dangling symlink 출력 및 assert 비활성 실행을 거부한다. <code>--boot</code>는 분리 RTOS 입력에만 사용한다. M0와 BOOT의 두 주소를 합성 RAM에서 임의로 alias시키지 않았다. 펌웨어 빌드·플래시는 이 분석에서 수행하지 않았다.</p>
-</section></main><footer>정적 분석과 한정된 CPU 재생 결과다. HTML 구조·로컬 링크와 320·390·1280px 화면을 검사했다. 실제 카메라의 업데이트·부팅·복구 성공은 미확정이다.</footer></body></html>
+
+<section id="verification">
+<h2>검증 범위와 한계</h2>
+<p class="takeaway">12사례는 통합 이미지 하나를 넣었을 때와 RTOS·BOOT를 따로 넣었을 때 같은 결과를 냈습니다.</p>
+<ul>
+<li><strong>실행한 코드</strong> — RTOS의 생성자, 배치 준비 함수, 쓰기 함수 전체와 BOOT의 조각 <code>0x50b00c70</code>–<code>0x50b00cf4</code>입니다. 12사례에서 원본 코드로 들어간 횟수는 모두 37번입니다.</li>
+<li><strong>디컴파일 C</strong> — 앞선 분석에서 만든 C 출력 3개를 그대로 다시 쓰고 원본과 해시를 대조했습니다. 새로 복구한 함수로 세지 않았습니다. 두 선택 경로를 설명하는 의사코드를 따로 써서 로컬에 보관하지만, 분석자가 쓴 설명이며 원본 소스가 아닙니다.</li>
+<li><strong>로컬 검토 2사례</strong> — 서로 다른 bank가 같은 시작 블록을 가리키면 새 payload를 읽을 수 있음을 확인했습니다. 하위 쓰기가 2를 돌려주면 상위 함수도 2를 그대로 돌려줬습니다. 쓰기 성공을 1로 바꿔 돌려준다고 해석하면 안 됩니다. 이 2사례는 공개 도구의 12사례에 들어 있지 않습니다.</li>
+<li><strong>공개 범위</strong> — 공개 자료에는 분석, 해시, 직접 만든 합성 시험만 있습니다.</li>
+</ul>
+
+<h3 id="limits">한계</h3>
+<ul>
+<li>표를 저장 장치에 기록하고 다시 읽는 과정과 reset은 실행하지 않았습니다. 같은 RAM 표와 합성 바이트 저장소를 넘겼습니다.</li>
+<li>BOOT의 초기화, 다른 리소스, 실제 mode 전환, 진입 주소로 들어가는 실행, 주변 장치, 인증은 시험 밖입니다.</li>
+<li>합성 매체는 시작 블록 번호별로 바이트를 저장합니다. 시작 블록이 다른 두 구간이 일부만 겹치는 경우는 흉내 내지 못합니다.</li>
+<li>M0가 쓰는 주소와 BOOT가 읽는 주소를 합성 RAM에서 임의로 같은 메모리로 묶지 않았습니다.</li>
+<li>동시에 선택값이 바뀌는 경우는 다루지 않았습니다.</li>
+<li>펌웨어 빌드와 플래시 기록은 하지 않았습니다. 실제 카메라의 업데이트, 부팅, 복구 성공은 확인하지 못했습니다.</li>
+</ul>
+</section>
+
+<section id="reproduce">
+<h2>재현 방법</h2>
+<p>도구는 통합 이미지 <code>decoded.bin</code> 하나, 또는 따로 잘라 낸 <code>rtos.bin</code>과 <code>boot.bin</code>을 입력으로 받습니다. 입력의 SHA-256이 아래 값과 다르면 실행하지 않습니다.</p>
+<dl class="kv">
+<dt>RTOS SHA-256</dt><dd><code class="wrap">342d2f35405e8daf1797dfe431d2e4aa70f4b52a2c242a29df48206672f1dfb4</code></dd>
+<dt>BOOT SHA-256</dt><dd><code class="wrap">0a9c086818b9d6e7531b93710c2cab2782c7f2c32bb5b1c26e3b5b5b69695900</code></dd>
+<dt>통합 이미지 SHA-256</dt><dd><code class="wrap">7ff301d585ef7adcd620a15575faa39b4227cc5a27eaa8d754efe50f667a30f9</code></dd>
+<dt>기준 주소</dt><dd>RTOS <code>0x52500000</code>, BOOT <code>0x50b00000</code>(21,696바이트)</dd>
+<dt>Python 패키지</dt><dd><code>unicorn==2.1.4</code></dd>
+</dl>
+<pre><code>python verify_update_bank_selection.py decoded.bin --output bank-decoded.json
+python verify_update_bank_selection.py rtos.bin --boot boot.bin --output bank-split.json</code></pre>
+<p class="small muted"><code>--boot</code>는 RTOS를 따로 넣을 때만 씁니다. 출력 경로에 기존 파일, hardlink, 대상이 없는 symlink가 있으면 멈춥니다. Python을 <code>-O</code>로 실행해 assert를 끄면 실행을 거부합니다.</p>
+</section>
+
+<section id="refs">
+<h2>근거 파일과 참고 자료</h2>
+<ul class="refs">
+<li><a href="update-bank-selection-evidence.json">update-bank-selection-evidence.json</a> — 원본 구간, 핵심 명령과 해시, 대체 호출, 한계</li>
+<li><a href="update-bank-selection-checks.json">update-bank-selection-checks.json</a> — 12사례의 인수, 표 변경, 읽기 결과</li>
+<li><a href="../verify_update_bank_selection.py">verify_update_bank_selection.py</a> — 재현 도구</li>
+<li><a href="startup-storage.html">M0 reset·SRAM remap·bank</a> — 부팅 단계의 표 읽기, 기록 순서, 후보에서 제외한 코드의 세부 근거</li>
+<li><a href="bank-record-evidence.json">bank-record-evidence.json</a> · <a href="m0-reset-evidence.json">m0-reset-evidence.json</a> · <a href="package-roundtrip-checks.json">package-roundtrip-checks.json</a> — 이 문서가 인용한 다른 단계의 근거</li>
+<li>외부 자료: <a href="https://source.android.com/docs/core/ota/ab">Android Open Source Project의 A/B 시스템 업데이트 문서</a>(두 슬롯과 부트로더의 선택이라는 일반 개념) · <a href="https://github.com/torvalds/linux/blob/v6.12/include/linux/mmc/mmc.h">Linux 커널 6.12 include/linux/mmc/mmc.h</a>(<code>EXT_CSD_PART_CONFIG_ACC_BOOT0</code>이 값 1) · <a href="https://github.com/torvalds/linux/blob/v6.12/Documentation/driver-api/mmc/mmc-dev-parts.rst">Linux 커널 문서 mmc-dev-parts</a>(eMMC 부트 영역 두 개)</li>
+</ul>
+</section>
+
+</main>
+</div>
+<!-- chrome:bottom -->
+<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">펌웨어 업데이트 과정 — 이 주제의 문서</h2><ol><li><a href="guide-update.html">업데이트 과정 안내</a></li><li><a href="update-resources.html">업데이트 검사와 ICONBIN<span>프로젝트·버전·체크섬</span></a></li><li><a href="update-memory.html">입력 로더와 메모리 할당</a></li><li><a href="update-file-lifetimes.html">파일 인터페이스와 버퍼 수명</a></li><li><a href="update-volume-finalization.html">파일 경로·volume·종료 처리</a></li><li><a href="update-media-completion.html">매체 객체와 완료 통지</a></li><li><a href="update-partition-io.html">R 파티션과 sector I/O</a></li><li><a href="update-bank-selection.html" aria-current="page">쓰기 bank와 BOOT 선택</a></li><li><a href="update-ui-consumer.html">완료 후 UI 작업</a></li><li><a href="update-ui-timer.html">UI 타이머와 콜백</a></li><li><a href="update-timer-abi.html">커널 호출과 예약 시각</a></li><li><a href="update-timer-insertion.html">기한 큐 삽입</a></li><li><a href="update-timer-clock.html">타이머 설정과 64비트 카운터</a></li><li><a href="update-timer-irq.html">타이머 등록과 지연 콜백</a></li><li><a href="update-subtick-arithmetic.html">하위 시간의 32비트 산술</a></li><li><a href="update-clock-readers.html">시각 조회 함수</a></li></ol></nav>
+<nav class="pager" aria-label="이전·다음 문서"><a class="prev" href="update-partition-io.html"><small>← 이전</small>R 파티션과 sector I/O</a><a class="next" href="update-ui-consumer.html"><small>다음 →</small>완료 후 UI 작업</a></nav>
+<footer class="sitefoot"><div class="sitefoot-in"><nav aria-label="사이트"><a href="../index.html#map">문서 지도</a><a href="../index.html#levels">검증 수준 읽는 법</a><a href="../glossary.html">용어집</a><a href="research-program.html">세 기종 연구 본부</a><a href="https://github.com/yunhyok/pentax-k3iii-firmware-analysis">GitHub 저장소</a></nav><p>PENTAX K-3 Mark III 펌웨어 2.20 분석 문서. PC에서 수행한 정적 분석과 에뮬레이션 결과이며, 카메라 실기에서 검증한 내용이 아닙니다. 원본 펌웨어와 추출한 독점 코드는 포함하지 않습니다.</p></div></footer>
+<!-- /chrome:bottom -->
+</body>
+</html>

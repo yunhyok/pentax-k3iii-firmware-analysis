@@ -1,0 +1,80 @@
+name: Publish research release
+# A release is described by docs/releases/<tag>.md (first line "# <title>", the rest is the body).
+# Merging a new notes file into main publishes that release; it can also be started by hand.
+on:
+  push:
+    branches: [main]
+    paths: ['docs/releases/v*.md']
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Tag to publish, e.g. v0.2.0 (docs/releases/<tag>.md must exist)'
+        required: true
+permissions:
+  contents: write
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Choose the version
+        id: version
+        env:
+          REQUESTED: ${{ inputs.version }}
+        run: |
+          if [ -n "$REQUESTED" ]; then
+            VERSION="$REQUESTED"
+          else
+            VERSION="$(ls docs/releases/v*.md | sed 's#.*/##; s#\.md$##' | sort -V | tail -n 1)"
+          fi
+          echo "$VERSION" | grep -Eq '^v[0-9]+\.[0-9]+\.[0-9]+$' || { echo "invalid version: $VERSION"; exit 1; }
+          test -f "docs/releases/$VERSION.md" || { echo "docs/releases/$VERSION.md is missing"; exit 1; }
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+      - name: Stop if this release already exists
+        id: existing
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          if gh release view "$VERSION" --repo "$GITHUB_REPOSITORY" > /dev/null 2>&1; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+            echo "Release $VERSION already exists; nothing to do."
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+      - if: steps.existing.outputs.exists == 'false'
+        run: python -m pip install unicorn==2.1.4 numpy==1.26.4 Pillow==10.4.0 tifffile==2023.4.12 opencv-python-headless==4.11.0.86 scikit-image==0.24.0
+      - if: steps.existing.outputs.exists == 'false'
+        run: python inspect_firmware.py --self-test
+      - if: steps.existing.outputs.exists == 'false'
+        run: python verify_findings.py --self-test
+      - if: steps.existing.outputs.exists == 'false'
+        run: python inspect_adobe_profiles.py --self-test
+      - if: steps.existing.outputs.exists == 'false'
+        run: python -m unittest discover -s tests -v
+      - if: steps.existing.outputs.exists == 'false'
+        run: python tools/check_research_program.py
+      - if: steps.existing.outputs.exists == 'false'
+        run: python tools/check_site.py
+      - name: Build the archive
+        if: steps.existing.outputs.exists == 'false'
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          NAME="pentax-k3iii-firmware-analysis-$VERSION"
+          mkdir dist
+          git archive --format=zip --prefix="$NAME/" -o "dist/$NAME.zip" HEAD
+          (cd dist && sha256sum "$NAME.zip" > SHA256SUMS.txt && cat SHA256SUMS.txt)
+      - name: Publish
+        if: steps.existing.outputs.exists == 'false'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          TITLE="$(head -n 1 "docs/releases/$VERSION.md" | sed 's/^# *//')"
+          tail -n +2 "docs/releases/$VERSION.md" > dist/notes.md
+          gh release create "$VERSION" dist/*.zip dist/SHA256SUMS.txt \
+            --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --title "$TITLE" --notes-file dist/notes.md

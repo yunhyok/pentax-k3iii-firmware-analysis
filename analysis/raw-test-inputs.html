@@ -3,56 +3,303 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>PENTAX 3기종 Lightroom 시험용 RAW</title>
-<style>
-:root{color-scheme:light dark;--bg:#f7f8fa;--paper:#fff;--ink:#182332;--muted:#48596b;--line:#d2dbe5;--accent:#124b8e;--soft:#edf3fa}
-@media(prefers-color-scheme:dark){:root{--bg:#111821;--paper:#18222d;--ink:#e8edf4;--muted:#b4c2d2;--line:#405369;--accent:#98c8ff;--soft:#223348}}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.75 system-ui,"Malgun Gothic",sans-serif;word-break:keep-all;overflow-wrap:anywhere}
-header,main{max-width:1060px;margin:auto;padding:clamp(18px,4vw,44px)}main{background:var(--paper);border:1px solid var(--line)}
-h1{font-size:clamp(1.8rem,5vw,2.8rem);line-height:1.25}h2{font-size:1.35rem;margin-top:2.2rem}h2:first-child{margin-top:0}small{color:var(--muted)}a{color:var(--accent);text-underline-offset:.18em}nav a{display:inline-block;margin:4px 16px 4px 0}
-.table-scroll,pre{overflow:auto}table{width:100%;min-width:650px;border-collapse:collapse}th,td{padding:11px 12px;text-align:left;vertical-align:top;border-bottom:1px solid var(--line)}th,pre{background:var(--soft)}pre{padding:16px;font-size:.84rem}code{font-family:ui-monospace,Consolas,monospace}
-</style>
+<title>시험용 RAW 세 장과 시험 DCP 준비 — PENTAX K-3 Mark III 펌웨어 연구</title>
+<meta name="description" content="K-3 Mark III, K-3 II, Q7의 CC0 공개 DNG를 한 장씩 확보해 출처와 해시를 확인하고, 카메라 내장 JPEG를 추출하고, DNG의 색 행렬만 담은 시험 DCP 세 개를 만든 기록입니다.">
+<link rel="stylesheet" href="../assets/site.css">
 </head>
-<body>
-<header>
-<small>2026-11-08 · PENTAX K-3 Mark III · K-3 II · Q7</small>
-<h1>PENTAX 3기종 Lightroom 시험용 RAW</h1>
-<p>raw.pixls.us에서 기종별 CC0 DNG를 한 개씩 확보했다. 세 파일의 원본 해시를 확인하고 내장 JPEG를 추출했다. 첫 Lightroom 시험에는 ColorChecker를 촬영한 K-3 II 표본이 적합하다.</p>
-<nav aria-label="관련 문서"><a href="../index.html">연구 개요</a><a href="lightroom-bridge.html">DCP 형식과 내보내기</a><a href="raw-test-inputs.json">표본별 메타데이터와 SHA-256</a></nav>
+<body data-camera="k3iii">
+<!-- chrome:top -->
+<a class="skip" href="#main">본문 바로가기</a>
+<div class="topbar"><div class="topbar-in"><a class="brand" href="../index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="../index.html" aria-current="true">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="https://yunhyok.github.io/pentax-q7-firmware-analysis/">Q7</a></div><nav class="topnav" aria-label="주제"><a href="../index.html">개요</a><a href="guide-boot.html">부팅·저장소</a><a href="guide-update.html">업데이트</a><a href="guide-rebuild.html">재구축</a><a href="guide-rtos.html">명령·셸</a><a href="guide-color.html">색 처리</a><a href="lightroom-bridge.html" aria-current="true">Lightroom</a><a href="af-foundations.html">AF</a><a href="ui-port-contract.html">UI</a></nav></div></div>
+<nav class="crumbs" aria-label="현재 위치"><ol><li><a href="../index.html">PENTAX K-3 Mark III</a></li><li><a href="lightroom-bridge.html">Lightroom 색 프로파일</a></li><li aria-current="page">시험용 RAW 준비</li></ol></nav>
+<!-- /chrome:top -->
+<header class="page-head">
+<p class="eyebrow">Lightroom 색 프로파일 · 실험 재료</p>
+<h1>시험용 RAW 세 장과 시험 DCP 준비</h1>
+<p class="lead">프로파일을 시험하려면 누구나 내려받을 수 있는 RAW 파일과 그 안에 든 카메라 JPEG가 필요합니다. 세 기종의 공개 RAW를 한 장씩 확보하고, Lightroom에 넣어 볼 첫 시험용 프로파일을 만들었습니다.</p>
 </header>
-<main>
-<h2>원본 출처와 촬영 조건</h2>
-<p>저장소의 세 레코드에 CC0 1.0이 명시되어 있다. 내려받은 85,606,739바이트의 SHA-256을 각 레코드와 대조했다. ExifTool 13.59로 원본의 모델명, 카메라 소프트웨어 버전, CFA 형식과 촬영 설정을 확인했다. 원본·추출 JPEG·실험용 DCP는 로컬 <code>.private/hq-color/samples/</code>에 있다. 공개 기록에는 필요한 메타데이터와 해시를 담았다. <a href="https://raw.pixls.us/">raw.pixls.us</a> · <a href="https://raw.pixls.us/json/getrepository.php?set=all">원본 레코드</a> · <a href="https://creativecommons.org/publicdomain/zero/1.0/">CC0 1.0</a> · <a href="raw-test-inputs.json">검사 기록</a></p>
-<div class="table-scroll"><table>
-<thead><tr><th scope="col">기종</th><th scope="col">원본과 카메라 소프트웨어</th><th scope="col">Custom Image·WB</th><th scope="col">내장 JPEG</th></tr></thead>
+<div class="layout">
+<!-- chrome:toc -->
+<nav class="toc" aria-label="이 문서의 목차"><h2 data-toc="no">이 문서에서</h2><ol><li><a href="#background">배경: 왜 공개 RAW와 그 안의 JPEG가 필요한가</a></li><li><a href="#samples">표본은 기종마다 한 장, 모두 CC0 공개 파일입니다</a></li><li><a href="#test-dcp">카메라 DNG의 행렬만 담은 시험 DCP를 만들었습니다</a></li><li><a href="#usage">이 표본과 시험 DCP가 쓰인 실험</a></li><li><a href="#limits">한계와 남은 과제</a></li><li><a href="#reproduce">재현 방법</a></li><li><a href="#refs">근거 파일과 참고 자료</a></li></ol></nav>
+<!-- /chrome:toc -->
+<main class="doc" id="main">
+<section class="summary">
+<h2 data-toc="no">핵심 요약</h2>
+<ul>
+<li>공개 RAW 저장소 raw.pixls.us에서 <strong>K-3 Mark III, K-3 II, Q7의 DNG를 한 장씩</strong> 받았습니다. 세 파일 모두 CC0(퍼블릭 도메인)이고, 받은 파일의 SHA-256이 저장소 기록과 일치합니다.</li>
+<li>각 DNG에서 <strong>카메라가 넣어 둔 큰 JPEG</strong>를 꺼냈습니다. 같은 노출의 카메라 색이므로 Lightroom 출력과 비교할 기준이 됩니다.</li>
+<li>각 DNG에 카메라가 기록해 둔 색 행렬 두 개와 광원 태그만 옮겨 담아 <strong>시험 DCP 세 개</strong>를 만들었습니다. 색을 맞추는 보정은 들어 있지 않습니다. 직접 만든 프로파일을 Lightroom이 받아들이는지 보는 첫 재료입니다.</li>
+<li>색상표가 찍힌 <strong>K-3 II #1376</strong>이 색 비교에 알맞아 가장 먼저 썼습니다. 세 시험 DCP는 이후 실제 Lightroom Classic에서 선택해 TIFF로 내보내는 데까지 확인했습니다.</li>
+<li>세 표본은 모두 <strong>분석 대상보다 앞선 펌웨어 버전</strong>으로 촬영됐습니다. 최신 펌웨어의 동작은 이 표본만으로 시험할 수 없습니다.</li>
+</ul>
+</section>
+
+<div class="scope">
+<div class="ok"><h3><span class="badge ok">확인</span> 파일을 직접 읽어 확인</h3>
+<ul>
+<li>원본 DNG 세 개의 SHA-256이 저장소 기록과 일치</li>
+<li>ExifTool 13.59로 읽은 기종·펌웨어 버전·촬영 설정·센서 레벨</li>
+<li>내장 JPEG의 크기와 해시, ICC 프로파일이 없다는 사실</li>
+<li>시험 DCP 세 개가 구조 검사를 통과하고 행렬 값이 원본과 일치</li>
+</ul></div>
+<div class="model"><h3><span class="badge model">모델</span> 연구자가 정한 조건</h3>
+<ul>
+<li>시험 DCP에는 DNG의 색 행렬·광원·기종 이름만 넣음</li>
+<li>내장 JPEG의 색공간은 DNG 태그의 선언(또는 규격의 기본값)에 따라 해석</li>
+<li>기종마다 표본은 한 장</li>
+</ul></div>
+<div class="open"><h3><span class="badge open">미확인</span> 확인하지 못한 것</h3>
+<ul>
+<li>내장 JPEG가 카메라에 따로 저장되는 JPEG와 색·톤·압축까지 같은지</li>
+<li>분석 대상 펌웨어 버전으로 찍은 RAW에서의 결과</li>
+<li>Lightroom이 Q7 기종 이름 끝의 공백을 어떻게 다루는지</li>
+<li>PEF 형식 RAW에서의 적용</li>
+</ul></div>
+</div>
+
+<section id="background">
+<h2>배경: 왜 공개 RAW와 그 안의 JPEG가 필요한가</h2>
+<p>Lightroom 프로파일이 카메라의 색에 가까운지 보려면 두 가지가 필요합니다. 하나는 Lightroom에서 현상할 RAW 파일이고, 다른 하나는 같은 순간에 카메라가 직접 만든 JPEG입니다. 이 연구는 누구나 같은 파일로 다시 확인할 수 있도록 공개 저장소의 RAW를 골랐습니다.</p>
+<p>PENTAX 카메라가 저장하는 <dfn title="Digital Negative. Adobe가 공개한 RAW 파일 형식입니다. TIFF 구조를 바탕으로 합니다.">DNG</dfn> 파일은 센서 데이터만 담고 있지 않습니다. 카메라가 현상한 JPEG와 색 변환용 행렬, 촬영 설정이 함께 들어 있습니다. 아래 그림은 한 DNG 파일에서 무엇을 꺼내 어디에 썼는지를 보여 줍니다.</p>
+
+<figure class="diagram">
+<figcaption>DNG 파일 한 개에서 꺼낸 것과 쓰임새</figcaption>
+<div class="dg-scroll">
+<svg class="dg" viewBox="0 0 800 326" role="img" aria-labelledby="dg-dng-title dg-dng-desc">
+<title id="dg-dng-title">DNG 파일의 네 부분과 각 부분에서 얻은 자료</title>
+<desc id="dg-dng-desc">왼쪽은 DNG 파일 한 개의 내부입니다. 위에서부터 색 태그와 썸네일이 든 IFD0, 센서 데이터가 든 SubIFD, 큰 내장 JPEG가 든 SubIFD1, 촬영 설정이 든 MakerNote입니다. 오른쪽으로 화살표가 이어집니다. IFD0의 색 행렬 두 개와 광원 태그로 시험 DCP를 만들었고, SubIFD의 센서 데이터는 Lightroom이 현상하며, SubIFD1의 JPEG는 추출해 비교 기준으로 쓰고, MakerNote에서는 촬영 조건을 읽었습니다.</desc>
+<defs><marker id="dg-dng-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0 0L10 5L0 10z"/></marker></defs>
+<rect class="gf" x="8" y="12" width="372" height="304" rx="12"/>
+<text class="h" x="22" y="34">DNG 파일 한 개</text>
+
+<rect class="b" x="20" y="46" width="348" height="58" rx="8"/>
+<text class="t" x="32" y="70">IFD0 · 색 태그와 썸네일</text>
+<text class="s" x="32" y="90">ColorMatrix1·2, 광원 태그, 썸네일 160×120</text>
+
+<rect class="b" x="20" y="112" width="348" height="58" rx="8"/>
+<text class="t" x="32" y="136">SubIFD · 센서 데이터</text>
+<text class="s" x="32" y="156">현상하기 전의 CFA 값 (12 또는 14비트)</text>
+
+<rect class="b" x="20" y="178" width="348" height="58" rx="8"/>
+<text class="t" x="32" y="202">SubIFD1 · 큰 내장 JPEG</text>
+<text class="s" x="32" y="222">카메라가 현상해 넣어 둔 영상 (PreviewImage)</text>
+
+<rect class="b" x="20" y="244" width="348" height="58" rx="8"/>
+<text class="t" x="32" y="268">MakerNote · 촬영 설정</text>
+<text class="s" x="32" y="288">Custom Image, 화이트밸런스, 작은 미리보기</text>
+
+<rect class="b key" x="486" y="46" width="306" height="58" rx="8"/>
+<text class="t" x="498" y="70">시험 DCP (행렬·광원만)</text>
+<text class="s" x="498" y="90">profile_bridge.py로 생성</text>
+
+<rect class="b mute" x="486" y="112" width="306" height="58" rx="8"/>
+<text class="t" x="498" y="136">Lightroom이 현상할 대상</text>
+<text class="s" x="498" y="156">이후 문서에서 TIFF로 내보냄</text>
+
+<rect class="b ok" x="486" y="178" width="306" height="58" rx="8"/>
+<text class="t" x="498" y="202">비교 기준 JPEG</text>
+<text class="s" x="498" y="222">ExifTool로 추출, 색공간은 태그로 해석</text>
+
+<rect class="b ok" x="486" y="244" width="306" height="58" rx="8"/>
+<text class="t" x="498" y="268">표본의 촬영 조건 기록</text>
+<text class="s" x="498" y="288">색 모드, 화이트밸런스, ISO, 펌웨어 버전</text>
+
+<path class="e" d="M368 75H484" marker-end="url(#dg-dng-ah)"/>
+<path class="e" d="M368 141H484" marker-end="url(#dg-dng-ah)"/>
+<path class="e" d="M368 207H484" marker-end="url(#dg-dng-ah)"/>
+<path class="e" d="M368 273H484" marker-end="url(#dg-dng-ah)"/>
+<text class="n mid" x="427" y="67">행렬 2개와 광원</text>
+<text class="n mid" x="427" y="133">센서 값</text>
+<text class="n mid" x="427" y="199">JPEG 바이트</text>
+<text class="n mid" x="427" y="265">태그 읽기</text>
+</svg>
+</div>
+<ul class="dg-legend"><li><i></i>DNG 안에 있는 자료</li><li><i class="key"></i>이 연구에서 새로 만든 파일</li><li><i class="ok"></i>파일에서 직접 읽어 확인한 것</li></ul>
+</figure>
+<p>DNG와 DCP의 태그가 무엇을 뜻하는지는 <a href="lightroom-bridge.html#background">DCP 생성·검증 개요</a>에서 설명합니다.</p>
+</section>
+
+<section id="samples">
+<h2>표본은 기종마다 한 장, 모두 CC0 공개 파일입니다</h2>
+<p class="takeaway">세 DNG의 출처·해시·촬영 설정을 확인했습니다. 색상표가 찍힌 K-3 II 표본이 색 비교에 가장 알맞습니다.</p>
+<div class="table-wrap"><table>
+<caption>raw.pixls.us에서 받은 세 표본</caption>
+<thead><tr><th>기종</th><th>원본</th><th class="n">촬영 펌웨어</th><th>Custom Image</th><th>화이트밸런스</th><th class="n">ISO</th><th>내장 JPEG의 크기와 색공간</th></tr></thead>
 <tbody>
-<tr><th scope="row">K-3 Mark III</th><td><a href="https://raw.pixls.us/getfile.php/4678/nice/Pentax%20-%20K-3%20Mark%20III%20-%2014bit%20%283:2%29.DNG">#4678 DNG</a><br>32,777,610바이트 · 1.01</td><td>Natural · 자동 WB · ISO 100</td><td>6192×4128 · Adobe RGB</td></tr>
-<tr><th scope="row">K-3 II</th><td><a href="https://raw.pixls.us/getfile.php/1376/nice/Pentax%20-%20K-3%20II%20-%2014bit%20%283:2%29.dng">#1376 DNG</a><br>31,948,334바이트 · 1.10</td><td>Natural · 수동 Kelvin WB · ISO 100<br>저장소 설명에 ColorChecker Passport 명시</td><td>6016×4000 · sRGB</td></tr>
-<tr><th scope="row">Q7</th><td><a href="https://raw.pixls.us/getfile.php/1760/nice/Pentax%20-%20Q7%20-%2012bit%20%284:3%29.DNG">#1760 DNG</a><br>20,880,795바이트 · 1.00</td><td>Bright · 자동 WB · ISO 800</td><td>4000×2664 · sRGB로 해석</td></tr>
-</tbody>
-</table></div>
-<p>큰 JPEG는 모두 <code>SubIFD1:PreviewImage</code>에 들어 있고, 크기는 해당 DNG의 <code>DefaultCropSize</code>와 같다. MakerNote의 작은 미리보기와 구별해 추출했다. Q7은 4000×3000 유효 영역을 세로로 잘라 4000×2664로 기록했다. 추출한 JPEG 세 파일에는 ICC 프로파일이 없다. 두 K-3 기종은 DNG에 기록된 <code>PreviewColorSpace</code>를 쓰고, Q7은 DNG 규격의 컬러 미리보기 기본값인 sRGB를 쓴다. Q7의 MakerNote에도 sRGB가 기록되어 있다. <a href="raw-test-inputs.json">JPEG 크기·색공간·해시</a> · <a href="https://helpx.adobe.com/content/dam/help/en/camera-raw/digital-negative/jcr_content/root/content/flex/items/position/position-par/download_section_733958301/download-1/DNG_Spec_1_7_1_0.pdf">Adobe DNG 규격, 54–55쪽</a></p>
-<p><code>ImageTone</code>과 WB는 원본 MakerNote에서 읽었다. 미리보기 IFD에는 별도의 현상 프로그램이나 설정 식별자가 없다. 내장 JPEG는 같은 노출의 비교 기준으로 쓸 수 있지만, 별도로 저장한 카메라 JPEG와 색·톤 및 압축이 동일한지는 확인할 수 없다. <a href="https://raw.githubusercontent.com/exiftool/exiftool/master/lib/Image/ExifTool/Pentax.pm">ExifTool Pentax 태그 해석</a> · <a href="raw-test-inputs.json">표본 메타데이터</a></p>
+<tr><th scope="row" class="nowrap">K-3 Mark III</th><td class="nowrap"><a href="https://raw.pixls.us/getfile.php/4678/nice/Pentax%20-%20K-3%20Mark%20III%20-%2014bit%20%283:2%29.DNG">#4678 DNG</a></td><td class="n">1.01</td><td>Natural</td><td>자동</td><td class="n">100</td><td class="nowrap">6192×4128<br><span class="small muted">Adobe RGB</span></td></tr>
+<tr><th scope="row" class="nowrap">K-3 II</th><td class="nowrap"><a href="https://raw.pixls.us/getfile.php/1376/nice/Pentax%20-%20K-3%20II%20-%2014bit%20%283:2%29.dng">#1376 DNG</a></td><td class="n">1.10</td><td>Natural</td><td>수동 (색온도 지정)</td><td class="n">100</td><td class="nowrap">6016×4000<br><span class="small muted">sRGB</span></td></tr>
+<tr><th scope="row" class="nowrap">Q7</th><td class="nowrap"><a href="https://raw.pixls.us/getfile.php/1760/nice/Pentax%20-%20Q7%20-%2012bit%20%284:3%29.DNG">#1760 DNG</a></td><td class="n">1.00</td><td>Bright</td><td>자동</td><td class="n">800</td><td class="nowrap">4000×2664<br><span class="small muted">sRGB (DNG 기본값)</span></td></tr>
+</tbody></table></div>
+<p>저장소의 세 레코드에는 CC0 1.0이 명시되어 있습니다. 내려받은 세 파일은 합쳐 85,606,739바이트이고, 각 파일의 SHA-256을 저장소가 공개한 값과 대조했습니다. 기종 이름, 카메라 소프트웨어 버전, 센서의 색 필터 배열, 촬영 설정은 ExifTool 13.59로 원본에서 읽었습니다.</p>
+<p>K-3 II #1376을 첫 색 비교에 고른 이유는 다음과 같습니다.</p>
+<ul>
+<li>저장소 설명에 ColorChecker Passport가 찍혀 있다고 적혀 있습니다.</li>
+<li>색 모드가 Natural이고 화이트밸런스를 색온도로 고정했으며 감도가 ISO 100입니다.</li>
+<li>내장 JPEG가 sRGB이고 기본 크롭과 크기가 같습니다.</li>
+<li>Lightroom에 이 기종의 Camera Natural 프로파일이 있어서 나란히 비교할 수 있습니다.</li>
+</ul>
 
-<h2>실제 카메라 DNG의 행렬로 만든 시험용 DCP</h2>
-<p>세 DNG에서 <code>ColorMatrix1/2</code>와 <code>CalibrationIlluminant1/2</code>를 읽었다. 두 광원은 A(17)와 D65(21)다. RAW의 검정·백색 레벨과 <code>AsShotNeutral</code>도 확보했다. K-3 Mark III는 14비트, 검정 64·백색 16379, K-3 II는 14비트, 검정 1·백색 16317, Q7은 12비트, 검정 0·백색 3983이었다. 이 수치는 해당 촬영 파일의 값이다. <a href="raw-test-inputs.json">CFA·레벨·WB 기록</a></p>
-<p>원본 DNG의 행렬과 광원을 입력해 기종별 실험용 DCP 세 개를 만들었다. 이 파일은 XYZ에서 기준 카메라 색공간으로 변환하는 행렬만 담으며, 사용 목적은 실제 카메라 행렬을 내보내고 Lightroom의 프로파일 표시를 확인하는 것이다. 색을 맞추기 위한 LookTable이나 톤 곡선은 아직 산출하지 않았다. ExifTool은 세 파일에서 <code>Validate: 0 0 0</code>을 반환했고, 재판독한 행렬 값은 원본에서 읽은 값과 원소별 5×10<sup>−7</sup> 이내로 일치했다. 기존 검사기로 행렬 태그와 모델명도 확인했다. <a href="raw-test-inputs.json">실험용 DCP 해시·오차</a> · <a href="../tools/profile_bridge.py">내보내기 도구</a></p>
-<p>Q7은 DNG의 <code>UniqueCameraModel</code> 값이 끝에 공백 한 칸을 포함한다. 실험용 DCP는 원본 문자열을 그대로 보존했고, 설치된 Adobe Standard DCP에는 그 공백이 없다. Lightroom이 두 표기를 어떻게 처리하는지는 Q7을 열어 확인할 항목이다. <a href="raw-test-inputs.json">Q7 원본·시험 DCP 기록</a> · <a href="lightroom-bridge.json">Adobe Standard 모델명 기록</a></p>
+<h3 id="firmware-versions">표본의 펌웨어 버전은 분석 대상과 다릅니다</h3>
+<div class="table-wrap"><table class="fit">
+<caption>표본을 찍은 카메라의 펌웨어와 세 기종 연구가 분석한 펌웨어</caption>
+<thead><tr><th>기종</th><th class="n">표본의 촬영 펌웨어</th><th class="n">분석한 펌웨어</th><th>DNG의 <code>Software</code> 태그</th></tr></thead>
+<tbody>
+<tr><th scope="row">K-3 Mark III</th><td class="n">1.01</td><td class="n">2.20</td><td><code>PENTAX K-3 Mark III Ver. 1.01</code></td></tr>
+<tr><th scope="row">K-3 II</th><td class="n">1.10</td><td class="n">1.12</td><td><code>PENTAX K-3 II Ver. 1.10</code></td></tr>
+<tr><th scope="row">Q7</th><td class="n">1.00</td><td class="n">1.01</td><td><code>PENTAX Q7     Ver 1.00</code></td></tr>
+</tbody></table></div>
+<div class="callout warn"><strong class="label">주의</strong>
+<p>표본으로 확인할 수 있는 것은 그 표본을 찍은 펌웨어의 결과입니다. 뒤 버전에서 추가되거나 바뀐 색 모드와 동작은 이 표본만으로 시험할 수 없습니다. 펌웨어 분석에서 찾은 내용과 표본 측정을 연결하려면 분석 대상 버전으로 찍은 RAW가 따로 필요합니다.</p></div>
 
-<h2>첫 Lightroom 비교</h2>
-<ol>
-<li>K-3 II #1376을 열고 Adobe Standard와 Camera Natural, 그리고 <code>PENTAX RAW matrix test 1376</code>을 선택할 수 있는지 각각 기록한다. 기준 RAW와 시험 DCP를 같은 Lightroom 버전에서 사용한다.</li>
-<li>세 현상에서 Process Version, As Shot WB, 노출, 자르기와 자동 보정 설정을 고정한다. 출력은 같은 해상도와 sRGB ICC를 지정한 16비트 TIFF로 저장한다. 내장 JPEG는 DNG의 색공간 선언에 따라 sRGB로 해석한다.</li>
-<li>JPEG와 TIFF의 방향과 크롭을 맞춘 다음 각 ColorChecker 패치의 안쪽을 표본으로 삼는다. 두 출력을 같은 ICC 색관리로 CIELAB D50으로 변환해 ΔE<sub>00</sub>의 중앙값과 상위 분위, 중성 패치 오차를 기록한다. 이 비교는 #1376의 미리보기와의 차이를 측정한다. 실제 모드 일치 여부는 기종별 독립 장면과 조명·노출 변화, 카메라에서 별도로 현상한 출력으로 검증해야 한다.</li>
-</ol>
-<p>표본의 카메라 소프트웨어는 위 표의 버전이다. 최신 펌웨어에서 추가된 모드나 동작은 이 표본만으로 시험할 수 없다. 이번 단계에서 완료한 범위는 원본·미리보기·DCP 구조 확인이다.</p>
+<h3 id="previews">내장 JPEG: 카메라가 만든 비교 기준</h3>
+<p>각 DNG에는 미리보기 JPEG가 두 개 들어 있습니다. 비교에 쓴 것은 <code>SubIFD1:PreviewImage</code>에 든 큰 JPEG입니다. 크기가 그 DNG의 <code>DefaultCropSize</code>와 같아서 Lightroom이 내보내는 영상과 화소 수가 맞습니다. MakerNote에 든 작은 미리보기(<code>Pentax:PreviewImage</code>)와 구별해 추출했습니다.</p>
+<ul>
+<li><strong>색공간</strong> — 추출한 JPEG 세 개에는 ICC 프로파일이 없습니다. K-3 Mark III와 K-3 II는 DNG의 <code>PreviewColorSpace</code> 태그에 적힌 값(각각 Adobe RGB, sRGB)을 따릅니다. Q7의 DNG에는 이 태그가 없으므로 DNG 규격이 컬러 미리보기의 기본값으로 정한 sRGB를 씁니다. Q7의 MakerNote에도 sRGB가 기록되어 있습니다.</li>
+<li><strong>촬영 설정</strong> — 색 모드(<code>ImageTone</code>)와 화이트밸런스는 원본 MakerNote에서 읽었습니다. 미리보기가 든 IFD에는 어떤 프로그램이 어떤 설정으로 현상했는지를 알려 주는 식별 태그가 없습니다.</li>
+<li><strong>한계</strong> — 내장 JPEG는 같은 노출의 비교 기준으로 쓸 수 있습니다. 다만 카메라에 따로 저장되는 JPEG와 색·톤·압축이 같은지는 이 파일만으로 확인할 수 없습니다.</li>
+</ul>
 
-<h2>원본에서 다시 추출하기</h2>
-<pre><code>$raw = '.private/hq-color/samples/pentax-k3ii-1376.dng'
-Get-FileHash -Algorithm SHA256 -LiteralPath $raw
-exiftool -G1 -s -Model -UniqueCameraModel -Software -ImageTone -WhiteBalance -ColorSpace -PreviewColorSpace -DefaultCropSize -BlackLevel -WhiteLevel -AsShotNeutral -CalibrationIlluminant1 -CalibrationIlluminant2 $raw
-exiftool -b -SubIFD1:PreviewImage -w %d%f-preview.jpg $raw</code></pre>
-<p>행렬 기반 시험 DCP의 JSON과 DCP는 같은 폴더의 <code>*-matrix-test.json</code>과 <code>*-matrix-test.dcp</code>에 있다. <a href="raw-test-inputs.json">파일명과 해시</a></p>
+<h3 id="levels">센서 레벨과 크롭</h3>
+<div class="table-wrap"><table>
+<caption>DNG에서 읽은 센서 값의 범위. 이 촬영 파일의 값입니다.</caption>
+<thead><tr><th>기종</th><th class="n">비트 수</th><th class="n">검정 레벨</th><th class="n">백색 레벨</th><th class="n">AsShotNeutral (R / G / B)</th><th class="n">BaselineExposure</th></tr></thead>
+<tbody>
+<tr><th scope="row">K-3 Mark III</th><td class="n">14비트</td><td class="n">64</td><td class="n">16,379</td><td class="n">0.4063 / 1.0000 / 0.5912</td><td class="n">−0.837 EV</td></tr>
+<tr><th scope="row">K-3 II</th><td class="n">14비트</td><td class="n">1</td><td class="n">16,317</td><td class="n">0.4563 / 1.0000 / 0.6938</td><td class="n">−0.506 EV</td></tr>
+<tr><th scope="row">Q7</th><td class="n">12비트</td><td class="n">0</td><td class="n">3,983</td><td class="n">0.6400 / 1.0000 / 0.4211</td><td class="n">+0.500 EV</td></tr>
+</tbody></table></div>
+<div class="table-wrap"><table>
+<caption>DNG에 기록된 영상 영역 (가로×세로, 픽셀)</caption>
+<thead><tr><th>기종</th><th class="n">CFA 배열 전체</th><th class="n">활성 영역</th><th class="n">기본 크롭 시작</th><th class="n">기본 크롭 크기</th></tr></thead>
+<tbody>
+<tr><th scope="row">K-3 Mark III</th><td class="n">6304×4224</td><td class="n">6224×4160</td><td class="n">(28, 24)</td><td class="n">6192×4128</td></tr>
+<tr><th scope="row">K-3 II</th><td class="n">6080×4032</td><td class="n">6028×4024</td><td class="n">(6, 12)</td><td class="n">6016×4000</td></tr>
+<tr><th scope="row">Q7</th><td class="n">4064×3000</td><td class="n">4000×3000</td><td class="n">(0, 168)</td><td class="n">4000×2664</td></tr>
+</tbody></table></div>
+<p class="small muted">검정 레벨은 네 CFA 위상의 값이 같아 하나로 적었습니다. 기본 크롭 시작점은 활성 영역의 왼쪽 위를 기준으로 한 (가로, 세로)입니다. 세 표본 모두 색 필터 배열은 RGGB(<code>CFAPattern2</code> = 0 1 1 2), 보정 광원은 A(17)와 D65(21), <code>AnalogBalance</code>는 1 1 1, 방향 태그는 1입니다.</p>
+<p>Q7은 4000×3000 활성 영역에서 위아래 168행씩을 뺀 4000×2664를 기본 크롭으로 기록했습니다. 내장 JPEG도 같은 크기입니다.</p>
+
+<details class="evidence"><summary>원본과 내장 JPEG의 해시, 촬영 정보</summary>
+<div class="table-wrap"><table class="compact">
+<caption>원본 DNG</caption>
+<thead><tr><th>표본</th><th class="n">크기(바이트)</th><th>SHA-256</th><th class="n">저장소 등록일</th><th class="n">셔터</th><th class="n">조리개</th><th class="n">DNG 버전</th><th><code>RawDevelopmentProcess</code></th></tr></thead>
+<tbody>
+<tr><th scope="row">K-3 Mark III #4678</th><td class="n">32,777,610</td><td><code class="wrap">1e3352ccba0db428fd2a183718fc857fb283b1d43ad704305e5094c19e0a0428</code></td><td class="n">2021-05-16</td><td class="n">1/1000초</td><td class="n">f/4</td><td class="n">1.2.0.0</td><td>20 (K-3III)</td></tr>
+<tr><th scope="row">K-3 II #1376</th><td class="n">31,948,334</td><td><code class="wrap">992c969286dc06b1690128a7b14ea74c5b5a46209b0fbf21e83df00807b050b9</code></td><td class="n">2017-05-01</td><td class="n">1/320초</td><td class="n">f/10</td><td class="n">1.2.0.0</td><td>13 (K-3,K-3II)</td></tr>
+<tr><th scope="row">Q7 #1760</th><td class="n">20,880,795</td><td><code class="wrap">577eac8d03419bb82714169dd532d58efc82a0abf928d28e4641f1ed5d56c350</code></td><td class="n">2017-10-02</td><td class="n">1/4초</td><td class="n">f/1.9</td><td class="n">1.1.0.0</td><td>12 (MX-1,Q-S1,Q7)</td></tr>
+</tbody></table></div>
+<div class="table-wrap"><table class="compact">
+<caption>추출한 미리보기 JPEG</caption>
+<thead><tr><th>기종</th><th>태그</th><th class="n">크기</th><th class="n">바이트</th><th>SHA-256</th></tr></thead>
+<tbody>
+<tr><th scope="row" rowspan="2">K-3 Mark III</th><td><code>SubIFD1:PreviewImage</code></td><td class="n">6192×4128</td><td class="n">3,162,506</td><td><code class="wrap">4ef494fa688a2e090667fcbc37637cefdf58da4aa67087e0c62290c934121818</code></td></tr><tr><td><code>Pentax:PreviewImage</code></td><td class="n">720×480</td><td class="n">57,115</td><td><code class="wrap">36565ddabf3eb3b26f8a8f979cf4ba21495c4cc7721b869b138effb3fe4c6049</code></td></tr>
+<tr><th scope="row" rowspan="2">K-3 II</th><td><code>SubIFD1:PreviewImage</code></td><td class="n">6016×4000</td><td class="n">2,900,622</td><td><code class="wrap">04609f9896a82b2277637a20999f2e3716b389ef9de1717af0e97fd41b427831</code></td></tr><tr><td><code>Pentax:PreviewImage</code></td><td class="n">720×480</td><td class="n">56,334</td><td><code class="wrap">a7335ce28ccc65d45e9da7fb53d1099b35f37756d056a18af9923bcdb074246f</code></td></tr>
+<tr><th scope="row" rowspan="2">Q7</th><td><code>SubIFD1:PreviewImage</code></td><td class="n">4000×2664</td><td class="n">2,410,157</td><td><code class="wrap">0e5a1cbf4a1b0add93a486ce42c8e87a1e2b1dd597c66f5f22e1dc7dcdccf26e</code></td></tr><tr><td><code>Pentax:PreviewImage</code></td><td class="n">640×480</td><td class="n">18,168</td><td><code class="wrap">7dc35dcd9934c174f8b1034a903ff7b9e178cb11626ccb2dd5cce60d4adf753e</code></td></tr>
+</tbody></table></div>
+<p class="small">원본, 추출한 JPEG, 시험 DCP는 공개하지 않는 로컬 폴더 <code>.private/hq-color/samples/</code>에 있습니다. 공개 기록 <a href="raw-test-inputs.json">raw-test-inputs.json</a>에는 개인 정보가 없는 메타데이터와 해시만 담았습니다. 행렬 값, DCP 내용, 미리보기, 원본 파일은 들어 있지 않습니다.</p>
+</details>
+</section>
+
+<section id="test-dcp">
+<h2>카메라 DNG의 행렬만 담은 시험 DCP를 만들었습니다</h2>
+<p class="takeaway">세 DNG의 색 행렬과 광원 태그를 그대로 옮긴 DCP 세 개가 구조 검사를 통과했습니다. 색을 맞춘 프로파일이 아니라 Lightroom에 넣어 볼 첫 시험 재료입니다.</p>
+<p>세 DNG에는 모두 <code>ColorMatrix1</code>, <code>ColorMatrix2</code>, <code>CalibrationIlluminant1</code>, <code>CalibrationIlluminant2</code>가 들어 있습니다. 두 광원은 표준 광원 A(17)와 D65(21)입니다. 행렬은 XYZ 색 좌표를 카메라 고유의 색 좌표로 바꾸는 방향이고 태그마다 계수가 9개입니다. <code>ForwardMatrix1/2</code>와 <code>CameraCalibration1/2</code>는 세 파일 모두에 없습니다.</p>
+<p>이 값과 기종 이름을 <a href="../tools/profile_bridge.py">내보내기 도구</a>에 넣어 기종별 시험 DCP를 만들었습니다. Lightroom 프로파일 목록에 보이는 이름은 <code>PENTAX RAW matrix test</code> 뒤에 표본 번호를 붙인 것입니다.</p>
+<div class="table-wrap"><table>
+<caption>기종별 시험 DCP</caption>
+<thead><tr><th>기종</th><th>파일</th><th class="n">크기(바이트)</th><th class="n">행렬 원소의 최대 오차</th><th>ExifTool <code>Validate</code></th></tr></thead>
+<tbody>
+<tr><th scope="row">K-3 Mark III</th><td><code>pentax-k3iii-4678-matrix-test.dcp</code></td><td class="n">278</td><td class="n">4.65×10<sup>−7</sup></td><td><code>0 0 0</code></td></tr>
+<tr><th scope="row">K-3 II</th><td><code>pentax-k3ii-1376-matrix-test.dcp</code></td><td class="n">272</td><td class="n">4.94×10<sup>−7</sup></td><td><code>0 0 0</code></td></tr>
+<tr><th scope="row">Q7</th><td><code>pentax-q7-1760-matrix-test.dcp</code></td><td class="n">270</td><td class="n">4.95×10<sup>−7</sup></td><td><code>0 0 0</code></td></tr>
+</tbody></table></div>
+<ul>
+<li><strong>들어 있는 것</strong> — 기종 이름(<code>UniqueCameraModel</code>), 프로파일 이름, 색 행렬 두 개, 광원 두 개입니다.</li>
+<li><strong>들어 있지 않은 것</strong> — 색을 다듬는 <code>ProfileLookTable</code>과 <code>ProfileHueSatMap</code>, 밝기 곡선 <code>ProfileToneCurve</code>, <code>ForwardMatrix</code>입니다. 카메라 JPEG의 색에 맞추는 값은 아직 산출하지 않았습니다.</li>
+<li><strong>검사 결과</strong> — ExifTool은 세 파일 모두에서 <code>Validate: 0 0 0</code>(경고·오류 없음)을 돌려줬습니다. DCP에서 다시 읽은 행렬 값은 원본 DNG에서 읽은 값과 원소별로 5×10<sup>−7</sup> 이내로 일치했습니다. 저장소의 검사기(<a href="../inspect_adobe_profiles.py">inspect_adobe_profiles.py</a>)로 행렬 태그와 기종 이름도 확인했습니다.</li>
+</ul>
+
+<div class="callout"><strong class="label">Q7의 기종 이름 끝에는 공백이 있습니다</strong>
+<p>Q7의 DNG에 적힌 <code>UniqueCameraModel</code>은 <code>PENTAX Q7</code> 뒤에 공백이 한 칸 붙어 있습니다. 시험 DCP는 이 문자열을 그대로 보존했습니다. Lightroom에 설치된 Adobe Standard DCP의 기종 이름에는 그 공백이 없습니다. 공백을 보존한 시험 DCP는 이후 Lightroom에서 Q7 DNG에 선택할 수 있었습니다(<a href="lightroom-model-exports.html">K-3 III·Q7 DCP 내보내기</a>). 공백을 뺀 시험 DCP는 만들어 보지 않았으므로, Lightroom이 두 표기를 같은 기종으로 다루는 규칙은 이 자료로 판정할 수 없습니다.</p></div>
+
+<details class="evidence"><summary>시험 DCP와 입력 JSON의 해시</summary>
+<div class="table-wrap"><table class="compact">
+<thead><tr><th>기종</th><th>파일</th><th>SHA-256</th></tr></thead>
+<tbody>
+<tr><th scope="row" rowspan="2">K-3 Mark III</th><td>입력 JSON <code>pentax-k3iii-4678-matrix-test.json</code></td><td><code class="wrap">d0e05dd2791020e7214995ffd1c2101f227c03aeda301a7f9389309794d97184</code></td></tr><tr><td>출력 DCP <code>pentax-k3iii-4678-matrix-test.dcp</code></td><td><code class="wrap">975eba5a74ad092d97919bdafd97efb56e9ea6aa4b56d57266743fca43f21772</code></td></tr>
+<tr><th scope="row" rowspan="2">K-3 II</th><td>입력 JSON <code>pentax-k3ii-1376-matrix-test.json</code></td><td><code class="wrap">dcdeca66bcc3f2ea0ebdb2a91856aea3c794244ada89994eed67f3914013a04d</code></td></tr><tr><td>출력 DCP <code>pentax-k3ii-1376-matrix-test.dcp</code></td><td><code class="wrap">6aa402a77f6b41f9fa37e99f1bd6911447e74c112eb7f7601c8c3bb116570ee4</code></td></tr>
+<tr><th scope="row" rowspan="2">Q7</th><td>입력 JSON <code>pentax-q7-1760-matrix-test.json</code></td><td><code class="wrap">3b57b8f46523d3d91ba9cddded5183750e9d267046a55c0ee5ef9b2a60a01396</code></td></tr><tr><td>출력 DCP <code>pentax-q7-1760-matrix-test.dcp</code></td><td><code class="wrap">fe68b3460a400cf00bf9dfbe49f06f5f1c2cbc1010642d214df375d60504729e</code></td></tr>
+</tbody></table></div>
+<p class="small">입력 JSON(<code>*-matrix-test.json</code>)과 출력 DCP(<code>*-matrix-test.dcp</code>)는 표본과 같은 비공개 폴더에 있습니다. K-3 II 표본의 입력 JSON은 <a href="lightroom-matrix-1376.json">lightroom-matrix-1376.json</a>으로 공개되어 있습니다.</p>
+</details>
+</section>
+
+<section id="usage">
+<h2>이 표본과 시험 DCP가 쓰인 실험</h2>
+<p class="takeaway">K-3 II 표본으로는 카메라 JPEG와의 색 차이까지 쟀고, K-3 Mark III와 Q7 표본으로는 시험 DCP가 Lightroom에서 선택되고 내보내지는지까지 확인했습니다.</p>
+<div class="table-wrap"><table>
+<caption>표본별로 진행한 Lightroom 실험</caption>
+<thead><tr><th>표본</th><th>한 일</th><th>문서</th></tr></thead>
+<tbody>
+<tr><th scope="row">K-3 II #1376</th><td>Adobe Standard, Camera Natural, 시험 DCP로 현상한 TIFF 6개를 내장 Natural JPEG와 24개 패치로 비교</td><td><a href="color-comparison-protocol.html">ColorChecker 비교 절차</a> · <a href="lightroom-render-comparison.html">실제 TIFF 6개 비교</a></td></tr>
+<tr><th scope="row">K-3 II #1376</th><td>시험 DCP에 톤 곡선이나 LookTable을 하나씩 더해 Lightroom 출력이 어떻게 달라지는지 대조</td><td><a href="lightroom-tone-comparison.html">톤 곡선 비교</a> · <a href="lightroom-look-controls.html">LookTable 대조 실험</a></td></tr>
+<tr><th scope="row">K-3 Mark III #4678<br>Q7 #1760</th><td>시험 DCP를 Lightroom에서 선택해 16비트 TIFF로 내보내고 파일 안의 프로파일 기록을 확인</td><td><a href="lightroom-model-exports.html">K-3 III·Q7 DCP 내보내기</a> · <a href="lightroom-profile-fingerprints.html">프로파일 지문 재현</a></td></tr>
+</tbody></table></div>
+<p>모든 실험에서 같은 원칙을 지켰습니다. 기준 RAW와 시험 DCP를 같은 Lightroom 버전에서 쓰고, Process Version·As Shot 화이트밸런스·노출·자르기·자동 보정을 고정하며, 같은 해상도의 16비트 TIFF에 ICC를 넣어 저장합니다. 내장 JPEG는 DNG의 색공간 선언에 따라 해석합니다.</p>
+<div class="callout"><strong class="label">근거 JSON의 기록 시점</strong>
+<p><a href="raw-test-inputs.json">raw-test-inputs.json</a>의 <code>render_validation</code>과 <code>lightroom_catalog_import_or_install</code> 항목은 “not run”으로 남아 있습니다. 이 JSON은 표본과 시험 DCP를 준비한 시점의 기록이고, 그 뒤의 Lightroom 실험 결과는 위 표의 문서와 각 문서의 JSON에 따로 기록했습니다.</p></div>
+</section>
+
+<section id="limits">
+<h2>한계와 남은 과제</h2>
+<ul>
+<li><strong>기종당 한 장</strong> — 장면, 조명, 노출이 하나씩뿐입니다. 색 모드가 실제로 맞는지는 기종별로 독립된 장면과 조명·노출 변화, 카메라에서 따로 현상한 출력으로 검증해야 합니다.</li>
+<li><strong>색 비교는 K-3 II만</strong> — 색상표가 찍힌 표본은 K-3 II #1376뿐입니다. K-3 Mark III(Natural)와 Q7(Bright) 표본의 내장 JPEG와 Lightroom 출력의 색 차이는 아직 재지 않았습니다.</li>
+<li><strong>펌웨어 버전</strong> — 세 표본 모두 분석 대상보다 앞선 버전으로 촬영됐습니다.</li>
+<li><strong>시험 DCP의 성격</strong> — 행렬과 광원만 담은 프로파일입니다. 카메라 색에 맞춘 LookTable과 톤 곡선은 아직 없습니다.</li>
+<li><strong>DNG만 시험</strong> — 세 표본 모두 DNG입니다. PEF 형식에서의 적용은 따로 검증해야 합니다.</li>
+</ul>
+</section>
+
+<section id="reproduce">
+<h2>재현 방법</h2>
+<p>원본은 위 표의 링크에서 받습니다. 아래는 K-3 II 표본을 예로 든 명령입니다. 먼저 파일의 SHA-256을 확인하고, ExifTool로 메타데이터를 읽은 뒤 큰 미리보기를 추출합니다.</p>
+<pre><code>python -c "import hashlib,sys; print(hashlib.sha256(open(sys.argv[1],'rb').read()).hexdigest())" \
+  .private/hq-color/samples/pentax-k3ii-1376.dng
+
+exiftool -G1 -s -Model -UniqueCameraModel -Software -ImageTone -WhiteBalance \
+  -ColorSpace -PreviewColorSpace -DefaultCropSize -BlackLevel -WhiteLevel \
+  -AsShotNeutral -CalibrationIlluminant1 -CalibrationIlluminant2 \
+  .private/hq-color/samples/pentax-k3ii-1376.dng
+
+exiftool -b -SubIFD1:PreviewImage -w %d%f-preview.jpg \
+  .private/hq-color/samples/pentax-k3ii-1376.dng</code></pre>
+<p>K-3 II의 시험 DCP는 공개된 입력 JSON으로 다시 만들 수 있습니다. 출력 경로에 파일이 이미 있으면 도구가 멈춥니다. 만들어진 파일의 SHA-256이 위 접이식 표의 값과 같아야 합니다.</p>
+<pre><code>python tools/profile_bridge.py analysis/lightroom-matrix-1376.json .private/pentax-k3ii-1376-matrix-test.dcp
+python inspect_adobe_profiles.py .private/pentax-k3ii-1376-matrix-test.dcp
+exiftool -validate -Warning -Error -FileType .private/pentax-k3ii-1376-matrix-test.dcp</code></pre>
+<p class="small muted">기록일은 2026-11-08입니다. 나머지 두 기종의 입력 JSON은 공개 자료에 들어 있지 않습니다. 같은 방법으로 DNG의 태그를 읽어 입력 JSON을 만들면 됩니다. 입력 형식은 <a href="lightroom-bridge.html#exporter">DCP 생성·검증 개요</a>에 있습니다.</p>
+</section>
+
+<section id="refs">
+<h2>근거 파일과 참고 자료</h2>
+<ul class="refs">
+<li><a href="raw-test-inputs.json">raw-test-inputs.json</a> — 표본별 메타데이터, 내장 JPEG와 시험 DCP의 해시, 행렬 왕복 오차</li>
+<li><a href="lightroom-matrix-1376.json">lightroom-matrix-1376.json</a> — K-3 II #1376의 기종 이름·행렬·광원으로 만든 시험 DCP 입력</li>
+<li><a href="../tools/profile_bridge.py">tools/profile_bridge.py</a> — DCP 내보내기 도구 · <a href="../inspect_adobe_profiles.py">inspect_adobe_profiles.py</a> — DCP 구조 검사기</li>
+<li><a href="lightroom-bridge.json">lightroom-bridge.json</a> — 설치된 Adobe Standard DCP의 기종 이름 기록(Q7의 공백 비교)</li>
+<li>표본 출처: <a href="https://raw.pixls.us/">raw.pixls.us</a> · <a href="https://raw.pixls.us/json/getrepository.php?set=all">저장소의 원본 레코드 목록(해시·라이선스·설명)</a> · <a href="https://creativecommons.org/publicdomain/zero/1.0/">CC0 1.0</a></li>
+<li>DNG: <a href="https://helpx.adobe.com/content/dam/help/en/camera-raw/digital-negative/jcr_content/root/content/flex/items/position/position-par/download_section_733958301/download-1/DNG_Spec_1_7_1_0.pdf">Adobe DNG 규격 1.7.1.0</a> — <a href="https://helpx.adobe.com/content/dam/help/en/camera-raw/digital-negative/jcr_content/root/content/flex/items/position/position-par/download_section_733958301/download-1/DNG_Spec_1_7_1_0.pdf#page=54">PreviewColorSpace와 기본값(54~55쪽)</a>, <a href="https://helpx.adobe.com/content/dam/help/en/camera-raw/digital-negative/jcr_content/root/content/flex/items/position/position-par/download_section_733958301/download-1/DNG_Spec_1_7_1_0.pdf#page=31">DefaultCropOrigin·DefaultCropSize(31쪽)</a>, <a href="https://helpx.adobe.com/content/dam/help/en/camera-raw/digital-negative/jcr_content/root/content/flex/items/position/position-par/download_section_733958301/download-1/DNG_Spec_1_7_1_0.pdf#page=32">ColorMatrix1(32~33쪽)</a></li>
+<li>태그 해석: <a href="https://exiftool.org/TagNames/Pentax.html">ExifTool의 Pentax MakerNote 태그 표</a>(<code>ImageTone</code>, <code>WhiteBalance</code>, <code>RawDevelopmentProcess</code>) · <a href="https://raw.githubusercontent.com/exiftool/exiftool/master/lib/Image/ExifTool/Pentax.pm">ExifTool Pentax.pm 소스</a> · <a href="https://exiftool.org/TagNames/EXIF.html">ExifTool의 EXIF 태그 표</a>(광원 값 17 = 표준 광원 A, 21 = D65)</li>
+</ul>
+</section>
+
 </main>
+</div>
+<!-- chrome:bottom -->
+<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">Lightroom 색 프로파일 — 이 주제의 문서</h2><ol><li><a href="lightroom-bridge.html">Lightroom 프로파일 안내<span>DCP 생성·검증의 전체 흐름</span></a></li><li><a href="raw-test-inputs.html" aria-current="page">시험용 RAW 준비</a></li><li><a href="color-comparison-protocol.html">ColorChecker 비교 절차</a></li><li><a href="lightroom-render-comparison.html">실제 TIFF 6개 비교</a></li><li><a href="lightroom-tone-comparison.html">톤 곡선 비교</a></li><li><a href="lightroom-model-exports.html">K-3 III·Q7 DCP 내보내기</a></li><li><a href="lightroom-profile-fingerprints.html">프로파일 지문 재현</a></li><li><a href="lightroom-look-controls.html">LookTable 대조 실험</a></li></ol></nav>
+<nav class="pager" aria-label="이전·다음 문서"><a class="prev" href="lightroom-bridge.html"><small>← 이전</small>Lightroom 프로파일 안내</a><a class="next" href="color-comparison-protocol.html"><small>다음 →</small>ColorChecker 비교 절차</a></nav>
+<footer class="sitefoot"><div class="sitefoot-in"><nav aria-label="사이트"><a href="../index.html#map">문서 지도</a><a href="../index.html#levels">검증 수준 읽는 법</a><a href="../glossary.html">용어집</a><a href="research-program.html">세 기종 연구 본부</a><a href="https://github.com/yunhyok/pentax-k3iii-firmware-analysis">GitHub 저장소</a></nav><p>PENTAX K-3 Mark III 펌웨어 2.20 분석 문서. PC에서 수행한 정적 분석과 에뮬레이션 결과이며, 카메라 실기에서 검증한 내용이 아닙니다. 원본 펌웨어와 추출한 독점 코드는 포함하지 않습니다.</p></div></footer>
+<!-- /chrome:bottom -->
 </body>
 </html>

@@ -33,7 +33,7 @@
     "ricoh_q7_manual": {
       "url": "https://www.ricoh-imaging.co.jp/english/support/man-pdf/q7.pdf",
       "printed_pages": [20, 66, 78],
-      "locator": "E3 / 13. Color Space, File Name, Main Specifications"
+      "locator": "C3 / 13. Color Space, File Name, Main Specifications"
     },
     "k3iii_color_path": {
       "path": "pipeline-report.html#0x145",
@@ -149,29 +149,29 @@
       "model": "PENTAX Q7",
       "firmware": "1.01",
       "address_units": "analysis ELF virtual addresses, MIPS32 little-endian",
-      "meaning": {"status": "official", "observed_ko": "커스텀 E3 > 13. Color Space", "sources": ["ricoh_q7_manual"]},
+      "meaning": {"status": "official", "observed_ko": "커스텀 설정 C3 > 13. Color Space", "sources": ["ricoh_q7_manual"]},
       "event": {
         "status": "separate_path",
         "observed_ko": "물리 스위치 생산자 0x803f9c58와 방향키 edge 0x80ae0614, 컴포넌트 키 분배 0x80ac8594가 다른 범위에서 확인됐다.",
-        "open_ko": "E3 색공간 항목에서 버튼 입력이 어느 핸들러·위젯을 거쳐 반영되는지.",
+        "open_ko": "C3 색공간 항목에서 버튼 입력이 어느 핸들러·위젯을 거쳐 반영되는지.",
         "sources": ["q7_ui"]
       },
       "state": {
         "status": "partial",
         "observed_ko": "DataHelper_GetColorSpace 0x8043374c 및 SetColorSpace 0x80433768이 사용자 데이터 헬퍼로 연결된다. IsAdobeRGB 0x8041c104는 값 1을 검사한다.",
-        "open_ko": "E3 화면의 getter/setter 호출과 두 선택값의 저장값 매핑, 보류 상태와 확정·취소. 값 1 검사만으로 화면 전체 enum을 확정할 수 없다.",
+        "open_ko": "C3 색공간 화면의 getter/setter 호출과 두 선택값의 저장값 매핑, 보류 상태와 확정·취소. 값 1 검사만으로 화면 전체 enum을 확정할 수 없다.",
         "sources": ["q7_setting"]
       },
       "rendering": {
         "status": "separate_path",
         "observed_ko": "LCD 아이콘 0x8043f42c는 픽셀당 팔레트 인덱스 1바이트를 쓰며 index 0은 목적지를 보존한다. 원본 그림 2사례는 버퍼 getter 0x80262fd4를 대체해 검증했다. 0x80439428의 960×480은 내부 좌표다.",
-        "open_ko": "E3 색공간의 실제 텍스트·선택 표식 호출자, 해당 화면의 갱신 범위와 물리 LCD.",
+        "open_ko": "C3 색공간 화면의 실제 텍스트·선택 표식 호출자, 해당 화면의 갱신 범위와 물리 LCD.",
         "sources": ["q7_ui"]
       },
       "resource": {
         "status": "separate_path",
         "observed_ko": "RLE/Zoran 아이콘 bank가 분리된다. 0x80ac5cb8 및 0x80ac644c는 별도 언어·문자 경로다.",
-        "open_ko": "E3 항목의 문자열·글꼴·팔레트 선택과 리소스 ID. Zoran 전체 디코딩과 재배치.",
+        "open_ko": "C3 색공간 항목의 문자열·글꼴·팔레트 선택과 리소스 ID. Zoran 전체 디코딩과 재배치.",
         "sources": ["q7_ui"]
       }
     }
@@ -189,7 +189,7 @@
     "scope_ko": "설계 제안이다. 이 상태 모델과 행동을 원본 카메라가 모두 사용한다는 관측은 없다."
   },
   "next_experiments": [
-    {"id": "bind_target", "pass_ko": "두 K-3 기종에서 물리 입력이 색공간 위젯의 논리 이벤트로 이어지는 경로를 확인한다. Q7은 E3 화면을 기존 입력·설정 경로에 연결해 검증한다."},
+    {"id": "bind_target", "pass_ko": "두 K-3 기종에서 물리 입력이 색공간 위젯의 논리 이벤트로 이어지는 경로를 확인한다. Q7은 C3 색공간 화면을 기존 입력·설정 경로에 연결해 검증한다."},
     {"id": "replay_state", "pass_ko": "양방향 변경·확정, 변경 후 취소, 같은 값 확정에서 setter 호출, RAM 기록, 콜백·하위 요청과 섹터 쓰기 요청을 구분해 기록한다. 창을 닫고 다시 열 때의 값과 재부팅 후 값은 따로 확인한다."},
     {"id": "replay_render", "pass_ko": "실제 색공간 위젯에서 무효화, 문자/표식 리소스, 로케일, 출력 주소·stride·형식까지 연결한다. 합성 버퍼에서 바뀌어야 하는 영역과 양쪽 경계를 대조한다."}
   ],

@@ -1,12 +1,18 @@
-"""Render the editorial snapshot as a standalone HTML report."""
+"""Render the three-camera status snapshot (analysis/research-program.json) as an HTML report.
+
+The page uses the shared stylesheet and navigation of the site (assets/site.css, tools/site_chrome.py).
+"""
 
 import json
 from html import escape as esc
 from pathlib import Path
 
+from site_chrome import Site
+
 ROOT = Path(__file__).resolve().parents[1]
 SNAPSHOT = ROOT / "analysis/research-program.json"
 OUTPUT = SNAPSHOT.with_suffix(".html")
+PAGE = OUTPUT.relative_to(ROOT).as_posix()
 
 
 def repository(camera):
@@ -34,9 +40,31 @@ def source_link(data, key, *, pinned=False):
     return anchor(source_url(data, key, pinned=pinned), data["sources"][key]["label"])
 
 
-def item_list(items, layout="flow", tag="ol"):
-    contents = "".join(f"<li><strong>{esc(name)}</strong><p>{esc(detail)}</p></li>" for name, detail in items)
-    return f'<{tag} class="{layout}">{contents}</{tag}>'
+def pairs(items, tag="ol", css="flow"):
+    contents = "".join(f"<li><strong>{esc(name)}</strong><span>{esc(detail)}</span></li>" for name, detail in items)
+    return f'<{tag} class="{css}">{contents}</{tag}>'
+
+
+def steps(items):
+    contents = "".join(f"<li><strong>{esc(name)}</strong> {esc(detail)}</li>" for name, detail in items)
+    return f'<ol class="steps">{contents}</ol>'
+
+
+def panels(items):
+    contents = "".join(f'<li class="card"><h3>{esc(name)}</h3><p>{esc(detail)}</p></li>' for name, detail in items)
+    return f'<ul class="cards">{contents}</ul>'
+
+
+def overview(data):
+    """One table: four goals down, three cameras across, each cell the current state."""
+    head = "".join(f'<th scope="col">{esc(camera["name"])} <small>v{esc(camera["firmware_version"])}</small></th>'
+                   for camera in data["cameras"])
+    rows = []
+    for number, track in enumerate(data["tracks"], 1):
+        cells = "".join(f'<td>{esc(track["cards"][camera["id"]]["state"])}</td>' for camera in data["cameras"])
+        rows.append(f'<tr><th scope="row"><a href="#{esc(track["id"])}">{number}. {esc(track["title"])}</a></th>{cells}</tr>')
+    return (f'<div class="table-wrap"><table><caption>목표별·기종별 현재 상태</caption>'
+            f'<thead><tr><th scope="col">목표</th>{head}</tr></thead><tbody>{"".join(rows)}</tbody></table></div>')
 
 
 def track_section(data, track, number):
@@ -44,138 +72,93 @@ def track_section(data, track, number):
     for camera in data["cameras"]:
         card = track["cards"][camera["id"]]
         links = " · ".join(source_link(data, key) for key in card["sources"])
-        cards.append(f'''<section class="card">
-<h3>{esc(camera["name"])}</h3><p class="state">{esc(card["state"])}</p>
-<p>{esc(card["finding"])}</p><p class="next"><strong>다음</strong> {esc(card["next"])}</p>
-<p class="citations"><strong>근거</strong> {links}</p></section>''')
+        cards.append(f'''<li class="card goal"><span class="tag">{esc(camera["name"])}</span>
+<p class="state">{esc(card["state"])}</p>
+<dl><dt>알아낸 것</dt><dd>{esc(card["finding"])}</dd>
+<dt>다음에 확인할 것</dt><dd>{esc(card["next"])}</dd>
+<dt>근거 문서</dt><dd>{links}</dd></dl></li>''')
     routes = ""
     if "routes" in track:
-        routes = f'<h3>서로 다른 빌드 경로</h3>{item_list(track["routes"], "routes", "ul")}'
-    return f'''<article class="track" id="{esc(track["id"])}">
-<div class="track-heading"><span class="number" aria-hidden="true">{number:02}</span><h2>{esc(track["title"])}</h2></div>
-<p class="dependency">{esc(track["dependency"])}</p><div class="matrix">{"".join(cards)}</div>
+        routes = f'<h3>펌웨어를 다시 만드는 세 가지 길</h3>{panels(track["routes"])}'
+    return f'''<section id="{esc(track["id"])}">
+<h2>목표 {number}. {esc(track["title"])}</h2>
+<p class="takeaway">{esc(track["dependency"])}</p>
+<ul class="cards">{"".join(cards)}</ul>
 {routes}
-<figure><figcaption>검증 순서와 통과 기준</figcaption>{item_list(track["gates"])}</figure></article>'''
+<h3>검증 순서와 통과 기준</h3>
+{pairs(track["gates"])}
+</section>'''
 
 
 def ledger(data):
     entries = []
     for camera in data["cameras"]:
         repo = repository(camera["id"])
-        entries.append(f'''<section class="card"><h3>{esc(camera["name"])} <small>v{esc(camera["firmware_version"])}</small></h3>
-<p class="project-links">{anchor(repo, "저장소")} · {source_link(data, camera["report_source"])} · {anchor(f'{repo}/releases/tag/v0.1.0', '1차 연구 릴리스')}</p>
-<dl><dt>기준 커밋</dt><dd><code>{anchor(f'{repo}/commit/{camera["commit"]}', camera["commit"])}</code></dd>
-<dt>원본 펌웨어 SHA-256</dt><dd><code>{esc(camera["firmware_sha256"])}</code></dd></dl>
-<p class="citations">{source_link(data, camera["digest_source"], pinned=True)}</p></section>''')
+        entries.append(f'''<li class="card"><h3>{esc(camera["name"])} <small>v{esc(camera["firmware_version"])}</small></h3>
+<p>{anchor(repo, "저장소")} · {source_link(data, camera["report_source"])} · {anchor(f"{repo}/releases", "릴리스")}</p>
+<dl class="kv"><dt>기준 커밋</dt><dd><code class="wrap">{anchor(f'{repo}/commit/{camera["commit"]}', camera["commit"])}</code></dd>
+<dt>원본 펌웨어 SHA-256</dt><dd><code class="wrap">{esc(camera["firmware_sha256"])}</code></dd></dl>
+<p class="small">{source_link(data, camera["digest_source"], pinned=True)}</p></li>''')
     archive = "".join(
         f"<li>{source_link(data, key, pinned=True)}"
-        + (f'<small>{esc(source["path"])}</small>' if "path" in source else "")
+        + (f' <small>{esc(source["path"])}</small>' if "path" in source else "")
         + "</li>"
         for key, source in data["sources"].items()
     )
-    return f'''<section id="ledger" class="section"><h2>근거 원장</h2>
-<p>아래 해시는 배포 ZIP이나 해제 데이터가 아닌 원본 펌웨어 BIN의 SHA-256입니다. 세 기준 커밋으로 이 판본의 인용 범위를 고정합니다.</p>
-<div class="matrix">{"".join(entries)}</div>
-<details><summary>인용 파일의 고정본과 공식 사양</summary><ul class="archive">{archive}</ul></details></section>'''
+    return f'''<section id="ledger"><h2>근거 원장</h2>
+<p>아래 해시는 배포 ZIP이나 해제한 데이터가 아니라 원본 펌웨어 BIN의 SHA-256입니다. 세 기준 커밋이 이 판본이 인용하는 범위를 고정합니다. 기준 커밋 이후에 문서의 모양과 구성은 바뀌었지만, 이 표가 가리키는 근거는 그 커밋의 파일입니다.</p>
+<ul class="cards">{"".join(entries)}</ul>
+<details><summary>인용한 파일의 고정본과 공식 사양 ({len(data["sources"])}개)</summary><ul class="refs">{archive}</ul></details></section>'''
 
 
 def render(data):
     title = esc(data["title"])
     tracks = "\n".join(track_section(data, track, n) for n, track in enumerate(data["tracks"], 1))
-    nav = " ".join(anchor("#" + track["id"], label) for track, label in zip(data["tracks"], ("펌웨어", "Lightroom", "AF", "UI")))
-    return f'''<!doctype html>
+    page = f'''<!doctype html>
 <!-- Generated by tools/build_research_program.py from analysis/research-program.json. -->
-<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="{esc(data["summary"])}"><title>{title}</title>
-<style>
-:root{{--paper:#f5f3ed;--panel:#fffefa;--ink:#172a2c;--muted:#4b6062;--line:#d1dad6;--green:#176458;--soft:#e7f0eb;--dark:#153638}}
-*,*::before,*::after{{box-sizing:border-box}}
-html{{background:var(--paper);color:var(--ink)}}
-body{{margin:0;font:16px/1.65 system-ui,"Malgun Gothic",sans-serif;word-break:keep-all;overflow-wrap:anywhere}}
-a{{color:var(--green);text-underline-offset:.19em;text-decoration-thickness:.08em}}
-a:hover{{text-decoration-thickness:.16em}}
-a:focus-visible,summary:focus-visible{{outline:3px solid #ab642b;outline-offset:4px}}
-.wrap{{width:min(1200px,calc(100% - 3rem));margin-inline:auto}}
-.skip{{position:absolute;left:1rem;top:1rem;z-index:1;background:white;padding:.5rem 1rem;transform:translateY(-180%)}}
-.skip:focus{{transform:none}}
-.hero{{background:linear-gradient(125deg,#10292d,var(--dark) 68%,#214a42);color:#f5faf6;padding:3.2rem 0 2rem}}
-.eyebrow{{color:#aaddcf;font:600 .85rem/1.6 ui-monospace,monospace;letter-spacing:.09em;margin:0 0 .7rem}}
-h1,h2,h3,p{{margin:0}}
-h1{{font-size:clamp(2rem,5vw,4rem);line-height:1.16;letter-spacing:-.045em;margin-bottom:.85rem}}
-.hero .lead{{font-size:clamp(1rem,2vw,1.22rem);max-width:50rem;color:#e4eee9}}
-.hero nav{{display:flex;gap:.6rem;flex-wrap:wrap;margin-top:1.5rem}}
-.hero nav a{{display:inline-block;color:#edf7f0;border:1px solid #6b8e84;border-radius:6px;padding:.35rem .65rem;text-decoration:none;font-weight:600}}
-.hero nav a:hover{{background:#285751}}
-main{{padding:1.8rem 0 2.5rem}}
-.boundary{{border-left:4px solid #368979;background:var(--soft);padding:.9rem 1.15rem;margin-bottom:1.65rem}}
-.boundary strong{{display:block;margin-bottom:.2rem}}
-h2{{font-size:clamp(1.35rem,2.7vw,2rem);line-height:1.3;letter-spacing:-.035em}}
-h3{{font-size:1.1rem;line-height:1.4}}
-.track{{padding:1.7rem 0 1.9rem;border-bottom:1px solid var(--line)}}
-.track-heading{{display:flex;gap:.75rem;align-items:baseline}}
-.number{{color:var(--green);font:700 1rem/1 ui-monospace,monospace}}
-.dependency,.section>p{{color:var(--muted);margin:.55rem 0 1rem}}
-.matrix,.routes,.inputs{{display:grid;gap:.85rem;grid-template-columns:repeat(3,minmax(0,1fr))}}
-.card{{min-width:0;display:flex;flex-direction:column;border:1px solid var(--line);border-top:3px solid #638b7b;border-radius:9px;background:var(--panel);padding:1rem}}
-.card>p{{margin:.65rem 0 0}}
-.card .state{{font-size:.9rem;font-weight:700;color:var(--green);margin:.2rem 0 0}}
-.card .next{{margin-block:.8rem;padding-top:.6rem;border-top:1px solid var(--line)}}
-.next strong,.citations strong{{font-size:.82rem;color:var(--muted);margin-right:.25rem}}
-.card .citations{{font-size:.82rem;margin-top:auto;color:var(--muted)}}
-.matrix+h3{{margin:1rem 0 .5rem}}
-figure{{margin:1.1rem 0 0}}
-figcaption{{font-weight:700;margin-bottom:.55rem}}
-.flow,.routes,.inputs{{list-style:none;margin:0;padding:0}}
-.flow{{display:flex;gap:.7rem;counter-reset:step}}
-.flow>li,.routes>li,.inputs>li{{position:relative;min-width:0;padding:.75rem .8rem;background:var(--soft);border-radius:7px}}
-.flow>li{{flex:1;counter-increment:step}}
-.flow>li strong::before{{content:counter(step,decimal-leading-zero) " ";font:700 .78rem ui-monospace,monospace;color:var(--green)}}
-.flow>li+li::before{{content:"›";position:absolute;left:-.56rem;top:.75rem;color:var(--green);font-size:1.1rem;line-height:1}}
-.flow li p,.routes li p,.inputs li p{{color:var(--muted);font-size:.88rem;margin-top:.25rem}}
-.routes>li{{background:var(--panel);border:1px solid var(--line)}}
-.inputs{{grid-template-columns:repeat(2,minmax(0,1fr))}}
-.section{{padding:1.7rem 0 0}}
-.section .matrix{{margin:.65rem 0}}
-small{{color:var(--muted)}}
-dl{{margin:.75rem 0}}
-dt{{font-size:.82rem;font-weight:700;color:var(--muted)}}
-dd{{margin:0 0 .45rem}}
-code{{font:500 .82rem/1.5 ui-monospace,Consolas,monospace;overflow-wrap:anywhere}}
-details{{padding:.55rem 0}}
-summary{{cursor:pointer;color:var(--green);font-weight:600}}
-.archive{{columns:3;padding-left:1.2rem}}
-.archive li{{break-inside:avoid;margin-bottom:.35rem}}
-.archive small{{display:block}}
-footer{{background:#e4ebe5;padding:1rem 0;color:var(--muted);font-size:.9rem}}
-footer p+p{{margin-top:.35rem}}
-@media(max-width:900px){{
-  .flow{{display:grid;grid-template-columns:1fr}}
-  .flow>li+li::before{{content:"⌄";left:1rem;top:-.7rem;line-height:.75}}
-}}
-@media(max-width:740px){{
-  .wrap{{width:calc(100% - 2rem)}}
-  .hero{{padding:2rem 0 1.5rem}}
-  .matrix,.routes,.inputs{{grid-template-columns:1fr}}
-  .archive{{columns:1}}
-}}
-</style></head><body>
-<a class="skip" href="#main">본문 바로가기</a>
-<header class="hero"><div class="wrap">
-<p class="eyebrow">PENTAX RESEARCH / <time datetime="{esc(data["as_of"])}">{esc(data["as_of"])}</time> · KST</p>
-<h1>{title}</h1><p class="lead">{esc(data["summary"])}</p>
-<nav aria-label="연구 목표와 근거">{nav} <a href="#ledger">근거 원장</a></nav></div></header>
-<main class="wrap" id="main">
-<aside class="boundary"><strong>이 판본의 검증 범위</strong><p>{esc(data["boundary"])}</p></aside>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{title} — PENTAX 펌웨어 연구</title>
+<meta name="description" content="{esc(data["summary"])}">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-camera="k3iii">
+<!-- chrome:top -->
+<!-- /chrome:top -->
+<header class="page-head">
+<p class="eyebrow">K-3 Mark III · K-3 II · Q7 — <time datetime="{esc(data["as_of"])}">{esc(data["as_of"])}</time> 기준</p>
+<h1>{title}</h1>
+<p class="lead">{esc(data["summary"])}</p>
+</header>
+<div class="layout">
+<!-- chrome:toc -->
+<!-- /chrome:toc -->
+<main class="doc" id="main">
+<section class="summary"><h2 data-toc="no">이 판본의 검증 범위</h2><p>{esc(data["boundary"])}</p></section>
+<section id="overview"><h2>한눈에 보기</h2>
+<p>세 기종을 같은 네 가지 목표로 조사합니다. 표의 각 칸은 그 기종에서 지금 다루고 있는 지점입니다. 목표 이름을 누르면 자세한 내용으로 갑니다.</p>
+{overview(data)}
+<p class="small muted">기종별 문서: <a href="../index.html">K-3 Mark III</a> · <a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a> · <a href="https://yunhyok.github.io/pentax-q7-firmware-analysis/">Q7</a>. 표시의 뜻은 <a href="../index.html#levels">검증 수준 읽는 법</a>에 있습니다.</p>
+</section>
 {tracks}
-<section class="section" id="inputs"><h2>실기 단계에 필요한 입력</h2>
-<p>각 시험 전에 기종과 조건을 확정해야 비교 결과를 재현할 수 있습니다.</p>{item_list(data["inputs"], "inputs", "ul")}</section>
-<section class="section" id="loop"><h2>다음 조사로 이어가는 방법</h2>
-<p>{esc(data["refresh_note"])}</p>{item_list(data["loop"])}</section>
+<section id="inputs"><h2>실기 단계에 필요한 입력</h2>
+<p>각 시험 전에 기종과 조건을 확정해야 비교 결과를 재현할 수 있습니다.</p>{panels(data["inputs"])}</section>
+<section id="loop"><h2>다음 조사로 이어가는 방법</h2>
+<p>{esc(data["refresh_note"])}</p>{steps(data["loop"])}</section>
 {ledger(data)}
-</main><footer><div class="wrap"><p><a href="../index.html">K-3 Mark III 분석 개요</a> · <a href="research-program.json">현황 원본 JSON</a></p>
-<p>기준일: {esc(data["as_of"])} ({esc(data["time_zone"])})</p></div></footer>
-</body></html>
+<section id="refs"><h2>이 문서의 원본</h2>
+<ul class="refs"><li><a href="research-program.json">research-program.json</a> — 이 문서를 만드는 현황 데이터. 기준일 {esc(data["as_of"])} ({esc(data["time_zone"])})</li>
+<li><a href="../tools/build_research_program.py">tools/build_research_program.py</a> · <a href="../tools/check_research_program.py">tools/check_research_program.py</a> — 생성기와 검사기</li></ul></section>
+</main>
+</div>
+<!-- chrome:bottom -->
+<!-- /chrome:bottom -->
+</body>
+</html>
 '''
+    return Site().render(PAGE, page)
 
 
 if __name__ == "__main__":

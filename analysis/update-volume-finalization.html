@@ -1,53 +1,349 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>업데이트 파일 경로와 종료 처리</title><style>
-:root{color-scheme:light dark;--bg:#f7f8fa;--paper:#fff;--ink:#182332;--muted:#48596b;--line:#d2dbe5;--accent:#124b8e;--soft:#edf3fa;--focus:#d75f00}
-@media(prefers-color-scheme:dark){:root{--bg:#111821;--paper:#18222d;--ink:#e8edf4;--muted:#b4c2d2;--line:#405369;--accent:#98c8ff;--soft:#223348;--focus:#ffb374}}
-*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.85 system-ui,-apple-system,"Malgun Gothic",sans-serif;word-break:keep-all;overflow-wrap:anywhere}
-a{color:var(--accent);text-underline-offset:.18em}a:hover{text-decoration-thickness:2px}:focus-visible{outline:3px solid var(--focus);outline-offset:4px}
-header,main,footer{max-width:1120px;margin:auto;padding:36px clamp(18px,4vw,56px)}header{padding-top:56px;padding-bottom:24px}main{background:var(--paper);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
-.eyebrow{color:var(--muted);font-size:.84rem;letter-spacing:.06em}h1{font-size:clamp(1.85rem,4.5vw,3rem);line-height:1.35;letter-spacing:-.025em;margin:12px 0 18px}h2{font-size:1.5rem;line-height:1.5;margin:3.6rem 0 1rem;padding-top:1.2rem;border-top:1px solid var(--line)}h2:first-child{margin-top:0}h3{font-size:1.12rem;margin-top:2rem}p{margin:1rem 0}strong{font-weight:650}.intro{max-width:55em;color:var(--muted)}
-nav{margin-top:25px}nav ul{display:flex;flex-wrap:wrap;gap:8px 22px;list-style:none;padding:0;margin:0}nav ul ul{display:none}nav a{font-size:.9rem}code{font: .88em/1.6 ui-monospace,Consolas,monospace;overflow-wrap:anywhere}pre{background:var(--soft);padding:18px;overflow-x:auto;white-space:pre-wrap;border-radius:5px}pre code{font-size:.82rem}
-.table-scroll{overflow-x:auto;margin:24px 0}table{border-collapse:collapse;width:100%;font-size:.92rem;min-width:530px}th,td{text-align:left;vertical-align:top;padding:14px 16px;border-bottom:1px solid var(--line)}th{background:var(--soft);font-weight:650}td:first-child{min-width:125px}details{border-block:1px solid var(--line);margin-top:24px;padding:16px 0}summary{cursor:pointer;font-weight:650;padding:6px 0}.caption,.meta{font-size:.86rem;color:var(--muted)}
-figure{margin:32px 0;padding:24px 0;border-block:1px solid var(--line)}figcaption{font-size:.95rem;font-weight:650;margin-bottom:20px}.flow{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:32px;list-style:none;padding:0;margin:18px 0}.flow li{position:relative;padding:18px;background:var(--soft);border-radius:6px;line-height:1.6}.flow strong{display:block;font-size:1rem}.flow span{display:block;color:var(--muted);font-size:.86rem;margin-top:9px}.flow li:not(:last-child)::after{content:"→";position:absolute;right:-27px;top:40%;font-size:22px;color:var(--muted)}.second{margin-top:24px}footer{font-size:.88rem;color:var(--muted)}
-@media(max-width:620px){body{font-size:16px}header,main,footer{padding-inline:20px}.flow{grid-template-columns:1fr;gap:26px}.flow li:not(:last-child)::after{content:"↓";right:auto;left:calc(50% - 8px);top:auto;bottom:-28px}.flow li{padding:15px 18px}h2{font-size:1.3rem}nav ul{gap:10px 18px}table{font-size:.87rem}th,td{padding:12px}header{padding-top:30px}}
-@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
-@media print{body{background:white;color:black;font-size:10pt}header,main,footer{max-width:none;padding:12pt}nav{display:none}a{color:inherit}h2,figure,table{break-inside:avoid}h2{break-after:avoid}main{border:0}.flow li{background:#f1f3f5}.table-scroll{overflow:visible}table{min-width:0}details>*{display:block!important}}
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>업데이트 파일의 경로, volume 기록, 종료 처리 — PENTAX K-3 Mark III 펌웨어 연구</title>
+<meta name="description" content="K-3 Mark III가 찾는 업데이트 파일 이름 C:\FWDC%ldB.BIN이 volume 기록표와 이어지는 과정, 그리고 업데이트 실행 뒤 입력 버퍼 해제 요청과 완료 통지가 일어나는 순서를 원본 ARM 45건으로 확인한 문서입니다.">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-camera="k3iii">
+<!-- chrome:top -->
+<a class="skip" href="#main">본문 바로가기</a>
+<div class="topbar"><div class="topbar-in"><a class="brand" href="../index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="../index.html" aria-current="true">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="https://yunhyok.github.io/pentax-q7-firmware-analysis/">Q7</a></div><nav class="topnav" aria-label="주제"><a href="../index.html">개요</a><a href="guide-boot.html">부팅·저장소</a><a href="guide-update.html" aria-current="true">업데이트</a><a href="guide-rebuild.html">재구축</a><a href="guide-rtos.html">명령·셸</a><a href="guide-color.html">색 처리</a><a href="lightroom-bridge.html">Lightroom</a><a href="af-foundations.html">AF</a><a href="ui-port-contract.html">UI</a></nav></div></div>
+<nav class="crumbs" aria-label="현재 위치"><ol><li><a href="../index.html">PENTAX K-3 Mark III</a></li><li><a href="guide-update.html">펌웨어 업데이트 과정</a></li><li aria-current="page">파일 경로·volume·종료 처리</li></ol></nav>
+<!-- /chrome:top -->
+<header class="page-head">
+<p class="eyebrow">펌웨어 업데이트 과정 · 파일 위치와 끝맺음</p>
+<h1>업데이트 파일의 경로, volume 기록, 종료 처리</h1>
+<p class="lead">업데이트의 맨 앞과 맨 뒤를 다룹니다. 카메라가 찾는 파일의 이름과 위치가 어떻게 정해지는지, 그리고 실행이 끝났을 때 입력 버퍼를 정리하고 완료를 알리는 순서를 확인했습니다.</p>
+</header>
+<div class="layout">
+<!-- chrome:toc -->
+<nav class="toc" aria-label="이 문서의 목차"><h2 data-toc="no">이 문서에서</h2><ol><li><a href="#background">배경: 파일을 찾는 곳과 끝내는 곳</a></li><li><a href="#volume">종류 2는 C: 쪽 파일 이름만 조회합니다</a></li><li><a href="#component5">구성 요소 5의 입력 설정은 기존 값을 지우지 않을 수 있습니다</a></li><li><a href="#finalization">종료 함수의 해제 요청과 완료 통지</a></li><li><a href="#checks">한계와 남은 과제</a></li><li><a href="#reproduce">재현 방법</a></li><li><a href="#refs">근거 파일과 참고 자료</a></li></ol></nav>
+<!-- /chrome:toc -->
+<main class="doc" id="main">
 
-.site-nav{border-block:1px solid var(--line);padding:14px 0;margin:20px 0}.site-nav a{display:inline-block;margin:4px 16px 4px 0}
-.review-note{background:var(--soft);padding:16px 20px;margin:24px 0}.toc{font-size:.92rem}.toc ul{list-style:none;padding-left:0}.toc ul ul{padding-left:20px}
-.branch{margin:18px 0;padding:0 0 0 24px;border-left:3px solid var(--line)}.branch p{margin:8px 0}.diagram-line{padding:12px 16px;background:var(--soft);border-radius:4px}
-td code{white-space:nowrap}
-</style></head><body><header><div class="eyebrow">PENTAX K-3 MARK III · FIRMWARE 2.20 · 2026-11-08</div>
-<h1>업데이트 파일 경로와 종료 처리</h1>
-<p class="intro">종류 2 업데이트가 사용하는 C 파일명 버퍼를 volume record까지 연결했다. 종료 함수가 입력 해제와 완료 통지를 처리하는 순서도 확인했다. component 5의 reset 호출은 기존 필드를 지우지 않는 조건이 있어 앞선 설명을 바로잡았다.</p>
-<nav aria-label="관련 문서"><a href="../index.html">연구 개요</a> · <a href="update-file-lifetimes.html">파일 인터페이스·버퍼 수명</a> · <a href="startup-storage.html">M0·BOOT·저장소</a> · <a href="#volume">파일명·volume</a> · <a href="#finalization">종료 처리</a> · <a href="#checks">검증 범위</a></nav></header>
-<main><section id="volume"><h2>종류 2는 C 파일명 버퍼를 사용한다</h2>
-<p>생성자 <code>0x52ff32ac</code>는 <code>0x5310b748</code>이 읽은 값 <code>[0x547bb198]→u32+0x18</code>을 파일명 형식 문자열에 전달한다. <code>0x52ff3394</code>의 대상은 <code>0x54796104</code>와 <code>C:\FWDC%ldB.BIN</code>, <code>0x52ff33b0</code>의 대상은 <code>0x54796140</code>과 <code>R:\FWDC%ldB.BIN</code>이다. 두 formatting 호출의 길이 인자는 <code>0x14</code>다. <a href="update-volume-path-evidence.json">생성자·문자열·getter 근거</a></p>
-<figure><figcaption>종류 2에서 파일명과 descriptor가 연결되는 경로</figcaption><ol class="flow"><li><strong>C 버퍼 선택</strong><span>0x52fef240의 kind 2 분기<br>→ getter 0x52ff3474<br>→ 0x54796104</span></li><li><strong>문자로 record 검색</strong><span>0x52f52554<br>C → index 0<br>record+0 → descriptor</span></li><li><strong>조건에 따라 backend 선택</strong><span>descriptor byte+0x14<br>descriptor word+0x18<br>실제 값·mount 상태는 별도 검증</span></li></ol></figure>
-<p>kind 2 분기는 C getter의 반환값을 크기 조회 함수 <code>0x52ff7d10</code>에 넘긴다. 크기가 비제로일 때 state의 종류·경로·길이를 기록하고 0이면 기존 세 필드를 유지한다. 이 분기에는 R fallback이 없다. R getter <code>0x52ff34d0</code>를 선택하는 다른 경로의 정책은 이번 범위에서 확정하지 않았다. 숫자 getter의 카메라 런타임 값과 원본 libc formatting은 검사하지 않았으며 합성 숫자·formatting 결과를 원본 경로 검색기에 전달했다. <a href="update-volume-path-checks.json">파일명·선택 검사</a></p>
-<h2>배열 용량과 record 생산자</h2>
-<p>factory는 생성자 <code>0x52f52334</code>에 용량 12를 전달한다. 생성자는 <code>8 + 0x18×12</code>바이트를 요청하고 배열 시작+8을 manager+0x14에, 용량을 +0x20에 저장한다. 따라서 +0x20은 등록된 record 수가 아니라 검색할 배열 용량이다. 등록 함수 <code>0x52f524b8</code>는 record+0의 descriptor 포인터가 NULL인 첫 자리를 찾아 descriptor를 record+0에, 입력 문자열의 첫 문자를 record+4에 쓴다. 용량은 증가시키지 않는다. <a href="update-volume-path-evidence.json">배열 생성·등록의 실제 쓰기 주소</a></p>
-<div class="table-scroll"><table><thead><tr><th>배열 index</th><th>문자</th><th>descriptor provider index</th><th>등록 인자 r3</th></tr></thead><tbody>
-<tr><td>0, 1</td><td>C, D</td><td>0, 1</td><td>0</td></tr><tr><td>2, 3</td><td>X, Y</td><td>3, 4</td><td>1</td></tr><tr><td>4–10</td><td>A, B, E, F, G, H, R</td><td>모두 2</td><td>0</td></tr><tr><td>11</td><td>W</td><td>5</td><td>0</td></tr></tbody></table></div>
-<p>등록 순서는 원본 factory의 진입점부터 backend 생성 직전까지 실행해 확인했다. 문자열 표에는 J도 있지만 이 루프는 J를 등록하지 않았다. provider getter <code>0x5327f710</code>은 <code>[provider+4+4×index]</code>를 반환한다. 여기까지의 연결만으로 C/R을 물리 매체로 명명하지 않으며 descriptor 생성자와 후속 기록자는 별도 조사 대상이다. factory의 query/config helper를 합성 함수로 대체했으므로 record의 모든 필드가 실제 카메라와 같다는 뜻도 아니다. 여기서 record+4는 파일시스템 volume의 문자 필드이며 기존에 추적하던 FwPartition bank record+4와는 별개다.</p>
-<p>상위 <code>FileFactory::BuildPackage</code>의 <code>0x52f3f350</code>은 singleton의 vslot+8을 호출한다. vptr <code>0x539014c0</code>이 유지된 조건에서 ROM slot <code>0x539014c8</code>의 대상은 factory 초기화 함수 <code>0x52f510e8</code>이다. 실제 호출 본문 한 단계를 추가로 연결했으며 그 위 task/startup 진입은 미확정이다. <a href="update-volume-path-evidence.json">조건부 간접 호출 연결</a></p></section>
-<section id="component5"><h2>component 5의 reset은 필드를 지우지 않을 수 있다</h2>
-<p><code>0x52ff31c4</code>는 리소스 슬롯 1을 조회한다. 초기 복사 descriptor <code>0x52500450</code>은 ROM <code>0x53ce7d40</code>에서 RAM <code>0x54500000</code>으로 <code>0x65a80</code>바이트를 대응시킨다. 이 관계에서 slot 1의 ROM record <code>0x53d0d2c8</code>은 RAM <code>0x54525588</code>에 해당한다. 초기 길이는 <code>0x100000</code>, base는 <code>0x509df000</code>, 이름은 <code>M0A7CommunicationBuffer</code>다. <a href="update-finalization-evidence.json">초기 record·주소 대응·해시</a></p>
-<p>getter <code>0x52ff8de4</code>는 base가 <code>0xffffffff</code>가 아니면 그대로 반환한다. component 5는 입력 포인터가 0이거나 길이가 0이면 기존 +0x0c/+0x10 필드를 유지한다. 둘 다 비제로일 때만 copy helper를 호출한 뒤 slot base와 길이를 저장한다. copy 분기의 반환값은 helper의 반환값이며 저장한 base와 항상 같다고 일반화할 수 없다. 실제 메모리 배치와 slot의 후속 변경, sentinel에서의 지연 할당은 이번 CPU 검사 범위 밖이다.</p>
-<p>앞선 입력 정리 함수 <code>0x52feec18</code>은 <code>0x52feecc0</code>에서 이 setter에 <code>(0, 0)</code>을 전달한다. 초기 slot 1 조건에서는 component 5의 기존 입력 필드가 그대로 남는다. 따라서 “모든 component 입력 descriptor를 0으로 만든다”는 기존 설명은 정확하지 않다. setter 호출과 실제 필드 삭제를 구분하도록 <a href="startup-storage-evidence.json">기존 메시지·저장소 근거</a>를 수정했다.</p></section>
-<section id="finalization"><h2>종료 함수의 해제 요청과 통지 순서</h2>
-<p><code>0x52feffa8(state, result)</code>는 result가 0인지와 관계없이 state+0x48에 든 포인터를 <code>0x52ff622c</code>에 넘긴다. 입력이 null인 합성 사례에서도 호출은 생략되지 않았다. 앞선 <a href="update-buffer-lifetime-evidence.json">wrapper 분석</a>에서 <code>0x52ff622c</code>는 mutex 획득 결과를 r6에 보존하고 반환하며 입력이 null이면 하위 pool 해제 호출을 건너뛰는 것을 확인했다. 따라서 합성 반환값 <code>0xffffffff</code>는 호출자의 반환 전달 검사에만 쓰이며 실제 하위 해제의 성공·실패 값으로 해석하지 않는다. 이 종료 함수 자체에는 state+0x48이나 길이 +0x44를 지우는 명령이 없다. <a href="update-finalization-evidence.json">종료 함수의 원본 명령 근거</a></p>
-<div class="table-scroll"><table><thead><tr><th>result 조건</th><th>실행 순서</th><th>종료 함수 반환</th></tr></thead><tbody>
-<tr><td>0</td><td>진단 → 입력 해제 요청</td><td>해제 wrapper 0x52ff622c의 반환값</td></tr><tr><td>비제로</td><td>진단 → 입력 해제 요청 → 0x52ff3960 통지</td><td>마지막 통지 경계의 반환값</td></tr></tbody></table></div>
-<p>비제로 분기는 해제 wrapper 0x52ff622c의 반환값을 분기 조건으로 쓰지 않는다. 통지 함수는 메시지 <code>0x2640820b</code>를 전달하고 하위 경계에 <code>0x20</code>을 넘긴 뒤 마지막 호출로 이동한다. 해제 요청 실패 여부와 통지 발생을 구분해야 한다. 합성 실행에서는 실제 큐·이벤트·저장소 동작을 대체했으며 이 통지가 물리적인 업데이트 완료를 보장한다는 뜻은 아니다. <a href="update-finalization-checks.json">해제 반환값·null 입력·비제로 결과 검사</a></p>
-<h2>상위 실행 wrapper와 조회 helper는 정리 경로가 다르다</h2>
-<p><code>0x52ff0044</code>의 종류 2·6·7은 executor <code>0x52fefe98</code>를 호출한 뒤 그 결과를 종료 함수에 전달한다. wrapper는 종료 함수의 반환값 대신 executor의 원래 32비트 값을 반환한다. 종류 5는 executor로 직접 tail call하며 이 wrapper의 종료 함수를 거치지 않는다. 범위 밖인 종류 8은 result=0으로 종료 함수를 호출하고 0을 반환한다. 종류 0·1·3·4의 추가 준비 경로는 정적으로만 확인했다.</p>
-<p>별도 조회 helper <code>0x533031a0</code>의 순서는 preflight → load → validation → postvalidation이다. 각 단계가 0을 반환하면 오류 byte에 차례로 0·3·1·3을 쓴다. 모두 비제로이면 호출자의 기존 오류 byte를 유지하고 마지막 postvalidation의 반환값을 그대로 전달한다. 이 helper 안에는 입력 해제 호출이 없다. 상위 호출자의 정리와 오류 보고를 더 따라가야 하며 이 사실만으로 누수나 중복 해제를 단정하지 않는다.</p>
-<p><code>CheckUpdateFirmware</code> 수신부는 종류 2 선택 후 load·validation·version 조회 결과를 <code>0x533167a4 → 0x52feec18(state, 1)</code>의 입력 정리 경로로 모은다. state+0x48이 NULL이면 <code>0x52feec34</code>에서 wrapper 호출을 건너뛰고 component 정리와 kind·파일명·길이 초기화를 진행한다. 포인터가 비제로일 때만 wrapper를 부르며, 반환값이 비제로여야 포인터를 지우고 나머지 정리를 진행한다. 이번에는 원본 receiver의 분기와 호출을 정적으로 대조했으며 전체 메시지 처리와 스케줄러를 실행하지 않았다. <a href="update-finalization-evidence.json">수신부와 정리 호출 근거</a></p></section>
-<section id="checks"><h2>검증 범위와 다음 조사</h2>
-<p>파일명·volume 19사례와 종료 처리 26사례, 합계 45사례가 원본 RTOS와 통합 decoded 이미지에서 같은 결과를 냈다. 종료 처리 26사례에는 독립 검토에서 추가한 6개 경계 사례가 포함돼 있다. 이 6개를 별도 합계로 중복 계산하지 않았다. 재분석한 범위를 포함해 C 출력 12개와 원본 ARM 1,622 words의 주소·해시를 로컬에 보존했다. 공개 자료에는 분석·검사 도구·메타데이터를 싣는다.</p>
-<p>자동 복원 C의 한계도 확인했다. component 5의 C에는 조건 코드 표현이 남아 있고 종료 함수의 C에는 성공 분기의 tail call이 빠져 있다. C 원문은 그대로 보존하며 조건과 반환 관계는 원본 ARM과 CPU 실행으로 판정했다. 실제 파일 접근·큰 메모리 할당·OS 해제·업데이트 executor·물리 매체·카메라는 실행하지 않았다.</p>
-<p>다음 조사 대상은 descriptor의 실제 생산자와 크기 단위, mount와 backend 초기화, 완료 통지의 수신 처리, decoded 출력의 최종 회수 시점이다. 현재 결과는 수정 펌웨어의 카메라 수용이나 정상 실행을 입증하지 않는다. 빌드·플래시는 이 분석에서 수행하지 않았다.</p>
-<details><summary>같은 입력으로 재현하기</summary><pre><code>python verify_update_volume_path.py rtos.bin --output volume-checks.json
-python verify_update_finalization.py rtos.bin --output finalization-checks.json</code></pre><p>두 도구는 입력 SHA-256을 확인하고 기존 출력 파일 덮어쓰기와 assert 비활성 실행을 거부한다. <a href="../verify_update_volume_path.py">volume 재현 도구</a> · <a href="../verify_update_finalization.py">종료 처리 재현 도구</a></p></details></section></main>
-<footer>원본 ARM과 합성 RAM·외부 호출을 사용한 분석이다. HTML 구조와 로컬 링크 18개를 검사했다. 화면 렌더링은 검사하지 않았다.</footer>
-</body></html>
+<section class="summary">
+<h2 data-toc="no">핵심 요약</h2>
+<ul>
+<li>업데이트 파일 이름은 형식 문자열 <strong><code>C:\FWDC%ldB.BIN</code></strong>으로 만들어집니다. 본체 펌웨어를 뜻하는 종류 2는 이 <code>C:</code> 쪽 이름만 조회하며, <code>R:</code> 쪽 이름으로 바꿔 찾는 분기가 없습니다.</li>
+<li>drive 글자는 volume 기록표에서 찾습니다. 기록표는 12칸이고 C, D, X, Y, A, B, E, F, G, H, R, W 순서로 등록됩니다. C는 0번 기록, R은 10번 기록입니다.</li>
+<li>종료 함수는 실행 결과와 관계없이 <strong>입력 버퍼의 해제를 요청</strong>하고, 결과가 0이 아닐 때만 완료 메시지를 보냅니다. 해제 요청이 성공했는지는 통지를 보낼지 말지에 쓰이지 않습니다.</li>
+<li><strong>정정</strong>: 구성 요소 5의 입력 설정 함수는 <code>(0, 0)</code>을 받으면 기존 값을 지우지 않습니다. “모든 구성 요소의 입력 정보를 0으로 만든다”는 앞선 설명은 정확하지 않았습니다.</li>
+<li>파일 이름·volume 19건과 종료 처리 26건, 합계 45건을 원본 ARM 코드로 실행했습니다. 실제 파일 접근, 메모리 해제, 업데이트 실행은 하지 않았습니다.</li>
+</ul>
+</section>
+
+<div class="scope">
+<div class="ok"><h3><span class="badge ok">확인</span> 원본 코드 실행으로 확인</h3>
+<ul>
+<li>공장 초기화가 volume 12개를 등록하는 순서</li>
+<li>이름 버퍼에서 기록 번호·제공자 번호까지의 연결</li>
+<li>종료 함수와 실행 감싸기 함수의 호출 순서, 반환값</li>
+<li>구성 요소 5가 값을 유지하거나 바꾸는 조건</li>
+</ul></div>
+<div class="static"><h3><span class="badge static">정적 분석</span> 코드를 읽어 판단</h3>
+<ul>
+<li>종류 0·1·3·4의 추가 준비 경로</li>
+<li>CheckUpdateFirmware 수신부가 입력 정리를 부르는 분기</li>
+<li>공장 초기화를 부르는 <code>BuildPackage</code>의 간접 호출</li>
+</ul></div>
+<div class="model"><h3><span class="badge model">모델</span> 시험 조건으로 정한 것</h3>
+<ul>
+<li>파일 이름에 들어가는 숫자(0, 9,067, 2,147,483,647)</li>
+<li>문자열 형식 함수, 할당, 공장의 조회·설정 함수는 대체</li>
+<li>해제 요청·업데이트 실행·통지는 값만 돌려주는 대체 함수</li>
+</ul></div>
+<div class="open"><h3><span class="badge open">미확인</span> 확인하지 않은 것</h3>
+<ul>
+<li>카메라가 실행 중에 파일 이름에 넣는 실제 숫자</li>
+<li><code>R:</code> 쪽 이름을 고르는 다른 경로의 조건</li>
+<li>공장 초기화보다 위쪽의 작업·시작 코드</li>
+<li>풀린 출력 버퍼가 최종으로 회수되는 시점</li>
+</ul></div>
+</div>
+
+<section id="background">
+<h2>배경: 파일을 찾는 곳과 끝내는 곳</h2>
+<p>Ricoh의 안내에 따르면 사용자는 펌웨어 파일을 SD 카드의 최상위 폴더에 복사해 슬롯 1에 넣고 업데이트를 시작합니다(<a href="https://www.ricoh-imaging.co.jp/english/support/digital/k-3-3.html">Ricoh 공식 안내</a>). 카메라 쪽에서는 “어느 drive의 어떤 이름을 찾을지”를 정하는 코드가 있어야 합니다. 이 문서의 앞 절반은 그 이름이 만들어져 volume으로 이어지는 과정을 다룹니다.</p>
+<p>뒤 절반은 업데이트 실행이 끝난 직후를 다룹니다. <a href="update-file-lifetimes.html#cleanup">파일 인터페이스와 버퍼 수명</a>에서 본 입력 버퍼 해제 요청이 실제로 어디서 불리는지, 완료를 알리는 메시지는 언제 나가는지입니다. 메시지를 받는 쪽은 <a href="update-media-completion.html">매체 객체와 완료 통지</a>로 이어집니다.</p>
+<h3>이 문서에서 쓰는 말</h3>
+<dl class="kv">
+<dt>volume 기록</dt><dd>drive 글자 하나와 그 저장 영역을 설명하는 객체를 짝지어 둔 표의 한 칸입니다. 한 칸은 <code>0x18</code>바이트입니다.</dd>
+<dt>설명 객체</dt><dd>volume 뒤에 있는 저장 매체를 나타내는 객체입니다. 근거 자료에서는 descriptor라고 부릅니다.</dd>
+<dt>제공자</dt><dd>설명 객체들을 번호로 내주는 객체입니다. 0번, 2번처럼 번호로 고릅니다.</dd>
+<dt>구성 요소</dt><dd>업데이트 코드가 패키지의 부분별로 두는 처리 객체입니다. 5번이 이 문서에 나옵니다.</dd>
+<dt>실행 함수와 종료 함수</dt><dd>실행 함수는 검증이 끝난 내용을 실제로 기록하는 단계의 입구입니다. 종료 함수는 그 결과를 받아 정리와 통지를 합니다.</dd>
+</dl>
+</section>
+
+<section id="volume">
+<h2>종류 2는 C: 쪽 파일 이름만 조회합니다</h2>
+<p class="takeaway">이름 생성 함수는 <code>C:</code>와 <code>R:</code> 두 벌의 이름을 만들지만, 종류 2 분기는 <code>C:</code> 쪽만 파일 크기 조회에 넘깁니다. 이름의 첫 글자가 volume 기록표에서 0번 기록을 고릅니다.</p>
+
+<figure class="diagram">
+<figcaption>파일 이름이 만들어져 volume 기록으로 이어지는 과정</figcaption>
+<div class="dg-scroll">
+<svg class="dg" viewBox="0 0 800 292" role="img" aria-labelledby="dg-vol-title dg-vol-desc">
+<title id="dg-vol-title">파일 이름 버퍼와 volume 기록표</title>
+<desc id="dg-vol-desc">이름 생성 함수가 C 쪽 이름 버퍼와 R 쪽 이름 버퍼를 만듭니다. 종류 2 분기는 C 쪽 이름을 파일 크기 조회 함수에 넘깁니다. 이름의 첫 글자 C로 volume 기록표를 찾으면 0번 기록이 나옵니다. 기록표에는 0번부터 11번까지 C, D, X, Y, A, B, E, F, G, H, R, W가 등록되어 있고 제공자 번호는 차례로 0, 1, 3, 4, 2, 2, 2, 2, 2, 2, 2, 5입니다.</desc>
+<defs><marker id="dg-vol-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0 0L10 5L0 10z"/></marker></defs>
+<rect class="b ok" x="8" y="14" width="170" height="64" rx="8"/>
+<text class="t" x="20" y="41">이름 생성 함수</text>
+<text class="s mono" x="20" y="61">0x52ff32ac</text>
+<rect class="b key" x="214" y="14" width="250" height="64" rx="8"/>
+<text class="t" x="226" y="41">C: 쪽 이름 버퍼</text>
+<text class="s mono" x="226" y="61">C:\FWDC%ldB.BIN</text>
+<rect class="b ok" x="500" y="14" width="292" height="64" rx="8"/>
+<text class="t" x="512" y="41">종류 2: 파일 크기 조회</text>
+<text class="s mono" x="512" y="61">0x52ff7d10</text>
+<rect class="b mute" x="8" y="104" width="170" height="64" rx="8"/>
+<text class="t" x="20" y="131">R: 쪽 이름 버퍼</text>
+<text class="s mono" x="20" y="151">R:\FWDC%ldB.BIN</text>
+<text class="n" x="196" y="140">종류 2는 이 이름을 쓰지 않음</text>
+<text class="n" x="452" y="112">첫 글자 C로</text>
+<text class="n" x="452" y="128">기록을 찾음</text>
+<text class="n" x="8" y="206">번호</text>
+<text class="n" x="8" y="241">글자</text>
+<text class="n" x="8" y="278">제공자</text>
+<rect class="b key" x="64" y="214" width="56" height="44" rx="4"/>
+<rect class="b" x="120" y="214" width="56" height="44" rx="4"/>
+<rect class="b" x="176" y="214" width="56" height="44" rx="4"/>
+<rect class="b" x="232" y="214" width="56" height="44" rx="4"/>
+<rect class="b" x="288" y="214" width="56" height="44" rx="4"/>
+<rect class="b" x="344" y="214" width="56" height="44" rx="4"/>
+<rect class="b" x="400" y="214" width="56" height="44" rx="4"/>
+<rect class="b" x="456" y="214" width="56" height="44" rx="4"/>
+<rect class="b" x="512" y="214" width="56" height="44" rx="4"/>
+<rect class="b" x="568" y="214" width="56" height="44" rx="4"/>
+<rect class="b" x="624" y="214" width="56" height="44" rx="4"/>
+<rect class="b" x="680" y="214" width="56" height="44" rx="4"/>
+<text class="n mid" x="92" y="206">0</text><text class="n mid" x="148" y="206">1</text><text class="n mid" x="204" y="206">2</text><text class="n mid" x="260" y="206">3</text><text class="n mid" x="316" y="206">4</text><text class="n mid" x="372" y="206">5</text><text class="n mid" x="428" y="206">6</text><text class="n mid" x="484" y="206">7</text><text class="n mid" x="540" y="206">8</text><text class="n mid" x="596" y="206">9</text><text class="n mid" x="652" y="206">10</text><text class="n mid" x="708" y="206">11</text>
+<text class="t mid" x="92" y="241">C</text><text class="t mid" x="148" y="241">D</text><text class="t mid" x="204" y="241">X</text><text class="t mid" x="260" y="241">Y</text><text class="t mid" x="316" y="241">A</text><text class="t mid" x="372" y="241">B</text><text class="t mid" x="428" y="241">E</text><text class="t mid" x="484" y="241">F</text><text class="t mid" x="540" y="241">G</text><text class="t mid" x="596" y="241">H</text><text class="t mid" x="652" y="241">R</text><text class="t mid" x="708" y="241">W</text>
+<text class="n mid" x="92" y="278">0</text><text class="n mid" x="148" y="278">1</text><text class="n mid" x="204" y="278">3</text><text class="n mid" x="260" y="278">4</text><text class="n mid" x="316" y="278">2</text><text class="n mid" x="372" y="278">2</text><text class="n mid" x="428" y="278">2</text><text class="n mid" x="484" y="278">2</text><text class="n mid" x="540" y="278">2</text><text class="n mid" x="596" y="278">2</text><text class="n mid" x="652" y="278">2</text><text class="n mid" x="708" y="278">5</text>
+<path class="e" d="M178 46H212" marker-end="url(#dg-vol-ah)"/>
+<path class="e" d="M464 46H498" marker-end="url(#dg-vol-ah)"/>
+<path class="e" d="M93 78V102" marker-end="url(#dg-vol-ah)"/>
+<path class="e" d="M440 78V186H76V212" marker-end="url(#dg-vol-ah)"/>
+</svg>
+</div>
+<ul class="dg-legend"><li><i class="key"></i>종류 2가 쓰는 이름과 기록</li><li><i class="ok"></i>원본 코드를 실행해 확인</li><li><i></i>이 분기에서 쓰지 않는 것</li></ul>
+<p>그림 아래쪽의 칸들이 volume 기록표입니다. <code>R:</code> 쪽 이름으로 찾으면 10번 기록(제공자 2번)이 나오는 것도 같은 시험에서 확인했습니다.</p>
+</figure>
+
+<h3>이름 버퍼 두 개</h3>
+<p>이름 생성 함수 <code>0x52ff32ac</code>는 숫자 하나를 읽어 형식 문자열 두 개에 넣습니다. 숫자는 함수 <code>0x5310b748</code>이 전역 포인터 <code>0x547bb198</code>이 가리키는 객체의 <code>+0x18</code>에서 읽습니다.</p>
+<div class="table-wrap"><table>
+<caption>이름 생성 함수가 채우는 두 버퍼</caption>
+<thead><tr><th>버퍼</th><th>형식 문자열</th><th>형식 호출 위치</th><th>길이 인수</th><th>조회 함수</th></tr></thead>
+<tbody>
+<tr><th scope="row"><code>0x54796104</code></th><td><code>C:\FWDC%ldB.BIN</code></td><td><code>0x52ff3394</code></td><td rowspan="2"><code>0x14</code></td><td><code>0x52ff3474</code></td></tr>
+<tr><th scope="row"><code>0x54796140</code></th><td><code>R:\FWDC%ldB.BIN</code></td><td><code>0x52ff33b0</code></td><td><code>0x52ff34d0</code></td></tr>
+</tbody></table></div>
+<p>종류를 고르는 함수 <code>0x52fef240</code>의 종류 2 분기는 <code>C:</code> 쪽 조회 함수가 돌려준 이름을 파일 크기 조회에 넘깁니다. 크기가 0이 아니면 상태 객체에 종류·경로·길이를 적고, 0이면 그 세 칸을 이전 값 그대로 둡니다. 이 분기에는 <code>R:</code> 쪽으로 바꿔 찾는 코드가 없습니다. <code>R:</code> 쪽 조회 함수를 고르는 다른 경로가 어떤 조건에서 쓰이는지는 정하지 않았습니다.</p>
+<div class="callout"><strong class="label">참고: 배포 파일 이름과의 관계</strong>
+<p>Ricoh가 배포하는 파일 이름 <code>fwdc233b.bin</code>은 이 형식에 숫자 233을 넣은 것과 대소문자만 다릅니다. 카메라가 실행 중에 이 칸에서 어떤 숫자를 읽는지, 파일 시스템이 이름의 대소문자를 어떻게 비교하는지는 확인하지 않았습니다. <code>C:</code>가 SD 슬롯 1이라는 대응도 이 문서의 근거로는 정하지 않았습니다. <code>C:</code> 뒤의 객체가 SD 카드 드라이버 클래스라는 점은 <a href="update-media-completion.html">매체 객체와 완료 통지</a>에서 확인했습니다.</p></div>
+<div class="callout model"><strong class="label">시험 조건</strong>
+<p>문자열 형식 함수는 원본 라이브러리 대신 틀·길이 제한·숫자 인수를 받아 문자열을 만드는 대체 함수였습니다. 숫자는 0, 9,067, 2,147,483,647을 넣었고, 만들어진 이름을 원본 경로 검색 함수에 넘겨 기록 번호를 확인했습니다. 크기 조회는 0과 35,136,788을 돌려주는 두 경우로 실행했습니다.</p></div>
+
+<h3>volume 기록표: 용량 12칸과 등록 순서</h3>
+<p>공장 초기화 함수는 volume 관리 객체를 만들 때 용량 12를 넘깁니다. 생성자 <code>0x52f52334</code>는 <code>8 + 0x18 × 12</code>바이트(296바이트)를 요청하고, 배열 시작에서 8바이트 뒤의 주소를 관리 객체 <code>+0x14</code>에, 용량을 <code>+0x20</code>에 저장합니다. 따라서 <code>+0x20</code>은 등록된 기록의 수가 아니라 검색할 배열의 용량입니다.</p>
+<p>등록 함수 <code>0x52f524b8</code>는 첫 칸(설명 객체 포인터)이 비어 있는 첫 기록을 찾아, 설명 객체를 기록 <code>+0</code>에, 넘겨받은 문자열의 첫 글자를 <code>+4</code>에 씁니다. 용량 값은 늘리지 않습니다. 빈 기록이 없으면 아무것도 쓰지 않고 0을 돌려줍니다.</p>
+<div class="table-wrap"><table>
+<caption>공장 초기화가 등록하는 volume</caption>
+<thead><tr><th>기록 번호</th><th>글자</th><th>설명 객체 제공자 번호</th><th>등록 인수(넷째 값)</th></tr></thead>
+<tbody>
+<tr><th scope="row">0, 1</th><td>C, D</td><td>0, 1</td><td>0</td></tr>
+<tr><th scope="row">2, 3</th><td>X, Y</td><td>3, 4</td><td>1</td></tr>
+<tr><th scope="row">4–10</th><td>A, B, E, F, G, H, R</td><td>모두 2</td><td>0</td></tr>
+<tr><th scope="row">11</th><td>W</td><td>5</td><td>0</td></tr>
+</tbody></table></div>
+<ul>
+<li>등록 순서는 공장 초기화 함수를 진입점부터 처리기 생성 직전까지 실행해 확인했습니다. 글자 표에는 J도 있지만 이 반복은 J를 등록하지 않았습니다.</li>
+<li>제공자의 조회 함수 <code>0x5327f710</code>은 <code>[제공자 + 4 + 4 × 번호]</code>의 값을 돌려줍니다.</li>
+<li>여기까지의 연결만으로 C나 R을 특정 물리 매체로 부르지 않습니다. 공장의 조회·설정 함수를 대체했으므로 기록의 모든 칸이 실제 카메라와 같다는 뜻도 아닙니다.</li>
+<li>기록의 <code>+4</code>는 volume의 글자 칸입니다. 부팅과 저장소 문서에서 다루는 <code>FwPartition</code>의 bank 기록 <code>+4</code>와는 다른 구조입니다.</li>
+</ul>
+<p>공장 초기화 함수를 부르는 곳도 한 단계 위까지 이었습니다. <code>FileFactory</code>의 <code>BuildPackage</code> 함수가 <code>0x52f3f350</code>에서 공장 객체의 가상 함수 <code>+8</code>을 부릅니다. 공장 객체의 가상 함수 표 <code>0x539014c0</code>이 그대로라면 그 칸 <code>0x539014c8</code>의 대상이 초기화 함수 <code>0x52f510e8</code>입니다. 그보다 위의 작업·시작 코드는 확인하지 못했습니다.</p>
+
+<details class="evidence"><summary>이름·volume 관련 함수 구간과 문자열</summary>
+<div class="table-wrap"><table class="compact">
+<thead><tr><th>함수</th><th>구간</th><th>SHA-256</th></tr></thead>
+<tbody>
+<tr><td>이름 생성</td><td><code>0x52ff32ac</code>–<code>0x52ff33bc</code></td><td><code class="wrap">ea3b5de14d56c56eae3f8dc99a110699b75733c1fe9816cfd9cf5e1a2fd4d908</code></td></tr>
+<tr><td>volume 관리 객체 생성자</td><td><code>0x52f52334</code>–<code>0x52f524b0</code></td><td><code class="wrap">cbd678c9062e5a3971e17c870f7a1f21e9021146b3f170c906b065db2de14092</code></td></tr>
+<tr><td>기록 등록</td><td><code>0x52f524b8</code>–<code>0x52f52554</code></td><td><code class="wrap">7bf92dda1c4a622367b75c1e4ccfb1a445eb65bd5ac1668a741d3b3751b71df0</code></td></tr>
+<tr><td>첫 글자 검색</td><td><code>0x52f52554</code>–<code>0x52f52630</code></td><td><code class="wrap">7b96fc646c98c9e182d6af196e102d7aa2252a6a031de8375134f133e152b49f</code></td></tr>
+<tr><td>volume 관리 객체 초기화</td><td><code>0x52f5212c</code>–<code>0x52f521dc</code></td><td><code class="wrap">90b6255ac5aeee1d889b113829e74d7bbae7375d42921317e9ad2746e94b0189</code></td></tr>
+<tr><td><code>BuildPackage</code></td><td><code>0x52f3f314</code>–<code>0x52f3f654</code></td><td><code class="wrap">4d86dab453b23a70098a30e7e7d405296546755f1d9987a16fd70295f0d513d5</code></td></tr>
+</tbody></table></div>
+<ul>
+<li>형식 문자열은 <code>0x53911ab0</code>(<code>C:</code>)와 <code>0x53911ac0</code>(<code>R:</code>)에 있습니다. 글자 문자열은 <code>0x539014b4</code>(C, D), <code>0x53901484</code>(X, Y), <code>0x539014a0</code>(W), <code>0x53cb16f0</code>(J, A, B, E, F, G, H, R)에 있습니다.</li>
+<li>종류 2 분기는 <code>0x52fef330</code>에서 이름 조회 함수를, <code>0x52fef340</code>에서 크기 조회 함수를 부르고, <code>0x52fef354</code>·<code>0x52fef35c</code>·<code>0x52fef364</code>에서 상태에 종류·경로·길이를 씁니다.</li>
+<li>등록 함수는 기록의 <code>+5</code>, <code>+7</code>, <code>+0xc</code>를 0으로 두고 넷째 인수의 하위 바이트를 <code>+6</code>에 복사합니다. 같은 글자가 이미 있는지는 검사하지 않습니다.</li>
+<li>파일 이름에 쓰이는 숫자를 읽는 함수 <code>0x5310b748</code>과, 프로젝트 값을 읽는 함수 <code>0x5310b7f0</code>은 서로 다른 칸을 읽습니다(<a href="update-resources.html#selection">업데이트 검사와 ICONBIN</a>).</li>
+<li><code>BuildPackage</code>라는 이름은 <code>src/FileFactory.cpp</code> 문자열(<code>0x538fd764</code>)과 함수 이름 문자열(<code>0x538fdc80</code>)에서 왔습니다.</li>
+</ul>
+</details>
+</section>
+
+<section id="component5">
+<h2>구성 요소 5의 입력 설정은 기존 값을 지우지 않을 수 있습니다</h2>
+<p class="takeaway">구성 요소 5의 설정 함수는 주소와 길이가 둘 다 0이 아닐 때만 자기 칸을 바꿉니다. 입력 정리가 넘기는 <code>(0, 0)</code>으로는 기존 값이 그대로 남습니다.</p>
+<div class="callout fix"><strong class="label">정정</strong>
+<p>입력 정리 함수 <code>0x52feec18</code>은 <code>0x52feecc0</code>에서 이 설정 함수에 <code>(0, 0)</code>을 넘깁니다. 처음 상태의 슬롯 1 조건에서는 구성 요소 5의 기존 입력 칸이 그대로 남습니다. 따라서 “모든 구성 요소의 입력 정보를 0으로 만든다”는 앞선 설명은 정확하지 않았습니다. 설정 함수를 부르는 것과 칸이 실제로 지워지는 것을 구분해야 합니다. 관련 근거 파일 <a href="startup-storage-evidence.json">startup-storage-evidence.json</a>의 서술도 이에 맞게 고쳐져 있습니다.</p></div>
+<p>설정 함수 <code>0x52ff31c4</code>는 리소스 슬롯 1(이름 <code>M0A7CommunicationBuffer</code>)의 기준 주소를 조회합니다. 조회 함수 <code>0x52ff8de4</code>는 기준 주소가 <code>0xffffffff</code>가 아니면 그 값을 그대로 돌려줍니다. 슬롯 1의 처음 값은 기준 <code>0x509df000</code>, 길이 <code>0x100000</code>입니다.</p>
+<div class="table-wrap"><table>
+<caption>설정 함수에 넣은 값과 결과(처음 상태의 슬롯 1)</caption>
+<thead><tr><th>넘긴 주소</th><th>넘긴 길이</th><th>구성 요소의 주소 칸 <code>+0x0c</code>, 길이 칸 <code>+0x10</code></th><th>복사 호출</th></tr></thead>
+<tbody>
+<tr><th scope="row">0</th><td>0</td><td>이전 값 그대로</td><td>없음</td></tr>
+<tr><th scope="row">0</th><td>16</td><td>이전 값 그대로</td><td>없음</td></tr>
+<tr><th scope="row"><code>0x12000000</code></th><td>0</td><td>이전 값 그대로</td><td>없음</td></tr>
+<tr><th scope="row"><code>0x12000000</code></th><td>1</td><td>슬롯 기준 주소 <code>0x509df000</code>, 길이 1</td><td>있음</td></tr>
+<tr><th scope="row"><code>0x12000000</code></th><td>16</td><td>슬롯 기준 주소 <code>0x509df000</code>, 길이 16</td><td>있음</td></tr>
+</tbody></table></div>
+<p>복사하는 분기에서 함수가 돌려주는 값은 복사 함수의 반환값입니다. 저장한 기준 주소와 항상 같다고 일반화할 수 없습니다. 실제 메모리 배치, 슬롯 값이 나중에 바뀌는 경우, 기준 주소가 <code>0xffffffff</code>일 때의 지연 할당은 이번 시험 범위 밖입니다.</p>
+<details class="evidence"><summary>슬롯 1의 처음 값이 놓인 위치</summary>
+<p>RTOS는 시작할 때 초기값 영역을 ROM에서 RAM으로 복사합니다. 복사 설명 <code>0x52500450</code>은 ROM <code>0x53ce7d40</code>을 RAM <code>0x54500000</code>으로 <code>0x65a80</code>바이트 대응시킵니다. 이 관계에서 슬롯 1의 ROM 기록 <code>0x53d0d2c8</code>은 RAM <code>0x54525588</code>에 해당합니다. 기록의 네 단어는 이름 포인터 <code>0x53912b84</code>, 길이 <code>0x100000</code>, 기준 <code>0x509df000</code>, 표식 포인터 0입니다. 기록 16바이트의 SHA-256은 <code class="wrap">455b916505517d2a4b958dc73431a939b0d4dd7ebebb7dd8f96a1b407e91545f</code>입니다.</p>
+</details>
+</section>
+
+<section id="finalization">
+<h2>종료 함수의 해제 요청과 완료 통지</h2>
+<p class="takeaway">종료 함수는 먼저 입력 버퍼의 해제를 요청하고, 실행 결과가 0이 아니면 완료 메시지를 보냅니다. 해제 요청의 반환값은 통지 여부를 정하는 데 쓰이지 않습니다.</p>
+
+<figure class="diagram">
+<figcaption>종료 함수 0x52feffa8(state, result)의 순서</figcaption>
+<div class="dg-scroll">
+<svg class="dg" viewBox="0 0 800 190" role="img" aria-labelledby="dg-fin-title dg-fin-desc">
+<title id="dg-fin-title">종료 함수의 호출 순서</title>
+<desc id="dg-fin-desc">종료 함수는 진단을 남긴 뒤 입력 버퍼 해제 요청 함수를 부릅니다. 그다음 실행 결과가 0인지 봅니다. 0이면 해제 요청 함수의 반환값을 그대로 돌려주고 끝납니다. 0이 아니면 완료 통지 함수를 불러 메시지 0x2640820b를 보냅니다. 메시지를 받는 쪽은 다음 문서에서 다룹니다.</desc>
+<defs><marker id="dg-fin-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0 0L10 5L0 10z"/></marker><marker id="dg-fin-aho" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah open" d="M0 0L10 5L0 10z"/></marker></defs>
+<rect class="b ok" x="8" y="14" width="170" height="64" rx="8"/>
+<text class="t" x="20" y="41">종료 함수</text>
+<text class="s" x="20" y="61">진단을 남기고 시작</text>
+<rect class="b ok" x="204" y="14" width="186" height="64" rx="8"/>
+<text class="t" x="216" y="41">입력 해제 요청</text>
+<text class="s mono" x="216" y="61">0x52ff622c</text>
+<rect class="b ok" x="416" y="14" width="156" height="64" rx="8"/>
+<text class="t" x="428" y="41">결과가 0인가</text>
+<text class="s" x="428" y="61">해제 결과는 보지 않음</text>
+<rect class="b ok" x="602" y="14" width="190" height="64" rx="8"/>
+<text class="t" x="614" y="41">0이면 여기서 끝</text>
+<text class="s" x="614" y="61">해제 요청의 반환값 반환</text>
+<rect class="b ok" x="602" y="114" width="190" height="64" rx="8"/>
+<text class="t" x="614" y="141">0이 아니면 완료 통지</text>
+<text class="s mono" x="614" y="161">0x52ff3960</text>
+<rect class="b open" x="340" y="114" width="232" height="64" rx="8"/>
+<text class="t" x="352" y="141">완료 메시지 0x2640820b</text>
+<text class="s" x="352" y="161">받는 쪽은 다음 문서에서</text>
+<path class="e" d="M178 46H202" marker-end="url(#dg-fin-ah)"/>
+<path class="e" d="M390 46H414" marker-end="url(#dg-fin-ah)"/>
+<path class="e" d="M572 46H600" marker-end="url(#dg-fin-ah)"/>
+<path class="e" d="M494 78V96H697V112" marker-end="url(#dg-fin-ah)"/>
+<path class="e open" d="M602 146H574" marker-end="url(#dg-fin-aho)"/>
+</svg>
+</div>
+<ul class="dg-legend"><li><i class="ok"></i>원본 코드를 실행해 확인한 순서</li><li><i class="open"></i>이 문서에서 실행하지 않은 전달</li></ul>
+<p>시험에서는 해제 요청, 메시지 전송, 이벤트 경계를 값만 돌려주는 대체 함수로 바꿨습니다. 이 통지가 물리적으로 업데이트가 끝났음을 보장한다는 뜻은 아닙니다.</p>
+</figure>
+
+<ul>
+<li>종료 함수는 결과가 0이든 아니든 상태 <code>+0x48</code>의 값을 해제 요청 함수에 넘깁니다. 입력 주소가 없는 합성 사례에서도 호출을 생략하지 않았습니다.</li>
+<li>해제 요청 함수는 잠금 결과를 돌려주며, 주소가 없으면 풀의 해제 호출을 건너뜁니다(<a href="update-file-lifetimes.html#cleanup">입력 정리와 해제 함수의 반환값</a>). 시험에 넣은 반환값 <code>0xffffffff</code>는 호출자가 그 값을 어떻게 전달하는지 보려는 것이며, 실제 해제의 성공·실패 값으로 읽으면 안 됩니다.</li>
+<li>종료 함수 안에는 상태 <code>+0x48</code>(입력 주소)이나 <code>+0x44</code>(길이)를 지우는 명령이 없습니다.</li>
+<li>완료 통지 함수는 메시지 <code>0x2640820b</code>를 보내고, 아래 경계에 <code>0x20</code>을 넘긴 뒤 마지막 호출로 넘어갑니다. 결과가 0이 아닐 때 종료 함수의 반환값은 이 마지막 통지 경계의 반환값입니다.</li>
+</ul>
+
+<h3>실행 감싸기 함수는 종류에 따라 종료 함수를 거치거나 건너뜁니다</h3>
+<div class="table-wrap"><table>
+<caption>실행 감싸기 함수 <code>0x52ff0044</code>의 종류별 동작</caption>
+<thead><tr><th>종류</th><th>동작</th><th>감싸기 함수의 반환값</th><th>상태</th></tr></thead>
+<tbody>
+<tr><th scope="row">2, 6, 7</th><td>실행 함수 <code>0x52fefe98</code>를 부르고 그 결과를 종료 함수에 넘깁니다.</td><td>실행 함수가 돌려준 32비트 값 그대로. 종료 함수의 반환값이 아닙니다.</td><td><span class="badge ok">확인</span></td></tr>
+<tr><th scope="row">5</th><td>실행 함수로 바로 넘어갑니다. 이 함수의 종료 함수를 거치지 않습니다.</td><td>실행 함수의 값</td><td><span class="badge ok">확인</span></td></tr>
+<tr><th scope="row">8(범위 밖)</th><td>결과 0으로 종료 함수를 부릅니다.</td><td>0</td><td><span class="badge ok">확인</span></td></tr>
+<tr><th scope="row">0, 1, 3, 4</th><td>추가 준비 경로가 있습니다.</td><td>실행하지 않음</td><td><span class="badge static">정적 분석</span></td></tr>
+</tbody></table></div>
+<p>종류 6과 7에 실행 결과 2를 넣었을 때도 감싸기 함수는 2를 그대로 돌려줬습니다. 0과 1로만 바꿔 전달하지 않는다는 뜻입니다.</p>
+
+<h3>조회용 함수와 CheckUpdateFirmware 수신부의 정리 경로</h3>
+<p>파일을 읽어 검증만 하는 조회용 함수 <code>0x533031a0</code>은 사전 점검 → 읽기 → 검증 → 사후 점검 순서로 진행합니다. 어느 단계가 0을 돌려주면 그 자리에서 오류 바이트를 쓰고 끝냅니다.</p>
+<div class="table-wrap"><table class="fit">
+<caption>조회용 함수가 쓰는 오류 바이트</caption>
+<thead><tr><th>0을 돌려준 단계</th><th>오류 바이트</th></tr></thead>
+<tbody>
+<tr><th scope="row">사전 점검</th><td>0</td></tr>
+<tr><th scope="row">읽기</th><td>3</td></tr>
+<tr><th scope="row">검증</th><td>1</td></tr>
+<tr><th scope="row">사후 점검</th><td>3</td></tr>
+<tr><th scope="row">모두 0이 아님</th><td>호출자가 넣어 둔 값 그대로. 사후 점검의 반환값을 그대로 전달</td></tr>
+</tbody></table></div>
+<p>이 함수 안에는 입력 버퍼를 해제하는 호출이 없습니다. 위쪽 호출자의 정리와 오류 보고를 더 따라가야 하며, 이 사실만으로 누수나 이중 해제를 단정하지 않습니다.</p>
+<p>업데이트 파일의 버전을 묻는 <code>CheckUpdateFirmware</code> 요청의 수신부는 종류 2를 고른 뒤 읽기·검증·버전 조회 결과를 모두 <code>0x533167a4</code> → <code>0x52feec18(state, 1)</code>의 입력 정리로 모읍니다. 입력 주소가 없으면 <code>0x52feec34</code>에서 해제 요청을 건너뛰고 구성 요소 정리와 종류·파일 이름·길이 초기화로 갑니다. 주소가 있으면 해제 요청 함수를 부르고, 그 반환값이 0이 아닐 때만 주소를 지우고 나머지 정리를 진행합니다. 이 부분은 수신부의 분기와 호출을 읽어서 대조했고, 메시지 처리 전체와 스케줄러는 실행하지 않았습니다. 요청과 응답의 전달 경로는 <a href="startup-storage.html#receiver">M0 reset·SRAM remap·bank</a>에 있습니다.</p>
+
+<details class="evidence"><summary>종료 처리 함수 구간, 분기 표, 대체한 함수</summary>
+<div class="table-wrap"><table class="compact">
+<thead><tr><th>함수</th><th>구간</th><th>SHA-256</th></tr></thead>
+<tbody>
+<tr><td>구성 요소 5 입력 설정</td><td><code>0x52ff31c4</code>–<code>0x52ff3214</code></td><td><code class="wrap">50886550a1b4109fb2763d9e809852b7873e66928bd681440ae306b3d76377eb</code></td></tr>
+<tr><td>종료 함수</td><td><code>0x52feffa8</code>–<code>0x52ff0044</code></td><td><code class="wrap">c5bcbcfb10b6b7ae4c6fd6a1d543fee5401371841ea7f9bd9d679ef61eb38d16</code></td></tr>
+<tr><td>실행 감싸기 함수</td><td><code>0x52ff0044</code>–<code>0x52ff0198</code></td><td><code class="wrap">6bc935cd0216256e419c40e278c4856b635864898ee64bebc208f62784d97d97</code></td></tr>
+<tr><td>완료 통지</td><td><code>0x52ff3960</code>–<code>0x52ff399c</code></td><td><code class="wrap">e456061368d99403be098829caf497b0d425b533cda5b7903c588f516fc13605</code></td></tr>
+<tr><td>조회용 읽기·검증</td><td><code>0x533031a0</code>–<code>0x53303224</code></td><td><code class="wrap">b317fe67fa83e9ea8fb527ac497eefb1866b3ff81dc69fd8641b23d7ebce4300</code></td></tr>
+<tr><td>리소스 슬롯 기준 주소 조회</td><td><code>0x52ff8de4</code>–<code>0x52ff8ed0</code></td><td><code class="wrap">6e85b8290f7c1441eb69f4119e8340bbc778bdd636554048d42769addae5aeff</code></td></tr>
+</tbody></table></div>
+<ul>
+<li>감싸기 함수의 종류별 분기 표는 <code>0x52ff00d0</code>에 8칸으로 있습니다. 종류 0과 3은 <code>0x52ff014c</code>, 1과 4는 <code>0x52ff00f0</code>, 2·6·7은 <code>0x52ff0118</code>, 5는 <code>0x52ff013c</code>로 갑니다.</li>
+<li>시험에서 값만 돌려주게 바꾼 함수: 해제 요청 <code>0x52ff622c</code>, 실행 함수 <code>0x52fefe98</code>, 완료 메시지 전송 <code>0x52ff382c</code>, 이벤트 인수 <code>0x53156fec</code>, 완료 경계 <code>0x53156fa4</code>, 시작 통지 <code>0x52ff391c</code>, 응용 최상위 객체 조회 <code>0x52eaacf4</code>, 사전 점검 <code>0x52feee48</code>, 읽기 <code>0x52fee900</code>, 검증 <code>0x52fefb84</code>, 사후 점검 <code>0x53302f6c</code>, 복사 <code>0x526aac80</code>, 기록 <code>0x530fced4</code>. 기록을 쓰는 경로는 전혀 실행하지 않았습니다.</li>
+<li>수신부에서 읽어 대조한 구간: <code>0x53316304</code>–<code>0x533163d0</code>, <code>0x5331678c</code>–<code>0x533167ac</code>, <code>0x5331683c</code>–<code>0x5331689c</code>.</li>
+</ul>
+</details>
+</section>
+
+<section id="limits">
+<h2 id="checks">한계와 남은 과제</h2>
+<ul>
+<li>파일 이름·volume 19건과 종료 처리 26건, 합계 45건이 RTOS 단독 이미지와 통합 이미지에서 같은 결과를 냈습니다. 종료 처리 26건에는 다른 검토자가 추가한 경계 사례 6건이 들어 있습니다. 이 6건을 합계에 따로 더하지 않았습니다.</li>
+<li>19건은 공장 등록 순서 1건, 이름에서 기록까지 6건, 종류 2의 크기 조건 2건, 이름에서 처리기 조건까지 8건, 등록 함수 2건(빈 칸 찾기, 가득 찬 표)입니다. 26건은 구성 요소 5의 5건과 반환값 1건, 종료 함수 4건과 주소 없는 경우 2건, 감싸기 함수 6건과 결과 2를 넣은 2건, 조회용 함수 5건과 반환값 전달 1건입니다.</li>
+<li>디컴파일한 C 12개와 원본 ARM 1,622개 단어의 주소·해시를 따로 보관했습니다. 구성 요소 5의 C에는 조건 코드 표현이 풀리지 않은 채 남아 있고, 종료 함수의 C에는 성공 분기의 마지막 호출이 빠져 있습니다. C는 고치지 않고 두었으며, 조건과 반환 관계는 원본 ARM 명령과 실행 결과로 판정했습니다.</li>
+<li>실제 파일 접근, 큰 메모리 할당, 운영체제의 해제, 업데이트 실행, 물리 매체, 카메라는 실행하지 않았습니다. 이 결과는 수정 펌웨어를 카메라가 받아들이거나 정상 실행한다는 것을 보여 주지 않습니다.</li>
+<li>이어지는 조사: 설명 객체를 만드는 코드와 크기의 단위, 완료 통지를 받는 쪽은 <a href="update-media-completion.html">매체 객체와 완료 통지</a>에서 다룹니다. mount와 처리기 초기화의 실행 시점, 풀린 출력 버퍼의 최종 회수 시점은 아직 남아 있습니다.</li>
+</ul>
+</section>
+
+<section id="reproduce">
+<h2>재현 방법</h2>
+<p>두 도구는 입력의 SHA-256을 확인하고, 이미 있는 출력 파일을 덮어쓰지 않으며, Python의 assert를 끈 상태로는 실행을 거부합니다. 입력으로 RTOS 단독 이미지나 통합 이미지 <code>decoded.bin</code>을 줄 수 있습니다.</p>
+<pre><code>python verify_update_volume_path.py rtos.bin --output volume-checks.json
+python verify_update_finalization.py rtos.bin --output finalization-checks.json</code></pre>
+<dl class="kv">
+<dt>RTOS SHA-256</dt><dd><code class="wrap">342d2f35405e8daf1797dfe431d2e4aa70f4b52a2c242a29df48206672f1dfb4</code></dd>
+</dl>
+</section>
+
+<section id="refs">
+<h2>근거 파일과 참고 자료</h2>
+<ul class="refs">
+<li><a href="update-volume-path-evidence.json">update-volume-path-evidence.json</a> — 이름 생성 함수와 문자열, 기록표 생성·등록의 쓰기 위치, 조건부 간접 호출</li>
+<li><a href="update-volume-path-checks.json">update-volume-path-checks.json</a> — 파일 이름·volume 19건의 입력과 결과</li>
+<li><a href="update-finalization-evidence.json">update-finalization-evidence.json</a> — 슬롯 1의 처음 기록, 종료 함수의 명령 근거, 수신부와 정리 호출</li>
+<li><a href="update-finalization-checks.json">update-finalization-checks.json</a> — 종료 처리 26건의 입력, 반환값, 호출 순서</li>
+<li><a href="update-buffer-lifetime-evidence.json">update-buffer-lifetime-evidence.json</a> — 해제 요청 함수의 반환값 분석</li>
+<li><a href="startup-storage-evidence.json">startup-storage-evidence.json</a> — 메시지·저장소 쪽 근거(구성 요소 서술 정정 반영)</li>
+<li><a href="../verify_update_volume_path.py">verify_update_volume_path.py</a> · <a href="../verify_update_finalization.py">verify_update_finalization.py</a> — 재현 도구</li>
+<li>외부 자료: <a href="https://www.ricoh-imaging.co.jp/english/support/digital/k-3-3.html">Ricoh Imaging, K-3 Mark III 펌웨어 업데이트 안내</a>(파일 이름, SD 카드 최상위 폴더, 슬롯 1)</li>
+</ul>
+</section>
+
+</main>
+</div>
+<!-- chrome:bottom -->
+<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">펌웨어 업데이트 과정 — 이 주제의 문서</h2><ol><li><a href="guide-update.html">업데이트 과정 안내</a></li><li><a href="update-resources.html">업데이트 검사와 ICONBIN<span>프로젝트·버전·체크섬</span></a></li><li><a href="update-memory.html">입력 로더와 메모리 할당</a></li><li><a href="update-file-lifetimes.html">파일 인터페이스와 버퍼 수명</a></li><li><a href="update-volume-finalization.html" aria-current="page">파일 경로·volume·종료 처리</a></li><li><a href="update-media-completion.html">매체 객체와 완료 통지</a></li><li><a href="update-partition-io.html">R 파티션과 sector I/O</a></li><li><a href="update-bank-selection.html">쓰기 bank와 BOOT 선택</a></li><li><a href="update-ui-consumer.html">완료 후 UI 작업</a></li><li><a href="update-ui-timer.html">UI 타이머와 콜백</a></li><li><a href="update-timer-abi.html">커널 호출과 예약 시각</a></li><li><a href="update-timer-insertion.html">기한 큐 삽입</a></li><li><a href="update-timer-clock.html">타이머 설정과 64비트 카운터</a></li><li><a href="update-timer-irq.html">타이머 등록과 지연 콜백</a></li><li><a href="update-subtick-arithmetic.html">하위 시간의 32비트 산술</a></li><li><a href="update-clock-readers.html">시각 조회 함수</a></li></ol></nav>
+<nav class="pager" aria-label="이전·다음 문서"><a class="prev" href="update-file-lifetimes.html"><small>← 이전</small>파일 인터페이스와 버퍼 수명</a><a class="next" href="update-media-completion.html"><small>다음 →</small>매체 객체와 완료 통지</a></nav>
+<footer class="sitefoot"><div class="sitefoot-in"><nav aria-label="사이트"><a href="../index.html#map">문서 지도</a><a href="../index.html#levels">검증 수준 읽는 법</a><a href="../glossary.html">용어집</a><a href="research-program.html">세 기종 연구 본부</a><a href="https://github.com/yunhyok/pentax-k3iii-firmware-analysis">GitHub 저장소</a></nav><p>PENTAX K-3 Mark III 펌웨어 2.20 분석 문서. PC에서 수행한 정적 분석과 에뮬레이션 결과이며, 카메라 실기에서 검증한 내용이 아닙니다. 원본 펌웨어와 추출한 독점 코드는 포함하지 않습니다.</p></div></footer>
+<!-- /chrome:bottom -->
+</body>
+</html>

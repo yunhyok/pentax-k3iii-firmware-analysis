@@ -1,49 +1,504 @@
-<!DOCTYPE html>
-<html lang="ko"><head><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/><title>색공간 UI 입력과 focus callback</title><style>
-:root{color-scheme:light dark;--bg:#f7f8fa;--paper:#fff;--ink:#182332;--muted:#48596b;--line:#d2dbe5;--accent:#124b8e;--soft:#edf3fa;--focus:#d75f00}
-@media(prefers-color-scheme:dark){:root{--bg:#111821;--paper:#18222d;--ink:#e8edf4;--muted:#b4c2d2;--line:#405369;--accent:#98c8ff;--soft:#223348;--focus:#ffb374}}
-*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.85 system-ui,-apple-system,"Malgun Gothic",sans-serif;word-break:keep-all;overflow-wrap:anywhere}
-a{color:var(--accent);text-underline-offset:.18em}a:hover{text-decoration-thickness:2px}:focus-visible{outline:3px solid var(--focus);outline-offset:4px}
-header,main,footer{max-width:1120px;margin:auto;padding:36px clamp(18px,4vw,56px)}header{padding-top:56px;padding-bottom:24px}main{background:var(--paper);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
-.eyebrow{color:var(--muted);font-size:.84rem;letter-spacing:.06em}h1{font-size:clamp(1.85rem,4.5vw,3rem);line-height:1.35;letter-spacing:-.025em;margin:12px 0 18px}h2{font-size:1.5rem;line-height:1.5;margin:3.6rem 0 1rem;padding-top:1.2rem;border-top:1px solid var(--line)}h2:first-child{margin-top:0}h3{font-size:1.12rem;margin-top:2rem}p{margin:1rem 0}strong{font-weight:650}.intro{max-width:55em;color:var(--muted)}
-nav{margin-top:25px}nav ul{display:flex;flex-wrap:wrap;gap:8px 22px;list-style:none;padding:0;margin:0}nav ul ul{display:none}nav a{font-size:.9rem}code{font: .88em/1.6 ui-monospace,Consolas,monospace;overflow-wrap:anywhere}pre{background:var(--soft);padding:18px;overflow-x:auto;white-space:pre-wrap;border-radius:5px}pre code{font-size:.82rem}
-.table-scroll{overflow-x:auto;margin:24px 0}table{border-collapse:collapse;width:100%;font-size:.92rem;min-width:530px}th,td{text-align:left;vertical-align:top;padding:14px 16px;border-bottom:1px solid var(--line)}th{background:var(--soft);font-weight:650}td:first-child{min-width:125px}details{border-block:1px solid var(--line);margin-top:24px;padding:16px 0}summary{cursor:pointer;font-weight:650;padding:6px 0}.caption,.meta{font-size:.86rem;color:var(--muted)}
-figure{margin:32px 0;padding:24px 0;border-block:1px solid var(--line)}figcaption{font-size:.95rem;font-weight:650;margin-bottom:20px}.flow{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:32px;list-style:none;padding:0;margin:18px 0}.flow li{position:relative;padding:18px;background:var(--soft);border-radius:6px;line-height:1.6}.flow strong{display:block;font-size:1rem}.flow span{display:block;color:var(--muted);font-size:.86rem;margin-top:9px}.flow li:not(:last-child)::after{content:"→";position:absolute;right:-27px;top:40%;font-size:22px;color:var(--muted)}.second{margin-top:24px}footer{font-size:.88rem;color:var(--muted)}
-@media(max-width:620px){body{font-size:16px}header,main,footer{padding-inline:20px}.flow{grid-template-columns:1fr;gap:26px}.flow li:not(:last-child)::after{content:"↓";right:auto;left:calc(50% - 8px);top:auto;bottom:-28px}.flow li{padding:15px 18px}h2{font-size:1.3rem}nav ul{gap:10px 18px}table{font-size:.87rem}th,td{padding:12px}header{padding-top:30px}}
-@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
-@media print{body{background:white;color:black;font-size:10pt}header,main,footer{max-width:none;padding:12pt}nav{display:none}a{color:inherit}h2,figure,table{break-inside:avoid}h2{break-after:avoid}main{border:0}.flow li{background:#f1f3f5}.table-scroll{overflow:visible}table{min-width:0}details>*{display:block!important}}
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>색공간 화면에서 방향 입력이 포커스를 옮기는 과정 — PENTAX K-3 Mark III 펌웨어 연구</title>
+<meta name="description" content="K-3 Mark III 색공간 선택 화면에서 방향 이벤트 네 가지가 목록의 포커스를 옮기는 규칙, 끝에서 멈추거나 돌아가는 조건, 포커스 변경을 메뉴에 알리는 콜백 순서를 원본 ARM 코드 50개 사례로 확인한 기록입니다.">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-camera="k3iii">
+<!-- chrome:top -->
+<a class="skip" href="#main">본문 바로가기</a>
+<div class="topbar"><div class="topbar-in"><a class="brand" href="../index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="../index.html" aria-current="true">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="https://yunhyok.github.io/pentax-q7-firmware-analysis/">Q7</a></div><nav class="topnav" aria-label="주제"><a href="../index.html">개요</a><a href="guide-boot.html">부팅·저장소</a><a href="guide-update.html">업데이트</a><a href="guide-rebuild.html">재구축</a><a href="guide-rtos.html">명령·셸</a><a href="guide-color.html">색 처리</a><a href="lightroom-bridge.html">Lightroom</a><a href="af-foundations.html">AF</a><a href="ui-port-contract.html" aria-current="true">UI</a></nav></div></div>
+<nav class="crumbs" aria-label="현재 위치"><ol><li><a href="../index.html">PENTAX K-3 Mark III</a></li><li><a href="ui-port-contract.html">UI와 화면 자원</a></li><li aria-current="page">색공간 화면: 방향 입력·포커스</li></ol></nav>
+<!-- /chrome:top -->
+<header class="page-head">
+<p class="eyebrow">UI와 화면 자원 · 색공간 화면 2</p>
+<h1>색공간 화면에서 방향 입력이 포커스를 옮기는 과정</h1>
+<p class="lead">선택지 사이를 오가는 입력이 펌웨어 안에서 어떤 순서로 처리되는지 알아봤습니다. 포커스를 옮기는 일은 값을 확정하는 일과 별개의 단계이며, 화면을 옮겨 심으려면 두 단계의 경계를 정확히 알아야 합니다.</p>
+</header>
+<div class="layout">
+<!-- chrome:toc -->
+<nav class="toc" aria-label="이 문서의 목차"><h2 data-toc="no">이 문서에서</h2><ol><li><a href="#background">배경: 포커스 이동은 확정과 별개의 단계입니다</a></li><li><a href="#direction">방향 이벤트 네 가지와 목록 끝에서의 동작</a></li><li><a href="#eligibility">옮겨 갈 수 있는 행은 자격 바이트가 정합니다</a></li><li><a href="#callback">포커스가 바뀐 사실은 콜백으로 메뉴에 전달됩니다</a></li><li><a href="#transition">전환 애니메이션을 예약해도 포커스는 먼저 바뀝니다</a></li><li><a href="#verification">50가지 사례를 어떻게 실행했는가</a></li><li><a href="#limits">한계와 남은 과제</a></li><li><a href="#reproduce">재현 방법</a></li><li><a href="#refs">근거 파일과 참고 자료</a></li></ol></nav>
+<!-- /chrome:toc -->
+<main class="doc" id="main">
 
-.site-nav{border-block:1px solid var(--line);padding:14px 0;margin:20px 0}.site-nav a{display:inline-block;margin:4px 16px 4px 0}
-.review-note{background:var(--soft);padding:16px 20px;margin:24px 0}.toc{font-size:.92rem}.toc ul{list-style:none;padding-left:0}.toc ul ul{padding-left:20px}
-.branch{margin:18px 0;padding:0 0 0 24px;border-left:3px solid var(--line)}.branch p{margin:8px 0}.diagram-line{padding:12px 16px;background:var(--soft);border-radius:4px}
-</style></head><body><header><div class="eyebrow">PENTAX K-3 MARK III · FIRMWARE 2.20 · 2026-11-08</div><h1>색공간 UI 입력과 focus callback</h1><p class="intro">방향 이벤트가 리스트의 선택 index를 바꾸고, 등록된 callback을 통해 메뉴 표시 갱신을 요청하는 경로를 확인했다.</p><nav aria-label="관련 문서"><a href="../index.html">연구 개요</a> · <a href="colorspace-ui.html">선택·확정·리소스</a> · <a href="ui-port-contract.html">기종 간 이식 조건</a></nav></header><main><figure><figcaption>원본 ARM으로 확인한 입력·상태·callback 순서</figcaption><ol class="flow"><li><strong>방향 이벤트</strong><span>df / e0: 경계 순환<br/>e3 / e4: 경계 정지<br/>실제 버튼 대응은 미확정</span></li><li><strong>focus 변경</strong><span>item +178로 이동 자격 검사<br/>이전 item callback<br/>list +1ce 기록 → 새 item callback</span></li><li><strong>메뉴 표시 callback</strong><span>list +220 → 5278ecd0<br/>5278ec04 → 5278e4ac<br/>마지막 표시 함수는 실행 경계</span></li></ol></figure>
-<p>route <code>0200009f</code>의 descriptor72(십진수)를 기준으로, 방향 이벤트에서 실제 <code>list+0x1ce</code> 저장까지 연결했다. <code>df/e0</code>는 양 끝에서 순환하고 <code>e3/e4</code>는 해당 경계에서 멈춘다. 목록의 focus 변경은 옵션 확정·저장과 별도이며 실제 등록된 menu focus callback이 표시 갱신 경계로 이어지는 부분도 확인했다. 원본 ARM 검사 50개가 통과했다. [<a href="colorspace-ui-input-checks.json">검사 기록</a>, <a href="colorspace-ui-input-evidence.json">주소·hash·관계 증거</a>]</p>
-<p>원본 RTOS base <code>52500000</code>, SHA-256 <code>342d2f35405e8daf1797dfe431d2e4aa70f4b52a2c242a29df48206672f1dfb4</code>. 주소와 offset은 16진수다. descriptor72는 <code>536439e0 + 72 × 5c = 536453c0</code>이며 byte+3=1이다. <code>M</code>은 menu, <code>L=M.ptr[1c8]</code>은 list다. 물리 버튼이나 다이얼의 이름은 추정하지 않았다.</p>
-<h2>방향과 경계 조건</h2>
-<div class="table-scroll"><table><thead><tr><th>이벤트</th><th>실제 전달</th><th>색 공간 메뉴에서의 경계</th></tr></thead><tbody>
-<tr><td>df</td><td>5278f0f8..fc →5278d9b0(M,0) →52c0e948(L,−1,1)</td><td>index0에서도 descriptor+3=1이므로 마지막 항목으로 순환</td></tr>
-<tr><td>e3</td><td>5278f030..34 →5278d9b0(M,1)</td><td>index0이면 5278d9dc에서 return; 그 외 delta−1</td></tr>
-<tr><td>e0</td><td>5278f0e4..e8 →5278da1c(M,0) →52c0e948(L,+1,1)</td><td>마지막 index에서도 descriptor+3=1이므로 index0으로 순환</td></tr>
-<tr><td>e4</td><td>5278f0d8..dc →5278da1c(M,1)</td><td>마지막 index이면 5278daa0에서 return; 그 외 delta+1</td></tr>
+<section class="summary">
+<h2 data-toc="no">핵심 요약</h2>
+<ul>
+<li>방향 이벤트는 네 가지입니다. 두 가지는 목록 끝에서 <strong>반대쪽 끝으로 돌아가고</strong>, 나머지 두 가지는 끝에서 <strong>멈춥니다</strong>. 어떤 버튼이나 다이얼이 이 이벤트를 만드는지는 확인하지 않았습니다.</li>
+<li>포커스 이동은 목록 객체의 <strong>포커스 번호 하나</strong>를 바꾸는 일입니다. 설정값은 건드리지 않습니다. 옮겨 갈 수 있는 행인지는 행마다 있는 자격 바이트가 정하며, 표시 여부나 확정 차단과는 다른 바이트입니다.</li>
+<li>포커스가 바뀌면 이전 행 알림 → 번호 기록 → 새 행 알림 → 메뉴 콜백 순서로 호출됩니다. 메뉴 콜백은 표시를 갱신하는 함수의 입구까지 이어집니다.</li>
+<li>전환 애니메이션을 예약하는 경우에도 포커스 번호는 예약보다 먼저 바뀝니다.</li>
+<li>원본 ARM 코드를 PC 에뮬레이터에서 <strong>50가지 합성 상황</strong>으로 실행했습니다. 그리기, 스케줄러, 시계는 호출만 기록하는 대체 함수였고 화면이 실제로 그려지는 과정은 실행하지 않았습니다.</li>
+</ul>
+</section>
+
+<div class="scope">
+<div class="ok"><h3><span class="badge ok">확인</span> 원본 코드 실행으로 확인</h3>
+<ul>
+<li>이벤트 네 가지의 이동 방향과 끝에서의 동작</li>
+<li>자격 없는 행을 건너뛰는 검색과 포커스 번호 기록</li>
+<li>콜백 호출 순서, 메뉴 콜백 등록과 호출</li>
+<li>전환 준비와 두 번째 이벤트의 정리 순서</li>
+</ul></div>
+<div class="static"><h3><span class="badge static">정적 분석</span> 코드를 읽어 판단</h3>
+<ul>
+<li>표시 갱신 함수가 머리글 함수와 표시 여부 설정으로 이어지는 것</li>
+<li>행 객체의 기본 생성자가 넣는 초기값</li>
+</ul></div>
+<div class="model"><h3><span class="badge model">모델</span> 시험 조건으로 정한 것</h3>
+<ul>
+<li>메뉴·목록·행 객체와 행 크기·스크롤 위치</li>
+<li>행의 알림 함수는 시험이 넣어 준 기록용 함수</li>
+<li>그리기 무효화, 스케줄러, 시계, 힙은 대체 함수</li>
+<li>CPU는 Unicorn의 Cortex-A15 모델</li>
+</ul></div>
+<div class="open"><h3><span class="badge open">미확인</span> 확인하지 않은 것</h3>
+<ul>
+<li>이벤트를 만드는 실제 버튼·다이얼·터치</li>
+<li>애니메이션의 시간 진행과 실제 화면 프레임</li>
+<li>실제 색공간 행 객체의 가상 함수 표</li>
+<li>빈 목록, 자격 있는 행이 하나도 없는 목록</li>
+</ul></div>
+</div>
+
+<section id="background">
+<h2>배경: 포커스 이동은 확정과 별개의 단계입니다</h2>
+<p>색공간 선택 화면에는 sRGB와 AdobeRGB 두 행이 있습니다. <a href="colorspace-ui.html">앞 문서</a>에서 본 것처럼 화면에서 고르는 중인 값은 목록 객체의 포커스 번호(<code>list+0x1ce</code>)이고, 확정 이벤트가 와야 그 번호가 설정 함수로 넘어갑니다. 앞 문서의 시험은 이 번호를 직접 써 넣었습니다. 이 문서는 그 빈칸, 곧 <strong>방향 이벤트가 실제로 이 번호를 바꾸는 과정</strong>을 원본 코드로 실행한 기록입니다.</p>
+<p>아래에서 M은 메뉴 controller 객체, L은 M의 <code>+0x1c8</code>이 가리키는 목록 객체입니다. 색공간 화면은 descriptor 72번(10진수, 주소 <code>0x536453c0</code>)을 씁니다. 그 밖의 주소와 offset은 모두 16진수입니다. 이벤트 번호는 펌웨어 안의 숫자일 뿐이며, 물리 버튼이나 다이얼의 이름을 붙이지 않았습니다.</p>
+
+<figure class="diagram">
+<figcaption>방향 이벤트 하나가 처리되는 순서</figcaption>
+<div class="dg-scroll">
+<svg class="dg" viewBox="0 0 800 314" role="img" aria-labelledby="dg-order-title dg-order-desc">
+<title id="dg-order-title">방향 이벤트에서 표시 갱신 입구까지의 호출 순서</title>
+<desc id="dg-order-desc">메뉴 이벤트 처리 함수가 이벤트 번호로 분기해 방향 wrapper를 부릅니다. wrapper는 목록 끝인지 검사해 멈추거나 목록 이동 함수로 넘깁니다. 목록 이동 함수는 자격 있는 행을 찾아 포커스 설정 함수를 부릅니다. 포커스 설정 함수는 네 가지를 차례로 합니다. 첫째 이전 행의 알림 함수 호출, 둘째 포커스 번호 기록, 셋째 새 행의 알림 함수 호출, 넷째 메뉴 콜백 호출입니다. 메뉴 콜백은 메뉴 쪽 처리 함수를 거쳐 표시 갱신 함수 입구에 이릅니다. 시험은 그 입구에서 멈추며 실제 그리기는 실행하지 않았습니다.</desc>
+<defs><marker id="dg-order-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0 0L10 5L0 10z"/></marker><marker id="dg-order-aho" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah open" d="M0 0L10 5L0 10z"/></marker></defs>
+
+<rect class="b ok" x="8" y="14" width="170" height="72" rx="8"/>
+<text class="t" x="20" y="39">메뉴 이벤트 처리</text>
+<text class="s" x="20" y="58">0x5278ef84</text>
+<text class="s" x="20" y="76">이벤트 번호로 분기</text>
+
+<rect class="b ok" x="214" y="14" width="170" height="72" rx="8"/>
+<text class="t" x="226" y="39">방향 wrapper</text>
+<text class="s" x="226" y="58">목록 끝인지 검사</text>
+<text class="s" x="226" y="76">멈춤 또는 통과</text>
+
+<rect class="b ok" x="420" y="14" width="170" height="72" rx="8"/>
+<text class="t" x="432" y="39">목록 이동</text>
+<text class="s" x="432" y="58">0x52c0e948</text>
+<text class="s" x="432" y="76">자격 있는 행 찾기</text>
+
+<rect class="b key" x="626" y="14" width="166" height="72" rx="8"/>
+<text class="t" x="638" y="39">포커스 설정</text>
+<text class="s" x="638" y="58">0x52c0e25c</text>
+<text class="s" x="638" y="76">아래 ①~④를 실행</text>
+
+<rect class="b model" x="8" y="126" width="170" height="72" rx="8"/>
+<text class="t" x="20" y="151">① 이전 행 알림</text>
+<text class="s" x="20" y="170">가상 함수 칸 +0x70</text>
+<text class="s" x="20" y="188">기본 함수면 생략</text>
+
+<rect class="b ok" x="214" y="126" width="170" height="72" rx="8"/>
+<text class="t" x="226" y="151">② 번호 기록</text>
+<text class="s" x="226" y="170">L+0x1ce ← 새 번호</text>
+<text class="s" x="226" y="188">16비트 저장</text>
+
+<rect class="b model" x="420" y="126" width="170" height="72" rx="8"/>
+<text class="t" x="432" y="151">③ 새 행 알림</text>
+<text class="s" x="432" y="170">가상 함수 칸 +0x6c</text>
+<text class="s" x="432" y="188">L+0x1d0이 0이 아닐 때</text>
+
+<rect class="b ok" x="626" y="126" width="166" height="72" rx="8"/>
+<text class="t" x="638" y="151">④ 메뉴 콜백</text>
+<text class="s" x="638" y="170">L+0x220의 함수 호출</text>
+<text class="s" x="638" y="188">L+0x224가 0이 아닐 때</text>
+
+<rect class="b ok" x="420" y="236" width="170" height="68" rx="8"/>
+<text class="t" x="432" y="260">메뉴 쪽 처리</text>
+<text class="s" x="432" y="278">0x5278ecd0 →</text>
+<text class="s" x="432" y="295">0x5278ec04</text>
+
+<rect class="b model" x="214" y="236" width="170" height="68" rx="8"/>
+<text class="t" x="226" y="260">표시 갱신 입구</text>
+<text class="s" x="226" y="278">0x5278e4ac</text>
+<text class="s" x="226" y="295">시험은 여기서 멈춤</text>
+
+<rect class="b open" x="8" y="236" width="170" height="68" rx="8"/>
+<text class="t" x="20" y="260">실제 그리기</text>
+<text class="s" x="20" y="278">머리글·표시 여부 갱신</text>
+<text class="s" x="20" y="295">실행하지 않음</text>
+
+<path class="e" d="M178 50H212" marker-end="url(#dg-order-ah)"/>
+<path class="e" d="M384 50H418" marker-end="url(#dg-order-ah)"/>
+<path class="e" d="M590 50H624" marker-end="url(#dg-order-ah)"/>
+<path class="e" d="M709 86V106H93V124" marker-end="url(#dg-order-ah)"/>
+<path class="e" d="M178 162H212" marker-end="url(#dg-order-ah)"/>
+<path class="e" d="M384 162H418" marker-end="url(#dg-order-ah)"/>
+<path class="e" d="M590 162H624" marker-end="url(#dg-order-ah)"/>
+<path class="e" d="M709 198V270H592" marker-end="url(#dg-order-ah)"/>
+<path class="e" d="M420 270H386" marker-end="url(#dg-order-ah)"/>
+<path class="e open" d="M214 270H180" marker-end="url(#dg-order-aho)"/>
+</svg>
+</div>
+<ul class="dg-legend"><li><i class="ok"></i>원본 코드 실행으로 확인</li><li><i class="key"></i>이 문서의 중심 함수</li><li><i class="model"></i>시험이 넣어 준 함수·대체한 경계</li><li><i class="open"></i>미확인</li></ul>
+</figure>
+</section>
+
+<section id="direction">
+<h2>방향 이벤트 네 가지와 목록 끝에서의 동작</h2>
+<p class="takeaway">이벤트 <code>0xdf</code>와 <code>0xe0</code>은 끝에서 반대쪽으로 돌아가고, <code>0xe3</code>과 <code>0xe4</code>는 끝에서 멈춥니다. 색공간 화면처럼 행이 둘이면 앞의 둘은 항상 다른 행으로 넘어갑니다.</p>
+
+<figure class="diagram">
+<figcaption>행이 두 개인 색공간 화면에서 이벤트별 포커스 이동 (8개 사례)</figcaption>
+<div class="dg-scroll">
+<svg class="dg" viewBox="0 0 800 266" role="img" aria-labelledby="dg-grid-title dg-grid-desc">
+<title id="dg-grid-title">방향 이벤트 네 가지의 포커스 이동 결과</title>
+<desc id="dg-grid-desc">네 칸에 이벤트별 결과를 그렸습니다. 이벤트 0xdf는 번호가 줄어드는 방향입니다. 행 1에서는 행 0으로 가고, 행 0에서는 끝을 넘어 행 1로 돌아갑니다. 이벤트 0xe3도 줄어드는 방향이지만 행 0에서는 움직이지 않습니다. 이벤트 0xe0은 번호가 늘어나는 방향입니다. 행 0에서는 행 1로 가고, 행 1에서는 끝을 넘어 행 0으로 돌아갑니다. 이벤트 0xe4도 늘어나는 방향이지만 행 1에서는 움직이지 않습니다.</desc>
+<defs><marker id="dg-grid-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0 0L10 5L0 10z"/></marker><marker id="dg-grid-ahk" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah key" d="M0 0L10 5L0 10z"/></marker></defs>
+
+<rect class="gf" x="8" y="8" width="190" height="250" rx="12"/>
+<text class="h" x="20" y="30">0xdf · 번호 −1 · 순환</text>
+<rect class="b" x="58" y="70" width="90" height="44" rx="8"/>
+<text class="t mid" x="103" y="97">행 0</text>
+<rect class="b" x="58" y="160" width="90" height="44" rx="8"/>
+<text class="t mid" x="103" y="187">행 1</text>
+<path class="e" d="M84 160V116" marker-end="url(#dg-grid-ah)"/>
+<path class="e key" d="M128 70V54H178V220H128V206" marker-end="url(#dg-grid-ahk)"/>
+<text class="n" x="20" y="246">행 0에서는 행 1로 돌아감</text>
+
+<rect class="gf" x="205" y="8" width="190" height="250" rx="12"/>
+<text class="h" x="217" y="30">0xe3 · 번호 −1 · 멈춤</text>
+<rect class="b" x="255" y="70" width="90" height="44" rx="8"/>
+<text class="t mid" x="300" y="97">행 0</text>
+<rect class="b" x="255" y="160" width="90" height="44" rx="8"/>
+<text class="t mid" x="300" y="187">행 1</text>
+<path class="e" d="M281 160V116" marker-end="url(#dg-grid-ah)"/>
+<path class="e" d="M325 70V54"/>
+<path class="e" d="M311 54H339"/>
+<text class="s topen" x="345" y="58">멈춤</text>
+<text class="n" x="217" y="246">행 0에서는 움직이지 않음</text>
+
+<rect class="gf" x="402" y="8" width="190" height="250" rx="12"/>
+<text class="h" x="414" y="30">0xe0 · 번호 +1 · 순환</text>
+<rect class="b" x="452" y="70" width="90" height="44" rx="8"/>
+<text class="t mid" x="497" y="97">행 0</text>
+<rect class="b" x="452" y="160" width="90" height="44" rx="8"/>
+<text class="t mid" x="497" y="187">행 1</text>
+<path class="e" d="M478 114V158" marker-end="url(#dg-grid-ah)"/>
+<path class="e key" d="M522 204V220H572V54H522V68" marker-end="url(#dg-grid-ahk)"/>
+<text class="n" x="414" y="246">행 1에서는 행 0으로 돌아감</text>
+
+<rect class="gf" x="599" y="8" width="193" height="250" rx="12"/>
+<text class="h" x="611" y="30">0xe4 · 번호 +1 · 멈춤</text>
+<rect class="b" x="649" y="70" width="90" height="44" rx="8"/>
+<text class="t mid" x="694" y="97">행 0</text>
+<rect class="b" x="649" y="160" width="90" height="44" rx="8"/>
+<text class="t mid" x="694" y="187">행 1</text>
+<path class="e" d="M675 114V158" marker-end="url(#dg-grid-ah)"/>
+<path class="e" d="M719 204V220"/>
+<path class="e" d="M705 220H733"/>
+<text class="s topen" x="739" y="224">멈춤</text>
+<text class="n" x="611" y="246">행 1에서는 움직이지 않음</text>
+</svg>
+</div>
+<ul class="dg-legend"><li><i></i>행</li><li><i class="key"></i>굵은 선: 끝을 넘어 반대쪽으로 순환</li><li>가로 막대와 ‘멈춤’: 끝에서 움직이지 않음</li></ul>
+<p>여덟 사례 모두 원본 이벤트 처리 함수부터 실행했습니다. 멈춘 두 사례에서는 포커스 번호를 쓰는 일이 한 번도 없었고, 목록 이동 함수에 들어가지도 않았습니다.</p>
+</figure>
+
+<p>이벤트 처리 함수는 이벤트 번호에 따라 방향 wrapper 둘 중 하나를 부르고, 두 번째 인수로 ‘끝에서 멈출지’를 넘깁니다.</p>
+<div class="table-wrap"><table>
+<caption>이벤트별 호출과 끝에서의 판단</caption>
+<thead><tr><th>이벤트</th><th>부르는 함수</th><th>끝이 아닐 때</th><th>끝에 있을 때</th></tr></thead>
+<tbody>
+<tr><th scope="row"><code>0xdf</code></th><td><code>0x5278d9b0(M, 0)</code></td><td>번호 −1</td><td>행 0에서: descriptor의 바이트 <code>+3</code>이 1이라 마지막 행으로 순환</td></tr>
+<tr><th scope="row"><code>0xe3</code></th><td><code>0x5278d9b0(M, 1)</code></td><td>번호 −1</td><td>행 0에서: <code>0x5278d9dc</code>에서 바로 복귀</td></tr>
+<tr><th scope="row"><code>0xe0</code></th><td><code>0x5278da1c(M, 0)</code></td><td>번호 +1</td><td>마지막 행에서: descriptor의 바이트 <code>+3</code>이 1이라 행 0으로 순환</td></tr>
+<tr><th scope="row"><code>0xe4</code></th><td><code>0x5278da1c(M, 1)</code></td><td>번호 +1</td><td>마지막 행에서: <code>0x5278daa0</code>에서 바로 복귀</td></tr>
 </tbody></table></div>
-<p>arg1은 경계에서의 이동을 억제한다. arg0도 모든 메뉴에서 순환한다는 뜻은 아니며 해당 경계에서 descriptor.byte3이0이면 return한다. 색 공간 row에서는 이 값이1이다. 양의 방향 wrapper는 row+8의 count callback <code>5277620c</code>로 항목수2를 얻는다. [<a href="colorspace-ui-input-evidence.json">event 전체</a>, <a href="colorspace-ui-input-evidence.json">음의 방향</a>, <a href="colorspace-ui-input-evidence.json">양의 방향</a>]</p>
-<h2>실제 focus writer와 서로 다른 row 상태</h2>
-<p><code>52c0e948</code>은 현재 index의 앞이나 뒤를 검색하고 필요하면 반대쪽으로 돌아가며 <code>item.byte[178] != 0</code>인 항목을 이동 대상으로 센다. <code>52c0e25c</code>도 대상의 이 byte를 검사한 뒤, 대상이 바뀌면 <code>52c0e2cc STRH</code>로 L+1ce에 저장한다. 후보가 부적격이면 저장 전에 돌아간다. [<a href="colorspace-ui-input-evidence.json">목록 이동</a>, <a href="colorspace-ui-input-evidence.json">focus setter</a>]</p>
-<div class="table-scroll"><table><tr><th>필드</th><th>확인된 소비·생산 관계</th></tr>
-<tr><td>item+178</td><td>이동 검색과 focus setter가 사용하는 자격 byte. base item constructor는1로 초기화한다. 실제 색 공간 item의 이후 생산자·정책 전체는 미확정이다.</td></tr>
-<tr><td>item+8a</td><td>generic visibility getter/setter가 읽고 쓰는 별도 byte. 이 값만0으로 바꾸고 item을 합성 pointer array에 남긴 검사에서는 이동이 계속됐다. 실제 숨김 처리에서 목록·기하가 어떻게 재구성되는지는 검사하지 않았다.</td></tr>
-<tr><td>item+17a</td><td>색 공간 confirm 경로5278db58..60이 확인하는 차단 byte. base constructor는0으로 초기화한다. 이 byte가1인 합성 row도+178이1이면 이동 대상이 됐다. focus 가능과 확정 가능을 같은 상태로 취급할 수 없다.</td></tr></table></div>
-<p>근거: <a href="colorspace-ui-input-evidence.json">base item constructor</a>, <a href="colorspace-ui-input-evidence.json">visibility setter</a>, <a href="colorspace-ui-input-evidence.json">17a setter</a>, <a href="colorspace-ui-input-evidence.json">confirm gate</a>. synthetic flag 검사는 실제 UI의 hidden/disabled row 생성 조건을 입증한 것이 아니다.</p>
-<h2>Callback과 표시 갱신 경계</h2>
-<p>변경된 유효 target에 대한 <code>52c0e25c</code>의 순서는 다음과 같다. 기존 item의 vslot+70을 호출하되 기본 함수 <code>52c0d6c4</code>이면 생략한다. 이어 L+1ce를 기록한다. L.byte1d0이 nonzero이면 새 item의 vslot+6c를 호출하되 기본 함수 <code>52c0d6c0</code>이면 생략한다. 마지막으로 L.byte224가 nonzero이면 <code>52c0e1c0</code>을 통해 focus-change callback을 호출한다. supplied callback 검사에서 이전 callback은 이전 index, 이후 callback은 새 index를 읽었다. 실제 색 공간 row의 동적 item vptr까지 복원한 것은 아니다.</p>
-<p><code>FocusChangeCallBack</code> 문자열 <code>53872c18</code>과 <code>View/ScrollList/ScrollListView.cpp</code> 문자열 <code>53628364</code>가 focus notification 함수에서 사용된다. 이 함수는 L+220을 읽어 <code>52c0e238 BX r3</code>로 호출하며 r0=L+214 closure, r1=새 focus를 넘긴다. [<a href="colorspace-ui-input-evidence.json">notification 함수</a>, <a href="colorspace-ui-input-evidence.json">기본 no-op callback</a>]</p>
-<p>이 callback의 실제 menu 등록도 이어진다. <code>5278dcd0..5278dd54</code>의 첫 등록 block은 menu pointer를 담은 closure, manager <code>5278b7b0</code>, invoker <code>5278ecd0</code>를 만든다. <code>52c0dfcc</code>는 복사된 closure를 L+214, manager를+21c, invoker를+220에 저장하고+224를 활성화한다. 따라서 이후 실제 focus 변경은 <code>5278ecd0 → 5278ec04</code>를 호출한다. 색 공간 descriptor+38/+3c는 모두0이므로 row별 hook을 생략하고 byte0=1에 따라 <code>5278ecc4 → 5278e4ac</code> 표시 갱신 경계로 들어간다. [<a href="colorspace-ui-input-evidence.json">등록 block</a>, <a href="colorspace-ui-input-evidence.json">installer</a>, <a href="colorspace-ui-input-evidence.json">menu callback</a>, <a href="colorspace-ui-input-evidence.json">표시 갱신 함수</a>]</p>
-<p>두 수치 검사는 등록 block과 원래 closure manager·installer를 실행한 다음 실제 방향 이벤트로 실제 menu callback까지 진입했다. <code>5278e4ac</code>는 그 검사에서 명시적 stub이다. 정적 ARM상 이 함수는 row+18 callback <code>52776a08</code> 및 visibility setter로 이어지지만 그 아래의 실제 그리기를 실행했다고 주장하지 않는다.</p>
-<h2>Animation 경로의 확인 범위</h2>
-<p>목록 검색이 경계를 넘어 순환하면 <code>52c0eac0</code>에서 transition 인자를0으로 바꾼다. 즉시 경로는 focus setter와 scroll setter를 부른다. 순환하지 않는 이동에 transition 인자가1이면 <code>52c0e838</code>로 가서 L.byte1dc=2와 전환용 위치값을 기록한다. 이 함수도 <code>52c0e900</code>에서 focus setter를 먼저 호출하고 나중에 <code>52c0e920 → 528f8228</code>로 scheduler 등록을 요청한다. 화면 animation이 끝난 뒤에야 focus가 바뀐다는 구조는 아니다. [<a href="colorspace-ui-input-evidence.json">전환 준비 범위·해시</a>]</p>
-<p>두 번째 이벤트가 목록 이동 함수 <code>52c0e948</code>에 진입하면 기존 state2를 먼저 정리한다. <code>52c0e528</code>은 scheduler 해제를 요청하고 저장된 scroll target을 적용한 뒤 current focus를 다시 setter에 전달하고 state를 0으로 바꾼다. <code>e0→e0</code> 검사에서 focus 0→1→0과 scheduler 등록 후 해제를 확인했다. 경계에 도달한 뒤 <code>e0→e4</code>와 <code>df→e3</code>의 두 번째 이벤트는 각각 <code>5278daa0</code>, <code>5278d9dc</code>에서 목록 이동 함수에 진입하기 전에 반환한다. 두 사례 모두 focus와 state2를 유지했고 scheduler 해제 요청은 없었다. asynchronous tick, 시간 곡선, 실제 frame, state1 전환은 이번 범위 밖이다. [<a href="colorspace-ui-input-evidence.json">전환 정리 함수</a>]</p>
-<h2>재현과 한계</h2>
-<p>검사 50개는 방향 이벤트 8개, 4행 이동 16개, 자격 검색 12개, 별도 상태 byte 4개, focus setter 5개, 연속 이벤트 3개, 실제 callback 등록 block→소비 2개로 구성된다. 이전 population/confirm 검사 횟수를 합산하지 않았다. 원본 geometry 복사·높이·누적위치, 검색·저장·전환 준비는 그대로 실행하고 rendering·scheduler·clock·heap과 supplied callback만 주소별로 stub 처리했다. [<a href="../verify_colorspace_ui_input.py">독립 수치 검사</a>, <a href="colorspace-ui-input-evidence.json">소스 검증</a>]</p>
-<pre>python verify_colorspace_ui_input.py rtos.bin --output colorspace-ui-input-checks.json</pre>
-<p class="limit">입력은 SHA-256으로 검증한 RTOS 또는 decoded.bin이다. synthetic menu/list와 geometry를 사용하며 OS·렌즈·camera·media I/O는 없다. 첫 callback 등록 block은 부분 실행이며 전체 3개 action 등록이나 full window lifecycle은 아니다. zero-sized/all-ineligible list, 실제 hidden-row membership 재구성, 실제 color-row vtable 대상, 물리 입력 producer는 미확정이다. Cortex-A15 emulation을 카메라 fidelity로 간주하지 않는다. genuine angr C8개는 수정 없이 보존했고 predication·타입 오류가 있을 수 있으므로 ARM이 판단 기준이다.</p>
-</main><footer>50개 합성 CPU 검사다. 물리 입력·비동기 animation tick·완성 화면·전체 창 수명 주기는 검증하지 않았다. 화면 렌더링 검사는 생략하고 HTML 구조·링크를 확인했다.</footer></body></html>
+<ul>
+<li>두 번째 인수가 1이면 끝에서 이동을 막습니다.</li>
+<li>두 번째 인수가 0이어도 모든 메뉴가 순환하는 것은 아닙니다. 끝에 있을 때 descriptor의 바이트 <code>+3</code>을 보고, 0이면 복귀합니다. 색공간 descriptor는 이 값이 1입니다.</li>
+<li>번호가 늘어나는 쪽 wrapper는 descriptor의 개수 함수(<code>0x5277620c</code>)를 불러 선택지 수 2를 얻고 마지막 행인지 판단합니다.</li>
+<li>두 wrapper는 통과시킬 때 목록 이동 함수를 <code>0x52c0e948(L, −1 또는 +1, 1)</code>로 부릅니다. 마지막 인수 1은 전환 애니메이션 요청입니다.</li>
+</ul>
+
+<details class="evidence"><summary>이벤트 분기 위치</summary>
+<div class="table-wrap"><table class="compact">
+<thead><tr><th>이벤트</th><th>분기 위치</th><th>방향 wrapper</th></tr></thead>
+<tbody>
+<tr><td><code>0xdf</code></td><td><code>0x5278f0f8</code>–<code>0x5278f0fc</code></td><td>번호가 줄어드는 쪽 <code>0x5278d9b0</code>–<code>0x5278da1c</code></td></tr>
+<tr><td><code>0xe3</code></td><td><code>0x5278f030</code>–<code>0x5278f034</code></td><td>같은 함수</td></tr>
+<tr><td><code>0xe0</code></td><td><code>0x5278f0e4</code>–<code>0x5278f0e8</code></td><td>번호가 늘어나는 쪽 <code>0x5278da1c</code>–<code>0x5278dac0</code></td></tr>
+<tr><td><code>0xe4</code></td><td><code>0x5278f0d8</code>–<code>0x5278f0dc</code></td><td>같은 함수</td></tr>
+</tbody></table></div>
+<p class="small">개수 함수는 <code>0x5278da74</code>의 간접 호출로 불립니다. descriptor의 <code>+0x08</code> 칸(<code>0x536453c8</code>)에 함수 주소가, <code>+0x0c</code> 칸에 보정값 0이 들어 있습니다.</p>
+</details>
+</section>
+
+<section id="eligibility">
+<h2>옮겨 갈 수 있는 행은 자격 바이트가 정합니다</h2>
+<p class="takeaway">목록 이동 함수는 행의 바이트 <code>+0x178</code>이 0이 아닌 행만 이동 대상으로 셉니다. 표시 여부 바이트(<code>+0x8a</code>)나 확정 차단 바이트(<code>+0x17a</code>)는 이동에 영향을 주지 않았습니다.</p>
+
+<figure class="diagram">
+<figcaption>행 네 개짜리 합성 목록에서 자격 없는 행을 건너뛰는 사례 (조건 6가지 × 전환 요청 유무 = 12개)</figcaption>
+<div class="dg-scroll">
+<svg class="dg" viewBox="0 0 800 326" role="img" aria-labelledby="dg-elig-title dg-elig-desc">
+<title id="dg-elig-title">자격 바이트에 따른 포커스 도착 행</title>
+<desc id="dg-elig-desc">여섯 줄에 각각 행 0부터 행 3까지 네 칸을 그렸습니다. 첫째 줄은 행 1에 자격이 없고 행 0에서 번호가 늘어나는 방향으로 움직여 행 2에 도착합니다. 둘째 줄은 같은 목록에서 행 2에서 줄어드는 방향으로 움직여 행 0에 도착합니다. 셋째 줄은 행 2와 3에 자격이 없고 행 0에서 줄어드는 방향으로 움직여 끝을 넘어 행 1에 도착합니다. 넷째 줄은 행 0과 2에 자격이 없고 행 3에서 늘어나는 방향으로 움직여 끝을 넘어 행 1에 도착합니다. 다섯째와 여섯째 줄은 행 1만 자격이 있고 행 1에서 출발해 어느 방향으로도 제자리에 머뭅니다.</desc>
+<text class="h mid" x="230" y="24">행 0</text>
+<text class="h mid" x="300" y="24">행 1</text>
+<text class="h mid" x="370" y="24">행 2</text>
+<text class="h mid" x="440" y="24">행 3</text>
+<text class="h" x="496" y="24">결과</text>
+
+<text class="s" x="12" y="60">행 0에서 번호 +1</text>
+<rect class="b key" x="200" y="38" width="60" height="34" rx="6"/><text class="s mid" x="230" y="60">출발</text>
+<rect class="b mute" x="270" y="38" width="60" height="34" rx="6"/><text class="s mid" x="300" y="60">×</text>
+<rect class="b ok" x="340" y="38" width="60" height="34" rx="6"/><text class="s mid" x="370" y="60">도착</text>
+<rect class="b" x="410" y="38" width="60" height="34" rx="6"/>
+<text class="s" x="496" y="60">행 1을 건너뛰어 행 2</text>
+
+<text class="s" x="12" y="108">행 2에서 번호 −1</text>
+<rect class="b ok" x="200" y="86" width="60" height="34" rx="6"/><text class="s mid" x="230" y="108">도착</text>
+<rect class="b mute" x="270" y="86" width="60" height="34" rx="6"/><text class="s mid" x="300" y="108">×</text>
+<rect class="b key" x="340" y="86" width="60" height="34" rx="6"/><text class="s mid" x="370" y="108">출발</text>
+<rect class="b" x="410" y="86" width="60" height="34" rx="6"/>
+<text class="s" x="496" y="108">행 1을 건너뛰어 행 0</text>
+
+<text class="s" x="12" y="156">행 0에서 번호 −1</text>
+<rect class="b key" x="200" y="134" width="60" height="34" rx="6"/><text class="s mid" x="230" y="156">출발</text>
+<rect class="b ok" x="270" y="134" width="60" height="34" rx="6"/><text class="s mid" x="300" y="156">도착</text>
+<rect class="b mute" x="340" y="134" width="60" height="34" rx="6"/><text class="s mid" x="370" y="156">×</text>
+<rect class="b mute" x="410" y="134" width="60" height="34" rx="6"/><text class="s mid" x="440" y="156">×</text>
+<text class="s" x="496" y="156">끝을 넘어 행 3·2를 건너뛰고 행 1</text>
+
+<text class="s" x="12" y="204">행 3에서 번호 +1</text>
+<rect class="b mute" x="200" y="182" width="60" height="34" rx="6"/><text class="s mid" x="230" y="204">×</text>
+<rect class="b ok" x="270" y="182" width="60" height="34" rx="6"/><text class="s mid" x="300" y="204">도착</text>
+<rect class="b mute" x="340" y="182" width="60" height="34" rx="6"/><text class="s mid" x="370" y="204">×</text>
+<rect class="b key" x="410" y="182" width="60" height="34" rx="6"/><text class="s mid" x="440" y="204">출발</text>
+<text class="s" x="496" y="204">끝을 넘어 행 0을 건너뛰고 행 1</text>
+
+<text class="s" x="12" y="252">행 1에서 번호 +1</text>
+<rect class="b mute" x="200" y="230" width="60" height="34" rx="6"/><text class="s mid" x="230" y="252">×</text>
+<rect class="b key" x="270" y="230" width="60" height="34" rx="6"/><text class="s mid" x="300" y="252">제자리</text>
+<rect class="b mute" x="340" y="230" width="60" height="34" rx="6"/><text class="s mid" x="370" y="252">×</text>
+<rect class="b mute" x="410" y="230" width="60" height="34" rx="6"/><text class="s mid" x="440" y="252">×</text>
+<text class="s" x="496" y="252">갈 곳이 없어 번호를 쓰지 않음</text>
+
+<text class="s" x="12" y="300">행 1에서 번호 −1</text>
+<rect class="b mute" x="200" y="278" width="60" height="34" rx="6"/><text class="s mid" x="230" y="300">×</text>
+<rect class="b key" x="270" y="278" width="60" height="34" rx="6"/><text class="s mid" x="300" y="300">제자리</text>
+<rect class="b mute" x="340" y="278" width="60" height="34" rx="6"/><text class="s mid" x="370" y="300">×</text>
+<rect class="b mute" x="410" y="278" width="60" height="34" rx="6"/><text class="s mid" x="440" y="300">×</text>
+<text class="s" x="496" y="300">갈 곳이 없어 번호를 쓰지 않음</text>
+</svg>
+</div>
+<ul class="dg-legend"><li><i class="key"></i>출발한 행</li><li><i class="ok"></i>도착한 행</li><li><i class="mute"></i>× 자격 없음 (<code>+0x178</code> = 0)</li><li><i></i>자격 있는 다른 행</li></ul>
+<p>이 목록과 자격 값은 검색 코드를 시험하려고 만든 합성 입력입니다. 색공간 화면의 실제 행은 두 개입니다. 여섯 조건은 전환 요청이 있을 때와 없을 때 모두 같은 행에 도착했습니다. 제자리에 머문 두 조건에서 전환을 요청하면, 포커스 번호는 쓰지 않은 채 전환 상태 값 2만 기록됐습니다.</p>
+</figure>
+
+<p>목록 이동 함수(<code>0x52c0e948</code>)는 현재 번호의 앞이나 뒤를 차례로 살피고, 필요하면 반대쪽 끝으로 넘어가면서 자격 있는 행을 찾습니다. 포커스 설정 함수(<code>0x52c0e25c</code>)도 대상 행의 같은 바이트를 한 번 더 검사합니다. 대상에 자격이 없으면 번호를 쓰기 전에 돌아가고, 대상이 지금과 다를 때만 <code>0x52c0e2cc</code>의 16비트 저장으로 <code>L+0x1ce</code>를 바꿉니다.</p>
+
+<div class="table-wrap"><table>
+<caption>행 객체의 세 가지 상태 바이트</caption>
+<thead><tr><th>위치</th><th>읽고 쓰는 곳</th><th>확인한 것</th><th>모르는 것</th></tr></thead>
+<tbody>
+<tr><th scope="row"><code>+0x178</code><br>이동 자격</th><td>목록 이동 검색, 포커스 설정 함수</td><td>0이면 이동 대상에서 빠집니다. 행의 기본 생성자는 1로 초기화합니다.</td><td>실제 색공간 행에서 이 값을 나중에 바꾸는 코드와 정책</td></tr>
+<tr><th scope="row"><code>+0x8a</code><br>표시 여부</th><td>공용 표시 여부 getter·setter</td><td>이 값만 0으로 바꾸고 행을 목록에 그대로 둔 시험에서 이동은 계속됐습니다.</td><td>실제로 행을 숨길 때 목록과 배치가 어떻게 다시 짜이는지</td></tr>
+<tr><th scope="row"><code>+0x17a</code><br>확정 차단</th><td>색공간 확정 경로(<code>0x5278db58</code>–<code>0x5278db60</code>)</td><td>기본 생성자는 0으로 초기화합니다. 이 값이 1이어도 <code>+0x178</code>이 1이면 이동 대상이 됐습니다.</td><td>이 값을 1로 만드는 실제 조건</td></tr>
+</tbody></table></div>
+<p>따라서 ‘포커스를 둘 수 있다’와 ‘확정할 수 있다’는 서로 다른 상태입니다. 다만 이 시험은 바이트를 직접 바꿔 본 것이어서, 실제 UI가 숨긴 행이나 비활성 행을 어떤 조건으로 만드는지를 입증하지는 않습니다.</p>
+
+<details class="evidence"><summary>포커스 설정 함수 단독 실행 5개 사례</summary>
+<div class="table-wrap"><table class="compact">
+<thead><tr><th>사례</th><th>조건</th><th>결과</th></tr></thead>
+<tbody>
+<tr><th scope="row">자격 없는 대상</th><td>행 0 → 행 1, 행 1의 자격 0</td><td>포커스 그대로, 번호 기록 없음, 알림 없음</td></tr>
+<tr><th scope="row">같은 대상</th><td>행 0 → 행 0</td><td>번호 기록 없음, 알림 없음</td></tr>
+<tr><th scope="row">새 행 알림 끔</th><td><code>L+0x1d0</code> = 0</td><td>포커스 1, 이전 행 알림만 호출</td></tr>
+<tr><th scope="row">새 행 알림 + 메뉴 콜백</th><td><code>L+0x1d0</code> = 1, <code>L+0x224</code> = 1</td><td>이전 행 알림, 새 행 알림, 메뉴 콜백 모두 호출</td></tr>
+<tr><th scope="row">기본 가상 함수 표</th><td>행이 기본 표(<code>0x53872b08</code>)를 씀</td><td>포커스는 바뀌고, 기본 알림 함수는 호출을 생략</td></tr>
+</tbody></table></div>
+<p class="small">행의 기본 생성자(<code>0x52c0f7f8</code>–<code>0x52c0f844</code>)는 <code>+0x178</code> = 1, <code>+0x179</code> = 1, <code>+0x17a</code> = 0을 넣습니다. <code>+0x179</code>의 쓰임은 조사하지 않았습니다.</p>
+</details>
+</section>
+
+<section id="callback">
+<h2>포커스가 바뀐 사실은 콜백으로 메뉴에 전달됩니다</h2>
+<p class="takeaway">포커스 설정 함수는 이전 행에 알리고, 번호를 기록하고, 새 행에 알린 다음, 메뉴가 등록해 둔 콜백을 부릅니다. 색공간 화면에서 이 콜백은 표시 갱신 함수의 입구로 이어집니다.</p>
+
+<ol class="steps">
+<li><strong>이전 행에 알림</strong> 이전 행의 가상 함수 표 <code>+0x70</code> 칸을 부릅니다. 그 칸이 기본 함수(<code>0x52c0d6c4</code>)이면 생략합니다.</li>
+<li><strong>번호 기록</strong> <code>L+0x1ce</code>에 새 행 번호를 씁니다.</li>
+<li><strong>새 행에 알림</strong> <code>L+0x1d0</code>이 0이 아니면 새 행의 <code>+0x6c</code> 칸을 부릅니다. 기본 함수(<code>0x52c0d6c0</code>)이면 생략합니다.</li>
+<li><strong>메뉴 콜백</strong> <code>L+0x224</code>가 0이 아니면 알림 함수(<code>0x52c0e1c0</code>)를 거쳐 <code>L+0x220</code>에 등록된 함수를 부릅니다. 인수는 <code>L+0x214</code>의 클로저와 새 포커스 번호입니다.</li>
+</ol>
+<p>기록용 알림 함수를 넣은 시험에서 이전 행 알림은 바뀌기 전 번호를, 새 행 알림은 바뀐 뒤 번호를 읽었습니다. 순서가 위와 같다는 뜻입니다. 실제 색공간 행 객체가 어떤 알림 함수를 가지는지는 복원하지 않았습니다.</p>
+
+<h3>메뉴가 콜백을 등록하는 과정</h3>
+<p>알림 함수 안에서는 <code>FocusChangeCallBack</code>이라는 문자열과 소스 파일 이름 <code>View/ScrollList/ScrollListView.cpp</code>가 쓰입니다. 펌웨어에 남은 이 이름들로 이 필드가 ‘포커스 변경 콜백’임을 확인했습니다.</p>
+<p>메뉴 쪽 코드의 첫 등록 구간(<code>0x5278dcd0</code>–<code>0x5278dd54</code>)은 메뉴 포인터를 담은 클로저, 클로저 관리 함수, 호출 함수를 만들어 목록의 설치 함수(<code>0x52c0dfcc</code>)에 넘깁니다. 설치 함수는 아래 네 필드를 채웁니다.</p>
+<div class="table-wrap"><table class="fit">
+<caption>목록 객체에 설치되는 콜백 필드</caption>
+<thead><tr><th>필드</th><th>설치되는 값</th></tr></thead>
+<tbody>
+<tr><th scope="row"><code>L+0x214</code></th><td>메뉴 포인터를 담은 클로저의 사본</td></tr>
+<tr><th scope="row"><code>L+0x21c</code></th><td>클로저 관리 함수 <code>0x5278b7b0</code></td></tr>
+<tr><th scope="row"><code>L+0x220</code></th><td>호출 함수 <code>0x5278ecd0</code></td></tr>
+<tr><th scope="row"><code>L+0x224</code></th><td>1 (콜백 사용)</td></tr>
+</tbody></table></div>
+<p>그 뒤 포커스가 바뀌면 <code>0x5278ecd0</code> → <code>0x5278ec04</code>가 불립니다. 색공간 descriptor의 <code>+0x38</code>과 <code>+0x3c</code>가 모두 0이라 행별 hook은 건너뛰고, 바이트 0의 값이 1이라 <code>0x5278ecc4</code>에서 표시 갱신 함수 <code>0x5278e4ac</code>로 들어갑니다.</p>
+<p>사례 두 개에서 이 전체를 이어서 실행했습니다. 원본 등록 구간과 원본 클로저 관리 함수·설치 함수를 실행한 다음, 방향 이벤트를 넣어 원본 메뉴 콜백이 정확히 한 번 불리는 것을 확인했습니다. 이때 시험이 넣어 준 기록용 콜백은 불리지 않았습니다.</p>
+<div class="callout warn"><strong class="label">주의</strong>
+<p>표시 갱신 함수 <code>0x5278e4ac</code>는 이 시험에서 ‘지금 포커스 번호만 기록하는’ 대체 함수입니다. 명령을 읽어 보면 이 함수는 머리글 함수(<code>0x52776a08</code>)와 표시 여부 설정으로 이어지지만, 그 아래의 실제 그리기를 실행했다고 말할 수 없습니다. 등록 구간도 첫 번째 것만 실행했습니다. 같은 함수 안의 나머지 두 등록은 실행하지 않았습니다.</p></div>
+</section>
+
+<section id="transition">
+<h2>전환 애니메이션을 예약해도 포커스는 먼저 바뀝니다</h2>
+<p class="takeaway">끝을 넘지 않는 이동에서는 전환 상태를 기록하고 스케줄러에 등록을 요청합니다. 포커스 번호는 그 요청보다 먼저 바뀝니다. 끝을 넘어 순환할 때는 전환 없이 바로 옮깁니다.</p>
+
+<div class="table-wrap"><table>
+<caption>이동 종류별 처리</caption>
+<thead><tr><th>상황</th><th>처리</th><th>관측한 값</th></tr></thead>
+<tbody>
+<tr><th scope="row">끝을 넘어 순환</th><td><code>0x52c0eac0</code>에서 전환 요청 인수를 0으로 바꿉니다. 포커스 설정 함수와 스크롤 설정 함수를 바로 부릅니다.</td><td>전환 상태 0, 스케줄러 등록 없음</td></tr>
+<tr><th scope="row">끝을 넘지 않는 이동, 전환 요청 1</th><td>전환 준비 함수 <code>0x52c0e838</code>로 갑니다. 전환 상태 바이트 <code>L+0x1dc</code>에 2를 쓰고 전환용 위치 값을 기록합니다. <code>0x52c0e900</code>에서 포커스 설정 함수를 먼저 부르고, 그 뒤 <code>0x52c0e920</code> → <code>0x528f8228</code>로 스케줄러 등록을 요청합니다.</td><td>전환 상태 2, 스케줄러 등록 요청 1회</td></tr>
+<tr><th scope="row">전환 요청 0</th><td>포커스 설정 함수와 스크롤 설정 함수를 바로 부릅니다.</td><td>전환 상태 0</td></tr>
+</tbody></table></div>
+<p>화면 애니메이션이 끝난 뒤에야 포커스가 바뀌는 구조가 아닙니다. 스케줄러에 등록을 요청하는 시점에 <code>L+0x1ce</code>에는 이미 새 번호가 들어 있습니다.</p>
+
+<h3>전환이 남아 있을 때 다음 이벤트가 오면</h3>
+<div class="table-wrap"><table>
+<caption>연속 이벤트 3개 사례</caption>
+<thead><tr><th>이벤트 순서</th><th>포커스</th><th>전환 상태</th><th>스케줄러 요청</th><th>설명</th></tr></thead>
+<tbody>
+<tr><th scope="row"><code>0xe0</code> → <code>0xe0</code> (행 0에서)</th><td>0 → 1 → 0</td><td>2 → 0</td><td>등록 후 해제</td><td>두 번째 이벤트가 목록 이동 함수에 들어가 남은 전환을 먼저 정리합니다.</td></tr>
+<tr><th scope="row"><code>0xe0</code> → <code>0xe4</code> (행 0에서)</th><td>0 → 1 → 1</td><td>2 → 2</td><td>등록만</td><td>두 번째 이벤트는 <code>0x5278daa0</code>에서 복귀해 목록 이동 함수에 들어가지 않습니다.</td></tr>
+<tr><th scope="row"><code>0xdf</code> → <code>0xe3</code> (행 1에서)</th><td>1 → 0 → 0</td><td>2 → 2</td><td>등록만</td><td>두 번째 이벤트는 <code>0x5278d9dc</code>에서 복귀합니다.</td></tr>
+</tbody></table></div>
+<p>정리 함수(<code>0x52c0e528</code>)는 스케줄러에 해제를 요청하고, 저장해 둔 스크롤 목표를 적용하고, 현재 포커스를 포커스 설정 함수에 다시 넘긴 뒤 전환 상태를 0으로 바꿉니다. 끝에서 멈추는 이벤트는 이 정리 함수에 이르지 못하므로 전환 상태 2가 그대로 남았습니다.</p>
+<div class="callout model"><strong class="label">시험 조건</strong>
+<p>스케줄러 등록·해제와 시계는 호출만 기록했습니다. 시간이 흘러 애니메이션이 한 단계씩 진행되는 호출은 한 번도 넣지 않았습니다. 시간 곡선, 실제 화면 프레임, 전환 상태 1은 이 시험의 범위 밖입니다.</p></div>
+</section>
+
+<section id="verification">
+<h2>50가지 사례를 어떻게 실행했는가</h2>
+<p class="takeaway">합성 메뉴·목록·행 객체를 만들고 원본 이벤트 처리 함수나 목록 함수를 직접 불렀습니다. 50개 사례가 모두 통과했습니다.</p>
+
+<div class="table-wrap"><table class="fit">
+<caption>사례 구성</caption>
+<thead><tr><th>묶음</th><th class="n">사례 수</th><th>시작 함수</th><th>확인한 것</th></tr></thead>
+<tbody>
+<tr><th scope="row">방향 이벤트</th><td class="n">8</td><td>이벤트 처리</td><td>이벤트 4 × 출발 행 2. 이동·순환·멈춤, 알림 순서, 스케줄러 등록 여부</td></tr>
+<tr><th scope="row">행 네 개 이동</th><td class="n">16</td><td>목록 이동</td><td>출발 행 4 × 방향 2 × 전환 요청 2</td></tr>
+<tr><th scope="row">자격 검색</th><td class="n">12</td><td>목록 이동</td><td>자격 배열 조건 6 × 전환 요청 2</td></tr>
+<tr><th scope="row">별도 상태 바이트</th><td class="n">4</td><td>목록 이동</td><td><code>+0x8a</code>·<code>+0x17a</code>를 바꿔도 이동하는지</td></tr>
+<tr><th scope="row">포커스 설정 함수</th><td class="n">5</td><td>포커스 설정</td><td>자격 없는 대상, 같은 대상, 알림 조건</td></tr>
+<tr><th scope="row">연속 이벤트</th><td class="n">3</td><td>이벤트 처리</td><td>남은 전환의 정리 1, 끝에서 멈출 때의 유지 2</td></tr>
+<tr><th scope="row">콜백 등록에서 호출까지</th><td class="n">2</td><td>등록 구간 → 이벤트 처리</td><td>원본 메뉴 콜백이 불리는지</td></tr>
+<tr><th scope="row">합계</th><td class="n">50</td><td colspan="2">앞 문서의 메뉴 구성·확정 16개 사례는 여기에 더하지 않았습니다.</td></tr>
+</tbody></table></div>
+
+<p>행의 위치·높이·누적 위치를 계산하는 함수, 검색, 번호 저장, 전환 준비는 원본 그대로 실행했습니다. 허용한 구간 24곳 밖의 코드가 실행되면 검증기가 즉시 실패합니다. 그 밖의 호출은 아래 대체 함수 13개가 받습니다.</p>
+
+<details class="evidence"><summary>대체한 함수 13개</summary>
+<div class="table-wrap"><table class="compact">
+<thead><tr><th>주소</th><th>시험에서 하는 일</th></tr></thead>
+<tbody>
+<tr><td><code>0x52c0201c</code></td><td>그리기 무효화 경계: 호출만 기록, 그리기 없음</td></tr>
+<tr><td><code>0x528c4fcc</code></td><td>합성 factory를 돌려줌</td></tr>
+<tr><td><code>0x528c53e0</code></td><td>합성 애니메이션 서비스를 돌려줌</td></tr>
+<tr><td><code>0x528f8228</code></td><td>애니메이션(스케줄러) 등록: 호출만 기록, 시간 진행 없음</td></tr>
+<tr><td><code>0x528f818c</code></td><td>애니메이션 해제: 호출만 기록</td></tr>
+<tr><td><code>0x530f2fa8</code></td><td>시계: 0으로 채운 시각을 돌려줌</td></tr>
+<tr><td><code>0x530fdfc4</code></td><td>assert: 조건이 참인지 확인하고 복귀</td></tr>
+<tr><td><code>0x30000100</code> (시험용 주소)</td><td>새 행 알림(<code>+0x6c</code> 칸)에 넣은 기록용 함수</td></tr>
+<tr><td><code>0x30000120</code> (시험용 주소)</td><td>이전 행 알림(<code>+0x70</code> 칸)에 넣은 기록용 함수</td></tr>
+<tr><td><code>0x30000140</code> (시험용 주소)</td><td><code>L+0x220</code>에 넣은 기록용 콜백. 메뉴 상태는 바꾸지 않음</td></tr>
+<tr><td><code>0x530f25f4</code></td><td>합성 힙 할당(콜백 설치에서만 사용)</td></tr>
+<tr><td><code>0x530f2630</code></td><td>해제: 호출만 기록</td></tr>
+<tr><td><code>0x5278e4ac</code></td><td>색공간 화면의 표시 갱신 경계: 현재 포커스만 기록</td></tr>
+</tbody></table></div>
+</details>
+
+<details class="evidence"><summary>분석한 함수 구간과 문자열</summary>
+<div class="table-wrap"><table class="compact">
+<thead><tr><th>역할</th><th>구간</th><th class="n">크기</th></tr></thead>
+<tbody>
+<tr><th scope="row">이벤트 처리</th><td><code>0x5278ef84</code>–<code>0x5278f10c</code></td><td class="n">392바이트</td></tr>
+<tr><th scope="row">방향 wrapper (번호 −1)</th><td><code>0x5278d9b0</code>–<code>0x5278da1c</code></td><td class="n">108바이트</td></tr>
+<tr><th scope="row">방향 wrapper (번호 +1)</th><td><code>0x5278da1c</code>–<code>0x5278dac0</code></td><td class="n">164바이트</td></tr>
+<tr><th scope="row">목록 이동</th><td><code>0x52c0e948</code>–<code>0x52c0ec04</code></td><td class="n">700바이트</td></tr>
+<tr><th scope="row">포커스 설정</th><td><code>0x52c0e25c</code>–<code>0x52c0e394</code></td><td class="n">312바이트</td></tr>
+<tr><th scope="row">전환 준비</th><td><code>0x52c0e838</code>–<code>0x52c0e948</code></td><td class="n">272바이트</td></tr>
+<tr><th scope="row">전환 정리</th><td><code>0x52c0e528</code>–<code>0x52c0e5b8</code></td><td class="n">144바이트</td></tr>
+<tr><th scope="row">콜백 설치</th><td><code>0x52c0dfcc</code>–<code>0x52c0e0ac</code></td><td class="n">224바이트</td></tr>
+<tr><th scope="row">메뉴 쪽 포커스 처리</th><td><code>0x5278ec04</code>–<code>0x5278ecd0</code></td><td class="n">204바이트</td></tr>
+<tr><th scope="row">포커스 알림</th><td><code>0x52c0e1c0</code>–<code>0x52c0e25c</code></td><td class="n">156바이트</td></tr>
+<tr><th scope="row">표시 갱신 경계</th><td><code>0x5278e4ac</code>–<code>0x5278e5a8</code></td><td class="n">252바이트</td></tr>
+</tbody></table></div>
+<ul class="small">
+<li>문자열 <code>FocusChangeCallBack</code>은 <code>0x53872c18</code>, <code>View/ScrollList/ScrollListView.cpp</code>는 <code>0x53628364</code>, assert 문구 <code>m_focusChangeCallBack != nullptr</code>은 <code>0x53628388</code>에 있습니다.</li>
+<li>포커스 알림 함수는 <code>L+0x220</code>을 읽어 <code>0x52c0e238</code>의 <code>BX r3</code>로 부릅니다.</li>
+<li>행의 기본 가상 함수 표에서 <code>+0x6c</code>·<code>+0x70</code> 칸은 주소 <code>0x53872b74</code>에 있고 값은 <code>0x52c0d6c0</code>·<code>0x52c0d6c4</code>입니다.</li>
+<li>구간의 끝 주소는 포함하지 않습니다. 구간별 SHA-256, 분기 142개, 간접 호출 12개, 핵심 명령 95개는 <a href="colorspace-ui-input-evidence.json">colorspace-ui-input-evidence.json</a>에 있습니다.</li>
+</ul>
+</details>
+
+<details><summary>조사 경과: 사례 수가 48개에서 50개가 된 이유</summary>
+<p>근거 JSON의 <code>validation</code> 항목은 처음 비공개로 점검한 48개 사례를 기록합니다. 그 뒤 ‘끝에서 멈춘 이벤트가 남은 전환을 건드리지 않는다’는 사례 두 개를 더했고, 공개 검증기와 결과 파일은 50개 기준입니다(<code>public_replay</code> 항목). 조정자가 독립적으로 다시 실행해 같은 결과를 얻었습니다.</p>
+</details>
+</section>
+
+<section id="limits">
+<h2>한계와 남은 과제</h2>
+<ul>
+<li><strong>입력</strong> — 이벤트 번호에 물리 버튼·다이얼·터치를 대응시키지 않았습니다. 이벤트를 만드는 하드웨어 쪽 코드는 추적하지 않았습니다.</li>
+<li><strong>객체</strong> — 메뉴·목록·행과 배치 값은 합성입니다. 행을 실제로 만들고 숨기는 코드, 실제 색공간 행의 가상 함수 표는 실행하지 않았습니다.</li>
+<li><strong>실행하지 않은 분기</strong> — 전환 상태 1, 행이 하나도 없는 목록, 자격 있는 행이 하나도 없는 목록.</li>
+<li><strong>등록</strong> — 콜백 등록은 첫 구간만 실행했습니다. 세 가지 동작 등록 전체나 창의 전체 수명은 아닙니다.</li>
+<li><strong>그리기와 시간</strong> — 그리기 무효화, 스케줄러, 시계는 경계에서 멈췄습니다. 완성된 화면과 애니메이션의 시간 진행은 확인하지 않았습니다.</li>
+<li><strong>에뮬레이션</strong> — Unicorn의 Cortex-A15 모델에서 실행했습니다. 카메라 CPU와 똑같이 동작한다는 보장으로 보지 않습니다.</li>
+<li><strong>디컴파일</strong> — angr가 만든 C 8개는 고치지 않고 보관했습니다. 조건부 명령이나 타입을 잘못 표현할 수 있어 ARM 명령과 실행 결과를 판단 기준으로 삼았습니다.</li>
+</ul>
+<p>다음 과제는 물리 입력이 이 이벤트 번호로 바뀌는 경로를 찾는 것과, 표시 갱신 함수 아래의 글자·포커스 그리기를 잇는 것입니다. 세 기종의 같은 화면을 어떻게 맞출지는 <a href="ui-port-contract.html">UI 이식 설계</a>에 정리했습니다.</p>
+</section>
+
+<section id="reproduce">
+<h2>재현 방법</h2>
+<p>입력은 RTOS 이미지 또는 <a href="../inspect_firmware.py">추출기</a>가 만든 <code>decoded.bin</code> 전체입니다. SHA-256이 아래 값과 같을 때만 실행합니다. 운영체제, 렌즈, 카메라, 저장 매체 입출력은 없습니다.</p>
+<dl class="kv">
+<dt>RTOS SHA-256</dt><dd><code class="wrap">342d2f35405e8daf1797dfe431d2e4aa70f4b52a2c242a29df48206672f1dfb4</code></dd>
+<dt>RTOS 적재 기준 주소</dt><dd><code>0x52500000</code></dd>
+<dt>색공간 descriptor</dt><dd><code>0x536439e0 + 72 × 0x5c = 0x536453c0</code>, 바이트 <code>+3</code> = 1</dd>
+</dl>
+<pre><code>python verify_colorspace_ui_input.py rtos.bin --output colorspace-ui-input-checks.json</code></pre>
+<p>출력 파일이 이미 있으면 멈춥니다. assert를 끄는 실행은 거부합니다.</p>
+</section>
+
+<section id="refs">
+<h2>근거 파일과 참고 자료</h2>
+<ul class="refs">
+<li><a href="colorspace-ui-input-checks.json">colorspace-ui-input-checks.json</a> — 50개 사례의 입력과 결과, 대체 함수 목록, 실행 구간 24곳의 해시</li>
+<li><a href="colorspace-ui-input-evidence.json">colorspace-ui-input-evidence.json</a> — 함수 구간, 분기와 간접 호출, 문자열, 관계 요약, 한계</li>
+<li><a href="../verify_colorspace_ui_input.py">verify_colorspace_ui_input.py</a> — 재현 도구</li>
+<li><a href="colorspace-ui.html">색공간 선택 화면에서 확정과 취소가 하는 일</a> — 이 포커스 번호가 확정 때 쓰이는 과정</li>
+<li><a href="ui-port-contract.html">UI 이식 설계</a> — 세 기종 비교와 남은 실험</li>
+<li>외부 자료: <a href="https://www.ricoh-imaging.co.jp/english/support/man-pdf/k-3-3.pdf">PENTAX K-3 Mark III 사용설명서</a>(48쪽, Color Space 선택지) · <a href="https://github.com/unicorn-engine/unicorn">Unicorn CPU 에뮬레이터</a></li>
+</ul>
+</section>
+
+</main>
+</div>
+<!-- chrome:bottom -->
+<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">UI와 화면 자원 — 이 주제의 문서</h2><ol><li><a href="ui-port-contract.html">UI 이식 설계·안내<span>세 기종 비교</span></a></li><li><a href="colorspace-ui.html">색공간 화면: 선택·확정·취소<span>16사례</span></a></li><li><a href="colorspace-ui-input.html" aria-current="page">색공간 화면: 방향 입력·포커스<span>50사례</span></a></li><li><a href="icon-resources.html">ICONBIN 아이콘 자원<span>저장 형식, 복사 규칙, 후보 아이콘</span></a></li></ol></nav>
+<nav class="pager" aria-label="이전·다음 문서"><a class="prev" href="colorspace-ui.html"><small>← 이전</small>색공간 화면: 선택·확정·취소</a><a class="next" href="icon-resources.html"><small>다음 →</small>ICONBIN 아이콘 자원</a></nav>
+<footer class="sitefoot"><div class="sitefoot-in"><nav aria-label="사이트"><a href="../index.html#map">문서 지도</a><a href="../index.html#levels">검증 수준 읽는 법</a><a href="../glossary.html">용어집</a><a href="research-program.html">세 기종 연구 본부</a><a href="https://github.com/yunhyok/pentax-k3iii-firmware-analysis">GitHub 저장소</a></nav><p>PENTAX K-3 Mark III 펌웨어 2.20 분석 문서. PC에서 수행한 정적 분석과 에뮬레이션 결과이며, 카메라 실기에서 검증한 내용이 아닙니다. 원본 펌웨어와 추출한 독점 코드는 포함하지 않습니다.</p></div></footer>
+<!-- /chrome:bottom -->
+</body>
+</html>

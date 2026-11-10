@@ -1,57 +1,370 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>업데이트 입력 로더와 메모리 할당</title><style>
-:root{color-scheme:light dark;--bg:#f7f8fa;--paper:#fff;--ink:#182332;--muted:#48596b;--line:#d2dbe5;--accent:#124b8e;--soft:#edf3fa;--focus:#d75f00}
-@media(prefers-color-scheme:dark){:root{--bg:#111821;--paper:#18222d;--ink:#e8edf4;--muted:#b4c2d2;--line:#405369;--accent:#98c8ff;--soft:#223348;--focus:#ffb374}}
-*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.85 system-ui,-apple-system,"Malgun Gothic",sans-serif;word-break:keep-all;overflow-wrap:anywhere}
-a{color:var(--accent);text-underline-offset:.18em}a:hover{text-decoration-thickness:2px}:focus-visible{outline:3px solid var(--focus);outline-offset:4px}
-header,main,footer{max-width:1120px;margin:auto;padding:36px clamp(18px,4vw,56px)}header{padding-top:56px;padding-bottom:24px}main{background:var(--paper);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
-.eyebrow{color:var(--muted);font-size:.84rem;letter-spacing:.06em}h1{font-size:clamp(1.85rem,4.5vw,3rem);line-height:1.35;letter-spacing:-.025em;margin:12px 0 18px}h2{font-size:1.5rem;line-height:1.5;margin:3.6rem 0 1rem;padding-top:1.2rem;border-top:1px solid var(--line)}h2:first-child{margin-top:0}h3{font-size:1.12rem;margin-top:2rem}p{margin:1rem 0}strong{font-weight:650}.intro{max-width:55em;color:var(--muted)}
-nav{margin-top:25px}nav ul{display:flex;flex-wrap:wrap;gap:8px 22px;list-style:none;padding:0;margin:0}nav ul ul{display:none}nav a{font-size:.9rem}code{font: .88em/1.6 ui-monospace,Consolas,monospace;overflow-wrap:anywhere}pre{background:var(--soft);padding:18px;overflow-x:auto;white-space:pre-wrap;border-radius:5px}pre code{font-size:.82rem}
-.table-scroll{overflow-x:auto;margin:24px 0}table{border-collapse:collapse;width:100%;font-size:.92rem;min-width:530px}th,td{text-align:left;vertical-align:top;padding:14px 16px;border-bottom:1px solid var(--line)}th{background:var(--soft);font-weight:650}td:first-child{min-width:125px}details{border-block:1px solid var(--line);margin-top:24px;padding:16px 0}summary{cursor:pointer;font-weight:650;padding:6px 0}.caption,.meta{font-size:.86rem;color:var(--muted)}
-figure{margin:32px 0;padding:24px 0;border-block:1px solid var(--line)}figcaption{font-size:.95rem;font-weight:650;margin-bottom:20px}.flow{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:32px;list-style:none;padding:0;margin:18px 0}.flow li{position:relative;padding:18px;background:var(--soft);border-radius:6px;line-height:1.6}.flow strong{display:block;font-size:1rem}.flow span{display:block;color:var(--muted);font-size:.86rem;margin-top:9px}.flow li:not(:last-child)::after{content:"→";position:absolute;right:-27px;top:40%;font-size:22px;color:var(--muted)}.second{margin-top:24px}footer{font-size:.88rem;color:var(--muted)}
-@media(max-width:620px){body{font-size:16px}header,main,footer{padding-inline:20px}.flow{grid-template-columns:1fr;gap:26px}.flow li:not(:last-child)::after{content:"↓";right:auto;left:calc(50% - 8px);top:auto;bottom:-28px}.flow li{padding:15px 18px}h2{font-size:1.3rem}nav ul{gap:10px 18px}table{font-size:.87rem}th,td{padding:12px}header{padding-top:30px}}
-@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
-@media print{body{background:white;color:black;font-size:10pt}header,main,footer{max-width:none;padding:12pt}nav{display:none}a{color:inherit}h2,figure,table{break-inside:avoid}h2{break-after:avoid}main{border:0}.flow li{background:#f1f3f5}.table-scroll{overflow:visible}table{min-width:0}details>*{display:block!important}}
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>업데이트 파일을 읽는 입력 로더와 메모리 할당 — PENTAX K-3 Mark III 펌웨어 연구</title>
+<meta name="description" content="K-3 Mark III의 업데이트 코드가 파일 크기를 어디서 얻어 입력 버퍼를 요청하는지, 압축된 입력과 풀린 출력이 같은 IMAGE1 메모리 풀에서 얼마만큼 요청되는지를 원본 ARM 62건의 실행으로 확인한 문서입니다.">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-camera="k3iii">
+<!-- chrome:top -->
+<a class="skip" href="#main">본문 바로가기</a>
+<div class="topbar"><div class="topbar-in"><a class="brand" href="../index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="../index.html" aria-current="true">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="https://yunhyok.github.io/pentax-q7-firmware-analysis/">Q7</a></div><nav class="topnav" aria-label="주제"><a href="../index.html">개요</a><a href="guide-boot.html">부팅·저장소</a><a href="guide-update.html" aria-current="true">업데이트</a><a href="guide-rebuild.html">재구축</a><a href="guide-rtos.html">명령·셸</a><a href="guide-color.html">색 처리</a><a href="lightroom-bridge.html">Lightroom</a><a href="af-foundations.html">AF</a><a href="ui-port-contract.html">UI</a></nav></div></div>
+<nav class="crumbs" aria-label="현재 위치"><ol><li><a href="../index.html">PENTAX K-3 Mark III</a></li><li><a href="guide-update.html">펌웨어 업데이트 과정</a></li><li aria-current="page">입력 로더와 메모리 할당</li></ol></nav>
+<!-- /chrome:top -->
+<header class="page-head">
+<p class="eyebrow">펌웨어 업데이트 과정 · 파일 읽기와 메모리</p>
+<h1>업데이트 파일을 읽는 입력 로더와 메모리 할당</h1>
+<p class="lead">카메라는 업데이트 파일을 통째로 메모리에 올리고, 그것을 풀어 낸 데이터도 메모리에 둡니다. 수정한 파일이 원본보다 커지면 이 단계에서 막히는지 알아보려고, 파일 크기가 전달되는 경로와 메모리를 요청하는 계산을 조사했습니다.</p>
+</header>
+<div class="layout">
+<!-- chrome:toc -->
+<nav class="toc" aria-label="이 문서의 목차"><h2 data-toc="no">이 문서에서</h2><ol><li><a href="#background">배경: 왜 메모리 요청을 따져 보는가</a></li><li><a href="#loader">파일 크기에서 입력 버퍼까지</a></li><li><a href="#pool">입력과 출력이 같은 IMAGE1 풀에서 나옵니다</a></li><li><a href="#formula">요청 크기 계산과 네 버퍼의 수치</a></li><li><a href="#capacity">설정 크기는 가용 메모리가 아닙니다</a></li><li><a href="#limits">한계와 남은 과제</a></li><li><a href="#reproduce">재현 방법</a></li><li><a href="#refs">근거 파일과 참고 자료</a></li></ol></nav>
+<!-- /chrome:toc -->
+<main class="doc" id="main">
 
-.site-nav{border-block:1px solid var(--line);padding:14px 0;margin:20px 0}.site-nav a{display:inline-block;margin:4px 16px 4px 0}
-.review-note{background:var(--soft);padding:16px 20px;margin:24px 0}.toc{font-size:.92rem}.toc ul{list-style:none;padding-left:0}.toc ul ul{padding-left:20px}
-.branch{margin:18px 0;padding:0 0 0 24px;border-left:3px solid var(--line)}.branch p{margin:8px 0}.diagram-line{padding:12px 16px;background:var(--soft);border-radius:4px}
-</style></head><body><header><div class="eyebrow">PENTAX K-3 MARK III · FIRMWARE 2.20 · 2026-11-08</div><h1>업데이트 입력 로더와 메모리 할당</h1><p class="intro">재압축 후보의 파일 길이가 전달되는 경로와 allocator의 설정 용량을 확인했다. 실제 가용 공간과 업데이트 수용 여부는 별도 검증이 필요하다.</p><nav aria-label="관련 문서"><a href="../index.html">연구 개요</a> · <a href="update-resources.html">검증·리소스 경로</a> · <a href="startup-storage.html">BOOT·저장소</a></nav></header><main><h2 id="loader">파일 크기부터 입력 버퍼까지</h2>
-<p>종류 값 2의 선택자 <code>52fef240</code>은 filename getter <code>52ff3474</code>의 주소 <code>54796104</code>를 사용한다. 파일 정보 조회 <code>52ff7d10 → 52ff7c38</code>은 resourceManager+38 객체의 vtable slot <code>+54</code>를 호출한다. 성공하면 FileInfo의 <code>+18</code> word를 읽고 이 값이 0이 아니면 경로와 크기를 updateState의 <code>+40 / +44</code>에 저장한다. 구체적인 파일 시스템 객체와 실제 조회의 구현은 아직 연결하지 않았다. <a href="update-file-loader-evidence.json">크기 생산자·저장 근거</a></p>
-<figure><figcaption>입력과 decoded 버퍼의 설정 경로</figcaption><ol class="flow"><li><strong>파일 크기·입력 요청</strong><span>kind2 → FileInfo+18<br>state+44 → 52fee900<br>52ff7160 → 3회 이내 재시도</span></li><li><strong>입력 allocator 선택</strong><span>크기 &gt; 0x80000<br>resourceManager+30<br>registry ID0e, alignment64</span></li><li><strong>decoded 할당</strong><span>validator+4도 ID0e<br>footer+10의 길이 전달<br>동일 IMAGE1 pool</span></li></ol></figure>
-<p><code>52fee900</code>은 resourceManager, 경로, 길이를 <code>52ff7160</code>에 넘기고 반환 포인터를 state+48에 저장한다. mutex를 얻은 뒤 <code>52ff70a0</code>이 <code>52ff7014</code>를 최대 3회 호출한다. unsigned 길이가 <code>0x80000</code>보다 크면 manager+30의 allocator를, 그 이하면 +34를 고른다. 원본과 두 후보는 모두 +30 경로이며 요청 길이를 그대로 전달하고 정렬 인자는 <code>0x40</code>이다. 이 선택 지점에 별도의 더 큰 상한 비교는 없지만 하위 할당 성공까지 뜻하지는 않는다. <a href="update-file-loader-checks.json">크기 경계·인자 전달 검사</a></p>
-<p>할당 뒤 <code>52ff6dd4</code>는 파일 객체의 open slot+20, read slot+28, close slot+24를 호출한다. open 실패는 close를 생략하고 open 성공 후 read 실패는 close한 뒤 할당 버퍼의 해제를 요청한다. read helper가 실패하면 같은 allocator의 slot+c로 해제를 요청하고 재시도한다. read 결과가 성공인 경로에서는 close의 반환값을 최종 성공 여부에 반영하지 않는다. 세 번 모두 실패하면 assertion/log 경계 <code>530feb20</code>에 false를 전달한다. 검사에서는 이 경계를 반환하는 stub으로 대체했으므로 실제 실패 후 카메라가 계속 실행한다고 단정할 수 없다. <a href="update-file-loader-evidence.json">실패·해제·재시도 조건</a></p>
-<p>로더 검사 27사례는 크기·allocator 분기 11개, 할당/open/read 실패와 재시도 9개, mutex 거부 1개, close 반환 1개, 종류 2의 파일 정보→상태 저장 5개다. 모든 할당·해제와 파일 I/O를 합성 callback으로 대체했으며 큰 요청을 실제 메모리에 할당하거나 후보 파일을 읽은 검사가 아니다. 상태 저장 검사는 이전 필드를 sentinel로 채운 뒤 실제 기록을 확인했다. <a href="../verify_update_file_loader.py">로더 재현 도구</a> · <a href="update-file-loader-checks.json">27사례·대체 지점</a></p>
-<h2 id="pool">같은 pool로 연결되는 생산자</h2>
+<section class="summary">
+<h2 data-toc="no">핵심 요약</h2>
+<ul>
+<li>로더는 파일 정보 조회에서 얻은 <strong>파일 크기 그대로</strong> 입력 버퍼를 요청합니다. 크기가 524,288바이트를 넘으면 큰 메모리 풀을 고르며, 이 선택 지점에는 그보다 큰 상한을 두는 비교가 없습니다.</li>
+<li>큰 풀은 이름이 <strong>IMAGE1</strong>인 가변 크기 메모리 풀입니다. 설정된 크기는 833,617,920바이트이고, 풀린 출력 버퍼도 같은 풀에서 요청합니다.</li>
+<li>풀이 운영체제에 요청하는 크기는 <strong>64바이트 단위로 올림한 크기 + 96바이트</strong>입니다. 원본 파일의 입력과 출력 요청을 더하면 113,790,848바이트로, 설정 크기의 약 14%입니다.</li>
+<li>읽기에 실패하면 버퍼를 해제하고 <strong>세 번까지</strong> 다시 시도합니다. 세 번 모두 실패한 뒤 카메라가 어떻게 되는지는 확인하지 못했습니다.</li>
+<li>설정 크기는 <strong>지금 비어 있는 메모리가 아닙니다</strong>. 실제 풀 생성, 다른 사용자의 점유, 연속 공간은 확인하지 않았으므로, 수정 파일을 카메라가 받아들인다고 말할 수 없습니다.</li>
+</ul>
+</section>
 
+<div class="scope">
+<div class="ok"><h3><span class="badge ok">확인</span> 원본 코드 실행으로 확인</h3>
+<ul>
+<li>로더의 크기 분기, 재시도, 상태 저장 27건</li>
+<li>풀 생성·등록, 요청 크기와 포인터 계산 35건</li>
+<li>RTOS 단독 입력과 통합 이미지 입력에서 같은 결과</li>
+</ul></div>
+<div class="static"><h3><span class="badge static">정적 분석</span> 코드를 읽어 판단</h3>
+<ul>
+<li>풀 초기화 함수 전체와 IMAGE1 객체의 생성 위치</li>
+<li>클래스 이름 <code>VariableMemoryPool</code>(RTTI 문자열)</li>
+<li>빈 공간 조회 함수 <code>GetFreeSpace</code>의 구조</li>
+</ul></div>
+<div class="model"><h3><span class="badge model">모델</span> 시험 조건으로 정한 것</h3>
+<ul>
+<li>할당·해제, 파일 열기·읽기·닫기, 잠금은 대체 함수</li>
+<li>운영체제 호출(풀 생성·할당)은 값만 돌려주는 대체 함수</li>
+<li>CPU는 Unicorn의 Cortex-A15 모델</li>
+<li>큰 버퍼를 실제로 잡거나 파일을 읽지 않음</li>
+</ul></div>
+<div class="open"><h3><span class="badge open">미확인</span> 확인하지 않은 것</h3>
+<ul>
+<li>실제 풀 생성 성공, 현재 여유, 최대 연속 공간</li>
+<li>풀 주소 범위가 실제 DRAM에 대응하는 방식</li>
+<li>세 번 실패한 뒤의 실제 처리</li>
+<li>수정 파일의 수용 여부와 업데이트 성공</li>
+</ul></div>
+</div>
 
-<p>파일 입력에 쓰는 allocator ID <code>0x0e</code>는 <code>VariableMemoryPool</code> 객체 <code>0x547ba638</code>, 이름 <code>IMAGE1</code>이다. 초기화 함수는 base <code>0x6e500000</code>, 크기 <code>0x31b00000</code> (833,617,920바이트), 기본 정렬 64바이트를 전달한다. decoded 출력의 validator도 같은 ID를 조회한다. 이 설정은 두 후보 크기보다 크지만 실제 생성 성공·사용량·단편화·연속 할당 성공은 확인하지 않았다.</p>
-<p>근거: <a href="update-allocator-evidence.json">주소·범위 해시·조건부 연결</a>, <a href="update-allocator-checks.json">원본 ARM 35사례</a>, <a href="update-allocator-evidence.json">재검증 결과</a>. 분석 원본 RTOS SHA-256: <code>342d2f35405e8daf1797dfe431d2e4aa70f4b52a2c242a29df48206672f1dfb4</code>.</p>
-<h2>등록 객체와 함수 연결</h2>
-<div class="table-scroll"><table><thead><tr><th>관계</th><th>원본 주소와 확인 범위</th></tr></thead><tbody>
-<tr><td>초기화 진입</td><td><code>52ef427c</code> → manager singleton <code>530f53ac</code>; <code>52ef4280</code> → <code>530f5430</code>. 실제 부팅 실행을 재현한 것은 아니다. <a href="update-allocator-evidence.json">호출 prefix</a></td></tr>
-<tr><td>IMAGE1 객체 생성</td><td>guard 경로의 <code>530f5a3c..530f5a44</code>가 객체 <code>547ba638</code>를 ctor <code>530f04ac</code>에 전달한다. ctor는 primary vptr <code>53a6b038</code>을 저장한다. RTTI 포인터 <code>53a6b07c</code> → NUL 종료 ASCII <code>53a6b018:18VariableMemoryPool</code>. <a href="update-allocator-evidence.json">ctor 주소·해시</a></td></tr>
-<tr><td>설정 생성</td><td><code>530f5890..58c8</code>가 ID 14, IMAGE1, base <code>6e500000</code>, size <code>31b00000</code>, alignment <code>40</code>을 <code>530f0504</code>로 전달한다. <a href="update-allocator-evidence.json">초기화 주소·해시</a></td></tr>
-<tr><td>등록 조건</td><td><code>530f0560</code>에서 OS create 경계를 호출하며 <code>530f0564/568</code>의 signed-positive 조건을 통과해야 <code>530f059c</code> → <code>530ef274</code>가 registry <code>547ba300[14]</code>에 객체를 기록한다. 초기화 함수는 각 create의 boolean을 검사하지 않는다. <a href="update-allocator-evidence.json">create 주소·해시</a>, <a href="update-allocator-evidence.json">registry</a></td></tr>
-<tr><td>입력 allocator 선택</td><td><code>52ff5c14..1c</code>가 ID 14를 resourceManager+30에 저장한다. unsigned size &gt; <code>80000</code>이면 <code>52ff7054</code>가 vslot+8을 호출한다. 초기화가 성공하고 vptr가 유지된 조건에서 <code>53a6b040=530efb8c</code>로 해석된다. loader 전체 흐름 검사는 manager의 별도 범위다. <a href="update-allocator-evidence.json">dispatch</a></td></tr>
-<tr><td>decoded allocator 선택</td><td>validator ctor <code>52ff4a48</code>가 ID 14 → <code>52ff4a68</code> registry getter → <code>52ff4a6c</code> validator+4에 저장한다. <code>52ff4fe0</code> 호출은 footer+10의 크기, alignment=0, caller tag=0을 전달한다. alignment=0은 pool+20의 기본 64를 사용한다. <a href="update-allocator-evidence.json">ctor</a>, <a href="update-allocator-evidence.json">소비 prefix</a></td></tr>
+<section id="background">
+<h2>배경: 왜 메모리 요청을 따져 보는가</h2>
+<p>펌웨어를 고쳐 다시 포장하면 파일 크기가 달라집니다. <a href="selective-repack.html">압축 블록을 보존한 재패키징</a>에서 만든 후보 두 개가 그 예입니다. 바뀐 블록만 압축 없이 저장한 <strong>선택 후보</strong>는 원본보다 조금 크고, 모든 블록을 압축 없이 저장한 <strong>전부 저장 후보</strong>는 원본의 두 배가 넘습니다. 카메라가 이런 파일을 읽을 메모리를 요청할 수 있는지가 이 문서의 질문입니다.</p>
+<div class="table-wrap"><table class="fit">
+<caption>이 문서에서 비교하는 파일 크기</caption>
+<thead><tr><th>파일</th><th class="n">크기(바이트)</th></tr></thead>
+<tbody>
+<tr><th scope="row">원본 <code>fwdc233b.bin</code></th><td class="n">35,106,716</td></tr>
+<tr><th scope="row">선택 후보</th><td class="n">35,136,788</td></tr>
+<tr><th scope="row">전부 저장 후보</th><td class="n">78,690,708</td></tr>
+<tr><th scope="row">풀린 출력(세 파일 공통)</th><td class="n">78,683,892</td></tr>
 </tbody></table></div>
-<h2>용량은 설정값이며 가용 메모리 값이 아니다</h2>
-<p><code>530f0504</code>는 OS create descriptor에 <code>[0, 0x20, size−0x10, base, 0, 0, 0]</code>을 만든다. 따라서 전달 크기는 <code>0x31affff0</code> = 833,617,904바이트다. 성공 시 object+14는 OS handle, +18은 이름, +1c는 size−16, +20은 기본 정렬, +24는 base가 된다. 설정 범위의 산술적 끝은 <code>0xa0000000</code>이다. 이 주소가 물리 DRAM에 어떻게 대응하는지는 이 조사로 정하지 않았다.</p>
-<p>create <code>525b6a58</code>와 allocate <code>525b7214</code>는 각각 service word <code>80450100</code>, <code>80470400</code>을 로드하고 SVC 6으로 넘어간다. 그 내부 OS 구현·현재 pool 내용은 실행하지 않았다. <code>530efc80</code>의 이름은 <code>GetFreeSpace</code>이며 OS report 경계 <code>525b74c0</code>가 0을 반환하면 report+8/+c 두 word를 출력한다. 각 word를 총 free/최대 연속 크기로 독립 식별하거나 실제 값을 얻지는 않았다. <a href="update-allocator-evidence.json">query 주소·해시</a></p>
-<h2>원본 allocator의 크기·포인터 계산</h2>
-<p><code>530efb8c</code>에서 A=0이면 object+20을 사용한다. 요청 크기 N에 대한 OS 요청은 32비트 산술로 <code>(((N+A−1) &amp; −A) + A + 0x20) mod 2^32</code>이다. 이번 정상 크기와 A=64에서는 <code>roundUp64(N)+96</code>이다. OS 결과가 nonzero이면 NULL을 반환한다. 성공 stub에서 받은 raw 포인터는 <code>(raw+0x18+A+7)&amp;−A</code>로 정렬하고 <code>[aligned−8]=raw+0x18</code>을 기록한다. debug metadata 호출은 별도 경계다. <a href="update-allocator-evidence.json">allocate 주소·해시</a></p>
-<div class="table-scroll"><table><thead><tr><th>버퍼</th><th>요청 바이트</th><th>ARM이 OS에 전달한 바이트</th><th>동일 decoded 출력과의 합</th></tr></thead><tbody>
-<tr><td>원본 입력</td><td>35,106,716</td><td>35,106,848</td><td>113,790,848</td></tr>
-<tr><td>선택 후보 입력</td><td>35,136,788</td><td>35,136,928</td><td>113,820,928</td></tr>
-<tr><td>all-stored 입력</td><td>78,690,708</td><td>78,690,848</td><td>157,374,848</td></tr>
-<tr><td>decoded 출력</td><td>78,683,892</td><td>78,684,000</td><td>해당 없음</td></tr>
-</tbody></table></div>
-<aside>합은 두 요청의 산술 비교다. 두 버퍼의 실제 공존 수명, 다른 pool 사용자, OS 내부 overhead, 현재 free space, 최대 연속 공간은 별도 검증 대상이다. 구성 크기보다 작다는 이유만으로 후보 수용이나 업데이트 성공을 단정하지 않는다. 0xffffffff 사례도 u32 산술 확인이며 유효 파일 크기 판정이 아니다.</aside>
-<h2>재현 검사와 한계</h2>
-<p><a href="../verify_update_allocator.py">allocator 재현 도구</a>는 pinned RTOS 또는 decoded.bin SHA를 확인한다. 35사례는 create signed-return/등록 6, allocate 크기/성공실패 20, 기본 정렬·포인터·caller fallback 8, validator ctor의 동일 registry alias 1이다. original ARM ctor/create/registry/allocate 및 일부 초기화 fragment를 실행한다. 초기화 fragment는 <code>530f5890</code>부터 r5=64와 합성 stack을 주입한다. full startup이나 실제 대형 버퍼 할당은 실행하지 않는다. CPU 모델은 Unicorn Cortex-A15이며 카메라 일치성 주장이 없다.</p>
-<p>명시적 stub은 OS create <code>525b6a58</code>, OS allocate <code>525b7214</code>, debug metadata <code>530ef42c</code>, ctor assertion <code>530fdfc4</code>이다. assertion이 실패할 때의 실제 fatal policy는 모사하지 않았다. OS stub은 작은 synthetic 포인터만 제공하며 실제 장치나 파일을 읽지 않는다.</p>
-<p>genuine angr C 6개는 수정하지 않은 자동 출력이다. create C의 name-null conditional load 처리와 allocate C의 포인터형·stack-canary 표현에는 왜곡이 있으므로 원본 ARM과 실행 검사를 수학·조건의 근거로 쓴다. 원본 word와 범위 hash는 모두 보존했다. FixedMemoryPool <code>530f13b8</code> 경로는 ID 0 등록 후보이므로 ID 14 생산자로 사용하지 않았다.</p>
-<pre>python verify_update_file_loader.py rtos.bin --output loader-checks.json
-python verify_update_allocator.py rtos.bin --output allocator-checks.json</pre>
+<h3>이 문서에서 쓰는 말</h3>
+<dl class="kv">
+<dt>메모리 풀</dt><dd>미리 떼어 둔 큰 메모리 영역입니다. 프로그램은 여기서 필요한 만큼을 빌리고(할당) 돌려줍니다(해제).</dd>
+<dt>정렬</dt><dd>버퍼의 시작 주소를 64 같은 수의 배수로 맞추는 일입니다. 맞추느라 요청 크기가 조금 늘어납니다.</dd>
+<dt>등록 ID</dt><dd>RTOS가 메모리 풀 객체를 찾을 때 쓰는 번호입니다. IMAGE1은 14(<code>0x0e</code>)번입니다.</dd>
+<dt>가상 함수 슬롯</dt><dd>C++ 객체가 함수 주소를 넣어 두는 표의 칸입니다. 코드는 “표의 <code>+8</code> 칸에 있는 함수”처럼 간접으로 호출합니다.</dd>
+<dt>잠금(mutex)</dt><dd>여러 작업이 같은 자원을 동시에 쓰지 못하게 하는 장치입니다.</dd>
+<dt>assert 경계</dt><dd>“이 조건이 거짓이면 문제”라고 기록하는 함수입니다. 거짓일 때 카메라가 멈추는지 계속 가는지는 그 함수 안쪽에 달려 있습니다.</dd>
+</dl>
+</section>
 
-<h2 id="limits">실행 가능성 판단에 남은 조건</h2><p>로더 27사례와 pool 35사례는 서로 다른 경계를 검사한 합계 62사례다. 재현 도구는 모두 입력 SHA-256을 확인하고 기존 결과 파일 덮어쓰기와 assert 비활성화를 거부한다. 본 조사에서 새 genuine C 14개를 로컬에 보존했다. 공개 자료에는 원본 코드 대신 주소·해시·해석·검사 결과를 남겼다.</p><p>두 요청의 합이 설정 영역보다 작다는 사실만으로 현재 메모리 여유를 판단할 수는 없다. 실제 pool 생성, 다른 사용자의 점유, 연속 공간, 입력과 출력의 공존 수명, 파일 시스템과 하드웨어 디코더, 후속 검증·기록·부팅을 계속 연결해야 한다. 실제 장치에서 파일 읽기·할당·설치·실행·복구를 수행하지 않았다.</p></main><footer>정적 주소·해시와 합성 CPU 실행 결과다. 원본 및 후보의 실제 카메라 수용을 주장하지 않는다. HTML 링크와 390px·1280px 화면 배치를 확인했다. 좁은 화면의 표는 내부에서 가로로 스크롤한다.</footer></body></html>
+<section id="loader">
+<h2>파일 크기에서 입력 버퍼까지</h2>
+<p class="takeaway">파일 크기는 파일 정보 조회 결과에서 나와 상태 객체에 저장되고, 로더는 그 값을 바꾸지 않고 메모리 풀에 요청합니다.</p>
+
+<figure class="diagram">
+<figcaption>종류 2 업데이트의 입력 로더 흐름</figcaption>
+<div class="dg-scroll">
+<svg class="dg" viewBox="0 0 800 304" role="img" aria-labelledby="dg-load-title dg-load-desc">
+<title id="dg-load-title">파일 정보 조회에서 입력 버퍼 저장까지</title>
+<desc id="dg-load-desc">파일 정보 조회가 크기를 돌려주면 상태 객체에 저장합니다. 로더는 잠금을 얻은 뒤 크기가 0x80000을 넘으면 큰 풀을 골라 파일 크기 그대로 버퍼를 요청합니다. 이어서 파일을 열고 읽고 닫습니다. 성공하면 입력 버퍼 주소를 상태 객체에 저장합니다. 실패하면 버퍼를 해제하고 다시 시도하며, 세 번 모두 실패하면 assert 경계에 도달합니다.</desc>
+<defs><marker id="dg-load-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0 0L10 5L0 10z"/></marker></defs>
+<rect class="b ok" x="8" y="14" width="176" height="64" rx="8"/>
+<text class="t" x="20" y="41">파일 정보 조회</text>
+<text class="s mono" x="20" y="61">0x52ff7d10</text>
+<rect class="b ok" x="206" y="14" width="176" height="64" rx="8"/>
+<text class="t" x="218" y="41">크기를 상태에 저장</text>
+<text class="s" x="218" y="61">0이면 저장하지 않음</text>
+<rect class="b ok" x="404" y="14" width="176" height="64" rx="8"/>
+<text class="t" x="416" y="41">로더 진입·잠금</text>
+<text class="s mono" x="416" y="61">0x52ff7160</text>
+<rect class="b ok" x="602" y="14" width="190" height="64" rx="8"/>
+<text class="t" x="614" y="41">메모리 풀 선택</text>
+<text class="s" x="614" y="61">0x80000 초과면 큰 풀</text>
+<rect class="b ok" x="602" y="128" width="190" height="64" rx="8"/>
+<text class="t" x="614" y="155">버퍼 할당 요청</text>
+<text class="s" x="614" y="175">파일 크기 그대로 · 정렬 64</text>
+<rect class="b ok" x="258" y="128" width="190" height="64" rx="8"/>
+<text class="t" x="270" y="155">열기 → 읽기 → 닫기</text>
+<text class="s mono" x="270" y="175">0x52ff6dd4</text>
+<rect class="b ok" x="8" y="128" width="190" height="64" rx="8"/>
+<text class="t" x="20" y="155">입력 버퍼 주소 저장</text>
+<text class="s" x="20" y="175">상태 객체 +0x48</text>
+<rect class="b ok" x="258" y="228" width="190" height="64" rx="8"/>
+<text class="t" x="270" y="255">버퍼 해제 후 재시도</text>
+<text class="s" x="270" y="275">시도는 모두 세 번까지</text>
+<rect class="b open" x="8" y="228" width="190" height="64" rx="8"/>
+<text class="t" x="20" y="255">세 번 모두 실패</text>
+<text class="s" x="20" y="275">assert 경계 0x530feb20</text>
+<path class="e" d="M184 46H204" marker-end="url(#dg-load-ah)"/>
+<path class="e" d="M382 46H402" marker-end="url(#dg-load-ah)"/>
+<path class="e" d="M580 46H600" marker-end="url(#dg-load-ah)"/>
+<path class="e" d="M697 78V126" marker-end="url(#dg-load-ah)"/>
+<path class="e" d="M602 160H450" marker-end="url(#dg-load-ah)"/>
+<path class="e" d="M258 160H200" marker-end="url(#dg-load-ah)"/>
+<path class="e" d="M353 192V226" marker-end="url(#dg-load-ah)"/>
+<path class="e" d="M448 260H697V194" marker-end="url(#dg-load-ah)"/>
+<path class="e" d="M258 260H200" marker-end="url(#dg-load-ah)"/>
+<text class="n mid" x="229" y="150">성공</text>
+<text class="n" x="362" y="214">실패</text>
+<text class="n mid" x="572" y="252">다시 시도</text>
+</svg>
+</div>
+<ul class="dg-legend"><li><i class="ok"></i>원본 코드를 실행해 확인한 흐름</li><li><i class="open"></i>이후 처리 미확인</li></ul>
+<p>시험에서는 할당 함수와 파일 열기·읽기·닫기를 대체 함수로 바꿨습니다. 실제로 메모리를 잡거나 파일을 읽은 것이 아니라, 로더가 어떤 순서로 무엇을 호출하는지를 확인한 것입니다.</p>
+</figure>
+
+<h3>크기는 어디서 오는가</h3>
+<p>종류 2를 고르는 함수 <code>0x52fef240</code>은 파일 이름이 든 버퍼 <code>0x54796104</code>를 파일 정보 조회 함수에 넘깁니다. 조회 함수는 파일 시스템 객체의 가상 함수를 불러 파일 정보 구조체(<code>FileInfo</code>)를 채우고, 그 구조체의 <code>+0x18</code>에 있는 32비트 값을 크기로 읽습니다. 크기가 0이 아니면 경로와 크기를 상태 객체에 저장합니다. 파일 시스템 객체의 실제 정체는 <a href="update-file-lifetimes.html">파일 인터페이스와 버퍼 수명</a>에서, 파일 이름이 만들어지는 과정은 <a href="update-volume-finalization.html#volume">파일 경로·volume·종료 처리</a>에서 다룹니다.</p>
+
+<h3>어느 풀을 고르는가</h3>
+<div class="table-wrap"><table>
+<caption>로더의 풀 선택과 요청 인수</caption>
+<thead><tr><th>조건(부호 없는 비교)</th><th>고르는 풀</th><th>요청 인수</th></tr></thead>
+<tbody>
+<tr><th scope="row">길이 &gt; <code>0x80000</code>(524,288바이트)</th><td>자원 관리 객체 <code>+0x30</code>의 풀. 등록 ID <code>0x0e</code>, 이름 IMAGE1</td><td rowspan="2">크기 = 파일 길이 그대로, 정렬 = <code>0x40</code>(64), 태그 = 호출한 곳의 복귀 주소</td></tr>
+<tr><th scope="row">그 이하</th><td>자원 관리 객체 <code>+0x34</code>의 풀. 등록 ID 1</td></tr>
+</tbody></table></div>
+<p>원본과 두 후보는 모두 큰 풀 쪽으로 갑니다. 이 선택 지점에 더 큰 상한을 두는 비교는 없습니다. 다만 이것은 로더가 요청을 보낸다는 뜻일 뿐이고, 아래 단계의 할당이 성공한다는 뜻은 아닙니다.</p>
+
+<h3>실패했을 때의 정리와 재시도</h3>
+<p>버퍼를 얻으면 파일 읽기 함수 <code>0x52ff6dd4</code>가 파일 객체의 열기·읽기·닫기를 차례로 부릅니다. 실패하는 위치에 따라 정리 방식이 다릅니다.</p>
+<div class="table-wrap"><table>
+<caption>실패 위치별 동작과 시험에서 센 호출 횟수</caption>
+<thead><tr><th>주입한 상황</th><th>로더의 동작</th><th class="n">할당</th><th class="n">열기</th><th class="n">읽기</th><th class="n">닫기</th><th class="n">해제</th></tr></thead>
+<tbody>
+<tr><th scope="row">할당 실패 1회 뒤 성공</th><td>다시 할당을 시도</td><td class="n">2</td><td class="n">1</td><td class="n">1</td><td class="n">1</td><td class="n">0</td></tr>
+<tr><th scope="row">열기 실패 1회 뒤 성공</th><td>닫기는 생략, 버퍼를 해제하고 재시도</td><td class="n">2</td><td class="n">2</td><td class="n">1</td><td class="n">1</td><td class="n">1</td></tr>
+<tr><th scope="row">읽기 실패 1회 뒤 성공</th><td>파일을 닫고 버퍼를 해제한 뒤 재시도</td><td class="n">2</td><td class="n">2</td><td class="n">2</td><td class="n">2</td><td class="n">1</td></tr>
+<tr><th scope="row">읽기 실패 3회</th><td>세 번 시도 뒤 assert 경계에 거짓 전달</td><td class="n">3</td><td class="n">3</td><td class="n">3</td><td class="n">3</td><td class="n">3</td></tr>
+<tr><th scope="row">잠금을 얻지 못함</th><td>할당도 파일 접근도 하지 않음</td><td class="n">0</td><td class="n">0</td><td class="n">0</td><td class="n">0</td><td class="n">0</td></tr>
+<tr><th scope="row">읽기 성공, 닫기가 0을 반환</th><td>성공으로 처리. 닫기 결과는 반영하지 않음</td><td class="n">1</td><td class="n">1</td><td class="n">1</td><td class="n">1</td><td class="n">0</td></tr>
+</tbody></table></div>
+<ul>
+<li>해제는 할당에 쓴 것과 같은 풀의 가상 함수 <code>+0xc</code>로 요청합니다.</li>
+<li>세 번 모두 실패하면 assert·기록 경계 <code>0x530feb20</code>에 거짓이 전달됩니다. 시험에서는 이 함수를 그냥 돌아오는 대체 함수로 바꿨습니다. 실제 카메라가 실패 뒤에도 계속 실행한다고 단정할 수 없습니다.</li>
+<li>길이가 0이면 로더는 이전에 저장된 입력 버퍼 주소를 지우기 전에 돌아옵니다. 이것이 실제 오류로 이어진다는 근거는 없습니다.</li>
+</ul>
+<div class="callout model"><strong class="label">시험 조건</strong>
+<p>로더 27건은 크기·풀 분기 11건, 할당·열기·읽기 실패와 재시도 9건, 잠금 거부 1건, 닫기 반환 1건, 파일 정보에서 상태 저장까지 5건입니다. 크기 분기에는 0, 1, 524,287, 524,288, 524,289, 원본과 두 후보의 크기, 2,147,483,647, 2,147,483,648, 4,294,967,295를 넣었습니다. 아주 큰 값은 인수 전달과 분기만 확인한 것이고 유효한 파일 크기라는 뜻이 아닙니다. 상태 저장 시험은 이전 필드를 표식 값으로 채운 뒤 실제로 덮어쓰였는지 확인했습니다.</p></div>
+
+<details class="evidence"><summary>로더 함수 구간과 핵심 명령</summary>
+<div class="table-wrap"><table class="compact">
+<thead><tr><th>함수</th><th>구간</th><th>SHA-256</th></tr></thead>
+<tbody>
+<tr><td>입력 읽기 진입</td><td><code>0x52fee900</code>–<code>0x52fee9b4</code></td><td><code class="wrap">4d686e4149a08f4b368d1aa393e0505473cd6b5828391e3e1cb718b8c76b6937</code></td></tr>
+<tr><td>열기·읽기·닫기</td><td><code>0x52ff6dd4</code>–<code>0x52ff6ef8</code></td><td><code class="wrap">f090d05403c506674a1f632f2a4dc9c243e808161ce298a38405488e4fdfce24</code></td></tr>
+<tr><td>할당 뒤 읽기</td><td><code>0x52ff7014</code>–<code>0x52ff70a0</code></td><td><code class="wrap">a5c93c7418e907d519ffd1d91b534d9b1df3c5d3a2a85026ebf8224a0318b064</code></td></tr>
+<tr><td>재시도 반복</td><td><code>0x52ff70a0</code>–<code>0x52ff7160</code></td><td><code class="wrap">93d1136d7c0813f2fd2a13524a73c9111f3adcc562c6f05e542da25077663b71</code></td></tr>
+<tr><td>잠금과 로더 호출</td><td><code>0x52ff7160</code>–<code>0x52ff71bc</code></td><td><code class="wrap">bc8772722a1ea53207f8183d2feb5fdaa0c6fe482b6fe1ddae76b2c38d7629a2</code></td></tr>
+<tr><td>종류 선택</td><td><code>0x52fef240</code>–<code>0x52fef488</code></td><td><code class="wrap">431913074d553d65105a89d233d6af6de7f3fed9a70fd45d3dd98a046e3cbc89</code></td></tr>
+<tr><td>파일 정보에서 크기 읽기</td><td><code>0x52ff7c38</code>–<code>0x52ff7d10</code></td><td><code class="wrap">583e98fb93dc545893f6208b98fae4b7b4e3a4356f3588b876ca93c7c7d4f120</code></td></tr>
+<tr><td>파일 정보 조회(잠금 포함)</td><td><code>0x52ff7d10</code>–<code>0x52ff7d6c</code></td><td><code class="wrap">a4ec6ba81bb39956e1502f3a5eaf819d278e424aec8c6ed5d4dbd1b8578c55bd</code></td></tr>
+</tbody></table></div>
+<ul>
+<li>크기의 출처: <code>0x52fef330</code>에서 이름 조회 함수 <code>0x52ff3474</code>를, <code>0x52fef340</code>에서 조회 함수를 부릅니다. 조회 안쪽의 <code>0x52ff7c8c</code>가 자원 관리 객체 <code>+0x38</code>에 있는 객체의 가상 함수 <code>+0x54</code>를 호출하고, <code>0x52ff7c98</code>이 구조체 <code>+0x18</code>을 읽습니다. 경로는 <code>0x52fef35c</code>에서 상태 <code>+0x40</code>에, 크기는 <code>0x52fef364</code>에서 <code>+0x44</code>에 저장됩니다.</li>
+<li>읽기 진입 <code>0x52fee900</code>은 자원 관리 객체(상태 <code>+0x10</code>), 경로, 길이를 <code>0x52ff7160</code>에 넘기고(<code>0x52fee934</code>) 돌려받은 주소를 <code>0x52fee938</code>에서 상태 <code>+0x48</code>에 저장합니다.</li>
+<li>재시도 횟수 3은 <code>0x52ff70c4</code>에서 설정되고 <code>0x52ff70fc</code>·<code>0x52ff7100</code>에서 줄이며 반복합니다. 반복 안에서 <code>0x52ff70d8</code>이 <code>0x52ff7014</code>를 부릅니다. assert 경계 호출은 <code>0x52ff7138</code>입니다.</li>
+<li>풀 선택: <code>0x52ff7020</code>이 <code>+0x30</code>, <code>0x52ff7028</code>이 <code>+0x34</code>를 읽고 <code>0x52ff702c</code>에서 <code>0x80000</code>과 비교해 <code>0x52ff7030</code>에서 고릅니다. 정렬 인수는 <code>0x52ff704c</code>, 호출은 <code>0x52ff7054</code>입니다. 해제 호출은 <code>0x52ff7094</code>·<code>0x52ff7098</code>입니다.</li>
+<li>파일 객체 호출: 열기 <code>0x52ff6e2c</code>(가상 함수 <code>+0x20</code>, 모드 1), 읽기 <code>0x52ff6e54</code>(<code>+0x28</code>), 닫기 <code>0x52ff6e74</code>(<code>+0x24</code>).</li>
+<li>잠금은 <code>0x530f1a68</code>, 잠금 해제는 <code>0x530f1bbc</code>, 기록 함수는 <code>0x530fced4</code>입니다. 로더는 <code>0x52ff71a4</code>에서 <code>0x52ff70a0</code>을 부릅니다.</li>
+<li>풀 포인터의 출처: 자원 관리 객체 초기화의 <code>0x52ff5c14</code>–<code>0x52ff5c1c</code>가 등록 ID <code>0x0e</code>를 <code>+0x30</code>에, <code>0x52ff5c50</code>–<code>0x52ff5c60</code>이 ID 1을 <code>+0x34</code>에 넣습니다. 등록부 조회 함수 <code>0x530ef264</code>는 표 <code>0x547ba300</code>에서 ID 번째 칸을 읽습니다. 파일 시스템 객체는 <code>0x52ff5c7c</code>–<code>0x52ff5c90</code>에서 <code>+0x38</code>에 들어갑니다.</li>
+</ul>
+</details>
+</section>
+
+<section id="pool">
+<h2>입력과 출력이 같은 IMAGE1 풀에서 나옵니다</h2>
+<p class="takeaway">압축된 입력 버퍼와 풀린 출력 버퍼는 둘 다 등록 ID 14번인 IMAGE1 풀에 요청됩니다. 이 풀은 주소 <code>0x6e500000</code>에서 시작하는 833,617,920바이트 영역으로 설정되어 있습니다.</p>
+<p>IMAGE1은 클래스 <code>VariableMemoryPool</code>의 객체 <code>0x547ba638</code>입니다. 초기화 함수가 기준 주소, 크기, 기본 정렬 64바이트를 넘겨 풀을 만듭니다. 풀린 출력을 담을 버퍼는 검증 객체가 같은 ID로 찾은 풀에서 요청하며, 요청 크기는 파일 footer에 적힌 출력 길이입니다(<a href="update-resources.html#selection">헤더와 footer에서 확인하는 값</a>).</p>
+<div class="table-wrap"><table>
+<caption>풀이 만들어져 두 요청에 쓰이기까지</caption>
+<thead><tr><th>단계</th><th>확인한 내용</th><th>상태</th></tr></thead>
+<tbody>
+<tr><th scope="row">초기화 진입</th><td>호출 위치 두 곳이 풀 관리 객체를 얻은 뒤 초기화 함수 <code>0x530f5430</code>을 부릅니다. 실제 부팅을 재현한 것은 아닙니다.</td><td><span class="badge static">정적 분석</span></td></tr>
+<tr><th scope="row">IMAGE1 객체 생성</th><td>생성자 <code>0x530f04ac</code>가 객체에 가상 함수 표 <code>0x53a6b038</code>을 넣습니다. 이 표의 RTTI는 이름 <code>18VariableMemoryPool</code>을 가리킵니다.</td><td><span class="badge ok">확인</span></td></tr>
+<tr><th scope="row">설정 전달</th><td>ID 14, 이름 IMAGE1, 기준 <code>0x6e500000</code>, 크기 <code>0x31b00000</code>, 정렬 <code>0x40</code>이 생성 함수 <code>0x530f0504</code>로 전달됩니다.</td><td><span class="badge ok">확인</span></td></tr>
+<tr><th scope="row">등록 조건</th><td>운영체제의 풀 생성 호출이 부호 있는 양수를 돌려줄 때만 등록부 <code>0x547ba300</code>의 14번 칸에 객체가 기록됩니다. 초기화 함수는 각 생성의 성공 여부를 검사하지 않습니다.</td><td><span class="badge ok">확인</span></td></tr>
+<tr><th scope="row">입력 버퍼 요청</th><td>로더가 큰 풀의 가상 함수 <code>+8</code>을 부릅니다. 풀이 정상 등록되고 표가 바뀌지 않았다면 그 대상은 할당 함수 <code>0x530efb8c</code>입니다.</td><td><span class="badge static">정적 분석</span></td></tr>
+<tr><th scope="row">출력 버퍼 요청</th><td>검증 객체가 생성될 때 ID 14로 찾은 풀을 <code>+4</code>에 저장하고, 변환 직전에 footer <code>+0x10</code>의 크기, 정렬 0, 태그 0으로 같은 할당 함수를 부릅니다. 정렬 0은 풀의 기본값 64로 바뀝니다.</td><td><span class="badge ok">확인</span></td></tr>
+</tbody></table></div>
+<p class="small muted">“확인”은 해당 함수나 조각을 에뮬레이터에서 실행해 저장 값과 인수를 관찰했다는 뜻입니다. 운영체제 호출은 대체 함수였습니다. 풀 생성 6건에는 양수 1, 4,660, 2,147,483,647과 0, 4,294,967,295, 2,147,483,648을 돌려주는 경우를 넣어 양수일 때만 등록되는 것을 확인했습니다.</p>
+
+<details class="evidence"><summary>등록 경로의 주소와 해시</summary>
+<ul>
+<li>초기화 진입: <code>0x52ef427c</code>가 관리 객체 함수 <code>0x530f53ac</code>를, <code>0x52ef4280</code>이 초기화 함수 <code>0x530f5430</code>을 부릅니다.</li>
+<li>객체 생성: 보호 분기의 <code>0x530f5a3c</code>–<code>0x530f5a44</code>가 객체 <code>0x547ba638</code>을 생성자에 넘깁니다. RTTI 포인터 <code>0x53a6b07c</code>가 가리키는 <code>0x53a6b018</code>에 NUL로 끝나는 ASCII 문자열이 있습니다.</li>
+<li>설정 전달: <code>0x530f5890</code>–<code>0x530f58c8</code>. 이름 문자열 <code>IMAGE1</code>은 <code>0x53a6ad50</code>에 있습니다.</li>
+<li>등록: <code>0x530f0560</code>에서 운영체제 경계를 부르고, <code>0x530f0564</code>·<code>0x530f0568</code>의 양수 조건을 지나 <code>0x530f059c</code>가 등록 함수 <code>0x530ef274</code>를 부릅니다.</li>
+<li>입력 쪽: <code>0x52ff5c14</code>–<code>0x52ff5c1c</code>가 ID 14의 풀을 자원 관리 객체 <code>+0x30</code>에 저장하고, <code>0x52ff7054</code>가 가상 함수 <code>+8</code>을 부릅니다. 표의 해당 칸은 <code>0x53a6b040</code>입니다.</li>
+<li>출력 쪽: 검증 객체 생성자의 <code>0x52ff4a48</code>이 ID 14를 넣고 <code>0x52ff4a68</code>에서 등록부를 조회해 <code>0x52ff4a6c</code>에서 저장합니다. 할당 호출은 <code>0x52ff4fe0</code>입니다.</li>
+<li>ID 0번에는 다른 클래스의 생성 함수 <code>0x530f13b8</code>(FixedMemoryPool)이 <code>0x530f55c0</code>에서 호출됩니다. ID 14의 출처로 쓰지 않았습니다.</li>
+</ul>
+<div class="table-wrap"><table class="compact">
+<thead><tr><th>함수</th><th>구간</th><th>SHA-256</th></tr></thead>
+<tbody>
+<tr><td>풀 생성자</td><td><code>0x530f04ac</code>–<code>0x530f0504</code></td><td><code class="wrap">b718d55c372cd2cac3879ee9e1e303aa6201d35cdfffa29a6cfd099111c94e83</code></td></tr>
+<tr><td>풀 생성·등록</td><td><code>0x530f0504</code>–<code>0x530f05cc</code></td><td><code class="wrap">982e2478942c917bab26a9947c60c45b3a4d42afcb1dd1f154ceb6b28f8500f0</code></td></tr>
+<tr><td>할당</td><td><code>0x530efb8c</code>–<code>0x530efc80</code></td><td><code class="wrap">5b52a2fc1e3756033ea4fc3e0efee203a9509749339a92bb5092707bdc55c2ed</code></td></tr>
+<tr><td>빈 공간 조회</td><td><code>0x530efc80</code>–<code>0x530efd88</code></td><td><code class="wrap">9910dc777845c3d04eb15ede0f4128e00b153b9a6ddfc12a1941fb64bb8c9e60</code></td></tr>
+<tr><td>풀 초기화 전체</td><td><code>0x530f5430</code>–<code>0x530f5d38</code></td><td><code class="wrap">2bf0504512096970f2b09bf820e6cca44a6dfc60672ff9bc8832e2f8b1747227</code></td></tr>
+<tr><td>검증 객체 생성자</td><td><code>0x52ff4a1c</code>–<code>0x52ff4aa8</code></td><td><code class="wrap">f68f7ec124efb4dac8f83cba4f8151b00c9d4ff8126d0f4c98ba86e47f3e28a9</code></td></tr>
+</tbody></table></div>
+</details>
+</section>
+
+<section id="formula">
+<h2>요청 크기 계산과 네 버퍼의 수치</h2>
+<p class="takeaway">할당 함수는 요청 크기를 정렬 단위로 올림한 뒤 정렬 값과 32바이트를 더해 운영체제에 요청합니다. 정렬이 64일 때는 “64의 배수로 올림 + 96바이트”입니다.</p>
+
+<figure class="diagram">
+<figcaption>IMAGE1 풀의 설정 크기와 두 버퍼 요청의 합(같은 축척)</figcaption>
+<div class="dg-scroll">
+<svg class="dg" viewBox="0 0 800 268" role="img" aria-labelledby="dg-pool-title dg-pool-desc">
+<title id="dg-pool-title">풀 설정 크기와 입력·출력 요청 크기의 비교</title>
+<desc id="dg-pool-desc">가로 막대의 길이가 바이트 수에 비례합니다. IMAGE1 풀의 설정 크기는 833,617,920바이트입니다. 원본 파일은 입력 35,106,848바이트와 출력 78,684,000바이트를 더해 113,790,848바이트를 요청합니다. 선택 후보는 113,820,928바이트, 전부 저장 후보는 157,374,848바이트입니다. 가장 큰 경우도 설정 크기의 약 19%입니다.</desc>
+<text class="s" x="20" y="22">IMAGE1 풀의 설정 크기 833,617,920바이트</text>
+<rect class="b mute" x="20" y="30" width="760" height="30" rx="4"/>
+<text class="n mono" x="20" y="78">0x6e500000</text>
+<text class="n mono end" x="780" y="78">0xa0000000</text>
+<text class="s" x="20" y="110">원본 파일</text>
+<rect class="b key" x="20" y="118" width="32" height="24" rx="3"/>
+<rect class="b" x="52" y="118" width="72" height="24" rx="3"/>
+<text class="s" x="136" y="135">입력 35,106,848 + 출력 78,684,000 = 113,790,848바이트(약 14%)</text>
+<text class="s" x="20" y="166">선택 후보</text>
+<rect class="b key" x="20" y="174" width="32" height="24" rx="3"/>
+<rect class="b" x="52" y="174" width="72" height="24" rx="3"/>
+<text class="s" x="136" y="191">입력 35,136,928 + 출력 78,684,000 = 113,820,928바이트(약 14%)</text>
+<text class="s" x="20" y="222">전부 저장 후보</text>
+<rect class="b key" x="20" y="230" width="72" height="24" rx="3"/>
+<rect class="b" x="92" y="230" width="72" height="24" rx="3"/>
+<text class="s" x="176" y="247">입력 78,690,848 + 출력 78,684,000 = 157,374,848바이트(약 19%)</text>
+</svg>
+</div>
+<ul class="dg-legend"><li><i class="key"></i>압축된 입력 버퍼 요청</li><li><i></i>풀린 출력 버퍼 요청</li></ul>
+<p>막대는 요청 크기를 산술로 비교한 것입니다. 설정 크기에서 지금 얼마가 비어 있는지는 이 그림에 없습니다.</p>
+</figure>
+
+<div class="table-wrap"><table>
+<caption>버퍼별 요청 크기(정렬 64)</caption>
+<thead><tr><th>버퍼</th><th class="n">코드가 요청한 바이트</th><th class="n">풀이 운영체제에 넘긴 바이트</th><th class="n">풀린 출력 요청과의 합</th></tr></thead>
+<tbody>
+<tr><th scope="row">원본 입력</th><td class="n">35,106,716</td><td class="n">35,106,848</td><td class="n">113,790,848</td></tr>
+<tr><th scope="row">선택 후보 입력</th><td class="n">35,136,788</td><td class="n">35,136,928</td><td class="n">113,820,928</td></tr>
+<tr><th scope="row">전부 저장 후보 입력</th><td class="n">78,690,708</td><td class="n">78,690,848</td><td class="n">157,374,848</td></tr>
+<tr><th scope="row">풀린 출력</th><td class="n">78,683,892</td><td class="n">78,684,000</td><td class="n">해당 없음</td></tr>
+</tbody></table></div>
+<p>입력과 출력이 실제로 같은 시점에 함께 잡혀 있는지는 <a href="update-file-lifetimes.html#lifetime">파일 인터페이스와 버퍼 수명</a>에서 확인했습니다.</p>
+
+<h3>계산식</h3>
+<p>요청 크기를 N, 정렬을 A라고 하면 할당 함수 <code>0x530efb8c</code>의 계산은 아래와 같습니다. 모든 계산은 32비트 범위에서 이루어집니다.</p>
+<pre><code>A가 0이면 A = 풀 객체의 기본 정렬(+0x20, IMAGE1은 64)
+운영체제 요청 크기 = (((N + A − 1) &amp; −A) + A + 0x20) mod 2^32
+A = 64일 때       = roundUp64(N) + 96
+
+운영체제가 돌려준 주소를 raw라고 하면
+호출자에게 주는 주소 aligned = (raw + 0x18 + A + 7) &amp; −A
+aligned − 8 위치에 raw + 0x18을 기록</code></pre>
+<p>운영체제 호출이 0이 아닌 값을 돌려주면 할당 함수는 NULL을 돌려줍니다. 디버그 정보를 기록하는 호출은 따로 있으며 시험에서는 대체했습니다.</p>
+<div class="callout model"><strong class="label">시험 조건</strong>
+<p>풀 35건은 생성·등록 6건, 요청 크기와 성공·실패 20건, 기본 정렬·주소 계산·태그 대체 8건, 검증 객체가 같은 풀을 찾는지 1건입니다. 요청 크기 시험에는 0, 1, 63, 64, 65, 524,288, 원본과 두 후보의 크기, 4,294,967,295(<code>0xffffffff</code>)를 넣었습니다. 이 최댓값은 32비트 산술을 확인한 것이며 유효한 파일 크기 판정이 아닙니다. 풀 초기화는 함수 전체가 아니라 <code>0x530f5890</code>부터의 조각을 정렬 값 64와 합성 스택으로 실행했습니다.</p></div>
+</section>
+
+<section id="capacity">
+<h2>설정 크기는 가용 메모리가 아닙니다</h2>
+<p class="takeaway">833,617,920바이트는 풀을 만들 때 넘기는 설정값입니다. 풀이 실제로 만들어졌는지, 지금 얼마나 비어 있는지는 운영체제 안쪽의 일이며 실행해 보지 않았습니다.</p>
+<p>생성 함수는 운영체제에 넘길 설명 구조체에 <code>[0, 0x20, 크기−0x10, 기준 주소, 0, 0, 0]</code>을 넣습니다. 그래서 운영체제에 전달되는 크기는 설정값보다 16바이트 작은 <code>0x31affff0</code>, 곧 833,617,904바이트입니다. 생성에 성공하면 풀 객체에 아래 값이 기록됩니다.</p>
+<div class="table-wrap"><table class="fit">
+<caption>생성 성공 뒤 풀 객체의 필드</caption>
+<thead><tr><th>위치</th><th>내용</th></tr></thead>
+<tbody>
+<tr><th scope="row"><code>+0x14</code></th><td>운영체제가 준 풀 번호(handle)</td></tr>
+<tr><th scope="row"><code>+0x18</code></th><td>이름</td></tr>
+<tr><th scope="row"><code>+0x1c</code></th><td>크기 − 16</td></tr>
+<tr><th scope="row"><code>+0x20</code></th><td>기본 정렬</td></tr>
+<tr><th scope="row"><code>+0x24</code></th><td>기준 주소</td></tr>
+</tbody></table></div>
+<p>설정 범위를 산술로 계산한 끝 주소는 <code>0xa0000000</code>입니다. 이 주소 범위가 물리 DRAM에 어떻게 대응하는지는 정하지 않았습니다.</p>
+
+<h3>운영체제 경계</h3>
+<p>풀 생성 함수 <code>0x525b6a58</code>과 할당 함수 <code>0x525b7214</code>는 각각 서비스 번호 <code>0x80450100</code>, <code>0x80470400</code>을 싣고 SVC 6 명령으로 커널에 들어갑니다. 커널 안쪽의 구현과 현재 풀의 내용은 실행하지 않았습니다.</p>
+<p>이름이 <code>GetFreeSpace</code>인 함수 <code>0x530efc80</code>은 운영체제의 조회 경계 <code>0x525b74c0</code>이 0을 돌려주면 조회 결과의 <code>+8</code>, <code>+0xc</code> 두 단어를 내놓습니다. 두 단어가 각각 빈 공간의 합계와 최대 연속 크기인지 따로 식별하지 않았고, 실제 값을 얻지도 않았습니다.</p>
+<div class="callout"><strong class="label">참고: 공개된 T-Kernel 자료와의 비교</strong>
+<p>이 RTOS의 식별 문자열은 SMP T-Kernel을 가리킵니다(<a href="update-timer-abi.html">커널 호출과 예약 시각</a>). TRON Forum이 공개한 T-Kernel 2.0 소스에서 가변 크기 메모리 풀의 상태 구조체 <code>T_RMPL</code>은 <code>+8</code>에 빈 영역의 합계, <code>+0xc</code>에 최대 연속 빈 영역을 둡니다. <code>GetFreeSpace</code>가 읽는 두 위치와 같습니다. 다만 이 펌웨어의 서비스 번호는 그 소스의 번호(<code>0x804b0100</code>, <code>0x804d0400</code>)와 다릅니다. 커널 안쪽을 확인한 것이 아니므로 두 단어의 뜻을 이 비교만으로 확정하지 않았습니다.</p></div>
+
+<div class="callout warn"><strong class="label">이 수치로 판단할 수 없는 것</strong>
+<p>두 요청의 합이 설정 크기보다 작다는 사실만으로는 메모리가 충분하다고 말할 수 없습니다. 두 버퍼가 함께 잡혀 있는 기간, 같은 풀을 쓰는 다른 코드, 운영체제 안쪽의 관리 비용, 지금 비어 있는 크기, 최대 연속 공간은 따로 확인해야 합니다. 후보 파일을 카메라가 받아들이거나 업데이트가 성공한다고 단정하지 않습니다.</p></div>
+</section>
+
+<section id="limits">
+<h2>한계와 남은 과제</h2>
+<ul>
+<li>로더 27건과 풀 35건, 합계 62건은 서로 다른 경계를 검사한 것입니다. 전체 시작 과정이나 실제 대형 버퍼 할당은 실행하지 않았습니다.</li>
+<li>대체한 함수는 운영체제의 풀 생성 <code>0x525b6a58</code>, 할당 <code>0x525b7214</code>, 디버그 정보 기록 <code>0x530ef42c</code>, 생성자의 assert <code>0x530fdfc4</code>, 그리고 로더 쪽의 잠금·기록·파일 호출입니다. assert가 실패했을 때의 실제 처리(정지 여부)는 흉내 내지 않았습니다. 대체 할당 함수는 요청 크기와 관계없이 작은 합성 주소만 돌려줍니다.</li>
+<li>CPU 모델은 Unicorn의 Cortex-A15입니다. 카메라의 CPU와 같다고 주장하지 않습니다.</li>
+<li>디컴파일한 C는 로더 쪽 8개, 풀 쪽 6개로 모두 14개이며 자동 출력 그대로 보관했습니다. 풀 생성 C에는 이름이 없을 때의 조건부 읽기가, 할당 C에는 포인터 형식과 스택 보호 표현이 틀리게 복원된 곳이 있습니다. 계산식과 조건은 원본 ARM 명령과 실행 결과를 근거로 삼았습니다.</li>
+<li>남은 연결은 실제 풀 생성과 점유 상태, 입력·출력이 함께 있는 기간, 파일 시스템과 변환 장치, 그 뒤의 검증·기록·부팅입니다. 실제 장치에서 파일 읽기·할당·설치·실행·복구를 수행하지 않았습니다.</li>
+</ul>
+</section>
+
+<section id="reproduce">
+<h2>재현 방법</h2>
+<p>두 도구는 따로 잘라 낸 RTOS 이미지(<code>rtos.bin</code>)나 통합 이미지(<code>decoded.bin</code>)를 받습니다. 입력의 SHA-256이 아래 값과 다르면 실행하지 않습니다. 이미 있는 결과 파일을 덮어쓰지 않으며, Python의 assert를 끈 상태로는 실행을 거부합니다.</p>
+<pre><code>python verify_update_file_loader.py rtos.bin --output loader-checks.json
+python verify_update_allocator.py rtos.bin --output allocator-checks.json</code></pre>
+<dl class="kv">
+<dt>RTOS SHA-256</dt><dd><code class="wrap">342d2f35405e8daf1797dfe431d2e4aa70f4b52a2c242a29df48206672f1dfb4</code></dd>
+<dt>RTOS 적재 기준 주소</dt><dd><code>0x52500000</code></dd>
+</dl>
+</section>
+
+<section id="refs">
+<h2>근거 파일과 참고 자료</h2>
+<ul class="refs">
+<li><a href="update-file-loader-evidence.json">update-file-loader-evidence.json</a> — 로더 함수 구간과 해시, 크기의 출처, 실패·해제·재시도 조건</li>
+<li><a href="update-file-loader-checks.json">update-file-loader-checks.json</a> — 로더 27건의 입력, 호출 횟수, 대체 지점</li>
+<li><a href="update-allocator-evidence.json">update-allocator-evidence.json</a> — 풀 객체와 등록 경로, 설정값, 계산식, 후보별 요청 크기</li>
+<li><a href="update-allocator-checks.json">update-allocator-checks.json</a> — 풀 35건의 입력과 결과</li>
+<li><a href="../verify_update_file_loader.py">verify_update_file_loader.py</a> · <a href="../verify_update_allocator.py">verify_update_allocator.py</a> — 재현 도구</li>
+<li>외부 자료: <a href="https://github.com/tron-forum/tkernel_2/blob/5778f619bdb354443551888dc2e9aa191e684da8/include/tk/syscall.h">T-Kernel 2.0 소스의 syscall.h</a>(가변 크기 메모리 풀 구조체 <code>T_CMPL</code>·<code>T_RMPL</code>) · <a href="https://github.com/tron-forum/tkernel_2/blob/5778f619bdb354443551888dc2e9aa191e684da8/include/sys/svc/tkfncd.h">같은 소스의 tkfncd.h</a>(서비스 번호 표)</li>
+</ul>
+</section>
+
+</main>
+</div>
+<!-- chrome:bottom -->
+<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">펌웨어 업데이트 과정 — 이 주제의 문서</h2><ol><li><a href="guide-update.html">업데이트 과정 안내</a></li><li><a href="update-resources.html">업데이트 검사와 ICONBIN<span>프로젝트·버전·체크섬</span></a></li><li><a href="update-memory.html" aria-current="page">입력 로더와 메모리 할당</a></li><li><a href="update-file-lifetimes.html">파일 인터페이스와 버퍼 수명</a></li><li><a href="update-volume-finalization.html">파일 경로·volume·종료 처리</a></li><li><a href="update-media-completion.html">매체 객체와 완료 통지</a></li><li><a href="update-partition-io.html">R 파티션과 sector I/O</a></li><li><a href="update-bank-selection.html">쓰기 bank와 BOOT 선택</a></li><li><a href="update-ui-consumer.html">완료 후 UI 작업</a></li><li><a href="update-ui-timer.html">UI 타이머와 콜백</a></li><li><a href="update-timer-abi.html">커널 호출과 예약 시각</a></li><li><a href="update-timer-insertion.html">기한 큐 삽입</a></li><li><a href="update-timer-clock.html">타이머 설정과 64비트 카운터</a></li><li><a href="update-timer-irq.html">타이머 등록과 지연 콜백</a></li><li><a href="update-subtick-arithmetic.html">하위 시간의 32비트 산술</a></li><li><a href="update-clock-readers.html">시각 조회 함수</a></li></ol></nav>
+<nav class="pager" aria-label="이전·다음 문서"><a class="prev" href="update-resources.html"><small>← 이전</small>업데이트 검사와 ICONBIN</a><a class="next" href="update-file-lifetimes.html"><small>다음 →</small>파일 인터페이스와 버퍼 수명</a></nav>
+<footer class="sitefoot"><div class="sitefoot-in"><nav aria-label="사이트"><a href="../index.html#map">문서 지도</a><a href="../index.html#levels">검증 수준 읽는 법</a><a href="../glossary.html">용어집</a><a href="research-program.html">세 기종 연구 본부</a><a href="https://github.com/yunhyok/pentax-k3iii-firmware-analysis">GitHub 저장소</a></nav><p>PENTAX K-3 Mark III 펌웨어 2.20 분석 문서. PC에서 수행한 정적 분석과 에뮬레이션 결과이며, 카메라 실기에서 검증한 내용이 아닙니다. 원본 펌웨어와 추출한 독점 코드는 포함하지 않습니다.</p></div></footer>
+<!-- /chrome:bottom -->
+</body>
+</html>

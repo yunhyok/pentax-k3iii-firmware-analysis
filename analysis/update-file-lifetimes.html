@@ -1,92 +1,415 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>업데이트 파일 시스템과 버퍼 수명</title><style>
-:root{color-scheme:light dark;--bg:#f7f8fa;--paper:#fff;--ink:#182332;--muted:#48596b;--line:#d2dbe5;--accent:#124b8e;--soft:#edf3fa;--focus:#d75f00}
-@media(prefers-color-scheme:dark){:root{--bg:#111821;--paper:#18222d;--ink:#e8edf4;--muted:#b4c2d2;--line:#405369;--accent:#98c8ff;--soft:#223348;--focus:#ffb374}}
-*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.85 system-ui,-apple-system,"Malgun Gothic",sans-serif;word-break:keep-all;overflow-wrap:anywhere}
-a{color:var(--accent);text-underline-offset:.18em}a:hover{text-decoration-thickness:2px}:focus-visible{outline:3px solid var(--focus);outline-offset:4px}
-header,main,footer{max-width:1120px;margin:auto;padding:36px clamp(18px,4vw,56px)}header{padding-top:56px;padding-bottom:24px}main{background:var(--paper);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
-.eyebrow{color:var(--muted);font-size:.84rem;letter-spacing:.06em}h1{font-size:clamp(1.85rem,4.5vw,3rem);line-height:1.35;letter-spacing:-.025em;margin:12px 0 18px}h2{font-size:1.5rem;line-height:1.5;margin:3.6rem 0 1rem;padding-top:1.2rem;border-top:1px solid var(--line)}h2:first-child{margin-top:0}h3{font-size:1.12rem;margin-top:2rem}p{margin:1rem 0}strong{font-weight:650}.intro{max-width:55em;color:var(--muted)}
-nav{margin-top:25px}nav ul{display:flex;flex-wrap:wrap;gap:8px 22px;list-style:none;padding:0;margin:0}nav ul ul{display:none}nav a{font-size:.9rem}code{font: .88em/1.6 ui-monospace,Consolas,monospace;overflow-wrap:anywhere}pre{background:var(--soft);padding:18px;overflow-x:auto;white-space:pre-wrap;border-radius:5px}pre code{font-size:.82rem}
-.table-scroll{overflow-x:auto;margin:24px 0}table{border-collapse:collapse;width:100%;font-size:.92rem;min-width:530px}th,td{text-align:left;vertical-align:top;padding:14px 16px;border-bottom:1px solid var(--line)}th{background:var(--soft);font-weight:650}td:first-child{min-width:125px}details{border-block:1px solid var(--line);margin-top:24px;padding:16px 0}summary{cursor:pointer;font-weight:650;padding:6px 0}.caption,.meta{font-size:.86rem;color:var(--muted)}
-figure{margin:32px 0;padding:24px 0;border-block:1px solid var(--line)}figcaption{font-size:.95rem;font-weight:650;margin-bottom:20px}.flow{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:32px;list-style:none;padding:0;margin:18px 0}.flow li{position:relative;padding:18px;background:var(--soft);border-radius:6px;line-height:1.6}.flow strong{display:block;font-size:1rem}.flow span{display:block;color:var(--muted);font-size:.86rem;margin-top:9px}.flow li:not(:last-child)::after{content:"→";position:absolute;right:-27px;top:40%;font-size:22px;color:var(--muted)}.second{margin-top:24px}footer{font-size:.88rem;color:var(--muted)}
-@media(max-width:620px){body{font-size:16px}header,main,footer{padding-inline:20px}.flow{grid-template-columns:1fr;gap:26px}.flow li:not(:last-child)::after{content:"↓";right:auto;left:calc(50% - 8px);top:auto;bottom:-28px}.flow li{padding:15px 18px}h2{font-size:1.3rem}nav ul{gap:10px 18px}table{font-size:.87rem}th,td{padding:12px}header{padding-top:30px}}
-@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
-@media print{body{background:white;color:black;font-size:10pt}header,main,footer{max-width:none;padding:12pt}nav{display:none}a{color:inherit}h2,figure,table{break-inside:avoid}h2{break-after:avoid}main{border:0}.flow li{background:#f1f3f5}.table-scroll{overflow:visible}table{min-width:0}details>*{display:block!important}}
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>파일 시스템 인터페이스와 입력·출력 버퍼의 수명 — PENTAX K-3 Mark III 펌웨어 연구</title>
+<meta name="description" content="K-3 Mark III의 업데이트 로더가 부르는 파일 객체가 FileSystem 클래스이며 FAT·exFAT·Virtual 세 처리기로 나뉜다는 것, 그리고 압축된 입력과 풀린 출력 버퍼가 메모리에 함께 있는 구간과 실패 때의 정리 조건을 원본 ARM 82건으로 확인한 문서입니다.">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-camera="k3iii">
+<!-- chrome:top -->
+<a class="skip" href="#main">본문 바로가기</a>
+<div class="topbar"><div class="topbar-in"><a class="brand" href="../index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="../index.html" aria-current="true">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="https://yunhyok.github.io/pentax-q7-firmware-analysis/">Q7</a></div><nav class="topnav" aria-label="주제"><a href="../index.html">개요</a><a href="guide-boot.html">부팅·저장소</a><a href="guide-update.html" aria-current="true">업데이트</a><a href="guide-rebuild.html">재구축</a><a href="guide-rtos.html">명령·셸</a><a href="guide-color.html">색 처리</a><a href="lightroom-bridge.html">Lightroom</a><a href="af-foundations.html">AF</a><a href="ui-port-contract.html">UI</a></nav></div></div>
+<nav class="crumbs" aria-label="현재 위치"><ol><li><a href="../index.html">PENTAX K-3 Mark III</a></li><li><a href="guide-update.html">펌웨어 업데이트 과정</a></li><li aria-current="page">파일 인터페이스와 버퍼 수명</li></ol></nav>
+<!-- /chrome:top -->
+<header class="page-head">
+<p class="eyebrow">펌웨어 업데이트 과정 · 파일 계층과 버퍼</p>
+<h1>파일 시스템 인터페이스와 입력·출력 버퍼의 수명</h1>
+<p class="lead">업데이트 로더는 “파일을 열어 읽어라”는 요청을 어떤 객체에 보냅니다. 그 객체가 실제로 무엇이고 요청이 어디까지 내려가는지, 그리고 읽어 들인 파일과 풀어 낸 데이터가 메모리에 언제까지 함께 남는지를 확인했습니다.</p>
+</header>
+<div class="layout">
+<!-- chrome:toc -->
+<nav class="toc" aria-label="이 문서의 목차"><h2 data-toc="no">이 문서에서</h2><ol><li><a href="#background">배경: 파일 요청이 내려가는 계층</a></li><li><a href="#interface">파일 객체의 정체와 처리기 선택</a></li><li><a href="#lifetime">압축된 입력과 풀린 출력이 함께 있는 구간</a></li><li><a href="#failure">변환이나 체크섬이 실패했을 때 출력 버퍼의 처리</a></li><li><a href="#cleanup">입력 버퍼의 정리와 해제 함수의 반환값</a></li><li><a href="#verification">한계와 남은 과제</a></li><li><a href="#reproduce">재현 방법</a></li><li><a href="#refs">근거 파일과 참고 자료</a></li></ol></nav>
+<!-- /chrome:toc -->
+<main class="doc" id="main">
 
-.site-nav{border-block:1px solid var(--line);padding:14px 0;margin:20px 0}.site-nav a{display:inline-block;margin:4px 16px 4px 0}
-.review-note{background:var(--soft);padding:16px 20px;margin:24px 0}.toc{font-size:.92rem}.toc ul{list-style:none;padding-left:0}.toc ul ul{padding-left:20px}
-.branch{margin:18px 0;padding:0 0 0 24px;border-left:3px solid var(--line)}.branch p{margin:8px 0}.diagram-line{padding:12px 16px;background:var(--soft);border-radius:4px}
-td code{white-space:nowrap}
-</style></head><body><header><div class="eyebrow">PENTAX K-3 MARK III · FIRMWARE 2.20 · 2026-11-08</div><h1>업데이트 파일 시스템과 버퍼 수명</h1><p class="intro">실제 FileSystem 객체부터 FAT·exFAT 분기까지 연결하고 압축 입력과 decoded 출력이 함께 존재하는 구간 및 실패 후 정리 조건을 확인했다.</p><nav aria-label="관련 문서"><a href="../index.html">연구 개요</a> · <a href="update-memory.html">입력 로더·메모리 설정</a> · <a href="update-resources.html">검증·리소스</a> · <a href="#lifetime">버퍼 수명</a> · <a href="#verification">검증 범위</a></nav></header><main>
+<section class="summary">
+<h2 data-toc="no">핵심 요약</h2>
+<ul>
+<li>로더가 쓰는 파일 객체는 <strong><code>FileSystem</code> 클래스의 객체</strong>입니다. 열기·닫기·읽기·정보 조회 요청은 경로의 첫 글자로 고른 volume에 따라 FAT, exFAT, Virtual 세 처리기 중 하나로 전달됩니다.</li>
+<li>처리기는 volume마다 붙은 설명 객체의 두 숫자로 고릅니다. 한 바이트가 4이면 Virtual, 아니면 32비트 값이 <code>0x0403ffff</code>보다 클 때 exFAT, 그 이하일 때 FAT입니다.</li>
+<li>압축된 입력 버퍼는 변환이 끝날 때까지 해제되지 않습니다. 그래서 <strong>입력과 출력이 같은 메모리 풀에 함께 잡혀 있는 구간</strong>이 있습니다. 원본 파일이면 그 시점의 요청 합계는 113,790,848바이트입니다.</li>
+<li>실패하는 위치에 따라 출력 버퍼의 처리가 다릅니다. 변환 실패나 길이 불일치는 출력 버퍼의 해제를 요청합니다. 안쪽 체크섬 실패는 출력 주소를 기록한 뒤에 일어나며, 그 함수 안에서는 해제하지 않습니다.</li>
+<li>파일 인터페이스 49건과 버퍼 수명 33건, 합계 82건을 원본 ARM 코드로 실행했습니다. 실제 파일·저장 장치·운영체제·변환 장치는 실행하지 않았습니다.</li>
+</ul>
+</section>
 
+<div class="scope">
+<div class="ok"><h3><span class="badge ok">확인</span> 원본 코드 실행으로 확인</h3>
+<ul>
+<li>객체 연결, 경로 첫 글자 검색, 처리기 선택 22건</li>
+<li>열기·읽기·정보 조회·닫기의 전달과 반환값 27건</li>
+<li>변환 실패 분기와 출력 인계 13건</li>
+<li>입력 정리와 풀 소속 검사 20건</li>
+</ul></div>
+<div class="static"><h3><span class="badge static">정적 분석</span> 코드를 읽어 판단</h3>
+<ul>
+<li>클래스 이름(RTTI 문자열)과 가상 함수 표</li>
+<li>세 처리기의 하위 함수 연결</li>
+<li>mount 경로가 처리기 배열을 채우고 지우는 위치</li>
+<li>입력 버퍼를 해제하는 호출이 변환 전에 없다는 점</li>
+</ul></div>
+<div class="model"><h3><span class="badge model">모델</span> 시험 조건으로 정한 것</h3>
+<ul>
+<li>volume 설명 객체의 숫자와 하위 파일 처리 함수</li>
+<li>변환 장치의 결과값과 작은 합성 출력</li>
+<li>할당·잠금·assert·운영체제 해제는 대체 함수</li>
+<li>바깥 체크섬은 생략 표식 <code>0xffffffff</code>로 통과</li>
+</ul></div>
+<div class="open"><h3><span class="badge open">미확인</span> 확인하지 않은 것</h3>
+<ul>
+<li>실제로 어느 volume이 mount되어 있는지</li>
+<li>FAT·exFAT 처리기 아래의 라이브러리와 드라이버</li>
+<li>풀린 출력 버퍼가 최종으로 해제되는 시점</li>
+<li>실패 뒤 검증이 반복 호출될 수 있는지</li>
+</ul></div>
+</div>
 
-<p><code>resourceManager+0x38</code>은 factory singleton <code>0x54787088</code>의 <code>+0x14</code>에 저장된 <code>FileSystem</code> primary 객체다. factory 초기화 함수에서 0x30바이트 객체를 생성하고 그 생성자가 vptr <code>0x53901308</code>을 설치한다. open/close/read/stat은 이 객체의 실제 함수로 연결되며 경로에서 구한 volume index에 따라 FatFileSystem, ExFatFileSystem 또는 VirtualFileSystem의 secondary interface로 전달된다.</p>
-<p><a href="update-file-interface-evidence.json">원본 범위·해시·조건부 연결</a> · <a href="update-file-interface-evidence.json">검증 결과</a> · <a href="update-file-interface-checks.json">원본 ARM 49사례</a>. 원본 RTOS SHA-256: <code>342d2f35405e8daf1797dfe431d2e4aa70f4b52a2c242a29df48206672f1dfb4</code>.</p>
-<h2>객체 생산과 alias</h2>
-<p>singleton <code>52f50f6c</code>은 <code>54787088</code>을 반환하며 최초 생성 시 <code>52f50fc8</code>에서 +14를 0으로 만든다. 해당 factory vptr는 <code>539014c0</code>, +8 slot은 <code>52f510e8</code>이다. 이 초기화 함수의 <code>52f51644..165c</code>는 size=0x30 할당 → ctor <code>52f4e66c</code> → factory+14 저장을 수행한다. 이번 조사는 factory 초기화 함수의 상위 task/startup 호출자까지 닫지는 않았다. 실제 생산자 본문과 vtable 등록을 확인한 것이다. <a href="update-file-interface-evidence.json">singleton</a> · <a href="update-file-interface-evidence.json">초기화 주소·해시</a> · <a href="update-file-interface-evidence.json">FileSystem ctor</a></p>
-<div class="table-scroll"><table><thead><tr><th>생산자</th><th>저장 관계</th></tr></thead><tbody>
-<tr><td>52f5165c</td><td>factory+14 ← FileSystem primary pointer; ctor52f4e6a0에서 vptr53901308</td></tr>
-<tr><td>52f51688</td><td>FileSystem+8 ← factory+4의 volume manager pointer</td></tr>
-<tr><td>52f5169c</td><td>FileSystem+c ← factory+8 FatFileSystem 객체+4; null이면0</td></tr>
-<tr><td>52f516b0</td><td>FileSystem+10 ← factory+c ExFatFileSystem 객체+4; null이면0</td></tr>
-<tr><td>52f516c4</td><td>FileSystem+14 ← factory+10 VirtualFileSystem 객체+4; null이면0</td></tr>
-<tr><td>52ff5c7c/80/90</td><td>factory singleton → factory+14 → resourceManager+38</td></tr>
-</tbody></table></div>
-<p>class 이름은 진단 문자열 추측이 아니라 vtable−4 → RTTI → name pointer로 확인했다: FileSystem <code>539012c8→539012b8:10FileSystem</code>, Fat <code>53900e84→53901000:13FatFileSystem</code>, ExFat <code>538fe2c4→538fe2b0:15ExFatFileSystem</code>, Virtual <code>53910674→5391063c:17VirtualFileSystem</code>. 모든 이름은 ASCII와 NUL 경계를 확인했다.</p>
-<h2>확인된 facade dispatch</h2>
-<div class="table-scroll"><table><thead><tr><th>operation</th><th>loader callsite</th><th>FileSystem slot → 함수</th><th>lower interface slot</th></tr></thead><tbody>
-<tr><td>open</td><td>52ff6e2c</td><td>+20 /53901328 →52f50398</td><td>+8 at52f5043c</td></tr>
-<tr><td>close</td><td>52ff6e74</td><td>+24 /5390132c →52f50864</td><td>+c at52f508e4</td></tr>
-<tr><td>read</td><td>52ff6e54</td><td>+28 /53901330 →52f4e7b4</td><td>+10 at52f4e84c</td></tr>
-<tr><td>stat</td><td>52ff7c8c</td><td>+54 /5390135c →52f4f068</td><td>+48 at52f4f0f8</td></tr>
-</tbody></table></div>
-<p>위 연결은 factory 생성·초기화가 수행되고 vptr가 유지된 조건이다. <code>FileSystem+18</code>의 backend 배열은 초기화 <code>52f4e14c</code>에서 할당·0 초기화한다. mount 경로 <code>52f50144</code>가 <code>52f50264</code>에서 selector <code>52f4fd70</code>을 호출하고 mount 실패 경로는 <code>52f502b8</code>에서 해당 entry를 다시 0으로 지울 수 있다. 현재 카메라에서 어느 volume이 mount되어 있는지는 확인하지 않았다.</p>
-<h2>backend 선택의 정확한 조건</h2>
-<p><code>52f52554</code>는 문자열이 비어 있지 않으면 첫 byte를 읽고 a–z를 A–Z로 정규화한다. volume manager+14 배열의 0x18바이트 record에서 +4의 문자와 비교하고 manager+20의 개수 안에서 index를 반환한다. 일치가 없으면 −1이다. 이 함수만으로는 colon이나 전체 경로 문법을 확인하지 않으며 합성 <code>Cat</code>도 C entry와 일치한다. 실제 update filename과 그 첫 글자의 런타임 생산자는 이 조사 범위 밖이다. <a href="update-file-interface-evidence.json">경로 index 주소·해시</a></p>
-<p><code>52f52630</code>은 index의 record+0에서 descriptor pointer를 얻는다. <code>52f4fd70</code>의 <code>52f4fdd0..fe0c</code>는 아래 조건으로 선택한 pointer를 <code>FileSystem+18[index]</code>에 저장한다. <a href="update-file-interface-evidence.json">selector 주소·해시</a></p>
-<div class="table-scroll"><table><thead><tr><th>조건</th><th>선택 pointer</th><th>secondary vptr</th></tr></thead><tbody>
-<tr><td>signed byte descriptor+14 ==4</td><td>FileSystem+14, VirtualFileSystem+4</td><td>53910748</td></tr>
-<tr><td>그 외, unsigned word descriptor+18 &gt;0403ffff</td><td>FileSystem+10, ExFatFileSystem+4</td><td>538fe210</td></tr>
-<tr><td>그 외, unsigned word descriptor+18 ≤0403ffff</td><td>FileSystem+c, FatFileSystem+4</td><td>53900f58</td></tr>
-</tbody></table></div>
-<aside>descriptor+14/+18은 여기서 수치 필드로만 부른다. 용량 단위, sector 수, 매체 종류, 실제 SD 카드와의 대응을 정하지 않았다. class 이름이 파일시스템 transport 또는 syscall 구현을 입증하지도 않는다.</aside>
-<h2>handle·크기·오류 전달</h2>
-<p>open이 lower callback 성공을 받으면 <code>52f50498</code>에서 8바이트 wrapper를 할당하고 <code>52f504d4</code>에 raw lower handle, <code>52f504e0</code>에 volume index를 기록한다. <code>52f504e4</code>는 그 wrapper pointer를 caller의 output에 저장한다. read와 close는 wrapper+4로 backend를 선택하고 wrapper+0을 lower handle로 전달한다. 성공 시 카운터 증가와 close 성공 시 감소도 이 층에 있다. open의 wrapper 할당 실패 처리는 합성 검사에서 실행하지 않았다.</p>
-<p>read는 buffer/size를 lower+10으로 그대로 전달하고 lower 반환값과 error word를 반환한다. null handle, 음수 index, null backend에서는 lower 호출 없이 반환0과 error12가 나온다. stat은 경로 index와 lower+48을 사용하며 invalid path는 반환0과 error2다. 합성 stat callback이 쓴 FileInfo+18은 caller가 읽을 크기 필드로 유지된다. close는 lower 실패에서도 wrapper 해제 helper를 호출한다. 반환값은 lower가 0이면 0, 비제로이면 1로 정규화한다. open도 wrapper 할당 성공 시 같은 방식으로 정규화하며 read·stat은 lower의 32비트 반환값을 유지한다. 이 차이는 합성 반환값 0·1·2·0xffffffff로 확인했다. 실제 lower close 동작은 실행하지 않았다.</p>
-<p>이 facade의 read/stat은 내부 mutex acquire 반환값을 분기 조건으로 쓰지 않는다. 합성 lock 반환0에서도 lower callback과 unlock이 호출됐다. 상위 loader의 mutex gate는 별도이며 이 관찰을 실제 동시성 오류나 잠금 정책 부재로 확대하지 않는다.</p>
-<h2>하위 함수와 남은 경계</h2>
-<div class="table-scroll"><table><thead><tr><th>backend</th><th>open thunk → target</th><th>close thunk → target</th><th>read thunk → target</th><th>stat thunk → target</th></tr></thead><tbody>
-<tr><td>Fat</td><td><code>52f4a9ec</code> → <code>52f4a934</code></td><td><code>52f4a4e4</code> → <code>52f4a46c</code></td><td><code>52f4a56c</code> → <code>52f4a4ec</code></td><td><code>52f4afc0</code> → <code>52f4aea4</code></td></tr>
-<tr><td>ExFat</td><td><code>52f459c8</code> → <code>52f458e8</code></td><td><code>52f45a3c</code> → <code>52f459d0</code></td><td><code>52f45abc</code> → <code>52f45a44</code></td><td><code>52f47364</code> → <code>52f47210</code></td></tr>
-<tr><td>Virtual</td><td><code>52fecdb4</code> → <code>52fec94c</code></td><td><code>52fec1a4</code> → <code>52fec114</code></td><td><code>52fec29c</code> → <code>52fec1ac</code></td><td><code>52fed5c4</code> → <code>52fed4ec</code></td></tr>
-</tbody></table></div>
-<p>모든 위 thunk는 r0에서4를 빼 primary 객체를 복원한 뒤 branch한다. 추가로 Fat read의 <code>52f4a510→533681c4</code>, ExFat read의 <code>52f45a84→5337f554</code> 직접 호출까지 확인했다. lower library 내부·IPC·장치 driver는 추적하거나 실행하지 않았다. 이 두 호출은 검증 가능한 소프트웨어 경계이며 실제 I/O 증거가 아니다. <a href="update-file-interface-evidence.json">Fat read</a> · <a href="update-file-interface-evidence.json">ExFat read</a></p>
-<h2>재현과 검증 범위</h2>
-<p><a href="../verify_update_file_interface.py">파일 인터페이스 재현 도구</a>는 pinned RTOS 또는 decoded.bin SHA를 검증한다. 원본 ARM 49사례는 factory fragment/실제 ctor alias4, 첫문자 index10, backend 분기8, open 반환값4 및 invalid1, read7 및 invalid3, stat7 및 invalid1, close4다. factory의 vptr와 네 alias 필드는 예상값과 다른 값으로 채운 뒤 실제 저장 결과를 확인했다. factory fragment는 <code>52f51644..16d8</code>이며 합성 r4와 frame을 주입했다. factory의 전체 시작 경로나 mount 전체를 실행한 검사는 아니다.</p>
-<p>명시적 stub은 lower FS callbacks, factory/handle 할당, mutex, assertion, handle bookkeeping/free, strlen, FileSystem initialize 경계다. 문자열 길이는 합성 NUL 문자열에서만 계산한다. 요청된 수천만 바이트를 실제로 할당하거나 읽지 않는다. CPU 모델은 Unicorn Cortex-A15이며 카메라 재현 정확도를 주장하지 않는다. genuine angr C8개는 그대로 보존하되 ARM을 조건·주소의 기준으로 사용한다.</p>
+<section id="background">
+<h2>배경: 파일 요청이 내려가는 계층</h2>
+<p><a href="update-memory.html">입력 로더와 메모리 할당</a>에서 로더는 “자원 관리 객체의 <code>+0x38</code>에 있는 객체”의 가상 함수를 불러 파일을 열고 읽었습니다. 그때는 이 객체의 정체를 몰랐습니다. 이 문서는 그 객체를 만든 코드를 찾아 클래스를 확인하고, 요청이 아래 계층으로 전달되는 조건을 따라갑니다.</p>
 
+<figure class="diagram">
+<figcaption>업데이트 로더에서 저장 장치까지의 계층과 확인 범위</figcaption>
+<div class="dg-scroll">
+<svg class="dg" viewBox="0 0 800 368" role="img" aria-labelledby="dg-layer-title dg-layer-desc">
+<title id="dg-layer-title">파일 요청이 전달되는 계층</title>
+<desc id="dg-layer-desc">맨 위의 업데이트 로더가 FileSystem 객체의 열기, 닫기, 읽기, 정보 조회 함수를 부릅니다. FileSystem 객체는 경로의 첫 글자와 설명 객체의 값으로 FatFileSystem, ExFatFileSystem, VirtualFileSystem 중 하나를 고릅니다. 그 아래의 파일 시스템 라이브러리와 저장 장치는 추적하거나 실행하지 않았습니다.</desc>
+<defs><marker id="dg-layer-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0 0L10 5L0 10z"/></marker></defs>
+<rect class="b ok" x="150" y="12" width="500" height="56" rx="8"/>
+<text class="t" x="164" y="36">업데이트 로더</text>
+<text class="s" x="164" y="56">파일 정보 조회, 열기 → 읽기 → 닫기를 요청</text>
+<text class="n" x="412" y="90">가상 함수 +0x54, +0x20, +0x28, +0x24</text>
+<rect class="b ok" x="150" y="104" width="500" height="56" rx="8"/>
+<text class="t" x="164" y="128">FileSystem 객체</text>
+<text class="s" x="164" y="148">volume을 찾아 처리기를 고르고, 파일 핸들을 관리</text>
+<text class="n" x="412" y="178">경로의 첫 글자와 설명 객체의 값으로 선택</text>
+<rect class="b static" x="40" y="204" width="230" height="62" rx="8"/>
+<text class="t" x="54" y="230">FatFileSystem</text>
+<text class="s" x="54" y="250">읽기에서 0x533681c4 호출</text>
+<rect class="b static" x="285" y="204" width="230" height="62" rx="8"/>
+<text class="t" x="299" y="230">ExFatFileSystem</text>
+<text class="s" x="299" y="250">읽기에서 0x5337f554 호출</text>
+<rect class="b static" x="530" y="204" width="230" height="62" rx="8"/>
+<text class="t" x="544" y="230">VirtualFileSystem</text>
+<text class="s" x="544" y="250">대상 함수까지 연결</text>
+<rect class="b open" x="40" y="300" width="720" height="56" rx="8"/>
+<text class="t" x="54" y="324">파일 시스템 라이브러리와 저장 장치</text>
+<text class="s" x="54" y="344">추적하거나 실행하지 않았습니다. 매체 객체는 이어지는 문서에서 다룹니다.</text>
+<path class="e" d="M400 68V102" marker-end="url(#dg-layer-ah)"/>
+<path class="e" d="M400 160V184H155V202" marker-end="url(#dg-layer-ah)"/>
+<path class="e" d="M400 184V202" marker-end="url(#dg-layer-ah)"/>
+<path class="e" d="M400 184H645V202" marker-end="url(#dg-layer-ah)"/>
+<path class="e open" d="M155 266V298" marker-end="url(#dg-layer-ah)"/>
+<path class="e open" d="M400 266V298" marker-end="url(#dg-layer-ah)"/>
+<path class="e open" d="M645 266V298" marker-end="url(#dg-layer-ah)"/>
+</svg>
+</div>
+<ul class="dg-legend"><li><i class="ok"></i>원본 코드를 실행해 확인</li><li><i class="static"></i>코드를 읽어 연결</li><li><i class="open"></i>추적·실행하지 않음</li></ul>
+</figure>
 
-<h2 id="lifetime">압축 입력과 decoded 출력의 공존</h2>
-<p>종류 2의 검증 진입점 <code>52fefb84</code>는 state+48의 입력 포인터와 +44의 길이를 packageContext+1c/+20으로 전달한다. <code>52ff2e04 → 52ff4b0c → 52ff5168</code>을 거쳐 validator+8/+c에 같은 입력을 연결한다. 원본 함수는 헤더·종류·외부 합계를 검사한 뒤 <code>52ff4f88</code>이 별도의 출력 버퍼를 할당하고 기존 입력의 +80 주소를 디코더에 넘긴다. 이 구간에는 입력 해제 호출이 없다. 공개 연결 검사의 외부 합계 필드는 <code>0xffffffff</code> sentinel이므로 실제 합계 비교를 건너뛴다. 별도 비공개 검토에서 실제 외부 합계의 일치·불일치 2사례를 검사했다. <a href="update-buffer-lifetime-evidence.json">연결 주소·해시·공존 근거</a></p>
-<figure><figcaption>종류 2의 입력·출력 소유 관계</figcaption><ol class="flow"><li><strong>입력 버퍼 유지</strong><span>state+48 → packageContext+1c<br>→ validator+8<br>압축 본문은 input+80</span></li><li><strong>별도 출력 할당</strong><span>같은 IMAGE1 pool<br>footer+10 길이 요청<br>디코더 실행 시 입력·출력 공존</span></li><li><strong>검증 후 인계</strong><span>validator+10/+14<br>→ packageContext+24/+28<br>→ CPU context+24/+28</span></li></ol></figure>
-<p>앞선 <a href="update-memory.html">메모리 할당 조사</a>에서 구한 입력·출력의 OS 요청 합계는 원본 <strong>113,790,848바이트</strong>, 선택 블록만 바꾼 후보 <strong>113,820,928바이트</strong>, 전체 stored 후보 <strong>157,374,848바이트</strong>다. 이제 이 합계를 두 요청이 공존하는 시점과 연결할 수 있다. 이는 전체 업데이트의 최고 메모리 사용량이 아니다. 디코더 작업 공간, 다른 할당, OS 내부 오버헤드, 현재 가용 연속 공간은 포함하지 않았다.</p>
-<h2 id="failure">디코더·체크섬 실패에 따른 출력 수명</h2>
-<div class="table-scroll"><table><thead><tr><th>분기</th><th>새 출력 해제 요청</th><th>validator+10/+14</th><th>근거</th></tr></thead><tbody>
-<tr><td>할당 실패</td><td>디코더 진입 전 false assertion</td><td>기존 값</td><td>52ff5014; 검사는 이 경계에서 정지</td></tr>
-<tr><td>디코더 반환 0</td><td>pool slot+c 호출</td><td>기존 값</td><td>52ff5058 → 52ff515c</td></tr>
-<tr><td>출력 길이 불일치</td><td>pool slot+c 호출</td><td>기존 값</td><td>52ff5064 → 52ff50ac</td></tr>
-<tr><td>내부 체크섬 실패</td><td>이 함수에서는 호출하지 않음</td><td>새 출력 포인터·길이 유지</td><td>52ff50e4/50ec 기록 후 52ff50f0 검사</td></tr>
-<tr><td>검증 성공</td><td>이 함수에서는 호출하지 않음</td><td>새 출력 포인터·길이 유지</td><td>52ff4c44 getter로 상위 context에 인계</td></tr>
+<h3>이 문서에서 쓰는 말</h3>
+<dl class="kv">
+<dt>volume</dt><dd>파일 시스템 하나가 차지하는 저장 영역입니다. 이 펌웨어는 <code>C:</code>, <code>R:</code>처럼 글자로 구분합니다. exFAT 규격은 volume을 “사용자 데이터를 저장하고 꺼내는 데 필요한 파일 시스템 구조와 데이터 공간 전체”로 정의합니다(<a href="https://learn.microsoft.com/en-us/windows/win32/fileio/exfat-specification">Microsoft exFAT 규격</a>).</dd>
+<dt>FAT과 exFAT</dt><dd>메모리 카드에 널리 쓰이는 두 파일 시스템입니다. SD 규격은 2GB 초과 32GB 이하의 SDHC 카드에 FAT32를, 32GB를 넘는 SDXC 카드에 exFAT을 쓰도록 정합니다(<a href="https://www.sdcard.org/developers/sd-standard-overview/capacity-sd-sdhc-sdxc-sduc/">SD Association의 용량 구분</a>).</dd>
+<dt>처리기(backend)</dt><dd>공통 창구 뒤에서 실제 일을 하는 객체입니다. 여기서는 <code>FatFileSystem</code>, <code>ExFatFileSystem</code>, <code>VirtualFileSystem</code> 세 가지입니다.</dd>
+<dt>핸들</dt><dd>열린 파일 하나를 가리키는 값입니다. 읽기와 닫기는 이 값을 받아 동작합니다.</dd>
+<dt>RTTI</dt><dd>C++ 컴파일러가 실행 파일에 남기는 클래스 이름 정보입니다. 가상 함수 표 바로 앞에 이름 문자열로 가는 포인터가 있습니다.</dd>
+</dl>
+</section>
+
+<section id="interface">
+<h2>파일 객체의 정체와 처리기 선택</h2>
+<p class="takeaway">로더가 부르는 객체는 공장 객체가 만들어 연결한 <code>FileSystem</code>이고, 네 가지 요청은 volume마다 정해진 처리기로 전달됩니다.</p>
+
+<h3>객체가 만들어져 로더에 연결되는 과정</h3>
+<p>파일 시스템을 만드는 공장 객체(<code>FileSystemFactory</code>, 주소 <code>0x54787088</code>)의 초기화 함수가 <code>0x30</code>바이트짜리 객체를 할당해 <code>FileSystem</code> 생성자를 부르고, 그 주소를 공장 객체의 <code>+0x14</code>에 저장합니다. 자원 관리 객체는 이 값을 가져가 <code>+0x38</code>에 둡니다. 로더가 쓰던 바로 그 칸입니다.</p>
+<div class="table-wrap"><table>
+<caption>초기화 함수가 저장하는 연결</caption>
+<thead><tr><th>저장 위치</th><th>저장하는 값</th><th>저장 명령</th></tr></thead>
+<tbody>
+<tr><th scope="row">공장 객체 <code>+0x14</code></th><td><code>FileSystem</code> 객체의 주소. 생성자가 가상 함수 표 <code>0x53901308</code>을 넣음</td><td><code>0x52f5165c</code>(생성자 안 <code>0x52f4e6a0</code>)</td></tr>
+<tr><th scope="row"><code>FileSystem</code> <code>+8</code></th><td>공장 객체 <code>+4</code>의 volume 관리 객체</td><td><code>0x52f51688</code></td></tr>
+<tr><th scope="row"><code>FileSystem</code> <code>+0xc</code></th><td>공장 객체 <code>+8</code>의 <code>FatFileSystem</code> 객체 <code>+4</code>. 없으면 0</td><td><code>0x52f5169c</code></td></tr>
+<tr><th scope="row"><code>FileSystem</code> <code>+0x10</code></th><td>공장 객체 <code>+0xc</code>의 <code>ExFatFileSystem</code> 객체 <code>+4</code>. 없으면 0</td><td><code>0x52f516b0</code></td></tr>
+<tr><th scope="row"><code>FileSystem</code> <code>+0x14</code></th><td>공장 객체 <code>+0x10</code>의 <code>VirtualFileSystem</code> 객체 <code>+4</code>. 없으면 0</td><td><code>0x52f516c4</code></td></tr>
+<tr><th scope="row">자원 관리 객체 <code>+0x38</code></th><td>공장 객체 <code>+0x14</code>의 값</td><td><code>0x52ff5c7c</code>, <code>0x52ff5c80</code>, <code>0x52ff5c90</code></td></tr>
 </tbody></table></div>
-<p>실패 시 기존 필드가 보존되는 조건은 sentinel을 넣은 원본 ARM 실행으로 확인했다. 내부 체크섬 실패는 출력 필드 기록 이후에 발생한다. 따라서 반환값 0만 보고 출력 할당이 모두 회수됐다고 볼 수 없다. 이후 전체 상태 전환이나 재부팅에서의 회수, 반복 검증 호출의 실제 도달 가능성은 미확정이므로 전역 메모리 누수로 단정하지 않는다. <a href="update-buffer-lifetime-checks.json">실패·인계 13사례</a></p>
-<p>성공 경로에서는 packageContext와 CPU context로 decoded 출력이 전달된다. 그 다음 하위 section 7 검색이 실패하면 상위 함수는 0을 반환해도 이미 전달한 포인터는 유지한다. 여기서 공개 성공 사례는 외부 합계의 sentinel 경로를 통과했다. 하위 section 검증 함수 두 개는 합성 반환값으로 대체했으며 실제 부속 펌웨어나 장치의 검증을 수행하지 않았다.</p>
-<h2 id="cleanup">입력 정리와 pool 해제의 반환값</h2>
-<p><code>52feec18(state, flag)</code>에서 입력이 없으면 해제 요청을 생략한다. 입력이 있고 flag가 0이면 포인터를 지우되 pool에 반환하지 않는다. flag가 0이 아니면 <code>52ff622c</code>에 해제를 요청하고 반환값이 0일 때는 포인터와 종류·경로·길이의 초기화 전에 종료한다. 비제로 반환을 받으면 먼저 state+48을 0으로 지우고 각 component의 입력 setter를 호출한다. 그 뒤 종류=8, 경로·길이=0을 기록한다. flag=0인 실제 호출 위치 <code>533164c0</code>도 존재한다. flag의 소유권 의미를 다른 진입 경로 전체로 확장하지 않았다. <a href="update-buffer-lifetime-evidence.json">정리 함수·호출자</a></p>
-<p><code>52ff622c</code>는 resourceManager+30 pool의 slot+18로 주소 소속을 확인하고 아니면 +34 pool을 검사한다. 일치한 pool의 slot+c를 호출한 뒤 반환하는 값은 저장해 둔 mutex 획득 결과다. pool 해제 함수의 성공 여부는 이 반환값에 반영하지 않는다. 어느 pool에도 속하지 않으면 false assertion에 도달한다. 두 실패 사례에서는 assertion이 반환한다고 가정해 이후 흐름을 확인했지만 실제 카메라의 실패 처리 정책은 재현하지 않았다.</p>
-<p>IMAGE1의 slot+18 대상 <code>530efb60</code>은 unsigned <code>base ≤ pointer &lt; base+size</code>를 검사한다. 확인된 필드 base=<code>6e500000</code>, size=<code>31affff0</code>를 대입하면 끝 경계는 <code>9ffffff0</code>이며 그 주소 자체는 제외된다. 앞서 초기 설정 영역의 끝을 <code>a0000000</code>으로 기록한 것과 구분해야 한다. 마지막 16바이트는 이 소프트웨어 소속 검사 범위 밖이다. 이는 물리 DRAM 매핑이나 실제 가용 공간을 입증하지 않는다.</p>
-<p>slot+c의 실제 대상 <code>530efee8</code>은 aligned 포인터 −8의 debug 포인터를 읽고 그 소속을 확인한 후 backpointer를 0으로 지운다. debug 포인터에서 <code>0x18</code>을 빼 raw 주소를 복원하고 <code>525b75e0(handle, raw)</code>에 전달한다. OS 반환값이 0이면 pool 함수는 1을 반환한다. 이 검사는 OS 호출을 합성 함수로 대체했으므로 실제 메모리 반환을 증명하지 않는다. <a href="../verify_update_buffer_lifetime.py">버퍼 수명 재현 도구</a></p>
-<p>현재 확인한 setter와 정리 구간은 validator의 decoded 필드와 상위 context의 decoded 필드를 지우지 않는다. 다만 component 5의 reset 함수 <code>52ff31c4</code>는 호출 인자만 확인하는 경계로 남겼다. 이후 리소스 슬롯 조회와 전체 업데이트 종료 과정까지 따라가야 최종 출력 회수 시점을 확정할 수 있다.</p>
-<h2 id="verification">검증 결과와 남은 조사</h2>
-<p>파일 인터페이스 49사례와 버퍼 수명 33사례, 합계 <strong>82사례</strong>를 원본 ARM으로 실행했다. 두 재현 도구 모두 RTOS 이미지와 통합 decoded 이미지에서 같은 결과를 냈다. 새 genuine C 17개와 원본 ARM 2,422 words의 주소·해시를 로컬에 보존했다. 공개 자료에는 바이너리·의사코드 본문 대신 분석과 검사 도구를 싣는다. 두 도구는 입력 SHA-256을 확인하고 기존 결과 덮어쓰기와 assert 비활성 실행을 거부한다.</p>
-<p>실제 시작 호출자와 mount 상태, update filename→volume 연결, descriptor 필드의 단위, FAT/exFAT 하위 드라이버, decoded 출력의 최종 회수와 반복 검증 조건이 다음 조사 대상이다. 이번 결과는 파일 입력 경로와 메모리 수명을 좁혀 준다. 카메라에서 수정 펌웨어를 수용하거나 정상 실행한다는 근거로 사용할 수는 없다.</p>
+<p>클래스 이름은 진단 문자열로 짐작한 것이 아닙니다. 가상 함수 표 바로 앞의 포인터에서 RTTI, 이름 문자열로 따라가 확인했습니다. 시험에서는 가상 함수 표와 네 연결 칸을 일부러 틀린 값으로 채워 놓고 원본 코드가 올바른 값으로 덮어쓰는지 보았습니다. 공장 초기화 함수를 부르는 위쪽 호출자 한 단계는 <a href="update-volume-finalization.html#volume">파일 경로·volume·종료 처리</a>에서 이었습니다.</p>
+
+<h3>네 가지 요청이 전달되는 함수</h3>
+<div class="table-wrap"><table>
+<caption>로더의 호출이 닿는 FileSystem 함수와 처리기 쪽 칸</caption>
+<thead><tr><th>요청</th><th>로더의 호출 위치</th><th><code>FileSystem</code> 가상 함수 → 대상</th><th>처리기 쪽 가상 함수</th></tr></thead>
+<tbody>
+<tr><th scope="row">열기</th><td><code>0x52ff6e2c</code></td><td><code>+0x20</code> (표의 <code>0x53901328</code>) → <code>0x52f50398</code></td><td><code>+8</code>, 호출 <code>0x52f5043c</code></td></tr>
+<tr><th scope="row">닫기</th><td><code>0x52ff6e74</code></td><td><code>+0x24</code> (<code>0x5390132c</code>) → <code>0x52f50864</code></td><td><code>+0xc</code>, 호출 <code>0x52f508e4</code></td></tr>
+<tr><th scope="row">읽기</th><td><code>0x52ff6e54</code></td><td><code>+0x28</code> (<code>0x53901330</code>) → <code>0x52f4e7b4</code></td><td><code>+0x10</code>, 호출 <code>0x52f4e84c</code></td></tr>
+<tr><th scope="row">정보 조회</th><td><code>0x52ff7c8c</code></td><td><code>+0x54</code> (<code>0x5390135c</code>) → <code>0x52f4f068</code></td><td><code>+0x48</code>, 호출 <code>0x52f4f0f8</code></td></tr>
+</tbody></table></div>
+<p>이 연결은 공장 초기화가 끝나고 가상 함수 표가 바뀌지 않았다는 조건에서 성립합니다. 처리기를 담는 배열은 <code>FileSystem</code>의 <code>+0x18</code>에 있고, 초기화 함수 <code>0x52f4e14c</code>가 할당해 0으로 채웁니다. mount 함수 <code>0x52f50144</code>가 처리기 선택 함수를 불러 칸을 채우며, mount가 실패하면 그 칸을 다시 0으로 지울 수 있습니다. 지금 카메라에서 어느 volume이 mount되어 있는지는 확인하지 않았습니다.</p>
+
+<h3>처리기를 고르는 조건</h3>
+<ol class="flow">
+<li class="ok"><strong>경로의 첫 글자</strong><span>소문자는 대문자로 바꿔 비교</span></li>
+<li class="ok"><strong>volume 기록 찾기</strong><span>기록표의 글자와 비교해 번호와 설명 객체를 얻음. 없으면 −1</span></li>
+<li class="ok"><strong>두 숫자로 선택</strong><span>바이트 <code>+0x14</code>, 32비트 값 <code>+0x18</code></span></li>
+<li class="ok"><strong>배열에 저장</strong><span><code>FileSystem</code> <code>+0x18</code>의 해당 칸</span></li>
+</ol>
+<p>글자 검색 함수 <code>0x52f52554</code>는 문자열이 비어 있지 않으면 첫 바이트만 읽습니다. volume 관리 객체가 가진 기록표에서 <code>0x18</code>바이트 간격의 기록마다 <code>+4</code>에 있는 글자와 비교합니다. 이 함수는 콜론이나 경로 전체의 문법을 보지 않으므로, 시험에 넣은 <code>Cat</code>도 C 기록과 일치했습니다.</p>
+<div class="table-wrap"><table>
+<caption>처리기 선택 함수 <code>0x52f4fd70</code>의 조건</caption>
+<thead><tr><th>조건(위에서부터 차례로)</th><th>선택하는 처리기</th><th>처리기의 가상 함수 표</th></tr></thead>
+<tbody>
+<tr><th scope="row">설명 객체의 부호 있는 바이트 <code>+0x14</code>가 4</th><td><code>VirtualFileSystem</code> (<code>FileSystem</code> <code>+0x14</code>의 값)</td><td><code>0x53910748</code></td></tr>
+<tr><th scope="row">그 밖에, 부호 없는 32비트 값 <code>+0x18</code> &gt; <code>0x0403ffff</code></th><td><code>ExFatFileSystem</code> (<code>+0x10</code>의 값)</td><td><code>0x538fe210</code></td></tr>
+<tr><th scope="row">그 밖에, <code>+0x18</code> ≤ <code>0x0403ffff</code></th><td><code>FatFileSystem</code> (<code>+0xc</code>의 값)</td><td><code>0x53900f58</code></td></tr>
+</tbody></table></div>
+<div class="callout warn"><strong class="label">주의</strong>
+<p>이 문서의 시험은 <code>+0x14</code>와 <code>+0x18</code>을 숫자 칸으로만 다뤘습니다. 용량의 단위, 매체의 종류, 실제 SD 카드와의 대응은 이 근거만으로 정하지 않았습니다. 클래스 이름이 아래쪽의 전송 방식이나 시스템 호출 구현을 증명하지도 않습니다.</p></div>
+<div class="callout"><strong class="label">참고: 경계값을 어떻게 읽을 수 있는가</strong>
+<p><a href="update-media-completion.html">매체 객체와 완료 통지</a>는 SD 카드 쪽 설명 객체의 <code>+0x18</code>이 카드 정보에서 계산한 512바이트 sector 수임을 연결했습니다. 그 해석을 적용하면 경계 <code>0x04040000</code> sector는 약 32.1GiB입니다. SD 규격이 FAT32를 쓰는 SDHC와 exFAT을 쓰는 SDXC를 나누는 32GB 부근입니다. 내장 저장소 쪽 설명 객체에서는 <code>+0x18</code>을 0이 아닌 값으로 만드는 코드를 찾지 못했으므로, 이 해석은 SD 경로에만 해당합니다.</p></div>
+
+<h3>핸들과 반환값이 전달되는 방식</h3>
+<ul>
+<li><strong>열기</strong> — 처리기가 성공을 돌려주면 8바이트짜리 포장 구조체를 할당해 처리기의 핸들과 volume 번호를 적고, 그 구조체의 주소를 호출자에게 줍니다. 포장 구조체 할당이 실패하는 경우는 시험에서 실행하지 않았습니다.</li>
+<li><strong>읽기·닫기</strong> — 포장 구조체의 <code>+4</code>(volume 번호)로 처리기를 고르고 <code>+0</code>(처리기의 핸들)을 넘깁니다. 읽기는 버퍼와 크기를 그대로 전달합니다.</li>
+<li><strong>잘못된 입력</strong> — 핸들이 없거나, 번호가 음수이거나, 처리기가 없으면 아래로 내려가지 않고 반환값 0과 오류 번호 12를 냅니다. 정보 조회에서 경로가 맞지 않으면 반환값 0과 오류 번호 2입니다.</li>
+<li><strong>닫기의 정리</strong> — 처리기가 실패를 돌려줘도 포장 구조체를 해제하는 함수는 호출합니다.</li>
+<li><strong>열린 파일 수</strong> — 열기가 성공하면 늘리고 닫기가 성공하면 줄이는 계수도 이 계층에 있습니다.</li>
+</ul>
+<div class="table-wrap"><table class="fit">
+<caption>처리기가 돌려준 값이 위로 전달되는 모양</caption>
+<thead><tr><th>처리기의 반환값</th><th>열기(포장 구조체 할당 뒤)·닫기</th><th>읽기·정보 조회</th></tr></thead>
+<tbody>
+<tr><th scope="row">0</th><td>0</td><td>0</td></tr>
+<tr><th scope="row">1</th><td>1</td><td>1</td></tr>
+<tr><th scope="row">2</th><td>1</td><td>2</td></tr>
+<tr><th scope="row"><code>0xffffffff</code></th><td>1</td><td><code>0xffffffff</code></td></tr>
+</tbody></table></div>
+<p>열기와 닫기는 0이 아닌 값을 모두 1로 바꾸고, 읽기와 정보 조회는 32비트 값을 그대로 돌려줍니다. 이 차이는 합성 반환값 네 가지로 확인한 것이며, 처리기가 실제로 어떤 값을 돌려주는지는 실행하지 않았습니다. 정보 조회에서 합성 콜백이 파일 정보 구조체(<code>FileInfo</code>)의 <code>+0x18</code>에 쓴 크기는 호출자가 읽을 때까지 유지됐습니다.</p>
+<p>이 계층의 읽기와 정보 조회는 안쪽 잠금 함수의 반환값을 분기 조건으로 쓰지 않습니다. 잠금 함수가 0을 돌려준 시험에서도 처리기 호출과 잠금 해제가 일어났습니다. 로더 쪽의 잠금 검사는 별개이며, 이 관찰을 실제 동시성 오류나 잠금 정책이 없다는 뜻으로 넓히지 않습니다.</p>
+
+<h3>세 처리기의 하위 함수</h3>
+<div class="table-wrap"><table>
+<caption>처리기별 중계 코드와 대상 함수</caption>
+<thead><tr><th>처리기</th><th>열기</th><th>닫기</th><th>읽기</th><th>정보 조회</th></tr></thead>
+<tbody>
+<tr><th scope="row">Fat</th><td><code>0x52f4a9ec</code> → <code>0x52f4a934</code></td><td><code>0x52f4a4e4</code> → <code>0x52f4a46c</code></td><td><code>0x52f4a56c</code> → <code>0x52f4a4ec</code></td><td><code>0x52f4afc0</code> → <code>0x52f4aea4</code></td></tr>
+<tr><th scope="row">ExFat</th><td><code>0x52f459c8</code> → <code>0x52f458e8</code></td><td><code>0x52f45a3c</code> → <code>0x52f459d0</code></td><td><code>0x52f45abc</code> → <code>0x52f45a44</code></td><td><code>0x52f47364</code> → <code>0x52f47210</code></td></tr>
+<tr><th scope="row">Virtual</th><td><code>0x52fecdb4</code> → <code>0x52fec94c</code></td><td><code>0x52fec1a4</code> → <code>0x52fec114</code></td><td><code>0x52fec29c</code> → <code>0x52fec1ac</code></td><td><code>0x52fed5c4</code> → <code>0x52fed4ec</code></td></tr>
+</tbody></table></div>
+<p>화살표 왼쪽은 객체 주소에서 4를 빼 원래 객체를 되찾은 뒤 분기하는 짧은 중계 코드(thunk)입니다. 여기에 더해 Fat 읽기의 <code>0x52f4a510</code> → <code>0x533681c4</code>, ExFat 읽기의 <code>0x52f45a84</code> → <code>0x5337f554</code> 직접 호출까지 확인했습니다. 그 아래의 라이브러리 내부, 작업 간 통신, 장치 드라이버는 추적하거나 실행하지 않았습니다. 두 호출은 소프트웨어에서 확인할 수 있는 경계이고 실제 입출력의 증거가 아닙니다.</p>
+
+<div class="callout model"><strong class="label">시험 조건</strong>
+<p>파일 인터페이스 49건은 객체 연결 4건, 첫 글자 검색 10건, 처리기 분기 8건, 열기 반환값 4건과 잘못된 경로 1건, 읽기 7건과 잘못된 입력 3건, 정보 조회 7건과 잘못된 경로 1건, 닫기 4건입니다. 공장 초기화는 함수 전체가 아니라 <code>0x52f51644</code>–<code>0x52f516d8</code> 조각을 합성 레지스터와 스택으로 실행했습니다. 대체한 것은 처리기 콜백, 할당, 잠금, assert, 핸들 기록과 해제, 문자열 길이 함수, <code>FileSystem</code> 초기화 경계입니다. 수천만 바이트를 실제로 할당하거나 읽지 않았고, CPU는 Unicorn의 Cortex-A15 모델입니다.</p></div>
+
+<details class="evidence"><summary>클래스 이름, 가상 함수 표, 함수 구간</summary>
+<div class="table-wrap"><table class="compact">
+<caption>RTTI로 확인한 클래스</caption>
+<thead><tr><th>클래스</th><th>RTTI → 이름 문자열</th><th>이름</th><th>가상 함수 표(주 / 보조)</th></tr></thead>
+<tbody>
+<tr><td>FileSystemFactory</td><td><code>0x53901494</code> → <code>0x539014d8</code></td><td><code>17FileSystemFactory</code></td><td><code>0x539014c0</code> / 없음</td></tr>
+<tr><td>FileSystem</td><td><code>0x539012c8</code> → <code>0x539012b8</code></td><td><code>10FileSystem</code></td><td><code>0x53901308</code> / <code>0x539013b0</code></td></tr>
+<tr><td>FatFileSystem</td><td><code>0x53900e84</code> → <code>0x53901000</code></td><td><code>13FatFileSystem</code></td><td><code>0x53900eb0</code> / <code>0x53900f58</code></td></tr>
+<tr><td>ExFatFileSystem</td><td><code>0x538fe2c4</code> → <code>0x538fe2b0</code></td><td><code>15ExFatFileSystem</code></td><td><code>0x538fe168</code> / <code>0x538fe210</code></td></tr>
+<tr><td>VirtualFileSystem</td><td><code>0x53910674</code> → <code>0x5391063c</code></td><td><code>17VirtualFileSystem</code></td><td><code>0x539106a0</code> / <code>0x53910748</code></td></tr>
+</tbody></table></div>
+<p class="small">모든 이름은 ASCII이며 NUL로 끝나는 것을 확인했습니다.</p>
+<ul>
+<li>공장 객체를 돌려주는 함수는 <code>0x52f50f6c</code>입니다. 처음 만들 때 <code>0x52f50fc8</code>에서 <code>+0x14</code>를 0으로 둡니다. 공장 객체의 가상 함수 표는 <code>0x539014c0</code>이고 <code>+8</code> 칸이 초기화 함수 <code>0x52f510e8</code>입니다. 초기화 함수 안에서 <code>0x52f51644</code>–<code>0x52f5165c</code>가 할당, 생성자 <code>0x52f4e66c</code> 호출, 저장을 수행합니다.</li>
+<li>처리기 선택 함수 안에서 조건과 저장은 <code>0x52f4fdd0</code>–<code>0x52f4fe0c</code>에 있습니다. mount 함수는 <code>0x52f50264</code>에서 선택 함수를 부르고, 실패 경로의 <code>0x52f502b8</code>에서 칸을 지웁니다. 설명 객체는 <code>0x52f52630</code>이 기록의 첫 칸에서 얻습니다. volume 관리 객체는 기록표를 <code>+0x14</code>, 기록표의 칸 수를 <code>+0x20</code>에 둡니다. 이 값이 등록된 개수가 아니라 용량이라는 점은 <a href="update-volume-finalization.html#volume">다음 문서</a>에서 확인했습니다.</li>
+<li>열기 함수는 <code>0x52f50498</code>에서 포장 구조체를 할당하고 <code>0x52f504d4</code>에 처리기의 핸들, <code>0x52f504e0</code>에 volume 번호를 적은 뒤 <code>0x52f504e4</code>에서 호출자에게 넘깁니다.</li>
+</ul>
+<div class="table-wrap"><table class="compact">
+<thead><tr><th>함수</th><th>구간</th><th>SHA-256</th></tr></thead>
+<tbody>
+<tr><td>공장 초기화</td><td><code>0x52f510e8</code>–<code>0x52f51790</code></td><td><code class="wrap">b769a056ebcc2d0ecddb48c27f1c77a0cab76f0a373750263cb54b4d1f6eb2ba</code></td></tr>
+<tr><td>FileSystem 생성자</td><td><code>0x52f4e66c</code>–<code>0x52f4e6d4</code></td><td><code class="wrap">2f43edd5bb265f3a8180ae639f50f828e33000366b921f529005f48464cc0120</code></td></tr>
+<tr><td>열기</td><td><code>0x52f50398</code>–<code>0x52f50518</code></td><td><code class="wrap">3916685bbe2326b0ab49bddf89d4a73e3a0c38155d278325af77656b97a09ac4</code></td></tr>
+<tr><td>닫기</td><td><code>0x52f50864</code>–<code>0x52f509a4</code></td><td><code class="wrap">f08ce4e178104cf27690878193dfff409d4202c2f670950961ca162098097443</code></td></tr>
+<tr><td>읽기</td><td><code>0x52f4e7b4</code>–<code>0x52f4e898</code></td><td><code class="wrap">effd2c7820a7781824346df80f006d83e043b0c35b148aa2a4747618a6c526ef</code></td></tr>
+<tr><td>정보 조회</td><td><code>0x52f4f068</code>–<code>0x52f4f13c</code></td><td><code class="wrap">918ca09b930edfaaf2080184982e897fc635d5a23f3ab2af79ebf78057a2bd66</code></td></tr>
+<tr><td>처리기 선택</td><td><code>0x52f4fd70</code>–<code>0x52f4fe18</code></td><td><code class="wrap">56aff2040769ffb02d0ff3ceec44eab7b2cfba41ca8f4e22c40c5b671d40408c</code></td></tr>
+<tr><td>첫 글자 검색</td><td><code>0x52f52554</code>–<code>0x52f52630</code></td><td><code class="wrap">7b96fc646c98c9e182d6af196e102d7aa2252a6a031de8375134f133e152b49f</code></td></tr>
+</tbody></table></div>
+</details>
+</section>
+
+<section id="lifetime">
+<h2>압축된 입력과 풀린 출력이 함께 있는 구간</h2>
+<p class="takeaway">입력 버퍼는 검증과 변환이 진행되는 동안 계속 잡혀 있고, 그 사이에 출력 버퍼가 따로 할당됩니다. 두 버퍼는 같은 IMAGE1 풀에 함께 존재합니다.</p>
+
+<figure class="diagram">
+<figcaption>종류 2 검증에서 두 버퍼가 잡혀 있는 기간</figcaption>
+<div class="dg-scroll">
+<svg class="dg" viewBox="0 0 800 212" role="img" aria-labelledby="dg-life-title dg-life-desc">
+<title id="dg-life-title">입력 버퍼와 출력 버퍼의 수명</title>
+<desc id="dg-life-desc">왼쪽에서 오른쪽으로 단계가 진행됩니다. 단계는 파일 읽기, 헤더와 바깥 체크섬, 출력 버퍼 할당, 변환, 길이 확인, 안쪽 체크섬, 상위로 인계, 입력 정리입니다. 입력 버퍼는 파일 읽기부터 입력 정리까지 잡혀 있습니다. 출력 버퍼는 출력 버퍼 할당 단계에서 생기고, 최종 해제 시점은 확인하지 못했습니다. 출력 버퍼 할당부터 입력 정리 전까지 두 버퍼가 함께 메모리에 있습니다.</desc>
+<rect class="gf" x="202" y="8" width="84" height="150"/>
+<rect class="gf" x="370" y="8" width="84" height="150"/>
+<rect class="gf" x="538" y="8" width="84" height="150"/>
+<rect class="gf" x="706" y="8" width="84" height="150"/>
+<text class="n mid" x="160" y="30">파일 읽기</text>
+<text class="n mid" x="244" y="24">헤더·바깥</text>
+<text class="n mid" x="244" y="40">체크섬</text>
+<text class="n mid" x="328" y="24">출력 버퍼</text>
+<text class="n mid" x="328" y="40">할당</text>
+<text class="n mid" x="412" y="30">변환</text>
+<text class="n mid" x="496" y="30">길이 확인</text>
+<text class="n mid" x="580" y="24">안쪽</text>
+<text class="n mid" x="580" y="40">체크섬</text>
+<text class="n mid" x="664" y="24">상위로</text>
+<text class="n mid" x="664" y="40">인계</text>
+<text class="n mid" x="748" y="30">입력 정리</text>
+<text class="s" x="8" y="79">입력 버퍼</text>
+<rect class="b key" x="118" y="56" width="630" height="36" rx="6"/>
+<text class="s" x="130" y="79">압축된 입력 · 원본은 35,106,716바이트</text>
+<text class="s" x="8" y="129">출력 버퍼</text>
+<rect class="b" x="286" y="106" width="420" height="36" rx="6"/>
+<text class="s" x="298" y="129">풀린 출력 · 78,683,892바이트</text>
+<rect class="b open" x="706" y="106" width="84" height="36" rx="6"/>
+<text class="s mid topen" x="748" y="129">미확인</text>
+<path class="e" d="M286 166V174H748V166"/>
+<text class="s mid" x="517" y="196">두 버퍼가 함께 메모리에 있는 구간</text>
+</svg>
+</div>
+<ul class="dg-legend"><li><i class="key"></i>입력 버퍼가 잡혀 있는 기간</li><li><i></i>출력 버퍼가 잡혀 있는 기간</li><li><i class="open"></i>최종 해제 시점 미확인</li></ul>
+<p>가로 길이는 시간에 비례하지 않습니다. 단계의 순서만 나타냅니다. 입력 정리가 실제로 해제를 요청하는 조건은 <a href="#cleanup">아래 절</a>에 있습니다.</p>
+</figure>
+
+<p>종류 2의 검증 진입 함수 <code>0x52fefb84</code>는 상태 객체에 있던 입력 주소와 길이를 패키지 문맥으로 넘기고, 그 값은 다시 검증 객체로 전달됩니다. 검증 객체는 헤더·종류·바깥 체크섬을 확인한 뒤 변환 함수 <code>0x52ff4f88</code>에서 출력 버퍼를 따로 할당하고, 입력의 <code>+0x80</code> 주소(압축된 본문의 시작)를 변환 장치에 넘깁니다. 이 구간에는 입력 버퍼를 해제하는 호출이 없습니다.</p>
+<ol class="flow">
+<li class="ok"><strong>입력 유지</strong><span>상태 <code>+0x48</code> → 패키지 문맥 <code>+0x1c</code> → 검증 객체 <code>+8</code></span></li>
+<li class="ok"><strong>출력 할당</strong><span>같은 IMAGE1 풀, footer <code>+0x10</code>의 길이</span></li>
+<li class="ok"><strong>검증 뒤 인계</strong><span>검증 객체 <code>+0x10</code>·<code>+0x14</code> → 패키지 문맥 <code>+0x24</code>·<code>+0x28</code> → CPU 문맥 <code>+0x24</code>·<code>+0x28</code></span></li>
+</ol>
+<p><a href="update-memory.html#formula">입력 로더와 메모리 할당</a>에서 구한 요청 합계를 이제 두 버퍼가 함께 있는 시점과 연결할 수 있습니다.</p>
+<div class="table-wrap"><table class="fit">
+<caption>두 버퍼가 함께 있을 때 풀에 요청된 크기의 합</caption>
+<thead><tr><th>입력 파일</th><th class="n">입력 + 출력 요청(바이트)</th></tr></thead>
+<tbody>
+<tr><th scope="row">원본</th><td class="n">113,790,848</td></tr>
+<tr><th scope="row">선택 후보(바뀐 블록만 압축 없이 저장)</th><td class="n">113,820,928</td></tr>
+<tr><th scope="row">전부 저장 후보</th><td class="n">157,374,848</td></tr>
+</tbody></table></div>
+<div class="callout warn"><strong class="label">주의</strong>
+<p>이 합계는 업데이트 전체에서 메모리를 가장 많이 쓰는 순간의 값이 아닙니다. 변환 장치의 작업 공간, 다른 할당, 운영체제 안쪽의 관리 비용, 지금 비어 있는 연속 공간은 들어 있지 않습니다.</p></div>
+<div class="callout model"><strong class="label">시험 조건</strong>
+<p>공개한 연결 시험은 바깥 체크섬 자리에 생략 표식 <code>0xffffffff</code>를 넣어 실제 합계 비교를 건너뜁니다. 실제 바깥 합계가 맞는 경우와 틀린 경우 2건은 공개 도구에 넣지 않은 별도 검토에서 확인했습니다. 변환 장치는 정해 준 결과값과 작은 합성 출력으로 대체했습니다.</p></div>
+</section>
+
+<section id="failure">
+<h2>변환이나 체크섬이 실패했을 때 출력 버퍼의 처리</h2>
+<p class="takeaway">변환 함수는 실패 위치에 따라 출력 버퍼를 해제하기도 하고 그대로 두기도 합니다. 반환값이 0이라는 것만으로 출력 버퍼가 회수됐다고 볼 수 없습니다.</p>
+<div class="table-wrap"><table>
+<caption>변환 함수 <code>0x52ff4f88</code>의 분기별 결과</caption>
+<thead><tr><th>분기</th><th>새 출력 버퍼의 해제 요청</th><th>검증 객체 <code>+0x10</code>·<code>+0x14</code></th><th>근거 위치</th></tr></thead>
+<tbody>
+<tr><th scope="row">할당 실패</th><td>변환에 들어가기 전에 assert에 거짓 전달</td><td>기존 값 유지</td><td><code>0x52ff5014</code>. 시험은 이 경계에서 정지</td></tr>
+<tr><th scope="row">변환 장치가 0을 반환</th><td>풀의 가상 함수 <code>+0xc</code> 호출</td><td>기존 값 유지</td><td><code>0x52ff5058</code> → <code>0x52ff515c</code></td></tr>
+<tr><th scope="row">출력 길이 불일치</th><td>풀의 가상 함수 <code>+0xc</code> 호출</td><td>기존 값 유지</td><td><code>0x52ff5064</code> → <code>0x52ff50ac</code></td></tr>
+<tr><th scope="row">안쪽 체크섬 실패</th><td>이 함수에서는 호출하지 않음</td><td>새 출력 주소·길이가 남음</td><td><code>0x52ff50e4</code>·<code>0x52ff50ec</code>에서 기록한 뒤 <code>0x52ff50f0</code>에서 검사</td></tr>
+<tr><th scope="row">검증 성공</th><td>이 함수에서는 호출하지 않음</td><td>새 출력 주소·길이가 남음</td><td>조회 함수 <code>0x52ff4c44</code>로 상위 문맥에 인계</td></tr>
+</tbody></table></div>
+<p>실패했을 때 기존 값이 유지되는지는 필드에 표식 값을 넣어 두고 원본 코드를 실행해 확인했습니다. 안쪽 체크섬 실패는 출력 주소를 기록한 다음에 일어납니다. 그 뒤 전체 상태 전환이나 재부팅에서 회수되는지, 검증이 실제로 반복 호출될 수 있는지는 확인하지 못했습니다. 그래서 이것을 메모리 누수로 단정하지 않습니다.</p>
+<p>성공 경로에서는 풀린 출력이 패키지 문맥과 CPU 문맥으로 전달됩니다. 그다음 하위 구획 7을 찾지 못하면 상위 함수는 0을 돌려주지만 이미 전달한 주소는 그대로 남습니다. 하위 구획을 검증하는 함수 두 개는 합성 반환값으로 대체했으며, 딸린 펌웨어나 장치의 실제 검증은 수행하지 않았습니다.</p>
+<p class="small muted">이 절의 13건은 변환 분기 7건(정상, 변환 실패, 길이 부족, 길이 초과, 체크섬 실패, 생략 표식 0과 <code>0xffffffff</code>), 할당 실패 1건, 종류 2 연결 5건(정상, 프로젝트 값 불일치, footer 종류 불일치, 구획 7 없음, 안쪽 체크섬 실패)입니다.</p>
+</section>
+
+<section id="cleanup">
+<h2>입력 버퍼의 정리와 해제 함수의 반환값</h2>
+<p class="takeaway">입력 정리 함수는 해제 요청 함수의 반환값에 따라 뒤따르는 초기화를 할지 정합니다. 그런데 그 반환값은 풀이 실제로 해제에 성공했는지가 아니라 잠금을 얻었는지를 나타냅니다.</p>
+
+<h3>입력 정리 함수 <code>0x52feec18(state, flag)</code></h3>
+<div class="table-wrap"><table>
+<caption>입력 주소와 flag에 따른 동작</caption>
+<thead><tr><th>입력 주소</th><th>flag</th><th>동작</th></tr></thead>
+<tbody>
+<tr><th scope="row">없음</th><td>무관</td><td>해제 요청을 생략하고 뒤따르는 초기화로 넘어갑니다.</td></tr>
+<tr><th scope="row">있음</th><td>0</td><td>주소 칸을 지우지만 풀에 돌려주지는 않습니다.</td></tr>
+<tr><th scope="row">있음</th><td>0이 아님</td><td>해제 요청 함수 <code>0x52ff622c</code>를 부릅니다. 반환값이 0이면 주소·종류·경로·길이를 초기화하기 전에 끝냅니다. 0이 아니면 먼저 상태 <code>+0x48</code>을 0으로 지우고, 각 구성 요소의 입력 설정 함수를 부른 뒤, 종류를 8로, 경로와 길이를 0으로 적습니다.</td></tr>
+</tbody></table></div>
+<p>flag가 0인 호출 위치 <code>0x533164c0</code>도 실제로 있습니다. flag가 버퍼의 소유권을 뜻하는지는 다른 진입 경로 전체로 넓혀 해석하지 않았습니다. 구성 요소 가운데 5번의 설정 함수 <code>0x52ff31c4</code>는 이 시험에서 호출 인수만 기록하는 경계로 두었습니다. 그 함수가 <code>(0, 0)</code>을 받으면 기존 값을 그대로 둔다는 점은 <a href="update-volume-finalization.html#component5">파일 경로·volume·종료 처리</a>에서 확인했습니다.</p>
+
+<h3>해제 요청 함수 <code>0x52ff622c</code></h3>
+<ol class="steps">
+<li><strong>잠금</strong> 잠금을 얻고 그 결과를 따로 보관합니다.</li>
+<li><strong>소속 확인</strong> 주소가 큰 풀(자원 관리 객체 <code>+0x30</code>)에 속하는지 풀의 가상 함수 <code>+0x18</code>로 묻고, 아니면 작은 쪽 풀(<code>+0x34</code>)에 묻습니다.</li>
+<li><strong>해제 호출</strong> 맞는 풀의 가상 함수 <code>+0xc</code>를 부릅니다. 어느 풀에도 속하지 않으면 assert에 거짓을 전달합니다.</li>
+<li><strong>반환</strong> 돌려주는 값은 1단계에서 보관한 잠금 결과입니다. 풀의 해제 함수가 성공했는지는 이 값에 들어가지 않습니다.</li>
+</ol>
+
+<h3>IMAGE1 풀의 소속 검사와 해제</h3>
+<p>소속 검사 함수 <code>0x530efb60</code>은 부호 없는 수로 <code>기준 ≤ 주소 &lt; 기준 + 크기</code>인지 봅니다. IMAGE1의 기준 <code>0x6e500000</code>과 크기 <code>0x31affff0</code>을 넣으면 끝 경계는 <code>0x9ffffff0</code>이고 그 주소 자체는 포함되지 않습니다. 풀 설정 영역의 끝 <code>0xa0000000</code>과는 다른 값입니다. 마지막 16바이트는 이 소프트웨어 검사의 범위 밖에 있습니다. 이 사실은 물리 DRAM의 배치나 실제 여유 공간을 알려 주지 않습니다.</p>
+<p>해제 함수 <code>0x530efee8</code>은 정렬된 주소의 8바이트 앞에 적어 둔 값을 읽고, 그 값이 풀에 속하는지 확인한 뒤 그 칸을 0으로 지웁니다. 읽은 값에서 <code>0x18</code>을 빼 운영체제가 처음 준 주소를 되찾고, 운영체제의 해제 호출 <code>0x525b75e0</code>에 풀 번호와 함께 넘깁니다. 운영체제가 0을 돌려주면 해제 함수는 1을 돌려줍니다. 시험에서는 운영체제 호출을 대체 함수로 바꿨으므로 실제로 메모리가 반환됐다는 증명은 아닙니다.</p>
+<p>지금까지 확인한 설정 함수와 정리 구간은 검증 객체의 출력 칸과 상위 문맥의 출력 칸을 지우지 않습니다. 풀린 출력 버퍼가 최종으로 회수되는 시점은 업데이트 종료 과정 전체를 따라가야 정할 수 있습니다.</p>
+<div class="callout model"><strong class="label">시험 조건</strong>
+<p>입력 정리 10건은 flag 0과 1, 주소 없음, 잠금 실패, 작은 쪽 풀의 주소, 운영체제 해제 실패, 어느 풀에도 없는 주소를 넣었습니다. 풀 소속 검사 10건은 작은 합성 풀과 IMAGE1 설정값 각각에서 경계 앞뒤 주소를 넣었습니다. 실패 2건에서는 assert 함수가 돌아온다고 가정하고 그 뒤 흐름을 보았습니다. 실제 카메라가 그렇게 동작하는지는 재현하지 않았습니다.</p></div>
+
+<details class="evidence"><summary>버퍼 수명 관련 함수 구간과 해시</summary>
+<div class="table-wrap"><table class="compact">
+<thead><tr><th>함수</th><th>구간</th><th>SHA-256</th></tr></thead>
+<tbody>
+<tr><td>종류별 검증 진입</td><td><code>0x52fefb84</code>–<code>0x52fefd08</code></td><td><code class="wrap">03a3516b0511cceee6a01ed9059f875d422fda3524b3df4ea5d1e87251d9d124</code></td></tr>
+<tr><td>패키지 검증과 인계</td><td><code>0x52ff2e04</code>–<code>0x52ff2f1c</code></td><td><code class="wrap">eaa4b36787a8fc00362720e5c6aa53331b1ed306e762ac5dfba76bbe1894f746</code></td></tr>
+<tr><td>변환·할당·해제</td><td><code>0x52ff4f88</code>–<code>0x52ff5168</code></td><td><code class="wrap">c1e91ec883dfb83798891073391e4662fd0a9cdb45523fc5a49ca050114564f4</code></td></tr>
+<tr><td>입력 정리</td><td><code>0x52feec18</code>–<code>0x52feecf8</code></td><td><code class="wrap">ae02a8b9a8a04cd2437215006b8a60630a45ac71d36a7b9a7fd026d851b6764c</code></td></tr>
+<tr><td>해제 요청</td><td><code>0x52ff622c</code>–<code>0x52ff62fc</code></td><td><code class="wrap">cabfb232cd7fd21ec9ed6f76030ca4d421b0f236804de65505764fac3c56cc37</code></td></tr>
+<tr><td>풀 소속 검사</td><td><code>0x530efb60</code>–<code>0x530efb8c</code></td><td><code class="wrap">1af88fa28c5fe2371c42d8f401fdac309ade12c90f7942ab8747c897db6b54b6</code></td></tr>
+<tr><td>풀 해제</td><td><code>0x530efee8</code>–<code>0x530f0080</code></td><td><code class="wrap">3e18207b50ad1e06944adb47eadd35297a0a4ddfa6f0daf765275d6600ab00e9</code></td></tr>
+<tr><td>풀린 출력 조회</td><td><code>0x52ff4c44</code>–<code>0x52ff4c60</code></td><td><code class="wrap">311ae7a41143e1be1ef628255563657a6cc2e997f2f0e59381b63d5f33c3e563</code></td></tr>
+<tr><td>검증 객체 입력 설정</td><td><code>0x52ff4b0c</code>–<code>0x52ff4b24</code></td><td><code class="wrap">50f3b025c0b4749c8d41845e198c484fd73cc3454ddbeb8eff91b9c431d36724</code></td></tr>
+</tbody></table></div>
+<ul>
+<li>연결 경로: <code>0x52fefb84</code> → <code>0x52ff2e04</code> → <code>0x52ff4b0c</code> → <code>0x52ff5168</code>. 입력 길이는 상태 <code>+0x44</code>에서 패키지 문맥 <code>+0x20</code>, 검증 객체 <code>+0xc</code>로 갑니다.</li>
+<li>풀의 가상 함수 표 <code>0x53a6b038</code>에서 할당은 <code>0x530efb8c</code>, 해제는 <code>0x530efee8</code>, 소속 검사는 <code>0x530efb60</code>입니다.</li>
+<li>CPU 문맥에 값을 넣는 함수는 <code>0x52ff1a18</code>입니다. flag가 1인 정리 호출은 <code>0x5331678c</code>–<code>0x533167d4</code> 구간에 있습니다.</li>
+</ul>
+</details>
+</section>
+
+<section id="limits">
+<h2 id="verification">한계와 남은 과제</h2>
+<ul>
+<li>82건은 모두 합성 입력으로 원본 ARM 코드를 실행한 것입니다. 두 도구는 RTOS 단독 이미지와 통합 이미지에서 같은 결과를 냈습니다. 실제 장치·저장소·운영체제·변환 장치는 실행하지 않았습니다.</li>
+<li>공장 초기화를 부르는 가장 위쪽의 작업·시작 코드와 실제 mount 상태는 확인하지 못했습니다.</li>
+<li>설명 객체 두 숫자의 단위는 이 문서의 근거만으로 정하지 못했습니다. SD 경로의 <code>+0x18</code>은 <a href="update-media-completion.html">매체 객체와 완료 통지</a>에서, 업데이트 파일 이름이 어느 volume으로 이어지는지는 <a href="update-volume-finalization.html#volume">파일 경로·volume·종료 처리</a>에서 이어서 다룹니다.</li>
+<li>FAT·exFAT 처리기 아래의 드라이버, 풀린 출력의 최종 회수 시점, 검증이 반복 호출되는 조건이 남아 있습니다.</li>
+<li>디컴파일한 C 17개(파일 인터페이스 8개, 버퍼 수명 9개)와 원본 ARM 2,422개 단어의 주소·해시를 따로 보관했습니다. 디컴파일 결과는 자동 출력 그대로이며 조건과 주소는 ARM 명령을 기준으로 삼았습니다. 공개 자료에는 바이너리와 의사코드 본문 대신 분석과 검사 도구만 있습니다.</li>
+<li>이 결과는 파일 입력 경로와 메모리 수명의 범위를 좁혀 줍니다. 카메라가 수정 펌웨어를 받아들이거나 정상 실행한다는 근거로 쓸 수 없습니다.</li>
+</ul>
+</section>
+
+<section id="reproduce">
+<h2>재현 방법</h2>
+<p>두 도구는 입력의 SHA-256을 확인하고, 이미 있는 결과 파일을 덮어쓰지 않으며, Python의 assert를 끈 상태로는 실행을 거부합니다. 입력으로 RTOS 단독 이미지나 통합 이미지 <code>decoded.bin</code>을 줄 수 있습니다.</p>
 <pre><code>python verify_update_file_interface.py rtos.bin --output interface-checks.json
-python verify_update_buffer_lifetime.py rtos.bin --output lifetime-checks.json</code></pre></main><footer>정적 분석과 합성 CPU 실행 결과다. 실제 장치·저장소·OS·디코더 하드웨어는 실행하지 않았다. HTML 구조·링크를 검사했다. HQ가 주소 줄바꿈 수정본을 Edge 157.0.4341.42의 390px·1280px에서 재검사했다. 전체 가로 넘침은 없었고 표 5개의 마지막 열에 접근할 수 있었다. 8자리 주소 토큰 61개의 중간 줄바꿈도 없었다. 검사 판본의 해시는 연결된 메타데이터에 기록했다.</footer></body></html>
+python verify_update_buffer_lifetime.py rtos.bin --output lifetime-checks.json</code></pre>
+<dl class="kv">
+<dt>RTOS SHA-256</dt><dd><code class="wrap">342d2f35405e8daf1797dfe431d2e4aa70f4b52a2c242a29df48206672f1dfb4</code></dd>
+</dl>
+</section>
+
+<section id="refs">
+<h2>근거 파일과 참고 자료</h2>
+<ul class="refs">
+<li><a href="update-file-interface-evidence.json">update-file-interface-evidence.json</a> — 클래스·가상 함수 표·함수 구간과 해시, 조건부 호출 연결</li>
+<li><a href="update-file-interface-checks.json">update-file-interface-checks.json</a> — 파일 인터페이스 49건의 입력과 결과</li>
+<li><a href="update-buffer-lifetime-evidence.json">update-buffer-lifetime-evidence.json</a> — 입력·출력의 연결, 실패 분기, 정리 함수와 호출자</li>
+<li><a href="update-buffer-lifetime-checks.json">update-buffer-lifetime-checks.json</a> — 버퍼 수명 33건의 입력과 결과</li>
+<li><a href="../verify_update_file_interface.py">verify_update_file_interface.py</a> · <a href="../verify_update_buffer_lifetime.py">verify_update_buffer_lifetime.py</a> — 재현 도구</li>
+<li>외부 자료: <a href="https://learn.microsoft.com/en-us/windows/win32/fileio/exfat-specification">Microsoft exFAT 파일 시스템 규격</a>(volume의 정의) · <a href="https://www.sdcard.org/developers/sd-standard-overview/capacity-sd-sdhc-sdxc-sduc/">SD Association, SD·SDHC·SDXC·SDUC 용량 구분</a>(카드 종류별 파일 시스템)</li>
+</ul>
+</section>
+
+</main>
+</div>
+<!-- chrome:bottom -->
+<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">펌웨어 업데이트 과정 — 이 주제의 문서</h2><ol><li><a href="guide-update.html">업데이트 과정 안내</a></li><li><a href="update-resources.html">업데이트 검사와 ICONBIN<span>프로젝트·버전·체크섬</span></a></li><li><a href="update-memory.html">입력 로더와 메모리 할당</a></li><li><a href="update-file-lifetimes.html" aria-current="page">파일 인터페이스와 버퍼 수명</a></li><li><a href="update-volume-finalization.html">파일 경로·volume·종료 처리</a></li><li><a href="update-media-completion.html">매체 객체와 완료 통지</a></li><li><a href="update-partition-io.html">R 파티션과 sector I/O</a></li><li><a href="update-bank-selection.html">쓰기 bank와 BOOT 선택</a></li><li><a href="update-ui-consumer.html">완료 후 UI 작업</a></li><li><a href="update-ui-timer.html">UI 타이머와 콜백</a></li><li><a href="update-timer-abi.html">커널 호출과 예약 시각</a></li><li><a href="update-timer-insertion.html">기한 큐 삽입</a></li><li><a href="update-timer-clock.html">타이머 설정과 64비트 카운터</a></li><li><a href="update-timer-irq.html">타이머 등록과 지연 콜백</a></li><li><a href="update-subtick-arithmetic.html">하위 시간의 32비트 산술</a></li><li><a href="update-clock-readers.html">시각 조회 함수</a></li></ol></nav>
+<nav class="pager" aria-label="이전·다음 문서"><a class="prev" href="update-memory.html"><small>← 이전</small>입력 로더와 메모리 할당</a><a class="next" href="update-volume-finalization.html"><small>다음 →</small>파일 경로·volume·종료 처리</a></nav>
+<footer class="sitefoot"><div class="sitefoot-in"><nav aria-label="사이트"><a href="../index.html#map">문서 지도</a><a href="../index.html#levels">검증 수준 읽는 법</a><a href="../glossary.html">용어집</a><a href="research-program.html">세 기종 연구 본부</a><a href="https://github.com/yunhyok/pentax-k3iii-firmware-analysis">GitHub 저장소</a></nav><p>PENTAX K-3 Mark III 펌웨어 2.20 분석 문서. PC에서 수행한 정적 분석과 에뮬레이션 결과이며, 카메라 실기에서 검증한 내용이 아닙니다. 원본 펌웨어와 추출한 독점 코드는 포함하지 않습니다.</p></div></footer>
+<!-- /chrome:bottom -->
+</body>
+</html>

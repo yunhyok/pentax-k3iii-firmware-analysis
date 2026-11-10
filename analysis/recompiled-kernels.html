@@ -3,55 +3,230 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>수치 커널 두 개의 C 재구현과 ARM 검증</title>
-<style>
-  :root { color-scheme: light dark; }
-  body { margin: 0 auto; max-width: 56rem; padding: 2rem 1.25rem; font: 1.05rem/1.75 system-ui, sans-serif;
-         overflow-wrap: anywhere; word-break: keep-all; }
-  h1, h2 { line-height: 1.3; }
-  h2 { margin-top: 2.5rem; }
-  a { text-underline-offset: .17em; }
-  table { width: 100%; border-collapse: collapse; }
-  th, td { border-bottom: 1px solid GrayText; text-align: left; padding: .65rem .8rem; vertical-align: top; }
-  .table-scroll { overflow-x: auto; }
-  table { min-width: 30rem; }
-  code { font-size: .88em; }
-  pre { padding: .9rem; background: color-mix(in srgb, CanvasText 8%, Canvas); white-space: pre-wrap; }
-</style>
+<title>수치 함수 두 개를 C로 다시 만들어 원본과 대조하기 — PENTAX K-3 Mark III 펌웨어 연구</title>
+<meta name="description" content="K-3 Mark III 펌웨어의 수치 함수 두 개(SAD·SSD, Q13 3×3 행렬 곱)를 C로 새로 작성해 ARM으로 컴파일하고, 에뮬레이터에서 원본 기계어와 합성 입력 237개의 출력을 비교한 기록입니다.">
+<link rel="stylesheet" href="../assets/site.css">
 </head>
-<body>
-<header>
-<nav aria-label="관련 문서"><a href="../index.html">개요</a> · <a href="dispatch-af.html">AF 분석</a> · <a href="color-algorithms.html">색 처리 수식</a></nav>
-<p>PENTAX K-3 Mark III · 펌웨어 2.20</p>
-<h1>수치 커널 두 개의 C 재구현과 ARM 검증</h1>
-<p>독립적으로 작성한 <a href="../source/reconstructed/numeric_kernels.c">C 코드</a>를 ARM으로 교차 컴파일했다. Unicorn의 Cortex-A7 모델에서 원본과 빌드 결과를 별도 주소에 놓고 각각 실행한 결과, 합성 입력 237개에서 두 ARM 코드의 출력 바이트가 Python 기준식과 일치했다. <a href="recompiled-kernels.json">사례별 결과와 해시</a> · <a href="../tools/verify_recompiled_kernels.py">빌드·검증 스크립트</a></p>
+<body data-camera="k3iii">
+<!-- chrome:top -->
+<a class="skip" href="#main">본문 바로가기</a>
+<div class="topbar"><div class="topbar-in"><a class="brand" href="../index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="../index.html" aria-current="true">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="https://yunhyok.github.io/pentax-q7-firmware-analysis/">Q7</a></div><nav class="topnav" aria-label="주제"><a href="../index.html">개요</a><a href="guide-boot.html">부팅·저장소</a><a href="guide-update.html">업데이트</a><a href="guide-rebuild.html" aria-current="true">재구축</a><a href="guide-rtos.html">명령·셸</a><a href="guide-color.html">색 처리</a><a href="lightroom-bridge.html">Lightroom</a><a href="af-foundations.html">AF</a><a href="ui-port-contract.html">UI</a></nav></div></div>
+<nav class="crumbs" aria-label="현재 위치"><ol><li><a href="../index.html">PENTAX K-3 Mark III</a></li><li><a href="guide-rebuild.html">펌웨어 재구축</a></li><li aria-current="page">수치 함수 C 재구현</li></ol></nav>
+<!-- /chrome:top -->
+<header class="page-head">
+<p class="eyebrow">펌웨어 재구축 · 1단계</p>
+<h1>수치 함수 두 개를 C로 다시 만들어 원본과 대조하기</h1>
+<p class="lead">펌웨어를 고치려면 먼저 “원본과 똑같이 동작하는 코드를 직접 만들 수 있는가”를 확인해야 합니다. 가장 작은 단위인 계산 함수 두 개로 이 질문을 시험했습니다.</p>
 </header>
-<main>
-<div class="table-scroll" tabindex="0" role="region" aria-label="커널별 검증 결과">
-<table>
-<thead><tr><th scope="col">함수</th><th scope="col">원본 → 샌드박스 진입점</th><th scope="col">코드 크기</th><th scope="col">일치</th><th scope="col">최대 스택 쓰기 깊이</th></tr></thead>
-<tbody>
-<tr><th scope="row">SAD·SSD</th><td><code>0x52c73190 → 0x62000000</code></td><td>216 → 84바이트</td><td>131개</td><td>12 → 16바이트</td></tr>
-<tr><th scope="row">Q13 3×3 곱</th><td><code>0x5312cd40 → 0x62001000</code></td><td>116 → 112바이트</td><td>106개</td><td>28 → 32바이트</td></tr>
-</tbody>
-</table>
+<div class="layout">
+<!-- chrome:toc -->
+<nav class="toc" aria-label="이 문서의 목차"><h2 data-toc="no">이 문서에서</h2><ol><li><a href="#background">배경: 왜 작은 함수부터 다시 만드는가</a></li><li><a href="#method">검증 방법: 원본과 새 코드를 같은 조건에서 실행</a></li><li><a href="#results">결과: 237개 입력 모두 일치</a></li><li><a href="#next">펌웨어에 넣기 전에 남은 확인</a></li><li><a href="#reproduce">재현 방법</a></li><li><a href="#refs">근거 파일과 참고 자료</a></li></ol></nav>
+<!-- /chrome:toc -->
+<main class="doc" id="main">
+
+<section class="summary">
+<h2 data-toc="no">핵심 요약</h2>
+<ul>
+<li>원본 기계어를 참고해 <strong>C 함수 두 개를 새로 작성</strong>했습니다. AF에서 두 신호의 차이를 재는 SAD·SSD 함수와, 색 변환 행렬을 곱하는 Q13 3×3 행렬 곱 함수입니다.</li>
+<li>이 C 코드를 ARM 기계어로 컴파일한 뒤, PC의 CPU 에뮬레이터에서 <strong>원본 기계어와 같은 입력 237개</strong>를 넣어 실행했습니다. 출력 바이트가 모두 같았고 Python으로 쓴 기준식과도 일치했습니다.</li>
+<li>확인한 것은 <strong>함수 하나를 따로 떼어 실행한 결과</strong>입니다. 펌웨어에 넣거나 카메라에서 실행하지는 않았습니다. 실행 시간과 일부 CPU 플래그는 비교하지 않았습니다.</li>
+</ul>
+</section>
+
+<div class="scope">
+<div class="ok"><h3><span class="badge ok">확인</span> 원본 코드 실행으로 확인</h3>
+<ul>
+<li>SAD·SSD 131개, Q13 행렬 곱 106개 입력에서 출력 바이트 일치</li>
+<li>두 코드 모두 지정된 출력과 스택 작업 영역에만 기록</li>
+<li>호출 규약이 보존하라고 정한 레지스터(r4–r11, d8–d15, SP) 보존</li>
+</ul></div>
+<div class="model"><h3><span class="badge model">모델</span> 시험 조건으로 정한 것</h3>
+<ul>
+<li>입력은 직접 만든 합성 값(경계값과 난수)</li>
+<li>쓰지 않는 첫 인수에는 매핑하지 않은 주소를 넣음</li>
+<li>CPU는 Unicorn의 Cortex-A7 모델</li>
+</ul></div>
+<div class="open"><h3><span class="badge open">미확인</span> 확인하지 않은 것</h3>
+<ul>
+<li>개수가 0이거나 음수일 때 원본의 동작</li>
+<li>실행 시간, 모든 CPU 플래그의 동일성</li>
+<li>펌웨어 통합, 카메라에서의 AF·색 출력</li>
+</ul></div>
 </div>
-<p>코드 크기는 원본 함수 구간과 컴파일된 함수의 <code>.text</code> 크기다. 원본 SAD·SSD의 128바이트 마스크 표와 ELF 메타데이터는 이 수치에 포함하지 않았다. 스택 깊이는 진입 SP 아래에서 가장 멀리 관측한 쓰기 위치다. <a href="recompiled-kernels.json">구간과 측정값</a></p>
 
-<h2>동작과 검증 범위</h2>
-<p><strong>SAD·SSD.</strong> <code>r1/r2</code>는 부호 없는 16비트 배열, <code>r3</code>는 양수 개수다. 진입 <code>SP</code>와 <code>SP+4</code>에 놓인 포인터로 절대차 합과 제곱차 합을 각각 32비트로 저장한다. 원본에는 마지막 NEON 벡터를 읽을 수 있도록 0이 아닌 패딩 값을 넣고, C에서 만든 기계어에는 유효 원소만 줬다. 8개 단위 경계, 동일값, 최대 차, 교대값, 난수를 검사했다. 모든 차가 65535인 경우 길이 65,537의 SAD는 <code>0xffffffff</code>, 길이 65,538은 <code>65534</code>였다. 0과 음수 개수의 원본 동작은 미확인이다. <a href="dispatch-af.html">AF 호출·패딩 근거</a> · <a href="numerical-checks.json">기존 원본 수치 검증</a></p>
-<p><strong>Q13 행렬.</strong> <code>r1</code>은 출력, <code>r2/r3</code>는 행 우선으로 배치한 부호 있는 16비트 입력 행렬이다. 내적에 4096을 더한 32비트 값을 오른쪽으로 13비트 논리 시프트하고 하위 16비트를 저장한다. 단위·영 행렬, 양·음의 반올림 경계, 32비트 합과 16비트 저장 범위를 넘는 경우, 난수를 검사했다. 범위를 넘는 출력은 포화시키지 않고 하위 16비트만 남겼다. 출력만으로 중간 시프트나 누산 폭을 구분할 수 없으므로 그 해석은 원본 명령 분석에 따른다. <a href="color-algorithms.html">행렬 합성과 원본 연산</a> · <a href="deep-evidence.json">원본 주소·호출 위치·구간 해시</a></p>
-<p>두 함수 모두 사용하지 않는 첫 인수 <code>r0</code>에 매핑하지 않은 주소를 넣었다. 매번 함수 범위 내 실행과 복귀, <code>r4–r11</code>·<code>d8–d15</code>·<code>SP</code> 보존, 호출자 스택 인수와 CPSR 제어 비트 보존, 지정된 출력 바이트에 대한 쓰기를 확인했다. 출력과 스택 작업 영역을 벗어난 쓰기는 허용하지 않았다. 명령과 데이터 접근을 감시했으며, 타이밍과 모든 플래그의 동일성은 비교 기준에 넣지 않았다. <a href="../tools/verify_recompiled_kernels.py">격리 환경과 검사 코드</a> · <a href="https://github.com/ARM-software/abi-aa/blob/main/aapcs32/aapcs32.rst">Arm AAPCS32</a> · <a href="https://github.com/unicorn-engine/unicorn">Unicorn</a></p>
+<section id="background">
+<h2>배경: 왜 작은 함수부터 다시 만드는가</h2>
+<p>제조사의 원본 소스 코드는 공개되어 있지 않습니다. 펌웨어를 고치는 방법은 두 가지입니다. 기계어 몇 바이트를 직접 바꾸거나, 함수를 C로 새로 작성해 컴파일한 결과로 원본 함수를 대체하는 것입니다. 두 번째 방법이 유지하기 쉽지만, 새 코드가 원본과 <em>정확히 같은 결과</em>를 낸다는 것을 먼저 증명해야 합니다.</p>
+<p>그래서 다른 함수를 부르지 않고 계산만 하는 작은 함수(<dfn title="다른 함수를 호출하지 않는 말단 함수">leaf 함수</dfn>) 두 개를 골랐습니다. 입력과 출력이 분명해서 원본과 새 코드를 나란히 실행해 비교하기 쉽습니다.</p>
 
-<h2>재현</h2>
-<p>검증기는 <a href="../inspect_firmware.py">추출기</a>의 <code>decoded.bin</code> 또는 별도 <code>rtos.bin</code>을 받는다. RTOS 적재 기준은 <code>0x52500000</code>이고, 입력 RTOS의 SHA-256이 <code>342d2f35405e8daf1797dfe431d2e4aa70f4b52a2c242a29df48206672f1dfb4</code>일 때만 실행한다. Python 환경에는 <code>unicorn==2.1.4</code>와 <code>pyelftools==0.33</code>을 사용했다.</p>
-<p><a href="https://ziglang.org/download/index.json">Zig 공식 배포 색인</a>의 <code>0.15.2 / x86_64-windows</code> ZIP을 받아 SHA-256 <code>3a0ed1e8799a2f8ce2a6e6290a9ff22e6906f8227865911fb7ddedc3cc14cb0c</code>과 일치할 때만 풀었다. 아래는 저장소 루트의 PowerShell에서 실행한다. <code>&lt;Zig 폴더&gt;</code>는 압축을 푼 경로다.</p>
+<div class="table-wrap"><table>
+<caption>대상 함수 두 개</caption>
+<thead><tr><th>함수</th><th>하는 일</th><th>펌웨어에서 쓰이는 곳</th></tr></thead>
+<tbody>
+<tr><th scope="row">SAD·SSD</th><td>16비트 값 배열 두 개를 받아 원소별 차이의 절댓값 합(SAD)과 제곱 합(SSD)을 구합니다. 두 신호가 얼마나 닮았는지 재는 기본 연산입니다.</td><td>AF의 상관 연산 (<a href="dispatch-af.html">디스패처·셔터·AF</a>)</td></tr>
+<tr><th scope="row">Q13 3×3 행렬 곱</th><td>3×3 행렬 두 개를 곱합니다. 값은 <dfn title="실수 1.0을 정수 8192(2의 13제곱)로 나타내는 고정소수점 표기">Q13 고정소수점</dfn>이라서 곱한 뒤 반올림하고 13비트만큼 내립니다.</td><td>색공간 변환 행렬 준비 (<a href="color-algorithms.html">색 처리 알고리즘</a>)</td></tr>
+</tbody></table></div>
+</section>
+
+<section id="method">
+<h2>검증 방법: 원본과 새 코드를 같은 조건에서 실행</h2>
+<p class="takeaway">새 코드와 원본 코드를 서로 다른 주소에 올려 놓고, 같은 입력으로 각각 실행한 뒤 출력 바이트를 비교했습니다.</p>
+
+<figure class="diagram">
+<figcaption>검증 환경의 구성</figcaption>
+<div class="dg-scroll">
+<svg class="dg" viewBox="0 0 800 318" role="img" aria-labelledby="dg-harness-title dg-harness-desc">
+<title id="dg-harness-title">원본 함수와 재컴파일한 함수를 같은 에뮬레이터에서 비교하는 구성</title>
+<desc id="dg-harness-desc">위쪽 경로는 새로 작성한 C 소스를 Zig 컴파일러로 ARM 코드로 만드는 과정이고, 아래쪽 경로는 원본 펌웨어에서 같은 함수를 꺼내는 과정입니다. 두 코드는 Unicorn 에뮬레이터 안에서 같은 합성 입력 237개로 실행되고, 출력 바이트를 서로 비교한 뒤 Python 기준식과도 비교합니다.</desc>
+<defs><marker id="dg-harness-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0 0L10 5L0 10z"/></marker></defs>
+<rect class="gf" x="394" y="14" width="212" height="218" rx="12"/>
+<text class="h mid" x="500" y="36">UNICORN · Cortex-A7 모델</text>
+
+<rect class="b key" x="8" y="52" width="172" height="64" rx="8"/>
+<text class="t" x="20" y="79">새로 작성한 C 소스</text>
+<text class="s" x="20" y="99">numeric_kernels.c</text>
+
+<rect class="b" x="216" y="52" width="150" height="64" rx="8"/>
+<text class="t" x="228" y="79">Zig cc 0.15.2</text>
+<text class="s" x="228" y="99">ARM A32 · 크기 최적화</text>
+
+<rect class="b key" x="408" y="52" width="184" height="64" rx="8"/>
+<text class="t" x="420" y="79">새 ARM 코드</text>
+<text class="s mono" x="420" y="99">0x62000000, 0x62001000</text>
+
+<rect class="b" x="8" y="152" width="172" height="64" rx="8"/>
+<text class="t" x="20" y="179">원본 RTOS 이미지</text>
+<text class="s" x="20" y="199">SHA-256이 맞을 때만</text>
+
+<rect class="b" x="408" y="152" width="184" height="64" rx="8"/>
+<text class="t" x="420" y="179">원본 ARM 코드</text>
+<text class="s mono" x="420" y="199">0x52c73190, 0x5312cd40</text>
+
+<rect class="b ok" x="636" y="92" width="156" height="84" rx="8"/>
+<text class="t" x="648" y="121">출력 바이트 비교</text>
+<text class="s" x="648" y="141">두 ARM 출력이 같고</text>
+<text class="s" x="648" y="159">Python 기준식과 일치</text>
+
+<rect class="b model" x="408" y="256" width="184" height="50" rx="8"/>
+<text class="t" x="420" y="278">합성 입력 237개</text>
+<text class="s" x="420" y="296">경계값 · 최대 차 · 난수</text>
+
+<path class="e" d="M180 84H214" marker-end="url(#dg-harness-ah)"/>
+<path class="e" d="M366 84H406" marker-end="url(#dg-harness-ah)"/>
+<path class="e" d="M180 184H406" marker-end="url(#dg-harness-ah)"/>
+<path class="e" d="M592 84H614V120H634" marker-end="url(#dg-harness-ah)"/>
+<path class="e" d="M592 184H614V148H634" marker-end="url(#dg-harness-ah)"/>
+<path class="e model" d="M500 256V234" marker-end="url(#dg-harness-ah)"/>
+</svg>
+</div>
+<ul class="dg-legend"><li><i class="key"></i>이번에 새로 만든 것</li><li><i></i>원본·기존 도구</li><li><i class="model"></i>시험을 위해 만든 입력</li><li><i class="ok"></i>확인한 결과</li></ul>
+</figure>
+
+<h3>실행할 때마다 확인한 조건</h3>
+<p>출력값만 보지 않았습니다. 함수가 주변 상태를 망가뜨리지 않는지도 매번 검사했습니다.</p>
+<ul>
+<li><strong>출력</strong> — Python 기준식의 결과와 바이트 단위로 같아야 합니다. 정해진 출력 위치에 빠짐없이 쓰였는지도 확인했습니다.</li>
+<li><strong>쓰기 범위</strong> — 출력 버퍼와 스택 작업 영역 밖에는 쓰지 않아야 합니다.</li>
+<li><strong>읽기 범위</strong> — 넘겨준 버퍼, 스택, 그리고 원본 SAD·SSD가 쓰는 128바이트 마스크 표만 읽어야 합니다.</li>
+<li><strong>실행 범위</strong> — 함수 구간 안에서만 실행되고 정해 둔 복귀 주소로 돌아와야 합니다.</li>
+<li><strong>보존 레지스터</strong> — ARM 호출 규약(<a href="https://github.com/ARM-software/abi-aa/blob/main/aapcs32/aapcs32.rst">AAPCS32</a>)이 보존하라고 정한 r4–r11, d8–d15, SP와 호출자의 스택 인수, CPSR 제어 비트가 그대로여야 합니다.</li>
+</ul>
+<div class="callout model"><strong class="label">비교 기준에서 뺀 것</strong>
+<p>실행 시간과 계산 과정에서 바뀌는 조건 플래그 전체는 비교하지 않았습니다. 쓰지 않는 첫 인수(r0)에는 일부러 매핑하지 않은 주소를 넣어, 두 코드 모두 이 인수를 건드리지 않는다는 점을 확인했습니다.</p></div>
+</section>
+
+<section id="results">
+<h2>결과: 237개 입력 모두 일치</h2>
+<div class="table-wrap"><table>
+<caption>함수별 측정값</caption>
+<thead><tr><th>함수</th><th>원본 주소 → 시험 주소</th><th class="n">코드 크기 (원본 → 새 코드)</th><th class="n">일치한 입력</th><th class="n">스택 사용 깊이</th></tr></thead>
+<tbody>
+<tr><th scope="row">SAD·SSD</th><td><code>0x52c73190</code> → <code>0x62000000</code></td><td class="n">216 → 84바이트</td><td class="n">131개</td><td class="n">12 → 16바이트</td></tr>
+<tr><th scope="row">Q13 3×3 행렬 곱</th><td><code>0x5312cd40</code> → <code>0x62001000</code></td><td class="n">116 → 112바이트</td><td class="n">106개</td><td class="n">28 → 32바이트</td></tr>
+</tbody></table></div>
+<p class="small muted">코드 크기는 함수 구간의 기계어 크기입니다. 원본 SAD·SSD가 따로 참조하는 128바이트 마스크 표는 포함하지 않았습니다. 스택 사용 깊이는 함수에 들어올 때의 스택 포인터 아래로 가장 멀리 쓴 위치입니다.</p>
+<div class="callout plain"><strong class="label">크기가 줄어든 이유</strong>
+<p>원본 SAD·SSD는 여러 값을 한 번에 처리하는 <dfn title="ARM의 SIMD 확장. 여러 데이터를 한 명령으로 처리합니다.">NEON</dfn> 명령을 씁니다. 새 코드는 값을 하나씩 처리하는 단순한 반복문이라 더 작습니다. 결과는 같지만 속도는 다를 수 있으며, 속도는 이번에 측정하지 않았습니다.</p></div>
+
+<h3 id="sad-ssd">SAD·SSD 함수</h3>
+<p>입력은 부호 없는 16비트 배열 두 개(r1, r2)와 양수인 원소 개수(r3)입니다. 결과는 스택으로 넘긴 포인터 두 곳에 32비트 값으로 저장됩니다.</p>
+<ul>
+<li><strong>시험한 길이</strong> — 1~17개, 그리고 8개 단위 경계 앞뒤(23·24·25, 31·32·33, … 1023·1024·1025). 길이마다 값이 모두 같은 경우, 차이가 최대인 경우, 번갈아 바뀌는 경우, 난수를 넣었습니다.</li>
+<li><strong>32비트를 넘는 경우</strong> — 모든 차이가 65,535일 때 길이 65,537의 SAD는 <code>0xffffffff</code>이고, 길이 65,538에서는 32비트를 넘어 <code>65534</code>가 됩니다. 원본과 새 코드 모두 넘친 값을 그대로 잘라 냅니다.</li>
+<li><strong>패딩</strong> — 원본은 마지막 NEON 벡터를 읽을 때 배열 끝을 조금 넘겨 읽을 수 있습니다. 그래서 원본에는 0이 아닌 패딩 값을 붙여 주고, 새 코드에는 유효한 원소만 주었습니다. 결과는 같았습니다.</li>
+</ul>
+
+<h3 id="q13">Q13 3×3 행렬 곱 함수</h3>
+<p>입력은 행 우선으로 놓인 부호 있는 16비트 행렬 두 개(r2, r3)이고, 출력 행렬은 r1이 가리킵니다. 원소마다 세 곱의 합에 4,096(Q13에서 0.5)을 더한 32비트 값을 오른쪽으로 13비트 논리 시프트하고 하위 16비트를 저장합니다.</p>
+<ul>
+<li><strong>시험한 입력</strong> — 단위 행렬, 영 행렬, 양수·음수 반올림 경계, 합이 32비트를 넘는 경우, 결과가 16비트를 넘는 경우, 난수 96개.</li>
+<li><strong>범위를 넘을 때</strong> — 결과가 16비트 범위를 넘으면 최댓값으로 고정(포화)하지 않고 하위 16비트만 남깁니다. 원본과 새 코드가 같게 동작합니다.</li>
+</ul>
+<div class="callout"><strong class="label">해석의 한계</strong>
+<p>출력이 같다는 사실만으로는 계산 중간의 시프트 방식이나 누산 폭까지 같다고 말할 수 없습니다. 그 부분의 해석은 <a href="color-algorithms.html">원본 명령 분석</a>에 근거합니다.</p></div>
+
+<details class="evidence"><summary>함수 구간과 해시</summary>
+<div class="table-wrap"><table class="compact">
+<thead><tr><th>함수</th><th>구분</th><th>구간</th><th>SHA-256</th></tr></thead>
+<tbody>
+<tr><th scope="row" rowspan="2">SAD·SSD</th><td>원본</td><td><code>0x52c73190</code>–<code>0x52c73268</code></td><td><code class="wrap">705670a0b4cac81dd27c3b7a0c327443e5b07240fa788582189fb719da887941</code></td></tr>
+<tr><td>새 코드</td><td><code>0x62000000</code>–<code>0x62000054</code></td><td><code class="wrap">aedeceae91f8abf59fea1bcd766dd60c10b8d25ae50d28fe29f16a7b678e3888</code></td></tr>
+<tr><th scope="row" rowspan="2">Q13 행렬 곱</th><td>원본</td><td><code>0x5312cd40</code>–<code>0x5312cdb4</code></td><td><code class="wrap">cfbe871ad650aa038a0756f3d3be2389be7b21d8b2ec382b1407597dd9ba28c7</code></td></tr>
+<tr><td>새 코드</td><td><code>0x62001000</code>–<code>0x62001070</code></td><td><code class="wrap">84d8f005c12abf45bfb40c4410daee4d8bd131e5ccaa74bcedea0c583bb8bea5</code></td></tr>
+</tbody></table></div>
+<p class="small">구간의 끝 주소는 함수에 포함되지 않습니다. 사례별 입력 해시와 출력은 <a href="recompiled-kernels.json">recompiled-kernels.json</a>에 있습니다.</p>
+</details>
+</section>
+
+<section id="next">
+<h2>펌웨어에 넣기 전에 남은 확인</h2>
+<p>이 결과는 “함수 하나를 떼어 놓았을 때 같다”는 것까지입니다. 실제 펌웨어에 넣으려면 호출하는 쪽의 조건을 더 확인해야 합니다.</p>
+<ul>
+<li>실제 호출마다 버퍼의 수명·정렬·겹침, 길이의 범위, 스택 여유가 맞는지</li>
+<li>이 함수를 주소로 간접 호출하는 곳이 더 있는지</li>
+<li>NEON을 쓰는 원본과 값을 하나씩 처리하는 새 코드의 실행 시간 차이가 AF의 처리 시간 예산 안에 드는지</li>
+<li>실행 주소 배치와 분기 연결, 이미지 검증과 부팅, 실기에서의 AF·색 출력</li>
+</ul>
+<p>Q13 행렬 곱 함수를 원래 자리에 넣고 다시 포장하는 과정은 <a href="recompiled-integration.html">재컴파일 함수 배치·재패키징</a>에서 이어집니다. 통합 전에 확인할 항목 전체는 <a href="research-roadmap.html">수정·이식 선행 연구</a>에 정리했습니다.</p>
+</section>
+
+<section id="reproduce">
+<h2>재현 방법</h2>
+<p>검증기는 <a href="../inspect_firmware.py">추출기</a>가 만든 <code>decoded.bin</code> 또는 따로 잘라 낸 <code>rtos.bin</code>을 입력으로 받습니다. 입력 RTOS의 SHA-256이 아래 값과 같을 때만 실행합니다.</p>
+<dl class="kv">
+<dt>RTOS SHA-256</dt><dd><code class="wrap">342d2f35405e8daf1797dfe431d2e4aa70f4b52a2c242a29df48206672f1dfb4</code></dd>
+<dt>RTOS 적재 기준 주소</dt><dd><code>0x52500000</code></dd>
+<dt>Python 패키지</dt><dd><code>unicorn==2.1.4</code>, <code>pyelftools==0.33</code></dd>
+<dt>컴파일러</dt><dd>Zig 0.15.2 (x86_64 Windows 배포본). <a href="https://ziglang.org/download/index.json">공식 배포 색인</a>의 ZIP SHA-256 <code class="wrap">3a0ed1e8799a2f8ce2a6e6290a9ff22e6906f8227865911fb7ddedc3cc14cb0c</code>과 일치할 때만 사용</dd>
+</dl>
 <pre><code>python tools/verify_recompiled_kernels.py .private/my-decode/decoded.bin "&lt;Zig 폴더&gt;/zig.exe"</code></pre>
-<p>검증기는 실행 파일 해시를 확인하고 아래 명령으로 컴파일한다. ARM A32 little-endian ELF 객체의 심볼에서 두 함수만 꺼냈다. 함수 코드에는 재배치 항목이나 외부 심볼 참조가 없었다. ELF 객체, 실행한 함수별 바이너리와 빌드 캐시는 <code>.private/hq-compile/</code>에 둔다. 공개 결과는 해시와 합성 사례만 포함한다.</p>
-<pre><code>zig cc -target arm-freestanding-eabi -mcpu=cortex_a7 -marm -std=c11 -ffreestanding -fno-builtin -fno-stack-protector -fno-unwind-tables -fno-asynchronous-unwind-tables -ffunction-sections -Oz -Wall -Wextra -Werror -c source/reconstructed/numeric_kernels.c -o .private/hq-compile/numeric_kernels.o</code></pre>
+<p>검증기는 컴파일러 실행 파일의 해시를 확인한 뒤 아래 옵션으로 컴파일합니다. 만들어진 ARM A32 리틀엔디언 ELF 객체에서 두 함수만 꺼내 씁니다. 함수 코드에는 재배치 항목이나 외부 심볼 참조가 없었습니다.</p>
+<pre><code>zig cc -target arm-freestanding-eabi -mcpu=cortex_a7 -marm -std=c11 \
+  -ffreestanding -fno-builtin -fno-stack-protector \
+  -fno-unwind-tables -fno-asynchronous-unwind-tables -ffunction-sections \
+  -Oz -Wall -Wextra -Werror \
+  -c source/reconstructed/numeric_kernels.c -o .private/hq-compile/numeric_kernels.o</code></pre>
+<p class="small muted">ELF 객체, 함수별 바이너리, 빌드 캐시는 <code>.private/hq-compile/</code>에 남고 공개하지 않습니다. 공개 결과에는 해시와 합성 사례만 들어 있습니다.</p>
+</section>
 
-<h2>펌웨어에 통합하기 전에 남은 확인</h2>
-<p>AF의 상관 처리와 색공간 행렬 준비 단계에서 일부 직접 호출 위치는 이미 확인했다. 다음 단계에서는 실제 호출마다 버퍼의 수명·정렬·겹침, 양수 길이의 범위, 스택 여유, 간접 호출 가능성을 확인해야 한다. AF의 원본 NEON과 새 스칼라 코드의 실기 실행 시간과 프레임 예산은 측정하지 않았다. 실행 주소 배치와 분기 연결, 이미지 검증·부팅 절차, 실기 AF·색 출력도 별도 검증이 필요하다. 이번에는 펌웨어를 패치하거나 카메라에서 실행하지 않았다. <a href="deep-evidence.json">확인된 호출 위치</a> · <a href="research-roadmap.html">통합 전 연구 항목</a></p>
+<section id="refs">
+<h2>근거 파일과 참고 자료</h2>
+<ul class="refs">
+<li><a href="../source/reconstructed/numeric_kernels.c">source/reconstructed/numeric_kernels.c</a> — 새로 작성한 C 소스</li>
+<li><a href="recompiled-kernels.json">recompiled-kernels.json</a> — 사례 237개의 입력 해시·출력, 구간, 컴파일러 정보</li>
+<li><a href="../tools/verify_recompiled_kernels.py">tools/verify_recompiled_kernels.py</a> — 빌드와 격리 실행, 검사 코드</li>
+<li><a href="numerical-checks.json">numerical-checks.json</a> — 앞서 원본 함수만 실행해 얻은 수치 검증</li>
+<li><a href="deep-evidence.json">deep-evidence.json</a> — 원본 주소, 호출 위치, 구간 해시</li>
+<li>외부 자료: <a href="https://github.com/ARM-software/abi-aa/blob/main/aapcs32/aapcs32.rst">Arm 32비트 호출 규약(AAPCS32)</a> · <a href="https://github.com/unicorn-engine/unicorn">Unicorn CPU 에뮬레이터</a></li>
+</ul>
+</section>
+
 </main>
+</div>
+<!-- chrome:bottom -->
+<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">펌웨어 재구축 — 이 주제의 문서</h2><ol><li><a href="guide-rebuild.html">재구축 안내</a></li><li><a href="recompiled-kernels.html" aria-current="page">수치 함수 C 재구현<span>SAD·SSD와 Q13 행렬 곱</span></a></li><li><a href="recompiled-integration.html">재컴파일 함수 배치·재패키징</a></li><li><a href="selective-repack.html">압축 블록을 보존한 재패키징</a></li></ol></nav>
+<nav class="pager" aria-label="이전·다음 문서"><a class="prev" href="guide-rebuild.html"><small>← 이전</small>재구축 안내</a><a class="next" href="recompiled-integration.html"><small>다음 →</small>재컴파일 함수 배치·재패키징</a></nav>
+<footer class="sitefoot"><div class="sitefoot-in"><nav aria-label="사이트"><a href="../index.html#map">문서 지도</a><a href="../index.html#levels">검증 수준 읽는 법</a><a href="../glossary.html">용어집</a><a href="research-program.html">세 기종 연구 본부</a><a href="https://github.com/yunhyok/pentax-k3iii-firmware-analysis">GitHub 저장소</a></nav><p>PENTAX K-3 Mark III 펌웨어 2.20 분석 문서. PC에서 수행한 정적 분석과 에뮬레이션 결과이며, 카메라 실기에서 검증한 내용이 아닙니다. 원본 펌웨어와 추출한 독점 코드는 포함하지 않습니다.</p></div></footer>
+<!-- /chrome:bottom -->
 </body>
 </html>
