@@ -77,6 +77,7 @@ python verify_findings.py .private/my-decode/decoded.bin
 | `source/` | 재배포 조건을 확인한 공개 소스 사본과, 직접 작성한 재구성 C 코드(`source/reconstructed/`) |
 | `tests/` | 단위 테스트 |
 | `assets/`, `site-map.json`, `tools/site_chrome.py`, `tools/check_site.py` | 문서 스타일, 문서 목록, 내비게이션 갱신·검사 도구 |
+| `docs/audit/` | 문서 검수 기록 (무엇을 확인했고 무엇을 고쳤는지, 판단이 필요한 항목) |
 | `docs/releases/` | 릴리스 노트 |
 
 문서를 추가하거나 순서를 바꿀 때는 `site-map.json`을 고친 뒤 `python tools/site_chrome.py`를 실행하면 모든 문서의 상단 메뉴와 이전·다음 링크가 갱신됩니다.
