@@ -1,41 +1,435 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>보드 등록에서 지연 callback까지</title><style>
-:root{color-scheme:light dark;--bg:#f7f8fa;--paper:#fff;--ink:#182332;--muted:#48596b;--line:#d2dbe5;--accent:#124b8e;--soft:#edf3fa;--focus:#d75f00}
-@media(prefers-color-scheme:dark){:root{--bg:#111821;--paper:#18222d;--ink:#e8edf4;--muted:#b4c2d2;--line:#405369;--accent:#98c8ff;--soft:#223348;--focus:#ffb374}}
-*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.85 system-ui,-apple-system,"Malgun Gothic",sans-serif;word-break:keep-all;overflow-wrap:anywhere}
-a{color:var(--accent);text-underline-offset:.18em}a:hover{text-decoration-thickness:2px}:focus-visible{outline:3px solid var(--focus);outline-offset:4px}
-header,main,footer{max-width:1120px;margin:auto;padding:36px clamp(18px,4vw,56px)}header{padding-top:56px;padding-bottom:24px}main{background:var(--paper);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
-.eyebrow{color:var(--muted);font-size:.84rem;letter-spacing:.06em}h1{font-size:clamp(1.85rem,4.5vw,3rem);line-height:1.35;letter-spacing:-.025em;margin:12px 0 18px}h2{font-size:1.5rem;line-height:1.5;margin:3.6rem 0 1rem;padding-top:1.2rem;border-top:1px solid var(--line)}h2:first-child{margin-top:0}h3{font-size:1.12rem;margin-top:2rem}p{margin:1rem 0}strong{font-weight:650}.intro{max-width:55em;color:var(--muted)}
-nav{margin-top:25px}nav ul{display:flex;flex-wrap:wrap;gap:8px 22px;list-style:none;padding:0;margin:0}nav ul ul{display:none}nav a{font-size:.9rem}code{font: .88em/1.6 ui-monospace,Consolas,monospace;overflow-wrap:anywhere}pre{background:var(--soft);padding:18px;overflow-x:auto;white-space:pre-wrap;border-radius:5px}pre code{font-size:.82rem}
-.table-scroll{overflow-x:auto;margin:24px 0}table{border-collapse:collapse;width:100%;font-size:.92rem;min-width:530px}th,td{text-align:left;vertical-align:top;padding:14px 16px;border-bottom:1px solid var(--line)}th{background:var(--soft);font-weight:650}td:first-child{min-width:125px}details{border-block:1px solid var(--line);margin-top:24px;padding:16px 0}summary{cursor:pointer;font-weight:650;padding:6px 0}.caption,.meta{font-size:.86rem;color:var(--muted)}
-figure{margin:32px 0;padding:24px 0;border-block:1px solid var(--line)}figcaption{font-size:.95rem;font-weight:650;margin-bottom:20px}.flow{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:32px;list-style:none;padding:0;margin:18px 0}.flow li{position:relative;padding:18px;background:var(--soft);border-radius:6px;line-height:1.6}.flow strong{display:block;font-size:1rem}.flow span{display:block;color:var(--muted);font-size:.86rem;margin-top:9px}.flow li:not(:last-child)::after{content:"→";position:absolute;right:-27px;top:40%;font-size:22px;color:var(--muted)}.second{margin-top:24px}footer{font-size:.88rem;color:var(--muted)}
-@media(max-width:620px){body{font-size:16px}header,main,footer{padding-inline:20px}.flow{grid-template-columns:1fr;gap:26px}.flow li:not(:last-child)::after{content:"↓";right:auto;left:calc(50% - 8px);top:auto;bottom:-28px}.flow li{padding:15px 18px}h2{font-size:1.3rem}nav ul{gap:10px 18px}table{font-size:.87rem}th,td{padding:12px}header{padding-top:30px}}
-@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
-@media print{body{background:white;color:black;font-size:10pt}header,main,footer{max-width:none;padding:12pt}nav{display:none}a{color:inherit}h2,figure,table{break-inside:avoid}h2{break-after:avoid}main{border:0}.flow li{background:#f1f3f5}.table-scroll{overflow:visible}table{min-width:0}details>*{display:block!important}}
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>타이머 처리 함수의 등록과 기한이 지난 콜백의 실행 — PENTAX K-3 Mark III 펌웨어 연구</title>
+<meta name="description" content="K-3 Mark III 펌웨어에서 타이머 인터럽트 처리 함수가 보드 descriptor를 거쳐 등록되는 경로와, 기한 큐에서 꺼낸 알람이 CPU별 지연 실행 큐를 거쳐 콜백으로 실행되는 과정을 원본 기계어 20개 사례로 확인한 기록입니다.">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-camera="k3iii">
+<!-- chrome:top -->
+<a class="skip" href="#main">본문 바로가기</a>
+<div class="topbar"><div class="topbar-in"><a class="brand" href="../index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="../index.html" aria-current="true">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="https://yunhyok.github.io/pentax-q7-firmware-analysis/">Q7</a></div><nav class="topnav" aria-label="주제"><a href="../index.html">개요</a><a href="guide-boot.html">부팅·저장소</a><a href="guide-update.html" aria-current="true">업데이트</a><a href="guide-rebuild.html">재구축</a><a href="guide-rtos.html">명령·셸</a><a href="guide-color.html">색 처리</a><a href="lightroom-bridge.html">Lightroom</a><a href="af-foundations.html">AF</a><a href="ui-port-contract.html">UI</a></nav></div></div>
+<nav class="crumbs" aria-label="현재 위치"><ol><li><a href="../index.html">PENTAX K-3 Mark III</a></li><li><a href="guide-update.html">펌웨어 업데이트 과정</a></li><li aria-current="page">타이머 등록과 지연 콜백</li></ol></nav>
+<!-- /chrome:top -->
+<header class="page-head">
+<p class="eyebrow">펌웨어 업데이트 과정 · 타이머 사슬 5/7</p>
+<h1>타이머 처리 함수의 등록과 기한이 지난 콜백의 실행</h1>
+<p class="lead">타이머 인터럽트가 들어오면 커널은 기한이 지난 예약을 큐에서 꺼내 콜백을 부릅니다. 그 처리 함수가 어떻게 등록되는지, 알람의 콜백이 어떤 단계를 거쳐 실행되는지 따라갔습니다.</p>
+</header>
+<div class="layout">
+<!-- chrome:toc -->
+<nav class="toc" aria-label="이 문서의 목차"><h2 data-toc="no">이 문서에서</h2><ol><li><a href="#background">배경: 예약은 타이머 인터럽트에서 처리됩니다</a></li><li><a href="#binding">CPU 0의 초기화가 descriptor를 만들고 처리 함수를 등록합니다</a></li><li><a href="#deadline">기한 비교는 부호 있는 64비트 차이로 합니다</a></li><li><a href="#callback">알람의 콜백은 CPU별 지연 실행 큐를 거쳐 실행됩니다</a></li><li><a href="#checks">20개 사례의 구성</a></li><li><a href="#limits">한계와 남은 과제</a></li><li><a href="#reproduce">재현 방법</a></li><li><a href="#refs">근거 파일과 참고 자료</a></li></ol></nav>
+<!-- /chrome:toc -->
+<main class="doc" id="main">
 
-.site-nav{border-block:1px solid var(--line);padding:14px 0;margin:20px 0}.site-nav a{display:inline-block;margin:4px 16px 4px 0}
-.review-note{background:var(--soft);padding:16px 20px;margin:24px 0}.toc{font-size:.92rem}.toc ul{list-style:none;padding-left:0}.toc ul ul{padding-left:20px}
-.branch{margin:18px 0;padding:0 0 0 24px;border-left:3px solid var(--line)}.branch p{margin:8px 0}.diagram-line{padding:12px 16px;background:var(--soft);border-radius:4px}
-td code{white-space:nowrap}
+<section class="summary">
+<h2 data-toc="no">핵심 요약</h2>
+<ul>
+<li>CPU 0의 초기화 경로가 메모리에 <strong>보드 descriptor</strong>를 만듭니다. 타이머 초기화는 거기 적힌 하드웨어 초기화 함수를 부르고, 타이머 처리 함수를 인터럽트 처리 함수 표에 등록합니다.</li>
+<li>처리 함수는 기한 큐의 맨 앞 노드부터 봅니다. <strong>기한에서 현재 카운터를 뺀 값을 부호 있는 64비트 수로 보아</strong> 0 이하면 노드를 떼어 콜백을 부르고, 1 이상이면 거기서 멈춥니다.</li>
+<li>알람의 콜백은 응용 함수를 바로 부르지 않습니다. 노드를 <strong>CPU별 지연 실행 큐</strong>로 옮겨 두고, 표시와 비우기 단계를 거친 뒤에 응용 콜백에 닿습니다.</li>
+<li>descriptor 만들기, 기한 처리, 지연 실행 경로를 원본 기계어로 <strong>20개 사례</strong> 실행했습니다.</li>
+<li>실제 인터럽트 진입, CPU 사이의 신호, 스케줄러는 실행하지 않았습니다. 등록 경로가 이어져 있다는 것과 인터럽트가 실제로 전달된다는 것은 다른 이야기입니다.</li>
+</ul>
+</section>
 
-.site-nav{display:flex;flex-wrap:wrap;gap:10px 22px}.flow{grid-template-columns:repeat(4,minmax(0,1fr))}.arithmetic-chart{display:block;width:100%;height:auto;background:#fff}@media(max-width:620px){.flow{grid-template-columns:1fr}}
-</style></head><body><header><div class="wrap"><p class="eyebrow">K-3 III · 타이머 callback 연결</p><h1>보드 등록에서 지연 callback까지</h1><p>보드 descriptor의 RAM 생산자와 타이머 handler 등록을 연결했다. 기한 큐에서 CPU별 지연 실행 큐로 넘어가는 선택 경로도 원본 ARM으로 재현했다. 실제 IRQ와 CPU 간 전달은 검증 범위 밖이다.</p><nav class="site-nav" aria-label="보고서 탐색"><a href="update-timer-clock.html">설정 생산자</a><a href="#binding">등록 경로</a><a href="#deadline">기한 비교</a><a href="#callback">callback 수명</a><a href="#checks">검증 범위</a></nav></div></header>
-<main><section id="binding"><h2>CPU 0 분기에서 descriptor가 만들어진다</h2>
-<ol class="flow"><li>CPU 0 초기화<br><code>0x525d9e94</code></li><li>보드 descriptor<br><code>0x54c40e70</code></li><li>handler 등록<br><code>0x525d7c90</code></li><li>타이머 처리 함수<br><code>0x525b807c</code></li></ol>
-<p><code>0x525d9e30</code>의 MPIDR 검사에서 CPU index가 0이면 <code>0x525d9e94</code>로 이동한다. 이 경로는 <code>0x54c40e70</code>의 0x30바이트를 초기화한 뒤 그 주소를 보드 binder <code>0x525b5b4c</code>에 전달한다. descriptor+0에는 초기화 함수 <code>0x525b5bf0</code>, +4·+8·+12에는 후속 callback 주소가 기록된다. <a href="update-timer-irq-evidence.json">생산자·등록·원본 명령 근거</a></p>
-<p>타이머 초기화는 <code>0x54c40e70</code>의 첫 포인터가 비제로이면 간접 호출한다. 앞의 생산자가 실행되고 이후 덮어쓰기가 없다는 조건에서 대상은 <code>0x525b5bf0</code>이다. 이어서 <code>0x54c40ea0</code>의 index로 handler 표 <code>0x54c3f504</code>에 <code>0x525d7c90</code>을 기록한다. 이 wrapper는 <code>0x525b807c</code>를 호출한다.</p>
-<p>CPU 시험은 privileged 초기화 분기 이후부터 시작해 descriptor 생산과 alias 복사를 재현했다. 전체 startup·실제 handler 등록·IRQ 진입·SVC 7 복귀는 실행하지 않았다. 등록 경로가 연결됐다는 정적 근거와 실제 인터럽트가 전달됐다는 검증은 구분해야 한다.</p></section>
-<section id="deadline"><h2>signed 64비트 차이로 기한을 비교</h2>
-<p>선택한 큐 처리 경로는 <code>delta = (deadline − NOW) mod 2⁶⁴</code>를 구한다. 이를 signed 64비트로 보아 1 이상이면 head에서 처리를 멈추고 0 이하이면 노드를 분리한다. CMP·SBCS 이후 BGE의 N==V 조건을 직접 검사했다. 단순히 차이에서 1을 뺀 순환 결과의 부호만 보는 식으로 바꾸면 극단 경계의 의미가 달라진다.</p>
-<div class="table-scroll"><table><thead><tr><th>합성 조건</th><th>관측 결과</th></tr></thead><tbody><tr><td>현재값과 같거나 이전인 head</td><td>노드를 먼저 분리하고 callback 호출</td></tr><tr><td>미래인 head 뒤에 과거 노드가 있음</td><td>head에서 멈추고 뒤 노드는 처리하지 않음</td></tr><tr><td>callback 포인터가 0</td><td>노드 분리 후 다음 head 확인</td></tr><tr><td>callback 대체 함수가 NOW를 변경</td><td>다음 비교에서 NOW를 다시 읽음</td></tr></tbody></table></div>
-<p>callback은 node+0x10, 인수는 node+0x14에서 읽는다. 시험은 정상적으로 연결한 합성 목록과 signed 최소·최대값, 64비트 순환 경계를 포함한다. callback의 NOW 변경은 시험이 만든 동작이며 실제 생산자의 발견은 아니다. <a href="update-timer-insertion.html">원본 삽입 함수의 별도 검증</a>에서도 임의 기한의 전순서나 상위 호출자의 유효 범위를 보장하지는 않는다.</p></section>
-<section id="callback"><h2>기한 큐에서 CPU별 지연 실행 큐로</h2>
-<p>alarm 메타데이터의 callback <code>0x525cdfa0</code>는 객체+0x10의 노드를 CPU별 큐에 연결한다. 객체+4의 bit 0x20000이 설정된 경로는 객체+0x34의 mask로 index를 고른다. 해당 bit가 꺼진 경로는 MPIDR의 하위 2비트를 사용한다. 수치 시험은 전자의 mask 0·1·4·8만 실행했다. 임의 mask에 대해 index가 4 미만임을 보장하는 검사는 이 함수에서 확인하지 못했다.</p>
-<p>선택된 큐는 <code>0x54c405e8 + 12×index</code>에 있다. 노드의 새 callback은 <code>0x525cde48</code>, 인수는 alarm 객체다. 등록은 큐 flag의 bit 0을 설정한다. 별도 mark 함수 <code>0x525ce7bc</code>는 하위 두 bit가 1인 슬롯에 bit 1을 설정하고 반환 CPU mask에 포함하며 모든 슬롯의 bit 0을 지운다.</p>
-<p>지연 실행 함수 <code>0x525ce80c</code>도 노드를 분리한 뒤 callback을 호출한다. <code>0x525cde48</code>은 객체+0x0c의 bit 0을 지우고 bit 1을 설정한 뒤 lock·IRQ helper를 거쳐 <code>object+8(object+0)</code>을 호출한다. 복귀 후에는 비교 필드 +0x38이 호출 전 값과 같을 때만 bit 1을 지운다. 이 필드의 실제 갱신 생산자와 동시 실행 안전성은 이번 결과로 확정하지 않는다.</p>
-<p>기한 큐 처리 → alarm route → mark → 선택 CPU의 지연 실행 → application callback 경계는 시험이 순서대로 호출했다. application callback과 lock·IRQ helper는 대체 함수다. CPU 간 신호와 실제 scheduler의 전달을 재현한 것은 아니다. 상위 callback의 UI 연결은 <a href="update-ui-timer.html">기존 타이머 서비스 보고서</a>에 별도로 기록했다.</p></section>
-<section id="checks"><h2>20사례의 범위</h2>
-<p>descriptor 생산 1사례, 큐 초기화 1사례, 기한 처리 12사례, alarm 전달 4사례, flag 변환 1사례와 빈 지연 큐 1사례가 RTOS·decoded에서 동일하게 통과했다. <a href="update-timer-irq-checks.json">20사례 결과</a></p>
-<p>디컴파일 C 7개, 지원 범위 7개와 ARM 582 words를 로컬에 보존했다. 디컴파일 C가 정확하게 복원하지 못한 포인터·CPU 상태는 원본 ARM으로 판단했다. 기존 TTimPeriod 20사례와 <a href="update-subtick-arithmetic.html">하위 산술 6,754회 실행</a>은 이 20사례에 합산하지 않는다.</p>
-<details><summary>재현 명령</summary><pre><code>python verify_update_timer_irq.py rtos.bin --output timer-irq.json</code></pre><p><a href="../verify_update_timer_irq.py">재현 도구</a>는 decoded 입력도 지원한다. 원본 C·ASM·바이너리·내장 표는 로컬에만 보존한다.</p></details>
-<p>실제 시간 단위·주파수, 비제로 bank 생산자, 리소스 레코드 +4 기록자, 인증·재시작과 카메라에서의 동작은 미확정이다. 카메라 I/O·펌웨어 빌드·플래시는 수행하지 않았다.</p></section></main><footer>정적 연결과 선택한 합성 실행을 구분했다. 실제 IRQ 전달은 미검증이며 보고서는 320·390·1280px에서 렌더링했다.</footer>
-</body></html>
+<div class="scope">
+<div class="ok"><h3><span class="badge ok">확인</span> 원본 코드 실행으로 확인</h3>
+<ul>
+<li>descriptor에 적히는 값과 그 사본</li>
+<li>기한 비교와 노드 분리 순서 (12개 사례)</li>
+<li>알람 전달, 표시, 비우기, 알람 실행 함수 (4개 사례)</li>
+<li>지연 실행 큐 초기화와 표시 비트 변환</li>
+</ul></div>
+<div class="static"><h3><span class="badge static">정적 분석</span> 코드를 읽어서 판단</h3>
+<ul>
+<li>CPU 번호 검사에서 초기화 경로로 가는 분기</li>
+<li>타이머 초기화의 간접 호출과 처리 함수 등록</li>
+<li>처리 함수의 나머지 부분과 CPU 선택 코드</li>
+</ul></div>
+<div class="model"><h3><span class="badge model">모델</span> 시험 조건으로 정한 것</h3>
+<ul>
+<li>큐, 노드, 알람 객체는 시험이 만든 값</li>
+<li>응용 콜백, lock, 인터럽트 차단·복원은 대체 함수</li>
+<li>CPU 번호와 단계 사이의 순서는 시험이 지정</li>
+</ul></div>
+<div class="open"><h3><span class="badge open">미확인</span> 확인하지 않은 것</h3>
+<ul>
+<li>실제 인터럽트 진입과 복귀</li>
+<li>다른 CPU로의 신호 전달</li>
+<li>임의의 CPU 마스크에서 큐 번호가 범위 안인지</li>
+<li>여러 CPU가 동시에 접근할 때의 안전성</li>
+</ul></div>
+</div>
+
+<section id="background">
+<h2>배경: 예약은 타이머 인터럽트에서 처리됩니다</h2>
+<p><a href="update-timer-abi.html">알람 시작 호출</a>은 예약 시각을 계산해 <a href="update-timer-insertion.html">기한 큐</a>에 넣는 데서 끝납니다. 그 예약이 실제로 “울리는” 곳은 타이머 인터럽트의 처리 함수입니다. 이 함수는 틱마다 <a href="update-timer-clock.html">64비트 카운터</a>를 올리고, 기한이 된 노드를 큐에서 꺼내 콜백을 부릅니다.</p>
+<p>이 문서는 두 가지를 다룹니다. 하나는 그 처리 함수가 부팅 때 어떻게 등록되는가입니다. 다른 하나는 꺼낸 노드의 콜백이 UI 쪽 함수에 닿기까지의 경로입니다. 이 커널은 CPU 코어 여러 개에서 도는 판이어서, 알람의 콜백은 어느 CPU에서 실행할지 정한 다음 그 CPU의 대기 큐를 거칩니다.</p>
+
+<figure class="diagram">
+<figcaption>타이머 사슬 일곱 문서와 이 문서의 위치</figcaption>
+<div class="dg-scroll">
+<svg class="dg" viewBox="0 0 800 300" role="img" aria-labelledby="dg-chain-title dg-chain-desc">
+<title id="dg-chain-title">업데이트 완료 화면의 타이머를 따라 내려가는 일곱 문서의 관계</title>
+<desc id="dg-chain-desc">위 층은 UI 작업 코드입니다. 완료 후 UI 작업이 UI 타이머에 예약을 요청합니다. 가운데 층은 RTOS 커널입니다. UI 타이머의 요청은 커널 호출과 예약 시각 계산을 거쳐 기한 큐에 삽입되고, 타이머 등록과 지연 콜백 단계가 기한이 지난 예약을 꺼내 만료 콜백을 UI 타이머로 돌려보냅니다. 아래 층은 시계 읽기와 하드웨어 타이머입니다. 타이머 설정과 64비트 카운터가 현재 시각과 주기 값을 기한 계산에 주고, 시각 조회 함수는 그 카운터와 하위 시간 변환 결과를 함께 읽습니다. 번호는 문서 순서입니다.</desc>
+<defs><marker id="dg-chain-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0 0L10 5L0 10z"/></marker></defs>
+<rect class="gf" x="0" y="8" width="800" height="88" rx="10"/>
+<text class="h" x="12" y="25">UI 작업 코드</text>
+<rect class="gf" x="0" y="106" width="800" height="88" rx="10"/>
+<text class="h" x="12" y="123">RTOS 커널</text>
+<rect class="gf" x="0" y="206" width="800" height="88" rx="10"/>
+<text class="h" x="12" y="223">시계 읽기와 하드웨어 타이머</text>
+<rect class="b mute" x="16" y="34" width="164" height="52" rx="8"/>
+<a href="update-ui-consumer.html"><text class="t" x="28" y="56">완료 후 UI 작업</text></a>
+<text class="s" x="28" y="75">타이머를 요청하는 쪽</text>
+<rect class="b" x="204" y="34" width="196" height="52" rx="8"/>
+<a href="update-ui-timer.html"><text class="t" x="216" y="56">1 · UI 타이머와 콜백</text></a>
+<text class="s" x="216" y="75">예약 · 취소 · 만료 확인</text>
+<rect class="b" x="204" y="132" width="196" height="52" rx="8"/>
+<a href="update-timer-abi.html"><text class="t" x="216" y="154">2 · 커널 호출과 예약 시각</text></a>
+<text class="s" x="216" y="173">SVC 6 · 기한 계산</text>
+<rect class="b" x="424" y="132" width="150" height="52" rx="8"/>
+<a href="update-timer-insertion.html"><text class="t" x="436" y="154">7 · 기한 큐 삽입</text></a>
+<text class="s" x="436" y="173">기한 순서로 정렬</text>
+<rect class="b key" x="598" y="132" width="194" height="52" rx="8"/>
+<text class="t tk" x="610" y="154">5 · 타이머 등록과 지연 콜백</text>
+<text class="s" x="610" y="173">기한 처리 · CPU별 큐</text>
+<rect class="b" x="4" y="232" width="200" height="52" rx="8"/>
+<a href="update-subtick-arithmetic.html"><text class="t" x="16" y="254">4 · 하위 시간의 32비트 산술</text></a>
+<text class="s" x="16" y="273">하드웨어 카운터 → 정수</text>
+<rect class="b" x="224" y="232" width="176" height="52" rx="8"/>
+<a href="update-clock-readers.html"><text class="t" x="236" y="254">6 · 시각 조회 함수</text></a>
+<text class="s" x="236" y="273">주 시각 + 하위 시간</text>
+<rect class="b" x="424" y="232" width="368" height="52" rx="8"/>
+<a href="update-timer-clock.html"><text class="t" x="436" y="254">3 · 타이머 설정과 64비트 카운터</text></a>
+<text class="s" x="436" y="273">TTimPeriod → 주기 값 · 틱마다 카운터 증가</text>
+<path class="e" d="M180 60H202" marker-end="url(#dg-chain-ah)"/>
+<path class="e" d="M302 86V130" marker-end="url(#dg-chain-ah)"/>
+<path class="e" d="M400 158H422" marker-end="url(#dg-chain-ah)"/>
+<path class="e" d="M574 158H596" marker-end="url(#dg-chain-ah)"/>
+<path class="e" d="M695 132V60H402" marker-end="url(#dg-chain-ah)"/>
+<path class="e" d="M499 232V186" marker-end="url(#dg-chain-ah)"/>
+<path class="e" d="M695 184V230" marker-end="url(#dg-chain-ah)"/>
+<path class="e" d="M424 258H402" marker-end="url(#dg-chain-ah)"/>
+<path class="e" d="M224 258H206" marker-end="url(#dg-chain-ah)"/>
+<text class="n" x="312" y="113">시작 · 정지 · 상태 조회</text>
+<text class="n mid" x="548" y="52">만료 콜백</text>
+<text class="n" x="507" y="213">현재 시각 · 주기 값</text>
+<text class="n" x="703" y="213">틱마다 증가</text>
+</svg>
+</div>
+<ul class="dg-legend"><li><i class="key"></i>이 문서</li><li><i></i>사슬의 다른 문서(제목을 누르면 이동)</li></ul>
+</figure>
+
+<dl class="kv">
+<dt>보드 descriptor</dt><dd>보드마다 다른 타이머 함수의 주소와 설정값을 모아 둔 0x30바이트 구조체. 메모리(RAM)에 만들어집니다.</dd>
+<dt>기한 큐</dt><dd>예약 노드가 기한 순서로 늘어선 연결 목록. 노드에는 기한, 콜백, 인수가 들어 있습니다.</dd>
+<dt>지연 실행 큐</dt><dd>바로 실행하지 않고 미뤄 둔 콜백을 CPU마다 따로 모아 두는 큐. 네 개가 있습니다.</dd>
+<dt>MPIDR</dt><dd>지금 실행 중인 CPU 코어를 구분하는 ARM 레지스터. 이 코드는 하위 2비트를 CPU 번호로 씁니다.</dd>
+</dl>
+</section>
+
+<section id="binding">
+<h2>CPU 0의 초기화가 descriptor를 만들고 처리 함수를 등록합니다</h2>
+<p class="takeaway">descriptor는 펌웨어 안의 고정된 표가 아니라 부팅 중에 메모리에 채워지는 값입니다. 타이머 초기화는 그 값을 읽어 하드웨어를 설정하고 처리 함수를 등록합니다.</p>
+
+<figure class="diagram">
+<figcaption>처리 함수가 등록되기까지</figcaption>
+<div class="dg-scroll">
+<svg class="dg" viewBox="0 0 800 258" role="img" aria-labelledby="dg-bind-title dg-bind-desc">
+<title id="dg-bind-title">보드 descriptor를 거쳐 타이머 처리 함수가 등록되는 경로</title>
+<desc id="dg-bind-desc">CPU 0 초기화 경로 0x525d9e94가 보드 연결 함수 0x525b5b4c를 부르고, 이 함수가 메모리 0x54c40e70의 보드 descriptor를 채웁니다. 타이머 초기화 0x525b7e64는 descriptor를 읽어 두 가지를 합니다. 첫 칸에 적힌 하드웨어 초기화 함수 0x525b5bf0을 부르고, 인터럽트 처리 함수 표 0x54c3f504에 wrapper 0x525d7c90의 주소를 적습니다. wrapper는 타이머 처리 함수 0x525b807c를 부릅니다. descriptor를 채우는 부분은 원본 코드로 실행했고, 타이머 초기화의 호출과 등록은 코드를 읽어 확인했습니다.</desc>
+<defs><marker id="dg-bind-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0 0L10 5L0 10z"/></marker></defs>
+
+<rect class="b ok" x="8" y="10" width="170" height="52" rx="8"/>
+<text class="t" x="20" y="32">CPU 0 초기화 경로</text>
+<text class="s mono" x="20" y="51">0x525d9e94</text>
+<rect class="b ok" x="206" y="10" width="160" height="52" rx="8"/>
+<text class="t" x="218" y="32">보드 연결 함수</text>
+<text class="s mono" x="218" y="51">0x525b5b4c</text>
+<rect class="b key" x="394" y="10" width="200" height="52" rx="8"/>
+<text class="t" x="406" y="32">보드 descriptor</text>
+<text class="s" x="406" y="51">메모리 0x54c40e70</text>
+<rect class="b static" x="622" y="10" width="170" height="52" rx="8"/>
+<text class="t" x="634" y="32">타이머 초기화</text>
+<text class="s mono" x="634" y="51">0x525b7e64</text>
+
+<rect class="b static" x="394" y="104" width="200" height="52" rx="8"/>
+<text class="t" x="406" y="126">하드웨어 초기화 함수</text>
+<text class="s" x="406" y="145">0x525b5bf0 · 레지스터 기록</text>
+<rect class="b static" x="622" y="104" width="170" height="52" rx="8"/>
+<text class="t" x="634" y="126">처리 함수 표</text>
+<text class="s mono" x="634" y="145">0x54c3f504</text>
+
+<rect class="b static" x="622" y="198" width="170" height="52" rx="8"/>
+<text class="t" x="634" y="220">wrapper</text>
+<text class="s mono" x="634" y="239">0x525d7c90</text>
+<rect class="b key" x="394" y="198" width="200" height="52" rx="8"/>
+<text class="t" x="406" y="220">타이머 처리 함수</text>
+<text class="s mono" x="406" y="239">0x525b807c</text>
+
+<path class="e" d="M178 36H204" marker-end="url(#dg-bind-ah)"/>
+<path class="e" d="M366 36H392" marker-end="url(#dg-bind-ah)"/>
+<path class="e" d="M594 36H620" marker-end="url(#dg-bind-ah)"/>
+<path class="e" d="M640 62V84H494V102" marker-end="url(#dg-bind-ah)"/>
+<path class="e" d="M740 62V102" marker-end="url(#dg-bind-ah)"/>
+<path class="e" d="M707 156V196" marker-end="url(#dg-bind-ah)"/>
+<path class="e" d="M622 224H596" marker-end="url(#dg-bind-ah)"/>
+<text class="n mid" x="567" y="78">첫 칸의 함수를 호출</text>
+<text class="n" x="748" y="86">등록</text>
+<text class="n" x="715" y="181">표의 항목</text>
+</svg>
+</div>
+<ul class="dg-legend"><li><i class="ok"></i>원본 코드 실행으로 확인</li><li><i class="static"></i>코드를 읽어 확인</li><li><i class="key"></i>이 절의 주인공</li></ul>
+</figure>
+
+<ol class="steps">
+<li><strong>CPU 번호 검사</strong> 초기화 함수가 MPIDR을 읽어 CPU 번호가 0이면 descriptor를 만드는 경로로 갑니다.</li>
+<li><strong>descriptor 채우기</strong> 0x30바이트를 0으로 지운 뒤 보드 연결 함수에 넘깁니다. 이 함수가 첫 칸에 하드웨어 초기화 함수를, 이어지는 칸에 다른 보드 함수의 주소와 설정값을 적습니다. 일부 값은 다른 전역 변수로 복사됩니다.</li>
+<li><strong>하드웨어 초기화</strong> 타이머 초기화는 descriptor의 첫 포인터가 0이 아니면 그 함수를 부릅니다. 앞 단계가 실행되고 그 뒤에 덮어쓰지 않았다면, 불리는 함수는 <a href="update-timer-clock.html#hardware">레지스터에 값 다섯 개를 쓰는 함수</a>입니다.</li>
+<li><strong>처리 함수 등록</strong> descriptor에서 복사해 둔 번호를 색인으로, 처리 함수 표에 wrapper의 주소를 적습니다. wrapper는 타이머 처리 함수를 부릅니다.</li>
+</ol>
+<div class="callout model"><strong class="label">시험 조건</strong>
+<p>실행 시험은 CPU 번호 검사를 통과한 다음 지점에서 시작해, descriptor가 채워지고 사본이 복사되는 것까지 재현했습니다. 부팅 전체, 실제 처리 함수 등록, 인터럽트 진입, SVC 7을 거치는 복귀는 실행하지 않았습니다. 3단계와 4단계는 코드를 읽어 이은 것입니다.</p></div>
+
+<details class="evidence"><summary>descriptor의 내용과 관련 주소</summary>
+<div class="table-wrap"><table class="compact">
+<caption>CPU 0 경로를 실행한 뒤 descriptor <code>0x54c40e70</code>의 내용</caption>
+<thead><tr><th>오프셋</th><th>값</th><th>알아낸 쓰임</th></tr></thead>
+<tbody>
+<tr><td><code>+0</code></td><td><code>0x525b5bf0</code></td><td>하드웨어 초기화 함수. 타이머 초기화가 부릅니다.</td></tr>
+<tr><td><code>+4</code></td><td><code>0x525b5c34</code></td><td>처리 함수가 본 작업 앞에 부르는 함수 (정적)</td></tr>
+<tr><td><code>+8</code></td><td><code>0x525b5c48</code></td><td>처리 함수가 lock을 풀고 인터럽트를 복원한 뒤 부르는 함수 (정적)</td></tr>
+<tr><td><code>+12</code></td><td><code>0x525b5c4c</code></td><td>쓰임은 분석하지 않음</td></tr>
+<tr><td><code>+0x14</code></td><td><code>0x525b5214</code></td><td>쓰임은 분석하지 않음</td></tr>
+<tr><td><code>+0x18</code></td><td><code>0x1d002000</code></td><td><code>0x54c40ea4</code>로 복사</td></tr>
+<tr><td><code>+0x1c</code></td><td><code>0x1d001000</code></td><td><code>0x54c40eac</code>로 복사</td></tr>
+<tr><td><code>+0x20</code></td><td><code>0x83</code></td><td><code>0x54c40ea0</code>으로 복사. 처리 함수 표의 색인</td></tr>
+<tr><td><code>+0x24</code></td><td><code>0x140</code></td><td><code>0x54c40ea8</code>로 복사</td></tr>
+<tr><td><code>+0x28</code></td><td><code>0x576871e7</code></td><td><code>0x54c40e68</code>로 복사</td></tr>
+<tr><td><code>+0x2c</code></td><td><code>0x57c52c80</code></td><td><code>0x54c40e5c</code>로 복사</td></tr>
+</tbody></table></div>
+<p class="small"><code>+0x18</code>과 <code>+0x1c</code>의 값은 리코가 공개한 Linux 소스의 장치 트리(<code>sc2000.dtsi</code>)에 인터럽트 컨트롤러의 CPU 인터페이스와 분배기 주소로 적힌 값과 같습니다. RTOS 코드가 이 값을 어떻게 쓰는지는 분석하지 않았으므로 뜻을 단정하지 않습니다.</p>
+<div class="table-wrap"><table class="compact">
+<caption>코드 위치</caption>
+<thead><tr><th>역할</th><th>주소</th></tr></thead>
+<tbody>
+<tr><td>초기화 함수와 MPIDR 검사</td><td><code>0x525d9e30</code>–<code>0x525d9f48</code>. CPU 0이면 <code>0x525d9e94</code>로</td></tr>
+<tr><td>보드 연결 함수</td><td><code>0x525b5b4c</code>–<code>0x525b5be0</code></td></tr>
+<tr><td>타이머 초기화의 뒷부분</td><td><code>0x525b7ec8</code>–<code>0x525b7f8c</code>. 지연 실행 큐 초기화 <code>0x525ce770</code> 호출, descriptor 첫 칸의 간접 호출, 표 기록</td></tr>
+<tr><td>wrapper</td><td><code>0x525d7c90</code>–<code>0x525d7cf0</code></td></tr>
+<tr><td>타이머 처리 함수</td><td><code>0x525b807c</code>–<code>0x525b8370</code></td></tr>
+</tbody></table></div>
+</details>
+</section>
+
+<section id="deadline">
+<h2>기한 비교는 부호 있는 64비트 차이로 합니다</h2>
+<p class="takeaway">처리 함수는 맨 앞 노드에서 <code>(기한 − 현재 카운터) mod 2<sup>64</sup></code>을 구합니다. 이 값을 부호 있는 수로 보아 1 이상이면 멈추고, 0 이하면 노드를 떼어 콜백을 부릅니다.</p>
+<div class="table-wrap"><table>
+<caption>큐 상태에 따른 동작</caption>
+<thead><tr><th>시험한 조건</th><th>관측한 동작</th></tr></thead>
+<tbody>
+<tr><th scope="row">맨 앞 노드의 기한이 현재와 같거나 이전</th><td>노드를 먼저 큐에서 떼고, 그다음 콜백을 부릅니다.</td></tr>
+<tr><th scope="row">맨 앞은 미래인데 뒤에 과거 노드가 있음</th><td>맨 앞에서 멈춥니다. 뒤의 노드는 처리하지 않습니다.</td></tr>
+<tr><th scope="row">콜백 포인터가 0</th><td>노드만 떼고 다음 노드를 봅니다.</td></tr>
+<tr><th scope="row">콜백이 현재 카운터를 바꿈</th><td>다음 비교에서 카운터를 다시 읽습니다.</td></tr>
+</tbody></table></div>
+<p>콜백 주소는 노드의 <code>+0x10</code>, 콜백에 넘길 인수는 <code>+0x14</code>에서 읽습니다. 기한은 <code>+8</code>의 64비트 값입니다. 콜백이 끝나면 큐의 맨 앞과 현재 카운터를 처음부터 다시 읽습니다.</p>
+<p>비교 명령은 <code>CMP</code>, <code>SBCS</code>에 이은 <code>BGE</code>이고, 이 분기는 음수 플래그와 넘침 플래그가 같을 때 성립합니다. 시험은 분기 순간의 두 플래그를 직접 읽어 “부호 있는 차이가 1 이상”과 일치하는지 검사했습니다. 이 비교를 “차이에서 1을 뺀 값의 부호만 본다”는 식으로 바꿔 옮기면 가장 큰 양수와 가장 작은 음수 근처에서 뜻이 달라집니다.</p>
+
+<div class="table-wrap"><table>
+<caption>기한 처리 사례 12개</caption>
+<thead><tr><th>사례</th><th class="n">현재 카운터</th><th>큐의 기한 (앞 → 뒤)</th><th>부호 있는 차이</th><th>결과</th></tr></thead>
+<tbody>
+<tr><th scope="row">빈 큐</th><td class="n">0</td><td>없음</td><td>—</td><td>아무 일도 없음</td></tr>
+<tr><th scope="row">1만큼 미래</th><td class="n">0</td><td>1</td><td>+1</td><td>멈춤, 노드 남음</td></tr>
+<tr><th scope="row">같음</th><td class="n">5</td><td>5</td><td>0</td><td>콜백</td></tr>
+<tr><th scope="row">1만큼 과거</th><td class="n">5</td><td>4</td><td>−1</td><td>콜백</td></tr>
+<tr><th scope="row">가장 큰 양수</th><td class="n">0</td><td>2<sup>63</sup> − 1</td><td>+(2<sup>63</sup> − 1)</td><td>멈춤, 노드 남음</td></tr>
+<tr><th scope="row">가장 작은 음수</th><td class="n">0</td><td>2<sup>63</sup></td><td>−2<sup>63</sup></td><td>콜백</td></tr>
+<tr><th scope="row">순환 뒤의 미래</th><td class="n">2<sup>64</sup> − 1</td><td>0</td><td>+1</td><td>멈춤, 노드 남음</td></tr>
+<tr><th scope="row">순환 앞의 과거</th><td class="n">0</td><td>2<sup>64</sup> − 1</td><td>−1</td><td>콜백</td></tr>
+<tr><th scope="row">둘은 지났고 하나는 미래</th><td class="n">10</td><td>9, 10, 11</td><td>−1, 0, +1</td><td>앞의 둘만 콜백, 셋째는 남음</td></tr>
+<tr><th scope="row">콜백 없는 노드</th><td class="n">10</td><td>9(콜백 0), 10</td><td>−1, 0</td><td>첫째는 떼기만, 둘째는 콜백</td></tr>
+<tr><th scope="row">미래 노드가 맨 앞</th><td class="n">10</td><td>11, 9</td><td>+1</td><td>멈춤, 둘 다 남음</td></tr>
+<tr><th scope="row">콜백이 카운터를 10으로 올림</th><td class="n">0</td><td>0, 5</td><td>0, −5</td><td>둘 다 콜백</td></tr>
+</tbody></table></div>
+<p>“미래 노드가 맨 앞” 사례는 큐가 기한 순서로 정렬되어 있지 않으면 지난 예약이 처리되지 않는다는 것을 보여 줍니다. 정렬을 지키는 쪽은 <a href="update-timer-insertion.html">기한 큐 삽입</a>입니다. 다만 삽입 함수를 따로 검증한 결과도 임의의 64비트 기한에 대해 순서가 항상 일관된다거나, 삽입을 부르는 쪽이 유효한 범위만 넘긴다는 것까지 보장하지는 않습니다.</p>
+<div class="callout model"><strong class="label">시험 조건</strong>
+<p>큐는 앞뒤 연결이 올바른 합성 목록입니다. 콜백이 현재 카운터를 바꾸는 동작은 시험이 만든 것이고, 실제로 그런 콜백을 찾았다는 뜻이 아닙니다. 처리 함수 전체가 아니라 큐를 도는 구간만 실행했으며, 그 앞의 카운터 증가와 스케줄러 관련 부분은 건너뛰었습니다.</p></div>
+</section>
+
+<section id="callback">
+<h2>알람의 콜백은 CPU별 지연 실행 큐를 거쳐 실행됩니다</h2>
+<p class="takeaway">기한 큐에서 불리는 알람의 콜백은 “전달 함수”입니다. 이 함수는 노드를 CPU 하나의 지연 실행 큐로 옮기기만 하고, 응용 콜백은 나중에 그 큐를 비우는 단계에서 불립니다.</p>
+
+<figure class="diagram">
+<figcaption>기한이 지난 알람이 응용 콜백에 닿기까지</figcaption>
+<div class="dg-scroll">
+<svg class="dg" viewBox="0 0 800 352" role="img" aria-labelledby="dg-defer-title dg-defer-desc">
+<title id="dg-defer-title">타이머 처리 함수에서 응용 콜백까지의 순서도</title>
+<desc id="dg-defer-desc">참여자는 왼쪽부터 처리 함수 0x525b807c, 기한 큐 0x5457ec00, 알람 전달 함수 0x525cdfa0, CPU마다 하나씩 있는 지연 실행 큐, 알람 실행 함수 0x525cde48, 응용 콜백입니다. 처리 함수가 기한 큐에서 기한이 지난 노드를 떼고, 노드의 콜백인 알람 전달 함수를 부릅니다. 전달 함수는 노드를 고른 CPU의 지연 실행 큐에 연결합니다. 처리 함수는 이어서 표시 함수로 처리할 큐에 표시를 하고, 해당 CPU에서 큐를 비우게 합니다. 이 전달 단계는 실행하지 않았습니다. 큐를 비우는 함수는 노드를 떼고 알람 실행 함수를 부릅니다. 알람 실행 함수는 응용 콜백을 부르고, 돌아오면 알람 객체의 상태를 정리합니다. 응용 콜백은 시험에서 대체 함수입니다.</desc>
+<defs>
+<marker id="dg-defer-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0 0L10 5L0 10z"/></marker>
+<marker id="dg-defer-am" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah model" d="M0 0L10 5L0 10z"/></marker>
+<marker id="dg-defer-ao" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah open" d="M0 0L10 5L0 10z"/></marker>
+</defs>
+<rect class="b" x="8" y="6" width="120" height="50" rx="8"/>
+<text class="t" x="18" y="28">처리 함수</text>
+<text class="s mono" x="18" y="46">0x525b807c</text>
+<rect class="b" x="140" y="6" width="120" height="50" rx="8"/>
+<text class="t" x="150" y="28">기한 큐</text>
+<text class="s mono" x="150" y="46">0x5457ec00</text>
+<rect class="b key" x="272" y="6" width="120" height="50" rx="8"/>
+<text class="t" x="282" y="28">알람 전달</text>
+<text class="s mono" x="282" y="46">0x525cdfa0</text>
+<rect class="b key" x="404" y="6" width="120" height="50" rx="8"/>
+<text class="t" x="414" y="28">지연 실행 큐</text>
+<text class="s" x="414" y="46">CPU마다 하나</text>
+<rect class="b key" x="536" y="6" width="120" height="50" rx="8"/>
+<text class="t" x="546" y="28">알람 실행</text>
+<text class="s mono" x="546" y="46">0x525cde48</text>
+<rect class="b model" x="668" y="6" width="124" height="50" rx="8"/>
+<text class="t" x="678" y="28">응용 콜백</text>
+<text class="s" x="678" y="46">대체 함수</text>
+
+<path class="e dash" d="M68 56V344"/>
+<path class="e dash" d="M200 56V344"/>
+<path class="e dash" d="M332 56V344"/>
+<path class="e dash" d="M464 56V344"/>
+<path class="e dash" d="M596 56V344"/>
+<path class="e dash" d="M730 56V344"/>
+
+<text class="n mid" x="134" y="80">지난 노드 떼기</text>
+<path class="e" d="M68 86H198" marker-end="url(#dg-defer-ah)"/>
+<text class="n mid" x="266" y="114">노드의 콜백</text>
+<path class="e" d="M68 120H330" marker-end="url(#dg-defer-ah)"/>
+<text class="n mid" x="398" y="148">CPU 큐에 연결</text>
+<path class="e" d="M332 154H462" marker-end="url(#dg-defer-ah)"/>
+<text class="n mid" x="398" y="182">표시(mark)</text>
+<path class="e" d="M68 188H462" marker-end="url(#dg-defer-ah)"/>
+<text class="n mid" x="398" y="216">전달 (미실행)</text>
+<path class="e open" d="M68 222H462" marker-end="url(#dg-defer-ao)"/>
+<text class="n mid" x="530" y="250">떼고 호출</text>
+<path class="e" d="M464 256H594" marker-end="url(#dg-defer-ah)"/>
+<text class="n mid" x="663" y="284">응용 콜백 호출</text>
+<path class="e model" d="M596 290H728" marker-end="url(#dg-defer-am)"/>
+<text class="n mid" x="663" y="318">복귀 뒤 상태 정리</text>
+<path class="e model" d="M730 324H598" marker-end="url(#dg-defer-am)"/>
+</svg>
+</div>
+<ul class="dg-legend"><li><i></i>실행한 원본 코드</li><li><i class="key"></i>이 절에서 다루는 함수와 큐</li><li><i class="model"></i>대체 함수</li><li><i class="open"></i>실행하지 않은 전달</li></ul>
+</figure>
+
+<h3>어느 CPU의 큐로 갈지 정하기</h3>
+<p>알람을 시작할 때 노드에 적힌 콜백은 전달 함수 <code>0x525cdfa0</code>이고 인수는 알람 객체입니다. 전달 함수는 알람 객체의 속성에 따라 CPU 번호를 고릅니다.</p>
+<ul>
+<li>객체 <code>+4</code>의 <code>0x20000</code> 비트가 켜져 있으면 객체 <code>+0x34</code>의 마스크로 고릅니다. 마스크가 0이면 0번, 아니면 가장 낮은 자리에 켜진 비트의 번호입니다.</li>
+<li>그 비트가 꺼져 있으면 MPIDR의 하위 2비트, 곧 지금 실행 중인 CPU의 번호를 씁니다.</li>
+</ul>
+<p>고른 번호의 큐는 <code>0x54c405e8 + 12 × 번호</code>에 있습니다. 전달 함수는 노드를 이 큐 끝에 연결하고, 노드의 콜백을 알람 실행 함수 <code>0x525cde48</code>로, 인수를 알람 객체로 바꿔 적습니다. 그리고 큐의 상태 바이트에서 비트 0을 켭니다.</p>
+
+<h3>표시하고 비우기</h3>
+<div class="table-wrap"><table>
+<caption>지연 실행 큐의 세 동작</caption>
+<thead><tr><th>동작</th><th>함수</th><th>하는 일</th></tr></thead>
+<tbody>
+<tr><th scope="row">표시(mark)</th><td><code>0x525ce7bc</code></td><td>큐 네 개를 돌며, 상태의 하위 두 비트 값이 정확히 1인 큐에 비트 1을 켜고 반환 마스크에 그 CPU의 비트를 넣습니다. 모든 큐의 비트 0은 끕니다.</td></tr>
+<tr><th scope="row">비우기(drain)</th><td><code>0x525ce80c</code></td><td>노드를 먼저 큐에서 떼고 노드의 콜백을 부릅니다. 큐가 비면 비트 1을 끕니다.</td></tr>
+<tr><th scope="row">알람 실행</th><td><code>0x525cde48</code></td><td>알람 객체 <code>+0x0c</code>의 비트 0을 끄고 비트 1을 켭니다. lock을 풀고 인터럽트를 복원한 뒤 <code>object+8(object+0)</code>, 곧 객체에 등록된 응용 콜백을 객체의 첫 워드를 인수로 부릅니다. 돌아오면 다시 인터럽트를 막고 lock을 잡습니다.</td></tr>
+</tbody></table></div>
+<p>알람 실행 함수는 콜백에서 돌아온 뒤, 객체 <code>+0x38</code>의 값이 부르기 전과 같을 때만 비트 1을 끕니다. 값이 달라졌으면 비트 1을 그대로 둡니다. 이 필드를 실제로 바꾸는 코드가 무엇인지는 찾지 못했습니다.</p>
+<div class="table-wrap"><table>
+<caption>전달부터 응용 콜백까지 이어 실행한 사례 4개</caption>
+<thead><tr><th class="n">CPU 마스크</th><th class="n">고른 CPU</th><th class="n">표시 함수의 반환 마스크</th><th>콜백 중 <code>+0x38</code> 변경</th><th class="n">끝난 뒤 객체 상태</th></tr></thead>
+<tbody>
+<tr><td class="n">0</td><td class="n">0</td><td class="n">1</td><td>없음</td><td class="n"><code>0x80</code></td></tr>
+<tr><td class="n">1</td><td class="n">0</td><td class="n">1</td><td>없음</td><td class="n"><code>0x80</code></td></tr>
+<tr><td class="n">4</td><td class="n">2</td><td class="n">4</td><td>없음</td><td class="n"><code>0x80</code></td></tr>
+<tr><td class="n">8</td><td class="n">3</td><td class="n">8</td><td>있음</td><td class="n"><code>0x82</code></td></tr>
+</tbody></table></div>
+<p>네 사례 모두 객체 상태는 <code>0x81</code>에서 출발했고, 응용 콜백은 한 번씩 불렸으며, 끝난 뒤 기한 큐와 지연 실행 큐는 비어 있었습니다. 응용 콜백이 불리는 순간에는 노드가 이미 큐에서 떨어져 있었습니다.</p>
+<div class="callout model"><strong class="label">시험 조건</strong>
+<p>기한 큐 처리 → 전달 함수 → 표시 → 고른 CPU의 비우기 → 응용 콜백 순서는 시험이 차례로 직접 불렀습니다. 처리 함수가 반환 마스크를 보고 다른 CPU에 신호를 보내거나 현재 CPU에서 비우기로 넘어가는 코드는 읽기만 했습니다. 비우기 함수는 CPU 번호를 읽는 앞부분을 건너뛰고 시험이 번호를 넣었습니다. 응용 콜백, lock, 인터럽트 차단·복원은 대체 함수입니다. UI 쪽 콜백이 이어지는 경로는 <a href="update-ui-timer.html#flow">UI 타이머와 콜백</a>에 있습니다.</p></div>
+<div class="callout"><strong class="label">참고: 공개 T-Kernel 소스와 견주면</strong>
+<p>공개 T-Kernel 2.0의 <code>timer_handler</code>도 카운터에 주기를 더한 뒤 큐의 맨 앞부터 보며, 기한이 현재보다 크면 멈추고, 그렇지 않으면 노드를 떼고 콜백이 있을 때만 부릅니다. 알람의 콜백 <code>call_almhdr</code>는 “동작 중” 비트를 끄고 등록된 함수를 확장 정보와 함께 부릅니다. 여기까지는 이 펌웨어에서 본 것과 같은 모양입니다. CPU별 지연 실행 큐는 단일 프로세서용인 공개 소스에 없는 부분입니다.</p></div>
+
+<details class="evidence"><summary>함수 구간과 자료 구조</summary>
+<div class="table-wrap"><table class="compact">
+<thead><tr><th>대상</th><th>주소</th><th>내용</th></tr></thead>
+<tbody>
+<tr><th scope="row">처리 함수 안의 큐 처리 구간</th><td><code>0x525b819c</code>–<code>0x525b81f4</code>, <code>0x525b831c</code>–<code>0x525b8328</code></td><td>시험이 실행한 부분. 비교는 <code>0x525b81c0</code>의 분기에서 관측</td></tr>
+<tr><th scope="row">지연 실행 큐 초기화</th><td><code>0x525ce770</code>–<code>0x525ce7bc</code></td><td>큐 네 개의 상태 하위 두 비트를 끄고 연결을 자기 자신으로. 다른 바이트는 보존</td></tr>
+<tr><th scope="row">알람 전달 함수</th><td><code>0x525cdfa0</code>–<code>0x525ce050</code></td><td>가장 낮은 켜진 비트는 표 <code>0x533e3368</code>(32비트 값 16개)에서 4비트씩 찾음</td></tr>
+<tr><th scope="row">표시</th><td><code>0x525ce7bc</code>–<code>0x525ce80c</code></td><td>상태 1, 3, 0, 2인 큐 네 개에서 반환 1, 뒤 상태 2, 2, 0, 2</td></tr>
+<tr><th scope="row">비우기</th><td><code>0x525ce80c</code>–<code>0x525ce880</code></td><td>시험은 <code>0x525ce814</code>부터 <code>0x525ce87c</code> 직전까지. 빈 큐에서 상태 <code>0xa6</code>이 <code>0xa4</code>로</td></tr>
+<tr><th scope="row">CPU 선택 코드</th><td><code>0x525ce880</code>–<code>0x525ce8d0</code></td><td>다른 CPU의 비트는 신호 보내기, 현재 CPU의 비트는 비우기로 (정적)</td></tr>
+<tr><th scope="row">알람 실행 함수</th><td><code>0x525cde48</code>–<code>0x525cdeb0</code></td><td>lock <code>0x525b7a20</code>·<code>0x525b7aa4</code>, 인터럽트 차단·복원 <code>0x525b6144</code>·<code>0x525b6154</code>는 대체 함수</td></tr>
+</tbody></table></div>
+<p class="small">지연 실행 큐 한 칸은 12바이트입니다. 첫 바이트가 상태이고 <code>+4</code>부터 목록의 앞뒤 연결이 있습니다. 전달 함수 안에서 임의의 마스크에 대해 번호가 4 미만임을 보장하는 검사는 확인하지 못했습니다. 실행한 마스크는 0, 1, 4, 8뿐입니다.</p>
+</details>
+</section>
+
+<section id="checks">
+<h2>20개 사례의 구성</h2>
+<div class="table-wrap"><table>
+<caption>사례 묶음</caption>
+<thead><tr><th>묶음</th><th class="n">사례</th><th>확인한 것</th></tr></thead>
+<tbody>
+<tr><th scope="row">descriptor 만들기</th><td class="n">1</td><td>적힌 함수 주소와 설정값, 전역 변수로의 복사</td></tr>
+<tr><th scope="row">지연 실행 큐 초기화</th><td class="n">1</td><td>큐 네 개의 상태 비트와 연결</td></tr>
+<tr><th scope="row">기한 처리</th><td class="n">12</td><td>위 표의 열두 사례</td></tr>
+<tr><th scope="row">알람 전달에서 응용 콜백까지</th><td class="n">4</td><td>CPU 마스크 0, 1, 4, 8</td></tr>
+<tr><th scope="row">표시 비트 변환</th><td class="n">1</td><td>네 가지 상태 값에서의 결과</td></tr>
+<tr><th scope="row">빈 지연 실행 큐</th><td class="n">1</td><td>콜백 없이 비트 1만 꺼짐</td></tr>
+</tbody></table></div>
+<p>따로 잘라 낸 RTOS 파일과 통합 decoded 파일에서 결과가 같았습니다. 이 20개에는 <a href="update-timer-clock.html">TTimPeriod 문서</a>의 20개 사례와 <a href="update-subtick-arithmetic.html">하위 시간 문서</a>의 6,754회 실행이 들어 있지 않습니다.</p>
+<p class="small muted">공개하지 않고 보관한 자료는 디컴파일 C 7개, 보조 구간 7개, ARM 명령 582 words입니다. 디컴파일 결과가 포인터와 CPU 상태를 정확히 복원하지 못한 곳은 원본 ARM 명령으로 판단했습니다. CPU는 Unicorn의 Cortex-A15 모델입니다.</p>
+</section>
+
+<section id="limits">
+<h2>한계와 남은 과제</h2>
+<ul>
+<li><strong>인터럽트는 한 번도 일어나지 않았습니다.</strong> 처리 함수의 등록은 코드를 읽어 이었고, 실제 인터럽트 진입과 복귀는 실행하지 않았습니다.</li>
+<li><strong>descriptor가 나중에 덮어써지지 않는다는 것은 전제입니다.</strong> 부팅 전체를 실행하지 않았으므로 완전히 배제하지 못했습니다.</li>
+<li><strong>CPU 사이의 전달은 재현하지 않았습니다.</strong> 다른 CPU에 신호를 보내는 코드와 스케줄러는 읽기만 했습니다. 현재 CPU 번호로 큐를 고르는 경로도 실행하지 않았습니다.</li>
+<li><strong>떼어 낸 노드 자신의 연결은 초기화되지 않습니다.</strong> 연결이 잘못되었거나 고리가 생긴 목록, 여러 CPU가 동시에 큐를 바꾸는 경우의 안전성은 확인하지 않았습니다.</li>
+<li><strong>객체 <code>+0x38</code> 필드의 뜻은 모릅니다.</strong> “콜백 앞뒤로 같은지 비교한다”는 것만 확인했습니다.</li>
+<li>이 문서 범위 밖: 시간 단위와 주파수, 0이 아닌 bank 값을 만드는 코드, 리소스 레코드의 +4 위치를 쓰는 코드, 인증과 재시작, 카메라에서의 동작. 카메라 입출력과 펌웨어 빌드·기록은 하지 않았습니다.</li>
+</ul>
+</section>
+
+<section id="reproduce">
+<h2>재현 방법</h2>
+<p>입력은 따로 잘라 낸 RTOS 파일이나 통합 decoded 파일입니다. SHA-256과 적재 주소는 <a href="update-ui-timer.html#reproduce">UI 타이머 문서의 재현 방법</a>과 같습니다. Python 패키지 <code>unicorn</code>이 필요합니다.</p>
+<pre><code>python verify_update_timer_irq.py rtos.bin --output timer-irq.json</code></pre>
+<p class="small muted">원본 C, ARM 목록, 바이너리, 내장 표는 공개하지 않습니다.</p>
+</section>
+
+<section id="refs">
+<h2>근거 파일과 참고 자료</h2>
+<ul class="refs">
+<li><a href="update-timer-irq-checks.json">update-timer-irq-checks.json</a> — 20개 사례의 입력, 비교 기록, 결과</li>
+<li><a href="update-timer-irq-evidence.json">update-timer-irq-evidence.json</a> — descriptor 생산, 등록, 큐 처리의 명령 위치와 구간 해시, 한계</li>
+<li><a href="../verify_update_timer_irq.py">verify_update_timer_irq.py</a> — 검증 스크립트</li>
+<li><a href="update-timer-clock.html">타이머 설정과 64비트 카운터</a> — 하드웨어 초기화 함수와 카운터 증가 · <a href="update-timer-insertion.html">기한 큐 삽입</a> — 큐의 순서를 만드는 쪽 · <a href="update-ui-timer.html">UI 타이머와 콜백</a> — 응용 콜백의 다음 단계</li>
+<li>T-Kernel 2.0 공개 소스(TRON Forum): <a href="https://github.com/tron-forum/tkernel_2/blob/5778f619bdb354443551888dc2e9aa191e684da8/kernel/tkernel/src/timer.c">타이머 처리 timer.c</a> · <a href="https://github.com/tron-forum/tkernel_2/blob/5778f619bdb354443551888dc2e9aa191e684da8/kernel/tkernel/src/time_calls.c">알람 콜백 time_calls.c</a></li>
+<li><a href="https://arm-software.github.io/CMSIS_5/Core_A/html/group__CMSIS__MPIDR.html">Arm CMSIS-Core(A)의 MPIDR 설명</a> — 다중 프로세서에서 프로세서를 구분하는 레지스터</li>
+<li><a href="https://documentation-service.arm.com/static/5f8dacc8f86e16515cdb865a">ARM Architecture Reference Manual (ARM DDI 0100I)</a> — <code>GE</code> 조건은 음수 플래그와 넘침 플래그가 같을 때 성립</li>
+<li><a href="https://www.ricoh-imaging.co.jp/japan/products/oss/k-3-3/K3mkIII_220.tar.gz">리코 K-3 Mark III 공개 소스 묶음</a> — <code>linux-kernel-1.60.1/arch/arm/boot/dts/sc2000.dtsi</code> 36~41행의 인터럽트 컨트롤러 주소</li>
+</ul>
+</section>
+
+</main>
+</div>
+<!-- chrome:bottom -->
+<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">펌웨어 업데이트 과정 — 이 주제의 문서</h2><ol><li><a href="guide-update.html">업데이트 과정 안내</a></li><li><a href="update-resources.html">업데이트 검사와 ICONBIN<span>프로젝트·버전·체크섬</span></a></li><li><a href="update-memory.html">입력 로더와 메모리 할당</a></li><li><a href="update-file-lifetimes.html">파일 인터페이스와 버퍼 수명</a></li><li><a href="update-volume-finalization.html">파일 경로·volume·종료 처리</a></li><li><a href="update-media-completion.html">매체 객체와 완료 통지</a></li><li><a href="update-partition-io.html">R 파티션과 sector I/O</a></li><li><a href="update-bank-selection.html">쓰기 bank와 BOOT 선택</a></li><li><a href="update-ui-consumer.html">완료 후 UI 작업</a></li><li><a href="update-ui-timer.html">UI 타이머와 콜백</a></li><li><a href="update-timer-abi.html">커널 호출과 예약 시각</a></li><li><a href="update-timer-clock.html">타이머 설정과 64비트 카운터</a></li><li><a href="update-subtick-arithmetic.html">하위 시간의 32비트 산술</a></li><li><a href="update-timer-irq.html" aria-current="page">타이머 등록과 지연 콜백</a></li><li><a href="update-clock-readers.html">시각 조회 함수</a></li><li><a href="update-timer-insertion.html">기한 큐 삽입</a></li></ol></nav>
+<nav class="pager" aria-label="이전·다음 문서"><a class="prev" href="update-subtick-arithmetic.html"><small>← 이전</small>하위 시간의 32비트 산술</a><a class="next" href="update-clock-readers.html"><small>다음 →</small>시각 조회 함수</a></nav>
+<footer class="sitefoot"><div class="sitefoot-in"><nav aria-label="사이트"><a href="../index.html#map">문서 지도</a><a href="../index.html#levels">검증 수준 읽는 법</a><a href="../glossary.html">용어집</a><a href="research-program.html">세 기종 연구 본부</a><a href="https://github.com/yunhyok/pentax-k3iii-firmware-analysis">GitHub 저장소</a></nav><p>PENTAX K-3 Mark III 펌웨어 2.20 분석 문서. PC에서 수행한 정적 분석과 에뮬레이션 결과이며, 카메라 실기에서 검증한 내용이 아닙니다. 원본 펌웨어와 추출한 독점 코드는 포함하지 않습니다.</p></div></footer>
+<!-- /chrome:bottom -->
+</body>
+</html>

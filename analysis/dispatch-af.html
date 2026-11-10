@@ -1,150 +1,259 @@
-<!DOCTYPE html>
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>공통 요청에서 셔터 GPIO와 AF 연산까지 — PENTAX K-3 Mark III 펌웨어 연구</title>
+<meta name="description" content="촬영·AF 요청이 공통 메시지로 디스패처에 전달된 뒤, 셔터 제어가 GPIO 레지스터에 쓰는 경로와 AF의 상관·디포커스 연산을 원본 기계어로 추적한 기록입니다.">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-camera="k3iii">
+<!-- chrome:top -->
+<a class="skip" href="#main">본문 바로가기</a>
+<div class="topbar"><div class="topbar-in"><a class="brand" href="../index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="../index.html" aria-current="true">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="https://yunhyok.github.io/pentax-q7-firmware-analysis/">Q7</a></div><nav class="topnav" aria-label="주제"><a href="../index.html">개요</a><a href="guide-boot.html">부팅·저장소</a><a href="guide-update.html">업데이트</a><a href="guide-rebuild.html">재구축</a><a href="guide-rtos.html" aria-current="true">명령·셸</a><a href="guide-color.html">색 처리</a><a href="lightroom-bridge.html">Lightroom</a><a href="af-foundations.html">AF</a><a href="ui-port-contract.html">UI</a></nav></div></div>
+<nav class="crumbs" aria-label="현재 위치"><ol><li><a href="../index.html">PENTAX K-3 Mark III</a></li><li><a href="guide-rtos.html">RTOS 명령과 셸</a></li><li aria-current="page">디스패처·셔터·AF 상관 연산</li></ol></nav>
+<!-- /chrome:top -->
+<header class="page-head">
+<p class="eyebrow">RTOS 명령과 셸 · 셔터와 AF 연산</p>
+<h1>공통 요청에서 셔터 GPIO와 AF 연산까지</h1>
+<p class="lead">촬영과 AF 요청은 같은 통로로 디스패처에 전달됩니다. 그 뒤 셔터 제어가 전기 신호를 내보내는 지점과, AF가 초점을 계산하는 실제 연산까지 따라갔습니다.</p>
+</header>
+<div class="layout">
+<!-- chrome:toc -->
+<nav class="toc" aria-label="이 문서의 목차"><h2 data-toc="no">이 문서에서</h2><ol><li><a href="#background">배경: 요청이 디스패처로 가는 구조</a></li><li><a href="#dispatch">공통 메시지에서 촬영·AF 이벤트로</a></li><li><a href="#shutter">셔터 제어 객체에서 GPIO 쓰기까지</a></li><li><a href="#af">AF 객체 생성과 실제 수치 연산</a></li><li><a href="#verify">검증 범위</a></li><li><a href="#reproduce">재현 방법</a></li><li><a href="#refs">근거 파일과 참고 자료</a></li></ol></nav>
+<!-- /chrome:toc -->
+<main class="doc" id="main">
 
-<html lang="ko"><head><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/><title>공통 요청 이후의 디스패처·셔터·AF</title><style>
-:root{color-scheme:light dark;--bg:#f7f8fa;--paper:#fff;--ink:#182332;--muted:#48596b;--line:#d2dbe5;--accent:#124b8e;--soft:#edf3fa;--focus:#d75f00}
-@media(prefers-color-scheme:dark){:root{--bg:#111821;--paper:#18222d;--ink:#e8edf4;--muted:#b4c2d2;--line:#405369;--accent:#98c8ff;--soft:#223348;--focus:#ffb374}}
-*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.85 system-ui,-apple-system,"Malgun Gothic",sans-serif;word-break:keep-all;overflow-wrap:anywhere}
-a{color:var(--accent);text-underline-offset:.18em}a:hover{text-decoration-thickness:2px}:focus-visible{outline:3px solid var(--focus);outline-offset:4px}
-header,main,footer{max-width:1120px;margin:auto;padding:36px clamp(18px,4vw,56px)}header{padding-top:56px;padding-bottom:24px}main{background:var(--paper);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
-.eyebrow{color:var(--muted);font-size:.84rem;letter-spacing:.06em}h1{font-size:clamp(1.85rem,4.5vw,3rem);line-height:1.35;letter-spacing:-.025em;margin:12px 0 18px}h2{font-size:1.5rem;line-height:1.5;margin:3.6rem 0 1rem;padding-top:1.2rem;border-top:1px solid var(--line)}h2:first-child{margin-top:0}h3{font-size:1.12rem;margin-top:2rem}p{margin:1rem 0}strong{font-weight:650}.intro{max-width:55em;color:var(--muted)}
-nav{margin-top:25px}nav ul{display:flex;flex-wrap:wrap;gap:8px 22px;list-style:none;padding:0;margin:0}nav ul ul{display:none}nav a{font-size:.9rem}code{font: .88em/1.6 ui-monospace,Consolas,monospace;overflow-wrap:anywhere}pre{background:var(--soft);padding:18px;overflow-x:auto;white-space:pre-wrap;border-radius:5px}pre code{font-size:.82rem}
-.table-scroll{overflow-x:auto;margin:24px 0}table{border-collapse:collapse;width:100%;font-size:.92rem;min-width:530px}th,td{text-align:left;vertical-align:top;padding:14px 16px;border-bottom:1px solid var(--line)}th{background:var(--soft);font-weight:650}td:first-child{min-width:125px}details{border-block:1px solid var(--line);margin-top:24px;padding:16px 0}summary{cursor:pointer;font-weight:650;padding:6px 0}.caption,.meta{font-size:.86rem;color:var(--muted)}
-figure{margin:32px 0;padding:24px 0;border-block:1px solid var(--line)}figcaption{font-size:.95rem;font-weight:650;margin-bottom:20px}.flow{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:32px;list-style:none;padding:0;margin:18px 0}.flow li{position:relative;padding:18px;background:var(--soft);border-radius:6px;line-height:1.6}.flow strong{display:block;font-size:1rem}.flow span{display:block;color:var(--muted);font-size:.86rem;margin-top:9px}.flow li:not(:last-child)::after{content:"→";position:absolute;right:-27px;top:40%;font-size:22px;color:var(--muted)}.second{margin-top:24px}footer{font-size:.88rem;color:var(--muted)}
-@media(max-width:620px){body{font-size:16px}header,main,footer{padding-inline:20px}.flow{grid-template-columns:1fr;gap:26px}.flow li:not(:last-child)::after{content:"↓";right:auto;left:calc(50% - 8px);top:auto;bottom:-28px}.flow li{padding:15px 18px}h2{font-size:1.3rem}nav ul{gap:10px 18px}table{font-size:.87rem}th,td{padding:12px}header{padding-top:30px}}
-@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
-@media print{body{background:white;color:black;font-size:10pt}header,main,footer{max-width:none;padding:12pt}nav{display:none}a{color:inherit}h2,figure,table{break-inside:avoid}h2{break-after:avoid}main{border:0}.flow li{background:#f1f3f5}.table-scroll{overflow:visible}table{min-width:0}details>*{display:block!important}}
-
-.site-nav{border-block:1px solid var(--line);padding:14px 0;margin:20px 0}.site-nav a{display:inline-block;margin:4px 16px 4px 0}
-.review-note{background:var(--soft);padding:16px 20px;margin:24px 0}.toc{font-size:.92rem}.toc ul{list-style:none;padding-left:0}.toc ul ul{padding-left:20px}
-.branch{margin:18px 0;padding:0 0 0 24px;border-left:3px solid var(--line)}.branch p{margin:8px 0}.diagram-line{padding:12px 16px;background:var(--soft);border-radius:4px}
-</style></head>
-<body><header><div class="eyebrow">PENTAX K-3 MARK III · FIRMWARE 2.20 · 2026-11-07</div><h1>공통 요청 이후의 디스패처·셔터·AF</h1><nav aria-label="분석 문서" class="site-nav"><a href="../index.html">개요·재현</a><a href="index.html">RTOS 957개</a><a aria-current="page" href="dispatch-af.html">셔터·AF</a><a href="color-lightroom.html">컬러모드·Lightroom</a><a href="color-algorithms.html">색 처리 수식</a><a href="pipeline-report.html">JPEG·ISP 최신 분석</a><a href="research-roadmap.html">수정·이식 선행 연구</a><a href="update-resources.html">업데이트·리소스</a><a href="startup-storage.html">메시지·저장소·BOOT</a></nav>
-<p class="review-note">기존 조사 범위를 보존하고 후속 분석으로 해소된 항목을 갱신했다. 현재의 WB·색공간·클리핑 경계는 <a href="pipeline-report.html">JPEG·ISP 최신 보고서</a>에서 확인할 수 있다.</p><details><summary>이 문서의 목차</summary><div class="toc">
+<section class="summary">
+<h2 data-toc="no">핵심 요약</h2>
 <ul>
-<li><a href="#공통-메시지에서-촬영af-이벤트로">공통 메시지에서 촬영·AF 이벤트로</a></li>
-<li><a href="#셔터-제어-객체에서-gpio-쓰기까지">셔터 제어 객체에서 GPIO 쓰기까지</a></li>
-<li><a href="#af-객체-생성과-실제-수치-연산">AF 객체 생성과 실제 수치 연산</a></li>
-<li><a href="#재현과-검증-범위">재현과 검증 범위</a></li>
+<li>촬영·AF 요청이 공통 메시지로 수신기에 도달한 뒤 <strong>촬영 이벤트와 AF 이벤트로 갈라지는</strong> 분기를 확인했습니다. 다만 이벤트에서 실제 셔터·AF 동작으로 이어지는 중간 상태 전이는 아직 연결하지 못했습니다.</li>
+<li>셔터 제어 코드가 특정 조건에서 <strong>GPIO 레지스터에 값을 쓰는 지점</strong>을 특정했습니다. 각 핀이 선막·후막·플래시 중 무엇인지는 회로도나 실측이 있어야 합니다.</li>
+<li>AF의 상관 연산에 쓰이는 <strong>SAD·SSD 함수를 에뮬레이터에서 실제로 실행</strong>해 기준식과 일치시켰습니다. 광학 단위, 렌즈 보정, 최종 렌즈 구동은 미확인입니다.</li>
 </ul>
+</section>
+
+<div class="scope">
+<div class="ok"><h3><span class="badge ok">확인</span> 원본 코드 실행·바이트 대조로 확인</h3>
+<ul>
+<li>SAD·SSD 함수를 합성 입력 72개에서 기준식과 대조</li>
+<li>구간 1,232개·호출 7,389개·상수 492개·간접 연결 104개 재계산</li>
+</ul></div>
+<div class="static"><h3><span class="badge static">정적 분석</span> 디스어셈블을 읽어 판단</h3>
+<ul>
+<li>수신 분기, 이벤트 번호, 셔터 작업 스레드 경로</li>
+<li>AF 팩토리 객체와 상관·디포커스 호출 순서</li>
+<li>GPIO 쓰기 값(초기화된 레지스터·마스크로 계산)</li>
+</ul></div>
+<div class="model"><h3><span class="badge model">모델</span> 시험 조건으로 정한 것</h3>
+<ul>
+<li>SAD·SSD 입력은 합성 배열, CPU는 Unicorn Cortex-A7</li>
+<li>간접 호출 대상은 문서화된 생성자 조건에 의존</li>
+</ul></div>
+<div class="open"><h3><span class="badge open">미확인</span> 확인하지 않은 것</h3>
+<ul>
+<li>이벤트에서 셔터·AF로 가는 런타임 상태 전이</li>
+<li>물리 핀 대응, 실제 기계적 셔터·합초 결과</li>
+</ul></div>
 </div>
-</details></header><main><aside class="review-note" id="drive-followup"><strong>AF 제어 선택 후속 분석 · 2026-11-08</strong><p>렌즈 정보의 생산자 → capability bit → 제어 객체 선택, 서로 다른 이벤트 loop와 일부 요청 바이트 작성을 연결했다. <a href="af-drive-architecture.html">기본 구조·원본 ARM 검사·미확정 범위</a></p></aside>
-<p>K-3 Mark III v2.20 RTOS에서 요청 수신 분기, 이벤트 큐, 셔터 작업 스레드와 GPIO 경로, AF의 상관·디포커스 연산을 추가 추적했다. 각 경로에서 직접 확인한 연결과 현재 제어 객체·스레드 상태에 의존하는 연결을 아래에 표시한다. 분석한 바이트 구간, 직접 호출·분기, 함수 포인터 값과 생성자 근거는 별도 JSON에 기록했다. <a href="deep-evidence.json">기계어 증거</a></p>
-<h2 id="공통-메시지에서-촬영af-이벤트로">공통 메시지에서 촬영·AF 이벤트로</h2>
-<p>기존 제출 경로 <code>0x52c1e4a8 → 0x52c1cc18</code>는 메시지 <code>0x46020102</code>를 만들고 <code>0x5330ae48 → 0x53309c10</code>의 전송 경로를 사용한다. 경로 초기화 함수 <code>0x52c1b1e0</code>은 요청 ID 3의 첫 인수 1·2에 목적지 마스크 2를 기록한다. 별도로 확인한 수신 함수 <code>0x529d26e4</code>는 같은 메시지 번호를 처리하고, <code>0x529ea474</code>에서 요청 ID 3을 선택해 <code>0x529ea1c4</code>로 보낸다. <strong>목적지 마스크 2의 전송 등록과 이 수신기를 연결하는 구간은 미해결이다.</strong> 아래는 수신기에 도달했을 때 확인한 분기다. <a href="deep-evidence.json">경로 초기화·수신기 범위</a></p>
-<div class="table-scroll"><table>
-<thead>
-<tr>
-<th scope="col">요청</th>
-<th scope="col">수신 후 경로</th>
-<th scope="col">큐에 넣는 값</th>
-</tr>
-</thead>
+
+<section id="background">
+<h2>배경: 요청이 디스패처로 가는 구조</h2>
+<p>촬영 버튼이나 AF 요청 같은 사용자 동작은 셸 명령으로 들어와, 하나의 공통 제출 함수를 거쳐 <dfn title="요청 메시지를 받아 담당 작업으로 나눠 보내는 부분">디스패처</dfn>로 전달됩니다. 이 공통 통로는 <a href="index.html#shared">명령 전체 지도</a>에서 다뤘습니다. 이 문서는 요청이 디스패처에 도달한 다음을 추적합니다.</p>
+<p class="takeaway">요청은 공통 메시지로 수신기에 도달해 촬영·AF 이벤트로 갈라지고, 이벤트 큐를 거쳐 현재 제어 객체의 가상 함수로 넘어갑니다.</p>
+</section>
+
+<section id="dispatch">
+<h2>공통 메시지에서 촬영·AF 이벤트로</h2>
+<p>공통 제출 경로는 메시지 <code>0x46020102</code>를 만들어 보냅니다. 수신기는 이 메시지를 받아 요청 ID 3을 고르고, 첫 인수 값에 따라 촬영(1)과 AF(2)로 갈라집니다. 촬영 시작은 이벤트 <code>0x49</code>, AF 시작은 이벤트 <code>0x11</code>을 큐에 넣습니다.</p>
+
+<figure class="diagram">
+<figcaption>요청이 이벤트 큐를 거쳐 제어 객체로 가는 경로</figcaption>
+<div class="dg-scroll">
+<svg class="dg" viewBox="0 0 800 326" role="img" aria-labelledby="dg-disp-title dg-disp-desc">
+<title id="dg-disp-title">공통 메시지에서 촬영·AF 이벤트를 거쳐 제어 객체로 가는 경로</title>
+<desc id="dg-disp-desc">공통 제출 경로가 메시지 0x46020102를 만들어 수신기 0x529d26e4로 보냅니다. 수신기는 요청 ID 3을 골라 촬영 이벤트 0x49와 AF 이벤트 0x11로 갈라집니다. 두 이벤트는 이벤트 큐 0x545a4698에 들어가고, 소비 함수가 현재 제어 객체의 가상 함수 +0x24를 부릅니다. 제어 객체로 가는 상태 전이는 아직 해결되지 않았습니다.</desc>
+<defs><marker id="dg-disp-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0 0L10 5L0 10z"/></marker><marker id="dg-disp-ao" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah open" d="M0 0L10 5L0 10z"/></marker></defs>
+<rect class="b static" x="300" y="18" width="200" height="48" rx="8"/>
+<text class="t mid" x="400" y="40">제출 메시지</text>
+<text class="s mono mid" x="400" y="58">0x46020102</text>
+<rect class="b static" x="300" y="86" width="200" height="48" rx="8"/>
+<text class="t mid" x="400" y="108">수신기·요청 ID 3 선택</text>
+<text class="s mono mid" x="400" y="126">0x529d26e4</text>
+<rect class="b static" x="150" y="154" width="210" height="48" rx="8"/>
+<text class="t mid" x="255" y="176">촬영 이벤트</text>
+<text class="s mono mid" x="255" y="194">0x49 · 첫 인수 1</text>
+<rect class="b static" x="440" y="154" width="210" height="48" rx="8"/>
+<text class="t mid" x="545" y="176">AF 이벤트</text>
+<text class="s mono mid" x="545" y="194">0x11 · 첫 인수 2</text>
+<rect class="b static" x="300" y="222" width="200" height="48" rx="8"/>
+<text class="t mid" x="400" y="244">이벤트 큐</text>
+<text class="s mono mid" x="400" y="262">0x545a4698</text>
+<rect class="b open" x="230" y="282" width="340" height="40" rx="8"/>
+<text class="t mid" x="400" y="300">제어 객체 가상 호출 +0x24</text>
+<text class="s mid" x="400" y="316">상태 전이 미해결</text>
+<path class="e" d="M400 66V84" marker-end="url(#dg-disp-ah)"/>
+<path class="e" d="M400 134V144H255V152" marker-end="url(#dg-disp-ah)"/>
+<path class="e" d="M400 134V144H545V152" marker-end="url(#dg-disp-ah)"/>
+<path class="e" d="M255 202V212H400V220" marker-end="url(#dg-disp-ah)"/>
+<path class="e" d="M545 202V212H400V220" marker-end="url(#dg-disp-ah)"/>
+<path class="e open" d="M400 270V280" marker-end="url(#dg-disp-ao)"/>
+</svg>
+</div>
+<ul class="dg-legend"><li><i class="static"></i>디스어셈블로 확인한 분기</li><li><i class="open"></i>미해결 연결</li></ul>
+</figure>
+
+<p>이벤트 큐는 하나의 공용 객체를 씁니다. 소비 함수는 현재 제어 객체를 얻어 가상 함수 슬롯 <code>+0x24</code>를 부릅니다. 기본 제어 객체의 이 슬롯 값은 확인했지만, 실행 시 선택되는 파생 객체와 그다음 동작은 상태에 따라 달라집니다. 촬영·AF 이벤트에서 아래의 셔터·상관 연산으로 이어지는 전체 연결에는 이 상태 전이 구간이 남아 있습니다.</p>
+
+<details class="evidence"><summary>수신·이벤트 경로 주소</summary>
+<div class="table-wrap"><table class="compact">
+<thead><tr><th>요청</th><th>수신 후 경로</th><th>큐에 넣는 값</th></tr></thead>
 <tbody>
-<tr>
-<td>촬영, 첫 인수 1</td>
-<td><code>0x529ea1c4 → 0x529e15bc → 0x528e8de4</code></td>
-<td>시작은 이벤트 <code>0x49</code>, 정지는 <code>0x1c3</code>와 값 0</td>
-</tr>
-<tr>
-<td>AF, 첫 인수 2</td>
-<td><code>0x529ea1c4 → 0x529e9d28</code></td>
-<td>cam이면 <code>0x529e16d8</code>, area이면 <code>0x529e9b8c</code></td>
-</tr>
-<tr>
-<td>AF 시작</td>
-<td>위 cam·area 경로에서 <code>0x528e8de4</code> 호출</td>
-<td>이벤트 <code>0x11</code>, 페이로드 <code>0x529d3164</code></td>
-</tr>
-<tr>
-<td>AF 정지</td>
-<td>위 cam·area 경로에서 <code>0x528e8de4</code> 호출</td>
-<td>이벤트 <code>0x1c3</code>와 값 1</td>
-</tr>
-</tbody>
-</table></div>
-<p>여기서 첫 인수는 기존 요청의 <strong>슬롯 0, 메모리 오프셋 +4</strong>다. AF의 다음 슬롯은 cam/area, 그 다음 슬롯은 start/stop이다. AF 시작 페이로드 함수 <code>0x529d3164</code>는 이벤트 <code>0x1c3</code>와 값 1을 검사하는 판정 함수다. 성공값은 요청 핸들러가 설정하는 응답이다. 큐가 가득 찬 분기에서는 저장을 건너뛰고 진단 함수가 반환할 경우에도 성공값 설정으로 이어질 수 있어, 이 값만으로 큐 반영이나 AF 완료를 확인할 수는 없다. <a href="deep-evidence.json">수신 분기·페이로드·큐 저장 함수</a></p>
-<p>큐는 싱글턴 <code>0x545a4698</code>을 사용한다. 소비 함수 <code>0x528e901c</code>는 <code>0x528e8fc4</code>를 호출하고, 현재 제어 객체를 얻은 뒤 <code>0x528e8ff0</code>에서 가상 함수 슬롯 <code>+0x24</code>를 호출한다. 기본 Controller 생성자는 vtable <code>0x53608c48</code>을 설치하며 해당 슬롯 값은 <code>0x526d8ccc</code>다. 이 값은 생성자와 표에서 확인했지만 실행 시 선택되는 파생 객체와 그 다음 슬롯 <code>+0x28</code>은 상태에 따라 달라진다. <strong>촬영 이벤트 <code>0x49</code>와 AF 이벤트 <code>0x11</code>에서 아래의 셔터·상관 연산으로 가는 전체 연결에는 이 상태 전이 구간이 남아 있다.</strong> <a href="deep-evidence.json">조건부 함수 포인터 연결</a></p>
-<h2 id="셔터-제어-객체에서-gpio-쓰기까지">셔터 제어 객체에서 GPIO 쓰기까지</h2>
-<p>벌브 시작 함수 <code>0x530e3dc8</code>은 객체의 <code>+0xb8</code>에 작업 코드 1을 기록하고 <code>0x530f3e58</code>을 통해 작업 스레드에 신호를 보낸다. ShutterControl 생성자 <code>0x530e3c14</code>는 vtable <code>0x53a66988</code>을 설치한다. 이 표의 <code>+8</code>, 주소 <code>0x53a66990</code>은 작업 함수 <code>0x530e5558</code>이다. 작업 함수는 <code>+0xb8</code>을 읽고 코드 1에서 <code>0x530e4f48 → 0x530e3fe4</code>로 들어간다. <a href="deep-evidence.json">생성자·작업 코드·직접 호출 위치</a></p>
-<p><code>0x530e3fe4</code>는 객체 <code>+0x3c</code>의 GPIO에 대해 <code>0x530e4004</code>에서 가상 슬롯 <code>+0x54</code>를 호출한다. 조사한 보드 매핑 7개 중 6개는 논리 번호 <code>0x62</code>를 드라이버 등록 키 <code>0x8d</code>로, <code>0x0e</code>를 키 <code>0x36</code>으로 연결한다. 이 초기화가 선택됐다는 조건에서 각각 TopGpio와 PmcGpio 생성자·등록 코드로 이어진다. 다른 한 보드 매핑에는 해당 연결이 없으며 실제 선택된 보드 상태를 수집하지 않았다. <a href="deep-evidence.json">매핑·등록·vtable 근거</a></p>
-<div class="table-scroll"><table>
-<thead>
-<tr>
-<th scope="col">셔터 객체의 호출 위치</th>
-<th scope="col">초기화 조건에서 결정되는 함수</th>
-<th scope="col">기계어에서 확인한 레지스터 쓰기</th>
-</tr>
-</thead>
+<tr><td>촬영(첫 인수 1)</td><td><code>0x529ea1c4</code> → <code>0x529e15bc</code> → <code>0x528e8de4</code></td><td>시작 이벤트 <code>0x49</code>, 정지 <code>0x1c3</code> 값 0</td></tr>
+<tr><td>AF(첫 인수 2)</td><td><code>0x529ea1c4</code> → <code>0x529e9d28</code></td><td>cam <code>0x529e16d8</code>, area <code>0x529e9b8c</code></td></tr>
+<tr><td>AF 시작</td><td>위 경로에서 <code>0x528e8de4</code></td><td>이벤트 <code>0x11</code>, 페이로드 <code>0x529d3164</code></td></tr>
+<tr><td>AF 정지</td><td>위 경로에서 <code>0x528e8de4</code></td><td>이벤트 <code>0x1c3</code> 값 1</td></tr>
+</tbody></table></div>
+<dl class="kv">
+<dt>제출 경로 / 경로 초기화</dt><dd><code>0x52c1e4a8</code> → <code>0x52c1cc18</code>, 전송 <code>0x5330ae48</code> → <code>0x53309c10</code>. 초기화 <code>0x52c1b1e0</code>이 목적지 마스크 2를 기록</dd>
+<dt>수신기 / 요청 선택</dt><dd><code>0x529d26e4</code>, <code>0x529ea474</code> → <code>0x529ea1c4</code></dd>
+<dt>이벤트 큐 / 제어 가상 호출</dt><dd>큐 <code>0x545a4698</code>, 소비 <code>0x528e901c</code> → <code>0x528e8fc4</code>, 슬롯 <code>+0x24</code> 호출 <code>0x528e8ff0</code>(기본 vtable <code>0x53608c48</code>, 값 <code>0x526d8ccc</code>). 다음 슬롯 <code>+0x28</code>은 상태에 따라 달라짐</dd>
+</dl>
+<p class="small">근거: <a href="deep-evidence.json">deep-evidence.json</a>의 <code>route_mask_assignments</code>·<code>conditional_bindings</code>·<code>transfers</code>·<code>unresolved</code>.</p>
+</details>
+</section>
+
+<section id="shutter">
+<h2>셔터 제어 객체에서 GPIO 쓰기까지</h2>
+<p class="takeaway">벌브 시작 함수가 작업 스레드를 깨우면, 스레드가 GPIO 드라이버의 가상 함수를 거쳐 특정 레지스터 주소에 값을 씁니다. 쓰기 뒤에는 ARM의 메모리 동기화 명령(DSB)이 옵니다.</p>
+<figure class="diagram">
+<ol class="flow" aria-label="벌브 시작에서 GPIO 레지스터 쓰기까지">
+<li class="static"><strong>벌브 시작</strong><span><code>0x530e3dc8</code> · <code>+0xb8</code>에 작업 코드 1</span></li>
+<li class="static"><strong>작업 스레드</strong><span><code>0x530e5558</code> → <code>0x530e4f48</code> → <code>0x530e3fe4</code></span></li>
+<li class="static"><strong>가상 슬롯 +0x54</strong><span><code>0x530e4004</code>에서 GPIO 드라이버 호출</span></li>
+<li class="static"><strong>레지스터 쓰기</strong><span>TopGpio·PmcGpio가 MMIO에 기록 후 DSB</span></li>
+</ol>
+</figure>
+<p>조사한 보드 매핑 7개 중 6개는 논리 번호 <code>0x62</code>를 드라이버 등록 키 <code>0x8d</code>로, <code>0x0e</code>를 키 <code>0x36</code>으로 연결합니다. 이 초기화가 선택된 조건에서 아래 쓰기가 일어납니다. 값은 초기화된 레지스터 주소와 마스크로 계산한 정적 결과입니다.</p>
+<div class="table-wrap"><table class="compact">
+<caption>셔터 경로가 도달하는 GPIO 레지스터 쓰기</caption>
+<thead><tr><th>호출 위치</th><th>드라이버 함수</th><th>레지스터 ← 값</th></tr></thead>
 <tbody>
-<tr>
-<td><code>0x530e4004</code>, GPIO <code>+0x3c</code>의 clear</td>
-<td>TopGpio <code>0x53267bbc</code></td>
-<td><code>0x53267bdc</code>에서 <code>0x1d022020 ← 0x00020000</code></td>
-</tr>
-<tr>
-<td><code>0x530e43ec</code>, GPIO <code>+0x3c</code>의 set</td>
-<td>TopGpio <code>0x53267c40</code></td>
-<td><code>0x53267c6c</code>에서 <code>0x1d022020 ← 0x00020002</code></td>
-</tr>
-<tr>
-<td><code>0x530e43fc</code>, GPIO <code>+0x40</code>의 set</td>
-<td>PmcGpio <code>0x53268098</code></td>
-<td><code>0x532680c4</code>에서 <code>0x1dffb000 ← 0x40004000</code></td>
-</tr>
-</tbody>
-</table></div>
-<p>쓰기 뒤에는 ARM <code>DSB</code>가 보인다. 위 값은 해당 드라이버 객체의 초기화된 레지스터 주소와 마스크로 계산한 정적 결과다. 이 분석으로 셔터 제어 코드가 도달하는 전기적 인터페이스를 특정했으며, 각 핀이 선막·후막·솔레노이드·상태 접점 중 무엇에 해당하는지는 회로도나 실측으로 확인해야 한다. 벌브 진단 경로가 일반 촬영 요청의 모든 경우에 실행된다고 가정하지 않았다. <a href="deep-evidence.json">GPIO 원본 범위와 초기화 값</a></p>
-<p>기존에 추적했던 객체 <code>+0x4c</code>는 ReloadTimer로 확인됐다. <code>+0x48</code>의 XTrigger 경로에는 <code>EXT_STRB_FT</code>라는 플래시 신호명이 있다. 이 두 하위 객체의 존재를 셔터 액추에이터에 직접 연결하는 근거로 사용하지 않았다. <a href="deep-evidence.json">타이머·트리거 관련 구간</a></p>
-<h2 id="af-객체-생성과-실제-수치-연산">AF 객체 생성과 실제 수치 연산</h2>
-<p>PafFactory의 생성자 호출·객체 포인터 저장·vtable 설치를 따라 세 객체의 간접 초기화 대상을 확인했다. 이 표는 해당 팩토리가 생성한 객체에 적용된다. <a href="deep-evidence.json">생성·초기화 근거</a></p>
-<div class="table-scroll"><table>
-<thead>
-<tr>
-<th scope="col">객체</th>
-<th scope="col">팩토리의 객체 필드</th>
-<th scope="col">간접 호출 위치</th>
-<th scope="col">vtable 슬롯 주소 → 대상</th>
-</tr>
-</thead>
+<tr><td><code>0x530e4004</code> (clear)</td><td>TopGpio <code>0x53267bbc</code></td><td><code>0x1d022020</code> ← <code>0x00020000</code></td></tr>
+<tr><td><code>0x530e43ec</code> (set)</td><td>TopGpio <code>0x53267c40</code></td><td><code>0x1d022020</code> ← <code>0x00020002</code></td></tr>
+<tr><td><code>0x530e43fc</code> (set)</td><td>PmcGpio <code>0x53268098</code></td><td><code>0x1dffb000</code> ← <code>0x40004000</code></td></tr>
+</tbody></table></div>
+<div class="callout warn"><strong class="label">주의</strong>
+<p>이 분석으로 셔터 제어 코드가 도달하는 전기적 인터페이스를 특정했습니다. 다만 각 핀이 선막·후막·솔레노이드·상태 접점 중 무엇인지, 벌브 진단 경로가 일반 촬영에서도 실행되는지는 회로도나 실측으로 확인해야 합니다. 플래시 신호명 <code>EXT_STRB_FT</code>를 셔터 액추에이터에 직접 연결하는 근거로 쓰지 않았습니다.</p></div>
+<details class="evidence"><summary>셔터 객체와 GPIO 주소</summary>
+<dl class="kv">
+<dt>벌브 시작 / 작업 통지</dt><dd>시작 <code>0x530e3dc8</code>이 <code>+0xb8</code>에 코드 1을 쓰고 <code>0x530f3e58</code>로 스레드를 깨움</dd>
+<dt>ShutterControl 생성자 / 작업 함수</dt><dd>생성자 <code>0x530e3c14</code>가 vtable <code>0x53a66988</code> 설치, <code>+8</code>(<code>0x53a66990</code>)이 작업 함수 <code>0x530e5558</code></dd>
+<dt>GPIO 쓰기 저장 명령</dt><dd>TopGpio clear <code>0x53267bdc</code>, set <code>0x53267c6c</code>; PmcGpio set <code>0x532680c4</code>. 객체 필드 <code>+0x3c</code>·<code>+0x40</code></dd>
+<dt>부가 하위 객체</dt><dd><code>+0x4c</code> ReloadTimer, <code>+0x48</code> XTrigger(<code>EXT_STRB_FT</code>). 셔터 액추에이터와 직접 연결하지 않음</dd>
+</dl>
+<p class="small">근거: <a href="deep-evidence.json">deep-evidence.json</a>의 <code>asynchronous_bulb_bridge</code>·<code>mmio_operations</code>·<code>board_gpio_assignments</code>.</p>
+</details>
+</section>
+
+<section id="af">
+<h2>AF 객체 생성과 실제 수치 연산</h2>
+<p class="takeaway">AF 팩토리가 만든 세 객체 중 Predictor가 상관 결과를 받아 보정하고, 그 값을 디포커스로 변환해 저장합니다. 상관 단계의 핵심 함수(SAD·SSD)는 에뮬레이터에서 실제로 실행해 확인했습니다.</p>
+
+<figure class="diagram">
+<figcaption>AF 예측기의 호출·데이터 경로</figcaption>
+<div class="dg-scroll">
+<svg class="dg" viewBox="0 0 800 150" role="img" aria-labelledby="dg-af-title dg-af-desc">
+<title id="dg-af-title">PafPredictor에서 상관·SAD·SSD·디포커스 변환까지의 데이터 경로</title>
+<desc id="dg-af-desc">PafPredictor가 상관 처리 함수를 부르고, 상관 처리는 SAD·SSD 커널을 사용합니다. SAD·SSD 커널은 원본 실행으로 확인했습니다. 보정 뒤 디포커스 변환 함수가 크기 값을 16비트로, 부호 있는 결과를 32비트로 저장합니다.</desc>
+<defs><marker id="dg-af-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0 0L10 5L0 10z"/></marker></defs>
+<rect class="b static" x="10" y="48" width="148" height="66" rx="8"/>
+<text class="t" x="22" y="78">PafPredictor</text>
+<text class="s mono" x="22" y="98">0x52cde650</text>
+<rect class="b static" x="168" y="48" width="148" height="66" rx="8"/>
+<text class="t" x="180" y="78">상관 처리</text>
+<text class="s mono" x="180" y="98">0x52cccd30</text>
+<rect class="b ok" x="326" y="48" width="148" height="66" rx="8"/>
+<text class="t" x="338" y="78">SAD·SSD 커널</text>
+<text class="s mono" x="338" y="98">0x52c73190</text>
+<rect class="b static" x="484" y="48" width="148" height="66" rx="8"/>
+<text class="t" x="496" y="78">디포커스 변환</text>
+<text class="s mono" x="496" y="98">0x52ccf93c</text>
+<rect class="b static" x="642" y="48" width="148" height="66" rx="8"/>
+<text class="t" x="654" y="78">결과 저장</text>
+<text class="s" x="654" y="98">+0x0e·+0x10</text>
+<path class="e" d="M158 81H166" marker-end="url(#dg-af-ah)"/>
+<path class="e" d="M316 81H324" marker-end="url(#dg-af-ah)"/>
+<path class="e" d="M474 81H482" marker-end="url(#dg-af-ah)"/>
+<path class="e" d="M632 81H640" marker-end="url(#dg-af-ah)"/>
+</svg>
+</div>
+<ul class="dg-legend"><li><i class="ok"></i>원본 실행으로 확인</li><li><i class="static"></i>디스어셈블로 확인</li></ul>
+</figure>
+
+<p>예측기는 상관 결과 후보를 꺼내 16비트로 보정하고, 디포커스 변환을 부릅니다. 변환은 설정·렌즈 값으로 곱셈과 스케일 조정을 한 뒤, 크기 값을 <code>0xffff</code>로 제한해 객체 <code>+0x0e</code>에 16비트로, 부호 있는 결과를 <code>+0x10</code>에 32비트로 저장합니다. 광학 단위, 렌즈 보정 계수 전체, 최종 렌즈 구동 명령은 추가 분석 대상입니다.</p>
+
+<h3 id="sadssd">SAD·SSD 상관 함수</h3>
+<p>상관에 쓰이는 <code>0x52c73190</code> 함수는 부호 없는 16비트 배열 두 개에 대해 <dfn title="두 신호의 차이의 절댓값 합. 두 패턴이 얼마나 닮았는지 재는 기본 측도입니다.">SAD</dfn>와 <dfn title="두 신호의 차이의 제곱 합.">SSD</dfn>를 계산합니다. <a href="https://developer.arm.com/Architectures/Neon">NEON</a> 명령으로 여러 값을 한 번에 처리하므로, 마지막 벡터를 읽을 때 배열 끝을 조금 넘겨 읽을 수 있어 패딩 메모리가 필요합니다.</p>
+<div class="callout plain"><strong class="label">쉽게 말하면</strong>
+<p>위상차 AF는 센서가 받은 두 상(像)을 조금씩 밀어 가며 가장 잘 겹치는 위치를 찾습니다. 두 상의 차이를 재는 것이 SAD·SSD이고, 차이가 가장 작은 밀림량이 초점이 얼마나 어긋났는지를 알려 줍니다.</p></div>
+<p>원본 커널 바이트를 Unicorn의 Cortex-A7 모델에서 독립 실행했습니다. 양수 길이 1~129 중 18가지에 같은 값·최대 차이·교대 값·난수를 조합한 72개 사례에서 기준식과 일치했습니다. 8개 단위 경계의 앞뒤, 0이 아닌 패딩, 32비트 넘침을 포함합니다. 0·음수 길이의 의미는 이 범위에서 검증하지 않았습니다.</p>
+<div class="callout"><strong class="label">참고</strong>
+<p>이 함수를 C로 다시 만들어 원본과 더 넓게 대조한 결과는 <a href="recompiled-kernels.html">수치 함수 C 재구현</a>에 있습니다. angr의 VEX 실행은 특정 NEON 명령(<code>Iop_PwAddL16Ux8</code>)을 지원하지 않아 실패해, 수치 검증에는 Unicorn을 사용했습니다.</p></div>
+
+<details class="evidence"><summary>AF 팩토리 객체와 함수 범위</summary>
+<div class="table-wrap"><table class="compact">
+<thead><tr><th>객체</th><th>팩토리 필드</th><th>간접 호출 위치</th><th>슬롯 → 대상</th></tr></thead>
 <tbody>
-<tr>
-<td>PafCorrelation</td>
-<td><code>+0x94</code></td>
-<td><code>0x52ca3218</code></td>
-<td><code>0x5388c9e4 → 0x52cc6e80</code></td>
-</tr>
-<tr>
-<td>PafDefocus</td>
-<td><code>+0x9c</code></td>
-<td><code>0x52ca3240</code></td>
-<td><code>0x5388d014 → 0x52ccf358</code></td>
-</tr>
-<tr>
-<td>PafPredictor</td>
-<td><code>+0x738</code></td>
-<td><code>0x52ca3360</code></td>
-<td><code>0x5388f544 → 0x52cdd63c</code></td>
-</tr>
-</tbody>
-</table></div>
-<p>PafPredictor 초기화는 팩토리의 Correlation·Defocus 포인터를 각각 자신의 <code>+0x18</code>, <code>+0x20</code>에 저장한다. 다음 경로를 직접 호출 명령과 데이터 전달에서 확인했다.</p>
-<figure aria-labelledby="af-flow"><figcaption id="af-flow">PafPredictor의 호출·데이터 경로</figcaption>
-<p class="diagram-line">PafPredictor <code>0x52cde650</code></p><div class="branch">
-<p>상관 처리 <code>0x52cccd30</code> → SAD·SSD NEON 커널 <code>0x52c73190</code></p>
-<p>유효성 검사·보정 후 → PafDefocus 변환 <code>0x52ccf93c</code></p></div></figure>
-<p>PafPredictor는 상관 결과 후보를 꺼내 보정한 16비트 값을 만들고, <code>0x52cde7e4</code>에서 PafDefocus 변환을 호출한다. 이 변환은 설정·렌즈 관련 값을 이용해 곱셈과 스케일 조정을 수행하며, 조건부 보정 뒤 크기 값을 <code>0xffff</code>로 제한해 객체 <code>+0x0e</code>에 16비트로, 부호 있는 결과를 <code>+0x10</code>에 32비트로 저장한다. 광학 단위, 렌즈 보정 계수 전체와 최종 렌즈 구동 명령은 추가 분석 대상이다. <a href="deep-evidence.json">Predictor·Defocus 범위와 직접 호출</a></p>
-<p><code>0x52c73190</code>의 NEON 커널은 unsigned16 입력 배열에 대해 SAD와 SSD를 계산한다. 각각 <code>Σ|aᵢ−bᵢ| mod 2³²</code>, <code>Σ(aᵢ−bᵢ)² mod 2³²</code>다. 마지막 8개 레인은 펌웨어의 마스크 표로 처리하므로 읽을 수 있는 패딩 메모리가 필요하다. 0·음수 길이의 의미는 이번 분석 범위에서 검증하지 않았다. <a href="deep-evidence.json">함수·마스크 범위</a></p>
-<p>실제 커널 바이트를 Unicorn 2.1.4의 Cortex-A7 모델에서 독립 실행했다. 양수 길이 1–129 중 18가지, 동일 배열·최대 차이·교대 값·난수를 조합한 <strong>72개 사례</strong>에서 기준식과 일치했다. 8개 경계의 앞뒤, 비영 패딩, 32비트 오버플로를 포함한다. angr의 VEX 실행은 <code>Iop_PwAddL16Ux8</code> 미지원으로 실패했고, 수치 검증에는 Unicorn을 사용했다. 생성된 C의 벡터 연산 표현도 일부 불완전하다. <a href="numerical-checks.json">측정 결과</a> · <a href="../verify_numeric_kernels.py">재현 코드</a> · <a href="https://github.com/unicorn-engine/unicorn">Unicorn 프로젝트</a></p>
-<h2 id="재현과-검증-범위">재현과 검증 범위</h2>
-<p>이 초기 심층 분석 단계에서 추가로 디컴파일한 서로 다른 진입점은 115개다. 아래 수치는 당시 범위이며 현재 누적 집계는 <a href="pipeline-report.html#verification">최신 보고서</a>에 있다. 셔터·디스패처 59개, AF 24개, 색 처리 33개 중 공통 진입점 하나를 중복 제거한 수다. 이와 별도로 기존 셸 의사코드 16개를 재사용했다. 당시 공개 증거는 디컴파일 탐색 창 115개, 기존 명령 창 16개, 명령어 보조 구간 18개, 데이터 구간 5개를 합친 154개 구간이다. 창의 끝은 분석 상한이며 일부에는 점프 테이블·인접 코드가 포함된다. 생성된 C는 원래 타입·이름·호출 규약을 완전히 복원하지 못한다. <a href="deep-evidence.json">구간별 방법과 해시</a></p>
-<p>같은 조사 단계에서 2,467개 A32 호출·분기 위치와 49개 포인터·상수 단어를 원본 바이트에서 독립 확인했다. 생성자 근거를 붙인 조건부 간접 연결은 16개다. 함수 포인터 슬롯의 값과 간접 호출 명령을 검사했고, 현재 객체가 해당 생성 경로에서 만들어졌다는 조건을 유지했다. <a href="../verify_deep_analysis.py">검증 코드</a></p>
-<p>기존 추출기로 만든 <code>decoded.bin</code>을 입력한다. 첫 검증기는 Python 표준 라이브러리만 필요하다. 두 번째 검증기는 <code>unicorn==2.1.4</code>를 사용하며, 수치 커널과 상수 페이지만 매핑해 합성 데이터로 실행한다.</p>
-<pre><code class="language-console">python verify_deep_analysis.py .private/my-decode/decoded.bin
-python verify_numeric_kernels.py .private/my-decode/decoded.bin
-</code></pre>
-<p>추가 진입점의 의사코드는 <code>angr==10.0.5</code> 환경에서 주소로 지정해 다시 생성할 수 있다. 출력은 로컬 경로에 저장한다. 텍스트 구조는 도구 분석 상태에 따라 달라질 수 있으므로 바이트·호출 위치를 우선 비교한다.</p>
-<pre><code class="language-console">python decompile_sample.py .private/my-decode/decoded.bin 0x52cde650 &gt; .private/paf-predictor.c
-python decompile_sample.py .private/my-decode/decoded.bin 0x5312cd40 &gt; .private/color-matrix.c
-</code></pre>
-<p>구간 해시·명령의 목적지·함수 포인터 단어를 검사하는 것은 저장한 근거의 재현성을 확인한다. 현재 제어 객체와 보드 선택, 비동기 콜백이 특정 촬영에서 실제 실행됐다는 의미는 별도의 실기 추적으로 확인해야 한다. 카메라·렌즈를 구동하거나 펌웨어를 변경하지 않았다. 전체 요청에서 기계적 셔터 동작·합초 결과까지 이어지는 실기 검증은 수행하지 않았다.</p></main>
-<footer><p>원본 펌웨어·추출 계수·디컴파일 C 원문은 로컬에 보관한다. 정적 분석과 합성 실행 결과를 실제 카메라의 픽셀 출력 검증과 구분한다.</p></footer></body></html>
+<tr><td>PafCorrelation</td><td><code>+0x94</code></td><td><code>0x52ca3218</code></td><td><code>0x5388c9e4</code> → <code>0x52cc6e80</code></td></tr>
+<tr><td>PafDefocus</td><td><code>+0x9c</code></td><td><code>0x52ca3240</code></td><td><code>0x5388d014</code> → <code>0x52ccf358</code></td></tr>
+<tr><td>PafPredictor</td><td><code>+0x738</code></td><td><code>0x52ca3360</code></td><td><code>0x5388f544</code> → <code>0x52cdd63c</code></td></tr>
+</tbody></table></div>
+<dl class="kv">
+<dt>SAD·SSD 함수</dt><dd><code>0x52c73190</code>–<code>0x52c73268</code>, SHA-256 <code class="wrap">705670a0b4cac81dd27c3b7a0c327443e5b07240fa788582189fb719da887941</code></dd>
+<dt>예측기 상관·변환</dt><dd>상관 <code>0x52cccd30</code>, 변환 <code>0x52ccf93c</code>, 변환 호출 <code>0x52cde7e4</code></dd>
+<dt>예측기 포인터 저장</dt><dd>Correlation·Defocus 포인터를 각각 <code>+0x18</code>·<code>+0x20</code>에 저장</dd>
+</dl>
+<p class="small">근거: <a href="numerical-checks.json">numerical-checks.json</a>(SAD·SSD 72개), <a href="deep-evidence.json">deep-evidence.json</a>(팩토리·범위).</p>
+</details>
+</section>
+
+<section id="verify">
+<h2>검증 범위</h2>
+<p class="takeaway">정적 근거는 원본 RTOS 바이트에서 전부 다시 계산해 확인했습니다. 다만 실기에서 이 경로가 실제로 실행됐다는 뜻은 아닙니다.</p>
+<p>현재 근거 파일에는 함수·데이터 구간 1,232개, 호출·분기 위치 7,389개, 상수·포인터 단어 492개, 생성자 근거를 붙인 조건부 간접 연결 104개가 들어 있습니다. 검증기는 RTOS의 SHA-256을 먼저 대조한 뒤 이 전부를 원본 바이트에서 다시 계산해 일치를 확인합니다. 각 간접 연결은 현재 객체가 해당 생성 경로에서 만들어졌다는 조건을 유지합니다.</p>
+<div class="callout warn"><strong class="label">주의</strong>
+<p>구간 해시·명령 목적지·함수 포인터 단어를 검사하는 것은 저장한 근거의 재현성을 확인합니다. 현재 제어 객체와 보드 선택, 비동기 콜백이 특정 촬영에서 실제 실행됐다는 의미는 별도의 실기 추적으로 확인해야 합니다. 카메라·렌즈를 구동하거나 펌웨어를 변경하지 않았습니다.</p></div>
+</section>
+
+<section id="reproduce">
+<h2>재현 방법</h2>
+<p>기존 추출기로 만든 <code>decoded.bin</code>을 입력합니다. 첫 검증기는 Python 표준 라이브러리만, 둘째는 <code>unicorn==2.1.4</code>를 씁니다.</p>
+<pre><code>python verify_deep_analysis.py .private/my-decode/decoded.bin
+python verify_numeric_kernels.py .private/my-decode/decoded.bin</code></pre>
+<p>추가 진입점의 의사코드는 <code>angr==10.0.5</code> 환경에서 주소로 다시 생성할 수 있습니다. 텍스트 구조는 도구 상태에 따라 달라질 수 있으므로 바이트·호출 위치를 우선 비교합니다.</p>
+<pre><code>python decompile_sample.py .private/my-decode/decoded.bin 0x52cde650 &gt; .private/paf-predictor.c
+python decompile_sample.py .private/my-decode/decoded.bin 0x5312cd40 &gt; .private/color-matrix.c</code></pre>
+</section>
+
+<section id="refs">
+<h2>근거 파일과 참고 자료</h2>
+<ul class="refs">
+<li><a href="deep-evidence.json">deep-evidence.json</a> — 구간·호출·단어·조건부 연결·GPIO·미해결 목록</li>
+<li><a href="numerical-checks.json">numerical-checks.json</a> — SAD·SSD 등 원본 수치 함수 실행 결과</li>
+<li><a href="../verify_deep_analysis.py">verify_deep_analysis.py</a> — 구간·전달·단어·연결 재계산 검증</li>
+<li><a href="../verify_numeric_kernels.py">verify_numeric_kernels.py</a> — 수치 커널 격리 실행</li>
+<li><a href="index.html">셸 명령 957개의 분류와 호출 관계</a> · <a href="recompiled-kernels.html">SAD·SSD와 Q13 커널 재구현</a></li>
+<li>외부 자료: <a href="https://developer.arm.com/Architectures/Neon">Arm NEON</a> · <a href="https://github.com/unicorn-engine/unicorn">Unicorn CPU 에뮬레이터</a> · <a href="https://docs.angr.io/en/latest/analyses/decompiler.html">angr 디컴파일러</a></li>
+</ul>
+</section>
+
+</main>
+</div>
+<!-- chrome:bottom -->
+<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">RTOS 명령과 셸 — 이 주제의 문서</h2><ol><li><a href="guide-rtos.html">RTOS 명령 안내</a></li><li><a href="index.html">RTOS 명령 957개<span>분류와 호출 관계</span></a></li><li><a href="dispatch-af.html" aria-current="page">디스패처·셔터·AF 상관 연산</a></li><li><a href="shell-backup-path.html">SD 셸 입력과 보정 백업</a></li></ol></nav>
+<nav class="pager" aria-label="이전·다음 문서"><a class="prev" href="index.html"><small>← 이전</small>RTOS 명령 957개</a><a class="next" href="shell-backup-path.html"><small>다음 →</small>SD 셸 입력과 보정 백업</a></nav>
+<footer class="sitefoot"><div class="sitefoot-in"><nav aria-label="사이트"><a href="../index.html#map">문서 지도</a><a href="../index.html#levels">검증 수준 읽는 법</a><a href="../glossary.html">용어집</a><a href="research-program.html">세 기종 연구 본부</a><a href="https://github.com/yunhyok/pentax-k3iii-firmware-analysis">GitHub 저장소</a></nav><p>PENTAX K-3 Mark III 펌웨어 2.20 분석 문서. PC에서 수행한 정적 분석과 에뮬레이션 결과이며, 카메라 실기에서 검증한 내용이 아닙니다. 원본 펌웨어와 추출한 독점 코드는 포함하지 않습니다.</p></div></footer>
+<!-- /chrome:bottom -->
+</body>
+</html>

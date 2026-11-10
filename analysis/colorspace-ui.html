@@ -1,57 +1,540 @@
-<!DOCTYPE html>
-<html lang="ko"><head><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/><title>색공간 UI의 선택·확정·리소스 경로</title><style>
-:root{color-scheme:light dark;--bg:#f7f8fa;--paper:#fff;--ink:#182332;--muted:#48596b;--line:#d2dbe5;--accent:#124b8e;--soft:#edf3fa;--focus:#d75f00}
-@media(prefers-color-scheme:dark){:root{--bg:#111821;--paper:#18222d;--ink:#e8edf4;--muted:#b4c2d2;--line:#405369;--accent:#98c8ff;--soft:#223348;--focus:#ffb374}}
-*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.85 system-ui,-apple-system,"Malgun Gothic",sans-serif;word-break:keep-all;overflow-wrap:anywhere}
-a{color:var(--accent);text-underline-offset:.18em}a:hover{text-decoration-thickness:2px}:focus-visible{outline:3px solid var(--focus);outline-offset:4px}
-header,main,footer{max-width:1120px;margin:auto;padding:36px clamp(18px,4vw,56px)}header{padding-top:56px;padding-bottom:24px}main{background:var(--paper);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
-.eyebrow{color:var(--muted);font-size:.84rem;letter-spacing:.06em}h1{font-size:clamp(1.85rem,4.5vw,3rem);line-height:1.35;letter-spacing:-.025em;margin:12px 0 18px}h2{font-size:1.5rem;line-height:1.5;margin:3.6rem 0 1rem;padding-top:1.2rem;border-top:1px solid var(--line)}h2:first-child{margin-top:0}h3{font-size:1.12rem;margin-top:2rem}p{margin:1rem 0}strong{font-weight:650}.intro{max-width:55em;color:var(--muted)}
-nav{margin-top:25px}nav ul{display:flex;flex-wrap:wrap;gap:8px 22px;list-style:none;padding:0;margin:0}nav ul ul{display:none}nav a{font-size:.9rem}code{font: .88em/1.6 ui-monospace,Consolas,monospace;overflow-wrap:anywhere}pre{background:var(--soft);padding:18px;overflow-x:auto;white-space:pre-wrap;border-radius:5px}pre code{font-size:.82rem}
-.table-scroll{overflow-x:auto;margin:24px 0}table{border-collapse:collapse;width:100%;font-size:.92rem;min-width:530px}th,td{text-align:left;vertical-align:top;padding:14px 16px;border-bottom:1px solid var(--line)}th{background:var(--soft);font-weight:650}td:first-child{min-width:125px}details{border-block:1px solid var(--line);margin-top:24px;padding:16px 0}summary{cursor:pointer;font-weight:650;padding:6px 0}.caption,.meta{font-size:.86rem;color:var(--muted)}
-figure{margin:32px 0;padding:24px 0;border-block:1px solid var(--line)}figcaption{font-size:.95rem;font-weight:650;margin-bottom:20px}.flow{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:32px;list-style:none;padding:0;margin:18px 0}.flow li{position:relative;padding:18px;background:var(--soft);border-radius:6px;line-height:1.6}.flow strong{display:block;font-size:1rem}.flow span{display:block;color:var(--muted);font-size:.86rem;margin-top:9px}.flow li:not(:last-child)::after{content:"→";position:absolute;right:-27px;top:40%;font-size:22px;color:var(--muted)}.second{margin-top:24px}footer{font-size:.88rem;color:var(--muted)}
-@media(max-width:620px){body{font-size:16px}header,main,footer{padding-inline:20px}.flow{grid-template-columns:1fr;gap:26px}.flow li:not(:last-child)::after{content:"↓";right:auto;left:calc(50% - 8px);top:auto;bottom:-28px}.flow li{padding:15px 18px}h2{font-size:1.3rem}nav ul{gap:10px 18px}table{font-size:.87rem}th,td{padding:12px}header{padding-top:30px}}
-@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
-@media print{body{background:white;color:black;font-size:10pt}header,main,footer{max-width:none;padding:12pt}nav{display:none}a{color:inherit}h2,figure,table{break-inside:avoid}h2{break-after:avoid}main{border:0}.flow li{background:#f1f3f5}.table-scroll{overflow:visible}table{min-width:0}details>*{display:block!important}}
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>색공간 선택 화면에서 확정과 취소가 하는 일 — PENTAX K-3 Mark III 펌웨어 연구</title>
+<meta name="description" content="K-3 Mark III의 색공간(sRGB·AdobeRGB) 선택 화면에서 현재값과 고르는 중인 값이 어떻게 나뉘고, 확정·취소가 설정 메모리와 하위 요청에 언제 영향을 주는지 원본 ARM 코드 16개 사례로 확인한 기록입니다.">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-camera="k3iii">
+<!-- chrome:top -->
+<a class="skip" href="#main">본문 바로가기</a>
+<div class="topbar"><div class="topbar-in"><a class="brand" href="../index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="../index.html" aria-current="true">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="https://yunhyok.github.io/pentax-q7-firmware-analysis/">Q7</a></div><nav class="topnav" aria-label="주제"><a href="../index.html">개요</a><a href="guide-boot.html">부팅·저장소</a><a href="guide-update.html">업데이트</a><a href="guide-rebuild.html">재구축</a><a href="guide-rtos.html">명령·셸</a><a href="guide-color.html">색 처리</a><a href="lightroom-bridge.html">Lightroom</a><a href="af-foundations.html">AF</a><a href="ui-port-contract.html" aria-current="true">UI</a></nav></div></div>
+<nav class="crumbs" aria-label="현재 위치"><ol><li><a href="../index.html">PENTAX K-3 Mark III</a></li><li><a href="ui-port-contract.html">UI와 화면 자원</a></li><li aria-current="page">색공간 화면: 선택·확정·취소</li></ol></nav>
+<!-- /chrome:top -->
+<header class="page-head">
+<p class="eyebrow">UI와 화면 자원 · 색공간 화면 1</p>
+<h1>색공간 선택 화면에서 확정과 취소가 하는 일</h1>
+<p class="lead">메뉴에서 sRGB와 AdobeRGB 중 하나를 고르는 화면이 펌웨어 안에서 어떻게 움직이는지 알아봤습니다. 화면을 다른 기종으로 옮기려면 ‘고르는 중인 값’과 ‘저장된 값’이 언제 갈라지고 언제 합쳐지는지를 먼저 알아야 합니다.</p>
+</header>
+<div class="layout">
+<!-- chrome:toc -->
+<nav class="toc" aria-label="이 문서의 목차"><h2 data-toc="no">이 문서에서</h2><ol><li><a href="#background">배경: 색공간 메뉴와 이 문서의 범위</a></li><li><a href="#route">메뉴 항목에서 화면 구성까지</a></li><li><a href="#state">고르는 중인 값은 확정할 때만 설정으로 넘어갑니다</a></li><li><a href="#write">확정한 값이 실제로 기록되는 조건</a></li><li><a href="#verification">16가지 사례를 어떻게 실행했는가</a></li><li><a href="#limits">한계와 남은 과제</a></li><li><a href="#reproduce">재현 방법</a></li><li><a href="#refs">근거 파일과 참고 자료</a></li></ol></nav>
+<!-- /chrome:toc -->
+<main class="doc" id="main">
 
-.site-nav{border-block:1px solid var(--line);padding:14px 0;margin:20px 0}.site-nav a{display:inline-block;margin:4px 16px 4px 0}
-.review-note{background:var(--soft);padding:16px 20px;margin:24px 0}.toc{font-size:.92rem}.toc ul{list-style:none;padding-left:0}.toc ul ul{padding-left:20px}
-.branch{margin:18px 0;padding:0 0 0 24px;border-left:3px solid var(--line)}.branch p{margin:8px 0}.diagram-line{padding:12px 16px;background:var(--soft);border-radius:4px}
-</style></head><body><header><div class="eyebrow">PENTAX K-3 MARK III · FIRMWARE 2.20 · 2026-11-08</div><h1>색공간 UI의 선택·확정·리소스 경로</h1><p class="intro">sRGB·AdobeRGB 메뉴의 현재값과 보류 선택을 구분하고 확정·취소가 설정 메모리와 하위 요청에 영향을 주는 조건을 확인했다.</p><nav aria-label="관련 문서"><a href="../index.html">연구 개요</a> · <a href="ui-port-contract.html">기종 간 이식 조건</a> · <a href="pipeline-report.html#0x145">색공간 메시지</a> · <a href="icon-resources.html">아이콘 리소스</a></nav></header><main><h2 id="route">색공간 화면으로 들어가는 경로</h2>
-<p>촬영 색공간 메뉴의 route <code>0x0200009f</code>가 <code>SelectMenuController</code>의 descriptor 72번을 고른다. route 처리기 <code>0x5278bb44</code>는 jump table <code>0x5278bc5c</code>의 대상 <code>0x5278d4c0</code>으로 분기하고 controller의 <code>+0x1d4</code>에 72를 쓴다. 이 숫자는 10진수이며 나머지 주소와 offset은 16진수다. descriptor 주소는 <code>0x536439e0 + 72 × 0x5c = 0x536453c0</code>이다. <a href="colorspace-ui-evidence.json">route·descriptor·타입 정보 근거</a></p>
-<p>controller의 vtable은 <code>0x5364ad68</code>이다. RTTI가 가리키는 <code>20SelectMenuController</code> 문자열을 함께 확인했다. vtable의 open 진입 <code>0x5278ed80</code>은 route 선택 후 표시 갱신으로 이어지고 event 진입 <code>0x5278ef84</code>은 확정·취소·이동 이벤트를 분기한다. 생성자와 open 진입 범위는 정적으로 보존했으며 이번 실행 검사는 route 처리기와 메뉴 구성 함수에서 시작한다.</p>
-<div class="table-scroll"><table><thead><tr><th scope="col">descriptor 필드</th><th scope="col">함수·값</th><th scope="col">확인한 역할</th></tr></thead><tbody>
-<tr><td><code>+8</code></td><td><code>5277620c</code></td><td>옵션 개수 2 반환</td></tr>
-<tr><td><code>+10</code></td><td><code>52779a58</code></td><td>행의 아이콘·문자열·선택 가능 상태 준비</td></tr>
-<tr><td><code>+18</code></td><td><code>52776a08</code></td><td>문자열 ID <code>1f5</code> 전달</td></tr>
-<tr><td><code>+20</code></td><td><code>527826f4</code></td><td>선택 index를 색공간 값으로 바꿔 setter 호출</td></tr>
-<tr><td><code>+30</code></td><td><code>52785f5c</code></td><td>옵션과 현재 UserData 캐시값 비교</td></tr>
-<tr><td><code>+38 / +40</code></td><td><code>0 / 0</code></td><td>옵션별 변경 hook / 취소 hook 없음</td></tr>
+<section class="summary">
+<h2 data-toc="no">핵심 요약</h2>
+<ul>
+<li>이 화면에서 색공간 값은 <strong>세 군데</strong>에 있습니다. 설정 레코드, 그 사본인 현재값 캐시, 그리고 화면에서 고르는 중인 보류 선택입니다. 화면을 채울 때는 캐시를 읽고, 포커스를 옮길 때는 보류 선택만 바뀝니다.</li>
+<li><strong>확정</strong>하면 보류 선택이 설정 함수로 넘어갑니다. 값이 이미 같으면 설정 함수에 들어가기는 하지만 기록은 생략합니다. <strong>취소</strong>는 설정 함수를 부르지 않고 화면을 닫습니다.</li>
+<li>기록이 일어나면 관찰자 함수(observer)가 캐시를 레코드 값으로 맞춥니다. 그 뒤 조건이 맞으면 색공간 속성 요청을 아래 단계로 보냅니다.</li>
+<li>원본 ARM 코드를 PC 에뮬레이터에서 <strong>16가지 합성 상황</strong>으로 실행해 확인했습니다. 화면 객체와 포커스는 시험용으로 만들어 넣었고, 그리기 호출은 인수만 기록했습니다. 실제 버튼, 완성된 화면, 전원을 껐다 켠 뒤의 값은 확인하지 않았습니다.</li>
+</ul>
+</section>
+
+<div class="scope">
+<div class="ok"><h3><span class="badge ok">확인</span> 원본 코드 실행으로 확인</h3>
+<ul>
+<li>색공간 메뉴 항목이 descriptor 72번을 고르는 것</li>
+<li>확정·취소 8조합의 설정 함수 호출, 기록 횟수, 닫기 요청</li>
+<li>레코드와 캐시가 어긋난 4조건, 요청을 막는 바이트, 확정을 막는 행 바이트</li>
+<li>행마다 넘기는 아이콘 ID와 문자열 ID</li>
+</ul></div>
+<div class="static"><h3><span class="badge static">정적 분석</span> 코드를 읽어 판단</h3>
+<ul>
+<li>controller의 가상 함수 표와 타입 이름</li>
+<li>생성자와 화면 열기 진입 구간</li>
+<li>메뉴 구성의 mode 0 분기</li>
+</ul></div>
+<div class="model"><h3><span class="badge model">모델</span> 시험 조건으로 정한 것</h3>
+<ul>
+<li>메뉴·목록·행 객체와 설정 메모리는 합성 객체</li>
+<li>보류 선택은 목록 필드에 직접 써 넣음</li>
+<li>레이아웃·그리기·힙·콜백 전달은 대체 함수</li>
+<li>CPU는 Unicorn의 Cortex-A15 모델</li>
+</ul></div>
+<div class="open"><h3><span class="badge open">미확인</span> 확인하지 않은 것</h3>
+<ul>
+<li>확정·취소 이벤트를 만드는 실제 버튼·터치</li>
+<li>창을 닫았다가 다시 여는 전체 과정</li>
+<li>글자와 아이콘이 그려진 완성 화면</li>
+<li>비휘발성 저장과 재부팅 뒤의 값</li>
+</ul></div>
+</div>
+
+<section id="background">
+<h2>배경: 색공간 메뉴와 이 문서의 범위</h2>
+<p>K-3 Mark III의 정지화상 메뉴 5번(Image Capture Settings)에는 Color Space 항목이 있습니다. 선택지는 sRGB와 AdobeRGB 둘이고 기본값은 sRGB입니다(<a href="https://www.ricoh-imaging.co.jp/english/support/man-pdf/k-3-3.pdf">공식 사용설명서</a> 24쪽·48쪽). 선택지가 둘뿐이고 K-3 II와 Q7에도 같은 설정이 있어서, <a href="ui-port-contract.html">UI 이식 설계</a>의 첫 단위로 이 화면을 골랐습니다.</p>
+<p>이 문서는 화면이 구성된 뒤부터 값이 설정 메모리에 닿을 때까지를 다룹니다. 포커스를 위아래로 옮기는 입력은 <a href="colorspace-ui-input.html">방향 입력과 포커스</a>에서, 아이콘이 화면 버퍼로 복사되는 과정은 <a href="icon-resources.html">ICONBIN 아이콘 자원</a>에서 다룹니다.</p>
+
+<h3>이 문서에 나오는 이름</h3>
+<dl class="kv">
+<dt>route</dt><dd>메뉴 항목을 가리키는 32비트 번호입니다. 색공간 항목은 <code>0x0200009f</code>입니다.</dd>
+<dt>descriptor</dt><dd>선택 화면 하나의 동작을 정의한 표의 한 줄(92바이트)입니다. 선택지 개수를 알려 주는 함수, 행을 준비하는 함수, 값을 반영하는 함수의 주소가 들어 있습니다.</dd>
+<dt>controller</dt><dd>여러 선택 화면이 함께 쓰는 객체입니다. 펌웨어에 남은 타입 이름은 <code>SelectMenuController</code>입니다. 어느 descriptor를 쓸지 번호로 기억합니다.</dd>
+<dt>list와 행</dt><dd>list는 선택지 행을 담는 목록 객체이고, 지금 포커스가 놓인 행 번호를 가집니다. 행마다 아이콘 표시부와 글자 표시부가 있습니다.</dd>
+<dt>UserData</dt><dd>사용자 설정을 담는 메모리 객체입니다. 설정 레코드와 현재값 캐시가 여기에 있습니다.</dd>
+<dt>setter·observer</dt><dd>setter는 설정값을 기록하는 함수, observer는 기록 뒤에 불려 뒷정리를 하는 함수입니다.</dd>
+</dl>
+
+<figure class="diagram">
+<figcaption>화면과 값 세 군데의 관계 (화면 배치는 개념도)</figcaption>
+<div class="dg-scroll">
+<svg class="dg" viewBox="0 0 800 334" role="img" aria-labelledby="dg-where-title dg-where-desc">
+<title id="dg-where-title">색공간 화면의 구성 요소와 값이 저장된 세 위치</title>
+<desc id="dg-where-desc">왼쪽은 색공간 선택 화면의 개념도입니다. 머리글 한 줄과 sRGB, AdobeRGB 두 행이 있고 포커스가 놓인 행을 굵게 표시했습니다. 오른쪽에는 값이 있는 세 곳이 있습니다. 현재값 캐시는 화면을 채울 때 읽습니다. 포커스를 옮기면 목록의 보류 선택 번호가 바뀝니다. 확정할 때만 보류 선택이 설정 레코드에 기록되고, 기록 뒤에는 observer가 캐시를 레코드 값으로 맞춥니다.</desc>
+<defs><marker id="dg-where-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0 0L10 5L0 10z"/></marker></defs>
+<rect class="gf" x="8" y="14" width="372" height="306" rx="12"/>
+<text class="h" x="24" y="38">색공간 선택 화면 (개념도)</text>
+
+<rect class="b mute" x="24" y="52" width="340" height="50" rx="8"/>
+<text class="t" x="36" y="74">머리글</text>
+<text class="s" x="36" y="92">문자열 ID 0x1f5</text>
+
+<rect class="b key" x="24" y="116" width="340" height="64" rx="8"/>
+<text class="t" x="36" y="143">행 0 · sRGB</text>
+<text class="s" x="36" y="163">아이콘 ID 0x539 · 문자열 ID 0x1f6</text>
+
+<rect class="b" x="24" y="194" width="340" height="64" rx="8"/>
+<text class="t" x="36" y="221">행 1 · AdobeRGB</text>
+<text class="s" x="36" y="241">아이콘 ID 0x537 · 문자열 ID 0x1f7</text>
+
+<text class="n" x="24" y="284">굵은 틀은 포커스가 놓인 행입니다. 실제 배치·글꼴·색은</text>
+<text class="n" x="24" y="302">확인하지 않았습니다.</text>
+
+<rect class="b" x="500" y="24" width="260" height="64" rx="8"/>
+<text class="t" x="512" y="51">현재값 캐시</text>
+<text class="s" x="512" y="71">UserData+0x3b7</text>
+
+<rect class="b key" x="500" y="116" width="260" height="64" rx="8"/>
+<text class="t" x="512" y="143">보류 선택</text>
+<text class="s" x="512" y="163">list+0x1ce · 행 번호 0 또는 1</text>
+
+<rect class="b ok" x="500" y="222" width="260" height="64" rx="8"/>
+<text class="t" x="512" y="249">설정 레코드</text>
+<text class="s" x="512" y="269">선택된 레코드의 +0x35b</text>
+
+<path class="e" d="M500 56H384" marker-end="url(#dg-where-ah)"/>
+<text class="s mid" x="441" y="46">채울 때 읽음</text>
+<path class="e" d="M364 148H498" marker-end="url(#dg-where-ah)"/>
+<text class="s mid" x="432" y="138">포커스 이동</text>
+<path class="e" d="M630 180V220" marker-end="url(#dg-where-ah)"/>
+<text class="s" x="640" y="205">확정할 때만</text>
+<path class="e" d="M760 254H782V56H762" marker-end="url(#dg-where-ah)"/>
+<text class="s" x="500" y="310">기록 뒤 observer가 캐시를 맞춤</text>
+</svg>
+</div>
+<ul class="dg-legend"><li><i class="key"></i>고르는 중인 값(포커스)</li><li><i class="ok"></i>확정된 값이 기록되는 곳</li><li><i></i>사본·표시 요소</li></ul>
+</figure>
+</section>
+
+<section id="route">
+<h2>메뉴 항목에서 화면 구성까지</h2>
+<p class="takeaway">색공간 메뉴 항목은 공용 controller에 descriptor 72번을 지정합니다. 이 descriptor에 든 함수 다섯 개가 화면의 내용과 동작을 정합니다.</p>
+
+<ol class="flow">
+<li class="model"><strong>메뉴 항목</strong><span>route <code>0x0200009f</code><br>시험에서는 직접 넣어 준 값</span></li>
+<li class="ok"><strong>route 처리기</strong><span>분기 표에서 색공간 칸을 골라 실행</span></li>
+<li class="ok"><strong>번호 기록</strong><span>controller에 descriptor 번호 72(10진수)를 기록</span></li>
+<li class="ok"><strong>메뉴 구성</strong><span>descriptor의 함수를 불러 행 두 개를 준비</span></li>
+</ol>
+
+<p>descriptor는 주소 <code>0x536439e0</code>에서 시작하는 표의 한 줄이고 한 줄은 <code>0x5c</code>(92)바이트입니다. 72번 줄의 주소는 <code>0x536439e0 + 72 × 0x5c = 0x536453c0</code>입니다. 이 문서에서 72만 10진수이고 나머지 주소와 offset은 16진수입니다.</p>
+
+<div class="table-wrap"><table>
+<caption>색공간 descriptor(72번)의 필드</caption>
+<thead><tr><th>필드</th><th>들어 있는 함수·값</th><th>하는 일</th></tr></thead>
+<tbody>
+<tr><th scope="row"><code>+0x08</code></th><td><code>0x5277620c</code></td><td>선택지 개수 2를 돌려줍니다.</td></tr>
+<tr><th scope="row"><code>+0x10</code></th><td><code>0x52779a58</code></td><td>행의 아이콘, 문자열, 선택 가능 상태를 준비합니다.</td></tr>
+<tr><th scope="row"><code>+0x18</code></th><td><code>0x52776a08</code></td><td>머리글에 문자열 ID <code>0x1f5</code>를 넘깁니다.</td></tr>
+<tr><th scope="row"><code>+0x20</code></th><td><code>0x527826f4</code></td><td>선택한 행 번호를 색공간 값으로 바꿔 setter를 부릅니다.</td></tr>
+<tr><th scope="row"><code>+0x30</code></th><td><code>0x52785f5c</code></td><td>각 선택지를 캐시의 현재값과 비교합니다.</td></tr>
+<tr><th scope="row"><code>+0x38</code> / <code>+0x40</code></th><td>0 / 0</td><td>선택지별 변경 hook과 취소 hook이 없습니다.</td></tr>
 </tbody></table></div>
-<p>위 함수 포인터와 짝을 이루는 보정 word는 모두 0이다. 따라서 이 행에서는 직접 member callback으로 해석된다. 테이블 형식 자체는 보정값에 따라 가상 호출도 지원하므로 모든 메뉴를 같은 직접 호출로 일반화하지 않았다. <a href="colorspace-ui-evidence.json">member-pointer word와 apply 분기</a></p>
-<h2 id="state">현재값·보류 선택·확정의 구분</h2>
-<figure><figcaption>메뉴 구성부터 확정·취소까지</figcaption><ol class="flow"><li><strong>메뉴 구성</strong><span>UserData +3b7 캐시 읽기<br/>현재 옵션 → controller +1d6<br/>list +1ce에 선택 표시</span></li><li><strong>보류 선택</strong><span>list +1ce의 index<br/>이동 중 저장과 구분<br/>확정 시 선택 행 +17a 검사</span></li><li><strong>확정 또는 취소</strong><span>e7: setter 후 close<br/>e9: 취소 hook 후 close<br/>이 행의 취소 hook은 0</span></li></ol></figure>
-<p><code>0x5278e05c(controller, 1)</code>은 각 옵션을 현재 캐시값과 비교한다. 일치하면 <code>0x5278e150</code>의 조건부 <code>STRBNE</code>가 controller <code>+1d6</code>을 갱신한다. 마지막에는 이 index를 리스트에 넘긴다. 리스트의 <code>+1ce</code>는 현재 선택 중인 index이며 확정 함수는 이 값을 읽는다. 메뉴 구성 mode 0은 mode 1과 달리 기존 controller index를 사용하는 분기가 있어, 두 모드를 혼동하지 않았다. <a href="colorspace-ui-evidence.json">메뉴 구성·getter 근거</a></p>
-<p>확정 event <code>e7</code>은 <code>5278db30 → 5278dac0 → 527826f4</code>로 이어진다. 선택 행의 byte <code>+17a</code>가 0이 아니면 setter와 close를 모두 생략한다. 그 밖에는 descriptor의 apply를 호출한 뒤 close <code>526d8b28</code>로 간다. 취소 event <code>e9</code>는 취소 hook을 확인한 뒤 close로 간다. 색공간 행의 hook은 0이므로 setter를 호출하지 않는다. 이 event 번호의 물리적 버튼·터치 입력 대응은 아직 확인하지 않았다. <a href="colorspace-ui-checks.json">확정·취소·행 차단 사례</a></p>
-<p>옵션 index 0·1은 <code>536a6250</code>의 두 바이트를 거쳐 값 0·1이 된다. 기존 파서 <code>52aed898</code> 분석은 이 값을 sRGB·AdobeRGB에 대응시킨다. K-3 II와 Q7에서도 enum이나 event 번호가 같다고 가정하지 않는다. <a href="pipeline-report.html#0x145">기존 색공간 요청 분석</a> · <a href="ui-port-contract.html">기종 간 이식 조건</a></p>
-<h2 id="write">설정 기록과 observer의 조건</h2>
-<p>apply는 <code>52954be0 → 52954afc</code>를 호출한다. 현재 record는 <code>UserData+4</code>가 가리키는 index byte로 선택하며 실제 색공간 값은 해당 메모리 record의 <code>+35b</code>에 있다. 캐시는 <code>UserData+3b7</code>이다. 이 record 선택을 업데이트용 활성 bank와 동일시하지 않는다. 비휘발성 저장장치에 기록됐다는 증거도 이번 검사에는 없다. <a href="colorspace-ui-evidence.json">setter의 주소 계산·비교·기록 명령</a></p>
+
+<p>표의 각 함수 주소 옆에는 보정값 word가 하나씩 붙어 있고 이 줄에서는 모두 0입니다. C++의 <dfn title="클래스의 멤버 함수를 가리키는 포인터. 함수 주소와 this 보정값의 쌍으로 표현됩니다.">멤버 함수 포인터</dfn>가 함수 주소와 보정값의 쌍으로 표현되는 것과 같은 모양입니다(<a href="https://itanium-cxx-abi.github.io/cxx-abi/abi.html#member-function-pointers">Itanium C++ ABI의 설명</a>). 보정값이 0이라 이 줄에서는 함수를 직접 부르는 것으로 해석했습니다. 표의 형식 자체는 보정값에 따라 가상 호출도 할 수 있으므로, 다른 메뉴까지 직접 호출이라고 일반화하지 않았습니다.</p>
+
+<h3 id="resources">행이 고르는 아이콘과 문자열</h3>
+<p>행 준비 함수는 선택지마다 아이콘 ID와 문자열 ID를 하나씩 정해 행 그리기 함수에 넘깁니다. 아이콘 ID는 스타일 값에 따라 두 벌이 있습니다.</p>
+<div class="table-wrap"><table class="fit">
+<caption>선택지별 자원 ID</caption>
+<thead><tr><th>선택지</th><th>문자열 ID</th><th>아이콘 ID (스타일 값 0)</th><th>아이콘 ID (스타일 값 0 아님)</th></tr></thead>
+<tbody>
+<tr><th scope="row">0 · sRGB</th><td><code>0x1f6</code></td><td><code>0x539</code></td><td><code>0x305</code></td></tr>
+<tr><th scope="row">1 · AdobeRGB</th><td><code>0x1f7</code></td><td><code>0x537</code></td><td><code>0x330</code></td></tr>
+</tbody></table></div>
+<p>행 그리기 함수는 행의 <code>+0x180</code>에 있는 아이콘 표시부(IconView)에 아이콘 ID를, <code>+0x18c</code>의 글자 표시부에 문자열 ID를 설정합니다. IconView가 이 ID로 아이콘 픽셀을 찾는 과정은 <a href="icon-resources.html#gui">ICONBIN 아이콘 자원</a>에 있습니다.</p>
+<div class="callout warn"><strong class="label">주의</strong>
+<p>시험에서는 행 그리기 함수를 ‘ID만 기록하는 대체 함수’로 바꿨습니다. 그래서 확인한 것은 어떤 ID가 넘어가는지까지입니다. 스타일 값의 공식 의미, 언어별 실제 문자열, 글꼴, 완성된 화면은 확인하지 않았습니다. descriptor에 있는 제목 후보 ID <code>0x1f3</code>과 머리글 함수가 넘기는 <code>0x1f5</code>는 서로 다른 ID이며, 둘을 같은 화면 제목으로 합치지 않았습니다.</p></div>
+
+<details class="evidence"><summary>route·controller·행 준비의 주소</summary>
+<div class="table-wrap"><table class="compact">
+<thead><tr><th>대상</th><th>주소·값</th><th>설명</th></tr></thead>
+<tbody>
+<tr><th scope="row">route 처리기</th><td><code>0x5278bb44</code></td><td>route에서 <code>0x02000063</code>을 뺀 값 <code>0x3c</code>를 분기 표의 번호로 씁니다.</td></tr>
+<tr><th scope="row">분기 표의 색공간 칸</th><td><code>0x5278bc5c</code> → <code>0x5278d4c0</code></td><td>이 코드가 controller의 <code>+0x1d4</code>(16비트)에 72를 씁니다.</td></tr>
+<tr><th scope="row">descriptor 72</th><td><code>0x536453c0</code>, 92바이트</td><td>SHA-256 <code class="wrap">3e3eb830762db05259c40daa78bbcf9efaba1cad6a1f605381e51103378d442b</code></td></tr>
+<tr><th scope="row">controller의 가상 함수 표</th><td><code>0x5364ad68</code></td><td>근거 JSON은 표 블록을 <code>0x5364ad60</code>부터 140바이트로 기록합니다. <code>+4</code> 위치가 타입 정보 <code>0x5364aab8</code>을 가리키고, 타입 정보는 이름 문자열 <code>20SelectMenuController</code>(<code>0x5364adec</code>)를 가리킵니다.</td></tr>
+<tr><th scope="row">화면 열기 진입</th><td><code>0x5278ed80</code></td><td>표의 <code>0x5364ad80</code> 칸. route 선택 뒤 표시 갱신으로 이어집니다. 정적으로만 확인했습니다.</td></tr>
+<tr><th scope="row">이벤트 진입</th><td><code>0x5278ef84</code></td><td>표의 <code>0x5364ad90</code> 칸. 확정·취소·이동 이벤트를 분기합니다.</td></tr>
+<tr><th scope="row">메뉴 구성 함수</th><td><code>0x5278e05c</code></td><td>두 번째 인수가 mode입니다. 시험은 mode 1로 실행했습니다.</td></tr>
+<tr><th scope="row">아이콘 ID 선택</th><td><code>0x529f137c</code></td><td>행 준비 함수가 호출합니다.</td></tr>
+<tr><th scope="row">문자열 ID 선택</th><td><code>0x529ed53c</code></td><td>행 준비 함수가 호출합니다.</td></tr>
+<tr><th scope="row">행 그리기</th><td><code>0x52c10aec</code></td><td>IconView 설정 <code>0x52bf1430</code>, 글자 설정 <code>0x52bee8f8</code>을 부릅니다. 시험에서는 대체했습니다.</td></tr>
+<tr><th scope="row">descriptor <code>+0x54</code></th><td><code>0x5278960c</code></td><td>근거 JSON에 값만 기록되어 있습니다. 역할은 해석하지 않았습니다.</td></tr>
+</tbody></table></div>
+<p class="small">시험은 route 처리기를 부르기 전에 controller의 descriptor 번호를 <code>0xffff</code>로 채워 두고, 실행 뒤 72로 바뀌었는지 확인합니다.</p>
+</details>
+</section>
+
+<section id="state">
+<h2>고르는 중인 값은 확정할 때만 설정으로 넘어갑니다</h2>
+<p class="takeaway">화면을 채울 때는 캐시의 현재값을 읽습니다. 고르는 동안에는 목록의 포커스 번호만 바뀌고, 확정 이벤트가 와야 그 번호가 설정 함수로 넘어갑니다. 취소는 아무것도 기록하지 않습니다.</p>
+
+<figure class="diagram">
+<figcaption>메뉴 구성부터 확정·취소까지의 상태 변화</figcaption>
+<div class="dg-scroll">
+<svg class="dg" viewBox="0 0 800 300" role="img" aria-labelledby="dg-state-title dg-state-desc">
+<title id="dg-state-title">색공간 화면의 상태 전이</title>
+<desc id="dg-state-desc">메뉴 구성 단계가 캐시의 현재값으로 포커스 위치를 정하면 보류 선택 상태가 됩니다. 방향 이동은 이 상태 안에서 포커스 번호만 바꿉니다. 확정 이벤트 0xe7이 오면 선택한 행의 차단 바이트를 검사합니다. 0이면 설정 함수를 부른 뒤 화면 닫기를 요청하고, 0이 아니면 반영과 닫기를 모두 생략합니다. 취소 이벤트 0xe9는 취소 hook을 확인한 뒤 설정 함수 호출 없이 화면 닫기를 요청합니다.</desc>
+<defs><marker id="dg-state-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0 0L10 5L0 10z"/></marker></defs>
+
+<rect class="b ok" x="8" y="118" width="150" height="74" rx="8"/>
+<text class="t" x="20" y="143">메뉴 구성</text>
+<text class="s" x="20" y="163">캐시의 현재값으로</text>
+<text class="s" x="20" y="181">포커스 위치를 정함</text>
+
+<rect class="b key" x="196" y="118" width="170" height="74" rx="8"/>
+<text class="t" x="208" y="143">보류 선택 상태</text>
+<text class="s" x="208" y="163">포커스 번호만 바뀜</text>
+<text class="s" x="208" y="181">설정은 그대로</text>
+<path class="e" d="M244 118V94H320V116" marker-end="url(#dg-state-ah)"/>
+<text class="s mid" x="282" y="84">방향 이동</text>
+
+<rect class="b ok" x="408" y="20" width="160" height="74" rx="8"/>
+<text class="t" x="420" y="45">확정 0xe7</text>
+<text class="s" x="420" y="65">선택한 행의 +0x17a가</text>
+<text class="s" x="420" y="83">0인지 검사</text>
+
+<rect class="b ok" x="632" y="20" width="160" height="74" rx="8"/>
+<text class="t" x="644" y="45">설정 함수 호출</text>
+<text class="s" x="644" y="65">행 번호 → 값 0·1</text>
+<text class="s" x="644" y="83">기록 조건은 다음 절</text>
+
+<rect class="b mute" x="408" y="128" width="160" height="54" rx="8"/>
+<text class="t" x="420" y="151">0이 아니면</text>
+<text class="s" x="420" y="170">반영·닫기 모두 생략</text>
+
+<rect class="b ok" x="408" y="216" width="160" height="74" rx="8"/>
+<text class="t" x="420" y="241">취소 0xe9</text>
+<text class="s" x="420" y="261">취소 hook 확인</text>
+<text class="s" x="420" y="279">이 화면은 hook 없음</text>
+
+<rect class="b model" x="632" y="216" width="160" height="74" rx="8"/>
+<text class="t" x="644" y="241">화면 닫기 요청</text>
+<text class="s" x="644" y="261">0x526d8b28</text>
+<text class="s" x="644" y="279">시험은 호출 횟수만 셈</text>
+
+<path class="e" d="M158 155H194" marker-end="url(#dg-state-ah)"/>
+<path class="e" d="M366 138H386V57H406" marker-end="url(#dg-state-ah)"/>
+<path class="e" d="M366 172H386V253H406" marker-end="url(#dg-state-ah)"/>
+<path class="e" d="M568 57H630" marker-end="url(#dg-state-ah)"/>
+<text class="s mid" x="599" y="47">0이면</text>
+<path class="e" d="M488 94V126" marker-end="url(#dg-state-ah)"/>
+<path class="e" d="M712 94V214" marker-end="url(#dg-state-ah)"/>
+<path class="e" d="M568 253H630" marker-end="url(#dg-state-ah)"/>
+</svg>
+</div>
+<ul class="dg-legend"><li><i class="key"></i>고르는 중인 상태</li><li><i class="ok"></i>원본 코드 실행으로 확인</li><li><i class="model"></i>시험에서 대체한 함수</li><li><i class="mute"></i>아무 일도 하지 않는 분기</li></ul>
+</figure>
+
+<div class="table-wrap"><table>
+<caption>값이 있는 곳과 바뀌는 때</caption>
+<thead><tr><th>위치</th><th>담는 값</th><th>언제 바뀌나</th></tr></thead>
+<tbody>
+<tr><th scope="row">설정 레코드 <code>+0x35b</code></th><td>색공간 값 0(sRGB) 또는 1(AdobeRGB)</td><td>확정한 값이 레코드나 캐시와 다를 때 setter가 기록합니다.</td></tr>
+<tr><th scope="row">캐시 <code>UserData+0x3b7</code></th><td>현재값의 사본</td><td>기록 뒤 observer가 레코드와 다르면 맞춥니다.</td></tr>
+<tr><th scope="row"><code>controller+0x1d6</code></th><td>화면을 채울 때 현재값과 일치한 선택지 번호</td><td>메뉴 구성(mode 1)이 일치하는 선택지를 찾았을 때만 갱신합니다.</td></tr>
+<tr><th scope="row"><code>list+0x1ce</code></th><td>포커스가 놓인 행 번호 = 보류 선택</td><td>메뉴 구성이 초기값을 넣고, 방향 이동이 바꿉니다.</td></tr>
+</tbody></table></div>
+
+<p>확정 함수는 <code>controller+0x1d6</code>이 아니라 <code>list+0x1ce</code>를 읽습니다. 그래서 포커스를 옮긴 뒤 확정하면 옮긴 행의 값이 반영됩니다. 선택지 번호 0·1은 2바이트짜리 표(<code>0x536a6250</code>)를 거쳐 값 0·1이 됩니다. 값 0이 sRGB, 1이 AdobeRGB라는 대응은 <a href="pipeline-report.html#0x145">색공간 요청을 받는 쪽의 분석</a>에서 나왔습니다. K-3 II와 Q7에서도 같은 번호를 쓴다고 가정하지 않습니다.</p>
+
+<div class="table-wrap"><table>
+<caption>확정·취소 8조합의 실행 결과</caption>
+<thead><tr><th>처음 값</th><th>보류 선택</th><th>동작</th><th class="n">setter 호출</th><th class="n">레코드 기록</th><th class="n">캐시 기록</th><th>속성 요청</th><th>다시 구성한 선택</th></tr></thead>
+<tbody>
+<tr><td>sRGB</td><td>sRGB</td><td>확정</td><td class="n">1</td><td class="n">0</td><td class="n">0</td><td>없음</td><td>sRGB</td></tr>
+<tr><td>sRGB</td><td>sRGB</td><td>취소</td><td class="n">0</td><td class="n">0</td><td class="n">0</td><td>없음</td><td>sRGB</td></tr>
+<tr><td>sRGB</td><td>AdobeRGB</td><td>확정</td><td class="n">1</td><td class="n">1</td><td class="n">1</td><td>값 1</td><td>AdobeRGB</td></tr>
+<tr><td>sRGB</td><td>AdobeRGB</td><td>취소</td><td class="n">0</td><td class="n">0</td><td class="n">0</td><td>없음</td><td>sRGB</td></tr>
+<tr><td>AdobeRGB</td><td>sRGB</td><td>확정</td><td class="n">1</td><td class="n">1</td><td class="n">1</td><td>값 0</td><td>sRGB</td></tr>
+<tr><td>AdobeRGB</td><td>sRGB</td><td>취소</td><td class="n">0</td><td class="n">0</td><td class="n">0</td><td>없음</td><td>AdobeRGB</td></tr>
+<tr><td>AdobeRGB</td><td>AdobeRGB</td><td>확정</td><td class="n">1</td><td class="n">0</td><td class="n">0</td><td>없음</td><td>AdobeRGB</td></tr>
+<tr><td>AdobeRGB</td><td>AdobeRGB</td><td>취소</td><td class="n">0</td><td class="n">0</td><td class="n">0</td><td>없음</td><td>AdobeRGB</td></tr>
+</tbody></table></div>
+<p class="small muted">여덟 사례 모두 화면 닫기 요청은 한 번씩 있었습니다. ‘다시 구성한 선택’은 같은 객체에 메뉴 구성 함수를 한 번 더 실행해 얻은 포커스 위치입니다. 창을 없앴다가 다시 만든 결과가 아닙니다.</p>
+
+<div class="callout model"><strong class="label">시험 조건</strong>
+<p>보류 선택은 방향 이벤트로 옮긴 것이 아니라 <code>list+0x1ce</code>에 값을 직접 써 넣은 것입니다. 이벤트 번호 <code>0xe7</code>·<code>0xe9</code>도 시험이 넣어 준 값이며, 어떤 버튼이나 터치가 이 번호를 만드는지는 확인하지 않았습니다. 방향 이벤트가 실제로 포커스를 옮기는 과정은 <a href="colorspace-ui-input.html">다음 문서</a>에서 따로 실행했습니다.</p></div>
+
+<details class="evidence"><summary>확정·취소 경로의 주소</summary>
+<div class="table-wrap"><table class="compact">
+<thead><tr><th>단계</th><th>주소</th><th>설명</th></tr></thead>
+<tbody>
+<tr><th scope="row">현재값 비교</th><td><code>0x5278e150</code></td><td>조건부 저장 <code>STRBNE</code>. 선택지가 캐시와 일치할 때만 <code>controller+0x1d6</code>을 씁니다.</td></tr>
+<tr><th scope="row">확정 분기</th><td><code>0x5278f088</code> → <code>0x5278db30</code></td><td>이벤트 <code>0xe7</code>. 이어서 <code>0x5278dac0</code> → <code>0x527826f4</code>로 갑니다.</td></tr>
+<tr><th scope="row">행 차단 검사</th><td><code>0x5278db58</code></td><td>선택한 행의 바이트 <code>+0x17a</code>를 읽습니다. 0이 아니면 setter와 닫기를 모두 생략합니다.</td></tr>
+<tr><th scope="row">닫기 요청</th><td><code>0x5278db78</code> → <code>0x526d8b28</code></td><td>확정 함수의 마지막 꼬리 호출입니다.</td></tr>
+<tr><th scope="row">취소 분기</th><td><code>0x5278f0c0</code> → <code>0x5278db88</code></td><td>이벤트 <code>0xe9</code>. 취소 hook(descriptor <code>+0x40</code>)이 0이라 setter 없이 <code>0x5278f0c8</code>에서 닫기를 요청합니다.</td></tr>
+<tr><th scope="row">값 변환 표</th><td><code>0x536a6250</code></td><td>2바이트 <code>[0, 1]</code>. 받는 쪽 파서 <code>0x52aed898</code>의 분석이 0=sRGB, 1=AdobeRGB를 정합니다.</td></tr>
+</tbody></table></div>
+<p class="small">메뉴 구성의 mode 0에는 mode 1과 달리 기존 <code>controller+0x1d6</code> 값을 그대로 쓰는 분기가 있습니다. 이 문서의 실행 결과는 mode 1에 한정됩니다.</p>
+</details>
+</section>
+
+<section id="write">
+<h2>확정한 값이 실제로 기록되는 조건</h2>
+<p class="takeaway">setter는 새 값이 레코드나 캐시 중 어느 하나와라도 다르면 레코드에 기록합니다. 둘 다 이미 같으면 기록과 observer 생성을 생략합니다. 하위 요청을 보낼지는 observer가 다른 조건으로 따로 정합니다.</p>
+
+<figure class="diagram">
+<figcaption>setter와 observer의 판단 순서</figcaption>
+<div class="dg-scroll">
+<svg class="dg" viewBox="0 0 800 300" role="img" aria-labelledby="dg-write-title dg-write-desc">
+<title id="dg-write-title">설정 기록과 속성 요청이 일어나는 조건</title>
+<desc id="dg-write-desc">확정하면 설정 함수 0x52954afc에 들어갑니다. 레코드 값이 새 값과 다르거나 캐시 값이 새 값과 다르면 레코드의 +0x35b에 새 값을 기록하고 observer를 만듭니다. 둘 다 같으면 아무것도 기록하지 않습니다. observer 0x5290e520은 캐시가 레코드와 다르면 캐시를 갱신합니다. 이어서 레코드의 +0x2c 바이트가 0이면 색공간 속성 요청 함수 0x52edd820을 부르고, 0이 아니면 요청 없이 돌아갑니다. 속성 요청을 받는 쪽인 요청 0x145 수신부는 별도 시험으로 확인했습니다.</desc>
+<defs><marker id="dg-write-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0 0L10 5L0 10z"/></marker><marker id="dg-write-ahm" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah model" d="M0 0L10 5L0 10z"/></marker></defs>
+
+<rect class="b ok" x="8" y="16" width="150" height="74" rx="8"/>
+<text class="t" x="20" y="41">설정 함수 진입</text>
+<text class="s" x="20" y="61">0x52954afc</text>
+<text class="s" x="20" y="79">확정할 때마다</text>
+
+<rect class="b key" x="196" y="16" width="196" height="74" rx="8"/>
+<text class="t" x="208" y="41">기록이 필요한가</text>
+<text class="s" x="208" y="61">레코드 ≠ 새 값</text>
+<text class="s" x="208" y="79">또는 캐시 ≠ 새 값</text>
+
+<rect class="b ok" x="430" y="16" width="160" height="74" rx="8"/>
+<text class="t" x="442" y="41">레코드에 기록</text>
+<text class="s" x="442" y="61">+0x35b ← 새 값</text>
+<text class="s" x="442" y="79">observer 생성</text>
+
+<rect class="b ok" x="632" y="16" width="160" height="74" rx="8"/>
+<text class="t" x="644" y="41">observer 실행</text>
+<text class="s" x="644" y="61">0x5290e520</text>
+<text class="s" x="644" y="79">캐시가 다르면 맞춤</text>
+
+<rect class="b mute" x="196" y="128" width="196" height="56" rx="8"/>
+<text class="t" x="208" y="151">기록하지 않음</text>
+<text class="s" x="208" y="171">observer도 만들지 않음</text>
+
+<rect class="b key" x="632" y="128" width="160" height="56" rx="8"/>
+<text class="t" x="644" y="151">+0x2c 검사</text>
+<text class="s" x="644" y="171">레코드 바이트가 0인가</text>
+
+<rect class="b ok" x="196" y="222" width="196" height="68" rx="8"/>
+<a href="pipeline-report.html#0x145"><text class="t" x="208" y="246">요청 0x145 수신부</text></a>
+<text class="s" x="208" y="265">공통 속성 버퍼에 반영</text>
+<text class="s" x="208" y="282">별도 시험 1,536건</text>
+
+<rect class="b model" x="430" y="222" width="160" height="68" rx="8"/>
+<text class="t" x="442" y="246">색공간 속성 요청</text>
+<text class="s" x="442" y="265">0x52edd820</text>
+<text class="s" x="442" y="282">시험은 인수만 기록</text>
+
+<rect class="b mute" x="632" y="222" width="160" height="68" rx="8"/>
+<text class="t" x="644" y="246">요청 없이 복귀</text>
+<text class="s" x="644" y="265">캐시 갱신까지만</text>
+
+<path class="e" d="M158 53H194" marker-end="url(#dg-write-ah)"/>
+<path class="e" d="M392 53H428" marker-end="url(#dg-write-ah)"/>
+<text class="s mid" x="410" y="43">예</text>
+<path class="e" d="M294 90V126" marker-end="url(#dg-write-ah)"/>
+<text class="s" x="304" y="113">아니요</text>
+<path class="e" d="M590 53H630" marker-end="url(#dg-write-ah)"/>
+<path class="e" d="M712 90V126" marker-end="url(#dg-write-ah)"/>
+<path class="e" d="M632 156H510V220" marker-end="url(#dg-write-ah)"/>
+<text class="s" x="522" y="148">0이면</text>
+<path class="e" d="M712 184V220" marker-end="url(#dg-write-ah)"/>
+<text class="s" x="722" y="207">0 아님</text>
+<path class="e model" d="M430 256H394" marker-end="url(#dg-write-ahm)"/>
+</svg>
+</div>
+<ul class="dg-legend"><li><i class="ok"></i>원본 코드 실행으로 확인</li><li><i class="key"></i>판단 지점</li><li><i class="model"></i>시험이 멈추는 경계(인수만 기록)</li><li><i class="mute"></i>아무것도 하지 않는 분기</li></ul>
+<p>파선 화살표는 한 번에 이어서 실행한 구간이 아니라는 뜻입니다. 이 문서의 시험은 속성 요청 함수 입구에서 멈추고, 요청을 받는 쪽은 다른 시험에서 따로 확인했습니다.</p>
+</figure>
+
+<p>기록 여부를 식으로 쓰면 아래와 같습니다.</p>
 <pre><code>write_record = (record.byte35b != new_value)
             || (UserData.byte3b7 != new_value)</code></pre>
-<p>따라서 두 값이 이미 같아도 확정은 setter에 진입한다. 실제 record 기록과 observer 생성만 생략한다. record와 캐시가 불일치하면 record에 같은 값을 다시 쓰는 경우도 있다. 합성 불일치 4조건에서 OR 비교와 주변 record 바이트 보존을 확인했다. 이 불일치가 실제 카메라에서 발생하는 조건은 아직 추적하지 않았다. <a href="colorspace-ui-checks.json">기록 횟수·불일치 경계 검사</a></p>
-<p>생성된 observer <code>5290e520</code>은 record의 값을 캐시와 비교해 다를 때 캐시를 갱신한다. 이어 record byte <code>+2c</code>가 0이 아니면 돌아오고 0이면 <code>52eaacf4 → 52edd820</code>으로 색공간 속성 요청을 전달한다. 즉 캐시 갱신과 하위 요청의 조건은 서로 다르다. 이번에는 callback 수집·전달을 동기 stub으로 대체하고 observer 본체를 원본 ARM으로 실행했다. 실제 callback 컨테이너 수명과 스케줄링은 미검증이다. <a href="colorspace-ui-evidence.json">observer 조건부 store·return</a></p>
-<p>요청 <code>0x145</code>의 하위 수신부와 <code>52ecf4a8</code> 연결은 앞선 분석에서 별도로 검증했다. 이번 UI 검사는 <code>52edd820</code> 진입에서 인자를 포착하므로 메뉴부터 ISP까지 한 번에 실행한 결과로 합산하지 않는다. <a href="colorspace-message-checks.json">기존 1,536사례의 실행 범위</a></p>
-<h2 id="resources">행이 선택하는 아이콘과 문자열</h2>
-<div class="table-scroll"><table><thead><tr><th scope="col">옵션</th><th scope="col">문자열 ID</th><th scope="col">style byte = 0</th><th scope="col">style byte ≠ 0</th></tr></thead><tbody>
-<tr><td>0 · sRGB</td><td><code>1f6</code></td><td>icon <code>539</code></td><td>icon <code>305</code></td></tr>
-<tr><td>1 · AdobeRGB</td><td><code>1f7</code></td><td>icon <code>537</code></td><td>icon <code>330</code></td></tr>
+<p>그래서 같은 값을 다시 확정해도 setter에는 들어갑니다. 레코드 기록과 observer 생성만 빠집니다. 반대로 레코드와 캐시가 서로 어긋나 있으면, 레코드에 이미 있는 값과 같은 값을 다시 쓰는 경우도 생깁니다.</p>
+
+<div class="table-wrap"><table>
+<caption>레코드와 캐시를 일부러 어긋나게 한 4조건</caption>
+<thead><tr><th>레코드</th><th>캐시</th><th>확정한 값</th><th class="n">레코드 기록</th><th class="n">캐시 기록</th><th>속성 요청</th><th>레코드의 다른 바이트</th></tr></thead>
+<tbody>
+<tr><td>0</td><td>1</td><td>0</td><td class="n">1</td><td class="n">1</td><td>값 0</td><td>그대로</td></tr>
+<tr><td>0</td><td>1</td><td>1</td><td class="n">1</td><td class="n">0</td><td>값 1</td><td>그대로</td></tr>
+<tr><td>1</td><td>0</td><td>0</td><td class="n">1</td><td class="n">0</td><td>값 0</td><td>그대로</td></tr>
+<tr><td>1</td><td>0</td><td>1</td><td class="n">1</td><td class="n">1</td><td>값 1</td><td>그대로</td></tr>
 </tbody></table></div>
-<p>행 준비 함수 <code>52779a58</code>이 <code>529f137c</code>에서 icon ID를, <code>529ed53c</code>에서 문자열 ID를 받아 <code>52c10aec</code>에 넘긴다. 이 함수는 행의 <code>+180</code> IconView에 <code>52bf1430</code>으로 ID를 설정하고 <code>+18c</code> 텍스트 객체에 <code>52bee8f8</code>로 문자열 ID를 설정한다. style byte의 공식 의미나 각 언어의 실제 문자열·글꼴·완성 화면은 아직 확인하지 않았다. <a href="colorspace-ui-evidence.json">ID 선택·렌더러 경계</a> · <a href="icon-resources.html">IconView에서 ICONBIN까지의 기존 분석</a></p>
-<p>descriptor의 title 후보 <code>1f3</code>와 header helper의 <code>1f5</code>는 서로 다른 ID다. 이 값들을 같은 화면 제목으로 합치지 않았다. 검사에서는 행 렌더링을 ID 포착 stub으로 대체했으므로 실제 글리프와 픽셀 배치까지 재현한 것은 아니다.</p>
-<h2 id="verification">검사 범위와 후속 조건</h2>
-<p>원본 ARM의 합성 실행 16사례를 통과했다. 확정·취소 조합 8개, record·캐시 불일치 4개, observer gate 1개, 선택 행 차단 2개, 다른 style 값의 리소스 선택 1개다. 확정·취소 조합에서는 같은 객체에 메뉴 구성을 다시 수행해 선택 상태를 재구성했다. 창 소멸·재생성이나 전체 재개방을 검사한 것은 아니다. <a href="colorspace-ui-checks.json">16사례·stub·범위 해시</a></p>
-<p>초기 8사례와 추가 경계 6개를 독립 검토했고 이후 조정자가 검사를 16사례로 정리했다. 검토에서 발견한 두 작은 문제는 수정했다. route 검사 전에 descriptor를 <code>ffff</code>로 초기화해 실제 기록을 확인하고 결과의 재개방 표현을 동일 객체의 선택 상태 재구성으로 바꿨다. 새 genuine C 14개와 보조 ARM 범위 12개는 로컬에 저장했다. 공개 자료에는 해시·주소·관계만 포함한다. <a href="colorspace-ui-evidence.json">독립 검토·원본 산출물 근거</a></p>
-<p>디컴파일러 결과에는 구체적인 한계가 있다. 메뉴 구성 C는 <code>5278e150</code>의 조건부 store를 무조건 대입처럼 표현하고 확정 함수 C는 <code>5278db78</code>의 close tail call을 누락한다. genuine C를 손으로 수정하지 않고 보존했으며 조건과 호출은 원본 ARM과 실행 결과를 기준으로 판단했다.</p>
+<p class="small muted">네 조건 모두 화면을 채울 때의 포커스는 캐시 값을 따랐습니다. 기록 전후로 레코드 앞쪽 <code>0x400</code>바이트를 비교해 <code>+0x35b</code> 한 바이트만 바뀐 것을 확인했습니다.</p>
+
+<div class="callout model"><strong class="label">시험 조건</strong>
+<p>레코드와 캐시가 어긋난 상태는 시험이 만들어 넣은 것입니다. 실제 카메라에서 이런 불일치가 언제 생기는지는 추적하지 않았습니다.</p></div>
+
+<h3>observer가 하는 두 가지 일은 조건이 다릅니다</h3>
+<ul>
+<li><strong>캐시 맞추기</strong> — 레코드의 값을 캐시와 비교해 다를 때만 캐시를 갱신합니다.</li>
+<li><strong>하위 요청</strong> — 레코드의 바이트 <code>+0x2c</code>가 0일 때만 색공간 속성 요청 함수로 넘어갑니다. 0이 아니면 캐시만 맞추고 돌아갑니다.</li>
+</ul>
+<p><code>+0x2c</code>를 1로 둔 사례에서 레코드와 캐시는 각각 한 번씩 기록됐고 속성 요청은 없었습니다. 이 바이트가 카메라에서 무엇을 뜻하는지는 확인하지 않았습니다.</p>
+
+<div class="callout warn"><strong class="label">주의</strong>
+<p>여기서 ‘레코드’는 UserData의 <code>+4</code>가 가리키는 번호 바이트로 고르는 메모리 안의 레코드입니다. 펌웨어 업데이트에서 말하는 활성 bank와 같은 것으로 보지 않습니다. 이 시험에는 값이 비휘발성 저장 장치에 기록됐다는 증거도 없습니다.</p></div>
+
+<details class="evidence"><summary>setter·observer의 주소와 명령</summary>
+<div class="table-wrap"><table class="compact">
+<thead><tr><th>단계</th><th>주소</th><th>설명</th></tr></thead>
+<tbody>
+<tr><th scope="row">값 반영 함수</th><td><code>0x527826f4</code> → <code>0x52954be0</code> → <code>0x52954afc</code></td><td>descriptor의 반영 함수가 감싸는 함수를 거쳐 setter로 갑니다.</td></tr>
+<tr><th scope="row">레코드 비교</th><td><code>0x52954b34</code>–<code>0x52954b3c</code></td><td><code>+0x35b</code>를 읽어 새 값과 비교합니다. 같으면 캐시 비교로 갑니다.</td></tr>
+<tr><th scope="row">캐시 비교</th><td><code>0x52954bcc</code>–<code>0x52954bd4</code></td><td><code>+0x3b7</code>을 읽어 새 값과 비교합니다. 다르면 기록으로 돌아갑니다.</td></tr>
+<tr><th scope="row">레코드 기록</th><td><code>0x52954b40</code></td><td><code>strb r1, [r3, #0x35b]</code></td></tr>
+<tr><th scope="row">observer</th><td><code>0x5290e520</code></td><td><code>0x5290e550</code>의 조건부 저장이 캐시를 갱신하고, <code>0x5290e558</code>의 조건부 복귀가 <code>+0x2c</code>를 반영합니다.</td></tr>
+<tr><th scope="row">속성 요청</th><td><code>0x52eaacf4</code> → <code>0x52edd820</code></td><td>요청 기술자를 얻은 뒤 색공간 속성 요청을 전달합니다. 시험은 <code>0x52edd820</code> 입구에서 인수를 기록합니다.</td></tr>
+<tr><th scope="row">요청 처리기</th><td><code>0x52ecf4a8</code></td><td>요청 <code>0x145</code>를 받는 쪽입니다. <a href="colorspace-message-checks.json">별도 시험 1,536건</a>의 범위입니다.</td></tr>
+</tbody></table></div>
+<p class="small">observer는 원본 ARM 코드로 실행했습니다. observer를 모아 두었다가 전달하는 콜백 컨테이너는 ‘모으는 즉시 그 자리에서 부르는’ 대체 함수로 바꿨습니다. 실제 컨테이너의 수명과 호출 시점은 확인하지 않았습니다.</p>
+</details>
+</section>
+
+<section id="verification">
+<h2>16가지 사례를 어떻게 실행했는가</h2>
+<p class="takeaway">원본 RTOS 이미지를 에뮬레이터에 올리고, 합성 객체를 만들어 route 처리기 → 메뉴 구성 → 이벤트 처리 순으로 원본 함수를 불렀습니다. 16개 사례가 모두 통과했습니다.</p>
+
+<div class="table-wrap"><table class="fit">
+<caption>사례 구성</caption>
+<thead><tr><th>묶음</th><th class="n">사례 수</th><th>확인한 것</th></tr></thead>
+<tbody>
+<tr><th scope="row">확정·취소 조합</th><td class="n">8</td><td>처음 값 2 × 보류 선택 2 × 동작 2</td></tr>
+<tr><th scope="row">레코드·캐시 불일치</th><td class="n">4</td><td>둘 중 하나만 달라도 기록하는지, 주변 바이트가 보존되는지</td></tr>
+<tr><th scope="row">observer의 요청 차단</th><td class="n">1</td><td>레코드 <code>+0x2c</code>가 0이 아니면 속성 요청이 없는지</td></tr>
+<tr><th scope="row">행 차단</th><td class="n">2</td><td>행 <code>+0x17a</code>가 0이 아니면 setter·기록·닫기가 모두 없는지</td></tr>
+<tr><th scope="row">다른 스타일 값</th><td class="n">1</td><td>아이콘 ID가 <code>0x305</code>·<code>0x330</code>으로 바뀌는지</td></tr>
+<tr><th scope="row">합계</th><td class="n">16</td><td>실행된 서로 다른 명령 주소 463개</td></tr>
+</tbody></table></div>
+
+<p>검증기는 허용한 원본 구간 20곳 밖의 코드가 실행되면 즉시 실패합니다. 그 밖으로 나가는 호출은 아래 목록의 대체 함수 20개가 받습니다. 레코드와 캐시에 일어나는 메모리 쓰기는 따로 세었습니다.</p>
+
+<details class="evidence"><summary>대체한 함수 20개</summary>
+<div class="table-wrap"><table class="compact">
+<thead><tr><th>주소</th><th>시험에서 하는 일</th></tr></thead>
+<tbody>
+<tr><td><code>0x528c4fcc</code></td><td>합성 factory 문맥을 돌려줌</td></tr>
+<tr><td><code>0x528c55c0</code></td><td>합성 UserData를 돌려줌</td></tr>
+<tr><td><code>0x528c5980</code></td><td>글꼴·스타일 문맥을 돌려줌</td></tr>
+<tr><td><code>0x52c10aec</code></td><td>행 그리기: 아이콘·문자열 ID만 기록</td></tr>
+<tr><td><code>0x52c108f0</code></td><td>현재값 표시(체크) 설정: 인수만 기록</td></tr>
+<tr><td><code>0x52c0f638</code></td><td>목록의 행 개수 기록</td></tr>
+<tr><td><code>0x52c01cbc</code></td><td>합성 사각형</td></tr>
+<tr><td><code>0x530fa17c</code> · <code>0x530fa23c</code> · <code>0x530fa05c</code></td><td>사각형의 폭·높이·소멸자: 아무 일도 하지 않음</td></tr>
+<tr><td><code>0x30000100</code></td><td>목록 레이아웃 가상 함수(시험용 주소): 아무 일도 하지 않음</td></tr>
+<tr><td><code>0x52c02114</code></td><td>표시 여부 설정: 아무 일도 하지 않음</td></tr>
+<tr><td><code>0x52c0ec04</code></td><td>목록 포커스를 직접 설정. 물리 입력과 스크롤은 없음</td></tr>
+<tr><td><code>0x526d8b28</code></td><td>화면 닫기 요청 횟수를 셈</td></tr>
+<tr><td><code>0x530f25f4</code> · <code>0x530f2630</code></td><td>합성 힙 할당, 해제는 아무 일도 하지 않음</td></tr>
+<tr><td><code>0x5292e804</code></td><td>만들어진 observer를 받아 둠(컨테이너 구현은 건너뜀)</td></tr>
+<tr><td><code>0x5292e428</code></td><td>받아 둔 observer를 그 자리에서 실행</td></tr>
+<tr><td><code>0x52eaacf4</code></td><td>요청 기술자를 돌려줌</td></tr>
+<tr><td><code>0x52edd820</code></td><td>속성 요청: 인수만 기록</td></tr>
+</tbody></table></div>
+</details>
+
+<details class="evidence"><summary>분석한 함수 구간</summary>
+<div class="table-wrap"><table class="compact">
+<thead><tr><th>역할</th><th>구간</th></tr></thead>
+<tbody>
+<tr><th scope="row">선택지 개수</th><td><code>0x5277620c</code>–<code>0x52776214</code></td></tr>
+<tr><th scope="row">머리글 문자열</th><td><code>0x52776a08</code>–<code>0x52776a18</code></td></tr>
+<tr><th scope="row">행 준비</th><td><code>0x52779a58</code>–<code>0x52779ae0</code></td></tr>
+<tr><th scope="row">값 반영</th><td><code>0x527826f4</code>–<code>0x52782724</code></td></tr>
+<tr><th scope="row">현재값 비교</th><td><code>0x52785f5c</code>–<code>0x52785f90</code></td></tr>
+<tr><th scope="row">문자열 ID · 아이콘 ID</th><td><code>0x529ed53c</code>–<code>0x529ed55c</code> · <code>0x529f137c</code>–<code>0x529f13e0</code></td></tr>
+<tr><th scope="row">반영 호출 · 확정</th><td><code>0x5278dac0</code>–<code>0x5278db30</code> · <code>0x5278db30</code>–<code>0x5278db7c</code></td></tr>
+<tr><th scope="row">취소 hook · 취소 콜백</th><td><code>0x5278db88</code>–<code>0x5278dbdc</code> · <code>0x5278dbdc</code>–<code>0x5278dc08</code></td></tr>
+<tr><th scope="row">동작 연결</th><td><code>0x5278dcd0</code>–<code>0x5278de30</code></td></tr>
+<tr><th scope="row">메뉴 구성</th><td><code>0x5278e05c</code>–<code>0x5278e2d8</code></td></tr>
+<tr><th scope="row">이벤트 처리</th><td><code>0x5278ef84</code>–<code>0x5278f10c</code></td></tr>
+<tr><th scope="row">route 처리기 (보조)</th><td><code>0x5278bb44</code>–<code>0x5278d7ec</code></td></tr>
+<tr><th scope="row">setter와 감싸는 함수 (보조)</th><td><code>0x52954afc</code>–<code>0x52954c98</code></td></tr>
+<tr><th scope="row">observer (보조)</th><td><code>0x5290e520</code>–<code>0x5290e574</code></td></tr>
+</tbody></table></div>
+<p class="small">구간의 끝 주소는 포함하지 않습니다. 함수 14개의 디컴파일 결과와 보조 구간 12개의 ARM 목록은 공개하지 않고 로컬에 보관합니다. 공개 자료에는 구간별 SHA-256, 주소, 호출 관계만 있습니다(<a href="colorspace-ui-evidence.json">colorspace-ui-evidence.json</a>).</p>
+</details>
+
+<h3>디컴파일 결과를 그대로 믿지 않은 이유</h3>
+<p>디컴파일러(angr 10.0.5)가 만든 C 코드에는 원본 명령과 다른 곳이 두 군데 있었습니다. 판단은 원본 ARM 명령과 실행 결과를 기준으로 했고, 디컴파일된 C는 손대지 않고 보관했습니다.</p>
+<ul>
+<li>메뉴 구성 함수의 C는 <code>0x5278e150</code>의 조건부 저장을 무조건 대입처럼 표현합니다.</li>
+<li>확정 함수의 C는 <code>0x5278db78</code>의 닫기 꼬리 호출을 빠뜨립니다.</li>
+</ul>
+
+<details><summary>조사 경과: 독립 검토에서 고친 것</summary>
+<p>처음 만든 8개 사례와 추가 경계 6개를 다른 검토자가 독립적으로 다시 실행했습니다. 그 뒤 사례를 16개로 정리했고, 늘어난 사례는 조정자가 따로 다시 실행했습니다. 검토에서 나온 작은 문제 두 가지를 고쳤습니다.</p>
+<ul>
+<li>route 검사 전에 descriptor 번호를 <code>0xffff</code>로 초기화해, 72가 실제로 기록되는지 확인하도록 했습니다.</li>
+<li>결과의 ‘다시 열기’라는 표현을 ‘같은 객체의 선택 상태 재구성’으로 바꿨습니다.</li>
+</ul>
+<p class="small">검토 범위는 디컴파일 파일 14개와 ARM word 5,194개였고, 중요도가 높은 지적은 없었습니다.</p>
+</details>
+</section>
+
+<section id="limits">
+<h2>한계와 남은 과제</h2>
+<ul>
+<li><strong>입력</strong> — 이벤트 <code>0xe7</code>·<code>0xe9</code>와 실제 버튼·터치의 대응을 확인하지 않았습니다.</li>
+<li><strong>화면</strong> — 레이아웃, 표시 여부, 아이콘·글자 그리기는 대체 함수였습니다. 글리프와 픽셀 배치는 재현하지 않았습니다.</li>
+<li><strong>창의 수명</strong> — 생성자와 화면 열기 진입은 정적으로만 봤습니다. 창을 없애고 다시 만드는 과정은 실행하지 않았습니다.</li>
+<li><strong>아래 단계</strong> — 시험은 속성 요청 함수 입구에서 멈춥니다. 메뉴에서 ISP까지를 한 번에 실행한 결과가 아닙니다.</li>
+<li><strong>저장</strong> — 카메라·렌즈·주변 장치 입출력과 비휘발성 기록은 하지 않았습니다.</li>
+</ul>
+<p>화면을 옮기려면 실제 입력에서 포커스 변경까지의 연결, 글꼴·문자열 자원의 해석, 창을 만들고 닫을 때의 객체 수명, 설정의 저장과 복원을 더 확인해야 합니다. 그 다음에 K-3 II와 Q7에서 뜻이 대응하는 이벤트·위젯·설정 함수를 각각 찾아야 합니다. 이 문서의 자료는 기능 단위의 대응을 정하는 근거입니다. K-3 Mark III의 함수 주소나 객체를 다른 기종에 그대로 복사할 수 있다는 증거가 아닙니다.</p>
+</section>
+
+<section id="reproduce">
+<h2>재현 방법</h2>
+<p>검증기는 RTOS 이미지 또는 <a href="../inspect_firmware.py">추출기</a>가 만든 <code>decoded.bin</code> 전체를 입력으로 받고, SHA-256이 아래 값과 같을 때만 실행합니다. Python 패키지 <code>unicorn</code>이 필요합니다.</p>
+<dl class="kv">
+<dt>RTOS SHA-256</dt><dd><code class="wrap">342d2f35405e8daf1797dfe431d2e4aa70f4b52a2c242a29df48206672f1dfb4</code></dd>
+<dt>RTOS 적재 기준 주소</dt><dd><code>0x52500000</code></dd>
+</dl>
 <pre><code>python verify_colorspace_ui.py rtos.bin --output colorspace-ui-checks.json</code></pre>
-<p><a href="../verify_colorspace_ui.py">재현 도구</a>는 입력 RTOS 또는 전체 decoded 파일의 SHA-256을 확인한다. 기존 출력은 덮어쓰지 않고 assert를 비활성화하는 실행은 거부한다. GUI 배치, focus 직접 설정, heap, callback 전달과 속성 제출의 대체 지점은 결과 JSON에 기록했다. 카메라·렌즈·주변장치 I/O와 비휘발성 기록은 수행하지 않았다.</p>
-<p>이식에 필요한 다음 조건은 실제 입력에서 focus 변경까지의 연결, 글꼴·문자열 리소스 해석, 창 생성과 종료 시 객체 수명, 설정 저장·복원이다. 그 뒤 K-3 II와 Q7 각각에서 의미가 대응하는 이벤트·위젯·설정 API를 찾아야 한다. 현재 자료는 기능 단위 대응을 정하는 근거이며 K-3 III의 함수 주소나 객체를 다른 기종에 그대로 복사할 수 있다는 증거는 아니다.</p>
-</main><footer>정적 분석과 합성 CPU 실행 결과다. 실제 카메라 입력·완성 화면·저장·전원 재시작·빌드·플래시는 검증하지 않았다. HTML 구조와 링크만 검사했으며 화면 렌더링 검사는 수행하지 않았다.</footer></body></html>
+<p>출력 파일이 이미 있으면 덮어쓰지 않고 멈춥니다. <code>-O</code> 옵션처럼 assert를 끄는 실행은 거부합니다. 대체한 지점과 한계는 결과 JSON의 <code>stubs</code>와 <code>limits</code>에 기록됩니다.</p>
+</section>
+
+<section id="refs">
+<h2>근거 파일과 참고 자료</h2>
+<ul class="refs">
+<li><a href="colorspace-ui-checks.json">colorspace-ui-checks.json</a> — 16개 사례의 결과, 대체 함수 목록, 실행 구간 해시</li>
+<li><a href="colorspace-ui-evidence.json">colorspace-ui-evidence.json</a> — 함수 구간, descriptor의 word, 핵심 명령, 관계 요약, 독립 검토 기록</li>
+<li><a href="../verify_colorspace_ui.py">verify_colorspace_ui.py</a> — 재현 도구</li>
+<li><a href="colorspace-message-checks.json">colorspace-message-checks.json</a> — 요청 <code>0x145</code>를 받는 쪽의 별도 시험 1,536건 (<a href="pipeline-report.html#0x145">설명</a>)</li>
+<li><a href="ui-port-contract.html">UI 이식 설계</a> — 세 기종의 같은 화면 비교</li>
+<li>외부 자료: <a href="https://www.ricoh-imaging.co.jp/english/support/man-pdf/k-3-3.pdf">PENTAX K-3 Mark III 사용설명서</a>(24쪽 메뉴 목록, 48쪽 Still Image Capture Settings) · <a href="https://itanium-cxx-abi.github.io/cxx-abi/abi.html#member-function-pointers">Itanium C++ ABI: 멤버 함수 포인터</a> · <a href="https://github.com/unicorn-engine/unicorn">Unicorn CPU 에뮬레이터</a></li>
+</ul>
+</section>
+
+</main>
+</div>
+<!-- chrome:bottom -->
+<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">UI와 화면 자원 — 이 주제의 문서</h2><ol><li><a href="ui-port-contract.html">UI 이식 설계</a></li><li><a href="colorspace-ui.html" aria-current="page">색공간 화면: 선택·확정·취소</a></li><li><a href="colorspace-ui-input.html">색공간 화면: 방향 입력·포커스</a></li><li><a href="icon-resources.html">ICONBIN 아이콘 자원</a></li></ol></nav>
+<nav class="pager" aria-label="이전·다음 문서"><a class="prev" href="ui-port-contract.html"><small>← 이전</small>UI 이식 설계</a><a class="next" href="colorspace-ui-input.html"><small>다음 →</small>색공간 화면: 방향 입력·포커스</a></nav>
+<footer class="sitefoot"><div class="sitefoot-in"><nav aria-label="사이트"><a href="../index.html#map">문서 지도</a><a href="../index.html#levels">검증 수준 읽는 법</a><a href="../glossary.html">용어집</a><a href="research-program.html">세 기종 연구 본부</a><a href="https://github.com/yunhyok/pentax-k3iii-firmware-analysis">GitHub 저장소</a></nav><p>PENTAX K-3 Mark III 펌웨어 2.20 분석 문서. PC에서 수행한 정적 분석과 에뮬레이션 결과이며, 카메라 실기에서 검증한 내용이 아닙니다. 원본 펌웨어와 추출한 독점 코드는 포함하지 않습니다.</p></div></footer>
+<!-- /chrome:bottom -->
+</body>
+</html>

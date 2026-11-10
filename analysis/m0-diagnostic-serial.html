@@ -1,51 +1,399 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>M0 초기 설정에서 직렬 출력까지</title><style>
-:root{color-scheme:light dark;--bg:#f7f8fa;--paper:#fff;--ink:#182332;--muted:#48596b;--line:#d2dbe5;--accent:#124b8e;--soft:#edf3fa;--focus:#d75f00}
-@media(prefers-color-scheme:dark){:root{--bg:#111821;--paper:#18222d;--ink:#e8edf4;--muted:#b4c2d2;--line:#405369;--accent:#98c8ff;--soft:#223348;--focus:#ffb374}}
-*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.85 system-ui,-apple-system,"Malgun Gothic",sans-serif;word-break:keep-all;overflow-wrap:anywhere}
-a{color:var(--accent);text-underline-offset:.18em}a:hover{text-decoration-thickness:2px}:focus-visible{outline:3px solid var(--focus);outline-offset:4px}
-header,main,footer{max-width:1120px;margin:auto;padding:36px clamp(18px,4vw,56px)}header{padding-top:56px;padding-bottom:24px}main{background:var(--paper);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
-.eyebrow{color:var(--muted);font-size:.84rem;letter-spacing:.06em}h1{font-size:clamp(1.85rem,4.5vw,3rem);line-height:1.35;letter-spacing:-.025em;margin:12px 0 18px}h2{font-size:1.5rem;line-height:1.5;margin:3.6rem 0 1rem;padding-top:1.2rem;border-top:1px solid var(--line)}h2:first-child{margin-top:0}h3{font-size:1.12rem;margin-top:2rem}p{margin:1rem 0}strong{font-weight:650}.intro{max-width:55em;color:var(--muted)}
-nav{margin-top:25px}nav ul{display:flex;flex-wrap:wrap;gap:8px 22px;list-style:none;padding:0;margin:0}nav ul ul{display:none}nav a{font-size:.9rem}code{font: .88em/1.6 ui-monospace,Consolas,monospace;overflow-wrap:anywhere}pre{background:var(--soft);padding:18px;overflow-x:auto;white-space:pre-wrap;border-radius:5px}pre code{font-size:.82rem}
-.table-scroll{overflow-x:auto;margin:24px 0}table{border-collapse:collapse;width:100%;font-size:.92rem;min-width:530px}th,td{text-align:left;vertical-align:top;padding:14px 16px;border-bottom:1px solid var(--line)}th{background:var(--soft);font-weight:650}td:first-child{min-width:125px}details{border-block:1px solid var(--line);margin-top:24px;padding:16px 0}summary{cursor:pointer;font-weight:650;padding:6px 0}.caption,.meta{font-size:.86rem;color:var(--muted)}
-figure{margin:32px 0;padding:24px 0;border-block:1px solid var(--line)}figcaption{font-size:.95rem;font-weight:650;margin-bottom:20px}.flow{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:32px;list-style:none;padding:0;margin:18px 0}.flow li{position:relative;padding:18px;background:var(--soft);border-radius:6px;line-height:1.6}.flow strong{display:block;font-size:1rem}.flow span{display:block;color:var(--muted);font-size:.86rem;margin-top:9px}.flow li:not(:last-child)::after{content:"→";position:absolute;right:-27px;top:40%;font-size:22px;color:var(--muted)}.second{margin-top:24px}footer{font-size:.88rem;color:var(--muted)}
-@media(max-width:740px){body{font-size:16px}header,main,footer{padding-inline:20px}.flow{grid-template-columns:1fr;gap:26px}.flow li:not(:last-child)::after{content:"↓";right:auto;left:calc(50% - 8px);top:auto;bottom:-28px}.flow li{padding:15px 18px}h2{font-size:1.3rem}nav ul{gap:10px 18px}table{font-size:.87rem}th,td{padding:12px}header{padding-top:30px}}
-@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
-@media print{body{background:white;color:black;font-size:10pt}header,main,footer{max-width:none;padding:12pt}nav{display:none}a{color:inherit}h2,figure,table{break-inside:avoid}h2{break-after:avoid}main{border:0}.flow li{background:#f1f3f5}.table-scroll{overflow:visible}table{min-width:0}details>*{display:block!important}}
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>M0의 진단용 직렬 출력: 속도 설정에서 문자 출력까지 — PENTAX K-3 Mark III 펌웨어 연구</title>
+<meta name="description" content="K-3 Mark III 펌웨어의 M0 초기화 코드가 직렬 포트의 속도를 계산해 설정하고 문자를 내보내는 경로를 추적했습니다. 레지스터 배치와 분주식이 Ricoh가 공개한 USIO 직렬 드라이버와 맞으며, 실제 출력 핀과 통신 속도는 확인하지 않았습니다.">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-camera="k3iii">
+<!-- chrome:top -->
+<a class="skip" href="#main">본문 바로가기</a>
+<div class="topbar"><div class="topbar-in"><a class="brand" href="../index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="../index.html" aria-current="true">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="https://yunhyok.github.io/pentax-q7-firmware-analysis/">Q7</a></div><nav class="topnav" aria-label="주제"><a href="../index.html">개요</a><a href="guide-boot.html" aria-current="true">부팅·저장소</a><a href="guide-update.html">업데이트</a><a href="guide-rebuild.html">재구축</a><a href="guide-rtos.html">명령·셸</a><a href="guide-color.html">색 처리</a><a href="lightroom-bridge.html">Lightroom</a><a href="af-foundations.html">AF</a><a href="ui-port-contract.html">UI</a></nav></div></div>
+<nav class="crumbs" aria-label="현재 위치"><ol><li><a href="../index.html">PENTAX K-3 Mark III</a></li><li><a href="guide-boot.html">부팅과 저장소</a></li><li aria-current="page">M0 진단 직렬 출력</li></ol></nav>
+<!-- /chrome:top -->
+<header class="page-head">
+<p class="eyebrow">부팅과 저장소 · M0 초기화 세부</p>
+<h1>M0의 진단용 직렬 출력: 속도 설정에서 문자 출력까지</h1>
+<p class="lead">부팅 초기 코드는 진단 문구를 직렬 포트로 내보냅니다. 초기 설정 가운데 어디까지가 이 직렬 출력을 위한 것인지 가려내면, 정체를 모르는 레지스터 기록의 범위가 그만큼 줄어듭니다.</p>
+</header>
+<div class="layout">
+<!-- chrome:toc -->
+<nav class="toc" aria-label="이 문서의 목차"><h2 data-toc="no">이 문서에서</h2><ol><li><a href="#background">배경: 부팅 초기의 직렬 콘솔</a></li><li><a href="#setup">직렬 설정: 상태 비트 하나로 속도와 클록 값을 고릅니다</a></li><li><a href="#output">문자 출력: 등록된 callback 아래로는 이어지지만 포맷터와의 연결은 미확정입니다</a></li><li><a href="#source">공개 USIO 드라이버와 나란히 놓으면 배치와 계산이 같습니다</a></li><li><a href="#verification">검증: 원본 함수를 8가지 조건으로 실행</a></li><li><a href="#limits">한계와 남은 과제</a></li><li><a href="#reproduce">재현 방법</a></li><li><a href="#refs">근거 파일과 참고 자료</a></li></ol></nav>
+<!-- /chrome:toc -->
+<main class="doc" id="main">
 
-.site-nav{border-block:1px solid var(--line);padding:14px 0;margin:20px 0}.site-nav a{display:inline-block;margin:4px 16px 4px 0}
-.review-note{background:var(--soft);padding:16px 20px;margin:24px 0}.toc{font-size:.92rem}.toc ul{list-style:none;padding-left:0}.toc ul ul{padding-left:20px}
-.branch{margin:18px 0;padding:0 0 0 24px;border-left:3px solid var(--line)}.branch p{margin:8px 0}.diagram-line{padding:12px 16px;background:var(--soft);border-radius:4px}
-td code{white-space:nowrap}
-</style></head><body>
-<header><div class="eyebrow">PENTAX K-3 MARK III · M0 STATIC ANALYSIS · 2026-11-08</div><h1>M0 초기 설정에서 직렬 출력까지</h1>
-<p class="intro">reset helper 뒤의 설정과 문자 출력 함수가 같은 MMIO 영역을 사용한다. 레지스터 배치와 분주식은 Ricoh 공개 소스의 USIO 직렬 드라이버와 맞는다. 이 비교로 초기 설정의 일부를 직렬 통신 경로로 좁혔지만 실제 출력 핀이나 SRAM remap을 확정한 것은 아니다.</p>
-<nav class="site-nav" aria-label="보고서 탐색"><a href="../index.html">연구 개요</a><a href="m0-board-config.html">보드 설정</a><a href="startup-storage.html#m0-reset-chain">reset 상위 경로</a><a href="#setup">설정과 분주식</a><a href="#output">출력 연결</a><a href="#source">공식 소스 대조</a><a href="#verification">검증 범위</a></nav></header>
-<main><section id="setup"><h2>pin 제어 후보 다음에 직렬 설정이 이어진다</h2>
-<p><code>0x3ffe0838</code>은 <code>0x4dffb208</code>에 OR <code>0x20</code>을 적용한 뒤 <code>0x3ffe7698</code>을 호출한다. 이 하위 함수는 설정을 준비해 <code>0x3fff42e0</code>으로 넘기고 <code>0x3fff4550</code>을 호출한다. 호출 순서는 확인했지만 pin 제어 후보와 실제 전기적 출력의 연결은 확인하지 않았다. <a href="m0-diagnostic-serial-evidence.json">원본 명령과 주소 근거</a> · <a href="m0-board-config.html#source">조건부 pinctrl 해석</a>.</p>
-<figure><figcaption>초기 설정에서 확인한 호출 순서</figcaption><ol class="flow"><li><strong>초기 helper</strong><span><code>0x3ffe0838</code><br>pin 제어 후보 OR <code>0x20</code></span></li><li><strong>설정 준비</strong><span><code>0x3ffe7698</code><br>상태 bit에 따라 설정값 선택</span></li><li><strong>설정 적용</strong><span><code>0x3fff42e0</code><br>분주값과 제어 레지스터 기록</span></li><li><strong>출력 활성화 후보</strong><span><code>0x3fff4550</code><br>상태 저장과 제어 bit 설정</span></li></ol></figure>
-<p>상위 함수와 설정 적용 함수는 각각 <code>0x4dffe000</code>의 bit 24를 읽는다. 상위는 bit가 0이면 설정 첫 word에 115200을, 1이면 1200을 넣는다. 하위는 이 bit에 따라 100000000 또는 32768을 선택하고 <code>0x4dffe100</code>의 하위 byte에 1을 더한 값으로 먼저 나눈다. 이어 설정 첫 word로 나누고 1을 뺀 값을 <code>0x4de00006</code>에 halfword로 기록한 뒤 bit 15를 지운다. 두 상태 읽기 사이에 하드웨어 값이 유지되는지는 이번 분석으로 보장하지 않는다.</p>
-<pre>Q = ((N / (low8(clock_divider) + 1)) / config[0]) - 1
+<section class="summary">
+<h2 data-toc="no">핵심 요약</h2>
+<ul>
+<li>M0의 초기 설정은 pin 제어 후보 레지스터의 비트 하나를 켠 뒤 곧바로 <strong>직렬 포트 설정 함수</strong>를 부릅니다. 이 함수는 상태 비트 하나에 따라 목표 속도(115200 또는 1200)와 계산에 쓸 클록 값을 고르고, 나눗셈으로 얻은 분주값을 레지스터에 씁니다.</li>
+<li>문자를 내보내는 함수는 줄바꿈(LF) 앞에 CR을 넣고, 상태 비트를 기다렸다가 한 문자씩 데이터 레지스터에 씁니다.</li>
+<li>레지스터의 오프셋·비트 위치와 “클록 ÷ 속도 − 1” 계산은 <strong>Ricoh가 공개한 Linux의 USIO 직렬 드라이버</strong>와 같습니다. 같은 드라이버는 Linux 업스트림에도 있습니다.</li>
+<li>원본 함수를 에뮬레이터에서 8가지 조건으로 실행해 분기와 기록 순서를 확인했습니다. <strong>실제 통신 속도, 출력 핀, 전압 파형은 확인하지 않았습니다.</strong> SRAM remap에 관한 새 근거도 아닙니다.</li>
+</ul>
+</section>
+
+<div class="scope">
+<div class="ok"><h3><span class="badge ok">확인</span> 원본 코드 실행으로 확인</h3>
+<ul>
+<li>설정 준비·적용·활성화 함수의 분기와 레지스터 기록 순서(5사례)</li>
+<li>분주값 계산 결과 네 가지</li>
+<li>문자 출력 함수의 대기·기록 순서, CR 삽입(3사례)</li>
+</ul></div>
+<div class="static"><h3><span class="badge static">정적 분석</span> 읽어서 판단</h3>
+<ul>
+<li>초기 helper에서 설정 함수까지의 호출 순서</li>
+<li>출력 callback의 등록, callback 아래의 호출 사슬</li>
+<li>공개 USIO 드라이버 소스와의 대조</li>
+</ul></div>
+<div class="model"><h3><span class="badge model">모델</span> 시험 조건으로 정한 것</h3>
+<ul>
+<li>레지스터 자리에 둔 일반 RAM과 그 초기값</li>
+<li>상태 비트가 바뀌는 순서</li>
+<li>CPU는 Unicorn의 Cortex-M0 모델</li>
+</ul></div>
+<div class="open"><h3><span class="badge open">미확인</span> 확인하지 못한 것</h3>
+<ul>
+<li>포맷터가 출력 callback을 부르는 지점</li>
+<li>실제 입력 클록, 통신 속도, 출력 핀</li>
+<li>레지스터의 물리 주소 대응, SRAM remap, 인증</li>
+</ul></div>
+</div>
+
+<section id="background">
+<h2>배경: 부팅 초기의 직렬 콘솔</h2>
+<p>기기를 개발할 때는 화면이 켜지기 전 단계의 상태를 보려고 <dfn title="한 번에 한 비트씩 차례로 보내는 통신. 개발용 콘솔에 흔히 씁니다.">직렬 포트</dfn>(UART)로 글자를 내보냅니다. M0 코드에도 보드 버전 같은 진단 문구를 출력하는 호출이 있습니다. 직렬 포트를 쓰려면 먼저 통신 속도를 맞춰야 합니다. 속도는 입력 클록을 정수로 나눠 만들고, 그 나눗수를 <dfn title="입력 클록을 몇으로 나눌지 정하는 값. 이 값이 통신 속도(baud rate)를 결정합니다.">분주값</dfn>이라고 합니다.</p>
+<p>이 문서가 다루는 코드는 <a href="m0-board-config.html">M0 보드 설정</a>과 같은 reset 초기화에 속합니다. 그 문서에서 본 <code>0x4dffb208</code>의 비트 5(pin 제어 후보)를 켜는 초기 helper가 바로 뒤에 직렬 설정을 부릅니다. 이 연결을 확인하면 초기 레지스터 기록의 일부를 “직렬 출력 준비”로 분류할 수 있습니다.</p>
+<div class="callout plain"><strong class="label">USIO란</strong>
+<p>이 SoC 계열의 직렬 통신 장치를 Linux 드라이버에서 부르는 이름입니다. Ricoh가 배포한 K-3 Mark III용 Linux 커널 소스에 <code>drivers/tty/serial/usio.c</code>가 들어 있고, 이 저장소에도 <a href="../source/usio.c">사본</a>이 있습니다. 같은 장치의 드라이버가 Linux 업스트림에는 <a href="https://github.com/torvalds/linux/blob/master/drivers/tty/serial/milbeaut_usio.c">milbeaut_usio.c</a>라는 이름으로 있습니다.</p></div>
+<p>주소는 M0 레코드를 정적 분석 기준 주소 <code>0x3ffe0300</code>에 놓았을 때의 값입니다. M0라는 이름과 CPU 코어의 관계는 <a href="m0-board-config.html#background">M0 보드 설정의 배경</a>에 적었습니다.</p>
+</section>
+
+<section id="setup">
+<h2>직렬 설정: 상태 비트 하나로 속도와 클록 값을 고릅니다</h2>
+<p class="takeaway">설정 코드는 분자(클록 값)를 분주 바이트와 목표 속도로 차례로 나누고 1을 뺀 값을 분주값 레지스터에 씁니다.</p>
+
+<ol class="flow">
+<li class="static"><strong>초기 helper</strong><span><code>0x3ffe0838</code> · pin 제어 후보에 OR <code>0x20</code></span></li>
+<li class="ok"><strong>설정 준비</strong><span><code>0x3ffe7698</code> · 상태 비트로 목표 속도 선택</span></li>
+<li class="ok"><strong>설정 적용</strong><span><code>0x3fff42e0</code> · 분주값 계산과 제어 레지스터 기록</span></li>
+<li class="ok"><strong>출력 활성화 후보</strong><span><code>0x3fff4550</code> · 상태 저장과 제어 비트 설정</span></li>
+</ol>
+<p>초기 helper는 <code>0x4dffb208</code>에 OR <code>0x20</code>을 적용한 뒤 설정 준비 함수를 부릅니다. 설정 준비 함수는 설정값을 마련해 설정 적용 함수로 넘기고, 이어서 활성화 함수를 부릅니다. 두 호출 사이에 결과를 검사하는 분기는 없습니다. 호출 순서는 확인했지만 pin 제어 후보와 실제 전기적 출력의 연결은 확인하지 않았습니다.</p>
+
+<figure class="diagram">
+<figcaption>분주값이 정해지는 과정</figcaption>
+<div class="dg-scroll">
+<svg class="dg" viewBox="0 0 800 292" role="img" aria-labelledby="dg-baud-title dg-baud-desc">
+<title id="dg-baud-title">상태 비트에서 분주값 레지스터 기록까지</title>
+<desc id="dg-baud-desc">왼쪽의 상태 비트 24를 두 함수가 따로 읽습니다. 설정 준비 함수는 비트가 0이면 목표 속도 115200을, 1이면 1200을 고릅니다. 설정 적용 함수는 비트가 0이면 분자 100000000을, 1이면 32768을 고릅니다. 두 값이 계산식으로 들어갑니다. 계산식은 분자를 분주 바이트 더하기 1로 나누고, 다시 목표 속도로 나눈 뒤 1을 뺍니다. 결과를 0x4de00006에 16비트로 기록하고, 되읽어 비트 15를 지운 값을 다시 기록합니다.</desc>
+<defs><marker id="dg-baud-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0 0L10 5L0 10z"/></marker></defs>
+
+<rect class="b model" x="8" y="104" width="150" height="74" rx="8"/>
+<text class="t" x="20" y="128">상태 비트 24</text>
+<text class="s mono" x="20" y="148">0x4dffe000</text>
+<text class="s" x="20" y="166">두 함수가 따로 읽음</text>
+
+<rect class="b ok" x="200" y="20" width="252" height="86" rx="8"/>
+<text class="t" x="212" y="46">① 설정 준비: 목표 속도</text>
+<text class="s mono" x="212" y="68">0x3ffe7698</text>
+<text class="s" x="212" y="90">비트 0 → 115200 · 비트 1 → 1200</text>
+
+<rect class="b ok" x="200" y="176" width="252" height="86" rx="8"/>
+<text class="t" x="212" y="202">② 설정 적용: 분자</text>
+<text class="s mono" x="212" y="224">0x3fff42e0</text>
+<text class="s" x="212" y="246">비트 0 → 100000000 · 비트 1 → 32768</text>
+
+<rect class="b key" x="494" y="96" width="298" height="90" rx="8"/>
+<text class="t" x="506" y="122">분주값 계산</text>
+<text class="s" x="506" y="146">분자 ÷ (D + 1) ÷ 목표 속도 − 1</text>
+<text class="s" x="506" y="168">D: 0x4dffe100의 하위 바이트</text>
+
+<rect class="b ok" x="494" y="216" width="298" height="64" rx="8"/>
+<text class="t" x="506" y="242">0x4de00006에 16비트로 기록</text>
+<text class="s" x="506" y="264">되읽어 비트 15를 지우고 다시 기록</text>
+
+<path class="e model" d="M158 141H180V63H198" marker-end="url(#dg-baud-ah)"/>
+<path class="e model" d="M180 141V219H198" marker-end="url(#dg-baud-ah)"/>
+<path class="e" d="M452 63H472V126H492" marker-end="url(#dg-baud-ah)"/>
+<path class="e" d="M452 219H472V156H492" marker-end="url(#dg-baud-ah)"/>
+<path class="e" d="M643 186V214" marker-end="url(#dg-baud-ah)"/>
+</svg>
+</div>
+<ul class="dg-legend"><li><i class="ok"></i>원본 코드 실행으로 확인한 동작</li><li><i class="model"></i>시험에서 정해 넣은 입력</li><li><i class="key"></i>코드에서 읽어 낸 계산식</li></ul>
+</figure>
+
+<p>코드의 계산을 식으로 쓰면 다음과 같습니다. 나눗셈은 모두 정수 나눗셈이고, 양수 입력에서 순서대로 수행하는 경로를 나타냅니다.</p>
+<pre><code>Q = ((N / (low8(clock_divider) + 1)) / config[0]) - 1
 write16(0x4de00006, low16(Q))
-write16(0x4de00006, read16(0x4de00006) &amp; 0x7fff)</pre>
-<p>위 식은 유효한 양의 입력에서 정수 나눗셈을 순서대로 수행하는 경로를 나타낸다. 115200·1200을 설정 목표값 후보로 해석할 수 있지만 실제 baud rate를 측정한 것은 아니다. 100000000·32768도 코드에 쓰인 분자이며 해당 보드의 실제 입력 클록을 확인한 값은 아니다. <a href="m0-diagnostic-serial-evidence.json">분기·나눗셈·기록 위치</a>.</p>
-<p><code>0x3fff4550</code>은 상태 영역에 인자를 저장하고 <code>0x4de00001</code>의 bit 0을 설정한다. 두 번째 인자가 비제로일 때는 bit 4도 설정한다. 공개 USIO 드라이버에서는 같은 offset과 bit를 각각 송신 활성화와 수신 인터럽트 허용으로 부른다. 하위 함수의 실제 효과는 레지스터 대응이 성립한다는 조건에서 해석한다.</p>
-</section><section id="output"><h2>출력 callback 등록과 포맷터 내부 호출은 구분한다</h2>
-<div class="table-scroll"><table><thead><tr><th scope="col">연결</th><th scope="col">확인 내용</th><th scope="col">범위</th></tr></thead><tbody>
-<tr><td><code>Board ver → 0x3fff0630 → 0x3fff0ba0</code></td><td>진단 호출과 포맷터 진입</td><td>정적 연결</td></tr>
-<tr><td><code>0x3fff070c → stream+0x28</code></td><td>write callback으로 Thumb 주소 <code>0x3fff11dd</code> 등록</td><td>등록 사실</td></tr>
-<tr><td>포맷터 내부 → write callback</td><td>해당 간접 호출 지점 미확정</td><td>연결을 단정하지 않음</td></tr>
-<tr><td><code>0x3fff11dc → 0x3fff12fc → 0x3ffe0860 → 0x3ffe7710 → 0x3fff4800</code></td><td>하위 출력 호출과 데이터 기록</td><td>선택한 함수 경로</td></tr>
+write16(0x4de00006, read16(0x4de00006) &amp; 0x7fff)</code></pre>
+<dl class="kv">
+<dt><code>N</code></dt><dd>분자. <code>0x4dffe000</code>의 비트 24가 0이면 100,000,000, 1이면 32,768</dd>
+<dt><code>clock_divider</code></dt><dd><code>0x4dffe100</code>에서 읽은 값. 하위 8비트에 1을 더해 먼저 나눕니다.</dd>
+<dt><code>config[0]</code></dt><dd>설정의 첫 워드. 설정 준비 함수가 같은 비트를 보고 115,200 또는 1,200을 넣습니다.</dd>
+</dl>
+
+<div class="table-wrap"><table>
+<caption>에뮬레이터에서 실행한 네 조합의 분주값</caption>
+<thead><tr><th>상태 비트 24</th><th class="n">목표 속도</th><th class="n">분자</th><th class="n">분주 바이트 D</th><th>계산</th><th class="n">레지스터에 남은 값</th></tr></thead>
+<tbody>
+<tr><td>0</td><td class="n">115,200</td><td class="n">100,000,000</td><td class="n">0</td><td>몫 868 − 1</td><td class="n">867</td></tr>
+<tr><td>0</td><td class="n">115,200</td><td class="n">100,000,000</td><td class="n">255</td><td>몫 3 − 1</td><td class="n">2</td></tr>
+<tr><td>1</td><td class="n">1,200</td><td class="n">32,768</td><td class="n">0</td><td>몫 27 − 1</td><td class="n">26</td></tr>
+<tr><td>1</td><td class="n">1,200</td><td class="n">32,768</td><td class="n">255</td><td>몫 0 − 1 = −1, 16비트로 쓴 뒤 비트 15를 지움</td><td class="n">32,767</td></tr>
 </tbody></table></div>
-<p><code>0x3ffe7710</code>은 LF 앞에 CR을 출력한다. <code>0x3ffe0860</code>은 하위 반환값과 무관하게 요청 길이를 반환한다. 따라서 이 반환값만으로 실제 카메라의 직렬 전송 성공을 판단할 수 없다. <a href="m0-diagnostic-serial-evidence.json">callback과 출력 함수의 명령 근거</a>.</p>
-<p>마지막 함수 <code>0x3fff4800</code>은 <code>0x4de00003</code>의 bit 1을 기다리고 <code>0x4de00004</code>에 halfword를 기록한 뒤 다시 같은 상태 bit를 기다린다. 기록값은 <code>(읽은 halfword &amp; 0xfe00) | r0</code>의 하위 16bit다. 직접 인자의 높은 bit가 켜져 있으면 기존 상위 7bit에도 OR 결과가 반영된다. 상위 line writer는 문자 인자를 byte로 읽는다. 공개 소스의 SSR·DR 배치와 일치하지만 읽기·기록 레지스터의 실제 하드웨어 동작은 별도로 확인해야 한다. 이 함수에는 timeout이 없다. 상태 bit를 합성 RAM에서 바꾸는 CPU 검사는 분기와 접근 순서를 확인할 뿐 실제 송신 완료나 전압 파형을 재현하지 않는다.</p>
-</section><section id="source"><h2>공식 USIO 소스와 일치하는 부분</h2>
-<p>Ricoh의 <code>K3mkIII_220.tar.gz</code> 안에 있는 Linux 소스의 <code>drivers/tty/serial/usio.c</code>를 대조했다. 해당 소스는 SCR offset 1, SSR offset 3, DR offset 4, BGR offset 6을 정의한다. SCR bit 0은 TXE, bit 4는 RIE이고 SSR bit 1은 TDRE다. <a href="https://www.ricoh-imaging.co.jp/japan/products/oss/k-3-3/K3mkIII_220.tar.gz">Ricoh 배포본</a> · <a href="m0-diagnostic-serial-evidence.json">archive·member 해시와 행 번호</a>.</p>
-<p>같은 소스의 390–394행은 baud가 1보다 클 때 <code>uartclk / baud - 1</code>을 계산하고 417행은 그 값을 BGR에 쓴다. 이 구조와 여러 레지스터 offset의 일치가 직렬 설정 해석을 뒷받침한다. 다만 이 소스에서 M0의 정확한 base 주소와 입력 클록을 확인한 것은 아니므로 레지스터 호환성 비교와 물리 주소 매핑을 구분한다.</p>
-<p>이 경로는 <code>0x4dffb208</code>을 SRAM remap 레지스터로 볼 근거를 추가하지 않는다. 앞선 pinctrl 비교와 이번 직렬 초기화의 연속 호출은 pin 기능 설정이라는 해석을 뒷받침하는 단서다. 실제 pin multiplexing 표, <code>CLK_CRRRS</code> bit 정의, <code>0x2000fffc</code>와 <code>0x0100fffc</code>의 물리적 관계는 여전히 필요하다. <a href="m0-board-config.html">보드별 기록 순서와 한계</a>.</p>
-</section><section id="verification"><h2>검증과 후속 경계</h2>
-<p>설정 적용·활성화·문자 출력의 genuine C 3개를 추가해 로컬에 저장했다. 원본 Thumb, literal, 분기와 호출 대상이 판단의 기준이며 원시 C를 빌드 가능한 복원 소스로 취급하지 않았다. 활성화 함수의 C에서 unsupported로 남은 명령은 원본의 DSB이고 문자 출력 C의 상수 반환은 남은 r0 값이므로 전송 결과 API로 해석하지 않았다. 공개 자료에는 분석 설명과 재현 도구, 코드 범위와 해시를 남겼다.</p>
-<p>8사례의 합성 CPU 검사에서 원본 함수의 상태 분기와 기록 순서를 검증했다. 원본 MMIO 주소에는 독립 RAM을 배치했으며 카메라나 OS 장치에는 접근하지 않았다. 입력의 해시를 고정하고 직접 M0 파일과 decoded 컨테이너에서 같은 결과를 확인했다. <a href="m0-diagnostic-serial-checks.json">검사 결과</a> · <a href="../verify_m0_diagnostic_serial.py">재현 도구</a>.</p>
-<pre>python verify_m0_diagnostic_serial.py m0.bin --output m0-serial-direct.json
-python verify_m0_diagnostic_serial.py decoded.bin --output m0-serial-decoded.json</pre>
-<p>이 결과는 직렬 초기화의 일부를 구분한 것이며 수정 펌웨어의 수락을 입증하지 않는다. 비제로 bank의 실제 생산자, resource record+4의 값 결정 정책, 선행 Boot ROM의 인증과 SRAM remap은 미확정이다. <a href="update-bank-selection.html">현재까지 검증한 bank 선택 조건</a>.</p>
-</section></main><footer>정적 코드와 독립 RAM을 사용한 CPU 검사다. HTML 구조·로컬 링크와 320–1280px 화면 배치를 확인했다. 실제 통신·핀·SRAM alias·인증은 미검증이며 빌드·플래시는 수행하지 않았다.</footer></body></html>
+<p>몫은 분자를 (D + 1)로 나눈 뒤 목표 속도로 다시 나눈 정수입니다. 둘째 줄을 예로 들면 100,000,000 ÷ 256 = 390,625이고 390,625 ÷ 115,200 = 3입니다. 넷째 줄은 32,768 ÷ 256 = 128, 128 ÷ 1,200 = 0입니다.</p>
+<p class="small muted">분주 바이트 0과 255는 양 끝을 시험하려고 넣은 값입니다. 마지막 줄처럼 나눗셈 결과가 0이 되는 조합이 실제 하드웨어에서 나오는지는 알 수 없습니다.</p>
+
+<div class="callout warn"><strong class="label">수치를 읽을 때 주의</strong>
+<p>115200과 1200은 목표 통신 속도 후보로 해석할 수 있지만 실제 속도를 측정한 것은 아닙니다. 100000000과 32768도 코드에 적힌 분자일 뿐이며, 이 기판의 실제 입력 클록을 확인한 값이 아닙니다. 또 상태 비트를 두 함수가 따로 읽으므로, 두 번의 읽기 사이에 하드웨어 값이 그대로라는 보장은 이 분석에 없습니다.</p></div>
+
+<h3>출력 활성화 후보 함수</h3>
+<p><code>0x3fff4550</code>은 넘겨받은 두 인수를 상태 영역에 저장하고 <code>0x4de00001</code>의 비트 0을 켭니다. 두 번째 인수가 0이 아니면 비트 4도 켭니다. 공개 USIO 드라이버는 같은 오프셋의 같은 비트를 각각 송신 활성화(TXE)와 수신 인터럽트 허용(RIE)이라고 부릅니다. 이 해석은 레지스터 대응이 성립한다는 조건에서만 맞습니다. 초기 설정 경로에서는 두 번째 인수가 0이라 비트 0만 켭니다.</p>
+
+<details class="evidence"><summary>함수 범위와 명령 위치</summary>
+<div class="table-wrap"><table class="compact">
+<thead><tr><th>함수</th><th>코드 범위</th><th class="n">명령 수</th><th>코드 범위 SHA-256</th></tr></thead>
+<tbody>
+<tr><th scope="row">설정 준비</th><td><code>0x3ffe7698</code>–<code>0x3ffe76ea</code></td><td class="n">39</td><td><code class="wrap">9b4c4cc08b44d98fba37c20f72b3c9196908dd6721e151bb078dd4e744a66239</code></td></tr>
+<tr><th scope="row">설정 적용</th><td><code>0x3fff42e0</code>–<code>0x3fff450c</code></td><td class="n">273</td><td><code class="wrap">325a3cb949f8777bc5d3e5639d055dbdd1dc15edc9ed82eb8fb09e9c00ad29c9</code></td></tr>
+<tr><th scope="row">출력 활성화 후보</th><td><code>0x3fff4550</code>–<code>0x3fff457e</code></td><td class="n">22</td><td><code class="wrap">5e26aaf9d97d34df5f7bf8b0cc9cd24d68ea273d8a6db8084e99afc4c8f27f0a</code></td></tr>
+<tr><th scope="row">양수 나눗셈</th><td><code>0x3fff1788</code>–<code>0x3fff188c</code></td><td class="n">131</td><td><code class="wrap">88de6a6d14bb5e9208225357eda2f8bf0c5f1782575f0c58aa737a93d4bd74e2</code></td></tr>
+<tr><th scope="row">메모리 채우기</th><td><code>0x3fff04e2</code>–<code>0x3fff04f2</code></td><td class="n">8</td><td><code class="wrap">bec2f8c4da2605cdafc9d7313691a9ae099a807a87df4ad7b3b9cfcfcdb80a00</code></td></tr>
+</tbody></table></div>
+<ul class="small">
+<li>초기 helper: 읽기 <code>0x3ffe0840</code>, OR <code>0x3ffe0842</code>, 기록 <code>0x3ffe0844</code>, 설정 준비 호출 <code>0x3ffe0846</code>.</li>
+<li>설정 준비: 상태 읽기 <code>0x3ffe76a0</code>, 분기 <code>0x3ffe76a4</code>, 목표 속도 저장 <code>0x3ffe76aa</code> 또는 <code>0x3ffe76e6</code>, 설정 적용 호출 <code>0x3ffe76d2</code>, 활성화 호출 <code>0x3ffe76da</code>.</li>
+<li>설정 적용: 나눗셈 호출 <code>0x3fff4368</code>·<code>0x3fff436e</code>·<code>0x3fff44b0</code>, 1 빼기 <code>0x3fff4388</code>, 분주값 기록 <code>0x3fff43d0</code>, 되읽기 <code>0x3fff43d4</code>, 비트 15 지우기 <code>0x3fff43d8</code>–<code>0x3fff43da</code>, 다시 기록 <code>0x3fff43dc</code>.</li>
+<li>활성화: 인수 저장 <code>0x3fff4552</code>·<code>0x3fff4554</code>(저장 위치 <code>0x3fffec74</code>의 +4와 +8), 분기 <code>0x3fff455a</code>, 제어 바이트 기록 <code>0x3fff4566</code>·<code>0x3fff4570</code>, DSB <code>0x3fff4572</code>.</li>
+<li>에뮬레이터에서 설정을 마친 뒤 RAM 상태: <code>0x3fffec54</code>에 목표 속도, <code>0x3fffec78</code>에 <code>0x3ffe7685</code>, <code>0x3fffec7c</code>에 0, 제어 바이트 <code>0x4de00001</code>은 <code>0x81</code>. <code>0x3fff99c4</code>와 <code>0x3fff9940</code>의 128바이트 영역은 0으로 채워집니다. <code>0x3ffe7685</code>가 출력 callback이라는 것은 확인하지 않았습니다.</li>
+</ul>
+</details>
+</section>
+
+<section id="output">
+<h2>문자 출력: 등록된 callback 아래로는 이어지지만 포맷터와의 연결은 미확정입니다</h2>
+<p class="takeaway">출력 callback이 등록된다는 사실과 callback이 문자 기록 함수까지 내려간다는 사실은 각각 확인했습니다. 포맷터가 그 callback을 실제로 부르는 지점은 찾지 못했습니다.</p>
+
+<figure class="diagram">
+<figcaption>진단 문구에서 데이터 레지스터까지</figcaption>
+<div class="dg-scroll">
+<svg class="dg" viewBox="0 0 800 318" role="img" aria-labelledby="dg-out-title dg-out-desc">
+<title id="dg-out-title">진단 문구 출력 요청에서 문자 기록 함수까지의 호출 사슬</title>
+<desc id="dg-out-desc">윗줄은 보드 버전 문구 출력 요청, printf 진입 함수, 포맷터, write callback 순서입니다. 포맷터에서 write callback으로 가는 연결은 확인하지 못해 점선으로 표시했습니다. write callback은 스트림 구조의 +0x28에 등록됩니다. 아랫줄은 write callback 아래의 호출 사슬입니다. 오류 처리 어댑터, 요청 길이를 반환하는 어댑터, 줄 출력 함수, 문자 한 개 기록 함수 순서이고, 마지막 함수가 데이터 레지스터에 기록합니다. 줄 출력 함수와 문자 기록 함수는 에뮬레이터에서 실행했습니다.</desc>
+<defs><marker id="dg-out-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0 0L10 5L0 10z"/></marker><marker id="dg-out-aho" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah open" d="M0 0L10 5L0 10z"/></marker></defs>
+
+<rect class="b static" x="8" y="20" width="160" height="64" rx="8"/>
+<text class="t" x="20" y="46">Board ver 출력 요청</text>
+<text class="s" x="20" y="66">진단 문구</text>
+
+<rect class="b static" x="216" y="20" width="160" height="64" rx="8"/>
+<text class="t" x="228" y="46">printf 진입</text>
+<text class="s mono" x="228" y="66">0x3fff0630</text>
+
+<rect class="b static" x="424" y="20" width="160" height="64" rx="8"/>
+<text class="t" x="436" y="46">포맷터</text>
+<text class="s mono" x="436" y="66">0x3fff0ba0</text>
+
+<rect class="b static" x="632" y="14" width="160" height="76" rx="8"/>
+<text class="t" x="644" y="38">write callback</text>
+<text class="s mono" x="644" y="58">0x3fff11dc</text>
+<text class="s" x="644" y="76">스트림 +0x28에 등록</text>
+
+<text class="n topen mid" x="608" y="112">이 연결은 미확정</text>
+
+<rect class="b static" x="632" y="148" width="160" height="64" rx="8"/>
+<text class="t" x="644" y="174">오류 처리 어댑터</text>
+<text class="s mono" x="644" y="194">0x3fff12fc</text>
+
+<rect class="b static" x="424" y="148" width="160" height="64" rx="8"/>
+<text class="t" x="436" y="174">길이 반환 어댑터</text>
+<text class="s mono" x="436" y="194">0x3ffe0860</text>
+
+<rect class="b ok" x="216" y="148" width="160" height="64" rx="8"/>
+<text class="t" x="228" y="174">줄 출력</text>
+<text class="s" x="228" y="194">LF 앞에 CR 추가</text>
+
+<rect class="b ok" x="8" y="148" width="160" height="64" rx="8"/>
+<text class="t" x="20" y="174">문자 1개 기록</text>
+<text class="s mono" x="20" y="194">0x3fff4800</text>
+
+<rect class="b model" x="8" y="252" width="160" height="56" rx="8"/>
+<text class="t" x="20" y="276">데이터 레지스터</text>
+<text class="s" x="20" y="296">시험에서는 일반 RAM</text>
+
+<path class="e" d="M168 52H214" marker-end="url(#dg-out-ah)"/>
+<path class="e" d="M376 52H422" marker-end="url(#dg-out-ah)"/>
+<path class="e open" d="M584 52H630" marker-end="url(#dg-out-aho)"/>
+<path class="e" d="M712 90V146" marker-end="url(#dg-out-ah)"/>
+<path class="e" d="M632 180H586" marker-end="url(#dg-out-ah)"/>
+<path class="e" d="M424 180H378" marker-end="url(#dg-out-ah)"/>
+<path class="e" d="M216 180H170" marker-end="url(#dg-out-ah)"/>
+<path class="e" d="M88 212V250" marker-end="url(#dg-out-ah)"/>
+</svg>
+</div>
+<ul class="dg-legend"><li><i class="ok"></i>원본 코드 실행으로 확인</li><li><i class="static"></i>명령을 읽어 확인한 호출</li><li><i class="model"></i>시험용 RAM</li><li><i class="open"></i>점선: 확인하지 못한 연결</li></ul>
+</figure>
+
+<div class="table-wrap"><table>
+<caption>연결별 확인 내용</caption>
+<thead><tr><th>연결</th><th>확인한 내용</th><th>상태</th></tr></thead>
+<tbody>
+<tr><td>Board ver 문구 → <code>0x3fff0630</code> → <code>0x3fff0ba0</code></td><td>진단 호출이 printf 진입 함수를 거쳐 포맷터로 들어갑니다.</td><td><span class="badge static">정적 분석</span></td></tr>
+<tr><td><code>0x3fff070c</code> → 스트림 <code>+0x28</code></td><td>스트림 초기화가 write callback으로 Thumb 주소 <code>0x3fff11dd</code>를 등록합니다.</td><td><span class="badge static">정적 분석</span> 등록 사실</td></tr>
+<tr><td>포맷터 내부 → write callback</td><td>이 간접 호출이 일어나는 지점을 찾지 못했습니다. 연결을 단정하지 않습니다.</td><td><span class="badge open">미확인</span></td></tr>
+<tr><td><code>0x3fff11dc</code> → <code>0x3fff12fc</code> → <code>0x3ffe0860</code> → <code>0x3ffe7710</code> → <code>0x3fff4800</code></td><td>callback 아래로 줄 출력 함수와 문자 기록 함수까지 직접 호출로 이어집니다.</td><td><span class="badge static">정적 분석</span> 뒤의 두 함수는 <span class="badge ok">확인</span></td></tr>
+</tbody></table></div>
+<p class="small muted">등록 주소 <code>0x3fff11dd</code>의 마지막 비트 1은 Thumb 코드임을 뜻하며, 함수 자체는 <code>0x3fff11dc</code>에서 시작합니다.</p>
+
+<h3>줄 출력 함수와 길이 반환</h3>
+<p>줄 출력 함수 <code>0x3ffe7710</code>은 LF를 만나면 그 앞에 CR을 먼저 내보냅니다. 한 단계 위의 <code>0x3ffe0860</code>은 아래 함수의 반환값과 상관없이 요청받은 길이를 그대로 돌려줍니다. 따라서 이 반환값만으로는 실제 카메라에서 직렬 전송이 성공했는지 판단할 수 없습니다.</p>
+
+<h3>문자 한 개를 기록하는 함수</h3>
+<p>마지막 함수 <code>0x3fff4800</code>의 동작은 다음과 같습니다.</p>
+<ol class="steps">
+<li><strong>상태 대기</strong> <code>0x4de00003</code>의 비트 1이 켜질 때까지 기다립니다.</li>
+<li><strong>기록</strong> <code>0x4de00004</code>에 16비트 값을 씁니다. 값은 <code>(읽은 16비트 &amp; 0xfe00) | r0</code>의 하위 16비트입니다.</li>
+<li><strong>다시 대기</strong> 같은 상태 비트가 켜질 때까지 다시 기다립니다.</li>
+</ol>
+<p>인수 r0의 높은 비트가 켜져 있으면 기존 상위 7비트에도 OR 결과가 반영됩니다. 다만 위의 줄 출력 함수는 문자를 바이트 단위로 읽어 넘깁니다. 레지스터 배치는 공개 소스의 SSR·DR과 같지만, 읽고 쓰는 레지스터의 실제 하드웨어 동작은 따로 확인해야 합니다.</p>
+<div class="callout warn"><strong class="label">주의</strong>
+<p>이 함수에는 timeout이 없습니다. 시험에서는 RAM에 둔 상태 비트를 정해 둔 순서로 바꿔 주었습니다. 분기와 접근 순서를 확인한 것이며, 실제 송신 완료나 전압 파형을 재현한 것이 아닙니다. 상태 비트가 끝내 켜지지 않는 경우는 실행하지 않았습니다.</p></div>
+
+<details class="evidence"><summary>출력 경로의 함수 범위와 명령 위치</summary>
+<div class="table-wrap"><table class="compact">
+<thead><tr><th>함수</th><th>코드 범위</th><th class="n">명령 수</th></tr></thead>
+<tbody>
+<tr><th scope="row">보드 버전 문구 호출부</th><td><code>0x3ffe09f0</code>–<code>0x3ffe0a12</code></td><td class="n">16</td></tr>
+<tr><th scope="row">printf 진입</th><td><code>0x3fff0630</code>–<code>0x3fff065e</code></td><td class="n">21</td></tr>
+<tr><th scope="row">스트림 초기화</th><td><code>0x3fff070c</code>–<code>0x3fff0742</code></td><td class="n">26</td></tr>
+<tr><th scope="row">write callback</th><td><code>0x3fff11dc</code>–<code>0x3fff1210</code></td><td class="n">24</td></tr>
+<tr><th scope="row">오류 처리 어댑터</th><td><code>0x3fff12fc</code>–<code>0x3fff131e</code></td><td class="n">16</td></tr>
+<tr><th scope="row">길이 반환 어댑터</th><td><code>0x3ffe0860</code>–<code>0x3ffe0870</code></td><td class="n">7</td></tr>
+<tr><th scope="row">줄 출력</th><td><code>0x3ffe7710</code>–<code>0x3ffe7742</code></td><td class="n">22</td></tr>
+<tr><th scope="row">문자 1개 기록</th><td><code>0x3fff4800</code>–<code>0x3fff482a</code></td><td class="n">21</td></tr>
+</tbody></table></div>
+<ul class="small">
+<li>문구 호출 <code>0x3ffe0a06</code>, 포맷터 호출 <code>0x3fff0652</code>.</li>
+<li>callback 주소 읽기 <code>0x3fff0734</code>, 스트림 +0x28 저장 <code>0x3fff0736</code>.</li>
+<li>호출 사슬: <code>0x3fff120a</code> → <code>0x3fff130c</code> → <code>0x3ffe0868</code> → <code>0x3ffe771e</code>. 줄 출력 함수의 나머지 문자 기록 호출은 <code>0x3ffe772e</code>와 <code>0x3ffe7736</code>에 있습니다.</li>
+<li>문자 기록 함수의 상태 대기·읽기·마스크·기록·재대기 명령: <code>0x3fff4808</code>, <code>0x3fff480e</code>, <code>0x3fff4812</code>–<code>0x3fff481a</code>, <code>0x3fff4820</code>, <code>0x3fff4826</code>.</li>
+<li>줄 출력 SHA-256 <code class="wrap">43bd285d229de0936599e222d867152ade30e1d49eefc71ae12d9e30b9632e30</code>, 문자 기록 SHA-256 <code class="wrap">44aaeb92aa5fd6d524974d5c103d517d02b3524ea3dbca24db3c734e904da89e</code>.</li>
+</ul>
+</details>
+</section>
+
+<section id="source">
+<h2>공개 USIO 드라이버와 나란히 놓으면 배치와 계산이 같습니다</h2>
+<p class="takeaway">M0 코드가 쓰는 오프셋 네 개와 비트 세 개, 그리고 분주값 계산의 꼴이 공개 드라이버와 같습니다. 이 일치가 “직렬 포트 설정”이라는 해석을 뒷받침합니다.</p>
+<p>Ricoh의 <code>K3mkIII_220.tar.gz</code> 안에 있는 Linux 소스의 <code>drivers/tty/serial/usio.c</code>와 대조했습니다. M0 쪽은 <code>0x4de00000</code>을 기준으로 본 오프셋입니다.</p>
+
+<div class="table-wrap"><table>
+<caption>레지스터 대조</caption>
+<thead><tr><th>공개 드라이버의 레지스터</th><th class="n">오프셋</th><th>드라이버가 정의한 비트</th><th>M0 코드의 접근</th></tr></thead>
+<tbody>
+<tr><th scope="row">SCR (제어)</th><td class="n">1</td><td>비트 0 <code>TXE</code>, 비트 4 <code>RIE</code></td><td><code>0x4de00001</code>의 비트 0을 켜고, 인수가 0이 아니면 비트 4도 켬</td></tr>
+<tr><th scope="row">SSR (상태)</th><td class="n">3</td><td>비트 1 <code>TDRE</code></td><td><code>0x4de00003</code>의 비트 1을 문자 기록 앞뒤로 기다림</td></tr>
+<tr><th scope="row">DR (데이터)</th><td class="n">4</td><td>—</td><td><code>0x4de00004</code>에 16비트로 문자 기록</td></tr>
+<tr><th scope="row">BGR (분주값)</th><td class="n">6</td><td>—</td><td><code>0x4de00006</code>에 16비트로 분주값 기록</td></tr>
+</tbody></table></div>
+
+<div class="table-wrap"><table>
+<caption>분주값 계산 대조</caption>
+<thead><tr><th>구분</th><th>계산</th><th>위치</th></tr></thead>
+<tbody>
+<tr><th scope="row">Ricoh 배포 드라이버</th><td>속도가 1보다 클 때 <code>uartclk / baud - 1</code>, 그 값을 BGR에 기록</td><td><a href="../source/usio.c#L390-L394">usio.c 390–394행</a>, <a href="../source/usio.c#L417">417행</a></td></tr>
+<tr><th scope="row">Linux 업스트림 드라이버</th><td>같은 식 <code>port-&gt;uartclk / baud - 1</code>, 같은 오프셋 0·1·2·3·4·6·12·14</td><td><a href="https://github.com/torvalds/linux/blob/master/drivers/tty/serial/milbeaut_usio.c">milbeaut_usio.c</a></td></tr>
+<tr><th scope="row">M0 코드</th><td>분자를 (분주 바이트 + 1)로 나눈 뒤 목표 속도로 나누고 1을 뺌</td><td><code>0x3fff42e0</code></td></tr>
+</tbody></table></div>
+<p>M0 코드는 분자를 분주 바이트로 한 번 더 나눈다는 점이 다릅니다. 그 결과를 드라이버의 <code>uartclk</code> 자리에 놓으면 나머지 계산은 같은 꼴입니다.</p>
+
+<h3>이 비교로 말할 수 있는 것과 없는 것</h3>
+<ul>
+<li>공개 소스에서 M0 쪽의 정확한 base 주소와 입력 클록을 확인한 것은 아닙니다. 레지스터 배치가 호환된다는 비교와 물리 주소가 대응한다는 주장은 구분합니다.</li>
+<li>이 경로는 <code>0x4dffb208</code>을 SRAM remap 레지스터로 볼 근거를 보태지 않습니다. 오히려 <a href="m0-board-config.html#source">pinctrl 소스 비교</a>와 직렬 설정이 바로 이어진다는 사실은 pin 기능 설정이라는 해석을 뒷받침하는 단서입니다.</li>
+<li>실제 pin 다중화 표, <code>CLK_CRRRS</code>의 비트 정의, <code>0x2000fffc</code>와 <code>0x0100fffc</code>의 물리적 관계는 여전히 필요합니다.</li>
+</ul>
+
+<details class="evidence"><summary>대조한 소스 파일</summary>
+<dl class="kv">
+<dt>배포 묶음</dt><dd><a href="https://www.ricoh-imaging.co.jp/japan/products/oss/k-3-3/K3mkIII_220.tar.gz">K3mkIII_220.tar.gz</a> 안의 커널 소스 아카이브, SHA-256 <code class="wrap">c212c909c78fd8d1de4699ebfc405d9948afd6949e2660172c92d693df83e6c0</code></dd>
+<dt>파일</dt><dd><code>linux-kernel-1.60.1/drivers/tty/serial/usio.c</code>, 18,829바이트, SHA-256 <code class="wrap">9662fb66cbaa245a1091c65226794135bec3c9410b41c6eca88a5df897061027</code></dd>
+<dt>대조한 행</dt><dd>41–84(레지스터와 비트 정의), 105–119, 390–394(분주값 계산), 411–425(레지스터 기록)</dd>
+</dl>
+</details>
+</section>
+
+<section id="verification">
+<h2>검증: 원본 함수를 8가지 조건으로 실행</h2>
+<p class="takeaway">8사례 모두 예상한 분기와 기록 순서를 따랐습니다. 대체한 함수는 없습니다.</p>
+
+<div class="callout model"><strong class="label">시험 조건</strong>
+<p>M0 레코드의 원본 바이트를 Unicorn의 Cortex-M0 모델에 올렸습니다. 레지스터 주소에는 독립된 일반 RAM을 두었고, 카메라나 PC의 장치에는 접근하지 않았습니다. 상태 비트와 분주 바이트, 데이터 레지스터의 초기값, 상태 비트가 켜지는 순서는 시험용으로 정한 값입니다. 설정 사례는 원본의 나눗셈 함수와 메모리 채우기 함수까지 그대로 실행합니다.</p></div>
+
+<div class="table-wrap"><table>
+<caption>공개 검증 도구의 8사례</caption>
+<thead><tr><th>사례</th><th>시작 함수</th><th>넣은 조건</th><th>확인한 결과</th><th class="n">실행한 명령</th></tr></thead>
+<tbody>
+<tr><th scope="row">설정 1</th><td rowspan="4"><code>0x3ffe7698</code></td><td>비트 24 = 0, D = 0</td><td>목표 속도 115200, 분주값 867</td><td class="n">1,749</td></tr>
+<tr><th scope="row">설정 2</th><td>비트 24 = 0, D = 255</td><td>목표 속도 115200, 분주값 2</td><td class="n">1,661</td></tr>
+<tr><th scope="row">설정 3</th><td>비트 24 = 1, D = 0</td><td>목표 속도 1200, 분주값 26</td><td class="n">1,638</td></tr>
+<tr><th scope="row">설정 4</th><td>비트 24 = 1, D = 255</td><td>목표 속도 1200, 분주값 32767</td><td class="n">1,560</td></tr>
+<tr><th scope="row">활성화</th><td><code>0x3fff4550</code></td><td>두 번째 인수가 0이 아님, 제어 바이트 초기값 <code>0x40</code></td><td>제어 바이트에 <code>0x50</code>, 이어서 <code>0x51</code> 기록</td><td class="n">20</td></tr>
+<tr><th scope="row">문자 1개</th><td><code>0x3fff4800</code></td><td>인수 <code>0x142</code>, 데이터 레지스터 초기값 <code>0xa7ff</code>, 상태 비트가 늦게 켜짐</td><td>상태 읽기 5회, <code>0xa742</code> 한 번 기록</td><td class="n">33</td></tr>
+<tr><th scope="row">한 줄</th><td rowspan="2"><code>0x3ffe7710</code></td><td>문자열 “A”와 LF(2바이트)</td><td>‘A’, CR, LF 순서로 3회 기록, 상태 읽기 6회</td><td class="n">87</td></tr>
+<tr><th scope="row">빈 줄</th><td>길이 0</td><td>기록 0회</td><td class="n">8</td></tr>
+</tbody></table></div>
+<p>설정 사례마다 레지스터 영역에 16회 기록이 일어났습니다. 모든 사례에서 r4–r11과 스택 포인터가 보존되었고, 실행 위치가 정해 둔 함수 범위를 벗어나지 않았습니다. M0 레코드만 넣었을 때와 압축을 푼 전체 스트림을 넣었을 때 결과가 같았습니다.</p>
+
+<h3>디컴파일 의사코드</h3>
+<p>설정 적용·활성화·문자 기록 함수 세 개는 angr 10.0.5의 C 형태 의사코드를 로컬에 보관했습니다. 판단 기준은 원본 Thumb 명령, literal, 분기와 호출 대상이며, 의사코드를 빌드할 수 있는 복원 소스로 다루지 않았습니다. 활성화 함수의 의사코드에 “지원하지 않는 명령”으로 남은 것은 원본의 DSB입니다. 문자 기록 함수의 의사코드가 상수를 반환하는 것처럼 보이는 것은 r0에 남은 값이며, 전송 결과를 돌려주는 것으로 해석하지 않았습니다.</p>
+
+<h3>독립 검토의 추가 실행</h3>
+<p>독립 검토에서는 상태 비트 24가 두 번의 읽기 사이에 0에서 1로, 1에서 0으로 바뀌는 입력을 넣었습니다. 목표 속도와 분자가 서로 다른 쪽에서 선택되었습니다. 코드가 두 값을 따로 고른다는 점을 보인 것이며, 실제 하드웨어에서 부팅 중에 이 비트가 바뀐다는 주장은 아닙니다. 이 2사례는 공개 도구의 8사례에 들어 있지 않습니다.</p>
+</section>
+
+<section id="limits">
+<h2>한계와 남은 과제</h2>
+<ul>
+<li>양수 나눗셈 경로만 실행했습니다. 목표 속도가 0이거나 음수인 경우, 설정 구조의 선택 필드(<code>+0x1c</code>), 기본값이 아닌 형식 플래그는 실행하지 않았습니다.</li>
+<li>printf에서 write callback으로 가는 실행 중의 호출은 증명하지 못했습니다. callback 등록과 그 아래의 출력 사슬은 따로 확인한 두 조각입니다.</li>
+<li>레지스터는 일반 RAM이었습니다. 주변장치의 동작, 시간 단위, 실제 통신 속도, 콘솔 핀, SRAM alias, 인증의 의미는 다루지 않았습니다.</li>
+<li>이 결과는 직렬 초기화의 일부를 가려낸 것이며, 수정 펌웨어가 받아들여진다는 근거가 아닙니다. 0이 아닌 bank의 실제 생산자, 리소스 레코드 +4의 값을 정하는 정책, 선행 Boot ROM의 인증과 SRAM remap은 미확정입니다(<a href="update-bank-selection.html">현재까지 검증한 bank 선택 조건</a>).</li>
+<li>펌웨어 빌드와 플래시는 하지 않았습니다.</li>
+</ul>
+</section>
+
+<section id="reproduce">
+<h2>재현 방법</h2>
+<p>검증 도구는 따로 잘라 낸 M0 레코드(<code>m0.bin</code>)나 <a href="../inspect_firmware.py">추출기</a>가 만든 <code>decoded.bin</code>을 받습니다. 입력의 SHA-256을 확인한 뒤 실행하며, 결과 파일이 이미 있으면 멈춥니다. Python 패키지 <code>unicorn</code>이 필요합니다.</p>
+<pre><code>python verify_m0_diagnostic_serial.py m0.bin --output m0-serial-direct.json
+python verify_m0_diagnostic_serial.py decoded.bin --output m0-serial-decoded.json</code></pre>
+<dl class="kv">
+<dt>M0 레코드 SHA-256</dt><dd><code class="wrap">63dd8f3b2668ef68f3ab0f8ecd0f4cda8c46a78c5388646fc9e1fe85e39a070e</code></dd>
+</dl>
+<p class="small muted">추출 방법은 <a href="firmware-structure.html#reproduce">펌웨어 구조와 하드웨어의 재현 절차</a>에 있습니다.</p>
+</section>
+
+<section id="refs">
+<h2>근거 파일과 참고 자료</h2>
+<ul class="refs">
+<li><a href="m0-diagnostic-serial-evidence.json">m0-diagnostic-serial-evidence.json</a> — 함수 범위와 해시, 분기·나눗셈·기록 명령의 위치, 공개 소스의 파일 해시와 행 번호</li>
+<li><a href="m0-diagnostic-serial-checks.json">m0-diagnostic-serial-checks.json</a> — 에뮬레이터 실행 8사례의 결과</li>
+<li><a href="../verify_m0_diagnostic_serial.py">verify_m0_diagnostic_serial.py</a> — 재현 도구</li>
+<li><a href="../source/usio.c">source/usio.c</a> — Ricoh가 배포한 USIO 드라이버 소스(GPL v2)</li>
+<li>관련 문서: <a href="m0-board-config.html">M0 보드 설정</a> · <a href="startup-storage.html#m0-reset-chain">M0 reset·SRAM remap·bank</a> · <a href="firmware-structure.html#code">Linux 커널 안의 같은 드라이버 함수 대조</a></li>
+<li>외부 자료: <a href="https://github.com/torvalds/linux/blob/master/drivers/tty/serial/milbeaut_usio.c">Linux 업스트림 drivers/tty/serial/milbeaut_usio.c</a> · <a href="https://www.ricoh-imaging.co.jp/english/products/oss/">Ricoh Imaging 오픈소스 소프트웨어 배포 페이지</a> · <a href="https://github.com/unicorn-engine/unicorn">Unicorn CPU 에뮬레이터</a></li>
+</ul>
+</section>
+
+</main>
+</div>
+<!-- chrome:bottom -->
+<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">부팅과 저장소 — 이 주제의 문서</h2><ol><li><a href="guide-boot.html">부팅과 저장소 안내</a></li><li><a href="startup-storage.html">M0 reset·SRAM remap·bank<span>초기화 사슬과 저장소 bank</span></a></li><li><a href="m0-board-config.html">M0 보드 설정<span>상수 기록과 SRAM remap의 경계</span></a></li><li><a href="m0-diagnostic-serial.html" aria-current="page">M0 진단 직렬 출력<span>분주식과 문자 출력</span></a></li><li><a href="stubby-load-auth.html">Stubby 적재와 인증 경계<span>Linux 부트로더의 파일 조건</span></a></li><li><a href="header-alias-consumer.html">부트 헤더와 파티션 표<span>+4 저장 후보의 실제 대상</span></a></li></ol></nav>
+<nav class="pager" aria-label="이전·다음 문서"><a class="prev" href="m0-board-config.html"><small>← 이전</small>M0 보드 설정</a><a class="next" href="stubby-load-auth.html"><small>다음 →</small>Stubby 적재와 인증 경계</a></nav>
+<footer class="sitefoot"><div class="sitefoot-in"><nav aria-label="사이트"><a href="../index.html#map">문서 지도</a><a href="../index.html#levels">검증 수준 읽는 법</a><a href="../glossary.html">용어집</a><a href="research-program.html">세 기종 연구 본부</a><a href="https://github.com/yunhyok/pentax-k3iii-firmware-analysis">GitHub 저장소</a></nav><p>PENTAX K-3 Mark III 펌웨어 2.20 분석 문서. PC에서 수행한 정적 분석과 에뮬레이션 결과이며, 카메라 실기에서 검증한 내용이 아닙니다. 원본 펌웨어와 추출한 독점 코드는 포함하지 않습니다.</p></div></footer>
+<!-- /chrome:bottom -->
+</body>
+</html>

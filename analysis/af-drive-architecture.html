@@ -1,71 +1,499 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>렌즈 정보와 AF 제어 구조</title><style>
-:root{color-scheme:light dark;--bg:#f7f8fa;--paper:#fff;--ink:#182332;--muted:#48596b;--line:#d2dbe5;--accent:#124b8e;--soft:#edf3fa;--focus:#d75f00}
-@media(prefers-color-scheme:dark){:root{--bg:#111821;--paper:#18222d;--ink:#e8edf4;--muted:#b4c2d2;--line:#405369;--accent:#98c8ff;--soft:#223348;--focus:#ffb374}}
-*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.85 system-ui,-apple-system,"Malgun Gothic",sans-serif;word-break:keep-all;overflow-wrap:anywhere}
-a{color:var(--accent);text-underline-offset:.18em}a:hover{text-decoration-thickness:2px}:focus-visible{outline:3px solid var(--focus);outline-offset:4px}
-header,main,footer{max-width:1120px;margin:auto;padding:36px clamp(18px,4vw,56px)}header{padding-top:56px;padding-bottom:24px}main{background:var(--paper);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
-.eyebrow{color:var(--muted);font-size:.84rem;letter-spacing:.06em}h1{font-size:clamp(1.85rem,4.5vw,3rem);line-height:1.35;letter-spacing:-.025em;margin:12px 0 18px}h2{font-size:1.5rem;line-height:1.5;margin:3.6rem 0 1rem;padding-top:1.2rem;border-top:1px solid var(--line)}h2:first-child{margin-top:0}h3{font-size:1.12rem;margin-top:2rem}p{margin:1rem 0}strong{font-weight:650}.intro{max-width:55em;color:var(--muted)}
-nav{margin-top:25px}nav ul{display:flex;flex-wrap:wrap;gap:8px 22px;list-style:none;padding:0;margin:0}nav ul ul{display:none}nav a{font-size:.9rem}code{font: .88em/1.6 ui-monospace,Consolas,monospace;overflow-wrap:anywhere}pre{background:var(--soft);padding:18px;overflow-x:auto;white-space:pre-wrap;border-radius:5px}pre code{font-size:.82rem}
-.table-scroll{overflow-x:auto;margin:24px 0}table{border-collapse:collapse;width:100%;font-size:.92rem;min-width:530px}th,td{text-align:left;vertical-align:top;padding:14px 16px;border-bottom:1px solid var(--line)}th{background:var(--soft);font-weight:650}td:first-child{min-width:125px}details{border-block:1px solid var(--line);margin-top:24px;padding:16px 0}summary{cursor:pointer;font-weight:650;padding:6px 0}.caption,.meta{font-size:.86rem;color:var(--muted)}
-figure{margin:32px 0;padding:24px 0;border-block:1px solid var(--line)}figcaption{font-size:.95rem;font-weight:650;margin-bottom:20px}.flow{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:32px;list-style:none;padding:0;margin:18px 0}.flow li{position:relative;padding:18px;background:var(--soft);border-radius:6px;line-height:1.6}.flow strong{display:block;font-size:1rem}.flow span{display:block;color:var(--muted);font-size:.86rem;margin-top:9px}.flow li:not(:last-child)::after{content:"→";position:absolute;right:-27px;top:40%;font-size:22px;color:var(--muted)}.second{margin-top:24px}footer{font-size:.88rem;color:var(--muted)}
-@media(max-width:620px){body{font-size:16px}header,main,footer{padding-inline:20px}.flow{grid-template-columns:1fr;gap:26px}.flow li:not(:last-child)::after{content:"↓";right:auto;left:calc(50% - 8px);top:auto;bottom:-28px}.flow li{padding:15px 18px}h2{font-size:1.3rem}nav ul{gap:10px 18px}table{font-size:.87rem}th,td{padding:12px}header{padding-top:30px}}
-@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
-@media print{body{background:white;color:black;font-size:10pt}header,main,footer{max-width:none;padding:12pt}nav{display:none}a{color:inherit}h2,figure,table{break-inside:avoid}h2{break-after:avoid}main{border:0}.flow li{background:#f1f3f5}.table-scroll{overflow:visible}table{min-width:0}details>*{display:block!important}}
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>렌즈 응답에서 구동 방식 선택과 명령 작성까지 — PENTAX K-3 Mark III 펌웨어 연구</title>
+<meta name="description" content="K-3 Mark III 펌웨어에서 렌즈가 알려 준 능력 바이트의 bit 6이 두 AF 제어 객체 가운데 하나를 고르고, 한쪽이 명령 0x8900의 2바이트 요청을 만드는 과정을 원본 ARM 코드 1,267건 실행으로 확인한 기록입니다. 실제 렌즈 통신과 모터 동작은 실행하지 않았습니다.">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-camera="k3iii">
+<!-- chrome:top -->
+<a class="skip" href="#main">본문 바로가기</a>
+<div class="topbar"><div class="topbar-in"><a class="brand" href="../index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="../index.html" aria-current="true">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="https://yunhyok.github.io/pentax-q7-firmware-analysis/">Q7</a></div><nav class="topnav" aria-label="주제"><a href="../index.html">개요</a><a href="guide-boot.html">부팅·저장소</a><a href="guide-update.html">업데이트</a><a href="guide-rebuild.html">재구축</a><a href="guide-rtos.html">명령·셸</a><a href="guide-color.html">색 처리</a><a href="lightroom-bridge.html">Lightroom</a><a href="af-foundations.html" aria-current="true">AF</a><a href="ui-port-contract.html">UI</a></nav></div></div>
+<nav class="crumbs" aria-label="현재 위치"><ol><li><a href="../index.html">PENTAX K-3 Mark III</a></li><li><a href="af-foundations.html">AF와 렌즈 제어</a></li><li aria-current="page">렌즈 구동 선택·명령·응답</li></ol></nav>
+<!-- /chrome:top -->
+<header class="page-head">
+<p class="eyebrow">AF와 렌즈 제어 · 구동 요청을 만드는 단계</p>
+<h1>렌즈 응답에서 구동 방식 선택과 명령 작성까지</h1>
+<p class="lead">K 마운트에는 바디의 모터로 돌리는 렌즈와 렌즈 안의 모터로 움직이는 렌즈가 함께 있습니다. 펌웨어가 어느 쪽 제어 코드를 쓸지 어디에서 정하는지, 그 뒤 렌즈에 보낼 요청을 어떻게 만드는지 따라갔습니다.</p>
+</header>
+<div class="layout">
+<!-- chrome:toc -->
+<nav class="toc" aria-label="이 문서의 목차"><h2 data-toc="no">이 문서에서</h2><ol><li><a href="#background">배경: 구동 방식을 고르는 코드를 찾는 이유</a></li><li><a href="#selection">능력 바이트의 bit 6이 제어 객체를 고릅니다</a></li><li><a href="#capability">능력 바이트는 두 경로로 기록됩니다</a></li><li><a href="#events">두 제어 객체는 서로 다른 이벤트를 처리합니다</a></li><li><a href="#encoding">InMotor 쪽은 구동 값을 명령 0x8900의 2바이트로 만듭니다</a></li><li><a href="#verification">검사 1,267건의 범위와 재현 방법</a></li><li><a href="#limits">한계와 남은 과제</a></li><li><a href="#refs">근거 파일과 참고 자료</a></li></ol></nav>
+<!-- /chrome:toc -->
+<main class="doc" id="main">
 
-.site-nav{border-block:1px solid var(--line);padding:14px 0;margin:20px 0}.site-nav a{display:inline-block;margin:4px 16px 4px 0}
-.review-note{background:var(--soft);padding:16px 20px;margin:24px 0}.toc{font-size:.92rem}.toc ul{list-style:none;padding-left:0}.toc ul ul{padding-left:20px}
-.branch{margin:18px 0;padding:0 0 0 24px;border-left:3px solid var(--line)}.branch p{margin:8px 0}.diagram-line{padding:12px 16px;background:var(--soft);border-radius:4px}
-</style></head><body><header><div class="eyebrow">PENTAX K-3 MARK III · FIRMWARE 2.20 · 2026-11-08</div><h1>렌즈 정보에서 AF 제어·명령까지</h1><p class="intro">렌즈 응답 필드가 제어 객체 선택에 쓰이는 경로를 연결했다. 선택된 객체의 이벤트 처리와 명령 작성도 일부 확인했다. 현재 목적은 향후 변경에 필요한 기본 구조를 연구하는 것이며 렌즈별 패치나 실제 구동 적용은 진행하지 않는다.</p><nav aria-label="관련 문서"><a href="../index.html">연구 개요</a> · <a href="dispatch-af.html">상위 요청·AF 계산</a> · <a href="icon-resources.html">ICONBIN·GUI</a></nav></header>
-<main>
-<h2 id="selection">factory 생성과 실행 중 선택</h2>
-<p><code>AfMotorFactory</code>의 생성 경로 <code>0x52f08be8</code>은 AfJointLensControl, CafJointLens, PafMotor, PafPulse를 모두 만든다. 렌즈 정보에 따라 하나만 만드는 분기는 이 경로에 없다. AfInMotorLensControl과 AfLensControl은 별도 AfLensFactory가 만든다. 이름은 생성자의 vtable 설치와 RTTI를 함께 대조했다. <a href="af-drive-selection-evidence.json">생성·alias·원본 해시</a></p>
-<p>실제 선택은 <code>AfDriveFacade</code>의 <code>0x52ef89f4</code>에 있다. facade의 <code>+4</code>는 Joint, <code>+8</code>은 AfLensControl, <code>+c</code>는 InMotor 객체를 가리킨다. 주소와 필드 offset은 16진수이며 command·client 번호는 10진수다.</p>
-<figure><figcaption>확인된 수신 필드와 선택 경로</figcaption><ol class="flow"><li><strong>응답 필드 복사</strong><span>52f18808: buffer[6]<br>52f1881c: C+5272<br>C = LensCpuCommunication</span></li><li><strong>capability getter</strong><span>52eff628 → 52efda40<br>[C+5272]의 bit 6<br>0 또는 1 반환</span></li><li><strong>facade 선택</strong><span>52ef8a28 / 52ef8a2c<br>1 → InMotor<br>0 → Joint</span></li></ol></figure>
-<pre><code>C = LensFactory.field14 = AfLensControl.field58 = reader.field54
+<section class="summary">
+<h2 data-toc="no">핵심 요약</h2>
+<ul>
+<li>렌즈와 통신하는 객체 안에 <strong>능력 바이트</strong>가 하나 있습니다. 이 바이트의 bit 6이 1이면 <code>AfInMotorLensControl</code>, 0이면 <code>AfJointLensControl</code> 객체가 AF 구동 명령을 받습니다. 256가지 값을 모두 넣어 원본 코드를 실행해 확인했습니다.</li>
+<li>능력 바이트를 기록하는 경로를 두 개 찾았습니다. 렌즈 정보를 받은 뒤 응답의 byte 6을 옮기는 경로와, 렌즈 명령 <code>0x8205</code>의 응답 첫 바이트를 옮기는 경로입니다. 둘 다 바이트 전체를 그대로 복사합니다.</li>
+<li>InMotor 쪽은 구동 값을 <strong>명령 <code>0x8900</code>의 2바이트</strong>로 만듭니다. 하위 14비트가 값이고 최상위 비트가 방향 표시입니다. 값의 단위와 방향의 극성은 알지 못합니다.</li>
+<li>확인한 범위는 요청을 <strong>만드는</strong> 데까지입니다. 렌즈 응답은 모두 연구자가 넣은 합성 값이고, 실제 렌즈 통신과 모터 동작은 실행하지 않았습니다.</li>
+<li>나중의 변경에 대비해 기본 구조를 조사한 것이며, 렌즈별 패치나 실제 구동 적용은 하지 않았습니다.</li>
+</ul>
+</section>
+
+<div class="scope">
+<div class="ok"><h3><span class="badge ok">확인</span> 원본 코드 실행으로 확인</h3>
+<ul>
+<li>능력 바이트 256값에서 bit 6을 읽고 객체를 고르는 코드</li>
+<li>능력 바이트를 기록하는 두 경로의 복사</li>
+<li>InMotor·Joint 이벤트 루프의 분기 순서</li>
+<li>명령 <code>0x8900</code> 요청의 2바이트 구성</li>
+</ul></div>
+<div class="static"><h3><span class="badge static">정적 분석</span> 코드를 읽어 판단</h3>
+<ul>
+<li>객체 생성과 포인터 연결 (factory, 생성자, vtable)</li>
+<li>InMotor의 이벤트 0x80 처리기가 요청 작성 함수를 부르는 관계</li>
+<li>요청 큐 진입 함수의 호출 순서</li>
+</ul></div>
+<div class="model"><h3><span class="badge model">모델</span> 시험 조건으로 정한 것</h3>
+<ul>
+<li>렌즈 응답 바이트, 송신·수신·대기 함수의 반환값</li>
+<li>이벤트 플래그는 직접 주입, 하위 처리 함수는 stub</li>
+<li>CPU는 Unicorn의 Cortex-A15 모델</li>
+</ul></div>
+<div class="open"><h3><span class="badge open">미확인</span> 확인하지 않은 것</h3>
+<ul>
+<li>bit 6의 제조사 명칭, SDM만 뜻하는지, 렌즈 ID와의 관계</li>
+<li><code>0x8900</code> 값의 단위, 방향 극성, 유효 범위</li>
+<li>실제 렌즈 통신, 모터 동작, Joint 쪽 하위 구동</li>
+</ul></div>
+</div>
+
+<section id="background">
+<h2>배경: 구동 방식을 고르는 코드를 찾는 이유</h2>
+<p>K-3 Mark III의 마운트는 AF 커플러(바디 모터의 회전을 렌즈에 전하는 기계 연결부)와 렌즈 정보 접점, 전원 접점을 갖춘 KAF2입니다. 그래서 바디 모터로 돌리는 렌즈와 렌즈 안 모터(SDM·DC·PLM)를 쓰는 렌즈를 모두 받습니다. 두 방식의 차이와 마운트 종류는 <a href="af-foundations.html#drive-types">AF 안내 문서</a>에 정리했습니다.</p>
+<p>구형 SDM 렌즈를 바디 모터로 돌리는 것 같은 변경을 검토하려면, 펌웨어가 구동 방식을 정하는 지점을 먼저 알아야 합니다. 이 문서는 그 지점과 바로 뒤의 요청 작성까지를 다룹니다. 요청이 큐에 들어간 뒤의 일은 <a href="af-request-consumer.html">AF 요청 큐와 완료 통지</a>에서 이어집니다.</p>
+
+<figure class="diagram">
+<figcaption>이 문서가 다루는 경로: 렌즈 응답에서 요청 큐 앞까지</figcaption>
+<div class="dg-scroll">
+<svg class="dg" viewBox="0 0 800 322" role="img" aria-labelledby="dg-ov-title dg-ov-desc">
+<title id="dg-ov-title">렌즈 응답 바이트에서 제어 객체 선택과 요청 작성까지의 흐름</title>
+<desc id="dg-ov-desc">렌즈 응답 바이트가 통신 객체 C의 능력 바이트(C+0x5272)에 복사됩니다. 함수 0x52efda40이 그 바이트의 bit 6을 읽어 0 또는 1을 돌려줍니다. AfDriveFacade는 명령을 받을 때마다 이 값으로 객체를 고릅니다. bit 6이 1이면 AfInMotorLensControl이 선택되고, 그 이벤트 0x80 처리기가 0x8900 요청 작성 함수를 부르며, 작성된 요청은 요청 큐로 넘어갑니다. bit 6이 0이면 AfJointLensControl이 선택됩니다. Joint 쪽 처리기의 내부와 그 뒤의 구동은 추적하지 않았습니다.</desc>
+<defs>
+<marker id="dg-ov-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0 0L10 5L0 10z"/></marker>
+<marker id="dg-ov-ah-model" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah model" d="M0 0L10 5L0 10z"/></marker>
+<marker id="dg-ov-ah-open" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah open" d="M0 0L10 5L0 10z"/></marker>
+</defs>
+<rect class="b model" x="8" y="24" width="160" height="74" rx="8"/>
+<text class="t" x="20" y="49">렌즈 응답 바이트</text>
+<text class="s" x="20" y="69">시험에서는 합성 값</text>
+<rect class="b key" x="206" y="24" width="178" height="74" rx="8"/>
+<text class="t" x="218" y="49">능력 바이트</text>
+<text class="s mono" x="218" y="68">C+0x5272</text>
+<text class="s" x="218" y="86">통신 객체 C의 필드</text>
+<rect class="b ok" x="422" y="24" width="160" height="74" rx="8"/>
+<text class="t" x="434" y="49">bit 6 읽기</text>
+<text class="s mono" x="434" y="68">0x52efda40</text>
+<text class="s" x="434" y="86">0 또는 1 반환</text>
+<rect class="b ok" x="620" y="24" width="172" height="74" rx="8"/>
+<text class="t" x="632" y="49">AfDriveFacade</text>
+<text class="s mono" x="632" y="68">0x52ef89f4</text>
+<text class="s" x="632" y="86">명령마다 객체 선택</text>
+<path class="e model" d="M168 61H204" marker-end="url(#dg-ov-ah-model)"/>
+<path class="e" d="M384 61H420" marker-end="url(#dg-ov-ah)"/>
+<path class="e" d="M582 61H618" marker-end="url(#dg-ov-ah)"/>
+<path class="e" d="M706 98V120H22V176H38" marker-end="url(#dg-ov-ah)"/>
+<path class="e" d="M22 176V272H38" marker-end="url(#dg-ov-ah)"/>
+
+<rect class="b ok" x="40" y="140" width="206" height="74" rx="8"/>
+<text class="t" x="52" y="165">AfInMotorLensControl</text>
+<text class="s" x="52" y="185">bit 6 = 1일 때 선택</text>
+<text class="s mono" x="52" y="203">루프 0x52ef9d50</text>
+<rect class="b static" x="276" y="140" width="156" height="74" rx="8"/>
+<text class="t" x="288" y="165">이벤트 0x80 처리기</text>
+<text class="s mono" x="288" y="184">0x52ef93d8</text>
+<text class="s" x="288" y="202">호출은 정적 분석</text>
+<rect class="b ok" x="462" y="140" width="156" height="74" rx="8"/>
+<text class="t" x="474" y="165">0x8900 요청 작성</text>
+<text class="s mono" x="474" y="184">0x52efc7a0</text>
+<text class="s" x="474" y="202">bit 6을 다시 검사</text>
+<rect class="b" x="648" y="140" width="144" height="74" rx="8"/>
+<a href="af-request-consumer.html"><text class="t" x="660" y="165">요청 큐</text></a>
+<text class="s" x="660" y="185">다음 문서에서</text>
+<text class="s" x="660" y="202">이어집니다</text>
+<path class="e" d="M246 177H274" marker-end="url(#dg-ov-ah)"/>
+<path class="e" d="M432 177H460" marker-end="url(#dg-ov-ah)"/>
+<path class="e" d="M618 177H646" marker-end="url(#dg-ov-ah)"/>
+
+<rect class="b ok" x="40" y="236" width="206" height="74" rx="8"/>
+<text class="t" x="52" y="261">AfJointLensControl</text>
+<text class="s" x="52" y="281">bit 6 = 0일 때 선택</text>
+<text class="s mono" x="52" y="299">루프 0x52f08828</text>
+<rect class="b open" x="276" y="236" width="516" height="74" rx="8"/>
+<text class="t" x="288" y="263">Joint 쪽 처리 함수의 내부와 그 뒤의 구동</text>
+<text class="s" x="288" y="285">추적하지 않았습니다. 이벤트 루프의 분기 순서만 실행해 확인했습니다.</text>
+<path class="e open" d="M246 273H274" marker-end="url(#dg-ov-ah-open)"/>
+</svg>
+</div>
+<ul class="dg-legend"><li><i class="ok"></i>원본 코드 실행으로 확인</li><li><i class="static"></i>정적 분석</li><li><i class="model"></i>시험용으로 넣은 값</li><li><i class="key"></i>이 문서의 중심이 되는 필드</li><li><i class="open"></i>미확인</li></ul>
+</figure>
+
+<h3 id="objects">등장하는 객체</h3>
+<p>이 부분의 펌웨어는 C++ 객체로 짜여 있습니다. 클래스 이름은 펌웨어에 남아 있는 <dfn title="실행 중 객체의 형(type)을 알아내기 위해 컴파일러가 넣는 정보. 클래스 이름 문자열이 들어 있습니다.">RTTI</dfn> 문자열과 소스 파일 이름 문자열에서 가져왔고, 생성자가 설치하는 <dfn title="객체가 가진 가상 함수들의 주소를 모아 둔 표">vtable</dfn>과 맞춰 보았습니다.</p>
+<div class="table-wrap"><table>
+<caption>이 문서에 나오는 객체와 기호</caption>
+<thead><tr><th>이름</th><th>기호</th><th>이 문서에서 확인한 역할</th></tr></thead>
+<tbody>
+<tr><th scope="row"><code>LensCpuCommunication</code></th><td>C</td><td>렌즈 CPU와의 통신 상태를 담는 객체. 능력 바이트가 <code>C+0x5272</code>에 있습니다.</td></tr>
+<tr><th scope="row"><code>AfDriveFacade</code></th><td>F</td><td>AF 구동 명령(1~22번)을 받아 제어 객체 가운데 하나에 넘기는 창구</td></tr>
+<tr><th scope="row"><code>AfInMotorLensControl</code></th><td class="nowrap">InMotor</td><td>bit 6이 1일 때 선택되는 제어 객체. <code>0x8900</code> 요청을 만듭니다.</td></tr>
+<tr><th scope="row"><code>AfJointLensControl</code></th><td>Joint</td><td>bit 6이 0일 때 선택되는 제어 객체</td></tr>
+<tr><th scope="row"><code>AfLensControl</code></th><td>L</td><td>렌즈 요청을 기록하고 큐에 넣는 객체 (<a href="af-request-consumer.html">다음 문서</a>)</td></tr>
+<tr><th scope="row"><code>AfMotorFactory</code>, <code>AfLensFactory</code></th><td>—</td><td>위 객체들을 만들어 보관하는 객체</td></tr>
+<tr><th scope="row"><code>CafJointLens</code>, <code>PafMotor</code>, <code>PafPulse</code></th><td>—</td><td><code>AfMotorFactory</code>가 Joint와 함께 만드는 객체. 역할은 추적하지 않았습니다.</td></tr>
+</tbody></table></div>
+<div class="callout"><strong class="label">이름에서 알 수 있는 것과 없는 것</strong>
+<p>InMotor는 “렌즈 안 모터”, Joint는 “연결부”를 떠올리게 하는 이름입니다. K-3 II에서는 같은 자리의 비트가 켜지면 렌즈 명령, 꺼지면 바디 드라이버 쪽으로 갈렸습니다(<a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/analysis/af-drive.html">K-3 II 렌즈 능력과 구동 분기</a>). 그러나 K-3 Mark III에서 확인한 것은 클래스 이름과 선택 조건까지입니다. 각 객체가 실제로 어느 모터를 움직이는지, <code>Paf</code>·<code>Caf</code>로 시작하는 객체가 구동 방식과 어떤 관계인지는 확인하지 않았습니다.</p></div>
+<p class="small muted">이 문서의 주소와 필드 오프셋은 16진수입니다. facade의 명령 번호와 client 번호는 10진수입니다.</p>
+</section>
+
+<section id="selection">
+<h2>능력 바이트의 bit 6이 제어 객체를 고릅니다</h2>
+<p class="takeaway"><code>AfDriveFacade</code>는 명령을 받을 때마다 능력 바이트의 bit 6을 읽습니다. 1이면 InMotor 객체에, 0이면 Joint 객체에 일을 넘깁니다.</p>
+<pre><code>C        = LensFactory.field14 = AfLensControl.field58 = reader.field54
 selected = (C.byte5272 &amp; 0x40) ? facade.field0c : facade.field04</code></pre>
-<p>생성자 <code>0x5315c274</code>는 C+5272를 0으로 초기화한다. 수신 함수 <code>0x52f18638</code>은 하위 호출 <code>0x52f3a754</code> 뒤 mode가 3이거나 mode가 0이고 submode가 3인 경로에서 응답 byte 6을 복사한다. mode·submode의 사용자 기능 이름과 통신 유효성 전체는 아직 확인하지 않았다. C는 전역 common-property 객체로 명명하지 않는다. <a href="af-drive-selection-evidence.json">생산자·초기화·분기 근거</a></p>
-<p>이 비트가 선택하는 클래스는 확인했지만 vendor의 비트 이름, SDM만을 뜻하는지 여부, 특정 렌즈 ID와의 관계는 미확정이다. 후속 조사에서 <code>0x5315e078</code>을 같은 필드의 두 번째 기록자로 확인했다. <code>0x531346e4</code>는 별도 영상처리 출력 주소를 쓰므로 이 후보에서 제외했다.</p>
+<ol class="steps">
+<li><strong>능력 바이트 읽기</strong> facade의 선택 코드(<code>0x52ef89f4</code>)가 <code>0x52eff628</code>을 거쳐 <code>0x52efda40</code>을 부릅니다. 이 함수는 <code>[C+0x5272]</code>의 bit 6만 꺼내 0 또는 1을 돌려줍니다.</li>
+<li><strong>객체 고르기</strong> facade는 Joint, <code>AfLensControl</code>, InMotor 객체의 포인터를 각각 <code>+4</code>, <code>+8</code>, <code>+c</code>에 갖고 있습니다. 반환값이 1이면 <code>+c</code>(InMotor)를, 아니면 <code>+4</code>(Joint)를 읽습니다. 이 선택은 <code>0x52ef8a28</code>과 <code>0x52ef8a2c</code>의 조건부 읽기 명령 두 개로 이뤄집니다.</li>
+<li><strong>명령 넘기기</strong> 고른 객체를 첫 인수로 삼아 명령 1~22번에 해당하는 함수를 부릅니다.</li>
+</ol>
+<p>두 객체는 렌즈에 따라 하나만 만들어지지 않습니다. <code>AfMotorFactory</code>의 생성 경로(<code>0x52f08be8</code>)는 <code>AfJointLensControl</code>, <code>CafJointLens</code>, <code>PafMotor</code>, <code>PafPulse</code>를 모두 만듭니다. 렌즈 정보에 따라 하나만 만드는 분기는 이 경로에 없습니다. <code>AfInMotorLensControl</code>과 <code>AfLensControl</code>은 별도의 <code>AfLensFactory</code>가 만듭니다. 즉 선택은 객체를 만들 때가 아니라 명령을 처리할 때 일어납니다.</p>
 
-<h2 id="capability">command 0x8205가 갱신하는 같은 필드</h2>
-<p>명령 metadata 함수 <code>0x5315a8a0</code>은 command <code>0x8205</code>에 index <code>0x26</code>, type 2, required-mask 0을 반환한다. 처리기 <code>0x52f182d4</code>는 type 2 경로에서 교환 helper <code>0x52f18128</code>을 호출한다. 반환값이 0이면 <code>0x5315dc68</code>로 32바이트를 캐시에 복사하고 <code>0x5315dc9c</code>로 필드를 갱신한다. <a href="af-capability-evidence.json">lookup·분기·저장 주소 근거</a></p>
-<figure><figcaption>추가로 확인한 capability 갱신 경로</figcaption><ol class="flow"><li><strong>명령과 버퍼</strong><span>command 0x8205<br>index 0x26 · type 2<br>교환 helper 반환 0</span></li><li><strong>32바이트 캐시</strong><span>5315dc68<br>C + 0x38 + index × 0x20<br>= C + 0x4f8</span></li><li><strong>첫 바이트 복사</strong><span>5315e070 / 5315e078<br>[C+5260]+6<br>C+5272</span></li></ol></figure>
-<p>이 경로는 캐시 첫 바이트 전체를 복사한다. bit 6만 설정하거나 지우는 정책은 확인되지 않았다. 앞선 수신 경로의 <code>buffer[6]</code>과 이 경로의 <code>cache[0]</code>는 서로 다른 입력 위치이며 같은 packet이나 같은 값으로 가정하지 않는다. 초기화 코드 <code>0x5315c0b8..c0</code>과 <code>0x52f17ad8..ec</code>에서 <code>C+5260 = reader+4c = LensFactory+c</code> alias를 확인했다. 두 경로는 같은 C 필드와 같은 보조 객체 byte 6을 갱신한다. <a href="af-capability-evidence.json">객체 alias와 기록자</a></p>
-<p>교환 helper는 송신에 32바이트를 사용하고 수신 후 caller 버퍼에 <code>min(requested_length, 32)</code>바이트를 복사한다. 그 뒤 캐시 함수는 다시 32바이트를 복사한다. 따라서 caller 버퍼의 용량과 초기화가 중요하지만 이번 범위에서 잘못된 caller나 실제 메모리 침범을 관찰한 것은 아니다. 캐시 함수의 범위 검사는 signed index가 <code>0x86</code>보다 큰 경우만 거부한다. 합성 index −1은 C+18로 계산됐고 확인한 0x8205 lookup은 정상 index 0x26을 생산했다.</p>
-<p><code>0x8205/type 2</code> 처리 경로는 교환 helper의 nonzero 반환에서 캐시 갱신을 건너뛰지만 관찰한 helper의 일반 반환부는 항상 0이다. type 3 경로는 <code>0x52f18410</code>에서 캐시를 복사한 뒤 상태를 검사하므로 이 조건을 모든 type에 적용하지 않는다. helper는 WaitLensCpuControl <code>0x52f180a0</code>의 반환값을 후속 조건에 사용하지 않는다. wait 내부의 assertion이나 하위 transport가 실행을 멈출 수 있으므로 실제 통신 실패 때도 capability가 갱신된다고 단정할 수 없다. <a href="af-capability-checks.json">합성 wait·nonzero 입력의 검사 범위</a></p>
-<p>상위 전달 함수 <code>0x52f15100</code>은 자체 byte +9b가 0일 때 <code>0x52f18490</code>을 호출한다. 이 wrapper는 C+52f3가 nonzero이면 0x8205 전달을 막는다. 두 상태 필드의 의미와 실제 0x8205를 발생시키는 UI/event는 미확정이다. 다른 MOVW 후보는 MOVT와 결합하면 <code>0x26408205</code>여서 16비트 명령과 구분했다.</p>
-<p>제외한 후보 <code>0x531346e4</code>는 EdgeEnhancement packer <code>0x5313432c</code> 안에 있다. 시작부가 <code>r3 = output + 0x1000</code>을 만들고 해당 store가 <code>[r3+0x272]</code>에 쓰므로 목적지는 output+1272다. 이 호출 경로의 주소식을 확인한 결과이며 다른 모든 alias가 없다는 전체 부재 증명은 아니다. <a href="af-capability-evidence.json">영상처리 caller와 주소 계산</a></p>
+<div class="table-wrap"><table>
+<caption>선택 코드의 실행 검사 (합계 306건)</caption>
+<thead><tr><th>검사</th><th class="n">사례</th><th>넣은 값</th><th>결과</th></tr></thead>
+<tbody>
+<tr><th scope="row">bit 6 읽기</th><td class="n">256건</td><td>능력 바이트 0~255 전부</td><td>반환값이 항상 (바이트 &gt;&gt; 6) &amp; 1</td></tr>
+<tr><th scope="row">facade 선택</th><td class="n">50건</td><td>능력 바이트 0과 0x40, 명령 1~22와 범위 밖 번호 0·23·0xffffffff, client 2</td><td>0x40이면 InMotor, 0이면 Joint가 첫 인수로 전달됨. 범위 밖 명령은 아무것도 부르지 않고 0을 반환</td></tr>
+</tbody></table></div>
 
-<h2 id="policy">client 검사와 command 18의 추가 정책</h2>
-<p>facade는 객체를 고른 뒤 command 1..22를 처리한다. command 18에서 client가 2이고 capability bit 6이 1이면 helper <code>0x52ef8578</code>의 세 번째 인자를 0으로 강제한다. 그 외에는 첫 가변인자 word의 byte 1을 전달한다. helper는 global <code>0x5478442c</code>와 client가 같아야 다음 호출로 진행한다. 이 숫자를 물리적 정지·회전 명령으로 번역하지 않았다. <a href="af-drive-selection-evidence.json">선택 뒤 정책·조건부 vtable 연결</a></p>
-<div class="table-scroll"><table><thead><tr><th>선택 객체</th><th>주 vtable</th><th>slot +18</th><th>slot +20</th></tr></thead><tbody><tr><td>InMotor</td><td>538f00b8</td><td>52ef91e4</td><td>52ef91b8</td></tr><tr><td>Joint</td><td>538f2480</td><td>52f07e60</td><td>52ef7ff8 · base 구현</td></tr></tbody></table></div>
+<h3 id="policy">선택 뒤에 붙는 조건: client 검사와 명령 18</h3>
+<p>명령 18에는 능력 비트를 한 번 더 보는 처리가 있습니다. client가 2이고 bit 6이 1이면, 하위 함수 <code>0x52ef8578</code>에 넘기는 셋째 인수를 0으로 고정합니다. 그 밖에는 첫 가변 인자 word의 byte 1을 넘깁니다. 하위 함수는 전역 변수 <code>0x5478442c</code>의 값과 client가 같을 때만 다음 호출로 진행합니다. 이 숫자들이 정지나 회전 같은 물리 동작 가운데 무엇에 해당하는지는 풀지 않았습니다.</p>
+<div class="table-wrap"><table class="fit">
+<caption>하위 함수 <code>0x52ef8578</code>이 부르는 가상 함수 (선택된 객체에 따라 달라짐)</caption>
+<thead><tr><th>선택 객체</th><th>주 vtable</th><th>slot +18 (셋째 인수 ≠ 0)</th><th>slot +20 (셋째 인수 = 0)</th></tr></thead>
+<tbody>
+<tr><th scope="row">InMotor</th><td><code>0x538f00b8</code></td><td><code>0x52ef91e4</code></td><td><code>0x52ef91b8</code></td></tr>
+<tr><th scope="row">Joint</th><td><code>0x538f2480</code></td><td><code>0x52f07e60</code></td><td><code>0x52ef7ff8</code> (기반 클래스 구현)</td></tr>
+</tbody></table></div>
 
-<h2 id="events">선택된 객체의 이벤트 처리</h2>
-<p>공통 요청 helper들은 client 검사 뒤 객체 필드에 인자를 복사하고 <code>0x530ed03c</code>에 이벤트 비트를 전달한다. InMotor loop <code>0x52ef9d50</code>의 대기 마스크는 <code>0x19fc3</code>, Joint loop <code>0x52f08828</code>은 <code>0x3feff</code>다. 두 loop의 분기와 호출 순서를 원본 ARM으로 실행해 비교했다. <a href="af-command-evidence.json">loop·helper 범위와 호출</a> · <a href="af-command-checks.json">개별 플래그 검사</a></p>
-<div class="table-scroll"><table><thead><tr><th>이벤트 비트</th><th>InMotor 처리기</th><th>Joint 처리기</th></tr></thead><tbody><tr><td>0x80</td><td>52ef93d8</td><td>52f0853c → 52f083f0</td></tr><tr><td>0x100</td><td>52ef9510</td><td>대기 마스크와 처리 분기에서 제외</td></tr><tr><td>0x200</td><td>52ef961c</td><td>52f08578</td></tr><tr><td>0x2000 / 0x4000</td><td>대기 마스크와 처리 분기에서 제외</td><td>52f080a0 / 52f080ec</td></tr></tbody></table></div>
-<p>두 경로는 같은 이벤트 번호에서도 다른 하위 함수를 부른다. 위 표는 일부 차이를 뽑은 것이며 전체 분기는 JSON에 기록했다. RTOS의 실제 대기·전달 동작과 하위 처리기는 명시적 stub으로 대체했다. 이 검사는 loop 내부의 분기·순서를 검증하며 scheduler나 모터 실행을 재현하지 않는다.</p>
+<details class="evidence"><summary>선택 경로의 주소와 포인터 연결</summary>
+<div class="table-wrap"><table class="compact">
+<thead><tr><th>항목</th><th>주소·식</th><th>내용</th></tr></thead>
+<tbody>
+<tr><th scope="row">facade 선택·분배</th><td><code>0x52ef89f4</code>–<code>0x52ef8d94</code></td><td>928바이트. 명령 표는 <code>0x52ef8a3c</code>부터 22칸</td></tr>
+<tr><th scope="row">능력 비트 읽기</th><td><code>0x52eff628</code> → <code>0x52efda40</code></td><td><code>ldrb r0, [r3, #0x272]</code> 뒤 <code>ubfx r0, r0, #6, #1</code></td></tr>
+<tr><th scope="row">조건부 객체 읽기</th><td><code>0x52ef8a28</code> / <code>0x52ef8a2c</code></td><td><code>ldreq r6, [r5, #0xc]</code> / <code>ldrne r6, [r5, #4]</code></td></tr>
+<tr><th scope="row">facade 필드</th><td>F+4, F+8, F+c</td><td>F+4 = AfMotorFactory+4 (Joint), F+8 = AfLensFactory+10 (L), F+c = AfLensFactory+4 (InMotor)</td></tr>
+<tr><th scope="row">통신 객체 C</th><td>L+58 = LensFactory+14 = reader+54</td><td>근거 JSON은 이 포인터의 이름 문자열로 <code>m_LensCpuCommunication</code>과 <code>m_pcLensSdm</code>(<code>src/LensInterface.cpp</code>)을 함께 기록합니다.</td></tr>
+<tr><th scope="row">명령 18의 처리</th><td><code>0x52ef8b34</code>, <code>0x52ef8d74</code>, <code>0x52ef8d88</code></td><td>능력 비트를 다시 읽고(<code>bl 0x52eff628</code>) 1이면 <code>mov r2, #0</code></td></tr>
+<tr><th scope="row">factory 생성</th><td><code>0x52f08be8</code>, <code>0x52f0270c</code></td><td>AfMotorFactory는 객체 네 개를 조건 없이 생성. AfLensFactory는 InMotor와 AfLensControl을 생성</td></tr>
+</tbody></table></div>
+<p class="small">facade 검사에서 명령 11~17은 함수를 부르지 않고 선택된 객체의 필드(<code>+54</code>, <code>+88</code>, <code>+8c</code>, <code>+90</code>, <code>+94</code>, <code>+95</code>, <code>+55</code>)를 바로 읽어 돌려주었습니다. 명령 2·3은 하위 호출 뒤 1을 돌려주었고, 나머지 호출형 명령은 stub의 반환값을 그대로 돌려주었습니다. 명령 18에서는 가변 인자 word를 <code>0x7a00</code>으로 넣어 셋째 인수가 bit 6 = 0일 때 <code>0x7a</code>, bit 6 = 1일 때 0이 되는 것을 확인했습니다. 하위 명령 함수 16개의 주소, 생성자와 vtable·RTTI 문자열, 구간별 SHA-256은 <a href="af-drive-selection-evidence.json">af-drive-selection-evidence.json</a>과 <a href="af-drive-selection-checks.json">af-drive-selection-checks.json</a>에 있습니다.</p>
+</details>
+<p>이 비트가 어느 클래스를 고르는지는 확인했습니다. 그러나 제조사가 붙인 비트 이름, 이 비트가 SDM만을 뜻하는지, 특정 렌즈 ID와 어떤 관계인지는 확정하지 못했습니다.</p>
+</section>
 
-<h2 id="encoding">InMotor 명령 작성에서 다시 만나는 capability</h2>
-<p>InMotor의 이벤트 0x80 처리기에는 제어 모드에 따라 <code>0x52efc7a0</code>을 호출하는 경로가 있다. 이 명령 작성 함수는 통신 객체의 같은 bit 6을 다시 검사한다. 비트가 0이면 queue를 호출하지 않고 <code>0xff</code>를 반환한다. 비트가 1이면 아래 값을 두 바이트로 작성한다. <a href="af-command-evidence.json">원본 명령과 전이</a></p>
+<section id="capability">
+<h2>능력 바이트는 두 경로로 기록됩니다</h2>
+<p class="takeaway">능력 바이트에 값을 쓰는 코드를 두 곳 찾았습니다. 두 경로 모두 받은 바이트 전체를 그대로 옮기며, bit 6만 골라 켜거나 끄는 처리는 없습니다.</p>
+<figure class="diagram">
+<figcaption>능력 바이트를 기록하는 두 경로와 제외한 후보</figcaption>
+<div class="dg-scroll">
+<svg class="dg" viewBox="0 0 800 312" role="img" aria-labelledby="dg-wr-title dg-wr-desc">
+<title id="dg-wr-title">능력 바이트 C+0x5272에 값을 쓰는 두 경로</title>
+<desc id="dg-wr-desc">첫째 경로는 렌즈 정보 수신 함수 0x52f18638입니다. mode와 submode 조건을 통과하면 응답 버퍼의 byte 6을 능력 바이트에 복사합니다. 둘째 경로는 명령 0x8205 처리기 0x52f182d4입니다. 교환 함수가 0을 반환하면 응답 32바이트를 캐시 C+0x4f8에 넣고 그 첫 바이트를 능력 바이트에 복사합니다. 두 경로 모두 보조 객체의 +6에도 같은 값을 씁니다. 영상 처리 코드 0x531346e4의 비슷한 저장 명령은 다른 출력 버퍼의 +0x1272에 쓰므로 후보에서 제외했습니다.</desc>
+<defs>
+<marker id="dg-wr-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0 0L10 5L0 10z"/></marker>
+</defs>
+<text class="h" x="8" y="16">경로 A</text>
+<rect class="b ok" x="8" y="24" width="214" height="74" rx="8"/>
+<text class="t" x="20" y="49">렌즈 정보 수신 함수</text>
+<text class="s mono" x="20" y="68">0x52f18638</text>
+<text class="s" x="20" y="86">mode·submode 조건 통과 시</text>
+<rect class="b model" x="266" y="24" width="190" height="74" rx="8"/>
+<text class="t" x="278" y="49">응답 버퍼의 byte 6</text>
+<text class="s mono" x="278" y="68">buffer[6]</text>
+<text class="s" x="278" y="86">시험에서는 합성 값</text>
+
+<text class="h" x="8" y="126">경로 B</text>
+<rect class="b ok" x="8" y="134" width="214" height="74" rx="8"/>
+<text class="t" x="20" y="159">명령 0x8205 처리기</text>
+<text class="s mono" x="20" y="178">0x52f182d4</text>
+<text class="s" x="20" y="196">교환 함수가 0을 반환하면</text>
+<rect class="b model" x="266" y="134" width="190" height="74" rx="8"/>
+<text class="t" x="278" y="159">32바이트 캐시</text>
+<text class="s mono" x="278" y="178">C+0x4f8 · cache[0]</text>
+<text class="s" x="278" y="196">응답은 합성 값</text>
+
+<rect class="b key" x="540" y="62" width="252" height="108" rx="8"/>
+<text class="t" x="552" y="88">능력 바이트</text>
+<text class="s mono" x="552" y="108">C+0x5272</text>
+<text class="s" x="552" y="130">보조 객체의 +6에도 같은 값</text>
+<text class="s" x="552" y="150">바이트 전체를 그대로 복사</text>
+
+<path class="e" d="M222 61H264" marker-end="url(#dg-wr-ah)"/>
+<path class="e" d="M456 61H498V96H538" marker-end="url(#dg-wr-ah)"/>
+<path class="e" d="M222 171H264" marker-end="url(#dg-wr-ah)"/>
+<path class="e" d="M456 171H498V136H538" marker-end="url(#dg-wr-ah)"/>
+
+<text class="h" x="8" y="238">제외한 후보</text>
+<rect class="b mute" x="8" y="246" width="448" height="56" rx="8"/>
+<text class="t" x="20" y="270">영상 처리 코드의 비슷한 저장 명령</text>
+<text class="s mono" x="20" y="290">0x531346e4 → output+0x1272 (EdgeEnhancement packer)</text>
+<text class="n" x="474" y="270">다른 출력 버퍼에 쓰는 코드라서</text>
+<text class="n" x="474" y="288">능력 바이트의 기록자가 아닙니다</text>
+</svg>
+</div>
+<ul class="dg-legend"><li><i class="ok"></i>원본 코드 실행으로 확인</li><li><i class="model"></i>시험용으로 넣은 값</li><li><i class="key"></i>기록 대상</li><li><i class="mute"></i>제외</li></ul>
+</figure>
+
+<div class="table-wrap"><table>
+<caption>두 기록 경로의 비교</caption>
+<thead><tr><th>항목</th><th>경로 A: 렌즈 정보 수신</th><th>경로 B: 명령 <code>0x8205</code></th></tr></thead>
+<tbody>
+<tr><th scope="row">기록하는 코드</th><td>수신 함수 <code>0x52f18638</code>. 읽기 <code>0x52f18808</code>, 쓰기 <code>0x52f1881c</code></td><td>처리기 <code>0x52f182d4</code>가 부르는 <code>0x5315dc9c</code>. 쓰기 <code>0x5315e070</code>, <code>0x5315e078</code></td></tr>
+<tr><th scope="row">값의 출처</th><td>응답 버퍼의 byte 6 (<code>buffer[6]</code>)</td><td>32바이트 캐시의 첫 바이트 (<code>cache[0]</code>). 캐시 위치는 <code>C+0x4f8</code></td></tr>
+<tr><th scope="row">기록 조건</th><td>하위 수신 호출 <code>0x52f3a754</code> 뒤, mode가 3이거나 mode가 0이고 submode가 3일 때</td><td>교환 함수 <code>0x52f18128</code>의 반환값이 0일 때</td></tr>
+<tr><th scope="row">함께 쓰는 곳</th><td colspan="2">보조 객체의 byte 6. 보조 객체는 <code>[C+0x5260]</code>이 가리키며 <code>reader+4c</code>, <code>LensFactory+c</code>와 같은 포인터입니다.</td></tr>
+<tr><th scope="row">실행 검사</th><td>복사 명령 6개에 256값, 진입 조건 분기에 mode·submode 25조합</td><td>metadata 조회부터 필드 갱신까지 256값, 그 밖의 경계 검사 16건</td></tr>
+</tbody></table></div>
+<p>생성자는 <code>0x5315c274</code>에서 능력 바이트를 0으로 초기화합니다. 경로 A의 <code>buffer[6]</code>과 경로 B의 <code>cache[0]</code>은 서로 다른 입력 위치입니다. 같은 패킷이나 같은 값이라고 가정하지 않습니다. mode와 submode가 사용자 기능 가운데 무엇에 해당하는지, 통신이 유효한지를 가리는 조건 전체는 확인하지 않았습니다. C를 전역 공용 속성 객체라고 부르지도 않습니다.</p>
+
+<h3 id="cmd8205">명령 0x8205가 처리되는 순서</h3>
+<ol class="steps">
+<li><strong>명령 정보 조회</strong> 함수 <code>0x5315a8a0</code>은 명령 <code>0x8205</code>에 index <code>0x26</code>, type 2, required-mask 0을 돌려줍니다.</li>
+<li><strong>교환</strong> 처리기 <code>0x52f182d4</code>는 type 2 경로에서 교환 함수 <code>0x52f18128</code>을 부릅니다. 이 함수 안에 송신과 수신 호출이 있습니다.</li>
+<li><strong>캐시에 복사</strong> 반환값이 0이면 <code>0x5315dc68</code>이 32바이트를 캐시에 복사합니다. 위치는 <code>C + 0x38 + index × 0x20</code>, 곧 <code>C+0x4f8</code>입니다.</li>
+<li><strong>필드 갱신</strong> <code>0x5315dc9c</code>가 캐시의 첫 바이트를 보조 객체의 +6과 능력 바이트에 씁니다.</li>
+</ol>
+<div class="callout warn"><strong class="label">통신 실패 때의 동작은 확정하지 못했습니다</strong>
+<p>type 2 경로는 교환 함수가 0이 아닌 값을 돌려주면 캐시 갱신을 건너뜁니다. 그런데 관찰한 교환 함수의 일반 반환부는 항상 0입니다. 이 함수는 대기 함수 <code>WaitLensCpuControl</code>(<code>0x52f180a0</code>)의 반환값을 뒤의 조건에 쓰지 않습니다. 대기 함수 안의 assertion이나 하위 전송이 실행을 멈출 수 있으므로, 실제 통신이 실패했을 때도 능력 바이트가 갱신된다고 단정할 수 없습니다. type 3 경로는 <code>0x52f18410</code>에서 캐시를 복사한 뒤에 상태를 검사하므로, 이 조건을 모든 type에 적용하지도 않습니다.</p></div>
+<ul>
+<li><strong>버퍼 길이</strong> — 교환 함수는 32바이트를 송신하고, 수신 뒤 호출자 버퍼에 <code>min(requested_length, 32)</code>바이트를 복사합니다. 그 뒤 캐시 함수가 다시 32바이트를 복사합니다. 호출자 버퍼의 용량과 초기화가 중요한 구조입니다. 다만 잘못된 호출자나 실제 메모리 침범을 관찰한 것은 아닙니다.</li>
+<li><strong>index 범위</strong> — 캐시 함수의 범위 검사는 부호 있는 index가 <code>0x86</code>보다 클 때만 거부합니다. 합성 index −1은 <code>C+18</code>로 계산됐습니다. 실제 조회가 <code>0x8205</code>에 내놓은 index는 정상값 <code>0x26</code>입니다.</li>
+<li><strong>전달을 막는 조건</strong> — 상위 전달 함수 <code>0x52f15100</code>은 자기 객체의 byte <code>+9b</code>가 0일 때 <code>0x52f18490</code>을 부릅니다. 이 함수는 <code>C+52f3</code>이 0이 아니면 <code>0x8205</code> 전달을 막습니다. 두 상태 필드의 뜻과, 실제로 <code>0x8205</code>를 일으키는 화면 조작이나 이벤트는 확정하지 못했습니다.</li>
+</ul>
+
+<details class="evidence"><summary>0x8205 경로와 제외한 후보의 세부</summary>
+<div class="table-wrap"><table class="compact">
+<thead><tr><th>항목</th><th>주소·식</th><th>내용</th></tr></thead>
+<tbody>
+<tr><th scope="row">명령 정보</th><td><code>0x5315a8a0</code>–<code>0x5315ba7c</code></td><td><code>0x8205</code> → 반환 1, index <code>0x26</code>, type 2, 추가 바이트 1, required-mask 0</td></tr>
+<tr><th scope="row">처리기</th><td><code>0x52f182d4</code>–<code>0x52f18490</code></td><td>type 2: 교환 반환 0이면 <code>0x52f18474</code>에서 캐시 복사, <code>0x52f18484</code>에서 필드 갱신. 0이 아니면 <code>0x5315e2f0</code>으로 분기</td></tr>
+<tr><th scope="row">교환 함수</th><td><code>0x52f18128</code>–<code>0x52f182c8</code></td><td>송신 <code>0x52f3a74c</code>, 수신 <code>0x52f3a754</code>. 길이 제한 <code>cmp r5, #0x20</code>. 일반 반환 <code>mov r0, #0</code>은 <code>0x52f182ac</code></td></tr>
+<tr><th scope="row">캐시 복사</th><td><code>0x5315dc68</code>–<code>0x5315dc9c</code></td><td><code>cmp r1, #0x86</code> 뒤 <code>bxgt lr</code>. 목적지 <code>C+38+index×20</code></td></tr>
+<tr><th scope="row">필드 갱신</th><td><code>0x5315dc9c</code>–<code>0x5315e2f0</code></td><td><code>0x5315e070</code>: 보조 객체 +6에 쓰기. <code>0x5315e078</code>: <code>C+5272</code>에 쓰기</td></tr>
+<tr><th scope="row">포인터 연결</th><td><code>0x5315c0b8</code>..<code>c0</code>, <code>0x52f17ad8</code>..<code>ec</code></td><td><code>C+5260 = reader+4c = LensFactory+c</code></td></tr>
+<tr><th scope="row">전달 조건</th><td><code>0x52f15100</code>, <code>0x52f18490</code></td><td>byte <code>+9b</code> ≠ 0이면 전달하지 않음. <code>C+52f3</code> ≠ 0이면 막음. 근거 JSON은 명령 번호의 상위 니블이 <code>0xa000</code>인 경우만 예외라고 기록합니다. 호출자는 고정된 <code>0x8205</code>가 아니라 들어온 인수에서 명령 번호를 얻습니다.</td></tr>
+<tr><th scope="row">다른 0x8205 후보</th><td><code>0x528e77f4</code>, <code>0x52a88b44</code>, <code>0x53316d38</code></td><td>MOVW <code>0x8205</code>가 MOVT와 합쳐져 <code>0x26408205</code>가 되는 곳. 16비트 명령과 구분해 제외</td></tr>
+<tr><th scope="row">제외한 저장 명령</th><td><code>0x531346e4</code></td><td>EdgeEnhancement packer <code>0x5313432c</code> 안. 시작부가 <code>r3 = output + 0x1000</code>을 만들고 <code>[r3+0x272]</code>에 쓰므로 목적지는 output+1272</td></tr>
+</tbody></table></div>
+<p class="small">경로 A의 진입 조건 25건은 분기 구간(<code>0x52f18730</code>–<code>0x52f1874c</code>)만 실행했고, mode와 견주는 레지스터 r8에는 0을 넣었습니다. 경로 B의 256값 검사에서는 대기 함수의 반환값을 0과 1로 번갈아 넣었고, 어느 쪽이든 능력 바이트가 응답 첫 바이트로 갱신됐습니다. 송신 stub은 패킷의 오프셋 4~6에 있는 세 바이트가 <code>63 05 82</code>인지 확인했습니다. 제외한 저장 명령은 이 호출 경로의 주소식을 확인한 결과이며, 다른 모든 별칭이 없다는 증명은 아닙니다. 능력 바이트를 쓰는 코드가 이 둘뿐이라고도 주장하지 않습니다. 근거: <a href="af-capability-evidence.json">af-capability-evidence.json</a>, <a href="af-capability-checks.json">af-capability-checks.json</a>.</p>
+</details>
+</section>
+
+<section id="events">
+<h2>두 제어 객체는 서로 다른 이벤트를 처리합니다</h2>
+<p class="takeaway">InMotor와 Joint는 각자 이벤트 루프를 돕니다. 기다리는 이벤트 비트의 집합이 다르고, 같은 비트에서 부르는 처리 함수도 다릅니다.</p>
+<p>facade가 부르는 공통 요청 함수들은 client를 검사한 뒤 인수를 객체 필드에 복사하고, <code>0x530ed03c</code>로 이벤트 비트를 전달합니다. 각 객체의 루프는 그 이벤트를 기다렸다가 비트마다 정해진 함수를 부릅니다.</p>
+<div class="table-wrap"><table class="fit">
+<caption>두 이벤트 루프</caption>
+<thead><tr><th>객체</th><th>루프 함수</th><th>기다리는 비트 (대기 마스크)</th><th class="n">처리 함수</th></tr></thead>
+<tbody>
+<tr><th scope="row">InMotor</th><td><code>0x52ef9d50</code></td><td><code>0x19fc3</code></td><td class="n">11개</td></tr>
+<tr><th scope="row">Joint</th><td><code>0x52f08828</code></td><td><code>0x3feff</code></td><td class="n">17개</td></tr>
+</tbody></table></div>
+<div class="table-wrap"><table>
+<caption>같은 이벤트 비트에서 달라지는 처리 (일부)</caption>
+<thead><tr><th>이벤트 비트</th><th>InMotor 처리 함수</th><th>Joint 처리 함수</th></tr></thead>
+<tbody>
+<tr><th scope="row"><code>0x80</code></th><td><code>0x52ef93d8</code></td><td><code>0x52f0853c</code> → <code>0x52f083f0</code></td></tr>
+<tr><th scope="row"><code>0x100</code></th><td><code>0x52ef9510</code></td><td>대기 마스크와 처리 분기에 없음</td></tr>
+<tr><th scope="row"><code>0x200</code></th><td><code>0x52ef961c</code></td><td><code>0x52f08578</code></td></tr>
+<tr><th scope="row"><code>0x2000</code> / <code>0x4000</code></th><td>대기 마스크와 처리 분기에 없음</td><td><code>0x52f080a0</code> / <code>0x52f080ec</code></td></tr>
+</tbody></table></div>
+<div class="callout model"><strong class="label">시험 조건</strong>
+<p>루프 검사 88건은 루프 진입부터 “대기 → 플래그 지우기 → 분배” 한 바퀴를 돌고 다음 대기에 닿을 때까지 실행했습니다. 대기 함수(<code>0x530ed1ac</code>), 지우기 함수(<code>0x530ed0f4</code>), 처리 함수는 모두 stub이고 이벤트 플래그는 직접 넣었습니다. 확인한 것은 루프 안의 분기와 호출 순서입니다. RTOS의 스케줄러나 모터 실행을 재현한 것이 아닙니다.</p></div>
+
+<details class="evidence"><summary>이벤트 비트별 처리 함수 전체</summary>
+<div class="table-wrap"><table class="compact">
+<thead><tr><th>이벤트 비트</th><th>InMotor</th><th>Joint</th></tr></thead>
+<tbody>
+<tr><th scope="row"><code>0x1</code></th><td><code>0x52ef9b14</code> (객체의 <code>+54</code> 바이트가 1일 때만)</td><td><code>0x52f087c4</code></td></tr>
+<tr><th scope="row"><code>0x2</code></th><td><code>0x52ef88dc</code></td><td><code>0x52f083bc</code></td></tr>
+<tr><th scope="row"><code>0x4</code></th><td>—</td><td><code>0x52f0823c</code></td></tr>
+<tr><th scope="row"><code>0x8</code></th><td>—</td><td><code>0x52f082c4</code></td></tr>
+<tr><th scope="row"><code>0x10</code></th><td>—</td><td><code>0x52f08634</code></td></tr>
+<tr><th scope="row"><code>0x20</code></th><td>—</td><td><code>0x52f08320</code></td></tr>
+<tr><th scope="row"><code>0x40</code></th><td><code>0x52ef9378</code></td><td><code>0x52f08000</code></td></tr>
+<tr><th scope="row"><code>0x80</code></th><td><code>0x52ef93d8</code></td><td><code>0x52f0853c</code></td></tr>
+<tr><th scope="row"><code>0x100</code></th><td><code>0x52ef9510</code></td><td>—</td></tr>
+<tr><th scope="row"><code>0x200</code></th><td><code>0x52ef961c</code></td><td><code>0x52f08578</code></td></tr>
+<tr><th scope="row"><code>0x400</code></th><td><code>0x52f0019c</code></td><td><code>0x52f08060</code></td></tr>
+<tr><th scope="row"><code>0x800</code></th><td><code>0x52ef9be8</code></td><td><code>0x52f08714</code></td></tr>
+<tr><th scope="row"><code>0x1000</code></th><td><code>0x52ef9cf4</code></td><td><code>0x52f08370</code></td></tr>
+<tr><th scope="row"><code>0x2000</code></th><td>—</td><td><code>0x52f080a0</code></td></tr>
+<tr><th scope="row"><code>0x4000</code></th><td>—</td><td><code>0x52f080ec</code></td></tr>
+<tr><th scope="row"><code>0x8000</code></th><td><code>0x52ef9718</code></td><td><code>0x52f08158</code></td></tr>
+<tr><th scope="row"><code>0x10000</code></th><td><code>0x52ef9860</code></td><td><code>0x52f07eb8</code> (객체의 <code>+54</code> 바이트가 1일 때만)</td></tr>
+<tr><th scope="row"><code>0x20000</code></th><td>—</td><td><code>0x52f07fd4</code></td></tr>
+</tbody></table></div>
+<p class="small">88건은 루프 2개 × 객체의 <code>+54</code> 바이트 0·1 × 플래그 22가지(0, 단일 비트 18개, 각 루프의 대기 마스크, <code>0x3ffff</code>, <code>0x80000000</code>)입니다. 대기 마스크에 없는 비트를 넣은 사례는 분기 동작을 본 것이며, RTOS가 그 비트를 실제로 전달한다는 뜻이 아닙니다. 루프 구간은 InMotor <code>0x52ef9d50</code>–<code>0x52ef9ef8</code>, Joint <code>0x52f08828</code>–<code>0x52f08a5c</code>입니다. 근거: <a href="af-command-evidence.json">af-command-evidence.json</a>, <a href="af-command-checks.json">af-command-checks.json</a>.</p>
+</details>
+</section>
+
+<section id="encoding">
+<h2>InMotor 쪽은 구동 값을 명령 0x8900의 2바이트로 만듭니다</h2>
+<p class="takeaway">요청 작성 함수는 능력 비트를 다시 확인한 뒤, 입력 값의 하위 14비트와 방향 표시 1비트를 묶어 2바이트를 만듭니다.</p>
+<p>InMotor의 이벤트 <code>0x80</code> 처리 함수에는 제어 모드에 따라 요청 작성 함수 <code>0x52efc7a0</code>을 부르는 경로가 있습니다. 이 함수는 통신 객체의 같은 bit 6을 한 번 더 검사합니다. 비트가 0이면 큐 쪽 함수를 부르지 않고 <code>0xff</code>를 돌려줍니다. 비트가 1이면 아래처럼 2바이트를 만듭니다.</p>
+<figure class="diagram">
+<figcaption>명령 0x8900에 싣는 2바이트의 구성</figcaption>
+<div class="dg-scroll">
+<svg class="dg" viewBox="0 0 800 236" role="img" aria-labelledby="dg-enc-title dg-enc-desc">
+<title id="dg-enc-title">16비트 값이 방향 비트와 14비트 값으로 이뤄지고 두 바이트로 나뉘는 모습</title>
+<desc id="dg-enc-desc">16비트 값의 bit 15는 방향 인자가 0이 아니면 1입니다. bit 14는 항상 0입니다. bit 13부터 bit 0까지는 입력 값의 하위 14비트입니다. 이 16비트 값을 상위 8비트와 하위 8비트로 나눠, 상위 바이트를 payload의 첫 바이트에, 하위 바이트를 둘째 바이트에 놓습니다.</desc>
+<defs><marker id="dg-enc-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0 0L10 5L0 10z"/></marker></defs>
+<text class="h" x="20" y="20">16비트 값 (WORD)</text>
+<rect class="b key" x="20" y="30" width="210" height="70" rx="8"/>
+<text class="t" x="32" y="58">bit 15</text>
+<text class="s" x="32" y="80">방향 인자가 0이 아니면 1</text>
+<rect class="b mute" x="230" y="30" width="110" height="70" rx="8"/>
+<text class="t" x="242" y="58">bit 14</text>
+<text class="s" x="242" y="80">항상 0</text>
+<rect class="b ok" x="340" y="30" width="440" height="70" rx="8"/>
+<text class="t" x="352" y="58">bit 13 ~ bit 0</text>
+<text class="s" x="352" y="80">입력 값의 하위 14비트 (value &amp; 0x3fff)</text>
+<path class="e" d="M20 116H780"/>
+<path class="e" d="M205 116V152" marker-end="url(#dg-enc-ah)"/>
+<path class="e" d="M595 116V152" marker-end="url(#dg-enc-ah)"/>
+<rect class="b" x="20" y="154" width="370" height="70" rx="8"/>
+<text class="t" x="32" y="182">payload[0] = 상위 8비트</text>
+<text class="s mono" x="32" y="204">word &gt;&gt; 8</text>
+<rect class="b" x="410" y="154" width="370" height="70" rx="8"/>
+<text class="t" x="422" y="182">payload[1] = 하위 8비트</text>
+<text class="s mono" x="422" y="204">word &amp; 0xff</text>
+</svg>
+</div>
+<ul class="dg-legend"><li><i class="key"></i>방향 표시 비트</li><li><i class="ok"></i>값 14비트</li><li><i class="mute"></i>쓰지 않는 비트</li></ul>
+</figure>
 <pre><code>value14 = inputValue &amp; 0x3fff
-word = value14 | (directionArgument != 0 ? 0x8000 : 0)
+word    = value14 | (directionArgument != 0 ? 0x8000 : 0)
 payload = [word &gt;&gt; 8, word &amp; 0xff]
 descriptor.command = 0x8900
-request.opcode = 0x1b</code></pre>
-<p>directionArgument는 0 여부에 따라 bit 15를 만드는 인자를 구분하기 위한 분석용 이름이다. 회전 방향의 극성, 거리·펄스 단위, 유효 이동 범위는 확인하지 않았다. 입력 하위 14비트와 인자 원값은 객체의 <code>+8c</code>, <code>+88</code>에 각각 저장된다. <code>0x52eff608</code>은 opcode 0x1b를 넣어 <code>0x52eff524</code>로 넘긴다. descriptor는 CPU 내부 요청 형식이며 실제 렌즈 버스 프레임으로 단정하지 않는다.</p>
-<figure><figcaption>명령 작성까지 연결한 경로 · 통신·구동 실행은 미검증</figcaption><ol class="flow"><li><strong>InMotor 이벤트 0x80</strong><span>52ef93d8<br>모드에 따른 하위 분기</span></li><li><strong>0x8900 descriptor</strong><span>52efc7a0<br>bit 6 재검사<br>하위 14비트 + bit 15</span></li><li><strong>요청 queue 경계</strong><span>52eff608 → 52eff524<br>opcode 0x1b<br>52f148fc 호출은 정적 확인</span></li></ol></figure>
-<p>상위 facade만 바꾸는 것으로 구동 전환이 성립한다고 판단할 근거는 없다. 하위 capability 검사, 이벤트의 지원 범위, 제어 모드별 처리와 기계적 조건을 함께 검토해야 한다.</p>
+request.opcode     = 0x1b</code></pre>
+<div class="table-wrap"><table>
+<caption>실행 검사에서 얻은 예 (능력 바이트 0x40)</caption>
+<thead><tr><th>입력 값</th><th>방향 인자</th><th>만들어진 2바이트</th><th>설명</th></tr></thead>
+<tbody>
+<tr><td><code>0x2345</code></td><td>1</td><td><code>a3 45</code></td><td>값은 그대로, bit 15가 켜짐</td></tr>
+<tr><td><code>0x3fff</code></td><td>0</td><td><code>3f ff</code></td><td>14비트로 표현할 수 있는 최댓값</td></tr>
+<tr><td><code>0x4000</code></td><td>1</td><td><code>80 00</code></td><td>bit 14 이상은 잘려 값이 0이 됨</td></tr>
+<tr><td><code>0xffff</code></td><td>2</td><td><code>bf ff</code></td><td>방향 인자는 0인지 아닌지만 반영</td></tr>
+<tr><td><code>0x12345678</code></td><td>0</td><td><code>16 78</code></td><td>하위 14비트만 남음</td></tr>
+<tr><td><code>0x12345678</code></td><td><code>0xffffffff</code></td><td><code>96 78</code></td><td>위와 같고 bit 15가 켜짐</td></tr>
+</tbody></table></div>
+<p><code>directionArgument</code>는 0인지 아닌지에 따라 bit 15를 만드는 인자를 가리키려고 분석에서 붙인 이름입니다. 이 비트가 어느 회전 방향인지, 값이 거리인지 펄스 수인지, 유효한 이동 범위가 어디까지인지는 확인하지 않았습니다. 입력 값의 하위 14비트와 방향 인자의 원래 값은 객체의 <code>+8c</code>와 <code>+88</code>에 각각 저장됩니다.</p>
 
-<h2 id="verification">실행 검사와 의사코드 보존</h2>
-<div class="table-scroll"><table><thead><tr><th>검사</th><th>사례 수</th><th>원본 실행 범위와 대체 부분</th></tr></thead><tbody><tr><td>capability·facade</td><td>306</td><td>getter 256 + facade 50. facade의 하위 명령은 명시적 return stub.</td></tr><tr><td>응답 복사·진입 조건</td><td>281</td><td>복사 여섯 명령 256 + mode/submode 분기 fragment 25. 수신 함수 전체 실행 아님.</td></tr><tr><td>InMotor·Joint loop</td><td>88</td><td>entry부터 한 번의 wait/clear/dispatch 후 다음 wait까지. wait·clear·처리기 stub.</td></tr><tr><td>0x8900 요청 작성</td><td>320</td><td>작성 함수와 opcode wrapper 전체. queue 진입 52eff524를 stub으로 받아 바이트 대조.</td></tr></tbody></table></div>
-<p>위 995건에 capability 기록자 검사 272건을 더해 합계 1,267건을 통과했다. 272건은 metadata 1건, handler→lookup→교환→캐시→필드 갱신 256건, 길이 경계 5건, index 경계 5건, 인위적 nonzero 반환 분기 1건, 비AF 주소 계산 fragment 4건이다. 할당·기본 메모리 함수·event clear·송수신·wait·free는 명시적 stub이며 비AF 검사는 분리된 두 fragment만 실행했다. <a href="af-capability-checks.json">추가 272건의 입력·범위·stub</a></p>
-<p>선택 587건, 명령 408건, 추가 기록자 272건을 조정자가 독립 재실행했다. genuine C는 선택 경로 6개, 명령 경로 11개, 추가 기록자 경로 6개로 총 23개를 로컬에 저장했다. 원본 ARM의 범위 해시와 분기 주소도 함께 보존했다. <a href="af-drive-selection-checks.json">선택 587건</a> · <a href="af-command-checks.json">명령 408건</a> · <a href="af-capability-evidence.json">추가 기록자 근거</a></p>
-<p>angr C에는 중요한 복원 오류가 있다. facade C는 조건부 LDREQ/LDRNE를 잃어 항상 Joint를 고르는 것처럼 표현한다. 명령 작성 C도 일부 인자·포인터를 정확히 복원하지 못한다. raw C를 손으로 고치지 않고 보존했으며 선택식과 바이트 변환은 원본 ARM·실행 결과를 근거로 작성했다. 이 C 전체를 컴파일 가능한 원본 소스로 취급하지 않는다.</p>
-<details><summary>로컬 재현 명령</summary><pre><code>python verify_af_drive_selection.py rtos.bin --output selection-checks.json
+<h3 id="queue-boundary">만든 요청이 큐 앞에 닿기까지</h3>
+<ol class="flow">
+<li class="static"><strong>InMotor 이벤트 0x80</strong><span><code>0x52ef93d8</code><br>모드에 따른 하위 분기</span></li>
+<li class="ok"><strong>0x8900 descriptor</strong><span><code>0x52efc7a0</code><br>bit 6 재검사, 14비트 + bit 15</span></li>
+<li class="ok"><strong>opcode 0x1b 지정</strong><span><code>0x52eff608</code><br>→ <code>0x52eff524</code></span></li>
+<li class="static"><strong>요청 큐 진입</strong><span><code>0x52f148fc</code> 호출<br>이 문서에서는 정적 확인</span></li>
+</ol>
+<p>작성 함수는 길이 2와 명령 번호 <code>0x8900</code>이 든 <dfn title="명령 번호, 길이, 데이터 위치를 담아 다음 함수에 넘기는 작은 기록">descriptor</dfn>를 만들고, <code>0x52eff608</code>이 요청 종류 번호(opcode) <code>0x1b</code>를 붙여 <code>0x52eff524</code>로 넘깁니다. descriptor는 CPU 안에서 쓰는 요청 형식입니다. 렌즈와 주고받는 실제 통신 프레임이라고 단정하지 않습니다. 이 뒤의 큐와 소비 과정은 <a href="af-request-consumer.html">AF 요청 큐와 완료 통지</a>에서 실행해 확인했습니다.</p>
+<div class="callout warn"><strong class="label">주의</strong>
+<p>상위 facade의 선택만 바꾸면 구동 방식이 바뀐다고 볼 근거는 없습니다. 요청 작성 함수가 능력 비트를 다시 검사하고, 두 객체가 지원하는 이벤트가 다르며, 제어 모드별 처리와 렌즈의 기계적 조건도 따로 있습니다. 이들을 함께 검토해야 합니다.</p></div>
+
+<details class="evidence"><summary>요청 작성 검사의 구성과 주소</summary>
+<p class="small">320건은 능력 바이트 0~255 전부(입력 값 <code>0x2345</code>, 방향 인자 1)에, 능력 바이트 0과 <code>0x40</code> 각각에서 입력 값 8가지(0, 1, <code>0x3fff</code>, <code>0x4000</code>, <code>0x7fff</code>, <code>0x8000</code>, <code>0xffff</code>, <code>0x12345678</code>)와 방향 인자 4가지(0, 1, 2, <code>0xffffffff</code>)를 조합한 64건을 더한 것입니다. bit 6이 0인 160건은 모두 <code>0xff</code>를 돌려주고 요청을 만들지 않았으며 객체의 <code>+88</code>~<code>+8d</code>도 바뀌지 않았습니다. bit 6이 1인 160건은 모두 요청 하나를 만들었습니다. descriptor의 앞 8바이트는 <code>02 00 00 89 00 00 00 00</code>이었습니다.</p>
+<p class="small">실행한 구간은 작성 함수 <code>0x52efc7a0</code>–<code>0x52efc858</code>과 opcode 지정 함수 <code>0x52eff608</code>–<code>0x52eff618</code>입니다. 큐 진입 함수 <code>0x52eff524</code>는 stub으로 받아 인수와 바이트를 대조했습니다. 정적 분석으로는 <code>0x52eff524</code>가 <code>0x52efeec0</code>으로 요청 기록을 얻고 opcode를 요청의 <code>+0c</code>에 쓴 뒤 <code>0x52f148fc</code>를 부르는 것을 확인했습니다. 이벤트 <code>0x80</code> 처리 함수에서 작성 함수를 부르는 명령은 <code>0x52ef94a4</code>에 있습니다. 근거: <a href="af-command-evidence.json">af-command-evidence.json</a>, <a href="af-command-checks.json">af-command-checks.json</a>.</p>
+</details>
+</section>
+
+<section id="verification">
+<h2>검사 1,267건의 범위와 재현 방법</h2>
+<p class="takeaway">세 검증 스크립트가 원본 ARM 코드를 1,267번 실행했습니다. 어느 검사도 렌즈, 스케줄러, 모터를 실행하지 않았습니다.</p>
+<div class="table-wrap"><table>
+<caption>검사 묶음별 사례 수와 범위</caption>
+<thead><tr><th>스크립트</th><th>검사</th><th class="n">사례</th><th>실행한 원본 코드와 대체한 부분</th></tr></thead>
+<tbody>
+<tr><th scope="row" rowspan="4">선택<br><span class="small muted">587건</span></th><td>bit 6 읽기</td><td class="n">256</td><td>읽기 함수 전체</td></tr>
+<tr><td>facade 선택</td><td class="n">50</td><td>facade와 읽기 함수 전체. 하위 명령 함수는 값만 돌려주는 stub</td></tr>
+<tr><td>응답 바이트 복사</td><td class="n">256</td><td>복사 명령 여섯 개. 수신 함수 전체를 실행한 것은 아님</td></tr>
+<tr><td>진입 조건</td><td class="n">25</td><td>mode·submode 분기 구간만</td></tr>
+<tr><th scope="row" rowspan="2">이벤트·명령<br><span class="small muted">408건</span></th><td>InMotor·Joint 루프</td><td class="n">88</td><td>진입부터 대기·지우기·분배 한 번 뒤 다음 대기까지. 대기·지우기·처리 함수는 stub</td></tr>
+<tr><td><code>0x8900</code> 요청 작성</td><td class="n">320</td><td>작성 함수와 opcode 지정 함수 전체. 큐 진입 <code>0x52eff524</code>를 stub으로 받아 바이트 대조</td></tr>
+<tr><th scope="row" rowspan="6">능력 기록<br><span class="small muted">272건</span></th><td><code>0x8205</code> 명령 정보</td><td class="n">1</td><td>조회 함수 전체</td></tr>
+<tr><td>처리기 → 조회 → 교환 → 캐시 → 필드 갱신</td><td class="n">256</td><td>할당, 메모리 기본 함수, 이벤트 지우기, 송신·수신, 대기, 해제는 stub</td></tr>
+<tr><td>복사 길이 경계</td><td class="n">5</td><td>요청 길이 0, 1, 31, 32, 33</td></tr>
+<tr><td>캐시 index 경계</td><td class="n">5</td><td>index 0, <code>0x26</code>, <code>0x86</code>, <code>0x87</code>, −1</td></tr>
+<tr><td>0이 아닌 반환 분기</td><td class="n">1</td><td>교환 함수의 반환을 7로 강제해 분기만 확인</td></tr>
+<tr><td>AF와 무관한 주소 계산</td><td class="n">4</td><td>영상 처리 코드의 떨어진 두 구간만</td></tr>
+<tr><th scope="row" colspan="2">합계</th><td class="n">1,267</td><td>587 + 408 + 272</td></tr>
+</tbody></table></div>
+<p>선택 587건은 bit 6 읽기와 facade 선택 306건, 응답 복사와 진입 조건 281건으로 이뤄집니다. 여기에 이벤트·명령 408건을 더한 995건에 능력 기록 272건을 더하면 1,267건입니다. 세 묶음은 처음 조사한 작업과 별도로 다시 실행해 같은 결과를 얻었습니다. RTOS만 잘라 낸 파일과 전체 디코딩 이미지를 각각 입력으로 주어도 결과가 같았습니다.</p>
+<div class="callout"><strong class="label">디컴파일한 C는 참고용입니다</strong>
+<p>디컴파일러 angr가 만든 C 의사코드 23개(선택 경로 6개, 명령 경로 11개, 능력 기록 경로 6개)를 손대지 않고 로컬에 보관했습니다. 여기에는 중요한 복원 오류가 있습니다. facade의 C는 조건부 읽기 명령(LDREQ/LDRNE)을 잃어 항상 Joint를 고르는 것처럼 보입니다. 요청 작성 함수의 C도 일부 인자와 포인터를 정확히 복원하지 못합니다. 그래서 선택식과 바이트 변환은 원본 ARM 명령과 실행 결과를 근거로 썼습니다. 이 C를 컴파일할 수 있는 원본 소스로 다루지 않습니다.</p></div>
+
+<h3 id="reproduce">재현 방법</h3>
+<p>검증 스크립트는 <a href="../inspect_firmware.py">추출기</a>가 만든 <code>decoded.bin</code>이나 따로 잘라 낸 RTOS 파일을 입력으로 받습니다. Unicorn이 필요합니다. 입력의 SHA-256이 아래 값과 다르면 실행하지 않습니다.</p>
+<dl class="kv">
+<dt>RTOS SHA-256</dt><dd><code class="wrap">342d2f35405e8daf1797dfe431d2e4aa70f4b52a2c242a29df48206672f1dfb4</code></dd>
+<dt><code>decoded.bin</code> SHA-256</dt><dd><code class="wrap">7ff301d585ef7adcd620a15575faa39b4227cc5a27eaa8d754efe50f667a30f9</code></dd>
+<dt>RTOS 적재 기준 주소</dt><dd><code>0x52500000</code></dd>
+<dt>CPU 모델</dt><dd>Unicorn의 Cortex-A15. 실행 모델일 뿐이며 카메라의 CPU와 같다는 뜻이 아닙니다.</dd>
+<dt>분석 기준</dt><dd>펌웨어 2.20, 2026-11-08에 정리한 결과</dd>
+</dl>
+<pre><code>python verify_af_drive_selection.py rtos.bin --output selection-checks.json
 python verify_af_commands.py rtos.bin --output command-checks.json
-python verify_af_capability.py rtos.bin --output capability-checks.json</code></pre><p>세 검사 도구는 Unicorn을 사용하고 입력 RTOS 또는 decoded.bin의 SHA-256을 확인한다. 기존 출력 파일은 덮어쓰지 않고 assert를 비활성화하는 최적화 실행을 거부한다. <a href="../verify_af_drive_selection.py">선택 검사</a> · <a href="../verify_af_commands.py">이벤트·명령 검사</a> · <a href="../verify_af_capability.py">추가 기록자 검사</a></p></details>
+python verify_af_capability.py rtos.bin --output capability-checks.json</code></pre>
+<p class="small muted">출력 파일이 이미 있으면 덮어쓰지 않고 멈춥니다. assert를 끄는 최적화 실행(<code>python -O</code>)도 거부합니다.</p>
+</section>
 
-<h2 id="future">미래 변경을 위한 연구 범위</h2>
-<p>후속 조사에서는 capability의 다른 기록자, 재연결·오류 시 갱신, AF 계산 결과와 command 인자의 관계, queue 이후의 transport를 추적한다. 대상 렌즈나 실물이 없어도 이 기본 구조 연구는 진행할 수 있다. 실제 구동을 검토할 때는 타이밍, 위치 한계, 보정과 기계적 호환성을 별도로 검증해야 한다.</p>
-<p><a href="https://www.ricoh-imaging.co.jp/english/products/lens/k/standard/smcpentax-das16-50/">구형 smc DA★16–50 SDM 공식 설명</a>에는 SDM 호환 여부에 따라 렌즈 내장 모터와 바디 모터를 사용하는 사례가 있다. 반면 <a href="https://www.ricoh-imaging.co.jp/english/support/qa/k-3-3/">K-3 III 공식 FAQ</a>는 KAF3를 AF coupler가 없는 렌즈로 설명한다. 이 차이는 기계적 조건을 구분하는 근거이며 bit 6의 공식 이름이나 강제 전환 가능성을 입증하지 않는다.</p>
-</main><footer>펌웨어·렌즈 EEPROM을 수정하거나 실제 모터·저장매체·카메라를 실행하지 않았다. 이 보고서는 현재 K-3 Mark III 코드의 기본 구조 분석이며 K-3 II·Q7에서 같은 ABI를 사용한다는 주장은 포함하지 않는다.</footer>
-</body></html>
+<section id="limits">
+<h2>한계와 남은 과제</h2>
+<ul>
+<li><strong>비트의 뜻</strong> — bit 6이 어느 클래스를 고르는지만 확인했습니다. 제조사의 비트 이름, 값 전체의 인코딩, 렌즈가 물리적으로 구동 가능한지를 가리는 규칙은 복원하지 못했습니다.</li>
+<li><strong>통신</strong> — 응답 바이트를 옮기는 CPU 명령은 실행했지만, 수신 호출 <code>0x52f3a754</code>와 그 아래 전송 계층은 실행하지 않았습니다. 전기적 통신, 응답의 유효성, 모터의 움직임은 이 결과로 알 수 없습니다.</li>
+<li><strong>부분 실행</strong> — 복사 256건과 진입 조건 25건은 수신 함수의 일부 구간입니다. 생성자와 factory의 포인터 연결은 정적 분석이며, 시작 과정을 실행한 것이 아닙니다.</li>
+<li><strong>다른 기록자</strong> — 조사 범위를 정해 놓고 찾은 결과입니다. 능력 바이트를 쓰는 코드나 같은 필드를 가리키는 다른 포인터가 더 없다고 증명한 것은 아닙니다.</li>
+<li><strong>값의 뜻</strong> — <code>0x8900</code> 값의 단위, 방향의 극성, 유효 이동 범위, 기계적 호환 조건은 미해결입니다.</li>
+<li><strong>범위 밖</strong> — AF 계산, 전원 순서, 하드웨어 드라이버 실행은 다루지 않았습니다. 펌웨어와 렌즈 EEPROM을 수정하지 않았고, 실제 모터·저장 매체·카메라를 실행하지 않았습니다.</li>
+<li><strong>다른 기종</strong> — K-3 Mark III의 현재 코드 구조를 분석한 것입니다. K-3 II와 Q7이 같은 내부 규약을 쓴다는 주장은 하지 않습니다.</li>
+</ul>
+
+<h3 id="future">앞으로 조사할 것</h3>
+<p>능력 바이트의 다른 기록자, 렌즈를 다시 연결하거나 오류가 났을 때의 갱신, AF 계산 결과와 명령 인자의 관계, 큐 뒤의 전송 계층을 추적할 예정입니다. 대상 렌즈나 실물이 없어도 이 기본 구조 조사는 계속할 수 있습니다. 실제 구동을 검토할 때는 타이밍, 위치 한계, 보정, 기계적 호환성을 따로 검증해야 합니다.</p>
+<p>리코이미징의 <a href="https://www.ricoh-imaging.co.jp/english/products/lens/k/standard/smcpentax-das16-50/">구형 smc DA★ 16–50 SDM 설명</a>에는 바디가 SDM을 지원하는지에 따라 렌즈 안 모터와 바디 모터를 가려 쓰는 사례가 있습니다. 반면 <a href="https://www.ricoh-imaging.co.jp/english/support/qa/k-3-3/">K-3 Mark III 지원 문서</a>는 KAF3를 AF 커플러가 없는 렌즈로 설명합니다. 이 차이는 렌즈의 기계적 조건을 구분해야 한다는 근거입니다. bit 6의 공식 이름이나 강제 전환이 가능하다는 것을 입증하지는 않습니다.</p>
+</section>
+
+<section id="refs">
+<h2>근거 파일과 참고 자료</h2>
+<ul class="refs">
+<li><a href="af-drive-selection-evidence.json">af-drive-selection-evidence.json</a> — 객체 생성, 포인터 연결, 능력 바이트의 수신 경로, 분기 명령, 구간 해시</li>
+<li><a href="af-drive-selection-checks.json">af-drive-selection-checks.json</a> — 선택 검사 587건의 입력과 결과</li>
+<li><a href="af-capability-evidence.json">af-capability-evidence.json</a> · <a href="af-capability-checks.json">af-capability-checks.json</a> — 명령 <code>0x8205</code> 경로, 제외한 후보, 능력 기록 검사 272건과 stub 목록</li>
+<li><a href="af-command-evidence.json">af-command-evidence.json</a> · <a href="af-command-checks.json">af-command-checks.json</a> — 이벤트 루프, <code>0x8900</code> 요청 작성, 검사 408건</li>
+<li><a href="../verify_af_drive_selection.py">verify_af_drive_selection.py</a> · <a href="../verify_af_commands.py">verify_af_commands.py</a> · <a href="../verify_af_capability.py">verify_af_capability.py</a> — 검증 스크립트</li>
+<li>관련 문서: <a href="af-foundations.html">AF와 렌즈 제어 안내</a> · <a href="dispatch-af.html#af">디스패처·셔터·AF 상관 연산</a> (요청 수신과 AF 계산) · <a href="af-request-consumer.html">AF 요청 큐와 완료 통지</a></li>
+<li>리코이미징 공식 자료: <a href="https://www.ricoh-imaging.co.jp/english/products/k-3-3/spec/">K-3 Mark III 사양</a> (KAF2 마운트) · <a href="https://www.ricoh-imaging.co.jp/english/support/qa/k-3-3/">K-3 Mark III 지원 문서</a> (KAF3는 AF 커플러가 없는 렌즈) · <a href="https://www.ricoh-imaging.co.jp/english/products/lens/k/standard/smcpentax-das16-50/">smc PENTAX-DA★ 16–50mm F2.8 SDM</a></li>
+<li>도구: <a href="https://github.com/unicorn-engine/unicorn">Unicorn CPU 에뮬레이터</a> · <a href="https://github.com/angr/angr">angr</a></li>
+</ul>
+</section>
+
+</main>
+</div>
+<!-- chrome:bottom -->
+<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">AF와 렌즈 제어 — 이 주제의 문서</h2><ol><li><a href="af-foundations.html">세 기종 AF 기초 비교</a></li><li><a href="af-drive-architecture.html" aria-current="page">렌즈 구동 선택·명령·응답</a></li><li><a href="af-request-consumer.html">AF 요청 큐와 완료 통지</a></li></ol></nav>
+<nav class="pager" aria-label="이전·다음 문서"><a class="prev" href="af-foundations.html"><small>← 이전</small>세 기종 AF 기초 비교</a><a class="next" href="af-request-consumer.html"><small>다음 →</small>AF 요청 큐와 완료 통지</a></nav>
+<footer class="sitefoot"><div class="sitefoot-in"><nav aria-label="사이트"><a href="../index.html#map">문서 지도</a><a href="../index.html#levels">검증 수준 읽는 법</a><a href="../glossary.html">용어집</a><a href="research-program.html">세 기종 연구 본부</a><a href="https://github.com/yunhyok/pentax-k3iii-firmware-analysis">GitHub 저장소</a></nav><p>PENTAX K-3 Mark III 펌웨어 2.20 분석 문서. PC에서 수행한 정적 분석과 에뮬레이션 결과이며, 카메라 실기에서 검증한 내용이 아닙니다. 원본 펌웨어와 추출한 독점 코드는 포함하지 않습니다.</p></div></footer>
+<!-- /chrome:bottom -->
+</body>
+</html>

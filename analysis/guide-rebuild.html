@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>펌웨어 재구축 안내 — PENTAX K-3 Mark III 펌웨어 연구</title>
+<meta name="description" content="제조사 소스 없이 펌웨어의 일부를 직접 다시 만들어 원본과 같게 동작시킬 수 있는지 시험한 연구의 길잡이입니다. 함수 재작성, 원래 자리 배치, 패키지 재포장의 세 문서를 이어 줍니다.">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-camera="k3iii">
+<!-- chrome:top -->
+<a class="skip" href="#main">본문 바로가기</a>
+<div class="topbar"><div class="topbar-in"><a class="brand" href="../index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="../index.html" aria-current="true">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="https://yunhyok.github.io/pentax-q7-firmware-analysis/">Q7</a></div><nav class="topnav" aria-label="주제"><a href="../index.html">개요</a><a href="guide-boot.html">부팅·저장소</a><a href="guide-update.html">업데이트</a><a href="guide-rebuild.html" aria-current="true">재구축</a><a href="guide-rtos.html">명령·셸</a><a href="guide-color.html">색 처리</a><a href="lightroom-bridge.html">Lightroom</a><a href="af-foundations.html">AF</a><a href="ui-port-contract.html">UI</a></nav></div></div>
+<nav class="crumbs" aria-label="현재 위치"><ol><li><a href="../index.html">PENTAX K-3 Mark III</a></li><li aria-current="page">재구축 안내</li></ol></nav>
+<!-- /chrome:top -->
+<header class="page-head">
+<p class="eyebrow">펌웨어 재구축</p>
+<h1>펌웨어 재구축 안내</h1>
+<p class="lead">제조사의 소스 코드는 공개되어 있지 않습니다. 이 주제는 펌웨어의 일부를 직접 다시 만들어, 원본과 똑같이 동작하는 코드로 바꿔 넣을 수 있는지를 가장 작은 단위부터 시험합니다.</p>
+</header>
+<div class="layout">
+<!-- chrome:toc -->
+<nav class="toc" aria-label="이 문서의 목차"><h2 data-toc="no">이 문서에서</h2><ol><li><a href="#map">한눈에 보기</a></li><li><a href="#background">배경 지식</a></li><li><a href="#status">지금까지 알아낸 것과 아직 모르는 것</a></li><li><a href="#order">읽는 순서</a></li><li><a href="#refs">근거 파일과 참고 자료</a></li></ol></nav>
+<!-- /chrome:toc -->
+<main class="doc" id="main">
+
+<section class="summary">
+<h2 data-toc="no">핵심 요약</h2>
+<ul>
+<li>이 주제는 “원본과 같은 코드를 직접 만들 수 있는가 → 원래 자리에 넣어도 같은가 → 파일 크기를 원본에 가깝게 되돌릴 수 있는가”의 세 단계로 이어집니다.</li>
+<li>모든 확인은 PC에서 원본 기계어를 에뮬레이터로 실행하거나 파일 바이트를 직접 대조하는 방식입니다. <strong>카메라에서 실행한 것은 하나도 없습니다.</strong></li>
+<li>지금까지 함수 하나를 원래 자리에 넣고 패키지를 다시 만들어 원본과 같다는 것까지 확인했습니다. 카메라 수용·부팅은 아직 남은 과제입니다.</li>
+</ul>
+</section>
+
+<section id="map">
+<h2>한눈에 보기</h2>
+<p class="takeaway">작은 계산 함수 하나를 골라, 다시 만들고 → 원래 자리에 넣고 → 파일을 원본 크기에 가깝게 되돌리는 순서로 진행합니다. 마지막 카메라 단계는 아직 하지 않았습니다.</p>
+<figure class="diagram">
+<figcaption>재구축 주제의 전체 흐름과 각 단계를 다루는 문서</figcaption>
+<div class="dg-scroll">
+<svg class="dg" viewBox="0 0 800 168" role="img" aria-labelledby="dg-rb-title dg-rb-desc">
+<title id="dg-rb-title">펌웨어 재구축의 다섯 단계</title>
+<desc id="dg-rb-desc">원본 펌웨어에서 함수를 추출하고, C로 다시 만들어 따로 떼어 검증하고(1단계 문서), 원래 주소에 넣어 패키지를 다시 포장하고(2단계 문서), 압축 블록을 보존해 크기를 줄이고(3단계 문서), 마지막으로 카메라 통합과 부팅을 확인합니다. 마지막 단계는 아직 확인하지 않았습니다.</desc>
+<defs><marker id="dg-rb-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0 0L10 5L0 10z"/></marker></defs>
+<rect class="b mute" x="10" y="52" width="148" height="70" rx="8"/>
+<text class="t" x="22" y="84">원본 함수</text>
+<text class="s" x="22" y="104">펌웨어에서 추출</text>
+
+<rect class="b ok" x="168" y="52" width="148" height="70" rx="8"/>
+<text class="s" x="180" y="44">1단계</text>
+<a href="recompiled-kernels.html"><text class="t" x="180" y="84">C 재작성</text></a>
+<text class="s" x="180" y="104">격리 검증</text>
+
+<rect class="b ok" x="326" y="52" width="148" height="70" rx="8"/>
+<text class="s" x="338" y="44">2단계</text>
+<a href="recompiled-integration.html"><text class="t" x="338" y="84">원래 자리</text></a>
+<text class="s" x="338" y="104">배치·재포장</text>
+
+<rect class="b ok" x="484" y="52" width="148" height="70" rx="8"/>
+<text class="s" x="496" y="44">3단계</text>
+<a href="selective-repack.html"><text class="t" x="496" y="84">블록 보존</text></a>
+<text class="s" x="496" y="104">크기 축소</text>
+
+<rect class="b open" x="642" y="52" width="148" height="70" rx="8"/>
+<text class="s" x="654" y="44">다음</text>
+<a href="research-roadmap.html"><text class="t" x="654" y="84">카메라 통합</text></a>
+<text class="s" x="654" y="104">부팅 (미확인)</text>
+
+<path class="e" d="M158 87H166" marker-end="url(#dg-rb-ah)"/>
+<path class="e" d="M316 87H324" marker-end="url(#dg-rb-ah)"/>
+<path class="e" d="M474 87H482" marker-end="url(#dg-rb-ah)"/>
+<path class="e open" d="M632 87H640" marker-end="url(#dg-rb-ah)"/>
+</svg>
+</div>
+<p>상자를 누르면 해당 문서로 갑니다. 파란 상자는 확인을 마친 단계, 점선 상자는 아직 확인하지 않은 단계입니다.</p>
+<ul class="dg-legend"><li><i class="ok"></i>확인한 단계</li><li><i class="open"></i>미확인 단계</li><li><i class="mute"></i>출발 재료</li></ul>
+</figure>
+</section>
+
+<section id="background">
+<h2>배경 지식</h2>
+<p>세 문서를 읽는 데 필요한 개념만 짧게 정리합니다.</p>
+<dl class="kv">
+<dt>leaf 함수</dt><dd>다른 함수를 부르지 않고 계산만 하는 말단 함수입니다. 입력과 출력이 분명해 원본과 새 코드를 나란히 실행해 비교하기 쉽습니다.</dd>
+<dt>Q13 고정소수점</dt><dd>실수 1.0을 정수 8,192(2의 13제곱)로 나타내는 표기입니다. 색 변환 행렬 값이 이 형식이라, 곱한 뒤 반올림하고 13비트만큼 내립니다.</dd>
+<dt>SAD·SSD</dt><dd>두 신호의 차이를 재는 기본 연산입니다. 차이의 절댓값 합(SAD)과 제곱 합(SSD)으로, <a href="dispatch-af.html">위상차 AF의 상관 연산</a>에 쓰입니다. 자세한 설명은 <a href="guide-rtos.html">명령·셸 안내</a>에 있습니다.</dd>
+<dt>NEON</dt><dd>ARM의 SIMD 확장입니다. 여러 데이터를 한 명령으로 한 번에 처리해 속도를 높입니다. 원본 SAD·SSD 함수가 이 명령을 씁니다. <a href="https://developer.arm.com/Architectures/Neon">Arm NEON 소개</a></dd>
+<dt>압축 블록과 저장(stored) 블록</dt><dd>펌웨어는 되돌아 참조하는 복사 명령으로 압축됩니다. “그대로 담은” 블록을 저장 블록이라 하며, 바뀐 부분만 저장 블록으로 다시 넣어 원본 압축을 보존할 수 있습니다.</dd>
+<dt>체크섬</dt><dd>파일 바이트를 32비트로 더한 검사 값입니다. 내용이 바뀌면 다시 계산해 맞춰야 합니다. 암호학적 서명이 아닙니다.</dd>
+</dl>
+</section>
+
+<section id="status">
+<h2>지금까지 알아낸 것과 아직 모르는 것</h2>
+<div class="table-wrap"><table>
+<caption>재구축 주제 전체의 현재 상태</caption>
+<thead><tr><th>항목</th><th>상태</th><th>근거 문서</th></tr></thead>
+<tbody>
+<tr><td>직접 만든 함수가 원본과 같게 계산하는가</td><td><span class="badge ok">확인</span></td><td><a href="recompiled-kernels.html">수치 함수 C 재구현</a></td></tr>
+<tr><td>그 함수를 원래 주소에 넣어도 같은가</td><td><span class="badge ok">확인</span></td><td><a href="recompiled-integration.html">함수 배치·재패키징</a></td></tr>
+<tr><td>실제 호출자 경로가 변함없이 동작하는가</td><td><span class="badge ok">확인</span></td><td><a href="recompiled-integration.html">함수 배치·재패키징</a></td></tr>
+<tr><td>파일을 원본에 가까운 크기로 되돌릴 수 있는가</td><td><span class="badge ok">확인</span></td><td><a href="selective-repack.html">압축 블록 보존 재패키징</a></td></tr>
+<tr><td>계산 중 바뀌는 CPU 플래그가 뒤에 영향을 주는가</td><td><span class="badge static">정적 분석</span></td><td><a href="recompiled-integration.html#qflag">함수 배치·재패키징</a></td></tr>
+<tr><td>커진 패키지를 카메라 RAM·디코더가 받는가</td><td><span class="badge open">미확인</span></td><td><a href="research-roadmap.html">수정·이식 선행 연구</a></td></tr>
+<tr><td>실제 업데이트 수용과 부팅, 카메라 동작</td><td><span class="badge open">미확인</span></td><td><a href="research-roadmap.html">수정·이식 선행 연구</a></td></tr>
+<tr><td>전체 소스 프로젝트의 재구축</td><td><span class="badge open">미확인</span></td><td><a href="research-roadmap.html">수정·이식 선행 연구</a></td></tr>
+</tbody></table></div>
+</section>
+
+<section id="order">
+<h2>읽는 순서</h2>
+<p>이해하기 쉬운 순서로 세 문서를 둡니다. 뒤로 갈수록 범위가 넓어집니다.</p>
+<ul class="cards">
+<li class="card"><span class="tag">1단계</span><h3><a href="recompiled-kernels.html">수치 함수 C 재구현</a></h3><p class="q">직접 만든 코드가 원본과 똑같이 계산하는가?</p><p>SAD·SSD와 Q13 행렬 곱 두 함수를 C로 작성해, 합성 입력 237개에서 원본 기계어와 출력이 모두 같았습니다.</p></li>
+<li class="card"><span class="tag">2단계</span><h3><a href="recompiled-integration.html">함수 배치·재패키징</a></h3><p class="q">그 함수를 원래 자리에 넣고 패키지를 다시 만들어도 같은가?</p><p>원래 주소와 실제 색 행렬 준비 호출자에서 출력·레지스터가 같았고, 원본의 헤더·체크섬 검사도 통과했습니다.</p></li>
+<li class="card"><span class="tag">3단계</span><h3><a href="selective-repack.html">압축 블록 보존 재패키징</a></h3><p class="q">파일을 원본에 가까운 크기로 줄일 수 있는가?</p><p>블록 3,202개 중 4개만 바꿔 35,136,788바이트로 만들었고, 독립 디코더로 다시 풀어도 결과가 같았습니다.</p></li>
+</ul>
+</section>
+
+<section id="refs">
+<h2>근거 파일과 참고 자료</h2>
+<ul class="refs">
+<li><a href="recompiled-kernels.json">recompiled-kernels.json</a> · <a href="recompiled-integration.json">recompiled-integration.json</a> · <a href="selective-repack.json">selective-repack.json</a> — 각 단계의 측정값과 해시</li>
+<li><a href="../source/reconstructed/numeric_kernels.c">source/reconstructed/numeric_kernels.c</a> — 새로 작성한 C 소스</li>
+<li><a href="research-roadmap.html">수정·이식 선행 연구</a> — 통합 전 확인할 항목 전체</li>
+<li>외부 자료: <a href="https://developer.arm.com/Architectures/Neon">Arm NEON</a> · <a href="https://github.com/ARM-software/abi-aa/blob/main/aapcs32/aapcs32.rst">Arm 호출 규약(AAPCS32)</a></li>
+</ul>
+</section>
+
+</main>
+</div>
+<!-- chrome:bottom -->
+<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">펌웨어 재구축 — 이 주제의 문서</h2><ol><li><a href="guide-rebuild.html" aria-current="page">재구축 안내</a></li><li><a href="recompiled-kernels.html">수치 함수 C 재구현<span>SAD·SSD와 Q13 행렬 곱</span></a></li><li><a href="recompiled-integration.html">재컴파일 함수 배치·재패키징</a></li><li><a href="selective-repack.html">압축 블록을 보존한 재패키징</a></li></ol></nav>
+<nav class="pager" aria-label="이전·다음 문서"><a class="prev" href="update-timer-insertion.html"><small>← 이전</small>기한 큐 삽입</a><a class="next" href="recompiled-kernels.html"><small>다음 →</small>수치 함수 C 재구현</a></nav>
+<footer class="sitefoot"><div class="sitefoot-in"><nav aria-label="사이트"><a href="../index.html#map">문서 지도</a><a href="../index.html#levels">검증 수준 읽는 법</a><a href="../glossary.html">용어집</a><a href="research-program.html">세 기종 연구 본부</a><a href="https://github.com/yunhyok/pentax-k3iii-firmware-analysis">GitHub 저장소</a></nav><p>PENTAX K-3 Mark III 펌웨어 2.20 분석 문서. PC에서 수행한 정적 분석과 에뮬레이션 결과이며, 카메라 실기에서 검증한 내용이 아닙니다. 원본 펌웨어와 추출한 독점 코드는 포함하지 않습니다.</p></div></footer>
+<!-- /chrome:bottom -->
+</body>
+</html>

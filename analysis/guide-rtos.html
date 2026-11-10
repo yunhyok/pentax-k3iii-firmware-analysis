@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>RTOS 명령과 셸 안내 — PENTAX K-3 Mark III 펌웨어 연구</title>
+<meta name="description" content="카메라 본체 운영체제의 셸 명령 957개가 무엇을 담당하고, 촬영·AF 요청이 어떻게 처리되며, 바깥에서 셸에 입력할 수 있는지를 다루는 문서들의 길잡이입니다.">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-camera="k3iii">
+<!-- chrome:top -->
+<a class="skip" href="#main">본문 바로가기</a>
+<div class="topbar"><div class="topbar-in"><a class="brand" href="../index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="../index.html" aria-current="true">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="https://yunhyok.github.io/pentax-q7-firmware-analysis/">Q7</a></div><nav class="topnav" aria-label="주제"><a href="../index.html">개요</a><a href="guide-boot.html">부팅·저장소</a><a href="guide-update.html">업데이트</a><a href="guide-rebuild.html">재구축</a><a href="guide-rtos.html" aria-current="true">명령·셸</a><a href="guide-color.html">색 처리</a><a href="lightroom-bridge.html">Lightroom</a><a href="af-foundations.html">AF</a><a href="ui-port-contract.html">UI</a></nav></div></div>
+<nav class="crumbs" aria-label="현재 위치"><ol><li><a href="../index.html">PENTAX K-3 Mark III</a></li><li aria-current="page">RTOS 명령 안내</li></ol></nav>
+<!-- /chrome:top -->
+<header class="page-head">
+<p class="eyebrow">RTOS 명령과 셸</p>
+<h1>RTOS 명령과 셸 안내</h1>
+<p class="lead">카메라 본체는 실시간 운영체제(RTOS) 위에서 돌며, 내부 점검·개발용 셸 명령 957개를 가지고 있습니다. 이 명령들이 무엇을 담당하고, 촬영·AF 요청이 어떻게 하드웨어까지 이어지는지를 모아 봅니다.</p>
+</header>
+<div class="layout">
+<!-- chrome:toc -->
+<nav class="toc" aria-label="이 문서의 목차"><h2 data-toc="no">이 문서에서</h2><ol><li><a href="#map">한눈에 보기</a></li><li><a href="#background">배경 지식</a></li><li><a href="#status">지금까지 알아낸 것과 아직 모르는 것</a></li><li><a href="#order">읽는 순서</a></li><li><a href="#refs">근거 파일과 참고 자료</a></li></ol></nav>
+<!-- /chrome:toc -->
+<main class="doc" id="main">
+
+<section class="summary">
+<h2 data-toc="no">핵심 요약</h2>
+<ul>
+<li>이 주제는 “명령이 무엇을 담당하는가(분류) → 요청이 어디로 가서 무엇을 움직이는가(디스패처·셔터·AF) → 바깥에서 셸에 입력할 수 있는가(SD 스크립트)”로 이어집니다.</li>
+<li>명령 분류와 호출표, SAD·SSD 상관 함수는 바이트 대조로 확인했고, 요청 처리 경로는 원본 명령을 읽어 추적했습니다.</li>
+<li>이벤트에서 실제 셔터·AF 동작으로 가는 런타임 상태 전이와, USB로 셸에 들어가는 경로는 아직 확인하지 못했습니다. <strong>카메라에서 실행한 것은 없습니다.</strong></li>
+</ul>
+</section>
+
+<section id="map">
+<h2>한눈에 보기</h2>
+<p class="takeaway">중심에 셸 명령 957개가 있습니다. 명령의 분류, 촬영·AF 요청의 처리, SD 스크립트를 통한 셸 입력을 각각 다른 문서가 다룹니다.</p>
+<figure class="diagram">
+<figcaption>RTOS 명령과 셸 주제의 전체 그림과 각 문서</figcaption>
+<div class="dg-scroll">
+<svg class="dg" viewBox="0 0 800 220" role="img" aria-labelledby="dg-rtos-title dg-rtos-desc">
+<title id="dg-rtos-title">RTOS 셸 명령을 중심으로 한 세 문서의 관계</title>
+<desc id="dg-rtos-desc">SD 스크립트가 셸에 입력을 넣습니다. 중심에 RTOS 셸 명령 957개가 있고, 세 문서가 각각 명령의 분류와 호출 관계, 디스패처에서 셔터 GPIO와 AF 연산까지, SD 셸 입력과 보정 백업을 다룹니다.</desc>
+<defs><marker id="dg-rtos-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0 0L10 5L0 10z"/></marker></defs>
+<rect class="b mute" x="40" y="28" width="200" height="48" rx="8"/>
+<text class="t" x="52" y="50">SD 스크립트</text>
+<text class="s" x="52" y="68">바깥에서 셸 입력</text>
+<rect class="b key" x="330" y="28" width="260" height="48" rx="8"/>
+<text class="t mid" x="460" y="50">RTOS 셸 명령 957개</text>
+<text class="s mid" x="460" y="68">SHELLCMD 레코드</text>
+<rect class="b" x="40" y="140" width="224" height="64" rx="8"/>
+<a href="index.html"><text class="t" x="52" y="166">분류와 호출 관계</text></a>
+<text class="s" x="52" y="188">17군 · 우선 418개</text>
+<rect class="b" x="288" y="140" width="224" height="64" rx="8"/>
+<a href="dispatch-af.html"><text class="t" x="300" y="166">디스패처·셔터·AF</text></a>
+<text class="s" x="300" y="188">요청 → 이벤트 → GPIO</text>
+<rect class="b" x="556" y="140" width="224" height="64" rx="8"/>
+<a href="shell-backup-path.html"><text class="t" x="568" y="166">SD 셸 입력·백업</text></a>
+<text class="s" x="568" y="188">스크립트 → 셸 · eMMC</text>
+<path class="e" d="M240 52H328" marker-end="url(#dg-rtos-ah)"/>
+<path class="e" d="M460 76V110H152V138" marker-end="url(#dg-rtos-ah)"/>
+<path class="e" d="M460 76V138" marker-end="url(#dg-rtos-ah)"/>
+<path class="e" d="M460 76V110H668V138" marker-end="url(#dg-rtos-ah)"/>
+</svg>
+</div>
+<p>상자를 누르면 해당 문서로 갑니다.</p>
+<ul class="dg-legend"><li><i class="key"></i>명령 목록(중심)</li><li><i></i>다루는 문서</li><li><i class="mute"></i>바깥 입력</li></ul>
+</figure>
+</section>
+
+<section id="background">
+<h2>배경 지식</h2>
+<dl class="kv">
+<dt>RTOS</dt><dd>실시간 운영체제입니다. 정해진 시간 안에 동작해야 하는 카메라 제어를 맡으며, 이 카메라에서는 Linux와 함께 돕니다.</dd>
+<dt>셸 명령</dt><dd>문자열 이름과 처리 함수를 짝지어 둔 점검·개발용 목록입니다. 이름을 입력하면 해당 함수를 부릅니다. 펌웨어의 <code>SHELLCMD</code> 레코드에 957개가 있습니다.</dd>
+<dt>디스패처</dt><dd>요청 메시지를 받아 담당 작업으로 나눠 보내는 부분입니다. 촬영·AF 요청이 공통 메시지로 여기 모였다가 각 이벤트로 갈라집니다.</dd>
+<dt>이벤트 큐</dt><dd>처리할 일을 순서대로 담아 두는 대기열입니다. 요청이 이벤트로 바뀌어 큐에 들어가면, 소비 함수가 꺼내 제어 객체로 넘깁니다.</dd>
+<dt>SAD·SSD</dt><dd>두 신호의 차이를 재는 기본 연산(차이의 절댓값 합·제곱 합)입니다. <a href="https://developer.arm.com/Architectures/Neon">NEON</a> 명령으로 빠르게 계산하며, 위상차 AF의 상관에 쓰입니다.</dd>
+<dt>TTL 스크립트와 sendln</dt><dd>TTL은 터미널 프로그램 Tera Term의 매크로 언어이고, <code>sendln</code>은 한 줄을 보내는 명령입니다. SD의 스크립트가 이를 통해 셸 명령을 넣습니다. <a href="https://teratermproject.github.io/manual/4/en/macro/command/sendln.html">sendln 매뉴얼</a></dd>
+<dt>eMMC</dt><dd>본체에 붙박인 내장 플래시 저장장치입니다. 꺼낼 수 있는 SD 카드와 달리 부트 영역과 일반 영역이 하드웨어로 나뉩니다.</dd>
+</dl>
+</section>
+
+<section id="status">
+<h2>지금까지 알아낸 것과 아직 모르는 것</h2>
+<div class="table-wrap"><table>
+<caption>RTOS 명령과 셸 주제 전체의 현재 상태</caption>
+<thead><tr><th>항목</th><th>상태</th><th>근거 문서</th></tr></thead>
+<tbody>
+<tr><td>셸 명령 957개의 17군 분류</td><td><span class="badge ok">확인</span></td><td><a href="index.html">분류와 호출 관계</a></td></tr>
+<tr><td>호출·분기 위치 17,914곳의 검증</td><td><span class="badge ok">확인</span></td><td><a href="index.html#calltable">분류와 호출 관계</a></td></tr>
+<tr><td>SAD·SSD 상관 함수의 동작</td><td><span class="badge ok">확인</span></td><td><a href="dispatch-af.html#sadssd">디스패처·셔터·AF</a></td></tr>
+<tr><td>촬영·AF 공통 제출과 이벤트 분기</td><td><span class="badge static">정적 분석</span></td><td><a href="dispatch-af.html#dispatch">디스패처·셔터·AF</a></td></tr>
+<tr><td>셔터 제어가 GPIO에 쓰는 지점</td><td><span class="badge static">정적 분석</span></td><td><a href="dispatch-af.html#shutter">디스패처·셔터·AF</a></td></tr>
+<tr><td>SD 스크립트 → 셸 명령 실행 경로</td><td><span class="badge static">정적 분석</span></td><td><a href="shell-backup-path.html#sd">SD 셸 입력·백업</a></td></tr>
+<tr><td>보정 백업이 내부 eMMC에도 씀</td><td><span class="badge static">정적 분석</span></td><td><a href="shell-backup-path.html#adjust">SD 셸 입력·백업</a></td></tr>
+<tr><td>이벤트에서 셔터·AF로 가는 상태 전이</td><td><span class="badge open">미확인</span></td><td><a href="dispatch-af.html#dispatch">디스패처·셔터·AF</a></td></tr>
+<tr><td>USB의 셸 진입 경로</td><td><span class="badge open">미확인</span></td><td><a href="shell-backup-path.html#usb">SD 셸 입력·백업</a></td></tr>
+<tr><td>물리 핀 대응, 실제 셔터·합초</td><td><span class="badge open">미확인</span></td><td><a href="dispatch-af.html#shutter">디스패처·셔터·AF</a></td></tr>
+</tbody></table></div>
+</section>
+
+<section id="order">
+<h2>읽는 순서</h2>
+<p>명령 전체를 먼저 보고, 촬영·AF 처리로, 마지막으로 셸 입력과 백업으로 좁혀 갑니다.</p>
+<ul class="cards">
+<li class="card"><span class="tag">1</span><h3><a href="index.html">분류와 호출 관계</a></h3><p class="q">셸 명령 957개는 무엇을 담당하는가?</p><p>17개 기능군으로 나누고, 촬영·AF·영상처리 명령의 호출 경로를 기계어와 대조했습니다.</p></li>
+<li class="card"><span class="tag">2</span><h3><a href="dispatch-af.html">디스패처·셔터·AF</a></h3><p class="q">촬영·AF 요청이 어디로 가서 무엇을 움직이는가?</p><p>공통 메시지가 이벤트로 갈라지고, 셔터가 GPIO에 쓰는 지점과 AF 상관 연산을 추적했습니다.</p></li>
+<li class="card"><span class="tag">3</span><h3><a href="shell-backup-path.html">SD 셸 입력·백업</a></h3><p class="q">바깥에서 셸에 입력할 수 있는가? 백업은 어디에 쓰는가?</p><p>SD 스크립트가 셸 명령을 실행하는 경로를 확인했고, 보정 백업이 내부 eMMC에도 쓴다는 것을 밝혔습니다.</p></li>
+</ul>
+</section>
+
+<section id="refs">
+<h2>근거 파일과 참고 자료</h2>
+<ul class="refs">
+<li><a href="command-analysis.tsv">command-analysis.tsv</a> · <a href="transfers.tsv">transfers.tsv</a> — 957행 분류와 호출표</li>
+<li><a href="deep-evidence.json">deep-evidence.json</a> · <a href="numerical-checks.json">numerical-checks.json</a> — 심층 분석 근거와 수치 검증</li>
+<li><a href="../rtos_catalog.py">rtos_catalog.py</a> · <a href="../verify_command_analysis.py">verify_command_analysis.py</a> — 명령표·검증 도구</li>
+<li>외부 자료: <a href="https://developer.arm.com/Architectures/Neon">Arm NEON</a> · <a href="https://teratermproject.github.io/manual/4/en/macro/command/sendln.html">Tera Term sendln</a></li>
+</ul>
+</section>
+
+</main>
+</div>
+<!-- chrome:bottom -->
+<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">RTOS 명령과 셸 — 이 주제의 문서</h2><ol><li><a href="guide-rtos.html" aria-current="page">RTOS 명령 안내</a></li><li><a href="index.html">RTOS 명령 957개<span>분류와 호출 관계</span></a></li><li><a href="dispatch-af.html">디스패처·셔터·AF 상관 연산</a></li><li><a href="shell-backup-path.html">SD 셸 입력과 보정 백업</a></li></ol></nav>
+<nav class="pager" aria-label="이전·다음 문서"><a class="prev" href="selective-repack.html"><small>← 이전</small>압축 블록을 보존한 재패키징</a><a class="next" href="index.html"><small>다음 →</small>RTOS 명령 957개</a></nav>
+<footer class="sitefoot"><div class="sitefoot-in"><nav aria-label="사이트"><a href="../index.html#map">문서 지도</a><a href="../index.html#levels">검증 수준 읽는 법</a><a href="../glossary.html">용어집</a><a href="research-program.html">세 기종 연구 본부</a><a href="https://github.com/yunhyok/pentax-k3iii-firmware-analysis">GitHub 저장소</a></nav><p>PENTAX K-3 Mark III 펌웨어 2.20 분석 문서. PC에서 수행한 정적 분석과 에뮬레이션 결과이며, 카메라 실기에서 검증한 내용이 아닙니다. 원본 펌웨어와 추출한 독점 코드는 포함하지 않습니다.</p></div></footer>
+<!-- /chrome:bottom -->
+</body>
+</html>

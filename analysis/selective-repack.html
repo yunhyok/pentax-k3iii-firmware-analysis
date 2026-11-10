@@ -3,75 +3,197 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>K-3 Mark III 선택적 블록 재패키징</title>
-<style>
-:root{color-scheme:light dark;--bg:#f7f8fa;--paper:#fff;--ink:#182332;--muted:#48596b;--line:#d2dbe5;--accent:#124b8e;--soft:#edf3fa;--selected:#e2f2ed}
-@media(prefers-color-scheme:dark){:root{--bg:#111821;--paper:#18222d;--ink:#e8edf4;--muted:#b4c2d2;--line:#405369;--accent:#98c8ff;--soft:#223348;--selected:#1f3c36}}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.75 system-ui,"Malgun Gothic",sans-serif;word-break:keep-all;overflow-wrap:anywhere}
-header,main{max-width:1060px;margin:auto;padding:clamp(18px,4vw,44px)}main{background:var(--paper);border:1px solid var(--line)}
-h1{font-size:clamp(1.8rem,5vw,2.8rem);line-height:1.25;margin-block:.35em .65em}h2{font-size:1.35rem;margin-top:2.2rem}h2:first-child{margin-top:0}
-small{color:var(--muted)}a{color:var(--accent);text-underline-offset:.18em}nav a{display:inline-block;margin:4px 16px 4px 0}
-.size{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:20px 0}.size div{padding:12px 15px;background:var(--soft);border:1px solid var(--line);border-radius:6px}.size dt{color:var(--muted);font-size:.9rem}.size dd{margin:0;font-size:clamp(1.05rem,3vw,1.55rem);font-weight:700;font-variant-numeric:tabular-nums}
-figure{margin:1.25em 0;padding:14px 0;border-block:1px solid var(--line)}figcaption{margin-bottom:10px}.window{display:grid;grid-template-columns:1fr 1.2fr 1fr;gap:6px;padding:0;margin:0;list-style:none}.window li{border:1px solid var(--line);border-radius:5px;background:var(--soft);padding:.7em .8em}.window li:nth-child(n+2){background:var(--selected)}.window code{display:block;margin-top:.2em}
-.table-scroll,pre{overflow:auto}table{width:100%;min-width:560px;border-collapse:collapse}th,td{padding:10px 12px;text-align:left;vertical-align:top;border-bottom:1px solid var(--line)}th{background:var(--soft)}th:first-child,td.num{white-space:nowrap;font-variant-numeric:tabular-nums}caption{text-align:left;margin:.5em 0}.scroll-hint{display:none}pre{background:var(--soft);padding:14px;white-space:pre-wrap;font-size:.84rem}code{font-family:ui-monospace,Consolas,monospace}
-@media(max-width:620px){.size,.window{grid-template-columns:1fr}.size div{display:flex;align-items:baseline;justify-content:space-between;gap:10px}.window code{display:inline-block;margin:.1em 0 .1em .4em}.scroll-hint{display:block}}
-</style>
+<title>원본 압축 블록을 그대로 두는 재패키징 — PENTAX K-3 Mark III 펌웨어 연구</title>
+<meta name="description" content="함수 하나만 바꾼 펌웨어 후보를, 원본의 압축 블록 대부분을 그대로 재사용해 원본에 가까운 크기로 다시 포장한 방법과 검증 기록입니다. 3,202개 블록 중 4개만 교체했습니다.">
+<link rel="stylesheet" href="../assets/site.css">
 </head>
-<body>
-<header>
-<small>2026-11-08 · PENTAX K-3 Mark III 2.20 · 오프라인 실험</small>
-<h1>원본 압축 블록을 보존하는 선택적 재패키징</h1>
-<p>Q13 행렬 코드를 넣은 오프라인 후보를 35,136,788바이트로 재구성했다. 원본보다 30,072바이트 크다. 원본 스트림의 3,202개 블록 중 3,198개는 인코딩 바이트를 그대로 보존했다. 디코딩 결과는 전체를 비압축 블록으로 다시 만든 기존 Q13 후보와 바이트 단위로 일치했다. <a href="selective-repack.json">크기·해시·검증 기록</a></p>
-<dl class="size" aria-label="세 패키지의 파일 크기">
-<div><dt>공식 원본</dt><dd>35,106,716 B</dd></div>
-<div><dt>전체 stored 후보</dt><dd>78,690,708 B</dd></div>
-<div><dt>선택적 후보</dt><dd>35,136,788 B</dd></div>
-</dl>
-<nav aria-label="관련 문서"><a href="../index.html">연구 개요</a><a href="recompiled-integration.html">Q13 후보의 선행 검증</a><a href="selective-repack.json">기계 판독 기록</a></nav>
+<body data-camera="k3iii">
+<!-- chrome:top -->
+<a class="skip" href="#main">본문 바로가기</a>
+<div class="topbar"><div class="topbar-in"><a class="brand" href="../index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="../index.html" aria-current="true">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="https://yunhyok.github.io/pentax-q7-firmware-analysis/">Q7</a></div><nav class="topnav" aria-label="주제"><a href="../index.html">개요</a><a href="guide-boot.html">부팅·저장소</a><a href="guide-update.html">업데이트</a><a href="guide-rebuild.html" aria-current="true">재구축</a><a href="guide-rtos.html">명령·셸</a><a href="guide-color.html">색 처리</a><a href="lightroom-bridge.html">Lightroom</a><a href="af-foundations.html">AF</a><a href="ui-port-contract.html">UI</a></nav></div></div>
+<nav class="crumbs" aria-label="현재 위치"><ol><li><a href="../index.html">PENTAX K-3 Mark III</a></li><li><a href="guide-rebuild.html">펌웨어 재구축</a></li><li aria-current="page">압축 블록을 보존한 재패키징</li></ol></nav>
+<!-- /chrome:top -->
+<header class="page-head">
+<p class="eyebrow">펌웨어 재구축 · 3단계</p>
+<h1>원본 압축 블록을 그대로 두는 재패키징</h1>
+<p class="lead">앞 단계의 후보는 압축을 풀어 담아 원본보다 두 배 넘게 컸습니다. 바뀐 부분만 새로 넣고 나머지 압축 블록은 원본 그대로 재사용하면, 원본에 가까운 크기로 줄일 수 있습니다.</p>
 </header>
-<main>
-<h2>어떤 블록을 그대로 쓰는가</h2>
-<p>LZ 복사 토큰은 상위 5비트와 하위 8비트를 합쳐 뒤로 참조할 거리를 지정한다. 유효 거리는 1–8191바이트다. 복사 길이가 거리보다 길면 같은 블록에서 방금 생성한 출력도 이어서 복사한다. 따라서 블록 시작 직전의 최대 8191바이트와 해당 블록의 목표 출력이 원본과 같으면, 기존 토큰을 그대로 디코딩해도 같은 바이트가 나온다. <a href="../inspect_firmware.py">프로젝트 디코더</a> · <a href="https://github.com/Trimz/Ricoh3x/blob/0ed425ad4e31b336624ba4709dc28962ace2d629/tools/pdec.py">독립 디코더의 토큰 형식</a></p>
-<figure>
-<figcaption>디코딩된 출력에서 시작이 <code>s</code>, 끝이 <code>e</code>인 블록의 판정 범위</figcaption>
-<ol class="window">
-<li><strong>더 앞선 출력</strong><code>[0, max(0, s−8191))</code></li>
-<li><strong>직전 참조 범위</strong><code>[max(0, s−8191), s)</code></li>
-<li><strong>현재 블록 출력</strong><code>[s, e)</code></li>
-</ol>
-<p>직전 참조 범위와 현재 블록 출력을 함께 비교한다. 하나라도 다르면 목표 출력을 <em>stored</em> 블록으로 쓴다. 바뀐 바이트를 해당 토큰이 실제로 읽는지까지 따지지 않으므로, 직전 범위만 달라진 경우에도 교체한다. 두 구간이 같으면 원본 인코딩을 복사한다. <a href="../tools/repack_changed_blocks.py">선택적 재패키징 구현</a></p>
-</figure>
-<p>선택한 블록을 바꾼 뒤 스트림 길이가 홀수면, 교체 시 크기 변화가 홀수인 미교체 LZ 블록 중 변화량이 가장 작은 것을 추가로 stored로 바꾼다. 길이가 짝수이면서 4의 배수가 아니면, 교체된 stored 조각 하나를 둘로 나누어 2바이트 헤더를 하나 더 붙인다. 이번 후보에는 추가 교체가 한 번 있었고 분할은 필요하지 않았다. <a href="../tools/repack_changed_blocks.py">정렬 처리</a> · <a href="../tests/test_repack_changed_blocks.py">정렬·경계 합성 테스트</a></p>
+<div class="layout">
+<!-- chrome:toc -->
+<nav class="toc" aria-label="이 문서의 목차"><h2 data-toc="no">이 문서에서</h2><ol><li><a href="#background">배경: 왜 압축 블록을 그대로 두는가</a></li><li><a href="#rule">어떤 블록을 그대로 쓰는가</a></li><li><a href="#blocks">이번 후보에서 바꾼 네 블록</a></li><li><a href="#verify">검증 결과와 적용 범위</a></li><li><a href="#limits">한계와 남은 과제</a></li><li><a href="#reproduce">재현 방법</a></li><li><a href="#refs">근거 파일과 참고 자료</a></li></ol></nav>
+<!-- /chrome:toc -->
+<main class="doc" id="main">
 
-<h2>이번 후보에서 교체한 네 블록</h2>
-<small class="scroll-hint">표를 옆으로 밀면 블록 크기까지 볼 수 있다.</small>
-<div class="table-scroll" tabindex="0" role="region" aria-label="교체한 네 블록과 교체 이유">
-<table>
-<caption>블록 번호는 0부터 세며, 크기는 블록 헤더를 포함한다.</caption>
-<thead><tr><th scope="col">블록</th><th scope="col">디코딩 출력에서 바뀐 바이트</th><th scope="col">교체 이유</th><th scope="col">인코딩 크기</th></tr></thead>
-<tbody>
-<tr><th scope="row">523</th><td>79</td><td>RTOS 행렬 코드가 있는 출력 구간</td><td class="num">14,812 → 24,578 B</td></tr>
-<tr><th scope="row">524</th><td>0</td><td>직전 참조 범위에 변경된 79바이트가 있음</td><td class="num">12,499 → 24,578 B</td></tr>
-<tr><th scope="row">873</th><td>0</td><td>홀수 스트림 길이 조정. 출력과 직전 참조 범위는 원본과 동일</td><td class="num">24,233 → 24,578 B</td></tr>
-<tr><th scope="row">3201</th><td>4</td><td>디코딩된 페이로드 끝의 내부 체크섬 갱신</td><td class="num">44 → 7,926 B</td></tr>
-</tbody>
-</table>
-</div>
-<p>디코딩된 78,683,892바이트 중 원본과 다른 것은 RTOS 코드 79바이트와 내부 체크섬 4바이트였다. 기존 Q13 후보의 코드 교체 구간은 112바이트이며, 그중 실제 값이 달라진 바이트는 79개다. 재패키징 도구는 최종 스트림 길이와 외부 체크섬을 갱신하고, 후보를 다시 열어 목표 페이로드와 비교한다. <a href="recompiled-integration.json">선행 Q13 후보의 변경 범위</a> · <a href="selective-repack.json">블록별 범위와 바이트 수</a></p>
-
-<h2>검증 결과와 적용 범위</h2>
+<section class="summary">
+<h2 data-toc="no">핵심 요약</h2>
 <ul>
-<li>공개 도구로 다시 만든 후보가 선행 실험의 선택적 후보와 바이트 단위로 일치했다. 교체하지 않은 3,198개 블록도 원본 인코딩과 각각 대조했다. <a href="selective-repack.json">재실행 해시와 보존 개수</a></li>
-<li>Trimz/Ricoh3x의 고정 커밋 <code>0ed425ad4e31b336624ba4709dc28962ace2d629</code>에 있는 독립 디코더를 사용했다. 소스 SHA-256은 <code>abc92c0090d2b870f2ec74782d67a2decb8c5a1eb8132f35756a2db81cfe8f50</code>다. 선택적 후보의 디코딩 결과가 전체 stored 후보와 일치했다. <a href="https://github.com/Trimz/Ricoh3x/blob/0ed425ad4e31b336624ba4709dc28962ace2d629/tools/pdec.py">고정한 디코더 소스</a> · <a href="selective-repack.json">디코딩 길이·해시</a></li>
-<li>Unicorn에서 원본 ARM 함수로 원본과 후보를 각각 네 번 검사했다. 두 이미지 모두 정상 헤더·외부 체크섬은 <code>1</code>, 프로젝트 필드를 바꾼 입력은 <code>0</code>, 매직 값을 바꾼 입력은 <code>0</code>, 정상 내부 체크섬은 <code>1</code>이었다. 체크섬 루프는 전체 버퍼를 사용했고, 거절 분기에서 진단 출력만 생략했다. <a href="../verify_package_roundtrip.py">원본 ARM 검사</a> · <a href="selective-repack.json">8개 반환값과 검사 범위</a></li>
-<li>합성 테스트 8개로 무변경 바이트 보존, 참조 거리 8191·8192의 경계, 겹치는 복사, 홀짝 정렬, 큰 블록 분할, 잘못된 길이·범위 거절, 출력 덮어쓰기 방지와 쓰기 실패 정리를 확인했다. <a href="../tests/test_repack_changed_blocks.py">재현 테스트</a></li>
+<li>함수 하나만 바꾼 펌웨어 후보를 <strong>35,136,788바이트</strong>로 다시 만들었습니다. 원본보다 30,072바이트 클 뿐이고, 압축을 전부 푼 앞 단계 후보(약 7,900만 바이트)보다 4,355만 바이트 작습니다.</li>
+<li>원본 압축 스트림의 블록 3,202개 중 <strong>3,198개는 원본 인코딩 바이트를 그대로 재사용</strong>하고, 바뀐 내용에 영향을 받는 4개만 다시 저장했습니다. 압축을 푼 결과는 앞 단계의 후보와 바이트까지 같았습니다.</li>
+<li>독립 디코더로 다시 풀어 같은 결과가 나오는지, 원본 펌웨어의 헤더·체크섬 검사를 통과하는지 확인했습니다. <strong>카메라의 RAM·하드웨어 디코더·업데이트·부팅은 확인하지 않았습니다.</strong></li>
 </ul>
-<p>여기서 확인한 범위는 호스트 디코딩과 원본 ARM의 헤더·체크섬 판정이다. 실제 카메라의 RAM 할당·파일 크기 한계, 하드웨어 디코더, 업데이트 실행, 저장장치 쓰기와 부팅은 별도 검증이 필요하다. <a href="package-codec-evidence.json">디코더·업데이트 경계 근거</a></p>
+</section>
 
-<h2>로컬 재현</h2>
-<p>해시가 일치하는 공식 2.20 원본과 선행 Q13 전체 stored 후보를 입력한다. 출력 폴더는 <code>.private</code> 아래에서 아직 존재하지 않는 경로를 지정한다. 공개 기록은 구조와 해시를 제공한다. <a href="https://www.ricoh-imaging.co.jp/english/support/digital/k-3-3.html">Ricoh 공식 2.20 펌웨어 안내</a> · <a href="recompiled-integration.html">전체 stored 후보 재현</a></p>
-<pre><code>python -B tools/repack_changed_blocks.py ORIGINAL.bin FULL_STORED.bin --output-dir .private/selective-repack-local
+<div class="scope">
+<div class="ok"><h3><span class="badge ok">확인</span> 바이트 대조·원본 코드 실행으로 확인</h3>
+<ul>
+<li>공개 도구의 후보가 선행 후보와 바이트 단위로 일치</li>
+<li>교체하지 않은 3,198개 블록이 원본 인코딩과 각각 일치</li>
+<li>독립 디코더로 푼 결과가 전부 저장 후보와 일치</li>
+<li>원본 ARM 헤더·체크섬 검사 8건 통과·거절 일치</li>
+</ul></div>
+<div class="model"><h3><span class="badge model">모델</span> 시험 조건으로 정한 것</h3>
+<ul>
+<li>입력은 선행 단계의 전부 저장 후보 하나</li>
+<li>저장 블록은 관측한 0x6000바이트 단위로 인코딩</li>
+<li>합성 경계 테스트 8개(참조 거리·정렬·겹침 복사)</li>
+</ul></div>
+<div class="open"><h3><span class="badge open">미확인</span> 확인하지 않은 것</h3>
+<ul>
+<li>카메라의 RAM·파일 크기 한계, 하드웨어 디코더</li>
+<li>실제 업데이트 실행, 저장장치 쓰기, 부팅</li>
+<li>원본 압축기 자체(재현한 것은 결과 일치일 뿐)</li>
+</ul></div>
+</div>
+
+<section id="background">
+<h2>배경: 왜 압축 블록을 그대로 두는가</h2>
+<p><a href="recompiled-integration.html">앞 단계</a>에서는 바꾼 내용을 넣은 뒤 펌웨어를 전부 압축 없이 저장했습니다. 검증에는 충분했지만 파일이 두 배 넘게 커졌습니다. 카메라가 받아들일 수 있는 크기에 가깝게 하려면, 바뀐 부분만 새로 넣고 손대지 않은 부분은 원본이 쓰던 압축 그대로 재사용하는 편이 낫습니다.</p>
+<p class="takeaway">원본 압축기를 복원하지는 못합니다. 대신 바뀐 바이트의 영향을 받지 않는 블록은 원본 인코딩을 그대로 복사하고, 영향을 받는 블록만 압축 없이 다시 저장합니다.</p>
+
+<figure class="diagram">
+<figcaption>세 패키지의 크기 비교</figcaption>
+<div class="dg-scroll">
+<svg class="dg" viewBox="0 0 800 176" role="img" aria-labelledby="dg-size-title dg-size-desc">
+<title id="dg-size-title">공식 원본, 전부 저장 후보, 선택 후보의 파일 크기 비교</title>
+<desc id="dg-size-desc">공식 원본은 35,106,716바이트, 전부 저장 후보는 78,690,708바이트, 선택 후보는 35,136,788바이트입니다. 선택 후보는 원본과 거의 같은 크기이며 전부 저장 후보의 절반이 되지 않습니다.</desc>
+<rect class="b" x="150" y="36" width="268" height="28" rx="6"/>
+<text class="s" x="12" y="55">공식 원본</text>
+<text class="mono" x="426" y="55">35,106,716바이트</text>
+<rect class="b mute" x="150" y="80" width="600" height="28" rx="6"/>
+<text class="s" x="12" y="99">전부 저장 후보</text>
+<text class="mono end" x="742" y="99">78,690,708바이트</text>
+<rect class="b key" x="150" y="124" width="268" height="28" rx="6"/>
+<text class="s" x="12" y="143">선택 후보</text>
+<text class="mono" x="426" y="143">35,136,788바이트</text>
+</svg>
+</div>
+<ul class="dg-legend"><li><i class="key"></i>이번에 만든 후보</li><li><i></i>원본</li><li><i class="mute"></i>앞 단계의 임시 후보</li></ul>
+</figure>
+</section>
+
+<section id="rule">
+<h2>어떤 블록을 그대로 쓰는가</h2>
+<p class="takeaway">압축의 복사 명령은 최대 8,191바이트 뒤까지 되돌아 참조합니다. 그래서 한 블록의 출력과, 그 앞 8,191바이트가 원본과 같으면, 원본 압축 바이트를 그대로 풀어도 같은 결과가 나옵니다.</p>
+
+<figure class="diagram">
+<figcaption>한 블록을 그대로 둘 수 있는지 판정하는 범위</figcaption>
+<div class="dg-scroll">
+<svg class="dg" viewBox="0 0 800 196" role="img" aria-labelledby="dg-win-title dg-win-desc">
+<title id="dg-win-title">압축을 푼 출력에서 한 블록의 출력과 그 직전 참조 범위</title>
+<desc id="dg-win-desc">압축을 푼 출력을 가로줄로 나타냅니다. 가운데에 현재 블록의 출력 구간이 있고, 그 바로 앞에 최대 8,191바이트의 직전 참조 범위가 있습니다. 직전 참조 범위와 현재 블록 출력이 원본과 모두 같으면 원본 압축 바이트를 그대로 둡니다. 하나라도 다르면 그 블록을 압축 없이 저장합니다.</desc>
+<text class="s" x="40" y="34">압축을 푼 전체 출력 →</text>
+<rect class="b mute" x="40" y="48" width="250" height="44" rx="6"/>
+<text class="s mid" x="165" y="75">더 앞선 출력</text>
+<rect class="b model" x="290" y="48" width="150" height="44" rx="6"/>
+<text class="s mid" x="365" y="68">직전 참조 범위</text>
+<text class="s mid" x="365" y="84">최대 8,191바이트</text>
+<rect class="b key" x="440" y="48" width="170" height="44" rx="6"/>
+<text class="t mid" x="525" y="68">현재 블록 출력</text>
+<text class="s mid" x="525" y="85">[s, e)</text>
+<rect class="b mute" x="610" y="48" width="150" height="44" rx="6"/>
+<text class="s mid" x="685" y="75">이후 출력</text>
+<path class="e" d="M290 110V128H610V110" marker-end="url(#dg-win-ah)"/>
+<defs><marker id="dg-win-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0 0L10 5L0 10z"/></marker></defs>
+<text class="s mid" x="450" y="150">이 범위를 원본과 비교</text>
+<text class="n" x="40" y="178">두 구간이 모두 원본과 같으면 원본 압축을 그대로 복사하고, 하나라도 다르면 그 블록만 저장(stored)으로 바꿉니다.</text>
+</svg>
+</div>
+<ul class="dg-legend"><li><i class="key"></i>판정 대상 블록</li><li><i class="model"></i>되돌아 참조할 수 있는 범위</li><li><i class="mute"></i>비교에 쓰는 주변 출력</li></ul>
+</figure>
+
+<div class="callout plain"><strong class="label">쉽게 말하면</strong>
+<p>압축은 “조금 전에 나온 글자를 그대로 다시 써라”라는 식의 복사 명령으로 되어 있습니다. 복사가 최대 8,191글자 전까지만 거슬러 가므로, 그만큼 앞 범위와 현재 블록이 원본과 같다면 원본의 복사 명령을 그대로 재생해도 결과가 어긋나지 않습니다.</p></div>
+<p>교체 블록을 고른 뒤 전체 길이가 홀수가 되면, 교체하지 않은 블록 중 변화량이 가장 작은 것을 하나 더 저장 블록으로 바꿔 길이를 맞춥니다. 4의 배수가 되지 않으면 저장 조각 하나를 둘로 나눕니다. 이번 후보에서는 길이 맞춤용 교체가 한 번 있었고 분할은 필요하지 않았습니다.</p>
+</section>
+
+<section id="blocks">
+<h2>이번 후보에서 바꾼 네 블록</h2>
+<p class="takeaway">실제로 내용이 바뀐 블록은 함수 코드가 든 523번과 체크섬이 든 3201번입니다. 524번은 바뀐 바이트가 직전 참조 범위에 들어와서, 873번은 전체 길이를 맞추려고 함께 저장 블록으로 바꿨습니다.</p>
+<div class="table-wrap"><table class="compact">
+<caption>블록 번호는 0부터 셉니다. 인코딩 크기는 블록 머리말을 포함합니다.</caption>
+<thead><tr><th>블록</th><th class="n">출력에서 바뀐 바이트</th><th>교체 이유</th><th class="n">인코딩 크기(원본 → 후보)</th></tr></thead>
+<tbody>
+<tr><th scope="row">523</th><td class="n">79</td><td>RTOS 행렬 코드가 든 출력 구간</td><td class="n">14,812 → 24,578바이트</td></tr>
+<tr><th scope="row">524</th><td class="n">0</td><td>직전 참조 범위에 바뀐 79바이트가 들어옴</td><td class="n">12,499 → 24,578바이트</td></tr>
+<tr><th scope="row">873</th><td class="n">0</td><td>길이 맞춤용. 출력·직전 범위는 원본과 같음</td><td class="n">24,233 → 24,578바이트</td></tr>
+<tr><th scope="row">3201</th><td class="n">4</td><td>압축을 푼 끝의 내부 체크섬 갱신</td><td class="n">44 → 7,926바이트</td></tr>
+</tbody></table></div>
+<p class="small muted">압축을 푼 78,683,892바이트 중 원본과 다른 것은 RTOS 코드 79바이트와 내부 체크섬 4바이트, 모두 83바이트뿐입니다(교체 구간 112바이트 중 값이 달라진 것은 79개입니다). 재패키징 도구는 최종 스트림 길이와 바깥 체크섬을 다시 계산하고, 후보를 다시 열어 목표와 비교합니다.</p>
+</section>
+
+<section id="verify">
+<h2>검증 결과와 적용 범위</h2>
+<p class="takeaway">공개 도구가 만든 후보가 선행 후보와 바이트까지 같고, 두 가지 독립 방법으로 다시 풀어도 목표 내용과 일치했습니다.</p>
+<ul>
+<li><strong>자체 재현</strong> — 공개 도구로 다시 만든 후보가 선행 실험의 선택 후보와 바이트 단위로 같았습니다. 교체하지 않은 3,198개 블록도 원본 인코딩과 각각 대조했습니다.</li>
+<li><strong>독립 디코더</strong> — 다른 사람이 만든 디코더(Trimz/Ricoh3x, 특정 커밋으로 고정)로 후보를 풀었을 때 결과가 전부 저장 후보와 같았습니다. 같은 압축 형식을 쓰는 리코 GR 계열 도구를 K-3 III 바이트로 교차 확인한 것입니다.</li>
+<li><strong>원본 ARM 검사</strong> — 원본 펌웨어의 헤더·체크섬 검사 코드를 에뮬레이터에서 실행해 원본과 후보 각각 네 번 돌렸습니다. 정상 입력은 받아들이고 프로젝트·매직 값을 바꾼 입력은 거절했습니다.</li>
+<li><strong>합성 경계 테스트</strong> — 참조 거리 8191·8192의 경계, 겹치는 복사, 홀짝 정렬, 큰 블록 분할, 잘못된 길이·범위 거절, 출력 덮어쓰기 방지 등 8개 테스트를 통과했습니다.</li>
+</ul>
+
+<details class="evidence"><summary>후보 해시와 검증 수치</summary>
+<dl class="kv">
+<dt>선택 후보 크기 / SHA-256</dt><dd>35,136,788바이트 / <code class="wrap">a7e806b1a6143d05bb72f4bcf7039cea6efa7b10338251a2f302c41e4092d1e5</code></dd>
+<dt>압축 해제 크기 / SHA-256</dt><dd>78,683,892바이트 / <code class="wrap">eb4b22845cf697ca7c843e5a57df0b6fba19e47020ecad2eeecde18a715c803b</code></dd>
+<dt>그대로 둔 블록 수</dt><dd>3,202개 중 3,198개(각각 인코딩 바이트 대조)</dd>
+<dt>길이 맞춤 추가 교체 / 분할</dt><dd>블록 873 / 없음</dd>
+<dt>독립 디코더</dt><dd>Trimz/Ricoh3x 커밋 <code>0ed425ad4e31b336624ba4709dc28962ace2d629</code>, 소스 SHA-256 <code class="wrap">abc92c0090d2b870f2ec74782d67a2decb8c5a1eb8132f35756a2db81cfe8f50</code></dd>
+<dt>원본 ARM 검사 / 합성 테스트</dt><dd>8건 / 8건 통과</dd>
+</dl>
+<p class="small">근거: <a href="selective-repack.json">selective-repack.json</a>. 블록 형식과 체크섬 경계는 <a href="package-codec-evidence.json">package-codec-evidence.json</a>.</p>
+</details>
+
+<div class="callout warn"><strong class="label">주의</strong>
+<p>여기서 확인한 것은 호스트에서의 압축 해제와 원본 ARM의 헤더·체크섬 판정까지입니다. 카메라의 RAM 할당과 파일 크기 한계, 하드웨어 디코더, 실제 업데이트 실행, 저장장치 쓰기와 부팅은 별도 검증이 필요합니다.</p></div>
+</section>
+
+<section id="limits">
+<h2>한계와 남은 과제</h2>
+<ul>
+<li>이 방법은 원본 압축기를 복원한 것이 아닙니다. 바뀌지 않은 블록의 원본 바이트를 그대로 복사하고, 영향받는 블록만 압축 없이 저장하는 보수적 방식입니다.</li>
+<li>레코드 크기 변경, 추가·삭제, 소스 컴파일, 링커 재구성, 서명 생성은 지원하지 않습니다.</li>
+<li>카메라가 이 후보를 실제로 받아 동작하는지는 미확인입니다. 통합 전 확인 항목은 <a href="research-roadmap.html">수정·이식 선행 연구</a>에 있습니다.</li>
+</ul>
+</section>
+
+<section id="reproduce">
+<h2>재현 방법</h2>
+<p>해시가 일치하는 공식 2.20 원본과, 앞 단계의 전부 저장 후보를 입력합니다. 출력 폴더는 <code>.private</code> 아래에서 아직 없는 경로를 지정합니다.</p>
+<pre><code>python -B tools/repack_changed_blocks.py ORIGINAL.bin FULL_STORED.bin \
+  --output-dir .private/selective-repack-local
 python -B -m unittest discover -s tests -p test_repack_changed_blocks.py -v</code></pre>
+<p class="small muted">공개 기록에는 구조와 해시만 들어 있습니다. 원본 압축 스트림과 추출한 독점 코드는 포함하지 않습니다.</p>
+</section>
+
+<section id="refs">
+<h2>근거 파일과 참고 자료</h2>
+<ul class="refs">
+<li><a href="selective-repack.json">selective-repack.json</a> — 크기·해시·블록별 범위·검증 기록</li>
+<li><a href="../tools/repack_changed_blocks.py">tools/repack_changed_blocks.py</a> — 선택적 재패키징 구현</li>
+<li><a href="../tests/test_repack_changed_blocks.py">tests/test_repack_changed_blocks.py</a> — 정렬·경계 합성 테스트</li>
+<li><a href="../inspect_firmware.py">inspect_firmware.py</a> — 프로젝트 압축 해제기</li>
+<li><a href="recompiled-integration.json">recompiled-integration.json</a> — 선행(전부 저장) 후보의 변경 범위</li>
+<li><a href="package-codec-evidence.json">package-codec-evidence.json</a> — 블록 형식·체크섬 경계 근거</li>
+<li>외부 자료: <a href="https://github.com/Trimz/Ricoh3x/blob/0ed425ad4e31b336624ba4709dc28962ace2d629/tools/pdec.py">독립 디코더(Trimz/Ricoh3x, 고정 커밋)</a> · <a href="https://www.ricoh-imaging.co.jp/english/support/digital/k-3-3.html">Ricoh 공식 K-3 III 2.20 펌웨어</a></li>
+</ul>
+</section>
+
 </main>
+</div>
+<!-- chrome:bottom -->
+<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">펌웨어 재구축 — 이 주제의 문서</h2><ol><li><a href="guide-rebuild.html">재구축 안내</a></li><li><a href="recompiled-kernels.html">수치 함수 C 재구현<span>SAD·SSD와 Q13 행렬 곱</span></a></li><li><a href="recompiled-integration.html">재컴파일 함수 배치·재패키징</a></li><li><a href="selective-repack.html" aria-current="page">압축 블록을 보존한 재패키징</a></li></ol></nav>
+<nav class="pager" aria-label="이전·다음 문서"><a class="prev" href="recompiled-integration.html"><small>← 이전</small>재컴파일 함수 배치·재패키징</a><a class="next" href="guide-rtos.html"><small>다음 →</small>RTOS 명령 안내</a></nav>
+<footer class="sitefoot"><div class="sitefoot-in"><nav aria-label="사이트"><a href="../index.html#map">문서 지도</a><a href="../index.html#levels">검증 수준 읽는 법</a><a href="../glossary.html">용어집</a><a href="research-program.html">세 기종 연구 본부</a><a href="https://github.com/yunhyok/pentax-k3iii-firmware-analysis">GitHub 저장소</a></nav><p>PENTAX K-3 Mark III 펌웨어 2.20 분석 문서. PC에서 수행한 정적 분석과 에뮬레이션 결과이며, 카메라 실기에서 검증한 내용이 아닙니다. 원본 펌웨어와 추출한 독점 코드는 포함하지 않습니다.</p></div></footer>
+<!-- /chrome:bottom -->
 </body>
 </html>

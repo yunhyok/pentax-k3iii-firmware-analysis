@@ -1,97 +1,175 @@
-<!DOCTYPE html>
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>수정 펌웨어와 UI 이식을 위한 선행 연구 — PENTAX K-3 Mark III 펌웨어 연구</title>
+<meta name="description" content="수정 펌웨어를 만들거나 UI를 다른 기종에 이식하기 전에 확인해야 할 조건을 정리한 로드맵입니다. 지금까지 확인한 UI·업데이트 경로와, 구현 착수 전에 남은 조사 항목을 보여 줍니다.">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-camera="k3iii">
+<!-- chrome:top -->
+<a class="skip" href="#main">본문 바로가기</a>
+<div class="topbar"><div class="topbar-in"><a class="brand" href="../index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="../index.html" aria-current="true">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="https://yunhyok.github.io/pentax-q7-firmware-analysis/">Q7</a></div><nav class="topnav" aria-label="주제"><a href="../index.html" aria-current="true">개요</a><a href="guide-boot.html">부팅·저장소</a><a href="guide-update.html">업데이트</a><a href="guide-rebuild.html">재구축</a><a href="guide-rtos.html">명령·셸</a><a href="guide-color.html">색 처리</a><a href="lightroom-bridge.html">Lightroom</a><a href="af-foundations.html">AF</a><a href="ui-port-contract.html">UI</a></nav></div></div>
+<nav class="crumbs" aria-label="현재 위치"><ol><li><a href="../index.html">PENTAX K-3 Mark III</a></li><li><a href="../index.html">시작하기</a></li><li aria-current="page">수정·이식 선행 연구</li></ol></nav>
+<!-- /chrome:top -->
+<header class="page-head">
+<p class="eyebrow">시작하기 · 선행 연구</p>
+<h1>수정 펌웨어와 UI 이식을 위한 선행 연구</h1>
+<p class="lead">최종 목표는 일부 정보를 바꾼 펌웨어를 만들어 카메라에서 정상 동작시키는 것이고, 부가 목표는 K-3 Mark III의 UI를 K-3 II나 Q7에 이식하는 것입니다. 지금은 두 목표의 선행 분석 단계이며, 빌드·플래시·이식은 아직 시작하지 않았습니다.</p>
+</header>
+<div class="layout">
+<!-- chrome:toc -->
+<nav class="toc" aria-label="이 문서의 목차"><h2 data-toc="no">이 문서에서</h2><ol><li><a href="#stage">목표와 현재 단계</a></li><li><a href="#ui">지금까지 확인한 UI 자원 접근</a></li><li><a href="#update">업데이트와 공개 소스의 경계</a></li><li><a href="#next">다음 조사 항목과 완료 기준</a></li><li><a href="#port">K-3 II·Q7 이식 비교의 출발점</a></li><li><a href="#refs">근거 파일과 참고 자료</a></li></ol></nav>
+<!-- /chrome:toc -->
+<main class="doc" id="main">
 
-<html lang="ko"><head><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/><title>수정 펌웨어·UI 이식을 위한 선행 연구</title><style>
-:root{color-scheme:light dark;--bg:#f7f8fa;--paper:#fff;--ink:#182332;--muted:#48596b;--line:#d2dbe5;--accent:#124b8e;--soft:#edf3fa;--focus:#d75f00}
-@media(prefers-color-scheme:dark){:root{--bg:#111821;--paper:#18222d;--ink:#e8edf4;--muted:#b4c2d2;--line:#405369;--accent:#98c8ff;--soft:#223348;--focus:#ffb374}}
-*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.85 system-ui,-apple-system,"Malgun Gothic",sans-serif;word-break:keep-all;overflow-wrap:anywhere}
-a{color:var(--accent);text-underline-offset:.18em}a:hover{text-decoration-thickness:2px}:focus-visible{outline:3px solid var(--focus);outline-offset:4px}
-header,main,footer{max-width:1120px;margin:auto;padding:36px clamp(18px,4vw,56px)}header{padding-top:56px;padding-bottom:24px}main{background:var(--paper);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
-.eyebrow{color:var(--muted);font-size:.84rem;letter-spacing:.06em}h1{font-size:clamp(1.85rem,4.5vw,3rem);line-height:1.35;letter-spacing:-.025em;margin:12px 0 18px}h2{font-size:1.5rem;line-height:1.5;margin:3.6rem 0 1rem;padding-top:1.2rem;border-top:1px solid var(--line)}h2:first-child{margin-top:0}h3{font-size:1.12rem;margin-top:2rem}p{margin:1rem 0}strong{font-weight:650}.intro{max-width:55em;color:var(--muted)}
-nav{margin-top:25px}nav ul{display:flex;flex-wrap:wrap;gap:8px 22px;list-style:none;padding:0;margin:0}nav ul ul{display:none}nav a{font-size:.9rem}code{font: .88em/1.6 ui-monospace,Consolas,monospace;overflow-wrap:anywhere}pre{background:var(--soft);padding:18px;overflow-x:auto;white-space:pre-wrap;border-radius:5px}pre code{font-size:.82rem}
-.table-scroll{overflow-x:auto;margin:24px 0}table{border-collapse:collapse;width:100%;font-size:.92rem;min-width:530px}th,td{text-align:left;vertical-align:top;padding:14px 16px;border-bottom:1px solid var(--line)}th{background:var(--soft);font-weight:650}td:first-child{min-width:125px}details{border-block:1px solid var(--line);margin-top:24px;padding:16px 0}summary{cursor:pointer;font-weight:650;padding:6px 0}.caption,.meta{font-size:.86rem;color:var(--muted)}
-figure{margin:32px 0;padding:24px 0;border-block:1px solid var(--line)}figcaption{font-size:.95rem;font-weight:650;margin-bottom:20px}.flow{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:32px;list-style:none;padding:0;margin:18px 0}.flow li{position:relative;padding:18px;background:var(--soft);border-radius:6px;line-height:1.6}.flow strong{display:block;font-size:1rem}.flow span{display:block;color:var(--muted);font-size:.86rem;margin-top:9px}.flow li:not(:last-child)::after{content:"→";position:absolute;right:-27px;top:40%;font-size:22px;color:var(--muted)}.second{margin-top:24px}footer{font-size:.88rem;color:var(--muted)}
-@media(max-width:620px){body{font-size:16px}header,main,footer{padding-inline:20px}.flow{grid-template-columns:1fr;gap:26px}.flow li:not(:last-child)::after{content:"↓";right:auto;left:calc(50% - 8px);top:auto;bottom:-28px}.flow li{padding:15px 18px}h2{font-size:1.3rem}nav ul{gap:10px 18px}table{font-size:.87rem}th,td{padding:12px}header{padding-top:30px}}
-@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
-@media print{body{background:white;color:black;font-size:10pt}header,main,footer{max-width:none;padding:12pt}nav{display:none}a{color:inherit}h2,figure,table{break-inside:avoid}h2{break-after:avoid}main{border:0}.flow li{background:#f1f3f5}.table-scroll{overflow:visible}table{min-width:0}details>*{display:block!important}}
+<section class="summary">
+<h2 data-toc="no">핵심 요약</h2>
+<ul>
+<li>이 문서는 결과 보고가 아니라 <strong>구현 착수 전 로드맵</strong>입니다. 지금까지 확인한 UI·업데이트 경로와, 수정 펌웨어를 만들기 전에 반드시 확인할 조건을 정리합니다.</li>
+<li>확보한 의사코드는 원래 소스 프로젝트가 아닙니다. 타입·이름·링커 배치·라이브러리·자원 생성 도구를 복원하지 않았으므로, 지금 코드를 컴파일한다고 원본과 동등한 펌웨어가 되지는 않습니다.</li>
+<li>분석 단계의 끝은 모든 함수를 해석하는 시점이 아니라, <strong>첫 변경 대상의 의존 범위·이미지 재구성 규칙·부팅과 복구 조건·검증 방법</strong>을 설명할 수 있는 시점입니다.</li>
+</ul>
+</section>
 
-.site-nav{border-block:1px solid var(--line);padding:14px 0;margin:20px 0}.site-nav a{display:inline-block;margin:4px 16px 4px 0}
-.review-note{background:var(--soft);padding:16px 20px;margin:24px 0}.toc{font-size:.92rem}.toc ul{list-style:none;padding-left:0}.toc ul ul{padding-left:20px}
-.branch{margin:18px 0;padding:0 0 0 24px;border-left:3px solid var(--line)}.branch p{margin:8px 0}.diagram-line{padding:12px 16px;background:var(--soft);border-radius:4px}
-</style></head><body><header><div class="eyebrow">PENTAX K-3 MARK III · FIRMWARE 2.20 · 2026-11-07</div><h1>수정 펌웨어·UI 이식을 위한 선행 연구</h1><nav aria-label="분석 문서" class="site-nav"><a href="../index.html">개요·재현</a><a href="index.html">RTOS 957개</a><a href="dispatch-af.html">셔터·AF</a><a href="color-lightroom.html">컬러모드·Lightroom</a><a href="color-algorithms.html">색 처리 수식</a><a href="pipeline-report.html">JPEG·ISP 최신 분석</a><a aria-current="page" href="research-roadmap.html">수정·이식 선행 연구</a><a href="update-resources.html">업데이트·리소스</a><a href="startup-storage.html">메시지·저장소·BOOT</a></nav><p class="intro">현재 분석에서 확인한 UI·업데이트 경로와 구현 착수 전에 확인할 조건.</p></header><main><aside class="review-note" id="reset-alias-followup"><strong>최신 추적 · 2026-11-08</strong><p>M0 reset에서 부트 적재 작업 등록·초기 스택을 연결했다. Log의 +4 기록은 별도 로그 상태, SystemControl의 +0x10 기록은 mutex 카운터로 구분했다. 의사코드 22개·합성 검사 106건과 배포 DTB 분석을 추가했으며 SRAM alias와 비제로 bank 생산자는 미확정이다. <a href="startup-storage.html#m0-reset-chain">reset·remap·alias 검증 결과</a></p></aside><aside class="review-note" id="m0-lower-followup"><strong>앞선 추적 · 2026-11-08</strong><p>M0의 CMD17·CMD18 전송과 SDRAM 5단계 상태 확인을 연결했다. SRAM 주소 대응과 RTOS 비제로 bank 생산자는 미확정이며, 새 의사코드 19개와 합성 검사 62개를 추가했다. <a href="startup-storage.html#m0-address-map">주소 대응·하위 적재·검증 결과</a></p></aside><aside class="review-note" id="m0-resync-followup"><strong>앞선 추적 · 2026-11-08</strong><p>조정 payload의 +4 저장을 bank 기록과 구분하고, 오류 복구·장치 재초기화에서 선택 캐시가 보존되는 조건을 확인했다. M0의 모드 1·2 기록 경로도 찾았으며 BOOT 주소와의 alias와 선행 인증은 미확정이다. <a href="startup-storage.html#preboot-mode">M0 분석</a> · <a href="startup-storage.html#cache-resync">캐시 복구</a></p></aside><aside class="review-note" id="startup-followup"><strong>후속 추적 · 2026-11-08</strong><p>리소스 record +4를 포함한 전체 테이블 읽기와 partition 0 복귀 실패 뒤의 캐시·오류 전달을 연결했다. 배포 BOOT의 진입점과 마지막 분기도 확인했다. 비제로 객체 bank 생산자와 선행 Boot ROM 인증은 미확정이다. <a href="startup-storage.html#record-reload">최신 검증 결과</a></p></aside><aside class="review-note" id="update-followup"><strong>2026-11-08 추적 결과</strong><p>프로젝트·버전·체크섬 검사와 ICONBIN의 저장소 인덱스 4→슬롯 5 연결은 앞선 업데이트 분석에서 확인했다. <a href="update-resources.html">검사·ICONBIN 보고서</a>. 하위 드라이버와 BOOT의 슬롯 2 초기화에 대한 후속 결과는 위 최신 보고서에 반영했다.</p></aside><h2 id="_1">목표와 현재 단계</h2>
-<p>최종 목표는 일부 정보를 추가하거나 바꾼 펌웨어를 빌드해 K-3 Mark III에서 정상 동작시키는 것이다. 부가 목표는 K-3 Mark III의 UI를 K-3 II 또는 Q7에 이식하는 것이다. 여기서는 사용자가 부른 K-3mk2를 K-3 II로 해석했다. 현재는 두 목표의 선행 분석 단계다. 빌드·패치·플래시와 다른 기종 이식은 아직 시작하지 않았다.</p>
-<p>현재 확보한 의사코드는 원래 소스 프로젝트와 다르다. 타입·이름·링커 배치·라이브러리·자원 생성 도구를 복원하지 않은 상태이므로 의사코드를 컴파일하면 원본과 동등한 펌웨어가 만들어진다고 볼 수 없다. 전체 소스 재구축, 특정 모듈의 재구현, 기존 이미지의 제한적 변경은 필요한 근거와 검증 범위가 서로 다르다. 어느 경로를 선택할지는 아래 분석 결과로 판단한다. <a href="../index.html">현재 분석 범위</a></p>
-<h2 id="ui">이번에 조사한 UI 리소스 접근</h2>
-<p>패키지의 ICONBIN payload는 26,219,192바이트다. 별도의 RES 레코드에는 폰트 경로가 있다. 크기와 레코드 이름만으로 자원 포맷이나 호환성을 판단하지 않았다. <a href="../evidence.json">패키지 레코드·해시</a></p>
-<p>아이콘 그리기 경로 <code>0x528c4780</code>은 <code>0x52ff8ed0(5)</code>로 리소스 슬롯 5의 준비 상태를 확인하고 <code>0x52ff8de4(5)</code>로 기준 주소를 얻는다. RAM 테이블 <code>0x54525578</code>의 16바이트 레코드 중 슬롯 5는 초기화 원본 <code>0x53d0d308</code>에 대응하며 이름 포인터는 <code>IconBinaryData</code>를 가리킨다. ROM→RAM 초기화 매핑과 두 접근 함수의 원본 명령으로 이 연결을 확인했다. <a href="readiness-evidence.json">UI·업데이트 근거</a></p>
-<p>준비 확인 함수는 레코드 <code>+0xc</code>의 포인터가 가리키는 값을 읽어 <code>0xa55a5aa5</code>인지 검사한다. 이는 관찰한 리소스 준비 표식이다. 업데이트 패키지의 암호학적 서명 검증으로 해석하지 않는다. 그리기 함수는 별도 설명자 조회 <code>0x528c3f08</code>의 결과에서 <code>+8</code>을 읽고 <code>기준 주소+(값&lt;&lt;2)</code>로 데이터 주소를 만든다. 설명자 조회에는 ID 재매핑과 <code>0x681</code> 상한 검사도 있다. <a href="deep-evidence.json">범위 해시·호출 근거</a></p>
-<figure aria-labelledby="ui-flow-caption"><figcaption id="ui-flow-caption">확인한 아이콘 접근 의존 관계</figcaption><ol class="flow"><li><strong>아이콘 ID와 설명자</strong><span>재매핑 · 범위 검사<br/>설명자+8에서 데이터 오프셋</span></li><li><strong>리소스 슬롯 5</strong><span>IconBinaryData<br/>준비 표식 · 기준 주소</span></li><li><strong>그리기 함수</strong><span>기준 주소+오프셋×4<br/>회전·배치 처리</span></li></ol><p class="caption">이 도식은 2026-11-07의 접근 경로다. 2026-11-08에는 ICONBIN 기록 요청과 저장소 인덱스 4에서 슬롯 5로 읽는 조건부 적재 경로를 연결했다. 하위 드라이버 대상은 후속 조사에서 Emmc로 연결했다. 픽셀 포맷은 미확정이다. <a href="startup-storage.html#driver">드라이버 연결</a> <a href="update-resources.html#iconbin">추가 적재 분석</a></p></figure>
-<p>이 구조에서는 ICONBIN만 옮겨 UI가 작동한다고 가정할 수 없다. 자원 적재, 설명자 표, 그리기 코드, 메뉴 상태, 입력 이벤트의 인터페이스를 함께 비교해야 한다. 이번에는 관련 함수 5개의 의사코드와 ARM 목록을 로컬에 추가했다.</p>
-<h2 id="_2">업데이트와 공개 소스의 경계</h2>
-<p>파일명 생성자 <code>0x52ff32ac</code>는 런타임 값을 받아 C:와 R: 드라이브의 <code>FWDC%ldB.BIN</code> 경로를 만든다. 해당 숫자는 <code>0x5310b748</code>이 읽는 객체의 <code>+0x18</code>에서 온다. 파일명 생산자를 확인한 결과이며 실제 업데이트 허용·버전·무결성·서명 검사에 연결한 결과는 아니다. <a href="readiness-evidence.json">함수 범위와 전이</a></p>
-<p>공식 OSS 패키지의 Stubby 1.60.1도 확인했다. README 109~117행은 MLB01 보드의 RTOS-main 이미지 조합을 설명하며 MILB_SDK.bin을 별도 입력으로 요구한다. <code>config-sc2000-rtos.h</code>의 RTOS 주소는 <code>0x60000000</code>으로 이번 RTOS 분석 주소 <code>0x52500000</code>과 다르다. 공개 보드 설정을 카메라의 실제 빌드 설정으로 취급하지 않는다. <a href="https://www.ricoh-imaging.co.jp/english/products/oss/">Ricoh 공식 OSS</a> · <a href="https://www.ricoh-imaging.co.jp/japan/products/oss/k-3-3/K3mkIII_220.tar.gz">배포 패키지</a> · <a href="readiness-evidence.json">파일 해시·행 근거</a></p>
-<p>이 설정 파일의 RSA 서명 옵션은 주석 처리돼 있다. 해당 옵션의 존재·상태만으로 카메라가 수정된 업데이트를 허용한다고 결론낼 수 없다. 입력 패키지의 32비트 합계가 0이라는 기존 관찰도 검증 규칙 전체를 설명하지 않는다. RTOS 업데이트 수신부, 패키지 검증기, 실제 부트로더를 각각 연결해야 한다.</p>
-<h2 id="_3">다음 조사 항목과 완료 기준</h2>
-<div class="table-scroll"><table>
-<thead>
-<tr>
-<th>우선순위</th>
-<th>조사할 항목</th>
-<th>출발 근거</th>
-<th>분석 완료 기준</th>
-</tr>
-</thead>
+<div class="scope">
+<div class="ok"><h3><span class="badge ok">확인</span> 원본 코드·바이트로 확인</h3>
+<ul>
+<li>아이콘 자원 접근 함수 5개의 구간과 연결</li>
+<li>무변경 재포장의 바이트 일치(round trip)</li>
+</ul></div>
+<div class="static"><h3><span class="badge static">정적 분석</span> 코드·공개 자료를 읽어 판단</h3>
+<ul>
+<li>업데이트 파일명 생성자와 모델 값 경로</li>
+<li>공개 Stubby OSS의 보드 설정</li>
+</ul></div>
+<div class="open"><h3><span class="badge open">미확인</span> 확인하지 않은 것</h3>
+<ul>
+<li>실제 업데이트 수용·서명 정책·부팅·복구</li>
+<li>자원 포맷, 메뉴·입력 인터페이스</li>
+<li>다른 기종의 ISA·OS·GUI 일치 여부</li>
+</ul></div>
+</div>
+
+<section id="stage">
+<h2>목표와 현재 단계</h2>
+<p class="takeaway">세 가지 구현 경로(전체 소스 재구축, 특정 모듈 재구현, 기존 이미지의 제한적 변경)는 필요한 근거와 검증 범위가 서로 다릅니다. 어느 경로를 택할지는 선행 분석 결과로 판단합니다.</p>
+<figure class="diagram">
+<figcaption>분석에서 구현까지의 단계</figcaption>
+<div class="dg-scroll">
+<svg class="dg" viewBox="0 0 800 150" role="img" aria-labelledby="dg-road-title dg-road-desc">
+<title id="dg-road-title">지금까지의 분석, 구현 전 선행 조사, 수정 펌웨어 빌드·이식의 세 단계</title>
+<desc id="dg-road-desc">첫 단계는 지금까지의 분석으로 명령·색·AF·업데이트 경로와 패키지 재구성을 확인했습니다. 둘째 단계는 구현 전 선행 조사로, 검증기와 부팅·복구, 자원 포맷, 메뉴·입력, 재빌드 도구를 확인합니다. 셋째 단계는 수정 펌웨어 빌드와 다른 기종 이식으로 아직 시작하지 않았습니다.</desc>
+<defs><marker id="dg-road-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0 0L10 5L0 10z"/></marker><marker id="dg-road-ao" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah open" d="M0 0L10 5L0 10z"/></marker></defs>
+<rect class="b ok" x="12" y="44" width="236" height="62" rx="8"/>
+<text class="t" x="24" y="72">지금까지의 분석</text>
+<text class="s" x="24" y="92">명령·색·AF·업데이트·재포장</text>
+<rect class="b static" x="282" y="44" width="236" height="62" rx="8"/>
+<text class="t" x="294" y="72">구현 전 선행 조사</text>
+<text class="s" x="294" y="92">검증기·부팅·자원·입력·도구</text>
+<rect class="b open" x="552" y="44" width="236" height="62" rx="8"/>
+<text class="t" x="564" y="72">빌드·이식 (미시작)</text>
+<text class="s" x="564" y="92">수정 펌웨어 · 다른 기종 UI</text>
+<path class="e" d="M248 75H280" marker-end="url(#dg-road-ah)"/>
+<path class="e open" d="M518 75H550" marker-end="url(#dg-road-ao)"/>
+</svg>
+</div>
+<ul class="dg-legend"><li><i class="ok"></i>확인한 단계</li><li><i class="static"></i>진행 중</li><li><i class="open"></i>미시작</li></ul>
+</figure>
+</section>
+
+<section id="ui">
+<h2>지금까지 확인한 UI 자원 접근</h2>
+<p class="takeaway">아이콘 자원이 어디에 준비되고 어떻게 그려지는지는 확인했습니다. 다만 ICONBIN만 옮긴다고 UI가 작동하지는 않습니다.</p>
+<p>패키지의 ICONBIN 자원은 26,219,192바이트이고, 별도 RES 레코드에 폰트 경로가 있습니다. 크기와 이름만으로 자원 포맷이나 호환성을 판단하지는 않았습니다. 아이콘 그리기 경로는 리소스 슬롯 5의 준비 상태를 확인한 뒤 기준 주소를 얻습니다. 이 슬롯은 초기화 원본에 대응하며 이름 포인터가 <code>IconBinaryData</code>를 가리킵니다.</p>
+<figure class="diagram">
+<ol class="flow" aria-label="아이콘 접근의 의존 관계">
+<li class="static"><strong>아이콘 ID·설명자</strong><span>ID 재매핑 · 범위 검사 · 설명자에서 데이터 오프셋</span></li>
+<li class="ok"><strong>리소스 슬롯 5</strong><span><code>IconBinaryData</code> · 준비 표식 · 기준 주소</span></li>
+<li class="static"><strong>그리기 함수</strong><span>기준 주소 + 오프셋×4 · 회전·배치</span></li>
+</ol>
+</figure>
+<p>준비 확인 함수는 레코드가 가리키는 값이 <code>0xa55a5aa5</code>인지 봅니다. 이는 관찰한 자원 준비 표식일 뿐, 업데이트 패키지의 암호학적 서명 검증이 아닙니다. 이 구조에서는 자원 적재, 설명자 표, 그리기 코드, 메뉴 상태, 입력 이벤트의 인터페이스를 함께 비교해야 합니다.</p>
+<details class="evidence"><summary>아이콘 접근 함수 주소</summary>
+<dl class="kv">
+<dt>설명자 조회</dt><dd><code>0x528c3f08</code> (ID 재매핑·상한 <code>0x681</code> 검사, 결과 <code>+8</code>에서 오프셋)</dd>
+<dt>준비 표식 검사</dt><dd>레코드 <code>+0xc</code>의 포인터가 가리키는 값이 <code>0xa55a5aa5</code>인지 확인</dd>
+<dt>준비 확인 / 기준 주소</dt><dd><code>0x52ff8ed0</code> / <code>0x52ff8de4</code> (슬롯 5)</dd>
+<dt>그리기 진입 / 데이터 주소</dt><dd><code>0x528c4780</code> / 기준 주소 + (설명자 값 ≪ 2)</dd>
+<dt>슬롯 5 매핑</dt><dd>RAM 표 <code>0x54525578</code>(16바이트 레코드), 초기화 원본 <code>0x53d0d308</code>, 이름 <code>IconBinaryData</code></dd>
+</dl>
+<p class="small">근거: <a href="readiness-evidence.json">readiness-evidence.json</a>·<a href="deep-evidence.json">deep-evidence.json</a>. 자원 적재·픽셀 포맷은 미확정입니다. <a href="icon-resources.html">ICONBIN 아이콘 자원</a>·<a href="update-resources.html">업데이트 검사와 ICONBIN</a></p>
+</details>
+</section>
+
+<section id="update">
+<h2>업데이트와 공개 소스의 경계</h2>
+<p class="takeaway">업데이트 파일명을 만드는 함수는 확인했지만, 실제 업데이트 허용·버전·무결성·서명 검사에 연결하지는 못했습니다.</p>
+<p>파일명 생성자 <code>0x52ff32ac</code>는 런타임 값을 받아 <code>C:\FWDC%ldB.BIN</code>과 <code>R:\FWDC%ldB.BIN</code> 경로를 만듭니다. 숫자는 모델 값을 읽는 객체의 <code>+0x18</code>에서 옵니다. 이것은 파일명 생산자를 확인한 결과일 뿐, 업데이트 수용 판단과 이은 결과가 아닙니다.</p>
+<p>공식 OSS 패키지의 <dfn title="리코가 공개한 부트로더 관련 오픈소스">Stubby 1.60.1</dfn>도 확인했습니다. README 109~117행은 MLB01 보드의 RTOS-main 이미지 조합을 설명하며 별도 입력 <code>MILB_SDK.bin</code>을 요구합니다. 설정 파일 <code>config-sc2000-rtos.h</code>의 RTOS 주소는 <code>0x60000000</code>으로, 이번 분석의 RTOS 적재 주소 <code>0x52500000</code>과 다릅니다. 공개 보드 설정을 카메라의 실제 빌드 설정으로 취급하지 않습니다.</p>
+<div class="callout warn"><strong class="label">주의</strong>
+<p>이 설정 파일의 RSA 서명 옵션은 주석 처리돼 있습니다. 옵션의 존재·상태만으로 카메라가 수정된 업데이트를 받아들인다고 결론지을 수 없습니다. 입력 패키지의 32비트 합계가 0이라는 관찰도 검증 규칙 전체를 설명하지 않습니다. RTOS 업데이트 수신부, 패키지 검증기, 실제 부트로더를 각각 연결해야 합니다.</p></div>
+<p>패키지를 변경 없이 다시 포장하면 바이트까지 같다는 것(round trip)과, 함수 하나를 바꿔 다시 포장하는 과정은 재구축 주제에서 다뤘습니다. <a href="recompiled-integration.html">함수 배치·재패키징</a> · <a href="selective-repack.html">압축 블록 보존 재패키징</a></p>
+<details class="evidence"><summary>업데이트·OSS 근거</summary>
+<dl class="kv">
+<dt>파일명 생성자 / 모델 값</dt><dd><code>0x52ff32ac</code> / 모델 조회 <code>0x5310b748</code>의 <code>+0x18</code></dd>
+<dt>Stubby 아카이브</dt><dd><code>stubby-1.60.1.tar.gz</code>, SHA-256 <code class="wrap">2a68ee9b871bb27ab867aa8db92273976f1f2c9b040c0be180d897a63cd4b2eb</code></dd>
+<dt>설정 파일 주장</dt><dd><code>config-sc2000-rtos.h</code>: RSA 옵션 주석 처리, RTOS 주소 <code>0x60000000</code>(분석 주소와 불일치)</dd>
+</dl>
+<p class="small">근거: <a href="readiness-evidence.json">readiness-evidence.json</a>. 외부: <a href="https://www.ricoh-imaging.co.jp/english/products/oss/">Ricoh 공식 OSS</a> · <a href="https://www.ricoh-imaging.co.jp/japan/products/oss/k-3-3/K3mkIII_220.tar.gz">배포 패키지</a></p>
+</details>
+</section>
+
+<section id="next">
+<h2>다음 조사 항목과 완료 기준</h2>
+<p>구현에 착수하기 전에 확인할 항목입니다. 우선순위 1이 먼저입니다.</p>
+<div class="table-wrap"><table class="compact">
+<caption>선행 조사 항목</caption>
+<thead><tr><th class="n">우선</th><th>조사 항목</th><th>완료 기준</th></tr></thead>
 <tbody>
-<tr>
-<td>1</td>
-<td>상한 후보·bypass·픽셀 순서</td>
-<td>WBLV 후보, R2y 제어 생산자, 조건부 버퍼 연결</td>
-<td>진단 필드↔레지스터 대응 또는 독립적인 레지스터 명세. 비교식·극성·처리 순서는 별도 근거로 확정</td>
-</tr>
-<tr>
-<td>1</td>
-<td>업데이트 파일명에서 실제 검증기로</td>
-<td>0x52ff32ac와 런타임 모델 값</td>
-<td>파일 열기→헤더/기종/버전 검사→무결성/서명 판단→기록 요청의 조건부 호출 그래프</td>
-</tr>
-<tr>
-<td>1</td>
-<td>원본을 보존하는 패키지 재구성</td>
-<td>명명 레코드·길이·체크섬·불명 영역</td>
-<td>분석 종료 후 변경 없는 round trip의 바이트 일치. 불명 영역과 실패 조건 설명</td>
-</tr>
-<tr>
-<td>1</td>
-<td>부팅·복구 의존 관계</td>
-<td>RTOS 초기화 복사와 공개 Stubby</td>
-<td>실제 부트 단계·파티션·실패 시 복구 진입을 확인. 공개 보드 예제와 기기 경로 구분</td>
-</tr>
-<tr>
-<td>2</td>
-<td>ICONBIN 로더와 자원 포맷</td>
-<td>슬롯 5, 설명자+8, 그리기 함수</td>
-<td>payload→RAM 슬롯 연결, 경계 검사, 압축/픽셀 포맷·팔레트·투명도·stride를 설명하고 로컬 디코드로 확인</td>
-</tr>
-<tr>
-<td>2</td>
-<td>메뉴와 입력 이벤트</td>
-<td>ScreenManager·TouchPanel·FontManager 문자열 및 아이콘 호출</td>
-<td>화면 상태→메뉴 동작→공통 속성의 연결, 버튼·다이얼·터치 이벤트 어댑터 목록</td>
-</tr>
-<tr>
-<td>2</td>
-<td>재빌드에 필요한 ABI·도구</td>
-<td>ARMEL RTOS, C++ 객체·vtable, 공개 OSS</td>
-<td>컴파일러 ABI·예외 처리·라이브러리·링커 배치·자원 생성 입력의 확보 여부를 모듈별 판정</td>
-</tr>
-<tr>
-<td>3</td>
-<td>기종별 UI 비교</td>
-<td>K-3 II·Q7 공식 사양</td>
-<td>각 기종 펌웨어를 별도로 분석해 ISA·OS·그리기 API·메모리·입력·자원 포맷 차이표 작성</td>
-</tr>
-</tbody>
-</table></div>
-<p>분석 단계의 종료는 모든 함수를 해석하는 시점으로 잡지 않는다. 첫 변경 대상의 의존 범위, 이미지 재구성 규칙, 부팅·복구 조건, 검증 방법을 설명할 수 있는 시점을 구현 착수 판단 기준으로 삼는다. 실제 정상 동작의 판정에는 부팅뿐 아니라 메뉴 입력, 촬영·저장·재생, AF·노출, 전원 전환과 원본 복구 확인이 필요하다. 이는 후속 단계의 검증 기준이며 이번에 수행한 시험은 아니다.</p>
-<h2 id="k-3-iiq7">K-3 II·Q7 이식 비교의 출발점</h2>
-<p>공식 사양에서 K-3 Mark III는 3.2형 약 162만 도트와 정전식 터치, K-3 II는 3.2형 약 103.7만 도트, Q7은 3.0형 약 46만 도트다. 이 수치는 표시 자원·레이아웃·입력 매핑을 따로 검토해야 하는 근거다. 도트 수를 framebuffer 해상도나 메모리 포맷으로 환산하지 않았다. <a href="https://www.ricoh-imaging.co.jp/english/products/k-3-3/spec/">K-3 Mark III</a> · <a href="https://www.ricoh-imaging.co.jp/english/products/k-3-2/spec/">K-3 II</a> · <a href="https://www.ricoh-imaging.co.jp/english/products/q7/spec/">Q7</a></p>
-<p>다른 기종의 ISA·RTOS·GUI ABI가 일치하는지는 아직 조사하지 않았다. 이 조건들이 다르면 UI 바이너리의 직접 이식보다 화면 구성과 동작을 대상 기종의 인터페이스에 맞게 재구현하는 방향을 검토해야 한다. 화면 재현, 메뉴 동작 이식, 전체 UI 런타임 이식은 구분해 평가하며 현재 어느 방식의 성공도 보장하지 않는다.</p></main><footer><p>현 단계는 분석이다. 수정 이미지의 빌드·플래시·카메라 실행과 타 기종 이식은 수행하지 않았다.</p><a href="pipeline-report.html">JPEG·ISP 분석 보고서</a></footer></body></html>
+<tr><td class="n">1</td><td>업데이트 파일명에서 실제 검증기로</td><td>파일 열기 → 헤더·기종·버전 검사 → 무결성·서명 판단 → 기록 요청의 조건부 호출 그래프</td></tr>
+<tr><td class="n">1</td><td>원본을 보존하는 패키지 재구성</td><td>변경 없는 round trip의 바이트 일치. 불명 영역과 실패 조건 설명(대체로 확인)</td></tr>
+<tr><td class="n">1</td><td>부팅·복구 의존 관계</td><td>실제 부트 단계·파티션·실패 시 복구 진입 확인. 공개 보드 예제와 기기 경로 구분</td></tr>
+<tr><td class="n">2</td><td>ICONBIN 로더와 자원 포맷</td><td>payload → RAM 슬롯 연결, 경계 검사, 압축·픽셀 포맷·팔레트·투명도를 설명하고 로컬 디코드로 확인</td></tr>
+<tr><td class="n">2</td><td>메뉴와 입력 이벤트 (ScreenManager·TouchPanel·FontManager 문자열)</td><td>화면 상태 → 메뉴 동작 → 공통 속성의 연결, 버튼·다이얼·터치 이벤트 어댑터 목록</td></tr>
+<tr><td class="n">2</td><td>재빌드에 필요한 ABI·도구</td><td>컴파일러 ABI·예외 처리·라이브러리·링커 배치·자원 생성 입력의 확보 여부를 모듈별 판정</td></tr>
+<tr><td class="n">3</td><td>기종별 UI 비교</td><td>각 기종 펌웨어를 분석해 ISA·OS·그리기 API·메모리·입력·자원 포맷 차이표 작성</td></tr>
+</tbody></table></div>
+<p>실제 정상 동작의 판정에는 부팅뿐 아니라 메뉴 입력, 촬영·저장·재생, AF·노출, 전원 전환과 원본 복구 확인이 필요합니다. 이는 후속 단계의 검증 기준이며 이번에 수행한 시험이 아닙니다.</p>
+</section>
+
+<section id="port">
+<h2>K-3 II·Q7 이식 비교의 출발점</h2>
+<p class="takeaway">세 기종은 화면 사양부터 다릅니다. 도트 수는 표시 자원·레이아웃·입력 매핑을 따로 검토해야 하는 근거이며, framebuffer 해상도나 메모리 포맷으로 환산하지 않았습니다.</p>
+<div class="table-wrap"><table class="fit">
+<caption>세 기종의 후면 화면 사양</caption>
+<thead><tr><th>기종</th><th>화면 크기</th><th class="n">도트 수(약)</th><th>터치</th></tr></thead>
+<tbody>
+<tr><th scope="row">K-3 Mark III</th><td>3.2형</td><td class="n">162만</td><td>정전식 터치</td></tr>
+<tr><th scope="row">K-3 II</th><td>3.2형</td><td class="n">103.7만</td><td>없음</td></tr>
+<tr><th scope="row">Q7</th><td>3.0형</td><td class="n">46만</td><td>없음</td></tr>
+</tbody></table></div>
+<p>다른 기종의 ISA·RTOS·GUI 인터페이스가 일치하는지는 아직 조사하지 않았습니다. 이 조건이 다르면, UI 바이너리를 그대로 옮기기보다 화면 구성과 동작을 대상 기종의 인터페이스에 맞게 다시 구현하는 방향을 검토해야 합니다. 화면 재현, 메뉴 동작 이식, 전체 UI 런타임 이식은 구분해 평가하며, 지금은 어느 방식의 성공도 보장하지 않습니다.</p>
+</section>
+
+<section id="refs">
+<h2>근거 파일과 참고 자료</h2>
+<ul class="refs">
+<li><a href="readiness-evidence.json">readiness-evidence.json</a> — UI 자원 접근·업데이트 파일명·Stubby 근거</li>
+<li><a href="deep-evidence.json">deep-evidence.json</a> — 범위 해시·호출 근거</li>
+<li><a href="../evidence.json">evidence.json</a> — 패키지 레코드·해시</li>
+<li><a href="recompiled-integration.html">함수 배치·재패키징</a> · <a href="selective-repack.html">압축 블록 보존 재패키징</a> — 패키지 재구성</li>
+<li>외부 자료: <a href="https://www.ricoh-imaging.co.jp/english/products/oss/">Ricoh 공식 OSS</a> · <a href="https://www.ricoh-imaging.co.jp/english/products/k-3-3/spec/">K-3 Mark III 사양</a> · <a href="https://www.ricoh-imaging.co.jp/english/products/k-3-2/spec/">K-3 II 사양</a> · <a href="https://www.ricoh-imaging.co.jp/english/products/q7/spec/">Q7 사양</a></li>
+</ul>
+</section>
+
+</main>
+</div>
+<!-- chrome:bottom -->
+<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">시작하기 — 이 주제의 문서</h2><ol><li><a href="../index.html">개요</a></li><li><a href="firmware-structure.html">펌웨어 구조와 하드웨어<span>패키지 15개 레코드, SoC 식별, 재현 절차</span></a></li><li><a href="research-program.html">세 기종 연구 본부<span>네 가지 목표의 현재 상태</span></a></li><li><a href="research-roadmap.html" aria-current="page">수정·이식 선행 연구<span>수정 펌웨어 전에 확인할 것</span></a></li><li><a href="../glossary.html">용어집</a></li></ol></nav>
+<nav class="pager" aria-label="이전·다음 문서"><a class="prev" href="research-program.html"><small>← 이전</small>세 기종 연구 본부</a><a class="next" href="../glossary.html"><small>다음 →</small>용어집</a></nav>
+<footer class="sitefoot"><div class="sitefoot-in"><nav aria-label="사이트"><a href="../index.html#map">문서 지도</a><a href="../index.html#levels">검증 수준 읽는 법</a><a href="../glossary.html">용어집</a><a href="research-program.html">세 기종 연구 본부</a><a href="https://github.com/yunhyok/pentax-k3iii-firmware-analysis">GitHub 저장소</a></nav><p>PENTAX K-3 Mark III 펌웨어 2.20 분석 문서. PC에서 수행한 정적 분석과 에뮬레이션 결과이며, 카메라 실기에서 검증한 내용이 아닙니다. 원본 펌웨어와 추출한 독점 코드는 포함하지 않습니다.</p></div></footer>
+<!-- /chrome:bottom -->
+</body>
+</html>

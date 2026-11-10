@@ -1,173 +1,270 @@
-<!DOCTYPE html>
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PENTAX K-3 Mark III 펌웨어 연구 — 개요</title>
+<meta name="description" content="PENTAX K-3 Mark III 펌웨어 2.20을 분석한 연구 기록의 입구입니다. 펌웨어 안에 무엇이 들어 있는지, 네 가지 연구 목표가 어디까지 왔는지, 각 결과를 얼마나 믿을 수 있는지 안내합니다.">
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body data-camera="k3iii">
+<!-- chrome:top -->
+<a class="skip" href="#main">본문 바로가기</a>
+<div class="topbar"><div class="topbar-in"><a class="brand" href="index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="index.html" aria-current="true">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="https://yunhyok.github.io/pentax-q7-firmware-analysis/">Q7</a></div><nav class="topnav" aria-label="주제"><a href="index.html" aria-current="true">개요</a><a href="analysis/guide-boot.html">부팅·저장소</a><a href="analysis/guide-update.html">업데이트</a><a href="analysis/guide-rebuild.html">재구축</a><a href="analysis/guide-rtos.html">명령·셸</a><a href="analysis/guide-color.html">색 처리</a><a href="analysis/lightroom-bridge.html">Lightroom</a><a href="analysis/af-foundations.html">AF</a><a href="analysis/ui-port-contract.html">UI</a></nav></div></div>
+<nav class="crumbs" aria-label="현재 위치"><ol><li><a href="index.html">PENTAX K-3 Mark III</a></li></ol></nav>
+<!-- /chrome:top -->
+<header class="hero">
+<div>
+<p class="eyebrow">PENTAX K-3 Mark III · 펌웨어 2.20</p>
+<h1>K-3 Mark III 펌웨어 안을 들여다본 기록</h1>
+<p class="lead">리코가 배포한 펌웨어 파일 하나를 풀어, 카메라가 어떻게 부팅하고 사진의 색을 만들고 초점을 맞추고 메뉴를 그리는지 코드 수준에서 추적했습니다. 무엇을 알아냈고 무엇은 아직 모르는지 근거와 함께 적었습니다.</p>
+<div class="notice">
+<p><strong>먼저 알아 둘 점</strong></p>
+<p>모든 분석은 PC에서 했습니다. 수정한 펌웨어를 카메라에 설치하거나 실행한 적이 없습니다. 이 저장소에는 카메라에 넣을 수 있는 펌웨어가 없으며, 원본 펌웨어와 제조사 코드도 들어 있지 않습니다.</p>
+</div>
+</div>
+<figure class="photo">
+<img src="assets/photos/pentax-k3iii.jpg" alt="렌즈를 장착한 검은색 PENTAX K-3 Mark III를 정면에서 본 모습" width="1200" height="1200">
+<figcaption><span class="credit">사진: © Jörgens.Mi/Wikipedia, <a href="https://creativecommons.org/licenses/by-sa/3.0/">CC BY-SA 3.0</a>, <a href="https://commons.wikimedia.org/wiki/File:Pentax_K3III_jm136770_ji.jpg">Wikimedia Commons</a> (크기 축소)</span></figcaption>
+</figure>
+</header>
 
-<html lang="ko"><head><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/><title>PENTAX K-3 Mark III v2.20 펌웨어 분석</title><style>
-:root{color-scheme:light dark;--bg:#f7f8fa;--paper:#fff;--ink:#182332;--muted:#48596b;--line:#d2dbe5;--accent:#124b8e;--soft:#edf3fa;--focus:#d75f00}
-@media(prefers-color-scheme:dark){:root{--bg:#111821;--paper:#18222d;--ink:#e8edf4;--muted:#b4c2d2;--line:#405369;--accent:#98c8ff;--soft:#223348;--focus:#ffb374}}
-*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.85 system-ui,-apple-system,"Malgun Gothic",sans-serif;word-break:keep-all;overflow-wrap:anywhere}
-a{color:var(--accent);text-underline-offset:.18em}a:hover{text-decoration-thickness:2px}:focus-visible{outline:3px solid var(--focus);outline-offset:4px}
-header,main,footer{max-width:1120px;margin:auto;padding:36px clamp(18px,4vw,56px)}header{padding-top:56px;padding-bottom:24px}main{background:var(--paper);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
-.eyebrow{color:var(--muted);font-size:.84rem;letter-spacing:.06em}h1{font-size:clamp(1.85rem,4.5vw,3rem);line-height:1.35;letter-spacing:-.025em;margin:12px 0 18px}h2{font-size:1.5rem;line-height:1.5;margin:3.6rem 0 1rem;padding-top:1.2rem;border-top:1px solid var(--line)}h2:first-child{margin-top:0}h3{font-size:1.12rem;margin-top:2rem}p{margin:1rem 0}strong{font-weight:650}.intro{max-width:55em;color:var(--muted)}
-nav{margin-top:25px}nav ul{display:flex;flex-wrap:wrap;gap:8px 22px;list-style:none;padding:0;margin:0}nav ul ul{display:none}nav a{font-size:.9rem}code{font: .88em/1.6 ui-monospace,Consolas,monospace;overflow-wrap:anywhere}pre{background:var(--soft);padding:18px;overflow-x:auto;white-space:pre-wrap;border-radius:5px}pre code{font-size:.82rem}
-.table-scroll{overflow-x:auto;margin:24px 0}table{border-collapse:collapse;width:100%;font-size:.92rem;min-width:530px}th,td{text-align:left;vertical-align:top;padding:14px 16px;border-bottom:1px solid var(--line)}th{background:var(--soft);font-weight:650}td:first-child{min-width:125px}details{border-block:1px solid var(--line);margin-top:24px;padding:16px 0}summary{cursor:pointer;font-weight:650;padding:6px 0}.caption,.meta{font-size:.86rem;color:var(--muted)}
-figure{margin:32px 0;padding:24px 0;border-block:1px solid var(--line)}figcaption{font-size:.95rem;font-weight:650;margin-bottom:20px}.flow{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:32px;list-style:none;padding:0;margin:18px 0}.flow li{position:relative;padding:18px;background:var(--soft);border-radius:6px;line-height:1.6}.flow strong{display:block;font-size:1rem}.flow span{display:block;color:var(--muted);font-size:.86rem;margin-top:9px}.flow li:not(:last-child)::after{content:"→";position:absolute;right:-27px;top:40%;font-size:22px;color:var(--muted)}.second{margin-top:24px}footer{font-size:.88rem;color:var(--muted)}
-@media(max-width:620px){body{font-size:16px}header,main,footer{padding-inline:20px}.flow{grid-template-columns:1fr;gap:26px}.flow li:not(:last-child)::after{content:"↓";right:auto;left:calc(50% - 8px);top:auto;bottom:-28px}.flow li{padding:15px 18px}h2{font-size:1.3rem}nav ul{gap:10px 18px}table{font-size:.87rem}th,td{padding:12px}header{padding-top:30px}}
-@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
-@media print{body{background:white;color:black;font-size:10pt}header,main,footer{max-width:none;padding:12pt}nav{display:none}a{color:inherit}h2,figure,table{break-inside:avoid}h2{break-after:avoid}main{border:0}.flow li{background:#f1f3f5}.table-scroll{overflow:visible}table{min-width:0}details>*{display:block!important}}
+<main class="home" id="main">
 
-.site-nav{border-block:1px solid var(--line);padding:14px 0;margin:20px 0}.site-nav a{display:inline-block;margin:4px 16px 4px 0}
-.review-note{background:var(--soft);padding:16px 20px;margin:24px 0}.toc{font-size:.92rem}.toc ul{list-style:none;padding-left:0}.toc ul ul{padding-left:20px}
-.branch{margin:18px 0;padding:0 0 0 24px;border-left:3px solid var(--line)}.branch p{margin:8px 0}.diagram-line{padding:12px 16px;background:var(--soft);border-radius:4px}
-</style></head>
-<body><header><div class="eyebrow">PENTAX K-3 MARK III · FIRMWARE 2.20 · 2026-11-08</div><h1>PENTAX K-3 Mark III v2.20 펌웨어 분석</h1><nav aria-label="분석 문서" class="site-nav"><a href="analysis/shell-backup-path.html">SD 셸 입력·보정 백업</a><a href="analysis/research-program.html">세 기종 연구 본부</a><a href="analysis/lightroom-bridge.html">DCP 생성·검증</a><a href="analysis/recompiled-kernels.html">독립 ARM 재컴파일</a><a href="analysis/raw-test-inputs.html">RAW 시험 자료</a><a aria-current="page" href="index.html">개요·재현</a><a href="analysis/index.html">RTOS 957개</a><a href="analysis/dispatch-af.html">셔터·AF</a><a href="analysis/color-lightroom.html">컬러모드·Lightroom</a><a href="analysis/color-algorithms.html">색 처리 수식</a><a href="analysis/pipeline-report.html">JPEG·ISP 최신 분석</a><a href="analysis/research-roadmap.html">수정·이식 선행 연구</a><a href="analysis/update-resources.html">업데이트·리소스</a><a href="analysis/startup-storage.html">메시지·저장소·BOOT</a></nav>
-<p class="review-note">펌웨어 구조, 확보한 소스와 재현 절차를 정리한 진입 문서다. 세부 단계의 누적 수치는 해당 조사 범위를 뜻하며 최신 결과는 JPEG·ISP 보고서에서 구분해 제시한다.</p><details><summary>이 문서의 목차</summary><div class="toc">
+<section class="band wrap" id="goals">
+<h2>이 연구가 답하려는 네 가지 질문</h2>
+<p class="sub">세 기종(K-3 Mark III, K-3 II, Q7)을 같은 질문으로 조사하고 있습니다. 아래는 K-3 Mark III에서 지금까지 온 지점입니다. 세 기종을 나란히 비교한 표는 <a href="analysis/research-program.html">세 기종 연구 본부</a>에 있습니다.</p>
+<ul class="cards wide">
+<li class="card goal">
+<span class="tag">목표 1</span>
+<h3><a href="analysis/guide-rebuild.html">펌웨어를 고쳐서 다시 만들 수 있는가</a></h3>
+<p class="state">파일을 다시 만드는 단계까지 확인</p>
+<dl>
+<dt>알아낸 것</dt><dd>아무것도 바꾸지 않고 다시 포장하면 배포본과 바이트까지 같습니다. 색 행렬 함수 하나를 C로 다시 짜서 넣은 후보 파일은 원본 코드의 헤더·체크섬 검사를 통과했습니다.</dd>
+<dt>아직 모르는 것</dt><dd>카메라가 이 파일을 업데이트로 받아들이는지, 부팅하는지. 부팅 단계의 인증 여부.</dd>
+</dl>
+</li>
+<li class="card goal">
+<span class="tag">목표 2</span>
+<h3><a href="analysis/lightroom-bridge.html">Lightroom에서 카메라의 색을 낼 수 있는가</a></h3>
+<p class="state">시험 프로파일을 실제 Lightroom에 적용</p>
+<dl>
+<dt>알아낸 것</dt><dd>카메라 안에서 색 모드에 따라 행렬과 감마가 어떻게 달라지는지 추적했습니다. 시험용 색 프로파일(DCP)을 만들어 Lightroom Classic에서 실제 TIFF를 내보냈습니다.</dd>
+<dt>아직 모르는 것</dt><dd>카메라 JPEG와 얼마나 가까운지. 색 차이를 잰 것은 K-3 II의 RAW 한 장뿐입니다.</dd>
+</dl>
+</li>
+<li class="card goal">
+<span class="tag">목표 3</span>
+<h3><a href="analysis/af-foundations.html">AF 동작을 바꿀 수 있는가</a></h3>
+<p class="state">제어 코드를 읽는 기초 단계</p>
+<dl>
+<dt>알아낸 것</dt><dd>AF 계산의 기본 연산, 렌즈가 알려 주는 능력에 따라 구동 방식을 고르는 분기, AF 요청이 큐를 거쳐 완료 통지로 이어지는 흐름을 원본 코드로 확인했습니다.</dd>
+<dt>아직 모르는 것</dt><dd>실제 렌즈와의 통신, 모터 이동, 초점 정확도. 코드를 바꿔 본 적은 없습니다.</dd>
+</dl>
+</li>
+<li class="card goal">
+<span class="tag">목표 4</span>
+<h3><a href="analysis/ui-port-contract.html">이 카메라의 화면을 다른 기종에 옮길 수 있는가</a></h3>
+<p class="state">첫 대상 화면을 분석한 단계</p>
+<dl>
+<dt>알아낸 것</dt><dd>색공간 선택 화면의 선택·확정·취소와 방향 입력 처리, 아이콘 자원의 저장 형식을 확인했습니다.</dd>
+<dt>아직 모르는 것</dt><dd>실제 버튼 입력에서 LCD 출력까지의 연결. 다른 기종으로 옮기는 작업은 시작하지 않았습니다.</dd>
+</dl>
+</li>
+</ul>
+</section>
+
+<section class="band wrap" id="inside">
+<h2>펌웨어 파일 안에 든 것</h2>
+<p class="sub">배포 파일 <code>fwdc233b.bin</code>은 압축되어 있습니다. 풀면 이름이 붙은 덩어리(레코드) 15개가 차례로 나옵니다. 아래 막대는 압축을 푼 뒤의 크기 비율입니다.</p>
+<ul class="facts">
+<li><b>35,106,716바이트</b><span>배포 파일 크기</span></li>
+<li><b>78,683,892바이트</b><span>압축을 푼 크기 (3,202블록)</span></li>
+<li><b>15개</b><span>이름이 붙은 레코드</span></li>
+<li><b>957개</b><span>RTOS 셸 명령</span></li>
+<li><b>Cortex-A7</b><span>Linux 장치 트리에 적힌 CPU</span></li>
+</ul>
+
+<figure class="diagram">
+<figcaption>압축을 푼 펌웨어의 구성 (크기 비례)</figcaption>
+<div class="dg-scroll">
+<svg class="dg" viewBox="0 0 800 250" role="img" aria-labelledby="dg-pack-title dg-pack-desc">
+<title id="dg-pack-title">압축을 푼 K-3 Mark III 펌웨어의 레코드 배치</title>
+<desc id="dg-pack-desc">78,683,892바이트를 가로 막대 하나로 나타냈습니다. 앞에서부터 설정 값과 초기 부팅 코드 M0·BOOT가 아주 작게 있고, 이어서 RTOS 약 25.5메가바이트, DSP 약 4.2메가바이트, LINUX 약 3.1메가바이트, INITFS 약 14.5메가바이트, 작은 레코드 SRIC·CPU·SHELLCMD, ICONBIN 약 26.2메가바이트, 마지막으로 용도를 해석하지 못한 약 4.8메가바이트가 있습니다.</desc>
+<rect class="b mute" x="8" y="60" width="2" height="74"/>
+<rect class="b key" x="10" y="60" width="254" height="74"/>
+<text class="t mid" x="137" y="92">RTOS</text>
+<text class="s mid" x="137" y="113">약 25.5MB · 카메라 본체 프로그램</text>
+<rect class="b" x="264" y="60" width="42" height="74"/>
+<rect class="b" x="306" y="60" width="30" height="74"/>
+<rect class="b" x="336" y="60" width="144" height="74"/>
+<text class="t mid" x="408" y="92">INITFS</text>
+<text class="s mid" x="408" y="113">약 14.5MB</text>
+<rect class="b mute" x="480" y="60" width="3" height="74"/>
+<rect class="b" x="483" y="60" width="261" height="74"/>
+<text class="t mid" x="613" y="92">ICONBIN</text>
+<text class="s mid" x="613" y="113">약 26.2MB · 화면 아이콘</text>
+<rect class="b open" x="744" y="60" width="48" height="74"/>
+
+<path class="e" d="M9 60V40"/>
+<text class="n" x="8" y="30">설정 값 · M0 · BOOT (초기 부팅 코드, 합쳐서 약 0.1MB)</text>
+<path class="e" d="M481 60V40"/>
+<text class="n" x="440" y="30">SRIC · CPU · SHELLCMD (명령 표)</text>
+
+<path class="e" d="M285 134V160"/>
+<text class="n mid" x="285" y="176">DSP</text>
+<text class="n mid" x="285" y="192">약 4.2MB</text>
+<text class="n mid" x="285" y="208">용도 미확인</text>
+<path class="e" d="M321 134V222H340"/>
+<text class="n" x="344" y="226">LINUX 약 3.1MB · 부트 코드(Stubby), 커널, 장치 트리</text>
+<path class="e" d="M408 134V160"/>
+<text class="n mid" x="424" y="176">Linux 초기 파일시스템</text>
+<path class="e" d="M768 134V160"/>
+<text class="n end" x="792" y="176">해석하지 못한 영역</text>
+<text class="n end" x="792" y="192">약 4.8MB</text>
+</svg>
+</div>
+<ul class="dg-legend"><li><i class="key"></i>이 연구가 가장 많이 다룬 부분</li><li><i></i>구조를 확인한 레코드</li><li><i class="open"></i>용도를 확인하지 못한 영역</li></ul>
+</figure>
+
+<div class="two">
+<div class="panel">
+<h3>카메라 안의 두 운영체제</h3>
+<p>이 카메라의 주 프로세서에서는 프로그램 두 벌이 함께 돕니다. 사진을 찍는 일은 <dfn title="정해진 시간 안에 반응해야 하는 기기를 위한 작은 운영체제">RTOS</dfn>가, 통신은 Linux가 맡는 구조로 읽힙니다.</p>
 <ul>
-<li><a href="#확보한-코드">확보한 코드</a></li>
-<li><a href="#대상-파일과-내부-구조">대상 파일과 내부 구조</a></li>
-<li><a href="#어떤-칩을-대상으로-빌드했는가">어떤 칩을 대상으로 빌드했는가</a></li>
-<li><a href="#실제-코드와-대조한-동작">실제 코드와 대조한 동작</a></li>
-<li><a href="#재현">재현</a></li>
+<li><strong>RTOS</strong> — 촬영, AF, 영상 처리, 메뉴. 이 연구의 대부분이 여기를 다룹니다.</li>
+<li><strong>Linux</strong> — 시작 스크립트에 무선 드라이버, USB·MTP, 네트워크·블루투스, 웹 API 서비스를 띄우는 순서가 적혀 있습니다.</li>
+<li><strong>M0 · BOOT</strong> — 전원이 켜진 직후 저장소와 메모리를 준비하고 RTOS를 올리는 초기 단계입니다.</li>
+</ul>
+<p class="small muted">Linux 쪽은 파일에 적힌 내용을 읽은 것이며, 실제 부팅 로그를 수집한 것은 아닙니다.</p>
+</div>
+<div class="panel">
+<h3>어떤 칩인가</h3>
+<p>Linux 장치 트리에는 <code>milbeaut,sc2000a</code>와 <code>arm,cortex-a7</code>이 적혀 있습니다. Socionext의 영상 처리용 칩 Milbeaut SC2000A 계열을 대상으로 만든 펌웨어라는 직접 증거입니다. 리코는 이 카메라의 영상 엔진을 PRIME V라고 부릅니다.</p>
+<p class="small muted">실제 기판에 붙은 칩의 각인, 동작 클럭, 별도 가속 장치의 부품 번호는 확인하지 못했습니다.</p>
+<p><a href="analysis/firmware-structure.html">펌웨어 구조와 하드웨어 자세히 보기 →</a></p>
+</div>
+</div>
+</section>
+
+<section class="band wrap" id="levels">
+<h2>검증 수준 읽는 법</h2>
+<p class="sub">모든 문서는 결과마다 “얼마나 확실한가”를 같은 네 가지 표시로 구분합니다. 표시가 다르면 믿을 수 있는 정도가 다릅니다.</p>
+<ul class="legend">
+<li><span class="badge ok">확인</span>
+<p>원본 펌웨어의 기계어를 PC의 CPU 에뮬레이터에서 실제로 실행해 관측했거나, 파일의 바이트를 직접 읽어 구조와 해시를 대조한 결과입니다.</p></li>
+<li><span class="badge static">정적 분석</span>
+<p>코드를 실행하지 않고, 기계어를 사람이 읽을 수 있게 바꾼 결과를 읽어서 판단한 내용입니다.</p></li>
+<li><span class="badge model">모델</span>
+<p>하드웨어의 응답이나 입력 데이터처럼, 실물 대신 연구자가 정해서 넣은 값입니다. 그 조건에서만 성립합니다.</p></li>
+<li><span class="badge open">미확인</span>
+<p>아직 확인하지 못했거나, 실물 카메라가 있어야 확인할 수 있는 내용입니다.</p></li>
+</ul>
+
+<figure class="diagram">
+<figcaption>이 연구에서 “확인했다”는 말의 뜻</figcaption>
+<div class="dg-scroll">
+<svg class="dg" viewBox="0 0 800 188" role="img" aria-labelledby="dg-levels-title dg-levels-desc">
+<title id="dg-levels-title">원본 코드를 에뮬레이터에서 실행해 확인하는 절차</title>
+<desc id="dg-levels-desc">펌웨어에서 꺼낸 원본 기계어를 PC의 CPU 에뮬레이터에 올리고, 카메라의 하드웨어 대신 연구자가 만든 입력과 응답을 넣어 실행합니다. 그 결과로 메모리와 레지스터에 쓰인 값을 관측해 기록합니다. 실물 카메라에서의 동작은 이 절차 밖에 있어 확인되지 않은 채로 남습니다.</desc>
+<defs>
+<marker id="dg-levels-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0 0L10 5L0 10z"/></marker>
+<marker id="dg-levels-am" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah model" d="M0 0L10 5L0 10z"/></marker>
+</defs>
+<rect class="b" x="8" y="20" width="170" height="64" rx="8"/>
+<text class="t" x="20" y="46">원본 기계어</text>
+<text class="s" x="20" y="67">펌웨어에서 꺼낸 그대로</text>
+<rect class="b model" x="8" y="112" width="170" height="64" rx="8"/>
+<text class="t" x="20" y="138">만든 입력과 응답</text>
+<text class="s" x="20" y="159">센서·저장장치를 대신함</text>
+<rect class="b key" x="232" y="56" width="176" height="84" rx="8"/>
+<text class="t" x="244" y="86">PC의 CPU 에뮬레이터</text>
+<text class="s" x="244" y="107">원본 명령을 한 줄씩 실행</text>
+<text class="s" x="244" y="125">(Unicorn, angr)</text>
+<rect class="b ok" x="462" y="56" width="150" height="84" rx="8"/>
+<text class="t" x="474" y="86">관측한 결과</text>
+<text class="s" x="474" y="107">메모리·레지스터에</text>
+<text class="s" x="474" y="125">쓰인 값</text>
+<rect class="b open" x="666" y="56" width="126" height="84" rx="8"/>
+<text class="t" x="678" y="86">실물 카메라</text>
+<text class="s" x="678" y="107">여기서는</text>
+<text class="s" x="678" y="125">실행하지 않음</text>
+<path class="e" d="M178 52H204V84H230" marker-end="url(#dg-levels-ah)"/>
+<path class="e model" d="M178 144H204V112H230" marker-end="url(#dg-levels-am)"/>
+<path class="e" d="M408 98H460" marker-end="url(#dg-levels-ah)"/>
+<path class="e open" d="M612 98H664"/>
+</svg>
+</div>
+<ul class="dg-legend"><li><i class="ok"></i>확인</li><li><i class="model"></i>모델</li><li><i class="open"></i>미확인</li></ul>
+</figure>
+<p class="wrap-note small muted">Lightroom 색 프로파일 실험만은 성격이 다릅니다. 실제 RAW 파일을 실제 Adobe Lightroom Classic에 넣어 얻은 측정값입니다. 다만 그것도 Lightroom의 출력을 잰 것이지 카메라 안의 처리를 잰 것은 아닙니다.</p>
+</section>
+
+<section class="band wrap" id="map">
+<h2>문서 지도</h2>
+<p class="sub">주제마다 “안내” 문서가 먼저 있습니다. 안내 문서에서 전체 그림을 본 뒤 세부 문서로 들어가면 읽기 쉽습니다. 낯선 용어는 <a href="glossary.html">용어집</a>에서 찾을 수 있습니다.</p>
+<!-- chrome:map -->
+<div class="sitemap"><section><h3 id="map-start">시작하기</h3><ol><li><a href="analysis/firmware-structure.html">펌웨어 구조와 하드웨어</a><span>패키지 15개 레코드, SoC 식별, 재현 절차</span></li><li><a href="analysis/research-program.html">세 기종 연구 본부</a><span>네 가지 목표의 현재 상태</span></li><li><a href="analysis/research-roadmap.html">수정·이식 선행 연구</a><span>수정 펌웨어 전에 확인할 것</span></li><li><a href="glossary.html">용어집</a></li></ol></section><section><h3 id="map-boot">부팅과 저장소</h3><ol><li><a href="analysis/guide-boot.html">부팅과 저장소 안내</a></li><li><a href="analysis/startup-storage.html">M0 reset·SRAM remap·bank</a><span>초기화 사슬과 저장소 bank</span></li><li><a href="analysis/m0-board-config.html">M0 보드 설정</a><span>상수 기록과 SRAM remap의 경계</span></li><li><a href="analysis/m0-diagnostic-serial.html">M0 진단 직렬 출력</a><span>분주식과 문자 출력</span></li><li><a href="analysis/stubby-load-auth.html">Stubby 적재와 인증 경계</a><span>Linux 부트로더의 파일 조건</span></li><li><a href="analysis/header-alias-consumer.html">부트 헤더와 파티션 표</a><span>+4 저장 후보의 실제 대상</span></li></ol></section><section><h3 id="map-update">펌웨어 업데이트 과정</h3><ol><li><a href="analysis/guide-update.html">업데이트 과정 안내</a></li><li><a href="analysis/update-resources.html">업데이트 검사와 ICONBIN</a><span>프로젝트·버전·체크섬</span></li><li><a href="analysis/update-memory.html">입력 로더와 메모리 할당</a></li><li><a href="analysis/update-file-lifetimes.html">파일 인터페이스와 버퍼 수명</a></li><li><a href="analysis/update-volume-finalization.html">파일 경로·volume·종료 처리</a></li><li><a href="analysis/update-media-completion.html">매체 객체와 완료 통지</a></li><li><a href="analysis/update-partition-io.html">R 파티션과 sector I/O</a></li><li><a href="analysis/update-bank-selection.html">쓰기 bank와 BOOT 선택</a></li><li><a href="analysis/update-ui-consumer.html">완료 후 UI 작업</a></li><li><a href="analysis/update-ui-timer.html">UI 타이머와 콜백</a></li><li><a href="analysis/update-timer-abi.html">커널 호출과 예약 시각</a></li><li><a href="analysis/update-timer-clock.html">타이머 설정과 64비트 카운터</a></li><li><a href="analysis/update-subtick-arithmetic.html">하위 시간의 32비트 산술</a></li><li><a href="analysis/update-timer-irq.html">타이머 등록과 지연 콜백</a></li><li><a href="analysis/update-clock-readers.html">시각 조회 함수</a></li><li><a href="analysis/update-timer-insertion.html">기한 큐 삽입</a></li></ol></section><section><h3 id="map-rebuild">펌웨어 재구축</h3><ol><li><a href="analysis/guide-rebuild.html">재구축 안내</a></li><li><a href="analysis/recompiled-kernels.html">수치 함수 C 재구현</a><span>SAD·SSD와 Q13 행렬 곱</span></li><li><a href="analysis/recompiled-integration.html">재컴파일 함수 배치·재패키징</a></li><li><a href="analysis/selective-repack.html">압축 블록을 보존한 재패키징</a></li></ol></section><section><h3 id="map-rtos">RTOS 명령과 셸</h3><ol><li><a href="analysis/guide-rtos.html">RTOS 명령 안내</a></li><li><a href="analysis/index.html">RTOS 명령 957개</a><span>분류와 호출 관계</span></li><li><a href="analysis/dispatch-af.html">디스패처·셔터·AF 상관 연산</a></li><li><a href="analysis/shell-backup-path.html">SD 셸 입력과 보정 백업</a></li></ol></section><section><h3 id="map-color">카메라 내부 색 처리</h3><ol><li><a href="analysis/guide-color.html">색 처리 안내</a></li><li><a href="analysis/pipeline-report.html">JPEG·ISP와 색 재현 경로</a></li><li><a href="analysis/color-algorithms.html">색 처리 알고리즘</a><span>행렬·감마·톤</span></li><li><a href="analysis/color-lightroom.html">컬러모드 자원과 Lightroom</a></li><li><a href="analysis/color-mode-boundaries.html">색 모드별 행렬·감마 조건</a></li></ol></section><section><h3 id="map-lightroom">Lightroom 색 프로파일</h3><ol><li><a href="analysis/lightroom-bridge.html">DCP 생성·검증 개요</a></li><li><a href="analysis/raw-test-inputs.html">시험용 RAW 준비</a></li><li><a href="analysis/color-comparison-protocol.html">ColorChecker 비교 절차</a></li><li><a href="analysis/lightroom-render-comparison.html">실제 TIFF 6개 비교</a></li><li><a href="analysis/lightroom-tone-comparison.html">톤 곡선 비교</a></li><li><a href="analysis/lightroom-model-exports.html">K-3 III·Q7 DCP 내보내기</a></li><li><a href="analysis/lightroom-profile-fingerprints.html">프로파일 지문 재현</a></li><li><a href="analysis/lightroom-look-controls.html">LookTable 대조 실험</a></li></ol></section><section><h3 id="map-af">AF와 렌즈 제어</h3><ol><li><a href="analysis/af-foundations.html">세 기종 AF 기초 비교</a></li><li><a href="analysis/af-drive-architecture.html">렌즈 구동 선택·명령·응답</a></li><li><a href="analysis/af-request-consumer.html">AF 요청 큐와 완료 통지</a></li></ol></section><section><h3 id="map-ui">UI와 화면 자원</h3><ol><li><a href="analysis/ui-port-contract.html">UI 이식 설계</a></li><li><a href="analysis/colorspace-ui.html">색공간 화면: 선택·확정·취소</a></li><li><a href="analysis/colorspace-ui-input.html">색공간 화면: 방향 입력·포커스</a></li><li><a href="analysis/icon-resources.html">ICONBIN 아이콘 자원</a></li></ol></section></div>
+<!-- /chrome:map -->
+</section>
+
+<section class="band wrap" id="reproduce">
+<h2>직접 확인해 보려면</h2>
+<div class="two">
+<div class="panel">
+<h3>펌웨어 없이</h3>
+<p>공개된 근거 파일과 도구가 서로 맞는지 검사합니다. Python 3.12와 아래 패키지가 필요합니다.</p>
+<pre><code>python -m pip install unicorn==2.1.4 numpy==1.26.4 Pillow==10.4.0 \
+  tifffile==2023.4.12 opencv-python-headless==4.11.0.86 scikit-image==0.24.0
+python inspect_firmware.py --self-test
+python verify_findings.py --self-test
+python inspect_adobe_profiles.py --self-test
+python -m unittest discover -s tests -v
+python tools/check_research_program.py
+python tools/check_site.py</code></pre>
+</div>
+<div class="panel">
+<h3>펌웨어 파일을 가지고</h3>
+<p>리코 공식 사이트에서 받은 <code>fwdc233b.bin</code>(SHA-256이 아래와 같은 파일)이 있으면 압축 해제부터 다시 해 볼 수 있습니다.</p>
+<pre><code>python inspect_firmware.py fwdc233b.bin --output-dir .private/my-decode
+python verify_findings.py .private/my-decode/decoded.bin</code></pre>
+<p class="small"><code class="wrap">3c9d466b8160689867af2f58ff2cf0bf3363bc3b42daff43685a33171b91eb1a</code></p>
+<p class="small muted">문서마다 “재현 방법” 절에 그 문서의 검증 명령이 있습니다. 전체 절차는 <a href="analysis/firmware-structure.html#reproduce">펌웨어 구조와 하드웨어</a>에 있습니다.</p>
+</div>
+</div>
+</section>
+
+<section class="band wrap" id="scope">
+<h2>공개 범위</h2>
+<div class="two">
+<div class="panel">
+<h3>이 저장소에 있는 것</h3>
+<ul>
+<li>분석 문서(HTML)와 측정 결과(JSON)</li>
+<li>직접 작성한 분석·검증 도구(Python)와 테스트</li>
+<li>직접 작성한 재구성 C 코드</li>
+<li>재배포 조건을 확인한 공개 소스 사본 (<code>source/</code>의 스크립트 두 개와 UART 드라이버)</li>
+<li>사진 한 장 (<a href="assets/photos/CREDITS.md">출처와 라이선스</a>)</li>
 </ul>
 </div>
-</details></header><main>
-<section class="review-note" id="hq-implementation-followup"><h2>재구축·색 프로파일·AF·UI 통합 연구</h2>
-<p>재컴파일한 색 행렬 함수를 원본 위치에 넣고 다시 포장했다. 원본 압축 블록을 보존한 후보는 35,136,788바이트이며, 별도 디코더와 원본 ARM의 헤더·체크섬 검사를 통과했다. 카메라의 업데이트 수용·부팅·촬영은 아직 확인하지 않았다.</p>
-<p><a href="analysis/m0-board-config.html">M0 보드 설정</a>에서는 여섯 본체의 상수 기록과 고정 반복문을 분석했다. <a href="analysis/m0-diagnostic-serial.html">M0 진단 직렬 출력</a>에서는 상태 분기·분주식·CR/LF 출력과 공식 USIO 소스를 대조했다. 원본 CPU 시험은 각각 4·8사례이며, 물리 SRAM 매핑과 선행 ROM 인증은 미확정이다.</p>
-<p><a href="analysis/recompiled-integration.html">함수 배치·호출 검증</a> · <a href="analysis/selective-repack.html">압축 블록 보존</a> · <a href="analysis/update-memory.html">입력·버퍼 할당</a> · <a href="analysis/update-file-lifetimes.html">파일 인터페이스·버퍼 수명</a> · <a href="analysis/update-volume-finalization.html">파일 경로·volume·종료 처리</a> · <a href="analysis/update-media-completion.html">매체 객체·완료 통지</a> · <a href="analysis/update-partition-io.html">R 파티션·sector I/O</a> · <a href="analysis/header-alias-consumer.html">부트 헤더 출력·파티션 표</a> · <a href="analysis/update-ui-consumer.html">완료 후 UI 작업</a> · <a href="analysis/update-ui-timer.html">UI 타이머·콜백</a> · <a href="analysis/update-timer-abi.html">커널 시각 계산</a> · <a href="analysis/update-timer-clock.html">타이머 설정·카운터</a> · <a href="analysis/update-subtick-arithmetic.html">32비트 하위 시간 산술</a> · <a href="analysis/update-timer-irq.html">등록·지연 콜백</a> · <a href="analysis/update-clock-readers.html">시각 조회 출력</a> · <a href="analysis/update-timer-insertion.html">기한 큐 삽입</a> · <a href="analysis/update-bank-selection.html">쓰기 bank·BOOT 선택</a> · <a href="analysis/color-comparison-protocol.html">RAW 색차 비교 절차</a> · <a href="analysis/color-mode-boundaries.html">색 모드별 행렬·감마</a> · <a href="analysis/af-foundations.html">세 기종 AF 기초 비교</a> · <a href="analysis/af-request-consumer.html">AF 요청과 완료 통지</a> · <a href="analysis/ui-port-contract.html">공통 UI 이식 설계</a> · <a href="analysis/colorspace-ui.html">색공간 선택·확정·취소</a> · <a href="analysis/colorspace-ui-input.html">방향 입력·포커스</a></p></section>
-<p><a href="analysis/stubby-load-auth.html">LINUX 내부 Stubby</a>의 파일 길이·DTB 속성·진입 주소 조건을 원본 ARM·Thumb 6사례로 대조했다. 파일 읽기는 명시한 모델이며 실제 kernel 진입 전에 멈춘다. 공개 소스의 서명 지원과 강제 거부 조건도 구분했다.</p>
-<aside class="review-note" id="reset-alias-followup"><strong>최신 추적 · 2026-11-08</strong><p>M0 reset에서 부트 적재 작업 등록·초기 스택을 연결했다. Log의 +4 기록은 별도 로그 상태, SystemControl의 +0x10 기록은 mutex 카운터로 구분했다. 의사코드 22개·합성 검사 106건과 배포 DTB 분석을 추가했으며 SRAM alias와 비제로 bank 생산자는 미확정이다. <a href="analysis/startup-storage.html#m0-reset-chain">reset·remap·alias 검증 결과</a></p></aside><aside class="review-note" id="m0-lower-followup"><strong>앞선 추적 · 2026-11-08</strong><p>M0의 CMD17·CMD18 전송과 SDRAM 5단계 상태 확인을 연결했다. SRAM 주소 대응과 RTOS 비제로 bank 생산자는 미확정이며, 새 의사코드 19개와 합성 검사 62개를 추가했다. <a href="analysis/startup-storage.html#m0-address-map">주소 대응·하위 적재·검증 결과</a></p></aside><aside class="review-note" id="m0-resync-followup"><strong>앞선 추적 · 2026-11-08</strong><p>조정 payload의 +4 저장을 bank 기록과 구분하고, 오류 복구·장치 재초기화에서 선택 캐시가 보존되는 조건을 확인했다. M0의 모드 1·2 기록 경로도 찾았으며 BOOT 주소와의 alias와 선행 인증은 미확정이다. <a href="analysis/startup-storage.html#preboot-mode">M0 분석</a> · <a href="analysis/startup-storage.html#cache-resync">캐시 복구</a></p></aside><aside class="review-note" id="restore-followup"><strong>앞선 추적 · 2026-11-08</strong><p>리소스 record +4를 포함한 전체 테이블 읽기와 partition 0 복귀 실패 뒤의 캐시·오류 전달을 연결했다. 배포 BOOT의 진입점과 마지막 분기도 확인했다. 비제로 객체 bank 생산자와 선행 Boot ROM 인증은 미확정이다. <a href="analysis/startup-storage.html#record-reload">추가 분석·검증</a></p></aside><aside class="review-note" id="startup-followup"><strong>후속 추적 · 2026-11-08</strong><p>메시지 큐의 그룹 등록·송수신 객체를 연결하고 파티션 표 → 부트 헤더 → BOOT 이미지의 기록 순서를 확인했다. BOOT 하위 검사는 SDHCI 호환 전송 상태 처리까지 추적했다. 비제로 bank 생산자와 전체 인증 정책은 미확정이다. <a href="analysis/startup-storage.html">최신 검증 결과</a></p></aside><aside class="review-note" id="update-followup"><strong>2026-11-08 추가 분석</strong><p>업데이트의 프로젝트·버전·체크섬 검사와 ICONBIN 저장소 인덱스 4→슬롯 5 연결을 확인했다. footer 앞 256바이트의 버전 레코드 용도와 LINUX 내부 Stubby의 서명 관련 출력 경로도 대조했다. <a href="analysis/update-resources.html">최신 보고서</a></p></aside><section class="review-note" id="control-followup"><h2>2026-11-07 추가 분석</h2><p>R2y 제어 생산자 8개, 새 ARM fragment 실행 2,048건, WBLV 후보의 반증 근거를 반영했다. UI 리소스 슬롯 5와 업데이트 파일명 생산자를 추가 추적했다.</p><p><a href="analysis/pipeline-report.html#control-producers">제어 생산자·WBLV 결과</a> · <a href="analysis/research-roadmap.html">수정 펌웨어·UI 이식 선행 연구</a></p><details><summary>이번 추가 분석 재현</summary><p>기존 환경의 Unicorn 2.1.4와 Capstone 5.0.7을 사용했다. 두 도구 모두 분석한 원본 RTOS의 SHA-256을 확인한다. 아래 decoded.bin은 사용자가 로컬에서 추출한 파일 경로다.</p><pre><code>python verify_r2y_controls.py decoded.bin --output r2y-control-checks.json
-python verify_wblv_references.py decoded.bin --output wblv-reference-checks.json</code></pre><p>WBLV 도구는 후보 검색을 재현한다. 레지스터 재정의에 따른 후보 탈락은 별도의 원본 명령 검토 결과다.</p></details></section>
-<p><a href="analysis/lightroom-render-comparison.html">K-3 II 표본의 Lightroom 실제 출력 비교</a>에서는 프로파일 3종의 sRGB·ProPhoto RGB TIFF 6개를 같은 RAW의 Natural 내장 JPEG와 대조했다. 24패치 색차, 출력 색공간의 끝점, 현상 조건과 정합 방법을 기록했다. 단일 장면의 비교이며 세 기종의 색 모드 보정 완료를 뜻하지 않는다.</p>
-<p><a href="analysis/lightroom-tone-comparison.html">톤 곡선을 바꾼 실제 출력 5개</a>에서는 곡선 생략·항등·Lift·명시 ACR3를 비교했다. 생략 조건의 재출력은 전체 픽셀이 같았고, 명시 ACR3는 작은 코드 차이가 있었다. SDK 출처와 패치별 수치를 기록했으며 Lightroom 내부 처리의 동일성을 주장하지 않는다.</p>
-<p><a href="analysis/lightroom-model-exports.html">K-3 III와 Q7의 시험 DCP 적용</a>도 실제 Lightroom에서 확인했다. 두 TIFF의 프로파일·ICC·크기와 전체 RGB16 픽셀을 검증했으며, Q7의 크롭은 RAW 기본 영역과 일치했다. 카메라 JPEG와의 색 재현 성능은 별도 검증이 남아 있다.</p>
-<p><a href="analysis/lightroom-profile-fingerprints.html">세 기종 시험 DCP 여섯 개의 프로파일 지문</a>을 Adobe SDK 계산 절차로 재현해 실제 TIFF의 XMP 값과 모두 일치시켰다. 파일 전체 SHA-256은 별도로 대조했으며, 같은 지문이어도 모델 제한이나 파일 바이트는 다를 수 있다.</p>
-<p><a href="analysis/lightroom-look-controls.html">LookTable 항등·채도 대조</a>에서는 K-3 II RAW 한 장의 TIFF 다섯 개를 비교했다. 같은 프로파일의 반복 출력은 픽셀이 같았으며, 표 생략과 항등 표 사이에는 34,099픽셀의 작은 차이가 남았다. 채도 배율 0.8의 효과를 24패치로 측정했으며, 카메라 JPEG의 색 재현 완료를 뜻하지 않는다.</p>
-<p>펌웨어 색 처리 결과는 <strong><a href="analysis/pipeline-report.html">JPEG·ISP와 색 재현 경로 — HTML 보고서</a></strong>에 정리했다. 파일을 내려받아 브라우저에서 열면 다이어그램과 표를 오프라인으로 읽을 수 있다. JPEG 서비스→레지스터→완료 콜백, Custom Image→R2y 행렬·감마·톤 설정, 색공간별 감마와 WB 데이터 흐름을 추적했다. Lightroom 이전 조건과 미해결 연결도 명시했다.</p>
-<p>현재 심층 분석은 <strong>516개 고유 디컴파일 진입점</strong>을 포함한다. 이전 단계에서 WB 결과→B2r gain 레지스터, 색공간 메시지 <code>0x145</code>→수신 처리기→common 버퍼 반영을 연결했다. 입력 M2PCLIP, R2y 상한 후보 필드와 조건부 B2r·R2y 버퍼 공유도 추적했다. WB 260사례, 메시지 1,536사례, ISP 설정 65그룹·450검사, 버퍼 32조건이 원본 ARM 합성 실행에서 통과했다. 실제 픽셀의 클리핑·처리 순서와 카메라 JPEG·Lightroom의 색 일치는 미확정이다. <a href="analysis/pipeline-report.html#verification">검증 범위</a> · <a href="analysis/pipeline-evidence.json">필드·레지스터 근거</a></p>
-<p><strong>이 펌웨어에서 Linux 셸 스크립트 원문을 꺼낼 수 있고, 컴파일된 함수는 기계어에서 동작을 추적할 수 있다.</strong> Linux UART 함수 한 개는 제조사가 배포한 C 소스와 대응시켰다. 촬영·영상처리 RTOS에서는 HDMI 명령 처리기의 흐름을 복원했다. 카메라 전체를 다시 빌드하는 데 필요한 비공개 C/C++ 소스, 원래의 타입·주석·빌드 프로젝트는 확보하지 못했다.</p>
-<p><strong><a href="analysis/index.html">RTOS 명령 957개의 분류와 촬영·AF·영상처리 분석</a></strong>에는 명령별 디컴파일 결과 색인, 호출 관계, 촬영 요청과 측광 덤프의 차이, AF 디포커스 결합 조건, 영상처리 진단용 톤 곡선의 수식과 재현 방법이 있다.</p>
-<p><strong><a href="analysis/dispatch-af.html">디스패처·셔터 GPIO·AF 상관 연산</a></strong>에서는 추가 수신 분기, 조건부 가상 함수 대상과 실제 수치 커널을 추적했다. <strong><a href="analysis/color-lightroom.html">RAW 현상·컬러모드·Lightroom 연구</a></strong>에는 모드별 생산용 리소스와 기존 Adobe Camera Matching 5종을 정리했다.</p>
-<p><strong><a href="analysis/color-algorithms.html">후속 색 처리 알고리즘 분석</a></strong>은 행렬 합성·채도·Hue, Gold/Cross 보간, 일반/Reversal 감마, 자동 ToneControl과 RAW 레시피→Develop→ImageTuning·JPEG 경로를 다룬다. 해당 단계에서는 심층 분석 목록을 기존 115개에서 <strong>162개 고유 디컴파일 진입점</strong>으로 확장했으며 의사코드는 로컬에 저장했다. 행렬 942개, 감마·톤 498개 검사 그룹과 RAW 레시피 246개 항목을 원본 ARM/VEX 실행으로 대조했다. 기존 분석의 <code>ColorReference</code> 표 명칭을 실제 소비자인 <code>YCbCrMatrix</code>로 정정했다. 미해결 하드웨어 연산·상태 전이 및 실기 검증 범위는 각 보고서에 명시했다.</p>
-<p>최근 추적에서는 M2PCLIP 설정 호출자 14곳을 분류하고 R2y의 제어 비트 생산 경로를 추가로 확인했다. 비교식·부호·물리 처리 순서는 미확정이다. 새 의사코드 10개를 로컬에 저장했으며, 공개 재현기는 검색 범위와 주소·해시를 검증한다. <a href="analysis/pipeline-report.html#clip-semantics">최신 클리핑·순서 분석</a> · <a href="analysis/isp-semantics-checks.json">검색 재현 결과</a></p>
-<h2 id="확보한-코드">확보한 코드</h2>
-<div class="table-scroll"><table>
-<thead>
-<tr>
-<th scope="col">파일</th>
-<th scope="col">출처</th>
-<th scope="col">확인한 내용</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><a href="source/update-rc.d">update-rc.d</a></td>
-<td>BIN의 Linux 초기 파일시스템에 들어 있는 스크립트 원문</td>
-<td>시작·종료 런레벨에 맞춰 init 스크립트 링크를 관리한다. 추출한 4,816바이트가 리코 v2.20 OSS 묶음의 <code>update-rc.d-0.7-r5-patched.tar.gz → git/update-rc.d</code>와 일치한다. GPL-2.0-or-later.</td>
-</tr>
-<tr>
-<td><a href="source/run-postinsts">run-postinsts</a></td>
-<td>같은 파일시스템에 들어 있는 스크립트 원문</td>
-<td>패키지 설치 후 처리를 담당하는 템플릿이다. 경로 치환 전 원문 1,773바이트가 OpenEmbedded의 morty 브랜치와 일치한다. MIT. <a href="https://github.com/openembedded/openembedded-core/blob/morty/meta/recipes-devtools/run-postinsts/run-postinsts/run-postinsts">업스트림 소스</a></td>
-</tr>
-<tr>
-<td><a href="source/usio.c">usio.c</a></td>
-<td>리코가 v2.20용으로 배포한 Linux 커널의 <code>drivers/tty/serial/usio.c</code></td>
-<td>SOCIONEXT UART 드라이버. 아래에 실제 BIN과 대조한 함수, 주소, 레지스터 비트를 기록했다. GPL v2.</td>
-</tr>
-</tbody>
-</table></div>
-<p>두 셸 파일의 BIN 내부 경로는 각각 <code>license/update-rc.d/update-rc.d.txt</code>와 <code>license/run-postinsts/run-postinsts.txt</code>다. 두 파일은 배포용 소스 사본이며 카메라 부팅 시 이 경로에서 실행됐다는 증거는 없다. 원저작권 표시와 소스에 적용되는 라이선스를 보존했다. <a href="source/COPYING">GPL</a> · <a href="source/COPYING.MIT">MIT</a></p>
-<p>리코의 같은 버전 OSS 묶음은 195,945,425바이트이며 커널, Stubby 부트로더, BusyBox, glibc, systemd 등 18개 패키지 아카이브가 들어 있다. <code>linux-kernel-1.60.1.tar.gz</code>는 패키지 이름이며, 실제 커널 버전은 <strong>4.4.15</strong>다. 전체 OSS 소스는 제조사에서 받을 수 있다. <a href="https://www.ricoh-imaging.co.jp/english/products/oss/">모델·버전별 목록</a> · <a href="https://www.ricoh-imaging.co.jp/japan/products/oss/k-3-3/K3mkIII_220.tar.gz">K-3 Mark III v2.20 소스 묶음</a></p>
-<h2 id="대상-파일과-내부-구조">대상 파일과 내부 구조</h2>
-<div class="table-scroll"><table>
-<thead>
-<tr>
-<th scope="col">항목</th>
-<th scope="col">실측 결과</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>입력</td>
-<td><code>fwdc233b.bin</code>, 35,106,716바이트</td>
-</tr>
-<tr>
-<td>입력 SHA-256</td>
-<td><code>3c9d466b8160689867af2f58ff2cf0bf3363bc3b42daff43685a33171b91eb1a</code></td>
-</tr>
-<tr>
-<td>패키지 대조</td>
-<td>보유 중인 <code>k3III_v220.zip</code>의 BIN과 SHA-256 일치. ZIP의 나머지 세 파일은 OpenSSL과 ZXing의 라이선스·고지 문서</td>
-</tr>
-<tr>
-<td>빌드·배포</td>
-<td>BIN 헤더의 빌드 시각 2024-10-08 15:31:16 JST. 리코의 v2.20 배포일 2024-10-30</td>
-</tr>
-<tr>
-<td>압축 해제</td>
-<td>BIN의 <code>0x80</code>에서 시작해 3,202개 블록을 해제. 결과 78,683,892바이트. 독립 디코더의 출력과 전체 바이트 일치</td>
-</tr>
-</tbody>
-</table></div>
-<p>디코딩한 스트림 처음부터 이름·종류·길이를 따라가면 15개 레코드가 이어진다. 아래 오프셋은 <strong>압축 해제한 스트림에서 페이로드가 시작하는 위치</strong>다. 15개 레코드 뒤의 4,841,096바이트와 원본 BIN의 압축 스트림 뒤 280바이트는 서로 다른 영역이다. 이 분석에서는 두 영역의 용도를 확정하지 않았다. 전체 레코드의 길이·오프셋·SHA-256 및 REA ZIP 증거 ID는 <a href="evidence.json">측정값</a>에 있다. <a href="https://www.ricoh-imaging.co.jp/english/support/digital/k-3-3.html">공식 펌웨어 안내</a> · <a href="https://github.com/Trimz/Ricoh3x/blob/0ed425ad4e31b336624ba4709dc28962ace2d629/tools/pdec.py">비교에 사용한 디코더</a></p>
-<div class="table-scroll"><table>
-<thead>
-<tr>
-<th scope="col">레코드</th>
-<th scope="col" style="text-align: right;">시작</th>
-<th scope="col" style="text-align: right;">바이트</th>
-<th scope="col">확인한 내용</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>RTOS</td>
-<td style="text-align: right;"><code>0x1C19C</code></td>
-<td style="text-align: right;">25,483,200</td>
-<td>ARM 예외 벡터, 시작 코드, 카메라 명령 처리기</td>
-</tr>
-<tr>
-<td>DSP</td>
-<td style="text-align: right;"><code>0x186996C</code></td>
-<td style="text-align: right;">4,194,304</td>
-<td>DSP 이름의 별도 페이로드. 칩 모델과 알고리즘 미확인</td>
-</tr>
-<tr>
-<td>LINUX</td>
-<td style="text-align: right;"><code>0x1C6997C</code></td>
-<td style="text-align: right;">3,062,784</td>
-<td>부트 코드, 압축 커널, 장치 트리</td>
-</tr>
-<tr>
-<td>INITFS</td>
-<td style="text-align: right;"><code>0x1F5558C</code></td>
-<td style="text-align: right;">14,452,736</td>
-<td>ROMFS 안의 gzip 압축 newc CPIO. 일반 파일 396개 중 20개가 셸 스크립트 형식이며 그중 2개는 라이선스 경로의 소스 사본</td>
-</tr>
-<tr>
-<td>SHELLCMD</td>
-<td style="text-align: right;"><code>0x2D5BDBC</code></td>
-<td style="text-align: right;">61,312</td>
-<td>서로 다른 RTOS 주소를 가리키는 명령 957개와 주소가 0인 종료 표식 1개</td>
-</tr>
-</tbody>
-</table></div>
-<h2 id="어떤-칩을-대상으로-빌드했는가">어떤 칩을 대상으로 빌드했는가</h2>
-<p><code>LINUX + 0x2E3BE0</code>에서 유효한 장치 트리(DTB)의 헤더와 속성을 파싱했다. 루트 <code>compatible</code>에는 <code>milbeaut,sc2000a</code> 및 <code>socionext,milbeaut-evb</code>가 들어 있다. 모델명은 <code>Socionext SC2000A EVB w/ RTOS and NETSEC</code>, Linux에 기술된 CPU 노드는 <code>/cpus/cpu@3</code>이고 호환 문자열은 <code>arm,cortex-a7</code>이다. 커널 내장 설정에도 <code>CONFIG_ARCH_MILBEAUT=y</code>가 있다. <strong>첨부 펌웨어의 Linux가 Socionext Milbeaut SC2000A 계열과 Cortex-A7을 대상으로 한다</strong>는 직접 증거다. <a href="verify_findings.py">검증 코드</a> · <a href="https://devicetree-specification.readthedocs.io/en/stable/flattened-format.html">DTB 포맷</a></p>
-<p>리코는 K-3 II의 영상 엔진을 PRIME III, K-3 Mark III의 영상 엔진과 가속기를 PRIME V 및 2세대 accelerator unit으로 구분한다. Socionext는 SC2000을 Milbeaut M10V 계열의 쿼드 Cortex-A7 제품으로 설명한다. K-3 Mark III 전용 독립 분석도 이 계열을 지목한다. 리코 공개 커널에는 R03010 보드와 GR III 보드의 설정 파일이 함께 있다. 이 자료는 플랫폼 공유의 근거지만, 두 카메라의 펌웨어·보드가 동일하다거나 K-3 II의 모든 하위 시스템이 교체됐다고 판단할 근거는 부족하다. 실장 패키지의 각인, 카메라의 실동작 클럭 및 별도 가속기의 부품번호는 미확인이다. <a href="https://www.ricoh-imaging.co.jp/english/products/k-3-2/feature/05.html">리코 K-3 II</a> · <a href="https://www.ricoh-imaging.co.jp/english/products/k-3-3/feature/02.html">리코 K-3 Mark III</a> · <a href="https://www.socionext.com/en/pr/sn_pr20170105_01e.pdf">Socionext SC2000 사양</a> · <a href="https://ameblo.jp/akinas/entry-12845980402.html">akinas의 K-3 Mark III 분석</a></p>
-<h2 id="실제-코드와-대조한-동작">실제 코드와 대조한 동작</h2>
-<p><strong>Linux UART.</strong> 커널 Image 안의 압축 심볼 테이블(kallsyms)에서 43,829개 심볼을 복원했다. <code>usio_tx_empty</code>는 가상 주소 <code>0x8015FDF0</code>, 압축 해제한 커널 Image 오프셋 <code>0x157DF0</code>에 있다. 다음 심볼까지의 14바이트를 Thumb 명령 5개로 읽으면 UART 레지스터 기준 주소에서 오프셋 3의 바이트를 읽고 비트 0을 반환한다. 이는 송신기의 empty 상태를 반환하는 공개 C 함수와 일치한다. 별도로 <code>usio_ops.tx_empty</code> 포인터 값이 <code>0x8015FDF1</code>임을 확인했다. 하위 1비트는 Thumb 명령 상태를 나타낸다. 커널의 내장 설정은 <code>CONFIG_SERIAL_SN_USIO=y</code>이며 장치 트리에서 UART 인스턴스 <code>0x1E700010</code>은 활성 상태로 기술돼 있다. <a href="source/usio.c#L61-L62">레지스터 정의</a> · <a href="source/usio.c#L266-L270">함수</a> · <a href="source/usio.c#L449-L450">콜백 등록</a></p>
-<p><strong>Linux 카메라 서비스.</strong> INITFS에서 회수한 <code>etc/rc.local</code>은 무선 드라이버를 로드하고 카메라 제어 데몬의 준비 표식을 기다린다. 이어 USB·시스템 관리 데몬을 시작한다. 일반 모드에서는 네트워크·Bluetooth Low Energy 서비스를 시작하고, 저장장치 마운트 후 웹 API를, MTP 장치 생성 후 MTP 서비스를 시작하도록 작성돼 있다. <code>usr/bin/ble_init.sh</code>에서 위 드라이버의 장치명인 <code>/dev/ttyUSI1</code>을 확인했다. 이는 파일에 적힌 시작 순서이며 실기 부팅 로그는 수집하지 않았다.</p>
-<p><strong>RTOS HDMI 명령.</strong> 벡터 기준 레지스터에 기록하는 값, 예외 처리기 포인터와 SHELLCMD의 명령 주소를 독립적으로 대조해 RTOS의 적재 기준 주소를 <code>0x52500000</code>으로 추정했다. 명령 표의 <code>App_ChangeHdmi</code> 주소는 <code>0x52508000</code>이다. RTOS 오프셋 <code>0x8000</code>에서 시작하는 56바이트 전체를 디스어셈블했다. 추가 인수가 있으면 첫 인수를 10진수로 해석하는 경로를 거쳐 하위 8비트를 설정 갱신 함수로 넘기며, 처리기는 0을 반환한다. 하위 함수는 값 비교 결과에 따라 21개 레코드의 <code>+0x970</code> 필드에 해당 바이트를 기록한다. 실제 HDMI 모드와 출력 신호의 변화는 확인하지 않았다. <a href="verify_findings.py">함수 범위를 확인하는 코드</a></p>
-<p><strong>RTOS 초기화.</strong> 리셋 벡터에서 이어지는 주 코어 초기화 경로의 일부는 <code>0x65A80</code>바이트를 복사하고 메모리 구간을 0으로 채운다. 이어 보조 코어가 확인하는 표식을 기록하고 ARM <code>SEV</code> 명령을 내보낸다. 별도의 4개 명령 함수(<code>0x52500508</code>)는 <code>0x1D001000</code>에 32비트 값 3을 기록한다. 로컬에서 두 함수(이 레지스터 기록 함수와 HDMI 처리기)에 대해 angr로 C 형태의 의사코드를 생성하고 ARM 명령과 대조했다. HDMI 함수의 스택 프레임과 간접 반환은 도구가 부정확하게 표현해 해당 부분은 명령어를 기준으로 판독했다.</p>
-<h2 id="재현">재현</h2>
-<p>Python 3 표준 라이브러리만 사용한다. 첫 명령의 출력 폴더는 새 경로여야 한다. 펌웨어 파일을 읽을 수 있는 위치에서 다음을 실행한다.</p>
-<pre><code class="language-console">python inspect_firmware.py fwdc233b.bin --output-dir .private/my-decode
-python verify_findings.py .private/my-decode/decoded.bin
-</code></pre>
-<p>첫 명령은 <code>decoded.bin</code>과 블록별 원본·출력 매핑을 담은 <code>inventory.json</code>을 저장한다. 두 번째 명령은 이 버전의 디코딩 결과 SHA-256을 검사한 뒤 DTB, 커널 설정, 초기 파일시스템, 공개 셸 원문, UART·HDMI 함수 범위를 검증한다. 입력 파일 없이 도구 자체를 점검하려면 두 스크립트에 각각 <code>--self-test</code>를 전달한다.</p>
-<p>자동 디컴파일까지 재현하려면 별도 Python 환경에 <code>angr==10.0.5</code>를 설치한다. 아래 명령은 원본 RTOS 해시와 함수 범위를 검사한 뒤 디컴파일러의 C 형태 출력을 표준 출력으로 보낸다. 디컴파일 경고는 표준 오류에 표시된다.</p>
-<pre><code class="language-console">python decompile_sample.py .private/my-decode/decoded.bin hdmi
-python decompile_sample.py .private/my-decode/decoded.bin register-write
-</code></pre>
-<p>REA는 배포 ZIP과 구성원의 해시를 확인하는 데 사용했다. Windows의 REA 펌웨어 스캐너는 Linux Binwalk 공급자가 필요해 실행되지 않았다. 위의 압축 해제·커널 심볼 복원·함수 분석은 각각 별도 도구로 수행했다. 리코의 펌웨어 사용 약관 3·4·6항에는 복제·역분석·양도 제한이 명시되어 있다. 이 저장소의 공개 범위는 재배포 조건을 확인한 OSS 파일, 직접 작성한 분석 도구와 측정 결과다. 원본 BIN, 추출한 독점 코드, RTOS 디컴파일 출력은 로컬에만 보관했다. 카메라 플래싱, 실기 실행, 전체 펌웨어 재빌드는 수행하지 않았다. <a href="https://www.ricoh-imaging.co.jp/english/support/digital/k-3-3.html">리코 배포 약관</a> · <a href="https://github.com/marin-m/vmlinux-to-elf">커널 심볼 복원 도구</a> · <a href="https://docs.angr.io/en/latest/analyses/decompiler.html">angr 디컴파일러</a></p></main>
-<footer><p>원본 펌웨어·추출 계수·디컴파일 C 원문은 로컬에 보관한다. 정적 분석과 합성 실행 결과를 실제 카메라의 픽셀 출력 검증과 구분한다.</p></footer></body></html>
+<div class="panel">
+<h3>이 저장소에 없는 것</h3>
+<ul>
+<li>원본 펌웨어 파일과 압축을 푼 바이너리</li>
+<li>제조사 코드의 디컴파일 결과, 추출한 계수와 표</li>
+<li>카메라에 설치할 수 있는 수정 펌웨어</li>
+<li>제조사의 비공개 소스 코드 (확보하지 못했습니다)</li>
+</ul>
+<p class="small muted">리코의 펌웨어 사용 약관에는 복제·역분석·양도를 제한하는 조항이 있습니다. 공개 범위는 이를 고려해 정했습니다.</p>
+</div>
+</div>
+</section>
+
+</main>
+<!-- chrome:bottom -->
+<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">시작하기 — 이 주제의 문서</h2><ol><li><a href="index.html" aria-current="page">개요</a></li><li><a href="analysis/firmware-structure.html">펌웨어 구조와 하드웨어<span>패키지 15개 레코드, SoC 식별, 재현 절차</span></a></li><li><a href="analysis/research-program.html">세 기종 연구 본부<span>네 가지 목표의 현재 상태</span></a></li><li><a href="analysis/research-roadmap.html">수정·이식 선행 연구<span>수정 펌웨어 전에 확인할 것</span></a></li><li><a href="glossary.html">용어집</a></li></ol></nav>
+<nav class="pager" aria-label="이전·다음 문서"><a class="next" href="analysis/firmware-structure.html"><small>다음 →</small>펌웨어 구조와 하드웨어</a></nav>
+<footer class="sitefoot"><div class="sitefoot-in"><nav aria-label="사이트"><a href="index.html#map">문서 지도</a><a href="index.html#levels">검증 수준 읽는 법</a><a href="glossary.html">용어집</a><a href="analysis/research-program.html">세 기종 연구 본부</a><a href="https://github.com/yunhyok/pentax-k3iii-firmware-analysis">GitHub 저장소</a></nav><p>PENTAX K-3 Mark III 펌웨어 2.20 분석 문서. PC에서 수행한 정적 분석과 에뮬레이션 결과이며, 카메라 실기에서 검증한 내용이 아닙니다. 원본 펌웨어와 추출한 독점 코드는 포함하지 않습니다.</p></div></footer>
+<!-- /chrome:bottom -->
+</body>
+</html>

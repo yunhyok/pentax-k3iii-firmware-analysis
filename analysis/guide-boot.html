@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>부팅과 저장소 안내 — PENTAX K-3 Mark III 펌웨어 연구</title>
+<meta name="description" content="K-3 Mark III가 켜질 때 M0, BOOT, RTOS, Linux가 차례로 올라오는 과정과 eMMC 저장소의 구조를 한 장의 지도로 정리하고, 이 주제의 문서 다섯 개가 각각 어느 단계를 다루는지 안내합니다.">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-camera="k3iii">
+<!-- chrome:top -->
+<a class="skip" href="#main">본문 바로가기</a>
+<div class="topbar"><div class="topbar-in"><a class="brand" href="../index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="../index.html" aria-current="true">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="https://yunhyok.github.io/pentax-q7-firmware-analysis/">Q7</a></div><nav class="topnav" aria-label="주제"><a href="../index.html">개요</a><a href="guide-boot.html" aria-current="true">부팅·저장소</a><a href="guide-update.html">업데이트</a><a href="guide-rebuild.html">재구축</a><a href="guide-rtos.html">명령·셸</a><a href="guide-color.html">색 처리</a><a href="lightroom-bridge.html">Lightroom</a><a href="af-foundations.html">AF</a><a href="ui-port-contract.html">UI</a></nav></div></div>
+<nav class="crumbs" aria-label="현재 위치"><ol><li><a href="../index.html">PENTAX K-3 Mark III</a></li><li aria-current="page">부팅과 저장소 안내</li></ol></nav>
+<!-- /chrome:top -->
+<header class="page-head">
+<p class="eyebrow">부팅과 저장소 · 주제 안내</p>
+<h1>부팅과 저장소 안내</h1>
+<p class="lead">카메라의 전원을 켜면 작은 초기 코드부터 차례로 다음 프로그램을 읽어 올립니다. 이 주제는 그 순서와, 프로그램들이 들어 있는 내장 저장소의 구조를 펌웨어 파일에서 읽어 낸 기록입니다.</p>
+</header>
+<div class="layout">
+<!-- chrome:toc -->
+<nav class="toc" aria-label="이 문서의 목차"><h2 data-toc="no">이 문서에서</h2><ol><li><a href="#map">한눈에 보기: 전원에서 RTOS와 Linux까지</a></li><li><a href="#concepts">배경 지식</a></li><li><a href="#status">지금까지 알아낸 것과 아직 모르는 것</a></li><li><a href="#reading">읽는 순서</a></li><li><a href="#refs">근거 파일과 참고 자료</a></li></ol></nav>
+<!-- /chrome:toc -->
+<main class="doc" id="main">
+
+<section class="summary">
+<h2 data-toc="no">핵심 요약</h2>
+<ul>
+<li>펌웨어 파일에서 확인한 부팅 순서는 <strong>M0 → BOOT → RTOS와 Linux</strong>입니다. M0가 메모리를 준비하고 다음 이미지를 읽어 오고, BOOT가 파티션 표를 읽어 RTOS를 올린 뒤 코어별 진입 주소를 넘깁니다. Linux 쪽은 Stubby라는 작은 부트로더가 커널을 올립니다.</li>
+<li>프로그램과 설정은 내장 플래시(eMMC)에 있습니다. <strong>파티션 표</strong>가 각 리소스의 위치를 적고, 레코드마다 <strong>bank</strong>라는 선택값으로 설명자 하나를 고릅니다.</li>
+<li>따라가 본 M0·BOOT·Stubby 코드에서 성공과 실패를 가르는 조건은 읽기 결과와 길이, 표식 같은 상태 검사였습니다. 해시나 서명을 비교하는 연산은 찾지 못했습니다. 그 앞의 Boot ROM은 자료가 없으므로 “인증이 없다”는 결론은 아닙니다.</li>
+<li>모든 내용은 PC에서 한 정적 분석과 에뮬레이션입니다. 카메라에서 실행한 것은 없고, 단계 사이의 인계 몇 곳은 아직 이어지지 않았습니다. 아래 지도에 그 끊긴 곳을 표시했습니다.</li>
+</ul>
+</section>
+
+<section id="map">
+<h2>한눈에 보기: 전원에서 RTOS와 Linux까지</h2>
+<p class="takeaway">위에서 아래로 실행이 넘어갑니다. 초록 상자는 원본 코드를 조각 단위로 실행해 확인한 단계이고, 점선은 아직 확인하지 못한 연결입니다. 밑줄 친 “문서 n”을 누르면 그 단계를 다루는 문서로 갑니다.</p>
+
+<figure class="diagram">
+<figcaption>부팅 단계, 저장소, 담당 문서</figcaption>
+<div class="dg-scroll">
+<svg class="dg" viewBox="0 0 800 640" role="img" aria-labelledby="dg-guide-title dg-guide-desc">
+<title id="dg-guide-title">K-3 Mark III의 부팅 단계와 eMMC 저장소, 각 단계를 다루는 문서</title>
+<desc id="dg-guide-desc">왼쪽은 실행 순서입니다. 맨 위의 전원 인가 직후 단계(Boot ROM 등)는 분석 자료가 없습니다. 그 아래 M0 단계는 초기 설정, SDRAM 설정, 파티션 표와 이미지 읽기, 진입 주소와 모드 기록을 하며 문서 1, 2, 3이 다룹니다. M0에서 BOOT로 넘어가는 실제 코어 기동과 모드 값 전달은 미확인입니다. BOOT 단계는 부트 헤더, 표 사본 선택, 파티션 표 적재, RTOS 읽기, 코어 진입 주소 저장을 하며 문서 1이 다룹니다. BOOT 아래 왼쪽은 RTOS로, 보조 코어가 표 index 1의 주소로 진입합니다. 오른쪽은 표 index 5의 주소로 가는 주 코어 진입이고, 그 아래 Stubby와의 연결은 미확인입니다. Stubby는 문서 4가 다룹니다. 오른쪽 열은 eMMC 저장소로 boot1 영역에 부트 헤더와 BOOT 이미지가, 일반 영역에 파티션 표와 리소스 본문이 있습니다. M0와 BOOT가 저장소를 읽고, RTOS가 업데이트 때 저장소에 기록합니다.</desc>
+<defs>
+<marker id="dg-guide-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0 0L10 5L0 10z"/></marker>
+<marker id="dg-guide-aho" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah open" d="M0 0L10 5L0 10z"/></marker>
+</defs>
+<text class="h" x="16" y="22">실행 순서</text>
+
+<rect class="b open" x="16" y="34" width="504" height="58" rx="8"/>
+<text class="t" x="28" y="58">전원 인가 직후: Boot ROM 등 선행 단계</text>
+<text class="s" x="28" y="78">펌웨어 파일에 없어 분석 자료 없음. 인증 여부 미확인</text>
+
+<rect class="b ok" x="16" y="116" width="504" height="110" rx="8"/>
+<text class="t" x="28" y="140">M0 단계</text>
+<text class="s" x="28" y="160">초기 설정 → SDRAM 설정 → 파티션 표·이미지 읽기 → 진입 주소·모드 기록</text>
+<text class="s" x="28" y="180">해시·서명 검사는 이 범위에서 찾지 못함</text>
+<a href="startup-storage.html#m0-stage"><text class="s tk" x="28" y="208">문서 1 · 단계 전체</text></a>
+<a href="m0-board-config.html"><text class="s tk" x="190" y="208">문서 2 · 보드 설정</text></a>
+<a href="m0-diagnostic-serial.html"><text class="s tk" x="352" y="208">문서 3 · 직렬 출력</text></a>
+
+<text class="n topen" x="282" y="246">진입 준비 기록까지 확인</text>
+<text class="n topen" x="282" y="262">코어 기동과 모드 값 전달은 미확인</text>
+
+<rect class="b ok" x="16" y="276" width="504" height="110" rx="8"/>
+<text class="t" x="28" y="300">BOOT 단계</text>
+<text class="s" x="28" y="320">부트 헤더 → 표 사본 선택 → 파티션 표를 RAM에 → RTOS 읽기 → 코어 진입 주소</text>
+<text class="s" x="28" y="340">보는 조건은 읽기 결과, 표식, 진입 주소가 0이 아닌지</text>
+<a href="startup-storage.html#boot-stage"><text class="s tk" x="28" y="368">문서 1 · BOOT 단계</text></a>
+<a href="startup-storage.html#auth-scope"><text class="s tk" x="190" y="368">문서 1 · 인증 검사 범위</text></a>
+
+<rect class="b static" x="16" y="432" width="244" height="124" rx="8"/>
+<text class="t" x="28" y="456">RTOS</text>
+<text class="s" x="28" y="476">보조 코어가 표 index 1의 주소로 진입</text>
+<text class="s" x="28" y="496">저장소 드라이버, 업데이트 기록</text>
+<a href="startup-storage.html#rtos-storage"><text class="s tk" x="28" y="522">문서 1 · 기록 순서와 오류 처리</text></a>
+<a href="startup-storage.html#bank-producers"><text class="s tk" x="28" y="542">문서 1, 5 · bank 값의 출처</text></a>
+
+<rect class="b static" x="276" y="432" width="244" height="48" rx="8"/>
+<text class="t" x="288" y="454">주 코어 진입 (표 index 5)</text>
+<text class="s" x="288" y="472">어떤 리소스인지 이름 미확인</text>
+<rect class="b ok" x="276" y="508" width="244" height="88" rx="8"/>
+<text class="t" x="288" y="532">Stubby → Linux 커널</text>
+<text class="s" x="288" y="552">읽은 길이와 장치 트리 속성 검사</text>
+<text class="s" x="288" y="570">커널 첫 명령 직전까지 실행</text>
+<a href="stubby-load-auth.html"><text class="s tk" x="288" y="588">문서 4 · Stubby</text></a>
+
+<rect class="gf" x="548" y="34" width="244" height="400" rx="12"/>
+<text class="h" x="560" y="56">eMMC 저장소</text>
+<rect class="b" x="560" y="68" width="220" height="104" rx="8"/>
+<text class="t" x="572" y="92">boot1 영역</text>
+<text class="s" x="572" y="112">부트 헤더 (블록 0)</text>
+<text class="s" x="572" y="130">BOOT 이미지</text>
+<a href="startup-storage.html#write-order"><text class="s tk" x="572" y="156">문서 1 · 기록 순서</text></a>
+<rect class="b" x="560" y="184" width="220" height="104" rx="8"/>
+<text class="t" x="572" y="208">일반 영역</text>
+<text class="s" x="572" y="228">파티션 표 (블록 0, 레코드 32개)</text>
+<text class="s" x="572" y="246">리소스 본문</text>
+<a href="update-partition-io.html"><text class="s tk" x="572" y="272">관련 · R 볼륨 입출력</text></a>
+<rect class="b key" x="560" y="300" width="220" height="122" rx="8"/>
+<text class="t" x="572" y="324">레코드와 bank</text>
+<text class="s" x="572" y="344">레코드마다 bank 선택값이</text>
+<text class="s" x="572" y="362">설명자 하나를 고름</text>
+<a href="startup-storage.html#banks"><text class="s tk" x="572" y="388">문서 1 · 네 가지 선택값</text></a>
+<a href="update-bank-selection.html"><text class="s tk" x="572" y="408">관련 · 쓰기 bank와 읽기 bank</text></a>
+
+<path class="e open" d="M268 92V114" marker-end="url(#dg-guide-aho)"/>
+<path class="e open" d="M268 226V274" marker-end="url(#dg-guide-aho)"/>
+<path class="e" d="M138 386V430" marker-end="url(#dg-guide-ah)"/>
+<path class="e" d="M398 386V430" marker-end="url(#dg-guide-ah)"/>
+<path class="e open" d="M398 480V506" marker-end="url(#dg-guide-aho)"/>
+<path class="e" d="M548 150H522" marker-end="url(#dg-guide-ah)"/>
+<path class="e" d="M548 310H522" marker-end="url(#dg-guide-ah)"/>
+<path class="e" d="M138 556V618H670V436" marker-end="url(#dg-guide-ah)"/>
+<text class="n" x="150" y="610">업데이트 때 RTOS가 파티션 표, 부트 헤더, BOOT 이미지를 기록</text>
+</svg>
+</div>
+<ul class="dg-legend"><li><i class="ok"></i>원본 코드를 조각 단위로 실행해 확인</li><li><i class="static"></i>코드를 읽어 판단</li><li><i class="open"></i>미확인 단계, 점선은 미확인 연결</li><li><i></i>저장소의 데이터(실물 내용은 관측하지 않음)</li><li><i class="key"></i>이 주제의 중심 개념</li></ul>
+<p>저장소에서 M0·BOOT 단계로 향하는 화살표는 읽기입니다. “확인”은 단계 전체를 이어서 실행했다는 뜻이 아닙니다. 각 단계의 함수를 따로 떼어, 하드웨어 대신 연구자가 정한 값을 넣고 실행한 결과입니다. M0와 BOOT가 저장소를 읽는 순간 eMMC의 어느 영역이 선택되어 있는지도 확인한 범위에 없습니다.</p>
+</figure>
+
+<h3 id="edges">검증된 지식이 끝나는 곳</h3>
+<div class="table-wrap"><table>
+<caption>지도에서 점선으로 그린 곳</caption>
+<thead><tr><th>끊긴 곳</th><th>확인한 쪽</th><th>모르는 쪽</th></tr></thead>
+<tbody>
+<tr><th scope="row">Boot ROM → M0</th><td>M0 레코드의 첫 명령부터의 동작</td><td>누가 M0를 메모리에 올리고 시작시키는지, 그때 검사를 하는지</td></tr>
+<tr><th scope="row">M0 → BOOT</th><td>M0가 벡터 명령·진입 주소·모드 값을 쓰는 것, BOOT가 모드 값을 읽는 것</td><td>M0가 쓰는 주소와 BOOT가 읽는 주소가 같은 메모리인지, 실제 코어 기동</td></tr>
+<tr><th scope="row">BOOT → Linux 쪽</th><td>BOOT가 표 index 5의 진입 주소로 분기하는 것, Stubby 안의 적재 조건</td><td>index 5가 어떤 리소스인지, BOOT의 분기가 Stubby로 이어지는지</td></tr>
+<tr><th scope="row">각 단계의 끝</th><td>진입 주소로 분기하기 직전까지</td><td>RTOS와 Linux 커널의 실제 기동, 하드웨어 레지스터의 실제 효과</td></tr>
+</tbody></table></div>
+</section>
+
+<section id="concepts">
+<h2>배경 지식</h2>
+<p>이 주제의 문서를 읽는 데 필요한 개념 여섯 가지입니다.</p>
+<dl class="kv">
+<dt>부팅 단계</dt><dd>전원이 들어온 직후에는 메모리도 저장소도 쓸 준비가 되어 있지 않습니다. 그래서 작은 코드가 먼저 실행되어 메모리를 설정하고, 저장소에서 더 큰 프로그램을 읽어 실행을 넘깁니다. 가장 먼저 실행되는 코드는 칩 안에 고정된 <dfn title="칩 제조 때 내부에 고정해 넣은 최초 실행 코드. 펌웨어 파일에는 들어 있지 않습니다.">Boot ROM</dfn>이며, 펌웨어 파일에는 들어 있지 않습니다.</dd>
+<dt>M0와 A7</dt><dd>펌웨어 패키지에는 M0와 BOOT라는 레코드가 있습니다. M0는 Thumb 명령으로 된 코드입니다. 칩 제조사 Socionext의 개발자는 SC2000(내부 이름 M10V)이 Cortex-A7 코어 네 개와 “전원 제어용 Cortex-M0”를 갖는다고 <a href="https://lkml.iu.edu/hypermail/linux/kernel/1903.0/00362.html">리눅스 커널 메일링 리스트</a>에서 소개했습니다. M0 레코드가 그 Cortex-M0의 프로그램이라는 것은 이 공개 설명에서 끌어낸 추정이고, 펌웨어에서 직접 확인한 사실은 아닙니다. 칩 식별의 근거는 <a href="firmware-structure.html#soc">펌웨어 구조와 하드웨어</a>에 있습니다.</dd>
+<dt>RTOS와 Linux</dt><dd>이 카메라는 두 운영체제를 함께 씁니다. 촬영과 조작을 맡는 <dfn title="Real-Time Operating System. 정해진 시간 안에 반응해야 하는 장치 제어에 쓰는 운영체제입니다.">RTOS</dfn>가 본체 프로그램이고, Linux는 별도로 올라옵니다. Linux의 부트로더가 Stubby입니다.</dd>
+<dt>eMMC와 부트 영역</dt><dd><dfn title="embedded MultiMediaCard. 기판에 납땜하는 내장 플래시 저장 장치입니다.">eMMC</dfn>는 일반 데이터 영역 외에 부트용 영역 두 개를 따로 갖습니다. Linux에서는 이 둘이 <code>mmcblkXboot0</code>, <code>mmcblkXboot1</code>이라는 별도 장치로 보입니다(<a href="https://www.kernel.org/doc/html/latest/driver-api/mmc/mmc-dev-parts.html">Linux 문서</a>). 어느 영역에 접근할지는 장치 설정(EXT_CSD)의 179번 바이트 하위 3비트로 바꿉니다. 이 펌웨어는 선택값 1을 boot1이라고 부르고, <a href="https://raw.githubusercontent.com/torvalds/linux/master/include/linux/mmc/mmc.h">Linux의 정의</a>는 같은 값을 <code>BOOT0</code>이라고 부릅니다.</dd>
+<dt>읽기 명령과 SDHCI</dt><dd>저장소에서 블록을 읽는 표준 명령이 CMD17(한 블록)과 CMD18(여러 블록)입니다. 이 명령을 보내는 호스트 컨트롤러의 표준 레지스터 배치가 <dfn title="SD Host Controller Interface. SD·eMMC 호스트 컨트롤러의 표준 레지스터 배치입니다.">SDHCI</dfn>입니다. BOOT의 저장소 코드가 쓰는 오프셋과 비트가 <a href="https://raw.githubusercontent.com/torvalds/linux/master/drivers/mmc/host/sdhci.h">Linux의 SDHCI 정의</a>와 일치합니다.</dd>
+<dt>파티션 표와 bank</dt><dd>이 펌웨어 고유의 구조입니다. 레코드 32개로 된 표가 리소스(BOOT, RTOS, 조정 데이터, 로그 등)의 위치를 적습니다. 레코드 하나에 설명자가 두 개 들어갈 자리가 있고, 레코드의 bank 선택값이 그중 하나를 고릅니다. 표 자체도 사본 A·B가 있을 수 있으며 부트 헤더가 순서를 정합니다. 그림으로 본 배치는 <a href="startup-storage.html#background">문서 1의 배경 절</a>에 있습니다.</dd>
+</dl>
+<div class="callout plain"><strong class="label">쉽게 말하면</strong>
+<p>bank는 같은 프로그램을 넣어 둘 칸이 여럿 있을 때 “어느 칸을 쓸지”를 가리키는 번호입니다. 이 카메라가 업데이트 때 칸을 바꿔 가며 쓰는지는 아직 모릅니다. 기록하는 쪽(RTOS)과 읽는 쪽(BOOT)이 서로 다른 곳의 값을 본다는 것까지 확인했습니다.</p></div>
+</section>
+
+<section id="status">
+<h2>지금까지 알아낸 것과 아직 모르는 것</h2>
+<div class="table-wrap"><table>
+<caption>주제 전체의 현재 상태</caption>
+<thead><tr><th>항목</th><th>상태</th><th>근거 문서</th></tr></thead>
+<tbody>
+<tr><th scope="row">M0의 reset → 초기 설정 → 적재 작업 등록 순서</th><td><span class="badge ok">확인</span> <span class="badge static">정적 분석</span></td><td><a href="startup-storage.html#m0-reset-chain">문서 1 · reset 경로</a></td></tr>
+<tr><th scope="row">보드별 설정 본체 여섯 개는 정해진 상수만 기록하고 입력을 검사하지 않음</th><td><span class="badge ok">확인</span> <span class="badge static">정적 분석</span></td><td><a href="m0-board-config.html">문서 2</a></td></tr>
+<tr><th scope="row">초기 설정의 일부는 진단용 직렬 출력 설정이며 공개 USIO 드라이버와 배치가 같음</th><td><span class="badge ok">확인</span> <span class="badge static">정적 분석</span></td><td><a href="m0-diagnostic-serial.html">문서 3</a></td></tr>
+<tr><th scope="row">SDRAM 두 채널을 5단계 상태 확인으로 설정</th><td><span class="badge ok">확인</span> <span class="badge model">모델</span></td><td><a href="startup-storage.html#m0-memory-setup">문서 1 · SDRAM 설정</a></td></tr>
+<tr><th scope="row">M0와 BOOT의 저장소 읽기는 CMD17·CMD18이고, 검사는 카드 응답과 전송 상태</th><td><span class="badge ok">확인</span> <span class="badge model">모델</span></td><td><a href="startup-storage.html#m0-lower-storage">문서 1 · M0 읽기</a>, <a href="startup-storage.html#controller">BOOT 전송 제어</a></td></tr>
+<tr><th scope="row">M0가 진입 주소와 모드 값 1·2를 기록</th><td><span class="badge ok">확인</span></td><td><a href="startup-storage.html#preboot-mode">문서 1 · 진입 주소와 모드</a></td></tr>
+<tr><th scope="row">M0가 쓰는 주소와 BOOT가 읽는 주소가 같은 메모리인지</th><td><span class="badge open">미확인</span></td><td><a href="startup-storage.html#m0-address-map">문서 1 · 주소 대응</a></td></tr>
+<tr><th scope="row">BOOT의 표 사본 선택, 준비 표식, RTOS 적재, 코어 진입</th><td><span class="badge ok">확인</span> <span class="badge model">모델</span></td><td><a href="startup-storage.html#boot-stage">문서 1 · BOOT 단계</a></td></tr>
+<tr><th scope="row">M0·BOOT의 추적 범위에 해시·서명 검사가 있는지</th><td>찾지 못함 <span class="badge open">미확인</span></td><td><a href="startup-storage.html#auth-scope">문서 1 · 인증 검사 범위</a></td></tr>
+<tr><th scope="row">Stubby의 적재 조건(읽은 길이, initrd 속성)과 진입 주소 전달</th><td><span class="badge ok">확인</span> <span class="badge model">모델</span></td><td><a href="stubby-load-auth.html">문서 4</a></td></tr>
+<tr><th scope="row">Stubby의 서명 검사 코드는 공개 소스에서 빌드 옵션이며, 이 이미지의 흐름은 그 구간을 뺀 구조와 맞음</th><td><span class="badge static">정적 분석</span></td><td><a href="stubby-load-auth.html#auth">문서 4 · 서명 검사</a></td></tr>
+<tr><th scope="row">bank와 관련된 선택값이 네 곳에 따로 있고, RTOS가 쓰는 값과 BOOT가 읽는 값이 다른 필드임</th><td><span class="badge ok">확인</span></td><td><a href="startup-storage.html#banks">문서 1 · 네 가지 선택값</a>, <a href="update-bank-selection.html">쓰기 bank와 읽기 bank</a></td></tr>
+<tr><th scope="row">RTOS의 기록 순서(파티션 표 → 부트 헤더 → BOOT 이미지)와 영역 복귀 실패가 가려지는 조건</th><td><span class="badge ok">확인</span> <span class="badge model">모델</span></td><td><a href="startup-storage.html#write-order">문서 1 · 기록 순서</a>, <a href="startup-storage.html#restore-failure">복귀 실패</a></td></tr>
+<tr><th scope="row">bank 기록자로 의심한 후보(AdjustManager, CameraLog, Log, 잠금, 헤더 정보 함수)는 모두 다른 객체에 기록</th><td><span class="badge ok">확인</span></td><td><a href="startup-storage.html#bank-producers">문서 1 · bank 값의 출처</a>, <a href="header-alias-consumer.html">문서 5</a></td></tr>
+<tr><th scope="row">0이 아닌 bank 값을 만드는 코드, 레코드 <code>+4</code>를 직접 쓰는 코드</th><td><span class="badge open">미확인</span></td><td><a href="startup-storage.html#bank-producers">문서 1</a>, <a href="header-alias-consumer.html">문서 5</a></td></tr>
+<tr><th scope="row">Boot ROM 등 선행 단계의 적재와 인증, 전체 인증 정책</th><td><span class="badge open">미확인</span></td><td><a href="startup-storage.html#limits">문서 1 · 남은 과제</a></td></tr>
+<tr><th scope="row">실제 매체에 들어 있는 표의 내용, 전원 차단 때의 복구, 실기 부팅</th><td><span class="badge open">미확인</span></td><td><a href="startup-storage.html#limits">문서 1 · 남은 과제</a></td></tr>
+</tbody></table></div>
+<p class="small muted">배지의 뜻은 <a href="../index.html#levels">검증 수준 읽는 법</a>과 같습니다. “확인”과 “모델”이 함께 붙은 항목은 원본 코드를 실행했지만 하드웨어 응답이나 저장소 내용은 넣어 준 값이라는 뜻입니다.</p>
+</section>
+
+<section id="reading">
+<h2>읽는 순서</h2>
+<p>문서 1이 전체 기록이고 나머지는 한 부분을 깊이 본 문서입니다. 문서 1의 배경 절과 M0·BOOT 단계 절을 먼저 읽고, 관심 있는 부분으로 넘어가면 됩니다.</p>
+<ul class="cards">
+<li class="card"><span class="tag">문서 1 · 전체</span><h3><a href="startup-storage.html">부팅 단계와 저장소 구조: M0에서 BOOT, RTOS까지</a></h3><p class="q">전원이 들어온 뒤 어떤 순서로 무엇을 읽어 올리고, 저장소에는 무엇이 어떻게 놓여 있는가?</p><p>M0와 BOOT의 순서, 파티션 표와 bank, RTOS의 기록 순서를 합성 검사 300건으로 확인했습니다. 가장 긴 문서이며 절마다 따로 읽을 수 있습니다.</p></li>
+<li class="card"><span class="tag">문서 2 · M0 세부</span><h3><a href="m0-board-config.html">M0 보드 설정 코드는 레지스터에 무엇을 쓰는가</a></h3><p class="q">기판 종류에 따라 골라 쓰는 설정 코드가 입력을 검사하거나 메모리 주소를 바꾸는가?</p><p>본체 여섯 개가 모두 같은 순서로 상수만 기록합니다. 그 값이 칩에서 내는 효과는 모릅니다.</p></li>
+<li class="card"><span class="tag">문서 3 · M0 세부</span><h3><a href="m0-diagnostic-serial.html">M0의 진단용 직렬 출력</a></h3><p class="q">정체를 모르는 초기 레지스터 기록 가운데 어디까지가 직렬 출력 설정인가?</p><p>속도 설정과 문자 출력의 레지스터 배치가 Ricoh가 공개한 USIO 드라이버와 같습니다.</p></li>
+<li class="card"><span class="tag">문서 4 · Linux 쪽</span><h3><a href="stubby-load-auth.html">Stubby가 커널을 올리는 조건과 서명 검사의 범위</a></h3><p class="q">Linux 부트로더는 무엇을 검사하고 무엇을 검사하지 않는가?</p><p>읽은 길이와 장치 트리 속성으로 성공을 가릅니다. 공개 소스의 서명 검사는 빌드 옵션입니다.</p></li>
+<li class="card"><span class="tag">문서 5 · bank 후보</span><h3><a href="header-alias-consumer.html">부트 헤더를 읽는 함수의 +4 저장은 어디에 쓰이는가</a></h3><p class="q">표 근처 주소를 다루는 함수 하나가 bank 값을 바꾸는가?</p><p>출력은 별도 전역 버퍼였고 파티션 표는 그대로였습니다. 후보에서 제외했습니다.</p></li>
+</ul>
+<h3>이어서 볼 문서</h3>
+<ul class="cards">
+<li class="card"><span class="tag">업데이트 과정</span><h3><a href="update-bank-selection.html">RTOS가 쓰는 bank와 BOOT가 읽는 bank의 선택 조건</a></h3><p class="q">업데이트가 쓴 내용을 다음 부팅이 읽으려면 어떤 조건이 맞아야 하는가?</p><p>같은 합성 표를 쓰기 경로와 읽기 경로에 넣어 12가지 경우를 비교했습니다.</p></li>
+<li class="card"><span class="tag">업데이트 과정</span><h3><a href="update-partition-io.html">R 볼륨의 sector 주소 계산과 하위 입출력</a></h3><p class="q">같은 저장소 드라이버로 파일 시스템 볼륨에는 어떻게 접근하는가?</p><p>시작 sector 오프셋과 총 sector 수의 쓰임을 25가지 경우로 확인했습니다.</p></li>
+<li class="card"><span class="tag">시작하기</span><h3><a href="firmware-structure.html">펌웨어 구조와 하드웨어</a></h3><p class="q">패키지의 레코드 15개는 무엇이고, 어떤 칩을 대상으로 만든 펌웨어인가?</p><p>M0, BOOT, RTOS, LINUX 레코드의 크기와 위치, 칩 식별의 근거가 있습니다.</p></li>
+</ul>
+</section>
+
+<section id="refs">
+<h2>근거 파일과 참고 자료</h2>
+<p>문서별 근거 JSON과 검증 도구는 각 문서의 끝에 있습니다. 여기에는 주제 전체에서 자주 쓰는 것만 모았습니다.</p>
+<ul class="refs">
+<li><a href="startup-storage-evidence.json">startup-storage-evidence.json</a> — BOOT의 적재 경로, 저장소 드라이버 연결, 요청·응답 경로의 주소와 판정</li>
+<li><a href="m0-reset-evidence.json">m0-reset-evidence.json</a> · <a href="preboot-mode-evidence.json">preboot-mode-evidence.json</a> — M0의 reset 경로와 진입 준비</li>
+<li><a href="boot-entry-evidence.json">boot-entry-evidence.json</a> · <a href="boot-path-checks.json">boot-path-checks.json</a> — BOOT의 진입점과 코어 인계, 합성 검사 37건</li>
+<li><a href="bank-switch-evidence.json">bank-switch-evidence.json</a> — 부트 헤더 직렬화와 기록 순서</li>
+<li><a href="m0-board-config-evidence.json">m0-board-config-evidence.json</a> · <a href="m0-diagnostic-serial-evidence.json">m0-diagnostic-serial-evidence.json</a> — 문서 2와 3의 근거</li>
+<li><a href="stubby-load-auth-evidence.json">stubby-load-auth-evidence.json</a> · <a href="header-alias-consumer-evidence.json">header-alias-consumer-evidence.json</a> — 문서 4와 5의 근거</li>
+<li><a href="../evidence.json">evidence.json</a> — 패키지의 레코드 15개와 해시</li>
+</ul>
+<h3>외부 자료</h3>
+<ul class="refs">
+<li><a href="https://lkml.iu.edu/hypermail/linux/kernel/1903.0/00362.html">리눅스 커널 메일링 리스트: Add basic support for Socionext Milbeaut M10V SoC</a> — Socionext 개발자의 SC2000(M10V) 소개. Cortex-A7 네 개와 전원 제어용 Cortex-M0</li>
+<li><a href="https://raw.githubusercontent.com/torvalds/linux/master/include/linux/mmc/mmc.h">Linux include/linux/mmc/mmc.h</a> — CMD17·CMD18 등 명령 번호, EXT_CSD 179번과 접근 영역 값 (2026-11-10 확인)</li>
+<li><a href="https://raw.githubusercontent.com/torvalds/linux/master/drivers/mmc/host/sdhci.h">Linux drivers/mmc/host/sdhci.h</a> — SDHCI 레지스터 오프셋과 상태 비트 (2026-11-10 확인)</li>
+<li><a href="https://www.kernel.org/doc/html/latest/driver-api/mmc/mmc-dev-parts.html">Linux 문서: SD and MMC Device Partitions</a> — eMMC 부트 영역 두 개의 설명</li>
+<li><a href="https://www.ricoh-imaging.co.jp/japan/products/oss/k-3-3/K3mkIII_220.tar.gz">Ricoh 공식 OSS 묶음 K3mkIII_220.tar.gz</a> — Stubby와 Linux 커널 소스</li>
+<li><a href="https://gethypoxic.com/blogs/technical/socionext-gp1-sc2000a-study">HYPOXIC: Socionext GP1 (SC2000A) study</a> — 같은 계열 칩을 쓴 다른 기기의 부팅 구조. 이 카메라에 그대로 적용하지 않았습니다.</li>
+</ul>
+<p class="small muted">eMMC 규격 원문(JEDEC JESD84 계열)은 직접 열람하지 못했습니다. 명령 번호와 EXT_CSD 필드는 Linux 정의로 대조했습니다.</p>
+</section>
+
+</main>
+</div>
+<!-- chrome:bottom -->
+<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">부팅과 저장소 — 이 주제의 문서</h2><ol><li><a href="guide-boot.html" aria-current="page">부팅과 저장소 안내</a></li><li><a href="startup-storage.html">M0 reset·SRAM remap·bank<span>초기화 사슬과 저장소 bank</span></a></li><li><a href="m0-board-config.html">M0 보드 설정<span>상수 기록과 SRAM remap의 경계</span></a></li><li><a href="m0-diagnostic-serial.html">M0 진단 직렬 출력<span>분주식과 문자 출력</span></a></li><li><a href="stubby-load-auth.html">Stubby 적재와 인증 경계<span>Linux 부트로더의 파일 조건</span></a></li><li><a href="header-alias-consumer.html">부트 헤더와 파티션 표<span>+4 저장 후보의 실제 대상</span></a></li></ol></nav>
+<nav class="pager" aria-label="이전·다음 문서"><a class="prev" href="../glossary.html"><small>← 이전</small>용어집</a><a class="next" href="startup-storage.html"><small>다음 →</small>M0 reset·SRAM remap·bank</a></nav>
+<footer class="sitefoot"><div class="sitefoot-in"><nav aria-label="사이트"><a href="../index.html#map">문서 지도</a><a href="../index.html#levels">검증 수준 읽는 법</a><a href="../glossary.html">용어집</a><a href="research-program.html">세 기종 연구 본부</a><a href="https://github.com/yunhyok/pentax-k3iii-firmware-analysis">GitHub 저장소</a></nav><p>PENTAX K-3 Mark III 펌웨어 2.20 분석 문서. PC에서 수행한 정적 분석과 에뮬레이션 결과이며, 카메라 실기에서 검증한 내용이 아닙니다. 원본 펌웨어와 추출한 독점 코드는 포함하지 않습니다.</p></div></footer>
+<!-- /chrome:bottom -->
+</body>
+</html>
