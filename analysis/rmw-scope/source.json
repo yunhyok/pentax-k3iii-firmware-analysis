@@ -1,0 +1,67 @@
+{
+  "schema": 1,
+  "inputs": {
+    "decoded": {
+      "bytes": 78683892,
+      "sha256": "7ff301d585ef7adcd620a15575faa39b4227cc5a27eaa8d754efe50f667a30f9"
+    },
+    "accepted31": {
+      "bytes": 7200103,
+      "sha256": "95a5ce68c95bcc4391894983e0650cf8098ae6f2c56878667b0a64cb01ef7b98",
+      "separately_supplied": true,
+      "bundled": false
+    }
+  },
+  "rtos": {
+    "offset": 115100,
+    "bytes": 25483200,
+    "base": "0x52500000",
+    "sha256": "342d2f35405e8daf1797dfe431d2e4aa70f4b52a2c242a29df48206672f1dfb4"
+  },
+  "model_block": {
+    "start": "0x525d8774",
+    "end_exclusive": "0x525d8790",
+    "bytes": 28,
+    "sha256": "9f16d22aacd46f2fe17d576d9ceb07334d4c7e46ad8d7038efe964c74fb3a9d9",
+    "instruction_count": 7
+  },
+  "historical35": {
+    "script_sha256": "087596b3085cdd39718d28f3ac5c45faa66d7fe691fbc457b16dd051ea36b614",
+    "result_file_sha256": "c84cabca174e99ab9fa5163694d2258590d0fc226a6b05a1296fac03bd89cc84",
+    "whole_typed_record_canonical_sha256": "6081eafffc91064d03f08e0d10648a64ff5a5b0ade374c752164d6053a446ddd",
+    "canonicalization": "UTF-8 JSON; exact dict/list/str/int/bool types only; sorted keys; compact separators; ensure_ascii false; no float/null",
+    "environment": {
+      "python": "3.12.3",
+      "Capstone_distribution": "5.0.9",
+      "Capstone_module": "5.0.7",
+      "Z3_distribution": "5.3.1.0",
+      "Z3_engine": "5.3.1"
+    }
+  },
+  "public_helper_sha256": "a0f0c1d8f9f6eef0fdc13fa5279b5715c6647dad15f264a3e2ce779080355fe2",
+  "premises": [
+    "Signed requested_pages>2 reaches tail path",
+    "LR equals requested_pages masked to30 bits, produced by original525d8740",
+    "Fixed writable ordinary RAM target, little-endian",
+    "Sequential completion, no concurrent/asynchronous write, observer or fault"
+  ],
+  "limits": {
+    "classified_bytes": 48,
+    "selected_proved_bytes": 4,
+    "other_classified_bytes_outside_proof": 44,
+    "previous_separate_proof_bytes": 8,
+    "original_RMW_allowance_bytes_unchanged": 56,
+    "physical_initial_writer_known": false,
+    "native_execution": false,
+    "intermediate_byte_depends_on_initial_state": true,
+    "all48_independence_proved": false,
+    "whole_boot_proved": false,
+    "original31_observed_stop": "0x525b5a54",
+    "later31_entries": "host-selected independent entries, not continuation past CP15 stop",
+    "host_initial_RAM_patterns": [
+      "00",
+      "A5"
+    ],
+    "read_log": "scoped, not all guest reads"
+  }
+}

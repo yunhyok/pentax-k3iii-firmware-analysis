@@ -62,6 +62,8 @@ jobs:
       - if: steps.existing.outputs.exists == 'false'
         run: python -S analysis/rmw-proof/test_verify.py --work-dir "${{ runner.temp }}" --output "${{ runner.temp }}/rmw-tests.json"
       - if: steps.existing.outputs.exists == 'false'
+        run: python -S analysis/rmw-scope/test_verify.py --work-dir "${{ runner.temp }}" --output "${{ runner.temp }}/rmw-scope-tests.json"
+      - if: steps.existing.outputs.exists == 'false'
         run: python tools/check_research_program.py
       - if: steps.existing.outputs.exists == 'false'
         run: python tools/check_site.py

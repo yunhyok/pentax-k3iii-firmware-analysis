@@ -18,5 +18,6 @@ jobs:
       - run: python analysis/allocator-replay/test_replay.py --work-dir "${{ runner.temp }}" --output "${{ runner.temp }}/allocator-tests.json"
       - run: python analysis/registry-replay/test_replay.py --work-dir "${{ runner.temp }}" --output "${{ runner.temp }}/registry-tests.json"
       - run: python -S analysis/rmw-proof/test_verify.py --work-dir "${{ runner.temp }}" --output "${{ runner.temp }}/rmw-tests.json"
+      - run: python -S analysis/rmw-scope/test_verify.py --work-dir "${{ runner.temp }}" --output "${{ runner.temp }}/rmw-scope-tests.json"
       - run: python tools/check_research_program.py
       - run: python tools/check_site.py
