@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>리소스 선택값과 업데이트 헤더의 기록 조건 — PENTAX K-3 Mark III</title>
+<meta name="description" content="M0 FIFO로 전달한 선택값 1의 반례와, RTOS 표·헤더 기록의 성공·실패 조건을 분리해 재현한 결과입니다.">
+<link rel="stylesheet" href="../assets/site.css">
+<style>
+.flow{grid-template-columns:1fr;gap:1.3rem}.flow>li:not(:last-child)::after{content:"↓";right:auto;left:1rem;top:auto;bottom:-1.25rem;transform:none}
+</style>
+</head>
+<body data-camera="k3iii">
+<!-- chrome:top -->
+<a class="skip" href="#main">본문 바로가기</a>
+<div class="topbar"><div class="topbar-in"><a class="brand" href="../index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="../index.html" aria-current="true">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="https://yunhyok.github.io/pentax-q7-firmware-analysis/">Q7</a></div><nav class="topnav" aria-label="주제"><a href="../index.html">개요</a><a href="guide-boot.html">부팅·저장소</a><a href="guide-update.html" aria-current="true">업데이트</a><a href="guide-rebuild.html">재구축</a><a href="guide-rtos.html">명령·셸</a><a href="guide-color.html">색 처리</a><a href="lightroom-bridge.html">Lightroom</a><a href="af-foundations.html">AF</a><a href="ui-port-contract.html">UI</a></nav></div></div>
+<nav class="crumbs" aria-label="현재 위치"><ol><li><a href="../index.html">PENTAX K-3 Mark III</a></li><li><a href="guide-update.html">펌웨어 업데이트 과정</a></li><li aria-current="page">리소스 선택값과 헤더 기록 조건</li></ol></nav>
+<!-- /chrome:top -->
+<header class="page-head">
+<p class="eyebrow">K-3 III · bank 선택 · III-SELECTOR-PUBLIC-21</p>
+<h1>리소스 선택값과 업데이트 헤더의 기록 조건</h1>
+<p class="lead">원본 생성자가 writer bank를 0으로 만들어도, 외부에서 읽어 온 리소스 선택값 1은 시험한 초기화 경로를 통과해 BOOT의 bank 1 선택으로 이어졌습니다. 별도 실험에서는 표·헤더 쓰기의 반환값이 다음 단계 진입을 결정하는 경로를 재현했습니다. 두 결과 모두 실제 카메라의 선택값 정책을 확정하지는 못합니다.</p>
+<p><a href="update-bank-selection.html">앞선 분석: RTOS가 쓰는 bank와 BOOT가 읽는 bank</a></p>
+</header>
+<div class="layout">
+<!-- chrome:toc -->
+<nav class="toc" aria-label="이 문서의 목차"><h2 data-toc="no">이 문서에서</h2><ol><li><a href="#distinction">같은 bank라는 표현으로 묶으면 안 되는 네 필드</a></li><li><a href="#selector19">19: writer bank가 0이어도 입력 선택값 1은 유지된다</a></li><li><a href="#policy20">20: 표 기록 성공 뒤에 헤더를 쓰고, 두 단계 성공 뒤에 image 함수로 간다</a></li><li><a href="#fields">헤더의 세 필드는 어느 명령에서 만들어지는가</a></li><li><a href="#errors">오류 알림 이후와 완료 상태 객체는 아직 열린 경로다</a></li><li><a href="#limits">확인하지 못한 부분</a></li><li><a href="#reproduce">원본 입력으로 다시 검증하기</a></li></ol></nav>
+<!-- /chrome:toc -->
+<main class="doc" id="main">
+<section id="distinction">
+<h2>같은 bank라는 표현으로 묶으면 안 되는 네 필드</h2>
+<div class="table-wrap"><table><thead><tr><th scope="col">대상</th><th scope="col">사용처</th><th scope="col">현재 증거</th></tr></thead><tbody>
+<tr><td><code>FwPartition +0x10</code></td><td>RTOS writer bank</td><td>시험한 원본 생성자는 0을 저장</td></tr>
+<tr><td>헤더 <code>+0x40</code></td><td>BOOT의 표 후보 순서</td><td>20의 헤더 생성 경로에서 writer bank를 복사</td></tr>
+<tr><td>헤더 <code>+0x44 / +0x48</code></td><td>표 후보의 LBA</td><td>원본 함수가 <code>0 / 0xffff</code>를 반환</td></tr>
+<tr><td>리소스 레코드 <code>+4</code></td><td>각 리소스의 bank 선택</td><td>전달·소비 경로는 확인했지만 실제 값 결정자는 미확정</td></tr>
+</tbody></table></div>
+<p>헤더 선택값이 writer bank에서 복사되는 관계는 확인했습니다. 그 복사로 각 리소스의 선택값까지 결정되지는 않습니다. 아래 두 실험은 <strong>독립된 합성 입력</strong>을 사용합니다. 20에서 만든 헤더가 19의 선택값 1을 만들었다는 연결은 없습니다.</p>
+<p class="small muted">근거: <a href="selector-policy-checks.json">공개 검증 결과 JSON</a>의 <code>evidence.III-SELECTOR-19</code>, <code>evidence.III-SELECTOR-POLICY-20</code>, <code>static_findings.header_policy</code>.</p>
+</section>
+
+<section id="selector19">
+<h2>19: writer bank가 0이어도 입력 선택값 1은 유지된다</h2>
+<ol class="flow" aria-label="선택값 반례의 원본 실행과 모형 경계">
+<li class="model"><strong>합성 FIFO 입력</strong><span>리소스 6의 선택값 1과 구별 가능한 bank 설명자를 공급</span></li>
+<li class="ok"><strong>M0 원본 저장 명령</strong><span><code>3ffe6396</code>에서 17,280개 워드를 표 RAM으로 전송</span></li>
+<li class="ok"><strong>BOOT 원본 초기화</strong><span>시험한 초기화 구간은 표를 지우지 않음</span></li>
+<li class="ok"><strong>리소스 6 선택</strong><span>bank 1의 읽기 인수를 준비한 뒤 BL 전에 중단</span></li>
+</ol>
+<p>원본 생성자 <code>52ff52d4</code>가 writer bank를 0으로 만든 상태에서, M0 FIFO helper의 원본 명령을 실행했습니다. 선택값 1은 <code>3ffe6396</code>의 CPU 저장으로 표의 <code>50b733a4</code>에 도달했습니다. BOOT 초기화와 리소스 6 선택 코드를 이어 실행하자 읽기 인수는 <code>(LBA 0x456, 블록 수 2, 목적지 0x44000000)</code>이 됐습니다.</p>
+<p><strong>이는 “생성자와 시험한 초기화가 입력 선택값을 반드시 0으로 바꾼다”는 주장에 대한 조건부 반례입니다.</strong> 실제 매체에서 1을 관찰한 결과는 아닙니다. FIFO 값과 컨트롤러 상태를 모형으로 공급했고, M0와 BOOT 단계가 같은 RAM을 보도록 연결했습니다. BOOT의 cold 경로에서 수행하는 표 재읽기와 앞선 리소스 처리는 생략했습니다. 이 연결로 실제 코어 간 주소 alias나 캐시 일관성이 입증되지는 않습니다.</p>
+<p>원본 M0는 여기서 값을 전달하는 CPU 기록자입니다. 선택값을 처음 결정하는 정책 기록자는 아닙니다. <code>50b01090</code>의 저장소 읽기 BL 전에 멈췄으므로 payload 읽기·부팅·인증 성공도 확인하지 않았습니다.</p>
+<p class="small muted">근거: JSON의 <code>evidence.III-SELECTOR-19.selector_stores</code>, <code>phases</code>, <code>boot_arguments</code>, <code>native_clear_ranges</code>. native 8개 구간과 추가 정적 3개 구간의 해시를 <code>source_ranges.III-SELECTOR-19</code>에 고정했습니다.</p>
+</section>
+
+<section id="policy20">
+<h2>20: 표 기록 성공 뒤에 헤더를 쓰고, 두 단계 성공 뒤에 image 함수로 간다</h2>
+<ol class="flow" aria-label="완료 호출자의 원본 조건 분기">
+<li class="ok"><strong>표 단계 <code>52ff2060</code></strong><span>반환값 0이면 <code>52ff2af8</code>에서 오류 진입점으로 분기</span></li>
+<li class="ok"><strong>헤더 단계 <code>52ff20d0</code></strong><span>반환값 0이면 <code>52ff2b14</code>에서 오류 진입점으로 분기</span></li>
+<li class="open"><strong>image 함수 <code>52ff21c8</code></strong><span>두 단계 성공 시 진입. 첫 명령 실행 전에 중단</span></li>
+</ol>
+<div class="table-wrap"><table><thead><tr><th scope="col">모형 하위 쓰기 응답</th><th scope="col">원본 호출자가 도달한 곳</th><th scope="col">모형 저장소 상태</th></tr></thead><tbody>
+<tr><td>표 실패</td><td><code>52ff2bf4</code>, 오류 본문 전</td><td>기록 없음. 헤더 할당·생성도 호출되지 않음</td></tr>
+<tr><td>표 성공, 헤더 실패</td><td><code>52ff2bf4</code>, 오류 본문 전</td><td>partition 0/LBA 0에 표만 존재</td></tr>
+<tr><td>표·헤더 성공</td><td><code>52ff21c8</code>, image 본문 전</td><td>partition 0/LBA 0의 표와 partition 1/LBA 0의 헤더</td></tr>
+</tbody></table></div>
+<p>완료 호출자와 표·헤더·하위 전송 함수 본문은 원본 명령으로 실행했습니다. 단계 전체를 임의의 반환값으로 대체하지 않았습니다. 다만 allocator, 메모리 복사, 진단·진행률, lock, partition 선택과 최하위 드라이버 쓰기는 모형입니다. 표 쓰기는 <code>0x87</code>개 블록, 헤더 쓰기는 2개 블록을 전달했습니다.</p>
+<p>실패 응답에서 매체를 보존하는 동작은 모형이 정한 규칙입니다. 표 성공·헤더 실패 후 표가 남았다는 관찰은 실제 장치의 부분 쓰기, 전원 차단 내성 또는 rollback 보장을 뜻하지 않습니다.</p>
+<p class="small muted">근거: JSON의 <code>evidence.III-SELECTOR-POLICY-20.cases</code>. 원본 실행 15개 구간과 정적 확인 5개 구간은 <code>source_ranges.III-SELECTOR-POLICY-20</code>으로 구분했습니다.</p>
+</section>
+
+<section id="fields">
+<h2>헤더의 세 필드는 어느 명령에서 만들어지는가</h2>
+<div class="table-wrap"><table><thead><tr><th scope="col">헤더 오프셋</th><th scope="col">저장 명령</th><th scope="col">값의 출처</th><th scope="col">시험값</th></tr></thead><tbody>
+<tr><td><code>+0x40</code></td><td><code>52ff2140</code></td><td><code>FwPartition +0x10</code>의 1바이트를 32비트로 저장</td><td><code>0</code></td></tr>
+<tr><td><code>+0x44</code></td><td><code>52ff2154</code></td><td><code>52ff5304(object, 0)</code></td><td><code>0</code></td></tr>
+<tr><td><code>+0x48</code></td><td><code>52ff2164</code></td><td><code>52ff5304(object, 1)</code></td><td><code>0xffff</code></td></tr>
+</tbody></table></div>
+<pre><code>위치 함수 52ff5304: index == 0 이면 0, 그 밖에는 0xffff
+성공 시 헤더 +40 / +44 / +48: 0 / 0 / 0xffff
+BOOT 후보 순서: [1, 2]
+첫 읽기 인수: (LBA 0, 0x87 블록, 목적지 0x50b70100)</code></pre>
+<p>성공 경로의 헤더를 모형 저장소에서 꺼내 BOOT RAM에 호스트 복사로 넘겼습니다. 원본 BOOT 후보 선택 코드는 첫 위치로 LBA 0을 골랐습니다. <code>50b00c64</code>의 표 읽기 BL은 실행하지 않았습니다. 실제 재부팅·헤더 읽기·표 재적재가 검증된 것은 아닙니다.</p>
+<p>원본 kind 3 처리 조각에는 레지스터를 직접 공급했습니다. 여기서 M0 레코드 길이 <code>0x16804</code>가 working BOOTPARA <code>+0x0c</code>에 반영됐지만, 전체 패키지 dispatch는 실행하지 않았습니다. 헤더 <code>+0x14–+0x3f</code>에는 allocator의 시험 패턴이 남습니다. 이 헤더를 카메라에 쓸 수 있는 완성된 산출물로 제시하지 않습니다.</p>
+<p>구별 가능한 시험값을 넣은 32개 리소스 레코드의 <code>+4</code>와 표 전체는 세 실행에서 유지됐습니다. 관찰한 완료·표·헤더 경로에 기록자가 없었다는 뜻이며, 펌웨어 전체에 그런 기록자가 없다는 뜻은 아닙니다.</p>
+<p class="small muted">근거: JSON의 <code>native_location_policy_calls</code>, <code>header_stores</code>, <code>boot_candidate</code>, <code>table_and_all_resource_selectors_unchanged</code>.</p>
+</section>
+
+<section id="errors">
+<h2>오류 알림 이후와 완료 상태 객체는 아직 열린 경로다</h2>
+<p>다음 내용은 <strong>정적 분석</strong>입니다. 오류 진입점 <code>52ff2bf4</code>는 <code>52ff29a8</code>에 사유 3을 전달합니다. <code>ctx+0x34</code>가 2와 5 모두 아닐 때 플래그를 참으로 만들고, <code>52ff3a3c → 52ff399c</code>에서 <code>52ff382c</code>를 통해 메시지 <code>0x2640820d</code>를 전달합니다. 이벤트 호출에는 마스크 <code>0x08 / 0x10 / 0x20</code>과 조건부 <code>0x40</code>이 나타납니다.</p>
+<p>확인한 본문에는 표·헤더를 직접 다시 쓰는 보상 호출이 없습니다. 알림 수신자와 간접 호출 이후에 복구가 일어날 가능성은 남아 있습니다. 별도의 성공 후 함수 <code>52ff2970</code>에서는 파생 상태 객체의 <code>+0xf0</code>를 기록하고 <code>+0x100</code>을 증가시키지만, 실제 alias를 모두 해소하지 못했습니다. 두 저장 명령을 리소스 레코드 <code>+4</code>의 기록자로 볼 근거는 아직 없습니다.</p>
+<p>BOOT1 wrapper는 쓰기 결과를 보관한 다음 partition 0 복귀를 요청하고, 복귀 반환값을 검사하지 않은 채 보관한 쓰기 결과를 돌려줍니다. 시험에서는 복귀 성공을 공급했습니다. 실제 복귀 실패 뒤 캐시 재동기화 경로를 확인한 결과는 아닙니다.</p>
+<p class="small muted">근거: JSON의 <code>static_findings.error_static_boundary</code>, <code>finalizer_static_boundary</code>와 코드 범위 <code>error_entry / error_bridge / error_notification / finalizer / boot1_wrapper</code>.</p>
+</section>
+
+<section id="limits">
+<h2>확인하지 못한 부분</h2>
+<ul>
+<li>실제 매체의 리소스 선택값, 비제로 writer bank 생산자, 레코드 <code>+4</code>의 정책 기록자는 찾지 못했습니다.</li>
+<li>M0와 BOOT의 실제 물리 주소 매핑·캐시 일관성·전체 reset 경로를 재현하지 않았습니다. Cortex-A7 에뮬레이터에서 호환 명령을 실행했으며, Cortex-M0 시스템·주변장치 모형은 아닙니다.</li>
+<li>실제 저장소의 부분 쓰기·원자성·rollback, Boot ROM 인증, 수정 펌웨어의 정상 부팅은 검증하지 않았습니다.</li>
+<li>19의 선택값 1과 20의 성공 헤더는 별도 시험 입력입니다. 두 증거를 하나의 실제 업데이트·부팅 기록으로 합치면 안 됩니다.</li>
+</ul>
+</section>
+
+<section id="reproduce">
+<h2>원본 입력으로 다시 검증하기</h2>
+<p>저장소 루트에서 원본 decoded carrier를 입력합니다. Python과 Unicorn 2.1.4 환경에서 검증했습니다. 새 검증기는 이미 공개된 <code>verify_update_bank_selection.py</code>만 프로젝트 helper로 사용합니다. 이 helper의 줄 끝을 LF로 통일한 뒤 고정 SHA-256과 비교하고, 검사한 그 바이트를 직접 실행합니다. helper를 import하거나 <code>.pyc</code>를 읽지 않습니다. Unicorn과 표준 라이브러리는 별도의 실행 환경이며 소스 해시 고정 대상이 아닙니다.</p>
+<pre><code>python verify_selector_policy.py decoded.bin --output selector-policy-result.json
+python -m unittest discover -s tests -p test_selector_policy.py -v</code></pre>
+<p>전체 입력과 RTOS·BOOT·M0·파라미터 해시, 증거 범위 31개를 확인한 뒤 두 증거를 실행합니다. 출력 경로가 이미 존재하면 거부하며, Python <code>-O</code>도 허용하지 않습니다. 보호 시험은 잘못된 입력, 변경된 helper, CRLF, 오래된 unchecked bytecode, 기존 파일·입력 hardlink·helper 출력 alias, dangling symlink를 확인합니다.</p>
+<ul class="refs">
+<li><a href="selector-policy-checks.json">selector-policy-checks.json</a> — 분리된 19·20 실행 결과, 주소·해시, 정적 경계</li>
+<li><a href="../verify_selector_policy.py">verify_selector_policy.py</a> — 원본 명령 재현기</li>
+<li><a href="../tests/test_selector_policy.py">test_selector_policy.py</a> — 입력·의존성·출력 보호 시험</li>
+<li><a href="../verify_update_bank_selection.py">verify_update_bank_selection.py</a> — 고정 해시로 검증하는 기존 helper</li>
+<li><a href="update-bank-selection.html">앞선 bank 선택 분석</a> — PARTPARA·INITFS 연결과 기존 12사례</li>
+</ul>
+</section>
+</main></div>
+<!-- chrome:bottom -->
+<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">펌웨어 업데이트 과정 — 이 주제의 문서</h2><ol><li><a href="guide-update.html">업데이트 과정 안내</a></li><li><a href="update-resources.html">업데이트 검사와 ICONBIN<span>프로젝트·버전·체크섬</span></a></li><li><a href="update-memory.html">입력 로더와 메모리 할당</a></li><li><a href="update-file-lifetimes.html">파일 인터페이스와 버퍼 수명</a></li><li><a href="update-volume-finalization.html">파일 경로·volume·종료 처리</a></li><li><a href="update-media-completion.html">매체 객체와 완료 통지</a></li><li><a href="update-partition-io.html">R 파티션과 sector I/O</a></li><li><a href="update-bank-selection.html">쓰기 bank와 BOOT 선택</a></li><li><a href="selector-policy.html" aria-current="page">리소스 선택값과 헤더 기록 조건<span>FIFO 반례·표와 헤더의 쓰기 분기</span></a></li><li><a href="update-ui-consumer.html">완료 후 UI 작업</a></li><li><a href="update-ui-timer.html">UI 타이머와 콜백</a></li><li><a href="update-timer-abi.html">커널 호출과 예약 시각</a></li><li><a href="update-timer-insertion.html">기한 큐 삽입</a></li><li><a href="update-timer-clock.html">타이머 설정과 64비트 카운터</a></li><li><a href="update-timer-irq.html">타이머 등록과 지연 콜백</a></li><li><a href="update-subtick-arithmetic.html">하위 시간의 32비트 산술</a></li><li><a href="update-clock-readers.html">시각 조회 함수</a></li></ol></nav>
+<nav class="pager" aria-label="이전·다음 문서"><a class="prev" href="update-bank-selection.html"><small>← 이전</small>쓰기 bank와 BOOT 선택</a><a class="next" href="update-ui-consumer.html"><small>다음 →</small>완료 후 UI 작업</a></nav>
+<footer class="sitefoot"><div class="sitefoot-in"><nav aria-label="사이트"><a href="../index.html#map">문서 지도</a><a href="../index.html#levels">검증 수준 읽는 법</a><a href="../glossary.html">용어집</a><a href="research-program.html">세 기종 연구 본부</a><a href="https://github.com/yunhyok/pentax-k3iii-firmware-analysis">GitHub 저장소</a></nav><p>PENTAX 펌웨어 연구. PC에서 수행한 정적 분석과 에뮬레이션 결과이며, 카메라 실기에서 검증한 내용이 아닙니다. 원본 펌웨어와 추출한 독점 코드는 포함하지 않습니다.</p></div></footer>
+<!-- /chrome:bottom -->
+</body></html>
