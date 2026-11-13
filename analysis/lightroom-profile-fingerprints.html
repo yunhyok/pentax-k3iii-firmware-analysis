@@ -10,8 +10,8 @@
 <body data-camera="k3iii">
 <!-- chrome:top -->
 <a class="skip" href="#main">본문 바로가기</a>
-<div class="topbar"><div class="topbar-in"><a class="brand" href="../index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="../index.html" aria-current="true">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="https://yunhyok.github.io/pentax-q7-firmware-analysis/">Q7</a></div><nav class="topnav" aria-label="주제"><a href="../index.html">개요</a><a href="guide-boot.html">부팅·저장소</a><a href="guide-update.html">업데이트</a><a href="guide-rebuild.html">재구축</a><a href="guide-rtos.html">명령·셸</a><a href="guide-color.html">색 처리</a><a href="lightroom-bridge.html" aria-current="true">Lightroom</a><a href="af-foundations.html">AF</a><a href="ui-port-contract.html">UI</a></nav></div></div>
-<nav class="crumbs" aria-label="현재 위치"><ol><li><a href="../index.html">PENTAX K-3 Mark III</a></li><li><a href="lightroom-bridge.html">Lightroom 색 프로파일</a></li><li aria-current="page">프로파일 지문 재현</li></ol></nav>
+<div class="topbar"><div class="topbar-in"><a class="brand" href="../index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="../index.html" aria-current="true">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="https://yunhyok.github.io/pentax-q7-firmware-analysis/">Q7</a></div><nav class="topnav" aria-label="주제"><a href="../index.html">개요</a><a href="guide-boot.html">부팅·저장소</a><a href="guide-update.html">업데이트</a><a href="guide-rebuild.html">재구축</a><a href="guide-rtos.html">명령·셸</a><a href="guide-color.html">색 처리</a><a href="guide-lightroom.html" aria-current="true">Lightroom</a><a href="guide-af.html">AF</a><a href="guide-ui.html">UI</a></nav></div></div>
+<nav class="crumbs" aria-label="현재 위치"><ol><li><a href="../index.html">PENTAX K-3 Mark III</a></li><li><a href="guide-lightroom.html">Lightroom 색 프로파일</a></li><li aria-current="page">프로파일 지문 재현</li></ol></nav>
 <!-- /chrome:top -->
 <header class="page-head">
 <p class="eyebrow">Lightroom 색 프로파일 · 프로파일 지문</p>
@@ -27,10 +27,10 @@
 <section class="summary">
 <h2 data-toc="no">핵심 요약</h2>
 <ul>
-<li>Lightroom Classic 15.6이 내보낸 TIFF의 XMP에는 <code>CameraProfileDigest</code>라는 16진수 32자리 값이 있습니다. Adobe DNG SDK 소스에 있는 “전체 프로파일 지문” 계산 절차를 따라 <strong>시험 DCP 여섯 개에서 이 값을 직접 계산했고, 여섯 개 모두 TIFF의 값과 같았습니다</strong>.</li>
+<li>Lightroom Classic 15.6이 내보낸 TIFF의 XMP에는 <code>CameraProfileDigest</code>라는 16진수 32자리 값이 있습니다. Adobe DNG SDK 소스에 있는 “전체 프로파일 지문” 계산 절차를 따라 <strong>시험 DCP 여섯 개에서 이 값을 직접 계산했습니다. 여섯 개 모두 TIFF의 값과 같았습니다</strong>.</li>
 <li>이 지문은 DCP 파일 전체의 해시가 아닙니다. 광원, 정규화하고 반올림한 색 행렬, 프로파일 이름, 정책 값, 그리고 있으면 톤 곡선을 정해진 순서로 이어 붙인 바이트 열의 MD5입니다.</li>
 <li>그래서 <strong>지문이 같아도 파일은 다를 수 있습니다</strong>. 합성 DCP로 시험했을 때 모델 제한 문자열, 반올림에서 사라지는 작은 계수 차이, 행렬 전체에 곱한 배율, 파일의 바이트 순서는 지문을 바꾸지 않았습니다.</li>
-<li>확인한 대상은 색 행렬 두 개와 선택적 톤 곡선만 가진 DCP 여섯 개입니다. 지문은 프로파일을 구분하는 값일 뿐이며, 파일이 진짜임을 보증하거나 색이 정확함을 뜻하지 않습니다.</li>
+<li>확인한 대상은 색 행렬 두 개와 선택적 톤 곡선만 가진 DCP 여섯 개입니다. 지문은 프로파일을 구분하는 값일 뿐이며 파일이 진짜임을 보증하거나 색이 정확함을 뜻하지 않습니다.</li>
 </ul>
 </section>
 
@@ -62,7 +62,7 @@
 
 <section id="background">
 <h2>배경: 프로파일 지문이 무엇이고 왜 직접 계산하는가</h2>
-<p>이 주제의 실험은 직접 만든 <dfn title="DNG Camera Profile. Lightroom과 Camera Raw가 RAW를 현상할 때 쓰는 카메라별 색 프로파일 파일(.dcp)입니다.">DCP</dfn>를 Lightroom에 넣고 TIFF를 내보내 비교합니다. 이때 “이 TIFF가 정말 그 DCP로 현상됐는가”를 확인할 수단이 필요합니다. Lightroom은 내보낸 파일의 <dfn title="Adobe가 만든 메타데이터 형식. 파일 안에 XML로 들어갑니다.">XMP</dfn> 메타데이터에 프로파일 이름(<code>CameraProfile</code>)과 함께 <code>CameraProfileDigest</code>라는 값을 적습니다. 프로파일 이름은 누구나 같은 이름을 붙일 수 있지만, 이 값은 프로파일의 내용에서 계산됩니다.</p>
+<p>이 주제의 실험은 직접 만든 <dfn title="DNG Camera Profile. Lightroom과 Camera Raw가 RAW를 현상할 때 쓰는 카메라별 색 프로파일 파일(.dcp)입니다.">DCP</dfn>를 Lightroom에 넣고 TIFF를 내보내 비교합니다. 이때 “이 TIFF가 정말 그 DCP로 현상됐는가”를 확인할 수단이 필요합니다. Lightroom은 내보낸 파일의 <dfn title="Adobe가 만든 메타데이터 형식. 파일 안에 XML로 들어갑니다.">XMP</dfn> 메타데이터에 프로파일 이름(<code>CameraProfile</code>)과 함께 <code>CameraProfileDigest</code>라는 값을 적습니다. 프로파일 이름은 누구나 같은 이름을 붙일 수 있지만 이 값은 프로파일의 내용에서 계산됩니다.</p>
 <div class="table-wrap"><table>
 <caption>이 문서에 나오는 용어</caption>
 <thead><tr><th>용어</th><th>뜻</th></tr></thead>
@@ -74,7 +74,7 @@
 <tr><th scope="row">모델 제한 문자열</th><td>DCP의 <code>UniqueCameraModel</code> 태그입니다. 이 프로파일을 쓸 수 있는 카메라 모델을 가리킵니다.</td></tr>
 <tr><th scope="row">embed policy</th><td>프로파일을 다른 파일에 복사·내장해도 되는지를 적는 <code>ProfileEmbedPolicy</code> 태그의 값입니다. 태그가 없으면 기본값 0(복사 허용)입니다.</td></tr>
 </tbody></table></div>
-<p>Adobe는 Lightroom의 코드를 공개하지 않지만 DNG SDK의 소스는 공개합니다. SDK 소스에는 <code>CameraProfileDigest</code>라는 이름이 나오지 않습니다. 그래서 SDK의 지문 계산 절차를 읽고 같은 계산을 Python으로 옮긴 뒤, 결과가 Lightroom이 적은 값과 같은지 실제 TIFF로 확인했습니다. SDK를 컴파일해 실행한 것은 아닙니다.</p>
+<p>Adobe는 Lightroom의 코드를 공개하지 않지만 DNG SDK의 소스는 공개합니다. SDK 소스에는 <code>CameraProfileDigest</code>라는 이름이 나오지 않습니다. 그래서 SDK의 지문 계산 절차를 읽고 같은 계산을 Python으로 옮긴 뒤, 결과가 Lightroom이 적은 값과 같은지 실제 TIFF로 확인했습니다. SDK를 컴파일해 실행하지는 않았습니다.</p>
 </section>
 
 <section id="results">
@@ -95,7 +95,7 @@
 <p>행렬만 있는 DCP 세 개는 MD5 입력이 179바이트로 같습니다. 톤 곡선이 있는 세 개는 곡선 길이와 이름 길이만큼 늘어납니다. 여섯 DCP는 <a href="lightroom-render-comparison.html">실제 TIFF 6개 비교</a>, <a href="lightroom-model-exports.html">K-3 III·Q7 DCP 내보내기</a>, <a href="lightroom-tone-comparison.html">톤 곡선 비교</a>에서 쓴 것들입니다.</p>
 <p>같은 여섯 DCP에서 다른 두 값도 계산해 봤습니다. 렌더 데이터 지문과 DCP 파일 전체의 MD5는 여섯 경우 모두 TIFF의 값과 달랐습니다. Lightroom이 적는 값은 “전체 프로파일 지문”에 해당합니다.</p>
 <div class="callout"><strong class="label">참고</strong>
-<p>색 보정 표(LookTable)가 든 시험 DCP 두 개도 같은 절차에 표 데이터를 더해 계산했고, 두 값 모두 TIFF와 일치했습니다. 그 결과는 <a href="lightroom-look-controls.html">LookTable 대조 실험</a>에 있습니다.</p></div>
+<p>색 보정 표(LookTable)가 든 시험 DCP 두 개도 같은 절차에 표 데이터를 더해 계산했고 두 값 모두 TIFF와 일치했습니다. 그 결과는 <a href="lightroom-look-controls.html">LookTable 대조 실험</a>에 있습니다.</p></div>
 
 <details class="evidence"><summary>일치하지 않은 두 값: 렌더 데이터 지문과 파일 MD5</summary>
 <div class="table-wrap"><table class="compact">
@@ -191,7 +191,7 @@
 <ol class="steps">
 <li><strong>DCP를 읽습니다</strong> 광원 두 개, 색 행렬 두 개, 프로파일 이름, 그리고 있으면 톤 곡선을 읽습니다. DCP 파일의 바이트 순서(little-endian 또는 big-endian)에 맞춰 값으로 해석합니다.</li>
 <li><strong>색 행렬을 정규화합니다</strong> 행렬에 D50 백색을 곱해 나온 세 값 가운데 최댓값을 구합니다. 그 값이 양수이고 0.99~1.01 범위를 벗어나면 행렬 전체를 그 값으로 나눕니다.</li>
-<li><strong>소수 넷째 자리로 반올림합니다</strong> 각 원소에 배정밀도 실수로 10,000을 곱한 뒤 부호를 고려해 정수로 반올림합니다(양수는 0.5를 더하고, 음수는 0.5를 빼고 소수부를 버림).</li>
+<li><strong>소수 넷째 자리로 반올림합니다</strong> 각 원소에 배정밀도 실수로 10,000을 곱합니다. 그다음 부호를 고려해 정수로 반올림합니다(양수는 0.5를 더하고 음수는 0.5를 빼고 소수부를 버림).</li>
 <li><strong>정해진 순서로 이어 붙입니다</strong> 아래 표의 순서대로 little-endian 바이트 열을 만듭니다.</li>
 <li><strong>MD5를 계산합니다</strong> 결과 16바이트를 16진수 대문자 32자리로 적은 것이 전체 프로파일 지문입니다.</li>
 </ol>
@@ -241,7 +241,7 @@
 <li>지문 계산 전체: <code>dng_camera_profile.cpp</code> 562–827행</li>
 <li>빌드 번호 2768은 <code>dng_flags.h</code> 30행, 톤 곡선 점의 한도 8,192개는 <code>dng_sdk_limits.h</code> 72행</li>
 </ul>
-<p class="small">2026-11-10에 Adobe 배포 링크에서 받은 ZIP의 SHA-256이 위 값과 같았고, 소스 15개의 해시도 표와 같았습니다.</p>
+<p class="small">2026-11-10에 Adobe 배포 링크에서 받은 ZIP의 SHA-256이 위 값과 같았고 소스 15개의 해시도 표와 같았습니다.</p>
 </details>
 
 <details class="evidence"><summary>여섯 DCP의 MD5 입력을 항목별로 나눈 길이와 해시</summary>
@@ -288,7 +288,7 @@
 <tr><td>embed policy</td><td class="n">4</td><td><code class="wrap">df3f619804a92fdb4057192dc43dd748ea778adc52bc498ce80524c014b81119</code></td></tr>
 <tr><td>톤 곡선</td><td class="n">8,200</td><td><code class="wrap">51dac135a83970b08279dcdcc59839b851c66c7069501aabbbd014ba57715b01</code></td></tr>
 </tbody></table></div>
-<p class="small">K-3 II의 DCP 네 개는 광원과 색 행렬 항목의 해시가 서로 같습니다. 색 행렬과 톤 곡선의 값 자체는 싣지 않고 해시만 남겼습니다.</p>
+<p class="small">K-3 II의 DCP 네 개는 광원과 색 행렬 항목의 해시가 서로 같습니다. 이 표와 JSON에는 색 행렬과 톤 곡선의 값을 싣지 않고 해시만 남겼습니다.</p>
 </details>
 </section>
 
@@ -307,7 +307,7 @@
 <p class="small muted"><code>UniqueID</code>는 전체 지문 16바이트 뒤에 모델 제한 문자열을 붙여 다시 MD5를 계산한 값입니다. 근거는 <code>dng_camera_profile.h</code> 691–714행과 966–974행, <code>dng_camera_profile.cpp</code> 831–855행입니다. 이 표는 여섯 DCP가 가진 태그 조합에 한정됩니다.</p>
 
 <h3>합성 DCP로 확인한 변형 8가지</h3>
-<p>단위 행렬 두 개와 점 세 개짜리 톤 곡선을 가진 합성 DCP를 기준으로 삼고, 한 군데씩 바꿔 두 지문이 달라지는지 봤습니다. 여덟 변형 모두 DCP 파일의 SHA-256은 달라졌습니다.</p>
+<p>단위 행렬 두 개와 점 세 개짜리 톤 곡선을 가진 합성 DCP를 기준으로 삼고 한 군데씩 바꿔 두 지문이 달라지는지 봤습니다. 여덟 변형 모두 DCP 파일의 SHA-256은 달라졌습니다.</p>
 <div class="table-wrap"><table>
 <caption>한 군데를 바꿨을 때 달라지는 값 <span class="badge model">모델</span></caption>
 <thead><tr><th>바꾼 것</th><th>DCP 파일 해시</th><th>전체 지문</th><th>렌더 데이터 지문</th></tr></thead>
@@ -322,10 +322,10 @@
 <tr><th scope="row">톤 곡선 태그를 뺌</th><td><strong>달라짐</strong></td><td><strong>달라짐</strong></td><td><strong>달라짐</strong></td></tr>
 </tbody></table></div>
 <ul>
-<li><strong>이름과 모델 제한</strong> — 이름만 바꾸면 전체 지문만 달라졌습니다. 모델 제한을 바꾸면 두 지문 모두 그대로였습니다.</li>
-<li><strong>작은 계수와 배율</strong> — 넷째 자리 반올림에서 사라지는 작은 계수 변화, 정규화에서 상쇄되는 균일한 배율은 지문을 바꾸지 않았습니다. 유효 자릿수가 달라지는 행렬 수정, 광원 수정, 곡선 수정은 두 지문에 모두 반영됐습니다.</li>
-<li><strong>파일의 바이트 순서</strong> — 합성 DCP를 big-endian 파일로 다시 담아도 읽은 값이 같으면 지문은 같았습니다. 반대로 MD5 입력 자체를 big-endian으로 직렬화하면 두 지문이 모두 달라졌습니다.</li>
-<li><strong>embed policy</strong> — MD5 입력의 정책 값을 0에서 1로 바꾸면 전체 지문만 달라졌습니다. 이 시험은 DCP의 태그가 아니라 MD5 입력 값만 바꾼 것입니다. 정책 태그가 명시된 DCP는 검사기가 받지 않습니다.</li>
+<li><strong>이름과 모델 제한</strong>: 이름만 바꾸면 전체 지문만 달라졌습니다. 모델 제한을 바꾸면 두 지문 모두 그대로였습니다.</li>
+<li><strong>작은 계수와 배율</strong>: 넷째 자리 반올림에서 사라지는 작은 계수 변화, 정규화에서 상쇄되는 균일한 배율은 지문을 바꾸지 않았습니다. 유효 자릿수가 달라지는 행렬 수정, 광원 수정, 곡선 수정은 두 지문에 모두 반영됐습니다.</li>
+<li><strong>파일의 바이트 순서</strong>: 합성 DCP를 big-endian 파일로 다시 담아도 읽은 값이 같으면 지문은 같았습니다. 반대로 MD5 입력 자체를 big-endian으로 직렬화하면 두 지문이 모두 달라졌습니다.</li>
+<li><strong>embed policy</strong>: MD5 입력의 정책 값을 0에서 1로 바꾸면 전체 지문만 달라졌습니다. 이 시험은 DCP의 태그는 그대로 두고 MD5 입력 값만 바꿨습니다. 정책 태그가 명시된 DCP는 검사기가 받지 않습니다.</li>
 </ul>
 
 <h3>행렬 원소가 0일 때의 표기는 정하지 못했습니다</h3>
@@ -338,23 +338,23 @@
 <dt>기준 합성 DCP에서 0인 행렬 원소</dt><dd>행렬마다 6개(단위 행렬)</dd>
 <dt>실제 DCP 여섯 개에서 0인 행렬 원소</dt><dd>행렬마다 0개</dd>
 </dl>
-<p class="small">합성 대조는 <a href="../tests/test_lightroom_profile_fingerprints.py">tests/test_lightroom_profile_fingerprints.py</a>가 실행하고, 결과는 JSON의 <code>synthetic_controls</code>와 같아야 통과합니다.</p>
+<p class="small">합성 대조는 <a href="../tests/test_lightroom_profile_fingerprints.py">tests/test_lightroom_profile_fingerprints.py</a>가 실행하고 결과는 JSON의 <code>synthetic_controls</code>와 같아야 통과합니다.</p>
 </details>
 </section>
 
 <section id="limits">
 <h2>한계와 남은 과제</h2>
 <ul>
-<li><strong>대상이 좁습니다</strong> — 색 행렬 두 개와 선택적 톤 곡선을 가진 DCP 여섯 개, Lightroom Classic 15.6 하나에서 확인했습니다. ForwardMatrix나 HueSatMap, 저작권 문자열, 명시된 정책 태그를 가진 DCP는 이 검사기의 범위 밖입니다.</li>
-<li><strong>계산을 옮겨 적은 것입니다</strong> — SDK 소스를 읽고 Python으로 같은 계산을 구현했습니다. Lightroom이 내부에서 SDK와 같은 코드를 쓴다는 것을 본 것이 아니라, 결과 값이 같다는 것을 확인했습니다.</li>
-<li><strong>0의 표기</strong> — 행렬 원소가 0인 프로파일에서 Lightroom이 어떤 표기를 쓰는지는 확인하지 못했습니다.</li>
-<li><strong>지문의 용도</strong> — 같은 지문이어도 DCP 파일의 바이트나 모델 제한은 다를 수 있습니다. 이 대조는 프로파일 지문의 재현에 한정되며, 파일 인증이나 색 정확도는 다루지 않습니다.</li>
+<li><strong>대상이 좁습니다</strong>. 색 행렬 두 개와 선택적 톤 곡선을 가진 DCP 여섯 개, Lightroom Classic 15.6 하나에서 확인했습니다. ForwardMatrix나 HueSatMap, 저작권 문자열, 명시된 정책 태그를 가진 DCP는 이 검사기의 범위 밖입니다.</li>
+<li><strong>계산을 옮겨 적은 것입니다</strong>. SDK 소스를 읽고 Python으로 같은 계산을 구현했습니다. 결과 값이 같다는 것은 확인했습니다. Lightroom이 내부에서 SDK와 같은 코드를 쓰는지는 직접 보지 않았습니다.</li>
+<li><strong>0의 표기</strong>: 행렬 원소가 0인 프로파일에서 Lightroom이 어떤 표기를 쓰는지는 확인하지 못했습니다.</li>
+<li><strong>지문의 용도</strong>: 같은 지문이어도 DCP 파일의 바이트나 모델 제한은 다를 수 있습니다. 이 대조는 프로파일 지문의 재현에 한정되며 파일 인증이나 색 정확도는 다루지 않습니다.</li>
 </ul>
 </section>
 
 <section id="replay">
 <h2>재현 방법</h2>
-<p>Python 3.11 이상과 tifffile을 씁니다. <code>--sdk</code>에는 Adobe DNG SDK ZIP, <code>--dcps</code>에는 DCP 여섯 개가 든 폴더, <code>--exports</code>에는 TIFF의 하위 폴더를 모아 둔 경로를 줍니다. 파일 배치는 JSON의 <code>input_layout</code>에 있습니다. 검사기는 해시가 정확히 일치하는 파일만 받고, 결과는 아직 없는 새 경로에만 씁니다.</p>
+<p>Python 3.11 이상과 tifffile을 씁니다. <code>--sdk</code>에는 Adobe DNG SDK ZIP, <code>--dcps</code>에는 DCP 여섯 개가 든 폴더, <code>--exports</code>에는 TIFF의 하위 폴더를 모아 둔 경로를 줍니다. 파일 배치는 JSON의 <code>input_layout</code>에 있습니다. 검사기는 해시가 정확히 일치하는 파일만 받고 결과는 아직 없는 새 경로에만 씁니다.</p>
 <pre><code>python -B tools/check_lightroom_profile_fingerprints.py \
   --sdk fingerprint-fixtures/dng-sdk.zip --dcps fingerprint-fixtures/dcps \
   --exports fingerprint-fixtures/exports \
@@ -362,7 +362,8 @@
 <p>검사기는 계산 결과가 공개 JSON과 다르면 실패합니다. 만들어진 <code>fingerprint-replay.json</code>의 SHA-256을 <code>analysis/lightroom-profile-fingerprints.json</code>과 비교해도 됩니다. 합성 대조만 다시 돌리려면 파일이 필요 없습니다.</p>
 <pre><code>python -m unittest discover -s tests -p test_lightroom_profile_fingerprints.py -v</code></pre>
 <div class="callout"><strong class="label">공개 자료에 없는 것</strong>
-<p>SDK 소스, 원본 DCP와 TIFF, 제조사의 행렬과 곡선 값은 저장소에 싣지 않았습니다. SDK ZIP은 <a href="https://helpx.adobe.com/camera-raw/desktop/dng-and-file-formats/digital-negative.html">Adobe 배포처</a>에서 받습니다. K-3 II의 DCP 네 개는 <a href="lightroom-tone-comparison.html#replay">톤 곡선 비교의 재현 방법</a>으로 다시 만들 수 있습니다.</p></div>
+<p>SDK 소스와 TIFF, 시험 DCP 여섯 개의 파일은 저장소에 싣지 않았습니다. SDK ZIP은 <a href="https://helpx.adobe.com/camera-raw/desktop/dng-and-file-formats/digital-negative.html">Adobe 배포처</a>에서 받습니다. K-3 II의 DCP 네 개는 <a href="lightroom-tone-comparison.html#replay">톤 곡선 비교의 재현 방법</a>으로 다시 만들 수 있습니다.</p>
+<p>시험 DCP에 넣은 색 행렬은 카메라가 공개 RAW에 적어 둔 값이며 저장소에 실었습니다. K-3 II의 값은 <a href="lightroom-matrix-1376.json">lightroom-matrix-1376.json</a>입니다. K-3 III와 Q7의 값은 <a href="lightroom-studio-baseline.json">lightroom-studio-baseline.json</a>의 <code>profile_recipes</code>에 있고 같은 도구로 두 DCP도 다시 만듭니다. 펌웨어에서 추출한 계수와 Adobe 프로파일의 값은 싣지 않았습니다.</p></div>
 </section>
 
 <section id="refs">
@@ -378,7 +379,7 @@
 </main>
 </div>
 <!-- chrome:bottom -->
-<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">Lightroom 색 프로파일 — 이 주제의 문서</h2><ol><li><a href="lightroom-bridge.html">Lightroom 프로파일 안내<span>DCP 생성·검증의 전체 흐름</span></a></li><li><a href="raw-test-inputs.html">시험용 RAW 준비</a></li><li><a href="color-comparison-protocol.html">ColorChecker 비교 절차</a></li><li><a href="lightroom-render-comparison.html">실제 TIFF 6개 비교</a></li><li><a href="lightroom-tone-comparison.html">톤 곡선 비교</a></li><li><a href="lightroom-model-exports.html">K-3 III·Q7 DCP 내보내기</a></li><li><a href="lightroom-profile-fingerprints.html" aria-current="page">프로파일 지문 재현</a></li><li><a href="lightroom-look-controls.html">LookTable 대조 실험</a></li><li><a href="color-tone-residual.html">톤 보정 뒤 남는 색차</a></li><li><a href="color-scene-transfer.html">고정 톤의 독립 장면 비교<span>K-3 II #1363과 Lightroom 버전 대조</span></a></li><li><a href="lightroom-composed-tone.html">합성 톤 DCP의 실제 Lightroom 출력<span>두 장면·최대 색차 기준 미충족</span></a></li><li><a href="lightroom-tone-coordinates.html">Lightroom 톤과 RGB 좌표<span>같은 엔진·두 출력 색공간 대조</span></a></li><li><a href="lightroom-studio-baseline.html">K-3 III·Q7 Bright 스튜디오 비교<span>정합 통과 영역의 JPEG 대비 색차</span></a></li><li><a href="lightroom-studio-reference.html">K-3 III·Q7 참조 프로파일 비교<span>같은 장면의 공통 마스크·As Shot 대조</span></a></li><li><a href="lightroom-as-shot.html">As Shot과 프로파일별 백색점<span>같은 Q7 RAW의 SDK 수식 재현</span></a></li><li><a href="lightroom-pef-neutral.html">K-3 III PEF의 As Shot 중립값<span>두 DNG 변환과 세 프로파일 수식 재현</span></a></li><li><a href="lightroom-cfa-preservation.html">K-3 III PEF·DNG의 CFA 샘플 비교<span>변환 전후 전체 26,628,096개 샘플 대조</span></a></li><li><a href="lightroom-cfa-range.html">K-3 III DNG의 CFA 범위와 기본 크롭<span>활성 영역과 크롭의 WhiteLevel 대조</span></a></li><li><a href="lightroom-sdk-stage2.html">K-3 III DNG의 Adobe SDK Stage 2 실행<span>원본 SDK에서 활성 영역 25,891,840개 전수 대조</span></a></li><li><a href="lightroom-sdk-stage3.html">K-3 III DNG의 Adobe SDK Stage 3<span>카메라 채널 77,675,520개 보간 대조</span></a></li></ol></nav>
+<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">Lightroom 색 프로파일 — 이 주제의 문서</h2><ol><li><a href="guide-lightroom.html">Lightroom 색 프로파일 안내</a></li><li><a href="lightroom-bridge.html">DCP 구조와 생성 도구<span>세 기종 공통</span></a></li><li><a href="raw-test-inputs.html">시험용 RAW 준비</a></li><li><a href="color-comparison-protocol.html">ColorChecker 비교 절차</a></li><li><a href="lightroom-render-comparison.html">실제 TIFF 6개 비교</a></li><li><a href="lightroom-tone-comparison.html">톤 곡선 비교</a></li><li><a href="lightroom-model-exports.html">K-3 III·Q7 DCP 내보내기</a></li><li><a href="lightroom-profile-fingerprints.html" aria-current="page">프로파일 지문 재현</a></li><li><a href="lightroom-look-controls.html">LookTable 대조 실험</a></li><li><a href="color-tone-residual.html">톤 보정 뒤 남는 색차</a></li><li><a href="color-scene-transfer.html">고정 톤의 독립 장면 비교<span>K-3 II #1363과 Lightroom 버전 대조</span></a></li><li><a href="lightroom-composed-tone.html">합성 톤 DCP의 실제 Lightroom 출력<span>두 장면·최대 색차 기준 미충족</span></a></li><li><a href="lightroom-tone-coordinates.html">Lightroom 톤과 RGB 좌표<span>같은 엔진·두 출력 색공간 대조</span></a></li><li><a href="lightroom-studio-baseline.html">K-3 III·Q7 Bright 스튜디오 비교<span>정합 통과 영역의 JPEG 대비 색차</span></a></li><li><a href="lightroom-studio-reference.html">K-3 III·Q7 참조 프로파일 비교<span>같은 장면의 공통 마스크·As Shot 대조</span></a></li><li><a href="lightroom-as-shot.html">As Shot과 프로파일별 백색점<span>같은 Q7 RAW의 SDK 수식 재현</span></a></li><li><a href="lightroom-pef-neutral.html">K-3 III PEF의 As Shot 중립값<span>두 DNG 변환과 세 프로파일 수식 재현</span></a></li><li><a href="lightroom-cfa-preservation.html">K-3 III PEF·DNG의 CFA 샘플 비교<span>변환 전후 샘플 전수 대조</span></a></li><li><a href="lightroom-cfa-range.html">K-3 III DNG의 CFA 범위와 기본 크롭<span>활성 영역과 크롭의 WhiteLevel 대조</span></a></li><li><a href="lightroom-sdk-stage2.html">K-3 III DNG의 Adobe SDK Stage 2 실행<span>정규화 단계 전수 대조</span></a></li><li><a href="lightroom-sdk-stage3.html">K-3 III DNG의 Adobe SDK Stage 3<span>Bayer 보간 전수 대조</span></a></li></ol></nav>
 <nav class="pager" aria-label="이전·다음 문서"><a class="prev" href="lightroom-model-exports.html"><small>← 이전</small>K-3 III·Q7 DCP 내보내기</a><a class="next" href="lightroom-look-controls.html"><small>다음 →</small>LookTable 대조 실험</a></nav>
 <footer class="sitefoot"><div class="sitefoot-in"><nav aria-label="사이트"><a href="../index.html#map">문서 지도</a><a href="../index.html#levels">검증 수준 읽는 법</a><a href="../glossary.html">용어집</a><a href="research-program.html">세 기종 연구 본부</a><a href="https://github.com/yunhyok/pentax-k3iii-firmware-analysis">GitHub 저장소</a></nav><p>PENTAX 펌웨어 연구. PC에서 수행한 정적 분석과 에뮬레이션 결과이며, 카메라 실기에서 검증한 내용이 아닙니다. 원본 펌웨어와 추출한 독점 코드는 포함하지 않습니다.</p></div></footer>
 <!-- /chrome:bottom -->

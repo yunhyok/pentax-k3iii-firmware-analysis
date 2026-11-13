@@ -10,8 +10,8 @@
 <body data-camera="k3iii">
 <!-- chrome:top -->
 <a class="skip" href="#main">본문 바로가기</a>
-<div class="topbar"><div class="topbar-in"><a class="brand" href="../index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="../index.html" aria-current="true">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="https://yunhyok.github.io/pentax-q7-firmware-analysis/">Q7</a></div><nav class="topnav" aria-label="주제"><a href="../index.html">개요</a><a href="guide-boot.html">부팅·저장소</a><a href="guide-update.html">업데이트</a><a href="guide-rebuild.html">재구축</a><a href="guide-rtos.html">명령·셸</a><a href="guide-color.html">색 처리</a><a href="lightroom-bridge.html">Lightroom</a><a href="af-foundations.html">AF</a><a href="ui-port-contract.html" aria-current="true">UI</a></nav></div></div>
-<nav class="crumbs" aria-label="현재 위치"><ol><li><a href="../index.html">PENTAX K-3 Mark III</a></li><li><a href="ui-port-contract.html">UI와 화면 자원</a></li><li aria-current="page">색공간 화면: 선택·확정·취소</li></ol></nav>
+<div class="topbar"><div class="topbar-in"><a class="brand" href="../index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="../index.html" aria-current="true">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="https://yunhyok.github.io/pentax-q7-firmware-analysis/">Q7</a></div><nav class="topnav" aria-label="주제"><a href="../index.html">개요</a><a href="guide-boot.html">부팅·저장소</a><a href="guide-update.html">업데이트</a><a href="guide-rebuild.html">재구축</a><a href="guide-rtos.html">명령·셸</a><a href="guide-color.html">색 처리</a><a href="guide-lightroom.html">Lightroom</a><a href="guide-af.html">AF</a><a href="guide-ui.html" aria-current="true">UI</a></nav></div></div>
+<nav class="crumbs" aria-label="현재 위치"><ol><li><a href="../index.html">PENTAX K-3 Mark III</a></li><li><a href="guide-ui.html">UI와 화면 자원</a></li><li aria-current="page">색공간 화면: 선택·확정·취소</li></ol></nav>
 <!-- /chrome:top -->
 <header class="page-head">
 <p class="eyebrow">UI와 화면 자원 · 색공간 화면 1</p>
@@ -27,10 +27,10 @@
 <section class="summary">
 <h2 data-toc="no">핵심 요약</h2>
 <ul>
-<li>이 화면에서 색공간 값은 <strong>세 군데</strong>에 있습니다. 설정 레코드, 그 사본인 현재값 캐시, 그리고 화면에서 고르는 중인 보류 선택입니다. 화면을 채울 때는 캐시를 읽고, 포커스를 옮길 때는 보류 선택만 바뀝니다.</li>
+<li>이 화면에서 색공간 값은 <strong>세 군데</strong>에 있습니다. 설정 레코드, 그 사본인 현재값 캐시, 그리고 화면에서 고르는 중인 보류 선택입니다. 화면을 채울 때는 캐시를 읽고 포커스를 옮길 때는 보류 선택만 바뀝니다.</li>
 <li><strong>확정</strong>하면 보류 선택이 설정 함수로 넘어갑니다. 값이 이미 같으면 설정 함수에 들어가기는 하지만 기록은 생략합니다. <strong>취소</strong>는 설정 함수를 부르지 않고 화면을 닫습니다.</li>
 <li>기록이 일어나면 관찰자 함수(observer)가 캐시를 레코드 값으로 맞춥니다. 그 뒤 조건이 맞으면 색공간 속성 요청을 아래 단계로 보냅니다.</li>
-<li>원본 ARM 코드를 PC 에뮬레이터에서 <strong>16가지 합성 상황</strong>으로 실행해 확인했습니다. 화면 객체와 포커스는 시험용으로 만들어 넣었고, 그리기 호출은 인수만 기록했습니다. 실제 버튼, 완성된 화면, 전원을 껐다 켠 뒤의 값은 확인하지 않았습니다.</li>
+<li>원본 ARM 코드를 PC 에뮬레이터에서 <strong>16가지 합성 상황</strong>으로 실행해 확인했습니다. 화면 객체와 포커스는 시험용으로 만들어 넣었고 그리기 호출은 인수만 기록했습니다. 실제 버튼, 완성된 화면, 전원을 껐다 켠 뒤의 값은 확인하지 않았습니다.</li>
 </ul>
 </section>
 
@@ -66,7 +66,7 @@
 
 <section id="background">
 <h2>배경: 색공간 메뉴와 이 문서의 범위</h2>
-<p>K-3 Mark III의 정지화상 메뉴 5번(Image Capture Settings)에는 Color Space 항목이 있습니다. 선택지는 sRGB와 AdobeRGB 둘이고 기본값은 sRGB입니다(<a href="https://www.ricoh-imaging.co.jp/english/support/man-pdf/k-3-3.pdf">공식 사용설명서</a> 24쪽·48쪽). 선택지가 둘뿐이고 K-3 II와 Q7에도 같은 설정이 있어서, <a href="ui-port-contract.html">UI 이식 설계</a>의 첫 단위로 이 화면을 골랐습니다.</p>
+<p>K-3 Mark III의 정지화상 메뉴 5번(Image Capture Settings)에는 Color Space 항목이 있습니다. 선택지는 sRGB와 AdobeRGB 둘이고 기본값은 sRGB입니다(<a href="https://www.ricoh-imaging.co.jp/english/support/man-pdf/k-3-3.pdf">공식 사용설명서</a> 24쪽·48쪽). 선택지가 둘뿐이고 K-3 II와 Q7에도 같은 설정이 있어서 <a href="ui-port-contract.html">UI 이식 설계</a>의 첫 단위로 이 화면을 골랐습니다.</p>
 <p>이 문서는 화면이 구성된 뒤부터 값이 설정 메모리에 닿을 때까지를 다룹니다. 포커스를 위아래로 옮기는 입력은 <a href="colorspace-ui-input.html">방향 입력과 포커스</a>에서, 아이콘이 화면 버퍼로 복사되는 과정은 <a href="icon-resources.html">ICONBIN 아이콘 자원</a>에서 다룹니다.</p>
 
 <h3>이 문서에 나오는 이름</h3>
@@ -74,7 +74,7 @@
 <dt>route</dt><dd>메뉴 항목을 가리키는 32비트 번호입니다. 색공간 항목은 <code>0x0200009f</code>입니다.</dd>
 <dt>descriptor</dt><dd>선택 화면 하나의 동작을 정의한 표의 한 줄(92바이트)입니다. 선택지 개수를 알려 주는 함수, 행을 준비하는 함수, 값을 반영하는 함수의 주소가 들어 있습니다.</dd>
 <dt>controller</dt><dd>여러 선택 화면이 함께 쓰는 객체입니다. 펌웨어에 남은 타입 이름은 <code>SelectMenuController</code>입니다. 어느 descriptor를 쓸지 번호로 기억합니다.</dd>
-<dt>list와 행</dt><dd>list는 선택지 행을 담는 목록 객체이고, 지금 포커스가 놓인 행 번호를 가집니다. 행마다 아이콘 표시부와 글자 표시부가 있습니다.</dd>
+<dt>list와 행</dt><dd>list는 선택지 행을 담는 목록 객체이고 지금 포커스가 놓인 행 번호를 가집니다. 행마다 아이콘 표시부와 글자 표시부가 있습니다.</dd>
 <dt>UserData</dt><dd>사용자 설정을 담는 메모리 객체입니다. 설정 레코드와 현재값 캐시가 여기에 있습니다.</dd>
 <dt>setter·observer</dt><dd>setter는 설정값을 기록하는 함수, observer는 기록 뒤에 불려 뒷정리를 하는 함수입니다.</dd>
 </dl>
@@ -168,7 +168,7 @@
 </tbody></table></div>
 <p>행 그리기 함수는 행의 <code>+0x180</code>에 있는 아이콘 표시부(IconView)에 아이콘 ID를, <code>+0x18c</code>의 글자 표시부에 문자열 ID를 설정합니다. IconView가 이 ID로 아이콘 픽셀을 찾는 과정은 <a href="icon-resources.html#gui">ICONBIN 아이콘 자원</a>에 있습니다.</p>
 <div class="callout warn"><strong class="label">주의</strong>
-<p>시험에서는 행 그리기 함수를 ‘ID만 기록하는 대체 함수’로 바꿨습니다. 그래서 확인한 것은 어떤 ID가 넘어가는지까지입니다. 스타일 값의 공식 의미, 언어별 실제 문자열, 글꼴, 완성된 화면은 확인하지 않았습니다. descriptor에 있는 제목 후보 ID <code>0x1f3</code>과 머리글 함수가 넘기는 <code>0x1f5</code>는 서로 다른 ID이며, 둘을 같은 화면 제목으로 합치지 않았습니다.</p></div>
+<p>시험에서는 행 그리기 함수를 ‘ID만 기록하는 대체 함수’로 바꿨습니다. 그래서 확인한 것은 어떤 ID가 넘어가는지까지입니다. 스타일 값의 공식 의미, 언어별 실제 문자열, 글꼴, 완성된 화면은 확인하지 않았습니다. descriptor에 있는 제목 후보 ID <code>0x1f3</code>과 머리글 함수가 넘기는 <code>0x1f5</code>는 서로 다른 ID이며 둘을 같은 화면 제목으로 합치지 않았습니다.</p></div>
 
 <details class="evidence"><summary>route·controller·행 준비의 주소</summary>
 <div class="table-wrap"><table class="compact">
@@ -177,7 +177,7 @@
 <tr><th scope="row">route 처리기</th><td><code>0x5278bb44</code></td><td>route에서 <code>0x02000063</code>을 뺀 값 <code>0x3c</code>를 분기 표의 번호로 씁니다.</td></tr>
 <tr><th scope="row">분기 표의 색공간 칸</th><td><code>0x5278bc5c</code> → <code>0x5278d4c0</code></td><td>이 코드가 controller의 <code>+0x1d4</code>(16비트)에 72를 씁니다.</td></tr>
 <tr><th scope="row">descriptor 72</th><td><code>0x536453c0</code>, 92바이트</td><td>SHA-256 <code class="wrap">3e3eb830762db05259c40daa78bbcf9efaba1cad6a1f605381e51103378d442b</code></td></tr>
-<tr><th scope="row">controller의 가상 함수 표</th><td><code>0x5364ad68</code></td><td>근거 JSON은 표 블록을 <code>0x5364ad60</code>부터 140바이트로 기록합니다. <code>+4</code> 위치가 타입 정보 <code>0x5364aab8</code>을 가리키고, 타입 정보는 이름 문자열 <code>20SelectMenuController</code>(<code>0x5364adec</code>)를 가리킵니다.</td></tr>
+<tr><th scope="row">controller의 가상 함수 표</th><td><code>0x5364ad68</code></td><td>근거 JSON은 표 블록을 <code>0x5364ad60</code>부터 140바이트로 기록합니다. <code>+4</code> 위치가 타입 정보 <code>0x5364aab8</code>을 가리키고 타입 정보는 이름 문자열 <code>20SelectMenuController</code>(<code>0x5364adec</code>)를 가리킵니다.</td></tr>
 <tr><th scope="row">화면 열기 진입</th><td><code>0x5278ed80</code></td><td>표의 <code>0x5364ad80</code> 칸. route 선택 뒤 표시 갱신으로 이어집니다. 정적으로만 확인했습니다.</td></tr>
 <tr><th scope="row">이벤트 진입</th><td><code>0x5278ef84</code></td><td>표의 <code>0x5364ad90</code> 칸. 확정·취소·이동 이벤트를 분기합니다.</td></tr>
 <tr><th scope="row">메뉴 구성 함수</th><td><code>0x5278e05c</code></td><td>두 번째 인수가 mode입니다. 시험은 mode 1로 실행했습니다.</td></tr>
@@ -186,13 +186,13 @@
 <tr><th scope="row">행 그리기</th><td><code>0x52c10aec</code></td><td>IconView 설정 <code>0x52bf1430</code>, 글자 설정 <code>0x52bee8f8</code>을 부릅니다. 시험에서는 대체했습니다.</td></tr>
 <tr><th scope="row">descriptor <code>+0x54</code></th><td><code>0x5278960c</code></td><td>근거 JSON에 값만 기록되어 있습니다. 역할은 해석하지 않았습니다.</td></tr>
 </tbody></table></div>
-<p class="small">시험은 route 처리기를 부르기 전에 controller의 descriptor 번호를 <code>0xffff</code>로 채워 두고, 실행 뒤 72로 바뀌었는지 확인합니다.</p>
+<p class="small">시험은 route 처리기를 부르기 전에 controller의 descriptor 번호를 <code>0xffff</code>로 채워 두고 실행 뒤 72로 바뀌었는지 확인합니다.</p>
 </details>
 </section>
 
 <section id="state">
 <h2>고르는 중인 값은 확정할 때만 설정으로 넘어갑니다</h2>
-<p class="takeaway">화면을 채울 때는 캐시의 현재값을 읽습니다. 고르는 동안에는 목록의 포커스 번호만 바뀌고, 확정 이벤트가 와야 그 번호가 설정 함수로 넘어갑니다. 취소는 아무것도 기록하지 않습니다.</p>
+<p class="takeaway">화면을 채울 때는 캐시의 현재값을 읽습니다. 고르는 동안에는 목록의 포커스 번호만 바뀌고 확정 이벤트가 와야 그 번호가 설정 함수로 넘어갑니다. 취소는 아무것도 기록하지 않습니다.</p>
 
 <figure class="diagram">
 <figcaption>메뉴 구성부터 확정·취소까지의 상태 변화</figcaption>
@@ -258,7 +258,7 @@
 <tr><th scope="row">설정 레코드 <code>+0x35b</code></th><td>색공간 값 0(sRGB) 또는 1(AdobeRGB)</td><td>확정한 값이 레코드나 캐시와 다를 때 setter가 기록합니다.</td></tr>
 <tr><th scope="row">캐시 <code>UserData+0x3b7</code></th><td>현재값의 사본</td><td>기록 뒤 observer가 레코드와 다르면 맞춥니다.</td></tr>
 <tr><th scope="row"><code>controller+0x1d6</code></th><td>화면을 채울 때 현재값과 일치한 선택지 번호</td><td>메뉴 구성(mode 1)이 일치하는 선택지를 찾았을 때만 갱신합니다.</td></tr>
-<tr><th scope="row"><code>list+0x1ce</code></th><td>포커스가 놓인 행 번호 = 보류 선택</td><td>메뉴 구성이 초기값을 넣고, 방향 이동이 바꿉니다.</td></tr>
+<tr><th scope="row"><code>list+0x1ce</code></th><td>포커스가 놓인 행 번호 = 보류 선택</td><td>메뉴 구성이 초기값을 넣고 방향 이동이 바꿉니다.</td></tr>
 </tbody></table></div>
 
 <p>확정 함수는 <code>controller+0x1d6</code>이 아니라 <code>list+0x1ce</code>를 읽습니다. 그래서 포커스를 옮긴 뒤 확정하면 옮긴 행의 값이 반영됩니다. 선택지 번호 0·1은 2바이트짜리 표(<code>0x536a6250</code>)를 거쳐 값 0·1이 됩니다. 값 0이 sRGB, 1이 AdobeRGB라는 대응은 <a href="pipeline-report.html#0x145">색공간 요청을 받는 쪽의 분석</a>에서 나왔습니다. K-3 II와 Q7에서도 같은 번호를 쓴다고 가정하지 않습니다.</p>
@@ -279,7 +279,7 @@
 <p class="small muted">여덟 사례 모두 화면 닫기 요청은 한 번씩 있었습니다. ‘다시 구성한 선택’은 같은 객체에 메뉴 구성 함수를 한 번 더 실행해 얻은 포커스 위치입니다. 창을 없앴다가 다시 만든 결과가 아닙니다.</p>
 
 <div class="callout model"><strong class="label">시험 조건</strong>
-<p>보류 선택은 방향 이벤트로 옮긴 것이 아니라 <code>list+0x1ce</code>에 값을 직접 써 넣은 것입니다. 이벤트 번호 <code>0xe7</code>·<code>0xe9</code>도 시험이 넣어 준 값이며, 어떤 버튼이나 터치가 이 번호를 만드는지는 확인하지 않았습니다. 방향 이벤트가 실제로 포커스를 옮기는 과정은 <a href="colorspace-ui-input.html">다음 문서</a>에서 따로 실행했습니다.</p></div>
+<p>보류 선택은 방향 이벤트로 옮기지 않고 <code>list+0x1ce</code>에 값을 직접 써 넣었습니다. 이벤트 번호 <code>0xe7</code>·<code>0xe9</code>도 시험이 넣어 준 값이며 어떤 버튼이나 터치가 이 번호를 만드는지는 확인하지 않았습니다. 방향 이벤트가 실제로 포커스를 옮기는 과정은 <a href="colorspace-ui-input.html">다음 문서</a>에서 따로 실행했습니다.</p></div>
 
 <details class="evidence"><summary>확정·취소 경로의 주소</summary>
 <div class="table-wrap"><table class="compact">
@@ -365,7 +365,7 @@
 </svg>
 </div>
 <ul class="dg-legend"><li><i class="ok"></i>원본 코드 실행으로 확인</li><li><i class="key"></i>판단 지점</li><li><i class="model"></i>시험이 멈추는 경계(인수만 기록)</li><li><i class="mute"></i>아무것도 하지 않는 분기</li></ul>
-<p>파선 화살표는 한 번에 이어서 실행한 구간이 아니라는 뜻입니다. 이 문서의 시험은 속성 요청 함수 입구에서 멈추고, 요청을 받는 쪽은 다른 시험에서 따로 확인했습니다.</p>
+<p>파선 화살표는 한 번에 이어서 실행하지 않은 구간을 나타냅니다. 이 문서의 시험은 속성 요청 함수 입구에서 멈추고 요청을 받는 쪽은 다른 시험에서 따로 확인했습니다.</p>
 </figure>
 
 <p>기록 여부를 식으로 쓰면 아래와 같습니다.</p>
@@ -389,8 +389,8 @@
 
 <h3>observer가 하는 두 가지 일은 조건이 다릅니다</h3>
 <ul>
-<li><strong>캐시 맞추기</strong> — 레코드의 값을 캐시와 비교해 다를 때만 캐시를 갱신합니다.</li>
-<li><strong>하위 요청</strong> — 레코드의 바이트 <code>+0x2c</code>가 0일 때만 색공간 속성 요청 함수로 넘어갑니다. 0이 아니면 캐시만 맞추고 돌아갑니다.</li>
+<li><strong>캐시 맞추기</strong>: 레코드의 값을 캐시와 비교해 다를 때만 캐시를 갱신합니다.</li>
+<li><strong>하위 요청</strong>: 레코드의 바이트 <code>+0x2c</code>가 0일 때만 색공간 속성 요청 함수로 넘어갑니다. 0이 아니면 캐시만 맞추고 돌아갑니다.</li>
 </ul>
 <p><code>+0x2c</code>를 1로 둔 사례에서 레코드와 캐시는 각각 한 번씩 기록됐고 속성 요청은 없었습니다. 이 바이트가 카메라에서 무엇을 뜻하는지는 확인하지 않았습니다.</p>
 
@@ -405,7 +405,7 @@
 <tr><th scope="row">레코드 비교</th><td><code>0x52954b34</code>–<code>0x52954b3c</code></td><td><code>+0x35b</code>를 읽어 새 값과 비교합니다. 같으면 캐시 비교로 갑니다.</td></tr>
 <tr><th scope="row">캐시 비교</th><td><code>0x52954bcc</code>–<code>0x52954bd4</code></td><td><code>+0x3b7</code>을 읽어 새 값과 비교합니다. 다르면 기록으로 돌아갑니다.</td></tr>
 <tr><th scope="row">레코드 기록</th><td><code>0x52954b40</code></td><td><code>strb r1, [r3, #0x35b]</code></td></tr>
-<tr><th scope="row">observer</th><td><code>0x5290e520</code></td><td><code>0x5290e550</code>의 조건부 저장이 캐시를 갱신하고, <code>0x5290e558</code>의 조건부 복귀가 <code>+0x2c</code>를 반영합니다.</td></tr>
+<tr><th scope="row">observer</th><td><code>0x5290e520</code></td><td><code>0x5290e550</code>의 조건부 저장이 캐시를 갱신하고 <code>0x5290e558</code>의 조건부 복귀가 <code>+0x2c</code>를 반영합니다.</td></tr>
 <tr><th scope="row">속성 요청</th><td><code>0x52eaacf4</code> → <code>0x52edd820</code></td><td>요청 기술자를 얻은 뒤 색공간 속성 요청을 전달합니다. 시험은 <code>0x52edd820</code> 입구에서 인수를 기록합니다.</td></tr>
 <tr><th scope="row">요청 처리기</th><td><code>0x52ecf4a8</code></td><td>요청 <code>0x145</code>를 받는 쪽입니다. <a href="colorspace-message-checks.json">별도 시험 1,536건</a>의 범위입니다.</td></tr>
 </tbody></table></div>
@@ -415,7 +415,7 @@
 
 <section id="verification">
 <h2>16가지 사례를 어떻게 실행했는가</h2>
-<p class="takeaway">원본 RTOS 이미지를 에뮬레이터에 올리고, 합성 객체를 만들어 route 처리기 → 메뉴 구성 → 이벤트 처리 순으로 원본 함수를 불렀습니다. 16개 사례가 모두 통과했습니다.</p>
+<p class="takeaway">원본 RTOS 이미지를 에뮬레이터에 올리고 합성 객체를 만들어 route 처리기 → 메뉴 구성 → 이벤트 처리 순으로 원본 함수를 불렀습니다. 16개 사례가 모두 통과했습니다.</p>
 
 <div class="table-wrap"><table class="fit">
 <caption>사례 구성</caption>
@@ -478,37 +478,37 @@
 </details>
 
 <h3>디컴파일 결과를 그대로 믿지 않은 이유</h3>
-<p>디컴파일러(angr 10.0.5)가 만든 C 코드에는 원본 명령과 다른 곳이 두 군데 있었습니다. 판단은 원본 ARM 명령과 실행 결과를 기준으로 했고, 디컴파일된 C는 손대지 않고 보관했습니다.</p>
+<p>디컴파일러(angr 10.0.5)가 만든 C 코드에는 원본 명령과 다른 곳이 두 군데 있었습니다. 판단은 원본 ARM 명령과 실행 결과를 기준으로 했고 디컴파일된 C는 손대지 않고 보관했습니다.</p>
 <ul>
 <li>메뉴 구성 함수의 C는 <code>0x5278e150</code>의 조건부 저장을 무조건 대입처럼 표현합니다.</li>
 <li>확정 함수의 C는 <code>0x5278db78</code>의 닫기 꼬리 호출을 빠뜨립니다.</li>
 </ul>
 
 <details><summary>조사 경과: 독립 검토에서 고친 것</summary>
-<p>처음 만든 8개 사례와 추가 경계 6개를 다른 검토자가 독립적으로 다시 실행했습니다. 그 뒤 사례를 16개로 정리했고, 늘어난 사례는 조정자가 따로 다시 실행했습니다. 검토에서 나온 작은 문제 두 가지를 고쳤습니다.</p>
+<p>처음 만든 8개 사례와 추가 경계 6개를 다른 검토자가 독립적으로 다시 실행했습니다. 그 뒤 사례를 16개로 정리했고 늘어난 사례는 조정자가 따로 다시 실행했습니다. 검토에서 나온 작은 문제 두 가지를 고쳤습니다.</p>
 <ul>
 <li>route 검사 전에 descriptor 번호를 <code>0xffff</code>로 초기화해, 72가 실제로 기록되는지 확인하도록 했습니다.</li>
 <li>결과의 ‘다시 열기’라는 표현을 ‘같은 객체의 선택 상태 재구성’으로 바꿨습니다.</li>
 </ul>
-<p class="small">검토 범위는 디컴파일 파일 14개와 ARM word 5,194개였고, 중요도가 높은 지적은 없었습니다.</p>
+<p class="small">검토 범위는 디컴파일 파일 14개와 ARM word 5,194개였고 중요도가 높은 지적은 없었습니다.</p>
 </details>
 </section>
 
 <section id="limits">
 <h2>한계와 남은 과제</h2>
 <ul>
-<li><strong>입력</strong> — 이벤트 <code>0xe7</code>·<code>0xe9</code>와 실제 버튼·터치의 대응을 확인하지 않았습니다.</li>
-<li><strong>화면</strong> — 레이아웃, 표시 여부, 아이콘·글자 그리기는 대체 함수였습니다. 글리프와 픽셀 배치는 재현하지 않았습니다.</li>
-<li><strong>창의 수명</strong> — 생성자와 화면 열기 진입은 정적으로만 봤습니다. 창을 없애고 다시 만드는 과정은 실행하지 않았습니다.</li>
-<li><strong>아래 단계</strong> — 시험은 속성 요청 함수 입구에서 멈춥니다. 메뉴에서 ISP까지를 한 번에 실행한 결과가 아닙니다.</li>
-<li><strong>저장</strong> — 카메라·렌즈·주변 장치 입출력과 비휘발성 기록은 하지 않았습니다.</li>
+<li><strong>입력</strong>: 이벤트 <code>0xe7</code>·<code>0xe9</code>와 실제 버튼·터치의 대응을 확인하지 않았습니다.</li>
+<li><strong>화면</strong>: 레이아웃, 표시 여부, 아이콘·글자 그리기는 대체 함수였습니다. 글리프와 픽셀 배치는 재현하지 않았습니다.</li>
+<li><strong>창의 수명</strong>: 생성자와 화면 열기 진입은 정적으로만 봤습니다. 창을 없애고 다시 만드는 과정은 실행하지 않았습니다.</li>
+<li><strong>아래 단계</strong>: 시험은 속성 요청 함수 입구에서 멈춥니다. 메뉴에서 ISP까지를 한 번에 실행한 결과가 아닙니다.</li>
+<li><strong>저장</strong>: 카메라·렌즈·주변 장치 입출력과 비휘발성 기록은 하지 않았습니다.</li>
 </ul>
 <p>화면을 옮기려면 실제 입력에서 포커스 변경까지의 연결, 글꼴·문자열 자원의 해석, 창을 만들고 닫을 때의 객체 수명, 설정의 저장과 복원을 더 확인해야 합니다. 그 다음에 K-3 II와 Q7에서 뜻이 대응하는 이벤트·위젯·설정 함수를 각각 찾아야 합니다. 이 문서의 자료는 기능 단위의 대응을 정하는 근거입니다. K-3 Mark III의 함수 주소나 객체를 다른 기종에 그대로 복사할 수 있다는 증거가 아닙니다.</p>
 </section>
 
 <section id="reproduce">
 <h2>재현 방법</h2>
-<p>검증기는 RTOS 이미지 또는 <a href="../inspect_firmware.py">추출기</a>가 만든 <code>decoded.bin</code> 전체를 입력으로 받고, SHA-256이 아래 값과 같을 때만 실행합니다. Python 패키지 <code>unicorn</code>이 필요합니다.</p>
+<p>검증기는 RTOS 이미지 또는 <a href="../inspect_firmware.py">추출기</a>가 만든 <code>decoded.bin</code> 전체를 입력으로 받고 SHA-256이 아래 값과 같을 때만 실행합니다. Python 패키지 <code>unicorn</code>이 필요합니다.</p>
 <dl class="kv">
 <dt>RTOS SHA-256</dt><dd><code class="wrap">342d2f35405e8daf1797dfe431d2e4aa70f4b52a2c242a29df48206672f1dfb4</code></dd>
 <dt>RTOS 적재 기준 주소</dt><dd><code>0x52500000</code></dd>
@@ -532,8 +532,8 @@
 </main>
 </div>
 <!-- chrome:bottom -->
-<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">UI와 화면 자원 — 이 주제의 문서</h2><ol><li><a href="ui-port-contract.html">UI 이식 설계·안내<span>세 기종 비교</span></a></li><li><a href="colorspace-ui.html" aria-current="page">색공간 화면: 선택·확정·취소<span>16사례</span></a></li><li><a href="colorspace-ui-input.html">색공간 화면: 방향 입력·포커스<span>50사례</span></a></li><li><a href="colorspace-render.html">색공간 행의 아이콘과 글자 측정<span>원본 행·ICONBIN 복사, Latin 글꼴 준비와 sRGB 측정</span></a></li><li><a href="colorspace-text.html">색공간 sRGB 글자의 래스터와 픽셀 전송<span>원본 텍스트 비트맵·합성 표면 전송</span></a></li><li><a href="colorspace-clip.html">sRGB 글자 전송의 화면 경계<span>일곱 좌표에서 32비트 전송과 Q7 행 검사 비교</span></a></li><li><a href="ui-viewport-producers.html">K-3 III 텍스트 viewport의 생산 경로<span>부모 클립과 텍스트 설정의 전달</span></a></li><li><a href="ui-surface-producers.html">K-3 III StringView의 그리기 표면<span>Canvas와 표면 기술자</span></a></li><li><a href="ui-render-chain.html">Q7 갱신에서 원본 픽셀까지<span>마커·두 텍스트·버퍼 교체의 합성 실행</span></a></li><li><a href="cross-ui-text.html">K-3 III와 Q7의 sRGB 글자 그리기 비교<span>32비트 커버리지 전송과 Q7 팔레트 번호·Q16 축소</span></a></li><li><a href="icon-resources.html">ICONBIN 아이콘 자원<span>저장 형식, 복사 규칙, 후보 아이콘</span></a></li></ol></nav>
-<nav class="pager" aria-label="이전·다음 문서"><a class="prev" href="ui-port-contract.html"><small>← 이전</small>UI 이식 설계·안내</a><a class="next" href="colorspace-ui-input.html"><small>다음 →</small>색공간 화면: 방향 입력·포커스</a></nav>
+<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">UI와 화면 자원 — 이 주제의 문서</h2><ol><li><a href="guide-ui.html">UI와 화면 자원 안내</a></li><li><a href="ui-port-contract.html">UI 이식 설계<span>세 기종 비교</span></a></li><li><a href="colorspace-ui.html" aria-current="page">색공간 화면: 선택·확정·취소<span>16사례</span></a></li><li><a href="colorspace-ui-input.html">색공간 화면: 방향 입력·포커스<span>50사례</span></a></li><li><a href="colorspace-render.html">색공간 행의 아이콘·체크 표시와 글자 크기 측정<span>행·아이콘 복사와 글꼴 준비</span></a></li><li><a href="colorspace-text.html">sRGB 글자를 비트맵으로 만들어 표면에 옮기기<span>글자 비트맵과 표면 전송</span></a></li><li><a href="colorspace-clip.html">글자가 화면 가장자리에 걸릴 때의 전송<span>일곱 위치의 가장자리 처리</span></a></li><li><a href="ui-viewport-producers.html">글자 viewport가 전송 함수에 닿는 경로<span>부모 클립과 글자 영역</span></a></li><li><a href="ui-surface-producers.html">StringView가 그릴 표면을 받는 경로<span>Canvas와 표면 기술자</span></a></li><li><a href="ui-render-chain.html">Q7 화면 갱신 한 번에서 픽셀까지<span>마커·두 글자 줄·버퍼 교체</span></a></li><li><a href="cross-ui-text.html">K-3 III와 Q7의 글자 그리기 비교<span>배율·좌표·픽셀 형식</span></a></li><li><a href="icon-resources.html">ICONBIN 아이콘 자원<span>저장 형식, 복사 규칙, 후보 아이콘</span></a></li></ol></nav>
+<nav class="pager" aria-label="이전·다음 문서"><a class="prev" href="ui-port-contract.html"><small>← 이전</small>UI 이식 설계</a><a class="next" href="colorspace-ui-input.html"><small>다음 →</small>색공간 화면: 방향 입력·포커스</a></nav>
 <footer class="sitefoot"><div class="sitefoot-in"><nav aria-label="사이트"><a href="../index.html#map">문서 지도</a><a href="../index.html#levels">검증 수준 읽는 법</a><a href="../glossary.html">용어집</a><a href="research-program.html">세 기종 연구 본부</a><a href="https://github.com/yunhyok/pentax-k3iii-firmware-analysis">GitHub 저장소</a></nav><p>PENTAX 펌웨어 연구. PC에서 수행한 정적 분석과 에뮬레이션 결과이며, 카메라 실기에서 검증한 내용이 아닙니다. 원본 펌웨어와 추출한 독점 코드는 포함하지 않습니다.</p></div></footer>
 <!-- /chrome:bottom -->
 </body>

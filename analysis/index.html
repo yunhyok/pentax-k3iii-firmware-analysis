@@ -10,7 +10,7 @@
 <body data-camera="k3iii">
 <!-- chrome:top -->
 <a class="skip" href="#main">본문 바로가기</a>
-<div class="topbar"><div class="topbar-in"><a class="brand" href="../index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="../index.html" aria-current="true">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="https://yunhyok.github.io/pentax-q7-firmware-analysis/">Q7</a></div><nav class="topnav" aria-label="주제"><a href="../index.html">개요</a><a href="guide-boot.html">부팅·저장소</a><a href="guide-update.html">업데이트</a><a href="guide-rebuild.html">재구축</a><a href="guide-rtos.html" aria-current="true">명령·셸</a><a href="guide-color.html">색 처리</a><a href="lightroom-bridge.html">Lightroom</a><a href="af-foundations.html">AF</a><a href="ui-port-contract.html">UI</a></nav></div></div>
+<div class="topbar"><div class="topbar-in"><a class="brand" href="../index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="../index.html" aria-current="true">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="https://yunhyok.github.io/pentax-q7-firmware-analysis/">Q7</a></div><nav class="topnav" aria-label="주제"><a href="../index.html">개요</a><a href="guide-boot.html">부팅·저장소</a><a href="guide-update.html">업데이트</a><a href="guide-rebuild.html">재구축</a><a href="guide-rtos.html" aria-current="true">명령·셸</a><a href="guide-color.html">색 처리</a><a href="guide-lightroom.html">Lightroom</a><a href="guide-af.html">AF</a><a href="guide-ui.html">UI</a></nav></div></div>
 <nav class="crumbs" aria-label="현재 위치"><ol><li><a href="../index.html">PENTAX K-3 Mark III</a></li><li><a href="guide-rtos.html">RTOS 명령과 셸</a></li><li aria-current="page">RTOS 명령 957개</li></ol></nav>
 <!-- /chrome:top -->
 <header class="page-head">
@@ -27,8 +27,8 @@
 <section class="summary">
 <h2 data-toc="no">핵심 요약</h2>
 <ul>
-<li>셸 명령 957개를 주 기능 기준으로 <strong>17개 군</strong>으로 나눴습니다. 영상처리 189개, 촬영 130개가 가장 많고, 우선 조사 분야인 촬영·AF·영상처리를 주 기능으로 가진 명령은 364개입니다.</li>
-<li>각 명령 진입점에서 C 형태의 의사코드를 자동 생성하고, 촬영·AF·영상처리에서 <strong>함수 36개</strong>를 골라 원본 기계어와 대조했습니다. 가장 구체적으로 복원한 것은 두 측거 결과를 합치는 조건과 영상 진단용 톤 변환표입니다.</li>
+<li>셸 명령 957개를 주 기능 기준으로 <strong>17개 군</strong>으로 나눴습니다. 영상처리 189개, 촬영 130개가 가장 많고 우선 조사 분야인 촬영·AF·영상처리를 주 기능으로 가진 명령은 364개입니다.</li>
+<li>각 명령 진입점에서 C 형태의 의사코드를 자동 생성하고 촬영·AF·영상처리에서 <strong>함수 36개</strong>를 골라 원본 기계어와 대조했습니다. 가장 구체적으로 복원한 것은 두 측거 결과를 합치는 조건과 영상 진단용 톤 변환표입니다.</li>
 <li>호출·분기 위치 17,914곳을 원본 바이트에서 독립 확인했습니다. 자동 디컴파일 결과는 타입·이름을 완전히 복원하지 못하므로, 판단은 기계어 대조를 우선합니다. <strong>카메라에서 실행한 것은 없습니다.</strong></li>
 </ul>
 </section>
@@ -59,8 +59,8 @@
 
 <section id="background">
 <h2>배경: RTOS 셸 명령이란</h2>
-<p>이 카메라는 <dfn title="실시간 운영체제. 정해진 시간 안에 동작해야 하는 카메라 제어를 맡습니다.">RTOS</dfn>와 Linux가 함께 돕니다. RTOS에는 내부 점검·개발용으로 쓰이는 <dfn title="문자열 명령 이름과 처리 함수를 짝지어 둔 목록. 이름을 입력하면 해당 함수를 부릅니다.">셸 명령</dfn> 목록이 들어 있습니다. 펌웨어의 <code>SHELLCMD</code> 레코드에 957개 항목이 있고, 각 항목은 명령 이름과 처리 함수 주소를 가집니다.</p>
-<p class="takeaway">957개 명령에 주 기능을 하나씩 지정해 분류하고, 촬영·AF·영상처리 명령의 처리 함수를 원본 기계어와 대조해 어떤 동작을 하는지 복원했습니다.</p>
+<p>이 카메라는 <dfn title="실시간 운영체제. 정해진 시간 안에 동작해야 하는 카메라 제어를 맡습니다.">RTOS</dfn>와 Linux가 함께 돕니다. RTOS에는 내부 점검·개발용으로 쓰이는 <dfn title="문자열 명령 이름과 처리 함수를 짝지어 둔 목록. 이름을 입력하면 해당 함수를 부릅니다.">셸 명령</dfn> 목록이 들어 있습니다. 펌웨어의 <code>SHELLCMD</code> 레코드에 957개 항목이 있고 각 항목은 명령 이름과 처리 함수 주소를 가집니다.</p>
+<p class="takeaway">957개 명령에 주 기능을 하나씩 지정해 분류하고 촬영·AF·영상처리 명령의 처리 함수를 원본 기계어와 대조해 어떤 동작을 하는지 복원했습니다.</p>
 <div class="callout"><strong class="label">참고</strong>
 <p>분류는 명령 이름과 계열, 처리기가 참조하는 도움말과 인수를 근거로 했습니다. 예를 들어 ID 717·718의 도움말은 스위치 <strong>입력 에뮬레이션</strong>을 명시합니다. 그래서 이 표에서 조작계로 분류한 명령이 실제로 물리 스위치를 읽는다고 단정할 수는 없습니다.</p></div>
 </section>
@@ -160,7 +160,7 @@
 </ol>
 <p>요청 수신 이후 셔터 GPIO와 AF 상관 연산까지의 추적은 <a href="dispatch-af.html">디스패처·셔터·AF 상관 연산</a>에서 이어집니다.</p>
 </figure>
-<p>촬영 제어의 대표 명령 셋을 짚어 봅니다. ID 30은 캡처·릴리스 요청이고, ID 391 <code>AE_Capture</code>는 상태에 따라 프레임 수를 정해 버퍼를 요청하는 <strong>측광 프레임 덤프</strong>이며, ID 710 <code>shtrctrl_bulb</code>는 별도 벌브 진단 경로입니다.</p>
+<p>촬영 제어의 대표 명령 셋을 짚어 봅니다. ID 30은 캡처·릴리스 요청입니다. ID 391 <code>AE_Capture</code>는 상태에 따라 프레임 수를 정해 버퍼를 요청하는 <strong>측광 프레임 덤프</strong>입니다. ID 710 <code>shtrctrl_bulb</code>는 별도 벌브 진단 경로입니다.</p>
 <details class="evidence"><summary>촬영 명령 주소</summary>
 <dl class="kv">
 <dt>ID 30 <code>camctl_control_capture</code></dt><dd>진입 <code>0x525118e8</code>. 요청 ID 3, 슬롯 1에 시작 0·정지 1. <code>0x52511c0c</code>에서 공통 제출 함수를 부릅니다.</dd>
@@ -175,7 +175,7 @@
 <section id="af">
 <h2>AF 명령과 디포커스 결합 조건</h2>
 <p class="takeaway">AF 모드·영역 설정 명령과, 두 측거 결과를 하나로 합치는 함수의 조건을 복원했습니다. 차이가 60을 넘으면 결합을 건너뜁니다.</p>
-<p>AF 명령에서는 AF 모드 설정(ID 242는 요청 ID 0, 설정 항목 <code>0x57</code>에 single=1·continuous=2 기록), 위상차 AF 플래그 설정(ID 336은 유효 객체의 <code>+0x89</code>에 0 또는 1 기록), 디포커스 조회(ID 335 <code>GetDefocus</code>)를 확인했습니다. <code>GetDefocus</code>는 저장 레코드가 유효하지 않으면 <code>0x7fffffff</code>를 반환하고, 유효하면 기존 디포커스 값을 읽습니다.</p>
+<p>AF 명령에서는 AF 모드 설정(ID 242는 요청 ID 0, 설정 항목 <code>0x57</code>에 single=1·continuous=2 기록), 위상차 AF 플래그 설정(ID 336은 유효 객체의 <code>+0x89</code>에 0 또는 1 기록), 디포커스 조회(ID 335 <code>GetDefocus</code>)를 확인했습니다. <code>GetDefocus</code>는 저장 레코드가 유효하지 않으면 <code>0x7fffffff</code>를 반환하고 유효하면 기존 디포커스 값을 읽습니다.</p>
 
 <figure class="diagram">
 <figcaption>두 측거 결과를 합치는 함수의 조건</figcaption>
@@ -222,10 +222,10 @@
 <ul>
 <li><code>left = mid - lo</code>, <code>right = hi - mid</code>, <code>q = min(left, right) / (hi - lo)</code></li>
 <li><code>p = 2.5q² + 0.55q + 0.1</code>. <code>left ≤ right</code>이면 지수는 <code>p</code>, 반대면 <code>1/p</code></li>
-<li>입력 <code>i ≤ lo</code>에는 0, <code>i ≥ hi</code>에는 255를 기록하고, 그 사이는 <code>trunc(0.5 + 255 × ((i-lo)/(hi-lo))^지수)</code></li>
+<li>입력 <code>i ≤ lo</code>에는 0, <code>i ≥ hi</code>에는 255를 기록하고 그 사이는 <code>trunc(0.5 + 255 × ((i-lo)/(hi-lo))^지수)</code></li>
 </ul>
 <p>진단 기본값 <code>lo=15, hi=240, mid=128</code>에서는 지수가 1.0068115입니다. 호스트에서 반올림을 재현하면 입력 15, 64, 128, 200, 240은 각각 0, 55, 127, 209, 255가 됩니다. 이것이 일반 JPEG 촬영의 기본 톤 곡선인지는 확인하지 않았습니다.</p>
-<p>ID 692 <code>IQ_nr</code>(노이즈 감소)는 다중 스케일 작업 버퍼를 배치하고, 네 하위 경로와 톤 경로가 완료 처리 함수 <code>0x530be7dc</code>를 공유합니다. 공통으로 확인한 범위는 완료·오류 처리까지입니다. 픽셀별 노이즈 필터와 ISP/DSP 내부 산술은 미확인입니다.</p>
+<p>ID 692 <code>IQ_nr</code>(노이즈 감소)는 다중 스케일 작업 버퍼를 배치하고 네 하위 경로와 톤 경로가 완료 처리 함수 <code>0x530be7dc</code>를 공유합니다. 공통으로 확인한 범위는 완료·오류 처리까지입니다. 픽셀별 노이즈 필터와 ISP/DSP 내부 산술은 미확인입니다.</p>
 <details class="evidence"><summary>영상처리 함수 주소</summary>
 <dl class="kv">
 <dt>IQ_tone (ID 698)</dt><dd>진입 <code>0x5258edfc</code>, 호출 <code>0x5258efd4</code>·<code>0x5258effc</code> → 표 생성 <code>0x530b6810</code></dd>
@@ -247,8 +247,8 @@
 <tr><th scope="row">레지스터 호출</th><td class="n">350</td><td>목적지가 레지스터로 정해지는 미확정 호출</td></tr>
 <tr><th scope="row">창 밖 분기</th><td class="n">15</td><td>분석 창 밖으로 향하는 분기</td></tr>
 </tbody></table></div>
-<p>상세 대조 범위는 경계 주소가 서로 다른 디컴파일 함수 36개와 추가 역어셈블 구간 6개입니다. 각 구간에는 시작·끝 주소와 원본 바이트의 SHA-256을 붙였습니다. 957개 일괄 분석은 각 명령 진입점에서 제어흐름 그래프를 만들고 다음 진입점 주소를 탐색 상한으로 썼습니다. 마지막 명령의 상한은 다음 별도 프롤로그 <code>0x525b2cd8</code>이고, 스택 보호 실패 함수 <code>0x532fb9c8</code>은 종료점으로 취급했습니다.</p>
-<p>탐색 창에는 리터럴이나 다른 코드가 섞일 수 있어, 창 안의 코드 비율을 소스 복원율로 쓰면 안 됩니다. 예를 들어 요청 전송 함수는 484바이트 중 432바이트, 셔터 드라이버 구간은 180바이트 중 60바이트만 해당 그래프에 나타나, 나머지는 전체 ARM 목록과 직접 대조했습니다. 자동 생성한 C에는 타입·호출 규약 오인과 분기 누락이 있어, 재현 시 입력 바이트·명령 주소·호출 목적지를 우선 대조합니다. TSV의 <code>cfg_bytes</code>·<code>window_bytes</code>는 그래프와 창의 크기, <code>c_sha256</code>은 저장한 C 텍스트의 해시입니다.</p>
+<p>상세 대조 범위는 경계 주소가 서로 다른 디컴파일 함수 36개와 추가 역어셈블 구간 6개입니다. 각 구간에는 시작·끝 주소와 원본 바이트의 SHA-256을 붙였습니다. 957개 일괄 분석은 각 명령 진입점에서 제어흐름 그래프를 만들고 다음 진입점 주소를 탐색 상한으로 썼습니다. 마지막 명령의 상한은 다음 별도 프롤로그 <code>0x525b2cd8</code>이고 스택 보호 실패 함수 <code>0x532fb9c8</code>은 종료점으로 취급했습니다.</p>
+<p>탐색 창에는 리터럴이나 다른 코드가 섞일 수 있으므로 창 안의 코드 비율을 소스 복원율로 쓰면 안 됩니다. 예를 들어 요청 전송 함수는 484바이트 중 432바이트, 셔터 드라이버 구간은 180바이트 중 60바이트만 해당 그래프에 나타났습니다. 나머지는 전체 ARM 목록과 직접 대조했습니다. 자동 생성한 C에는 타입·호출 규약 오인과 분기 누락이 있습니다. 그래서 재현할 때는 입력 바이트·명령 주소·호출 목적지를 먼저 대조합니다. TSV의 <code>cfg_bytes</code>·<code>window_bytes</code>는 그래프와 창의 크기, <code>c_sha256</code>은 저장한 C 텍스트의 해시입니다.</p>
 </section>
 
 <section id="reproduce">
@@ -256,11 +256,11 @@
 <p>먼저 <a href="../index.html">기본 분석 절차</a>로 이 버전의 <code>decoded.bin</code>을 만듭니다. 다음 두 명령은 Python 표준 라이브러리만 씁니다.</p>
 <pre><code>python rtos_catalog.py .private/my-decode/decoded.bin --output .private/my-commands.tsv
 python verify_command_analysis.py .private/my-decode/decoded.bin</code></pre>
-<p>첫 명령은 이름·주소·분류를 결합한 957행 TSV를 만듭니다. 두 번째 명령은 분류, 상세 구간 해시, 17,914개 위치의 ARM 명령 유형과 직접 분기 목적지를 바이너리에서 독립 확인합니다. 이 검증은 기계어와 기록의 일치를 보며, 모든 함수의 의미를 판정하지는 않습니다.</p>
+<p>첫 명령은 이름·주소·분류를 결합한 957행 TSV를 만듭니다. 두 번째 명령은 분류, 상세 구간 해시, 17,914개 위치의 ARM 명령 유형과 직접 분기 목적지를 바이너리에서 독립 확인합니다. 이 검증은 기계어와 기록의 일치를 보며 모든 함수의 의미를 판정하지는 않습니다.</p>
 <p>개별 명령의 의사코드는 <code>angr==10.0.5</code> 환경에서 ID 또는 주소로 다시 생성합니다. 출력은 C 형태의 의사코드입니다.</p>
 <pre><code>python decompile_sample.py .private/my-decode/decoded.bin 39
 python decompile_sample.py .private/my-decode/decoded.bin 0x530b6810</code></pre>
-<p class="small muted">상용 디스어셈블러로 원시 RTOS 이미지를 여는 시도는 <code>unsupported binary format</code>으로 실패해, 확인한 적재 주소 <code>0x52500000</code>에서 angr와 Capstone으로 읽었습니다. 카메라 실행이나 플래싱은 하지 않았습니다.</p>
+<p class="small muted">상용 디스어셈블러로 원시 RTOS 이미지를 여는 시도는 <code>unsupported binary format</code>으로 실패했습니다. 그래서 확인한 적재 주소 <code>0x52500000</code>에서 angr와 Capstone으로 읽었습니다. 카메라 실행이나 플래싱은 하지 않았습니다.</p>
 </section>
 
 <section id="refs">

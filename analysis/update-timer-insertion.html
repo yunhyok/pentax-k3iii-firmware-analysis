@@ -10,7 +10,7 @@
 <body data-camera="k3iii">
 <!-- chrome:top -->
 <a class="skip" href="#main">본문 바로가기</a>
-<div class="topbar"><div class="topbar-in"><a class="brand" href="../index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="../index.html" aria-current="true">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="https://yunhyok.github.io/pentax-q7-firmware-analysis/">Q7</a></div><nav class="topnav" aria-label="주제"><a href="../index.html">개요</a><a href="guide-boot.html">부팅·저장소</a><a href="guide-update.html" aria-current="true">업데이트</a><a href="guide-rebuild.html">재구축</a><a href="guide-rtos.html">명령·셸</a><a href="guide-color.html">색 처리</a><a href="lightroom-bridge.html">Lightroom</a><a href="af-foundations.html">AF</a><a href="ui-port-contract.html">UI</a></nav></div></div>
+<div class="topbar"><div class="topbar-in"><a class="brand" href="../index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="../index.html" aria-current="true">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="https://yunhyok.github.io/pentax-q7-firmware-analysis/">Q7</a></div><nav class="topnav" aria-label="주제"><a href="../index.html">개요</a><a href="guide-boot.html">부팅·저장소</a><a href="guide-update.html" aria-current="true">업데이트</a><a href="guide-rebuild.html">재구축</a><a href="guide-rtos.html">명령·셸</a><a href="guide-color.html">색 처리</a><a href="guide-lightroom.html">Lightroom</a><a href="guide-af.html">AF</a><a href="guide-ui.html">UI</a></nav></div></div>
 <nav class="crumbs" aria-label="현재 위치"><ol><li><a href="../index.html">PENTAX K-3 Mark III</a></li><li><a href="guide-update.html">펌웨어 업데이트 과정</a></li><li aria-current="page">기한 큐 삽입</li></ol></nav>
 <!-- /chrome:top -->
 <header class="page-head">
@@ -27,7 +27,7 @@
 <section class="summary">
 <h2 data-toc="no">핵심 요약</h2>
 <ul>
-<li>삽입 함수는 큐를 앞에서부터 훑으며 <strong>새 기한에서 노드의 기한을 뺀 값</strong>을 부호 있는 64비트 수로 봅니다. 0 이상이면 지나가고, 음수가 되는 첫 노드 앞에 넣습니다.</li>
+<li>삽입 함수는 큐를 앞에서부터 훑으며 <strong>새 기한에서 노드의 기한을 뺀 값</strong>을 부호 있는 64비트 수로 봅니다. 0 이상이면 지나가고 음수가 되는 첫 노드 앞에 넣습니다.</li>
 <li>기한이 같으면 차이가 0이라 지나갑니다. 그래서 <strong>같은 기한의 예약은 먼저 들어온 것이 앞</strong>에 남습니다.</li>
 <li>기한을 만드는 경로는 셋입니다. 부호 있는 지연, 부호 없는 지연, 절대 기한입니다. 부호 있는 지연에서 −1은 “큐에 넣지 않음”을 뜻하는 특수한 값입니다.</li>
 <li>네 함수를 <strong>대체 함수 없이</strong> 원본 기계어로 18개 사례 실행했습니다.</li>
@@ -128,7 +128,7 @@
 
 <section id="order">
 <h2>같은 기한이면 먼저 들어온 예약 뒤에 놓입니다</h2>
-<p class="takeaway">비교식은 <code>signed64((새 기한 − 노드의 기한) mod 2<sup>64</sup>) ≥ 0</code>입니다. 참이면 다음 노드로 가고, 거짓이면 그 노드 앞에 넣습니다. 끝까지 가면 머리 앞, 곧 목록의 맨 뒤에 넣습니다.</p>
+<p class="takeaway">비교식은 <code>signed64((새 기한 − 노드의 기한) mod 2<sup>64</sup>) ≥ 0</code>입니다. 참이면 다음 노드로 가고 거짓이면 그 노드 앞에 넣습니다. 끝까지 가면 머리 앞, 곧 목록의 맨 뒤에 넣습니다.</p>
 
 <figure class="diagram">
 <figcaption>기한 5, 10, 10, 20인 큐에 기한 10을 넣는 사례</figcaption>
@@ -204,7 +204,7 @@
 
 <section id="writers">
 <h2>기한을 만드는 경로는 셋입니다</h2>
-<p class="takeaway">두 경로는 지연을 받아 현재 카운터와 주기 값을 더해 기한을 만들고, 한 경로는 이미 계산된 기한을 그대로 받습니다. 세 경로 모두 마지막에 같은 삽입 함수로 넘어갑니다.</p>
+<p class="takeaway">두 경로는 지연을 받아 현재 카운터와 주기 값을 더해 기한을 만들고 한 경로는 이미 계산된 기한을 그대로 받습니다. 세 경로 모두 마지막에 같은 삽입 함수로 넘어갑니다.</p>
 
 <figure class="diagram">
 <figcaption>세 진입 함수가 삽입 함수에 닿는 길</figcaption>
@@ -265,7 +265,7 @@
 <tr><td>부호 없는 지연<br><code>0x525b801c</code></td><td><code>NOW64 + u32(delay) + u32(period)</code><br>mod 2<sup>64</sup></td><td>큰 양수 지연으로 계산해 삽입합니다.</td></tr>
 <tr><td>절대 기한<br><code>0x525b805c</code></td><td>인수(r2, r3)로 받은 64비트 기한을 그대로 저장</td><td>지연 인수를 해석하지 않습니다.</td></tr>
 </tbody></table></div>
-<p>두 지연 경로는 현재 카운터와 주기 값을 <a href="update-timer-clock.html">같은 전역 변수</a>에서 읽습니다. 부호 있는 경로는 상위 워드에 지연의 부호를 복사해 더하고, 부호 없는 경로의 상위 워드에는 자리올림만 반영됩니다. 그래서 같은 32비트 값이라도 맨 윗자리 비트가 켜져 있으면 두 경로의 결과가 달라집니다.</p>
+<p>두 지연 경로는 현재 카운터와 주기 값을 <a href="update-timer-clock.html">같은 전역 변수</a>에서 읽습니다. 부호 있는 경로는 상위 워드에 지연의 부호를 복사해 더하고 부호 없는 경로의 상위 워드에는 자리올림만 반영됩니다. 그래서 같은 32비트 값이라도 맨 윗자리 비트가 켜져 있으면 두 경로의 결과가 달라집니다.</p>
 
 <div class="table-wrap"><table>
 <caption>지연 경로 사례 7개와 절대 기한 사례 1개</caption>
@@ -282,14 +282,14 @@
 </tbody></table></div>
 
 <h3>−1 특수 경로</h3>
-<p>부호 있는 경로는 먼저 콜백과 인수를 노드에 적습니다. 그다음 지연이 −1이면 노드의 다음·이전 포인터를 자기 주소로 바꾸고, 원래 있던 기한은 건드리지 않은 채 돌아갑니다. 큐에는 아무 변화가 없습니다.</p>
-<p>이 경로는 이미 큐에 연결된 노드를 안전하게 빼내는 기능이 아닙니다. 시험은 새 노드가 어디에도 연결되지 않은 조건에서만 실행했습니다. −2와 가장 작은 음수도 넣어 부호 확장 계산을 확인했지만, 실제 호출자가 그런 값을 허용한다는 뜻은 아닙니다.</p>
+<p>부호 있는 경로는 먼저 콜백과 인수를 노드에 적습니다. 그다음 지연이 −1이면 노드의 다음·이전 포인터를 자기 주소로 바꾸고 원래 있던 기한은 건드리지 않은 채 돌아갑니다. 큐에는 아무 변화가 없습니다.</p>
+<p>이 경로는 이미 큐에 연결된 노드를 안전하게 빼내는 기능이 아닙니다. 시험은 새 노드가 어디에도 연결되지 않은 조건에서만 실행했습니다. −2와 가장 작은 음수도 넣어 부호 확장 계산을 확인했지만 실제 호출자가 그런 값을 허용한다는 뜻은 아닙니다.</p>
 
 <h3>절대 기한 경로</h3>
 <p>절대 기한 경로는 콜백과 인수를 레지스터가 아니라 스택(들어올 때의 SP와 SP+4)에서 읽습니다. 노드에 기한, 콜백, 인수를 적고 삽입 함수로 넘어갑니다. 알람 시작이 계산한 예약 시각이 이 경로로 들어옵니다. 그 계산은 <a href="update-timer-abi.html#arithmetic">커널 호출과 예약 시각</a>에 있습니다.</p>
 
 <div class="callout"><strong class="label">참고: 공개 T-Kernel 소스와 견주면</strong>
-<p>공개 T-Kernel 2.0의 타이머 코드에도 같은 구성의 함수 셋이 있습니다. <code>timer_insert</code>는 부호 있는 대기 시간을 받고, 값이 <code>TMO_FEVR</code>(−1, 무한 대기)이면 큐에 넣지 않고 노드의 연결만 초기화합니다. 주석은 그 까닭을 “나중에 삭제 함수가 불려도 괜찮게 하려는 것”이라고 적습니다. <code>timer_insert_reltim</code>은 부호 없는 상대 시간을, <code>timer_insert_abs</code>는 절대 시각을 받습니다. 큐에 넣는 <code>enqueue_tmeb</code>는 새 시각이 노드의 시각보다 작아지는 첫 자리 앞에 넣습니다. 이 펌웨어에서 본 동작과 같은 모양이지만, 같은 소스라고 확인한 것은 아닙니다.</p></div>
+<p>공개 T-Kernel 2.0의 타이머 코드에도 같은 구성의 함수 셋이 있습니다. <code>timer_insert</code>는 부호 있는 대기 시간을 받고 값이 <code>TMO_FEVR</code>(−1, 무한 대기)이면 큐에 넣지 않고 노드의 연결만 초기화합니다. 주석은 그 까닭을 “나중에 삭제 함수가 불려도 괜찮게 하려는 것”이라고 적습니다. <code>timer_insert_reltim</code>은 부호 없는 상대 시간을, <code>timer_insert_abs</code>는 절대 시각을 받습니다. 큐에 넣는 <code>enqueue_tmeb</code>는 새 시각이 노드의 시각보다 작아지는 첫 자리 앞에 넣습니다. 이 펌웨어에서 본 동작과 같은 모양입니다. 다만 같은 소스인지는 확인하지 않았습니다.</p></div>
 
 <details class="evidence"><summary>진입 함수의 명령</summary>
 <div class="table-wrap"><table class="compact">
@@ -336,7 +336,7 @@
 <ul>
 <li><strong>올바른 입력만 넣었습니다.</strong> 연결이 잘못된 목록, 이미 큐에 있는 노드의 재삽입, 여러 곳에서 동시에 수정하는 경우의 안전성은 검증하지 않았습니다.</li>
 <li><strong>비교는 국소적입니다.</strong> 기한들이 64비트 범위의 절반 이상 떨어져 있으면 순서가 직관과 달라집니다. 실제 호출자가 그런 값을 넘기지 않는다는 보장은 찾지 못했습니다.</li>
-<li><strong>호출자를 다 잇지 못했습니다.</strong> 절대 기한 경로는 알람 시작과 이어져 있지만, 두 지연 경로를 부르는 쪽과 그쪽의 입력 검사는 이 문서에서 다루지 않았습니다.</li>
+<li><strong>호출자를 다 잇지 못했습니다.</strong> 절대 기한 경로는 알람 시작과 이어져 있지만 두 지연 경로를 부르는 쪽과 그쪽의 입력 검사는 이 문서에서 다루지 않았습니다.</li>
 <li><strong>콜백은 실행하지 않았습니다.</strong> 이 시험은 노드를 큐에 넣는 데까지입니다. 꺼내서 부르는 쪽은 <a href="update-timer-irq.html">타이머 등록과 지연 콜백</a>에 있습니다.</li>
 <li>실제 운영체제, 인터럽트, 하드웨어 동작과 시간 단위는 확인하지 않았습니다. 펌웨어 빌드·기록도 하지 않았습니다.</li>
 </ul>
@@ -364,7 +364,7 @@
 </main>
 </div>
 <!-- chrome:bottom -->
-<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">펌웨어 업데이트 과정 — 이 주제의 문서</h2><ol><li><a href="guide-update.html">업데이트 과정 안내</a></li><li><a href="update-resources.html">업데이트 검사와 ICONBIN<span>프로젝트·버전·체크섬</span></a></li><li><a href="update-memory.html">입력 로더와 메모리 할당</a></li><li><a href="update-file-lifetimes.html">파일 인터페이스와 버퍼 수명</a></li><li><a href="update-volume-finalization.html">파일 경로·volume·종료 처리</a></li><li><a href="update-media-completion.html">매체 객체와 완료 통지</a></li><li><a href="update-partition-io.html">R 파티션과 sector I/O</a></li><li><a href="update-bank-selection.html">쓰기 bank와 BOOT 선택</a></li><li><a href="selector-policy.html">리소스 선택값과 헤더 기록 조건<span>FIFO 반례·표와 헤더의 쓰기 분기</span></a></li><li><a href="update-ui-consumer.html">완료 후 UI 작업</a></li><li><a href="update-ui-timer.html">UI 타이머와 콜백</a></li><li><a href="update-timer-abi.html">커널 호출과 예약 시각</a></li><li><a href="update-timer-insertion.html" aria-current="page">기한 큐 삽입</a></li><li><a href="update-timer-clock.html">타이머 설정과 64비트 카운터</a></li><li><a href="update-timer-irq.html">타이머 등록과 지연 콜백</a></li><li><a href="update-subtick-arithmetic.html">하위 시간의 32비트 산술</a></li><li><a href="update-clock-readers.html">시각 조회 함수</a></li></ol></nav>
+<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">펌웨어 업데이트 과정 — 이 주제의 문서</h2><ol><li><a href="guide-update.html">업데이트 과정 안내</a></li><li><a href="update-resources.html">업데이트 검사와 ICONBIN<span>프로젝트·버전·체크섬</span></a></li><li><a href="update-memory.html">입력 로더와 메모리 할당</a></li><li><a href="update-file-lifetimes.html">파일 인터페이스와 버퍼 수명</a></li><li><a href="update-volume-finalization.html">파일 경로·volume·종료 처리</a></li><li><a href="update-media-completion.html">매체 객체와 완료 통지</a></li><li><a href="update-partition-io.html">R 파티션과 sector I/O</a></li><li><a href="update-bank-selection.html">쓰기 bank와 BOOT 선택</a></li><li><a href="selector-policy.html">리소스 선택값과 헤더 기록 조건<span>선택값과 기록 조건</span></a></li><li><a href="update-ui-consumer.html">완료 후 UI 작업</a></li><li><a href="update-ui-timer.html">UI 타이머와 콜백</a></li><li><a href="update-timer-abi.html">커널 호출과 예약 시각</a></li><li><a href="update-timer-insertion.html" aria-current="page">기한 큐 삽입</a></li><li><a href="update-timer-clock.html">타이머 설정과 64비트 카운터</a></li><li><a href="update-timer-irq.html">타이머 등록과 지연 콜백</a></li><li><a href="update-subtick-arithmetic.html">하위 시간의 32비트 산술</a></li><li><a href="update-clock-readers.html">시각 조회 함수</a></li></ol></nav>
 <nav class="pager" aria-label="이전·다음 문서"><a class="prev" href="update-timer-abi.html"><small>← 이전</small>커널 호출과 예약 시각</a><a class="next" href="update-timer-clock.html"><small>다음 →</small>타이머 설정과 64비트 카운터</a></nav>
 <footer class="sitefoot"><div class="sitefoot-in"><nav aria-label="사이트"><a href="../index.html#map">문서 지도</a><a href="../index.html#levels">검증 수준 읽는 법</a><a href="../glossary.html">용어집</a><a href="research-program.html">세 기종 연구 본부</a><a href="https://github.com/yunhyok/pentax-k3iii-firmware-analysis">GitHub 저장소</a></nav><p>PENTAX 펌웨어 연구. PC에서 수행한 정적 분석과 에뮬레이션 결과이며, 카메라 실기에서 검증한 내용이 아닙니다. 원본 펌웨어와 추출한 독점 코드는 포함하지 않습니다.</p></div></footer>
 <!-- /chrome:bottom -->

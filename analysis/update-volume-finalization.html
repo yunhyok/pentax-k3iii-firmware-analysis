@@ -10,7 +10,7 @@
 <body data-camera="k3iii">
 <!-- chrome:top -->
 <a class="skip" href="#main">본문 바로가기</a>
-<div class="topbar"><div class="topbar-in"><a class="brand" href="../index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="../index.html" aria-current="true">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="https://yunhyok.github.io/pentax-q7-firmware-analysis/">Q7</a></div><nav class="topnav" aria-label="주제"><a href="../index.html">개요</a><a href="guide-boot.html">부팅·저장소</a><a href="guide-update.html" aria-current="true">업데이트</a><a href="guide-rebuild.html">재구축</a><a href="guide-rtos.html">명령·셸</a><a href="guide-color.html">색 처리</a><a href="lightroom-bridge.html">Lightroom</a><a href="af-foundations.html">AF</a><a href="ui-port-contract.html">UI</a></nav></div></div>
+<div class="topbar"><div class="topbar-in"><a class="brand" href="../index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="../index.html" aria-current="true">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="https://yunhyok.github.io/pentax-q7-firmware-analysis/">Q7</a></div><nav class="topnav" aria-label="주제"><a href="../index.html">개요</a><a href="guide-boot.html">부팅·저장소</a><a href="guide-update.html" aria-current="true">업데이트</a><a href="guide-rebuild.html">재구축</a><a href="guide-rtos.html">명령·셸</a><a href="guide-color.html">색 처리</a><a href="guide-lightroom.html">Lightroom</a><a href="guide-af.html">AF</a><a href="guide-ui.html">UI</a></nav></div></div>
 <nav class="crumbs" aria-label="현재 위치"><ol><li><a href="../index.html">PENTAX K-3 Mark III</a></li><li><a href="guide-update.html">펌웨어 업데이트 과정</a></li><li aria-current="page">파일 경로·volume·종료 처리</li></ol></nav>
 <!-- /chrome:top -->
 <header class="page-head">
@@ -27,10 +27,10 @@
 <section class="summary">
 <h2 data-toc="no">핵심 요약</h2>
 <ul>
-<li>업데이트 파일 이름은 형식 문자열 <strong><code>C:\FWDC%ldB.BIN</code></strong>으로 만들어집니다. 본체 펌웨어를 뜻하는 종류 2는 이 <code>C:</code> 쪽 이름만 조회하며, <code>R:</code> 쪽 이름으로 바꿔 찾는 분기가 없습니다.</li>
+<li>업데이트 파일 이름은 형식 문자열 <strong><code>C:\FWDC%ldB.BIN</code></strong>으로 만들어집니다. 본체 펌웨어를 뜻하는 종류 2는 이 <code>C:</code> 쪽 이름만 조회하며 <code>R:</code> 쪽 이름으로 바꿔 찾는 분기가 없습니다.</li>
 <li>drive 글자는 volume 기록표에서 찾습니다. 기록표는 12칸이고 C, D, X, Y, A, B, E, F, G, H, R, W 순서로 등록됩니다. C는 0번 기록, R은 10번 기록입니다.</li>
-<li>종료 함수는 실행 결과와 관계없이 <strong>입력 버퍼의 해제를 요청</strong>하고, 결과가 0이 아닐 때만 완료 메시지를 보냅니다. 해제 요청이 성공했는지는 통지를 보낼지 말지에 쓰이지 않습니다.</li>
-<li><strong>정정</strong>: 구성 요소 5의 입력 설정 함수는 <code>(0, 0)</code>을 받으면 기존 값을 지우지 않습니다. “모든 구성 요소의 입력 정보를 0으로 만든다”는 앞선 설명은 정확하지 않았습니다.</li>
+<li>종료 함수는 실행 결과와 관계없이 <strong>입력 버퍼의 해제를 요청</strong>하고 결과가 0이 아닐 때만 완료 메시지를 보냅니다. 해제 요청이 성공했는지는 통지를 보낼지 말지에 쓰이지 않습니다.</li>
+<li><strong>정정</strong>: 구성 요소 5의 입력 설정 함수는 <code>(0, 0)</code>을 받으면 기존 값을 지우지 않습니다. “모든 구성 요소의 입력 정보를 0으로 만든다”는 이전 설명은 정확하지 않았습니다.</li>
 <li>파일 이름·volume 19건과 종료 처리 26건, 합계 45건을 원본 ARM 코드로 실행했습니다. 실제 파일 접근, 메모리 해제, 업데이트 실행은 하지 않았습니다.</li>
 </ul>
 </section>
@@ -80,7 +80,7 @@
 
 <section id="volume">
 <h2>종류 2는 C: 쪽 파일 이름만 조회합니다</h2>
-<p class="takeaway">이름 생성 함수는 <code>C:</code>와 <code>R:</code> 두 벌의 이름을 만들지만, 종류 2 분기는 <code>C:</code> 쪽만 파일 크기 조회에 넘깁니다. 이름의 첫 글자가 volume 기록표에서 0번 기록을 고릅니다.</p>
+<p class="takeaway">이름 생성 함수는 <code>C:</code>와 <code>R:</code> 두 벌의 이름을 만들지만 종류 2 분기는 <code>C:</code> 쪽만 파일 크기 조회에 넘깁니다. 이름의 첫 글자가 volume 기록표에서 0번 기록을 고릅니다.</p>
 
 <figure class="diagram">
 <figcaption>파일 이름이 만들어져 volume 기록으로 이어지는 과정</figcaption>
@@ -141,14 +141,14 @@
 <tr><th scope="row"><code>0x54796104</code></th><td><code>C:\FWDC%ldB.BIN</code></td><td><code>0x52ff3394</code></td><td rowspan="2"><code>0x14</code></td><td><code>0x52ff3474</code></td></tr>
 <tr><th scope="row"><code>0x54796140</code></th><td><code>R:\FWDC%ldB.BIN</code></td><td><code>0x52ff33b0</code></td><td><code>0x52ff34d0</code></td></tr>
 </tbody></table></div>
-<p>종류를 고르는 함수 <code>0x52fef240</code>의 종류 2 분기는 <code>C:</code> 쪽 조회 함수가 돌려준 이름을 파일 크기 조회에 넘깁니다. 크기가 0이 아니면 상태 객체에 종류·경로·길이를 적고, 0이면 그 세 칸을 이전 값 그대로 둡니다. 이 분기에는 <code>R:</code> 쪽으로 바꿔 찾는 코드가 없습니다. <code>R:</code> 쪽 조회 함수를 고르는 다른 경로가 어떤 조건에서 쓰이는지는 정하지 않았습니다.</p>
+<p>종류를 고르는 함수 <code>0x52fef240</code>의 종류 2 분기는 <code>C:</code> 쪽 조회 함수가 돌려준 이름을 파일 크기 조회에 넘깁니다. 크기가 0이 아니면 상태 객체에 종류·경로·길이를 적고 0이면 그 세 칸을 이전 값 그대로 둡니다. 이 분기에는 <code>R:</code> 쪽으로 바꿔 찾는 코드가 없습니다. <code>R:</code> 쪽 조회 함수를 고르는 다른 경로가 어떤 조건에서 쓰이는지는 정하지 않았습니다.</p>
 <div class="callout"><strong class="label">참고: 배포 파일 이름과의 관계</strong>
 <p>Ricoh가 배포하는 파일 이름 <code>fwdc233b.bin</code>은 이 형식에 숫자 233을 넣은 것과 대소문자만 다릅니다. 카메라가 실행 중에 이 칸에서 어떤 숫자를 읽는지, 파일 시스템이 이름의 대소문자를 어떻게 비교하는지는 확인하지 않았습니다. <code>C:</code>가 SD 슬롯 1이라는 대응도 이 문서의 근거로는 정하지 않았습니다. <code>C:</code> 뒤의 객체가 SD 카드 드라이버 클래스라는 점은 <a href="update-media-completion.html">매체 객체와 완료 통지</a>에서 확인했습니다.</p></div>
 <div class="callout model"><strong class="label">시험 조건</strong>
-<p>문자열 형식 함수는 원본 라이브러리 대신 틀·길이 제한·숫자 인수를 받아 문자열을 만드는 대체 함수였습니다. 숫자는 0, 9,067, 2,147,483,647을 넣었고, 만들어진 이름을 원본 경로 검색 함수에 넘겨 기록 번호를 확인했습니다. 크기 조회는 0과 35,136,788을 돌려주는 두 경우로 실행했습니다.</p></div>
+<p>문자열 형식 함수는 원본 라이브러리 대신 틀·길이 제한·숫자 인수를 받아 문자열을 만드는 대체 함수였습니다. 숫자는 0, 9,067, 2,147,483,647을 넣었고 만들어진 이름을 원본 경로 검색 함수에 넘겨 기록 번호를 확인했습니다. 크기 조회는 0과 35,136,788을 돌려주는 두 경우로 실행했습니다.</p></div>
 
 <h3>volume 기록표: 용량 12칸과 등록 순서</h3>
-<p>공장 초기화 함수는 volume 관리 객체를 만들 때 용량 12를 넘깁니다. 생성자 <code>0x52f52334</code>는 <code>8 + 0x18 × 12</code>바이트(296바이트)를 요청하고, 배열 시작에서 8바이트 뒤의 주소를 관리 객체 <code>+0x14</code>에, 용량을 <code>+0x20</code>에 저장합니다. 따라서 <code>+0x20</code>은 등록된 기록의 수가 아니라 검색할 배열의 용량입니다.</p>
+<p>공장 초기화 함수는 volume 관리 객체를 만들 때 용량 12를 넘깁니다. 생성자 <code>0x52f52334</code>는 <code>8 + 0x18 × 12</code>바이트(296바이트)를 요청합니다. 그리고 배열 시작에서 8바이트 뒤의 주소를 관리 객체 <code>+0x14</code>에, 용량을 <code>+0x20</code>에 저장합니다. 따라서 <code>+0x20</code>은 등록된 기록의 수가 아니라 검색할 배열의 용량입니다.</p>
 <p>등록 함수 <code>0x52f524b8</code>는 첫 칸(설명 객체 포인터)이 비어 있는 첫 기록을 찾아, 설명 객체를 기록 <code>+0</code>에, 넘겨받은 문자열의 첫 글자를 <code>+4</code>에 씁니다. 용량 값은 늘리지 않습니다. 빈 기록이 없으면 아무것도 쓰지 않고 0을 돌려줍니다.</p>
 <div class="table-wrap"><table>
 <caption>공장 초기화가 등록하는 volume</caption>
@@ -180,7 +180,7 @@
 </tbody></table></div>
 <ul>
 <li>형식 문자열은 <code>0x53911ab0</code>(<code>C:</code>)와 <code>0x53911ac0</code>(<code>R:</code>)에 있습니다. 글자 문자열은 <code>0x539014b4</code>(C, D), <code>0x53901484</code>(X, Y), <code>0x539014a0</code>(W), <code>0x53cb16f0</code>(J, A, B, E, F, G, H, R)에 있습니다.</li>
-<li>종류 2 분기는 <code>0x52fef330</code>에서 이름 조회 함수를, <code>0x52fef340</code>에서 크기 조회 함수를 부르고, <code>0x52fef354</code>·<code>0x52fef35c</code>·<code>0x52fef364</code>에서 상태에 종류·경로·길이를 씁니다.</li>
+<li>종류 2 분기는 <code>0x52fef330</code>에서 이름 조회 함수를, <code>0x52fef340</code>에서 크기 조회 함수를 부릅니다. 이어서 <code>0x52fef354</code>·<code>0x52fef35c</code>·<code>0x52fef364</code>에서 상태에 종류·경로·길이를 씁니다.</li>
 <li>등록 함수는 기록의 <code>+5</code>, <code>+7</code>, <code>+0xc</code>를 0으로 두고 넷째 인수의 하위 바이트를 <code>+6</code>에 복사합니다. 같은 글자가 이미 있는지는 검사하지 않습니다.</li>
 <li>파일 이름에 쓰이는 숫자를 읽는 함수 <code>0x5310b748</code>과, 프로젝트 값을 읽는 함수 <code>0x5310b7f0</code>은 서로 다른 칸을 읽습니다(<a href="update-resources.html#selection">업데이트 검사와 ICONBIN</a>).</li>
 <li><code>BuildPackage</code>라는 이름은 <code>src/FileFactory.cpp</code> 문자열(<code>0x538fd764</code>)과 함수 이름 문자열(<code>0x538fdc80</code>)에서 왔습니다.</li>
@@ -192,7 +192,7 @@
 <h2>구성 요소 5의 입력 설정은 기존 값을 지우지 않을 수 있습니다</h2>
 <p class="takeaway">구성 요소 5의 설정 함수는 주소와 길이가 둘 다 0이 아닐 때만 자기 칸을 바꿉니다. 입력 정리가 넘기는 <code>(0, 0)</code>으로는 기존 값이 그대로 남습니다.</p>
 <div class="callout fix"><strong class="label">정정</strong>
-<p>입력 정리 함수 <code>0x52feec18</code>은 <code>0x52feecc0</code>에서 이 설정 함수에 <code>(0, 0)</code>을 넘깁니다. 처음 상태의 슬롯 1 조건에서는 구성 요소 5의 기존 입력 칸이 그대로 남습니다. 따라서 “모든 구성 요소의 입력 정보를 0으로 만든다”는 앞선 설명은 정확하지 않았습니다. 설정 함수를 부르는 것과 칸이 실제로 지워지는 것을 구분해야 합니다. 관련 근거 파일 <a href="startup-storage-evidence.json">startup-storage-evidence.json</a>의 서술도 이에 맞게 고쳐져 있습니다.</p></div>
+<p>입력 정리 함수 <code>0x52feec18</code>은 <code>0x52feecc0</code>에서 이 설정 함수에 <code>(0, 0)</code>을 넘깁니다. 처음 상태의 슬롯 1 조건에서는 구성 요소 5의 기존 입력 칸이 그대로 남습니다. 따라서 “모든 구성 요소의 입력 정보를 0으로 만든다”는 이전 설명은 정확하지 않았습니다. 설정 함수를 부르는 것과 칸이 실제로 지워지는 것을 구분해야 합니다. 관련 근거 파일 <a href="startup-storage-evidence.json">startup-storage-evidence.json</a>의 서술도 이에 맞게 고쳐져 있습니다.</p></div>
 <p>설정 함수 <code>0x52ff31c4</code>는 리소스 슬롯 1(이름 <code>M0A7CommunicationBuffer</code>)의 기준 주소를 조회합니다. 조회 함수 <code>0x52ff8de4</code>는 기준 주소가 <code>0xffffffff</code>가 아니면 그 값을 그대로 돌려줍니다. 슬롯 1의 처음 값은 기준 <code>0x509df000</code>, 길이 <code>0x100000</code>입니다.</p>
 <div class="table-wrap"><table>
 <caption>설정 함수에 넣은 값과 결과(처음 상태의 슬롯 1)</caption>
@@ -212,7 +212,7 @@
 
 <section id="finalization">
 <h2>종료 함수의 해제 요청과 완료 통지</h2>
-<p class="takeaway">종료 함수는 먼저 입력 버퍼의 해제를 요청하고, 실행 결과가 0이 아니면 완료 메시지를 보냅니다. 해제 요청의 반환값은 통지 여부를 정하는 데 쓰이지 않습니다.</p>
+<p class="takeaway">종료 함수는 먼저 입력 버퍼의 해제를 요청하고 실행 결과가 0이 아니면 완료 메시지를 보냅니다. 해제 요청의 반환값은 통지 여부를 정하는 데 쓰이지 않습니다.</p>
 
 <figure class="diagram">
 <figcaption>종료 함수 0x52feffa8(state, result)의 순서</figcaption>
@@ -252,9 +252,9 @@
 
 <ul>
 <li>종료 함수는 결과가 0이든 아니든 상태 <code>+0x48</code>의 값을 해제 요청 함수에 넘깁니다. 입력 주소가 없는 합성 사례에서도 호출을 생략하지 않았습니다.</li>
-<li>해제 요청 함수는 잠금 결과를 돌려주며, 주소가 없으면 풀의 해제 호출을 건너뜁니다(<a href="update-file-lifetimes.html#cleanup">입력 정리와 해제 함수의 반환값</a>). 시험에 넣은 반환값 <code>0xffffffff</code>는 호출자가 그 값을 어떻게 전달하는지 보려는 것이며, 실제 해제의 성공·실패 값으로 읽으면 안 됩니다.</li>
+<li>해제 요청 함수는 잠금 결과를 돌려주며 주소가 없으면 풀의 해제 호출을 건너뜁니다(<a href="update-file-lifetimes.html#cleanup">입력 정리와 해제 함수의 반환값</a>). 시험에 넣은 반환값 <code>0xffffffff</code>는 호출자가 그 값을 어떻게 전달하는지 보려는 것이며 실제 해제의 성공·실패 값으로 읽으면 안 됩니다.</li>
 <li>종료 함수 안에는 상태 <code>+0x48</code>(입력 주소)이나 <code>+0x44</code>(길이)를 지우는 명령이 없습니다.</li>
-<li>완료 통지 함수는 메시지 <code>0x2640820b</code>를 보내고, 아래 경계에 <code>0x20</code>을 넘긴 뒤 마지막 호출로 넘어갑니다. 결과가 0이 아닐 때 종료 함수의 반환값은 이 마지막 통지 경계의 반환값입니다.</li>
+<li>완료 통지 함수는 메시지 <code>0x2640820b</code>를 보내고 아래 경계에 <code>0x20</code>을 넘긴 뒤 마지막 호출로 넘어갑니다. 결과가 0이 아닐 때 종료 함수의 반환값은 이 마지막 통지 경계의 반환값입니다.</li>
 </ul>
 
 <h3>실행 감싸기 함수는 종류에 따라 종료 함수를 거치거나 건너뜁니다</h3>
@@ -267,7 +267,7 @@
 <tr><th scope="row">8(범위 밖)</th><td>결과 0으로 종료 함수를 부릅니다.</td><td>0</td><td><span class="badge ok">확인</span></td></tr>
 <tr><th scope="row">0, 1, 3, 4</th><td>추가 준비 경로가 있습니다.</td><td>실행하지 않음</td><td><span class="badge static">정적 분석</span></td></tr>
 </tbody></table></div>
-<p>종류 6과 7에 실행 결과 2를 넣었을 때도 감싸기 함수는 2를 그대로 돌려줬습니다. 0과 1로만 바꿔 전달하지 않는다는 뜻입니다.</p>
+<p>종류 6과 7에 실행 결과 2를 넣었을 때도 감싸기 함수는 2를 그대로 돌려줬습니다. 결과를 0과 1로만 바꿔 전달하지는 않습니다.</p>
 
 <h3>조회용 함수와 CheckUpdateFirmware 수신부의 정리 경로</h3>
 <p>파일을 읽어 검증만 하는 조회용 함수 <code>0x533031a0</code>은 사전 점검 → 읽기 → 검증 → 사후 점검 순서로 진행합니다. 어느 단계가 0을 돌려주면 그 자리에서 오류 바이트를 쓰고 끝냅니다.</p>
@@ -281,8 +281,8 @@
 <tr><th scope="row">사후 점검</th><td>3</td></tr>
 <tr><th scope="row">모두 0이 아님</th><td>호출자가 넣어 둔 값 그대로. 사후 점검의 반환값을 그대로 전달</td></tr>
 </tbody></table></div>
-<p>이 함수 안에는 입력 버퍼를 해제하는 호출이 없습니다. 위쪽 호출자의 정리와 오류 보고를 더 따라가야 하며, 이 사실만으로 누수나 이중 해제를 단정하지 않습니다.</p>
-<p>업데이트 파일의 버전을 묻는 <code>CheckUpdateFirmware</code> 요청의 수신부는 종류 2를 고른 뒤 읽기·검증·버전 조회 결과를 모두 <code>0x533167a4</code> → <code>0x52feec18(state, 1)</code>의 입력 정리로 모읍니다. 입력 주소가 없으면 <code>0x52feec34</code>에서 해제 요청을 건너뛰고 구성 요소 정리와 종류·파일 이름·길이 초기화로 갑니다. 주소가 있으면 해제 요청 함수를 부르고, 그 반환값이 0이 아닐 때만 주소를 지우고 나머지 정리를 진행합니다. 이 부분은 수신부의 분기와 호출을 읽어서 대조했고, 메시지 처리 전체와 스케줄러는 실행하지 않았습니다. 요청과 응답의 전달 경로는 <a href="startup-storage.html#receiver">M0 reset·SRAM remap·bank</a>에 있습니다.</p>
+<p>이 함수 안에는 입력 버퍼를 해제하는 호출이 없습니다. 위쪽 호출자의 정리와 오류 보고를 더 따라가야 하며 이 사실만으로 누수나 이중 해제를 단정하지 않습니다.</p>
+<p>업데이트 파일의 버전을 묻는 <code>CheckUpdateFirmware</code> 요청의 수신부는 종류 2를 고릅니다. 그 뒤 읽기·검증·버전 조회 결과를 모두 <code>0x533167a4</code> → <code>0x52feec18(state, 1)</code>의 입력 정리로 모읍니다. 입력 주소가 없으면 <code>0x52feec34</code>에서 해제 요청을 건너뛰고 구성 요소 정리와 종류·파일 이름·길이 초기화로 갑니다. 주소가 있으면 해제 요청 함수를 부릅니다. 그 반환값이 0이 아닐 때만 주소를 지우고 나머지 정리를 진행합니다. 이 부분은 수신부의 분기와 호출을 읽어서 대조했습니다. 메시지 처리 전체와 스케줄러는 실행하지 않았습니다. 요청과 응답의 전달 경로는 <a href="startup-storage.html#receiver">M0 reset·SRAM remap·bank</a>에 있습니다.</p>
 
 <details class="evidence"><summary>종료 처리 함수 구간, 분기 표, 대체한 함수</summary>
 <div class="table-wrap"><table class="compact">
@@ -308,7 +308,7 @@
 <ul>
 <li>파일 이름·volume 19건과 종료 처리 26건, 합계 45건이 RTOS 단독 이미지와 통합 이미지에서 같은 결과를 냈습니다. 종료 처리 26건에는 다른 검토자가 추가한 경계 사례 6건이 들어 있습니다. 이 6건을 합계에 따로 더하지 않았습니다.</li>
 <li>19건은 공장 등록 순서 1건, 이름에서 기록까지 6건, 종류 2의 크기 조건 2건, 이름에서 처리기 조건까지 8건, 등록 함수 2건(빈 칸 찾기, 가득 찬 표)입니다. 26건은 구성 요소 5의 5건과 반환값 1건, 종료 함수 4건과 주소 없는 경우 2건, 감싸기 함수 6건과 결과 2를 넣은 2건, 조회용 함수 5건과 반환값 전달 1건입니다.</li>
-<li>디컴파일한 C 12개와 원본 ARM 1,622개 단어의 주소·해시를 따로 보관했습니다. 구성 요소 5의 C에는 조건 코드 표현이 풀리지 않은 채 남아 있고, 종료 함수의 C에는 성공 분기의 마지막 호출이 빠져 있습니다. C는 고치지 않고 두었으며, 조건과 반환 관계는 원본 ARM 명령과 실행 결과로 판정했습니다.</li>
+<li>디컴파일한 C 12개와 원본 ARM 1,622개 단어의 주소·해시를 따로 보관했습니다. 구성 요소 5의 C에는 조건 코드 표현이 풀리지 않은 채 남아 있고 종료 함수의 C에는 성공 분기의 마지막 호출이 빠져 있습니다. C는 고치지 않고 두었으며 조건과 반환 관계는 원본 ARM 명령과 실행 결과로 판정했습니다.</li>
 <li>실제 파일 접근, 큰 메모리 할당, 운영체제의 해제, 업데이트 실행, 물리 매체, 카메라는 실행하지 않았습니다. 이 결과는 수정 펌웨어를 카메라가 받아들이거나 정상 실행한다는 것을 보여 주지 않습니다.</li>
 <li>이어지는 조사: 설명 객체를 만드는 코드와 크기의 단위, 완료 통지를 받는 쪽은 <a href="update-media-completion.html">매체 객체와 완료 통지</a>에서 다룹니다. mount와 처리기 초기화의 실행 시점, 풀린 출력 버퍼의 최종 회수 시점은 아직 남아 있습니다.</li>
 </ul>
@@ -316,7 +316,7 @@
 
 <section id="reproduce">
 <h2>재현 방법</h2>
-<p>두 도구는 입력의 SHA-256을 확인하고, 이미 있는 출력 파일을 덮어쓰지 않으며, Python의 assert를 끈 상태로는 실행을 거부합니다. 입력으로 RTOS 단독 이미지나 통합 이미지 <code>decoded.bin</code>을 줄 수 있습니다.</p>
+<p>두 도구는 입력의 SHA-256을 확인하고 이미 있는 출력 파일을 덮어쓰지 않으며 Python의 assert를 끈 상태로는 실행을 거부합니다. 입력으로 RTOS 단독 이미지나 통합 이미지 <code>decoded.bin</code>을 줄 수 있습니다.</p>
 <pre><code>python verify_update_volume_path.py rtos.bin --output volume-checks.json
 python verify_update_finalization.py rtos.bin --output finalization-checks.json</code></pre>
 <dl class="kv">
@@ -341,7 +341,7 @@ python verify_update_finalization.py rtos.bin --output finalization-checks.json<
 </main>
 </div>
 <!-- chrome:bottom -->
-<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">펌웨어 업데이트 과정 — 이 주제의 문서</h2><ol><li><a href="guide-update.html">업데이트 과정 안내</a></li><li><a href="update-resources.html">업데이트 검사와 ICONBIN<span>프로젝트·버전·체크섬</span></a></li><li><a href="update-memory.html">입력 로더와 메모리 할당</a></li><li><a href="update-file-lifetimes.html">파일 인터페이스와 버퍼 수명</a></li><li><a href="update-volume-finalization.html" aria-current="page">파일 경로·volume·종료 처리</a></li><li><a href="update-media-completion.html">매체 객체와 완료 통지</a></li><li><a href="update-partition-io.html">R 파티션과 sector I/O</a></li><li><a href="update-bank-selection.html">쓰기 bank와 BOOT 선택</a></li><li><a href="selector-policy.html">리소스 선택값과 헤더 기록 조건<span>FIFO 반례·표와 헤더의 쓰기 분기</span></a></li><li><a href="update-ui-consumer.html">완료 후 UI 작업</a></li><li><a href="update-ui-timer.html">UI 타이머와 콜백</a></li><li><a href="update-timer-abi.html">커널 호출과 예약 시각</a></li><li><a href="update-timer-insertion.html">기한 큐 삽입</a></li><li><a href="update-timer-clock.html">타이머 설정과 64비트 카운터</a></li><li><a href="update-timer-irq.html">타이머 등록과 지연 콜백</a></li><li><a href="update-subtick-arithmetic.html">하위 시간의 32비트 산술</a></li><li><a href="update-clock-readers.html">시각 조회 함수</a></li></ol></nav>
+<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">펌웨어 업데이트 과정 — 이 주제의 문서</h2><ol><li><a href="guide-update.html">업데이트 과정 안내</a></li><li><a href="update-resources.html">업데이트 검사와 ICONBIN<span>프로젝트·버전·체크섬</span></a></li><li><a href="update-memory.html">입력 로더와 메모리 할당</a></li><li><a href="update-file-lifetimes.html">파일 인터페이스와 버퍼 수명</a></li><li><a href="update-volume-finalization.html" aria-current="page">파일 경로·volume·종료 처리</a></li><li><a href="update-media-completion.html">매체 객체와 완료 통지</a></li><li><a href="update-partition-io.html">R 파티션과 sector I/O</a></li><li><a href="update-bank-selection.html">쓰기 bank와 BOOT 선택</a></li><li><a href="selector-policy.html">리소스 선택값과 헤더 기록 조건<span>선택값과 기록 조건</span></a></li><li><a href="update-ui-consumer.html">완료 후 UI 작업</a></li><li><a href="update-ui-timer.html">UI 타이머와 콜백</a></li><li><a href="update-timer-abi.html">커널 호출과 예약 시각</a></li><li><a href="update-timer-insertion.html">기한 큐 삽입</a></li><li><a href="update-timer-clock.html">타이머 설정과 64비트 카운터</a></li><li><a href="update-timer-irq.html">타이머 등록과 지연 콜백</a></li><li><a href="update-subtick-arithmetic.html">하위 시간의 32비트 산술</a></li><li><a href="update-clock-readers.html">시각 조회 함수</a></li></ol></nav>
 <nav class="pager" aria-label="이전·다음 문서"><a class="prev" href="update-file-lifetimes.html"><small>← 이전</small>파일 인터페이스와 버퍼 수명</a><a class="next" href="update-media-completion.html"><small>다음 →</small>매체 객체와 완료 통지</a></nav>
 <footer class="sitefoot"><div class="sitefoot-in"><nav aria-label="사이트"><a href="../index.html#map">문서 지도</a><a href="../index.html#levels">검증 수준 읽는 법</a><a href="../glossary.html">용어집</a><a href="research-program.html">세 기종 연구 본부</a><a href="https://github.com/yunhyok/pentax-k3iii-firmware-analysis">GitHub 저장소</a></nav><p>PENTAX 펌웨어 연구. PC에서 수행한 정적 분석과 에뮬레이션 결과이며, 카메라 실기에서 검증한 내용이 아닙니다. 원본 펌웨어와 추출한 독점 코드는 포함하지 않습니다.</p></div></footer>
 <!-- /chrome:bottom -->

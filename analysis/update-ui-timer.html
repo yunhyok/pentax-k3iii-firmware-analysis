@@ -10,7 +10,7 @@
 <body data-camera="k3iii">
 <!-- chrome:top -->
 <a class="skip" href="#main">본문 바로가기</a>
-<div class="topbar"><div class="topbar-in"><a class="brand" href="../index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="../index.html" aria-current="true">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="https://yunhyok.github.io/pentax-q7-firmware-analysis/">Q7</a></div><nav class="topnav" aria-label="주제"><a href="../index.html">개요</a><a href="guide-boot.html">부팅·저장소</a><a href="guide-update.html" aria-current="true">업데이트</a><a href="guide-rebuild.html">재구축</a><a href="guide-rtos.html">명령·셸</a><a href="guide-color.html">색 처리</a><a href="lightroom-bridge.html">Lightroom</a><a href="af-foundations.html">AF</a><a href="ui-port-contract.html">UI</a></nav></div></div>
+<div class="topbar"><div class="topbar-in"><a class="brand" href="../index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="../index.html" aria-current="true">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="https://yunhyok.github.io/pentax-q7-firmware-analysis/">Q7</a></div><nav class="topnav" aria-label="주제"><a href="../index.html">개요</a><a href="guide-boot.html">부팅·저장소</a><a href="guide-update.html" aria-current="true">업데이트</a><a href="guide-rebuild.html">재구축</a><a href="guide-rtos.html">명령·셸</a><a href="guide-color.html">색 처리</a><a href="guide-lightroom.html">Lightroom</a><a href="guide-af.html">AF</a><a href="guide-ui.html">UI</a></nav></div></div>
 <nav class="crumbs" aria-label="현재 위치"><ol><li><a href="../index.html">PENTAX K-3 Mark III</a></li><li><a href="guide-update.html">펌웨어 업데이트 과정</a></li><li aria-current="page">UI 타이머와 콜백</li></ol></nav>
 <!-- /chrome:top -->
 <header class="page-head">
@@ -27,9 +27,9 @@
 <section class="summary">
 <h2 data-toc="no">핵심 요약</h2>
 <ul>
-<li>UI 타이머 서비스는 예약 한 건을 <strong>슬롯</strong> 하나에 적어 둡니다. 슬롯에는 예약 번호(handle)와 콜백이 들어가고, 실제로 시간을 재는 일은 커널의 알람 호출에 맡깁니다.</li>
+<li>UI 타이머 서비스는 예약 한 건을 <strong>슬롯</strong> 하나에 적어 둡니다. 슬롯에는 예약 번호(handle)와 콜백이 들어가고 실제로 시간을 재는 일은 커널의 알람 호출에 맡깁니다.</li>
 <li>예약, 취소, 만료 확인, 콜백 전달 코드를 PC 에뮬레이터에서 <strong>원본 기계어로 39개 사례</strong> 실행했습니다. 결과는 모두 예상한 값과 같았습니다.</li>
-<li>타이머가 울린 뒤 콜백은 event flag와 UI 작업 큐를 거쳐 <code>UserFwUpdateController</code>에 닿습니다. 이 길에 놓인 코드는 실행했지만, 단계를 넘기는 순서는 시험이 직접 정했습니다.</li>
+<li>타이머가 울린 뒤 콜백은 event flag와 UI 작업 큐를 거쳐 <code>UserFwUpdateController</code>에 닿습니다. 이 길에 놓인 코드는 실행했지만 단계를 넘기는 순서는 시험이 직접 정했습니다.</li>
 <li>커널 호출이 실패하면 assertion이 먼저 불립니다. “실패해도 handle을 돌려주거나 슬롯을 지운다”는 결과는 assertion이 되돌아오는 조건에서만 성립합니다.</li>
 <li>예약에 넘긴 1000의 시간 단위, 실제 지연, 콜백 뒤의 재부팅 여부는 확인하지 못했습니다.</li>
 </ul>
@@ -68,7 +68,7 @@
 <section id="background">
 <h2>배경: 완료 화면은 왜 타이머를 거는가</h2>
 <p>앞 단계인 <a href="update-ui-consumer.html">완료 후 UI 작업</a>에서, 업데이트 완료 통지를 받은 <code>UserFwUpdateController</code>는 모델 값이 3일 때 UI 타이머 서비스에 예약을 넣습니다. 넘기는 값은 지연 1000과 자기 자신의 일부(<code>this+0x188</code>)를 가리키는 콜백입니다. 돌려받은 <dfn title="예약을 구분하려고 서비스가 돌려주는 번호. 나중에 취소하거나 콜백에서 대조할 때 씁니다.">handle</dfn>은 객체 안에 저장해 둡니다.</p>
-<p>이 문서는 그 예약이 서비스 안에서 어떻게 보관되고, 만료된 뒤 어떤 경로로 콜백이 되어 돌아오는지 다룹니다. 시간을 실제로 재는 커널 쪽은 <a href="update-timer-abi.html">커널 호출과 예약 시각</a>부터 이어지는 여섯 문서에서 따로 내려갑니다.</p>
+<p>이 문서는 그 예약이 서비스 안에서 어떻게 보관되고 만료된 뒤 어떤 경로로 콜백이 되어 돌아오는지 다룹니다. 시간을 실제로 재는 커널 쪽은 <a href="update-timer-abi.html">커널 호출과 예약 시각</a>부터 이어지는 여섯 문서에서 따로 내려갑니다.</p>
 
 <figure class="diagram">
 <figcaption>타이머 사슬 일곱 문서와 이 문서의 위치</figcaption>
@@ -136,7 +136,7 @@
 
 <section id="structure">
 <h2>서비스는 예약을 슬롯에 보관합니다</h2>
-<p class="takeaway">서비스 객체가 슬롯 배열을 갖고, 슬롯마다 타이머 객체가 하나씩 붙어 있습니다. 타이머 객체는 다시 서비스의 첫 번째 listener를 가리킵니다.</p>
+<p class="takeaway">서비스 객체가 슬롯 배열을 갖고 슬롯마다 타이머 객체가 하나씩 붙어 있습니다. 타이머 객체는 다시 서비스의 첫 번째 listener를 가리킵니다.</p>
 
 <figure class="diagram">
 <figcaption>서비스, 슬롯, 타이머 객체가 서로를 가리키는 방식</figcaption>
@@ -194,8 +194,8 @@
 <ul class="dg-legend"><li><i class="key"></i>예약 한 건을 이루는 필드</li><li><i></i>원본 객체의 필드</li><li><i class="model"></i>시험에서 대체한 부분</li></ul>
 </figure>
 
-<p>생성자는 서비스 안의 두 위치(listener 1과 listener 2)에 서로 다른 가상 함수 표 주소를 적습니다. 서비스 하나가 listener 두 개 노릇을 한다는 뜻입니다. 슬롯을 만들 때는 listener 1의 주소를 타이머 객체 생성자에 넘기고, 타이머 객체가 그 주소를 보관합니다.</p>
-<p>생성자는 counter에 1을 적습니다. 그래서 이 값에서 출발하면 첫 예약의 handle은 2입니다. 생성과 등록 과정은 코드를 읽어 확인한 내용이고, 실제 커널 등록은 실행하지 않았습니다.</p>
+<p>생성자는 서비스 안의 두 위치(listener 1과 listener 2)에 서로 다른 가상 함수 표 주소를 적습니다. 서비스 하나가 listener 두 개 노릇을 합니다. 슬롯을 만들 때는 listener 1의 주소를 타이머 객체 생성자에 넘기고 타이머 객체가 그 주소를 보관합니다.</p>
+<p>생성자는 counter에 1을 적습니다. 그래서 이 값에서 출발하면 첫 예약의 handle은 2입니다. 생성과 등록 과정은 코드를 읽어 확인한 내용이고 실제 커널 등록은 실행하지 않았습니다.</p>
 
 <details class="evidence"><summary>생성자와 가상 함수 표</summary>
 <div class="table-wrap"><table class="compact">
@@ -212,17 +212,17 @@
 
 <section id="conditions">
 <h2>예약, 취소, 만료 확인의 규칙</h2>
-<p class="takeaway">handle은 1씩 커지는 번호이고, 슬롯은 ID가 0이거나 콜백이 비어 있으면 빈 것으로 봅니다. 만료 확인은 커널에 “아직 진행 중인가”를 물어 아니라고 할 때 콜백을 부릅니다.</p>
+<p class="takeaway">handle은 1씩 커지는 번호이고 슬롯은 ID가 0이거나 콜백이 비어 있으면 빈 것으로 봅니다. 만료 확인은 커널에 “아직 진행 중인가”를 물어 아니라고 할 때 콜백을 부릅니다.</p>
 
 <div class="table-wrap"><table>
 <caption>서비스 함수별로 확인한 동작</caption>
 <thead><tr><th>함수</th><th>하는 일</th><th>확인한 규칙</th></tr></thead>
 <tbody>
 <tr><th scope="row">슬롯 찾기<br><code>0x528eb6b4</code></th><td>예약을 담을 슬롯을 고릅니다.</td><td>ID가 0이거나 콜백이 NULL인 첫 슬롯을 다시 씁니다. 모두 사용 중일 때 새 슬롯을 만드는 경로는 실행하지 않았습니다.</td></tr>
-<tr><th scope="row">예약<br><code>0x528eb758</code></th><td>handle을 발급하고 타이머를 시작합니다.</td><td>counter를 1 올립니다. 이전 값이 <code>0xffffffff</code>이면 1로 돌아갑니다. 슬롯에 ID와 콜백을 적은 뒤 시작 wrapper를 부르고, 돌아오면 counter를 반환합니다. wrapper의 성공 여부는 반환값에 반영하지 않습니다.</td></tr>
-<tr><th scope="row">취소<br><code>0x528eb490</code></th><td>handle에 해당하는 예약을 없앱니다.</td><td>ID가 같은 첫 슬롯에서 정지 wrapper를 부르고, 돌아오면 ID와 콜백을 지운 뒤 1을 반환합니다. 맞는 슬롯이 없으면 0입니다. ID 0도 비교 대상입니다.</td></tr>
+<tr><th scope="row">예약<br><code>0x528eb758</code></th><td>handle을 발급하고 타이머를 시작합니다.</td><td>counter를 1 올립니다. 이전 값이 <code>0xffffffff</code>이면 1로 돌아갑니다. 슬롯에 ID와 콜백을 적은 뒤 시작 wrapper를 부르고 돌아오면 counter를 반환합니다. wrapper의 성공 여부는 반환값에 반영하지 않습니다.</td></tr>
+<tr><th scope="row">취소<br><code>0x528eb490</code></th><td>handle에 해당하는 예약을 없앱니다.</td><td>ID가 같은 첫 슬롯에서 정지 wrapper를 부르고 돌아오면 ID와 콜백을 지운 뒤 1을 반환합니다. 맞는 슬롯이 없으면 0입니다. ID 0도 비교 대상입니다.</td></tr>
 <tr><th scope="row">상태 조회 wrapper<br><code>0x530ebac8</code></th><td>커널에 알람 상태를 묻습니다.</td><td>커널 반환이 0이고 조회 구조체의 <code>+8</code> 값이 정확히 1일 때만 1을 반환합니다.</td></tr>
-<tr><th scope="row">만료 확인(poll)<br><code>0x528eb7a4</code></th><td>슬롯을 돌며 끝난 예약의 콜백을 부릅니다.</td><td>ID가 0이거나 콜백이 NULL이면 건너뜁니다. 상태 조회가 0이면 ID와 콜백을 따로 보관하고, 슬롯의 <code>+8</code>, <code>+4</code> 순서로 0을 쓴 다음 콜백을 부릅니다. 그 뒤 배열의 끝을 다시 읽습니다.</td></tr>
+<tr><th scope="row">만료 확인(poll)<br><code>0x528eb7a4</code></th><td>슬롯을 돌며 끝난 예약의 콜백을 부릅니다.</td><td>ID가 0이거나 콜백이 NULL이면 건너뜁니다. 상태 조회가 0이면 ID와 콜백을 따로 보관하고 슬롯의 <code>+8</code>, <code>+4</code> 순서로 0을 쓴 다음 콜백을 부릅니다. 그 뒤 배열의 끝을 다시 읽습니다.</td></tr>
 <tr><th scope="row">work 수신<br><code>0x528eb81c</code></th><td>UI 작업을 받아 poll로 넘깁니다.</td><td>작업 번호가 <code>0x1bc</code>일 때만 poll을 부릅니다. <code>0x1bb</code>와 <code>0x1bd</code>에서는 아무 일도 하지 않았습니다.</td></tr>
 </tbody></table></div>
 
@@ -246,7 +246,7 @@
 
 <section id="flow">
 <h2>만료된 예약은 두 listener를 거쳐 콜백이 됩니다</h2>
-<p class="takeaway">타이머가 울리면 첫 번째 listener가 event flag를 세우고, event task가 UI 작업 <code>0x1bc</code>를 큐에 넣고, 두 번째 listener가 그 작업을 받아 poll을 돌립니다.</p>
+<p class="takeaway">타이머가 울리면 첫 번째 listener가 event flag를 세웁니다. 이어서 event task가 UI 작업 <code>0x1bc</code>를 큐에 넣고 두 번째 listener가 그 작업을 받아 poll을 돌립니다.</p>
 
 <figure class="diagram">
 <figcaption>예약부터 콜백까지의 호출 순서</figcaption>
@@ -319,7 +319,7 @@
 <tbody>
 <tr><th scope="row">1. 등록 콜백</th><td><code>0x530eb5d0</code></td><td>커널에 등록해 둔 함수입니다. 타이머 객체의 가상 함수를 거쳐 listener 1을 부릅니다.</td></tr>
 <tr><th scope="row">2. listener 1</th><td><code>0x528eb47c</code></td><td>event flag 1을 세워 달라고 요청합니다.</td></tr>
-<tr><th scope="row">3. event task</th><td><code>0x528eb420</code></td><td>event를 기다렸다가 지우고, UI 작업 큐에 작업 <code>0x1bc</code>(인수 0, 받는 쪽은 listener 2)를 넣습니다. 그리고 다시 기다립니다.</td></tr>
+<tr><th scope="row">3. event task</th><td><code>0x528eb420</code></td><td>event를 기다렸다가 지우고 UI 작업 큐에 작업 <code>0x1bc</code>(인수 0, 받는 쪽은 listener 2)를 넣습니다. 그리고 다시 기다립니다.</td></tr>
 <tr><th scope="row">4. listener 2</th><td><code>0x528eb81c</code></td><td><code>this</code>를 보정한 뒤 들어옵니다. 작업 번호가 <code>0x1bc</code>일 때만 다음 단계로 갑니다.</td></tr>
 <tr><th scope="row">5. 만료 확인</th><td><code>0x528eb7a4</code></td><td>슬롯을 돌며 끝난 예약의 콜백을 부릅니다.</td></tr>
 </tbody></table></div>
@@ -373,7 +373,7 @@
 <tr><th scope="row">상태 조회 wrapper</th><td class="n">6</td><td>조회값 0, 1, 2, <code>0xffffffff</code>에서 0, 1, 0, 0. 커널 오류 2개</td></tr>
 <tr><th scope="row">poll의 건너뛰기와 지우기</th><td class="n">6</td><td>빈 슬롯 3종은 조회하지 않음. 조회값 1은 콜백 없음, 0과 2는 콜백</td></tr>
 <tr><th scope="row">poll 중 커널 오류</th><td class="n">2</td><td>assertion이 되돌아올 때만 콜백</td></tr>
-<tr><th scope="row">콜백 안에서 슬롯 변경</th><td class="n">1</td><td>콜백이 현재 슬롯에 새 ID <code>0x99</code>를 쓰고 배열 끝을 한 칸 늘림. 늘어난 슬롯은 처리했고, 현재 슬롯은 다시 보지 않음</td></tr>
+<tr><th scope="row">콜백 안에서 슬롯 변경</th><td class="n">1</td><td>콜백이 현재 슬롯에 새 ID <code>0x99</code>를 쓰고 배열 끝을 한 칸 늘림. 늘어난 슬롯은 처리했고 현재 슬롯은 다시 보지 않음</td></tr>
 <tr><th scope="row">완료 화면 콜백</th><td class="n">3</td><td>위 표의 세 사례</td></tr>
 <tr><th scope="row">work 번호 필터</th><td class="n">3</td><td><code>0x1bb</code>, <code>0x1bc</code>, <code>0x1bd</code> 가운데 <code>0x1bc</code>만 통과</td></tr>
 <tr><th scope="row">전체 연결</th><td class="n">1</td><td>등록 콜백 → event task → 큐 → 배분 → 완료 화면 콜백. 저장 handle 0, <code>+0x1ad</code> = 1</td></tr>
@@ -404,14 +404,14 @@
 <tr><td><code>0x525b7844</code></td><td>타이머 시작 호출. 인수(첫 인수, 지연)를 기록하고 정해 둔 값을 반환</td></tr>
 <tr><td><code>0x525b78b0</code></td><td>타이머 정지 호출. 인수를 기록하고 정해 둔 값을 반환</td></tr>
 <tr><td><code>0x525b73c4</code></td><td>상태 조회 호출. 12바이트 출력을 정해 둔 값으로 채움</td></tr>
-<tr><td><code>0x530feb20</code></td><td>assertion·기록 함수. 조건을 기록하고, 거짓이면 멈추거나(기본) 되돌아옴(따로 지정한 사례)</td></tr>
+<tr><td><code>0x530feb20</code></td><td>assertion·기록 함수. 조건을 기록하고 거짓이면 멈추거나(기본) 되돌아옴(따로 지정한 사례)</td></tr>
 <tr><td><code>0x530ed03c</code>, <code>0x530ed1ac</code>, <code>0x530ed0f4</code></td><td>event 세우기, 기다리기, 지우기를 기록만 함. 두 번째 기다리기에서 시험 종료</td></tr>
 <tr><td><code>0x530f1a68</code>, <code>0x530f1bbc</code></td><td>lock 잡기와 풀기를 기록하고 1 반환</td></tr>
 <tr><td><code>0x530fdfc4</code>, <code>0x532fb9c8</code></td><td>불리면 안 되는 큐 assertion과 스택 보호 실패 경로</td></tr>
 <tr><td><code>0x5274e860</code></td><td>완료 화면의 후속 작업 생산 코드. 진입만 기록</td></tr>
 <tr><td><code>0x30000004</code></td><td>시험용 콜백. 불릴 때 슬롯이 이미 비워졌는지 확인하고 전달된 ID를 기록. 한 사례에서는 슬롯과 배열 끝을 일부러 바꿈</td></tr>
 </tbody></table></div>
-<p class="small">공개하지 않고 보관한 자료는 디컴파일 C 12개, 보조 구간 15개, ARM 명령 698 words입니다. 직접 분기 68개, 간접 분기 5개, 리소스 8개, 포인터 10개, 조건부 연결 4개의 주소와 해시를 대조했습니다. 디컴파일된 C에는 poll의 반복자 오류와 꼬리 호출 누락이 있어서, 해석은 원본 ARM 명령과 실행 결과를 기준으로 했습니다. 검증 스크립트는 이 서비스를 <code>AppTimerModel</code>이라고 부릅니다.</p>
+<p class="small">공개하지 않고 보관한 자료는 디컴파일 C 12개, 보조 구간 15개, ARM 명령 698 words입니다. 직접 분기 68개, 간접 분기 5개, 리소스 8개, 포인터 10개, 조건부 연결 4개의 주소와 해시를 대조했습니다. 디컴파일된 C에는 poll의 반복자 오류와 꼬리 호출 누락이 있어서 해석은 원본 ARM 명령과 실행 결과를 기준으로 했습니다. 검증 스크립트는 이 서비스를 <code>AppTimerModel</code>이라고 부릅니다.</p>
 </details>
 </section>
 
@@ -420,7 +420,7 @@
 <ul>
 <li><strong>시간이 흐르는 시험이 아닙니다.</strong> 커널 타이머 호출, event, lock은 모두 대체 함수입니다. 실제 지연과 커널의 콜백 전달은 실행하지 않았습니다.</li>
 <li><strong>1000의 단위는 모릅니다.</strong> 서비스는 이 값을 바꾸지 않고 커널 시작 호출의 두 번째 인수로 넘깁니다. 커널 쪽 단위는 <a href="update-timer-clock.html#limits">타이머 설정과 64비트 카운터</a>에서 정리한 대로 아직 가설 단계입니다.</li>
-<li><strong>poll은 콜백 뒤에 배열의 끝만 다시 읽고, 현재 위치는 그대로 둡니다.</strong> 그래서 이 결과로 배열 재할당이나 배열이 줄어드는 경우의 안전성을 말할 수 없습니다. 이 코드를 옮겨 쓸 때는 순회 중 배열의 수명과 위치 관계를 따로 보장해야 합니다.</li>
+<li><strong>poll은 콜백 뒤에 배열의 끝만 다시 읽고 현재 위치는 그대로 둡니다.</strong> 그래서 이 결과로 배열 재할당이나 배열이 줄어드는 경우의 안전성을 말할 수 없습니다. 이 코드를 옮겨 쓸 때는 순회 중 배열의 수명과 위치 관계를 따로 보장해야 합니다.</li>
 <li><strong>콜백이 슬롯을 바꾼 사례는 시험이 만든 동작입니다.</strong> 실제 콜백이 다시 예약하는 경우나 여러 작업이 동시에 접근하는 경우를 입증하지 않습니다.</li>
 <li><strong>이 문서 범위 밖:</strong> work 5의 처리, 재부팅, decoded 버퍼의 최종 회수, 0이 아닌 bank 값을 만드는 코드, 인증. 카메라와 저장 매체 입출력, 펌웨어 빌드와 기록은 하지 않았습니다. 화면 표시도 검사하지 않았습니다.</li>
 </ul>
@@ -436,7 +436,7 @@
 <dt>Python 패키지</dt><dd><code>unicorn</code></dd>
 </dl>
 <pre><code>python verify_update_ui_timer.py rtos.bin --output timer-checks.json</code></pre>
-<p class="small muted">스크립트는 입력 해시를 확인하고, 출력 파일이 이미 있으면 덮어쓰지 않으며, Python의 <code>-O</code> 옵션으로 assert가 꺼져 있으면 실행을 거부합니다. 원본 바이너리와 디컴파일 결과는 공개하지 않습니다.</p>
+<p class="small muted">스크립트는 입력 해시를 확인하고 출력 파일이 이미 있으면 덮어쓰지 않으며 Python의 <code>-O</code> 옵션으로 assert가 꺼져 있으면 실행을 거부합니다. 원본 바이너리와 디컴파일 결과는 공개하지 않습니다.</p>
 </section>
 
 <section id="refs">
@@ -454,7 +454,7 @@
 </main>
 </div>
 <!-- chrome:bottom -->
-<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">펌웨어 업데이트 과정 — 이 주제의 문서</h2><ol><li><a href="guide-update.html">업데이트 과정 안내</a></li><li><a href="update-resources.html">업데이트 검사와 ICONBIN<span>프로젝트·버전·체크섬</span></a></li><li><a href="update-memory.html">입력 로더와 메모리 할당</a></li><li><a href="update-file-lifetimes.html">파일 인터페이스와 버퍼 수명</a></li><li><a href="update-volume-finalization.html">파일 경로·volume·종료 처리</a></li><li><a href="update-media-completion.html">매체 객체와 완료 통지</a></li><li><a href="update-partition-io.html">R 파티션과 sector I/O</a></li><li><a href="update-bank-selection.html">쓰기 bank와 BOOT 선택</a></li><li><a href="selector-policy.html">리소스 선택값과 헤더 기록 조건<span>FIFO 반례·표와 헤더의 쓰기 분기</span></a></li><li><a href="update-ui-consumer.html">완료 후 UI 작업</a></li><li><a href="update-ui-timer.html" aria-current="page">UI 타이머와 콜백</a></li><li><a href="update-timer-abi.html">커널 호출과 예약 시각</a></li><li><a href="update-timer-insertion.html">기한 큐 삽입</a></li><li><a href="update-timer-clock.html">타이머 설정과 64비트 카운터</a></li><li><a href="update-timer-irq.html">타이머 등록과 지연 콜백</a></li><li><a href="update-subtick-arithmetic.html">하위 시간의 32비트 산술</a></li><li><a href="update-clock-readers.html">시각 조회 함수</a></li></ol></nav>
+<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">펌웨어 업데이트 과정 — 이 주제의 문서</h2><ol><li><a href="guide-update.html">업데이트 과정 안내</a></li><li><a href="update-resources.html">업데이트 검사와 ICONBIN<span>프로젝트·버전·체크섬</span></a></li><li><a href="update-memory.html">입력 로더와 메모리 할당</a></li><li><a href="update-file-lifetimes.html">파일 인터페이스와 버퍼 수명</a></li><li><a href="update-volume-finalization.html">파일 경로·volume·종료 처리</a></li><li><a href="update-media-completion.html">매체 객체와 완료 통지</a></li><li><a href="update-partition-io.html">R 파티션과 sector I/O</a></li><li><a href="update-bank-selection.html">쓰기 bank와 BOOT 선택</a></li><li><a href="selector-policy.html">리소스 선택값과 헤더 기록 조건<span>선택값과 기록 조건</span></a></li><li><a href="update-ui-consumer.html">완료 후 UI 작업</a></li><li><a href="update-ui-timer.html" aria-current="page">UI 타이머와 콜백</a></li><li><a href="update-timer-abi.html">커널 호출과 예약 시각</a></li><li><a href="update-timer-insertion.html">기한 큐 삽입</a></li><li><a href="update-timer-clock.html">타이머 설정과 64비트 카운터</a></li><li><a href="update-timer-irq.html">타이머 등록과 지연 콜백</a></li><li><a href="update-subtick-arithmetic.html">하위 시간의 32비트 산술</a></li><li><a href="update-clock-readers.html">시각 조회 함수</a></li></ol></nav>
 <nav class="pager" aria-label="이전·다음 문서"><a class="prev" href="update-ui-consumer.html"><small>← 이전</small>완료 후 UI 작업</a><a class="next" href="update-timer-abi.html"><small>다음 →</small>커널 호출과 예약 시각</a></nav>
 <footer class="sitefoot"><div class="sitefoot-in"><nav aria-label="사이트"><a href="../index.html#map">문서 지도</a><a href="../index.html#levels">검증 수준 읽는 법</a><a href="../glossary.html">용어집</a><a href="research-program.html">세 기종 연구 본부</a><a href="https://github.com/yunhyok/pentax-k3iii-firmware-analysis">GitHub 저장소</a></nav><p>PENTAX 펌웨어 연구. PC에서 수행한 정적 분석과 에뮬레이션 결과이며, 카메라 실기에서 검증한 내용이 아닙니다. 원본 펌웨어와 추출한 독점 코드는 포함하지 않습니다.</p></div></footer>
 <!-- /chrome:bottom -->

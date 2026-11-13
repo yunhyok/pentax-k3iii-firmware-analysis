@@ -10,7 +10,7 @@
 <body data-camera="k3iii">
 <!-- chrome:top -->
 <a class="skip" href="#main">본문 바로가기</a>
-<div class="topbar"><div class="topbar-in"><a class="brand" href="../index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="../index.html" aria-current="true">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="https://yunhyok.github.io/pentax-q7-firmware-analysis/">Q7</a></div><nav class="topnav" aria-label="주제"><a href="../index.html">개요</a><a href="guide-boot.html">부팅·저장소</a><a href="guide-update.html">업데이트</a><a href="guide-rebuild.html">재구축</a><a href="guide-rtos.html">명령·셸</a><a href="guide-color.html" aria-current="true">색 처리</a><a href="lightroom-bridge.html">Lightroom</a><a href="af-foundations.html">AF</a><a href="ui-port-contract.html">UI</a></nav></div></div>
+<div class="topbar"><div class="topbar-in"><a class="brand" href="../index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="../index.html" aria-current="true">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="https://yunhyok.github.io/pentax-q7-firmware-analysis/">Q7</a></div><nav class="topnav" aria-label="주제"><a href="../index.html">개요</a><a href="guide-boot.html">부팅·저장소</a><a href="guide-update.html">업데이트</a><a href="guide-rebuild.html">재구축</a><a href="guide-rtos.html">명령·셸</a><a href="guide-color.html" aria-current="true">색 처리</a><a href="guide-lightroom.html">Lightroom</a><a href="guide-af.html">AF</a><a href="guide-ui.html">UI</a></nav></div></div>
 <nav class="crumbs" aria-label="현재 위치"><ol><li><a href="../index.html">PENTAX K-3 Mark III</a></li><li><a href="guide-color.html">카메라 내부 색 처리</a></li><li aria-current="page">JPEG·ISP와 색 재현 경로</li></ol></nav>
 <!-- /chrome:top -->
 <header class="page-head">
@@ -28,7 +28,7 @@
 <h2 data-toc="no">핵심 요약</h2>
 <ul>
 <li>화이트밸런스 결과, 컬러모드의 색 행렬과 감마·톤 표, 색공간 선택, JPEG 양자화 표가 각각 <strong>영상 처리 회로와 JPEG 압축기의 설정 칸(레지스터)에 기록되는 경로</strong>를 찾았습니다.</li>
-<li>경로 위의 계산·기록 함수는 <strong>원본 기계어를 PC 에뮬레이터에서 실행</strong>해 따로 만든 기준식과 대조했습니다. 여덟 가지 시험이 모두 통과했습니다. 입력은 직접 만든 합성 값이고, 하드웨어 자리는 일반 메모리로 대신했습니다.</li>
+<li>경로 위의 계산·기록 함수는 <strong>원본 기계어를 PC 에뮬레이터에서 실행</strong>해 따로 만든 기준식과 대조했습니다. 여덟 가지 시험이 모두 통과했습니다. 입력은 직접 만든 합성 값이고 하드웨어 자리는 일반 메모리로 대신했습니다.</li>
 <li>확인한 범위는 <strong>어떤 값이 어디에 기록되는가</strong>까지입니다. 회로가 그 값으로 픽셀을 계산하는 식과 순서는 펌웨어 코드에 없습니다. 클리핑의 비교 방식, 화이트밸런스·행렬·감마·톤의 적용 순서는 확인하지 못했습니다.</li>
 <li>그래서 펌웨어의 행렬과 곡선을 <strong>Lightroom 프로파일에 그대로 넣을 수는 없습니다</strong>. 입력 좌표, 화이트밸런스 적용 상태, 포화 위치를 같은 RAW의 카메라 출력과 대조해야 합니다.</li>
 </ul>
@@ -67,7 +67,7 @@
 <section id="background">
 <h2>배경: RAW가 JPEG가 되는 과정과 이 문서가 확인한 범위</h2>
 <p>디지털카메라는 센서가 내놓은 RAW 데이터를 여러 단계로 가공해 JPEG를 만듭니다. 일반적인 순서는 블랙 레벨 보정, 화이트밸런스, 디모자이크, 노이즈 감소, 색 변환, 톤·감마 적용, 압축입니다(<a href="https://www.eecs.yorku.ca/~mbrown/pdf/Karaimer_Brown_ECCV16.pdf">Karaimer·Brown 2016, 그림 1</a>). 구체적인 구현은 카메라마다 다릅니다.</p>
-<p>K-3 Mark III에서 조사한 경로를 보면 펌웨어는 픽셀을 직접 계산하지 않습니다. 영상 처리 회로(<dfn title="Image Signal Processor. 센서 데이터를 사진으로 가공하는 전용 회로">ISP</dfn>)와 JPEG 압축 회로의 <dfn title="하드웨어의 동작을 정하는 설정 칸. 펌웨어는 정해진 메모리 주소에 값을 써서 설정합니다. 이 방식을 MMIO라고 합니다.">레지스터</dfn>에 설정값을 기록하고, 시작 신호를 보내고, 완료를 기다립니다. 그래서 펌웨어를 읽으면 <strong>어떤 값을 어디에 쓰는지</strong>는 알 수 있습니다. <strong>회로가 그 값으로 픽셀을 어떻게 계산하는지</strong>는 알 수 없습니다. 이 문서의 결론은 모두 이 구분을 따릅니다.</p>
+<p>K-3 Mark III에서 조사한 경로를 보면 펌웨어는 픽셀을 직접 계산하지 않습니다. 영상 처리 회로(<dfn title="Image Signal Processor. 센서 데이터를 사진으로 가공하는 전용 회로">ISP</dfn>)와 JPEG 압축 회로의 <dfn title="하드웨어의 동작을 정하는 설정 칸. 펌웨어는 정해진 메모리 주소에 값을 써서 설정합니다. 이 방식을 MMIO라고 합니다.">레지스터</dfn>에 설정값을 기록하고 시작 신호를 보내고 완료를 기다립니다. 그래서 펌웨어를 읽으면 <strong>어떤 값을 어디에 쓰는지</strong>는 알 수 있습니다. <strong>회로가 그 값으로 픽셀을 어떻게 계산하는지</strong>는 알 수 없습니다. 이 문서의 결론은 모두 이 구분을 따릅니다.</p>
 
 <figure class="diagram">
 <figcaption>이 문서가 따라간 설정 경로와 확인하지 못한 픽셀 경로</figcaption>
@@ -165,8 +165,8 @@
 
 <section id="m2pclip">
 <h2><span class="sec-no">1단계</span> 센서 데이터 입력: M2PCLIP 레지스터에 기록되는 값</h2>
-<p class="takeaway">입력 데이터를 읽는 장치에 M2PCLIP이라는 레지스터가 있고, 확인한 설정 경로는 모두 상위 16비트에 0xffff, 하위 16비트에 0을 기록합니다. 이 두 값이 픽셀을 어떻게 잘라 내는지는 알 수 없습니다.</p>
-<p>ISP는 메모리에 있는 영상 데이터를 읽기 장치(<code>ProReadUnit</code>)로 읽어 들입니다. 읽기 장치에는 offset, shift, clip 설정이 있고, 펌웨어에는 그 이름으로 <code>M2POFS</code>, <code>M2PBSFT</code>, <code>M2PCLIP</code>이 나옵니다. 그중 M2PCLIP은 펌웨어의 레지스터 덤프 함수가 직접 이 이름으로 값을 출력하므로 이름과 위치를 함께 확인할 수 있었습니다.</p>
+<p class="takeaway">입력 데이터를 읽는 장치에 M2PCLIP이라는 레지스터가 있고 확인한 설정 경로는 모두 상위 16비트에 0xffff, 하위 16비트에 0을 기록합니다. 이 두 값이 픽셀을 어떻게 잘라 내는지는 알 수 없습니다.</p>
+<p>ISP는 메모리에 있는 영상 데이터를 읽기 장치(<code>ProReadUnit</code>)로 읽어 들입니다. 읽기 장치에는 offset, shift, clip 설정이 있고 펌웨어에는 그 이름으로 <code>M2POFS</code>, <code>M2PBSFT</code>, <code>M2PCLIP</code>이 나옵니다. 그중 M2PCLIP은 펌웨어의 레지스터 덤프 함수가 직접 이 이름으로 값을 출력하므로 이름과 위치를 함께 확인할 수 있었습니다.</p>
 
 <div class="table-wrap"><table>
 <caption>M2PCLIP에 값이 기록되는 과정</caption>
@@ -180,7 +180,7 @@
 <p class="small muted">마지막 행의 주소는 기록한 factory 초기화가 실행됐다는 조건에서 성립합니다. 이 factory의 가상 초기화 호출 지점은 아직 연결하지 못했습니다.</p>
 
 <h3>같은 값을 쓰는 다른 설정 위치</h3>
-<p>M2PCLIP의 두 칸을 쓰는 함수는 두 개이고, 각각 공통 설정 함수 <code>0x532249e8</code> 안의 한 곳에서만 직접 호출됩니다. 공통 설정 함수로 가는 직접 호출 위치는 RTOS 전체에서 14곳입니다. 7곳은 호출자에게 받은 레코드를 그대로 넘기고, 나머지 7곳은 아래 네 함수가 레코드를 직접 만듭니다.</p>
+<p>M2PCLIP의 두 칸을 쓰는 함수는 두 개이고 각각 공통 설정 함수 <code>0x532249e8</code> 안의 한 곳에서만 직접 호출됩니다. 공통 설정 함수로 가는 직접 호출 위치는 RTOS 전체에서 14곳입니다. 7곳은 호출자에게 받은 레코드를 그대로 넘기고 나머지 7곳은 아래 네 함수가 레코드를 직접 만듭니다.</p>
 <div class="table-wrap"><table class="fit">
 <caption>레코드를 직접 만드는 함수와 그 값</caption>
 <thead><tr><th>함수</th><th>진입점</th><th>만드는 레코드</th><th>clip 값(상위 · 하위)</th></tr></thead>
@@ -248,7 +248,7 @@
 </ul>
 
 <div class="callout model"><strong class="label">시험 조건</strong>
-<p>260사례에서 원본 함수의 출력이 기준식과 일치했습니다. 재배율 함수 전체 128사례(제어값을 그대로 쓰는 분기 64, 다시 계산하는 분기 64), Develop 준비 함수의 일부 구간 64사례, B2r 적용 함수 전체 68사례입니다. gain뿐 아니라 같은 객체의 offset 필드와 상한 후보 필드의 기록도 대조했습니다. 입력과 객체는 합성 값이고 하드웨어 주소는 일반 메모리입니다.</p>
+<p>260사례에서 원본 함수의 출력이 기준식과 일치했습니다. 재배율 함수 전체 128사례(제어값을 그대로 쓰는 분기 64, 다시 계산하는 분기 64), Develop 준비 함수의 일부 구간 64사례, B2r 적용 함수 전체 68사례입니다. gain과 함께 같은 객체의 offset 필드와 상한 후보 필드의 기록도 대조했습니다. 입력과 객체는 합성 값이고 하드웨어 주소는 일반 메모리입니다.</p>
 <p>이 시험은 정수 나눗셈 명령을 지원하는 Cortex-A15 에뮬레이터 모델을 썼습니다. 카메라의 CPU를 식별한 결과가 아닙니다. 전체 AWB 선택과 서비스 실행, 0으로 나누는 경로는 시험하지 않았습니다. 변수 이름에 쓰인 <code>clip</code>은 분석하면서 붙인 이름이며 펌웨어의 명명은 확인하지 못했습니다.</p></div>
 
 <details class="evidence"><summary>화이트밸런스 경로의 주소와 계산식</summary>
@@ -256,7 +256,7 @@
 <caption>재배율과 미세 조정</caption>
 <thead><tr><th>항목</th><th>내용</th></tr></thead>
 <tbody>
-<tr><th scope="row">선택 결과 저장 구간</th><td><code>0x5314e0d0</code>..<code>0x5314e110</code>. 선택 객체 <code>+4/+6/+8/+a</code>의 값을 <code>&gt;&gt;5</code>. 다른 곳의 항등 기준은 8192이고, 이 변환은 저장 배율을 바꾸는 것이며 픽셀 곱셈이 아닙니다.</td></tr>
+<tr><th scope="row">선택 결과 저장 구간</th><td><code>0x5314e0d0</code>..<code>0x5314e110</code>. 선택 객체 <code>+4/+6/+8/+a</code>의 값을 <code>&gt;&gt;5</code>. 다른 곳의 항등 기준은 8192이고 이 변환은 저장 배율을 바꾸는 것이며 픽셀 곱셈이 아닙니다.</td></tr>
 <tr><th scope="row">미세 조정 값</th><td>GM은 common <code>+0x261a</code>, BA는 <code>+0x261b</code>의 1바이트. 읽는 위치 <code>0x5314e130</code>, <code>0x5314e134</code>. 조회표 <code>0x53c5ac30</code>, <code>0x53c5ad04</code>, <code>0x53c5acc0</code>, <code>0x53c59ff8</code>(16비트 항목, 길이 미확정)</td></tr>
 <tr><th scope="row">재배율 식</th><td><code>m = min(256, q0..q3)</code>, <code>t = min(4096, 표 0x53c19930, 표 0x53c19370)</code>(각 143항), <code>g = common+0x3df5c</code>. <code>F = ((((g &amp; 0x7ffff) &lt;&lt; 8) / m) &lt;&lt; 12) / t</code>. <code>out[j] = min(((q[j] × F) &gt;&gt; 13) &amp; 0xffff, 2047)</code>. <code>F</code>는 <code>common+0x3df7c</code>에 저장</td></tr>
 <tr><th scope="row">제어값 재계산 분기</th><td>common <code>+0x2a79</code>가 0일 때 <code>+0x2986</code>, <code>+0x29c0</code>, <code>+0x29f0</code>, <code>+0x2a00</code>, <code>+0x2a7c</code>, <code>+0x3e05c</code>의 값으로 제어값을 다시 구해 <code>+0x3df5c</code>와 <code>+0x3df60</code>에 저장한 뒤 재배율합니다. 이 필드들의 산술 역할은 확인했지만 물리적 의미와 값을 만드는 쪽은 닫지 못했습니다.</td></tr>
@@ -279,7 +279,7 @@
 
 <section id="0x145">
 <h2><span class="sec-no">3단계</span> 색공간 선택: 메시지 0x145가 공용 설정에 반영</h2>
-<p class="takeaway">메뉴에서 고른 색공간 값(sRGB는 0, AdobeRGB는 1)은 속성 번호 0x145의 설정 요청으로 큐에 들어가고, 수신 처리기가 공용 설정 버퍼의 한 바이트를 갱신합니다.</p>
+<p class="takeaway">메뉴에서 고른 색공간 값(sRGB는 0, AdobeRGB는 1)은 속성 번호 0x145의 설정 요청으로 큐에 들어갑니다. 수신 처리기가 공용 설정 버퍼의 한 바이트를 갱신합니다.</p>
 
 <figure class="diagram">
 <figcaption>색공간 값이 저장되고 공용 설정에 반영되는 경로</figcaption>
@@ -347,12 +347,12 @@
 <thead><tr><th>단계</th><th>내용</th></tr></thead>
 <tbody>
 <tr><th scope="row">문자열 해석</th><td>색공간 파서 <code>0x52aed898</code>이 <code>sRGB</code>와 <code>AdobeRGB</code> 문자열을 선택값 0과 1로 바꿉니다.</td></tr>
-<tr><th scope="row">저장</th><td><code>0x52954be0</code> → <code>0x52954afc</code>를 거쳐 <code>UserData</code>의 <code>+0x35b</code>에 저장하고, 변경 알림에서 요청을 보냅니다.</td></tr>
+<tr><th scope="row">저장</th><td><code>0x52954be0</code> → <code>0x52954afc</code>를 거쳐 <code>UserData</code>의 <code>+0x35b</code>에 저장하고 변경 알림에서 요청을 보냅니다.</td></tr>
 <tr><th scope="row">요청 송신</th><td>송신 함수 <code>0x52edd820</code>이 opcode 1, 속성 ID <code>0x145</code>, 1바이트 payload, 해제 플래그 0을 큐에 제출합니다. 송신에 성공하면 이벤트 마스크 0x1(bit 0)을 기다립니다.</td></tr>
 <tr><th scope="row">수신</th><td>큐 객체 생성자 <code>0x52ed0844</code>가 설치한 vtable의 <code>0x538ef480+0xc</code>가 실행 함수 <code>0x52ede7cc</code>를 가리킵니다. opcode 1은 <code>0x52ede66c</code>로 이어집니다.</td></tr>
-<tr><th scope="row">처리기 선택</th><td>속성별 멤버 함수 표는 RAM <code>0x545241cc</code>에 있습니다. ID <code>0x145</code>의 항목 <code>0x54524bf4</code>에는 <code>{0x52ecf4a8, 0}</code>이 들어 있고, 간접 호출 <code>0x52ede6e8</code>이 이 항목으로 색공간 처리기 <code>0x52ecf4a8</code>에 도달합니다.</td></tr>
+<tr><th scope="row">처리기 선택</th><td>속성별 멤버 함수 표는 RAM <code>0x545241cc</code>에 있습니다. ID <code>0x145</code>의 항목 <code>0x54524bf4</code>에는 <code>{0x52ecf4a8, 0}</code>이 들어 있습니다. 간접 호출 <code>0x52ede6e8</code>이 이 항목으로 색공간 처리기 <code>0x52ecf4a8</code>에 도달합니다.</td></tr>
 <tr><th scope="row">값 갱신</th><td>처리기가 서비스의 <code>+0x518</code> 포인터와 payload를 <code>0x52eef4c0</code>에 넘깁니다. 이 함수가 부르는 <code>0x52eef408</code>이 common의 <code>+0x26b5</code>를 갱신합니다.</td></tr>
-<tr><th scope="row">버퍼 반영</th><td>이어지는 commit <code>0x52edfa40</code>의 성공 분기가 두 common 버퍼의 포인터를 교환하고, 새 current의 <code>0x4ed0</code>바이트를 다른 버퍼로 복사합니다.</td></tr>
+<tr><th scope="row">버퍼 반영</th><td>이어지는 commit <code>0x52edfa40</code>의 성공 분기가 두 common 버퍼의 포인터를 교환하고 새 current의 <code>0x4ed0</code>바이트를 다른 버퍼로 복사합니다.</td></tr>
 </tbody></table></div>
 <ul>
 <li>표 항목의 초기 ROM 위치는 <code>0x53d0c934</code>입니다. 시작 코드가 초기화 데이터를 RAM으로 복사하는 대응 관계와 대조했습니다. 번호가 같은 두 함수를 짐작으로 이은 것이 아닙니다.</li>
@@ -361,9 +361,9 @@
 </ul>
 
 <h3>색공간 값이 색 처리에 미치는 영향</h3>
-<p><code>common+0x26b5</code>가 1이면 색 설정을 준비하는 함수의 플래그 P52가 1이 됩니다. 이 플래그는 모드 행렬에 추가 행렬을 곱하게 하고, YCbCr 계수 조정과 감마 준비에도 영향을 줍니다. 따라서 색공간 선택을 행렬 하나의 교체로만 재현할 수는 없습니다. 각 행렬이 받는 입력과 내놓는 출력의 물리적인 좌표계는 아직 확정하지 못했습니다. 행렬 합성 식은 <a href="color-algorithms.html">색 처리 알고리즘</a>에 있습니다.</p>
+<p><code>common+0x26b5</code>가 1이면 색 설정을 준비하는 함수의 플래그 P52가 1이 됩니다. 이 플래그는 모드 행렬에 추가 행렬을 곱하게 하고 YCbCr 계수 조정과 감마 준비에도 영향을 줍니다. 색공간 선택은 행렬 하나의 교체로만 재현할 수 없습니다. 각 행렬이 받는 입력과 내놓는 출력의 물리적인 좌표계는 아직 확정하지 못했습니다. 행렬 합성 식은 <a href="color-algorithms.html">색 처리 알고리즘</a>에 있습니다.</p>
 <div class="callout"><strong class="label">참고</strong>
-<p>두 색공간의 공개 규격은 원색 좌표와 전달 함수가 서로 다릅니다. sRGB는 <a href="https://registry.color.org/rgb-registry/srgb">IEC 61966-2-1</a>이 정한 구간별 곡선을 쓰고, <a href="https://www.adobe.com/digitalimag/pdfs/AdobeRGB1998.pdf">Adobe RGB (1998)</a>는 지수 2.19921875의 곡선을 씁니다. 녹색 원색의 좌표도 다릅니다. 펌웨어가 색공간에 따라 행렬과 감마 준비를 함께 바꾸는 것은 이 차이와 방향이 맞습니다. 다만 펌웨어의 표가 규격의 수식과 같은지는 확인하지 않았습니다.</p></div>
+<p>두 색공간의 공개 규격은 원색 좌표와 전달 함수가 서로 다릅니다. sRGB는 <a href="https://registry.color.org/rgb-registry/srgb">IEC 61966-2-1</a>이 정한 구간별 곡선을 쓰고 <a href="https://www.adobe.com/digitalimag/pdfs/AdobeRGB1998.pdf">Adobe RGB (1998)</a>는 지수 2.19921875의 곡선을 씁니다. 녹색 원색의 좌표도 다릅니다. 펌웨어가 색공간에 따라 행렬과 감마 준비를 함께 바꾸는 것은 이 차이와 방향이 맞습니다. 다만 펌웨어의 표가 규격의 수식과 같은지는 확인하지 않았습니다.</p></div>
 
 <div class="callout model"><strong class="label">시험 조건</strong>
 <p>1,536사례에서 버퍼 내용, 변경 목록, 포인터 교환이 예상과 일치했습니다. 속성 처리기 전체 768사례와 멤버 함수 디스패치의 일부 구간 768사례입니다. 두 시험 모두 실제 갱신 함수와 commit, NEON memcpy를 호출했고 대체 함수는 쓰지 않았습니다. 기존 값 0·1·255에 payload 0~255를 조합했습니다.</p>
@@ -389,7 +389,7 @@
 <section id="r2y">
 <h2><span class="sec-no">4단계</span> 색 행렬·감마·톤: Custom Image 설정이 R2y에 도달</h2>
 <p class="takeaway">컬러모드에서 계산한 색 행렬과 감마·톤 표는 0x5d24바이트짜리 설정 묶음에 담겨 R2y 블록의 레지스터와 표 영역으로 복사됩니다. 복사 위치와 비트 폭은 확인했습니다. 회로가 이 값으로 픽셀을 계산하는 방식은 모릅니다.</p>
-<p>RAW 현상 모듈 Develop의 반복 처리 <code>0x52e5c088</code>은 준비, 설정, 시작·대기, 종료 처리를 차례로 호출합니다. 초기화 함수 <code>0x52e5739c</code>가 B2b·B2r·R2y 서비스를 매크로의 <code>+0x9820</code>, <code>+0x9824</code>, <code>+0x9828</code>에 연결해 둡니다. 시작 명령은 R2y, B2r, B2b 순서로 제출됩니다. 이것은 CPU가 시작을 요청하는 순서일 뿐이며, 픽셀이 블록을 지나가는 순서로 해석하지 않습니다.</p>
+<p>RAW 현상 모듈 Develop의 반복 처리 <code>0x52e5c088</code>은 준비, 설정, 시작·대기, 종료 처리를 차례로 호출합니다. 초기화 함수 <code>0x52e5739c</code>가 B2b·B2r·R2y 서비스를 매크로의 <code>+0x9820</code>, <code>+0x9824</code>, <code>+0x9828</code>에 연결해 둡니다. 시작 명령은 R2y, B2r, B2b 순서로 제출됩니다. 이것은 CPU가 시작을 요청하는 순서일 뿐이며 픽셀이 블록을 지나가는 순서로 해석하지 않습니다.</p>
 
 <ol class="steps">
 <li><strong>설정 포인터 등록</strong> R2y 매개변수 준비 함수 <code>0x52e597c0</code>이 설정 포인터를 매개변수의 <code>+0x94</code>에 기록하고 갱신 플래그 7개를 세웁니다.</li>
@@ -501,9 +501,9 @@
 <p>이 연결로 모드별 행렬이 하드웨어 설정에 도달하는 지점까지 확인했습니다. 레지스터를 쓰는 함수는 픽셀마다 행렬 곱을 계산하지 않습니다. 회로 안 누산기의 비트 수, 픽셀 연산에서의 배율, 포화 시점, 출력 비트 깊이는 별도의 근거가 필요합니다.</p>
 
 <h3>감마와 톤 표</h3>
-<p>톤 포장 함수 <code>0x5313775c</code>는 16비트 항목 1024개를 C의 <code>+0x1568</code>에 넣고, 적용 함수가 이를 표 영역의 <code>+0x0000</code>으로 복사합니다. 감마 포장 함수 <code>0x53135c60</code>이 만든 <code>0x800</code>바이트 버퍼 네 개는 <code>+0x8800</code>, <code>+0x9000</code>, <code>+0x9800</code>, <code>+0xa000</code>으로, <code>0x200</code>바이트 버퍼 네 개는 <code>+0xaa00</code>, <code>+0xac00</code>, <code>+0xae00</code>, <code>+0xb000</code>으로 전달됩니다. 표가 저장되고 전달되는 위치를 확정한 것이며, 회로가 표를 보간하는 식까지 복원한 것은 아닙니다.</p>
+<p>톤 포장 함수 <code>0x5313775c</code>는 16비트 항목 1024개를 C의 <code>+0x1568</code>에 넣습니다. 적용 함수가 이를 표 영역의 <code>+0x0000</code>으로 복사합니다. 감마 포장 함수 <code>0x53135c60</code>이 만든 <code>0x800</code>바이트 버퍼 네 개는 <code>+0x8800</code>, <code>+0x9000</code>, <code>+0x9800</code>, <code>+0xa000</code>으로, <code>0x200</code>바이트 버퍼 네 개는 <code>+0xaa00</code>, <code>+0xac00</code>, <code>+0xae00</code>, <code>+0xb000</code>으로 전달됩니다. 확정한 것은 표가 저장되고 전달되는 위치입니다. 회로가 표를 보간하는 식은 복원하지 않았습니다.</p>
 <div class="callout model"><strong class="label">시험 조건</strong>
-<p>합성 설정 8개(0, 모두 1, 교대 패턴, 난수 5개)를 넣고 적용 함수 전체와 실제 레지스터 함수, NEON memcpy를 실행했습니다. 레지스터 래퍼 객체도 원본 생성자로 만들었습니다. 설정마다 행렬 필드 9개, 톤 필드 4개, 감마 플래그 묶음, 표 복사 18건을 대조하고 지정한 필드 밖의 비트가 보존되는지도 확인했습니다. 모두 312검사가 통과했습니다. 첫 번째 하드웨어 인스턴스의 레지스터와 표 영역을 일반 메모리로 대신한 시험이며, 센서 입력과 ISP의 픽셀 출력은 에뮬레이션하지 않았습니다.</p></div>
+<p>합성 설정 8개(0, 모두 1, 교대 패턴, 난수 5개)를 넣고 적용 함수 전체와 실제 레지스터 함수, NEON memcpy를 실행했습니다. 레지스터 래퍼 객체도 원본 생성자로 만들었습니다. 설정마다 행렬 필드 9개, 톤 필드 4개, 감마 플래그 묶음, 표 복사 18건을 대조하고 지정한 필드 밖의 비트가 보존되는지도 확인했습니다. 모두 312검사가 통과했습니다. 첫 번째 하드웨어 인스턴스의 레지스터와 표 영역을 일반 메모리로 대신한 시험이며 센서 입력과 ISP의 픽셀 출력은 에뮬레이션하지 않았습니다.</p></div>
 
 <h3>색공간에 따라 달라지는 감마 변환</h3>
 <p>감마 변환 함수 <code>0x53136f4c</code>는 256항 입력 곡선을 하드웨어에 보낼 형식으로 바꿉니다. 플래그가 켜지면 값을 펌웨어의 조회표 L에 한 번 더 통과시킵니다. 앞 절의 색공간 플래그 P52가 이 감마 재대응을 켜는 조건에 들어갑니다.</p>
@@ -526,7 +526,7 @@ d[i] = clamp(y[i+1] − y[i], 0, 240)      → 8바이트 레코드를 고르는
 <tr><th scope="row">gain</th><td>8192</td><td><code>R+0x28</code>, <code>R+0x2c</code></td><td>11비트</td></tr>
 <tr><th scope="row">상한 후보</th><td>4095</td><td><code>R+0x30</code>, <code>R+0x34</code></td><td>12비트</td></tr>
 </tbody></table></div>
-<p>Develop 준비 함수 <code>0x52e597c0</code>이 객체의 채널 인덱스 4·5·6에 위 값을 넣습니다. 객체는 R2y 매개변수 <code>+0x10</code>에서 설정 <code>+0x240</code>으로 전달되고, <code>0x5324ff2c</code>가 갱신 플래그 4의 조건에서 레지스터에 기록합니다. 값을 필드 폭에 맞춰 자르는 것과 픽셀이 포화하는 동작은 별개입니다. 원본 입력 설정 함수와 R2y 적용 함수를 실행한 합성 65그룹의 450검사가 통과했습니다.</p>
+<p>Develop 준비 함수 <code>0x52e597c0</code>이 객체의 채널 인덱스 4·5·6에 위 값을 넣습니다. 객체는 R2y 매개변수 <code>+0x10</code>에서 설정 <code>+0x240</code>으로 전달되고 <code>0x5324ff2c</code>가 갱신 플래그 4의 조건에서 레지스터에 기록합니다. 값을 필드 폭에 맞춰 자르는 것과 픽셀이 포화하는 동작은 별개입니다. 원본 입력 설정 함수와 R2y 적용 함수를 실행한 합성 65그룹의 450검사가 통과했습니다.</p>
 
 <h3 id="control-producers">제어 바이트 여덟 개와 R2y 제어 비트</h3>
 <p>설정 묶음 안의 제어 바이트 여덟 개는 서로 다른 기능 모듈이 만듭니다. R2y 적용 경로는 이 여덟 바이트의 지정 비트를 검사해, 하나라도 켜져 있으면 레지스터 <code>R+0x10</code>의 bit 0을 1로, 모두 꺼져 있으면 0으로 만듭니다.</p>
@@ -564,10 +564,10 @@ d[i] = clamp(y[i+1] − y[i], 0, 240)      → 8바이트 레코드를 고르는
 <li>일반 자원 선택 분기에서 Edge는 객체의 <code>u16+0x204</code> 값이 2, 3, 그 밖의 값인지에 따라 서로 다른 getter를 씁니다. 이 getter는 project index와 별도의 6칸 sub-index를 참조합니다.</li>
 <li>ColorReference에는 내부 Custom Image enum 10에서만 쓰는 별도의 자원 선택이 있습니다. 다른 런타임 분기도 있습니다.</li>
 </ul>
-<p>따라서 여덟 바이트를 사용자 컬러모드 하나에 대응하는 고정된 값 묶음으로 볼 수 없습니다. 이 결과는 각 기능의 설정이 하위 제어 비트 하나로 모이는 경로를 설명할 뿐이며, 하드웨어의 bypass나 픽셀 처리 순서를 정하지 않습니다.</p>
-<p>이와 별도로 C의 첫 바이트에서 하위 2비트를 꺼내 <code>0x53251310</code> → <code>0x53256ccc</code>로 전달하고 <code>R+0x80</code>의 bits 0..1에 기록하는 경로도 있습니다. 이 값을 bypass·클럭·필터 활성화로 해석하거나, 감마·톤·행렬의 순서를 바꾸는 모드라고 판단할 근거는 없습니다.</p>
+<p>따라서 여덟 바이트를 사용자 컬러모드 하나에 대응하는 고정된 값 묶음으로 볼 수 없습니다. 이 결과는 각 기능의 설정이 하위 제어 비트 하나로 모이는 경로를 설명할 뿐입니다. 하드웨어의 bypass나 픽셀 처리 순서는 정하지 않습니다.</p>
+<p>이와 별도로 C의 첫 바이트에서 하위 2비트를 꺼내 <code>0x53251310</code> → <code>0x53256ccc</code>로 전달하고 <code>R+0x80</code>의 bits 0..1에 기록하는 경로도 있습니다. 이 값을 bypass·클럭·필터 활성화로 해석하거나 감마·톤·행렬의 순서를 바꾸는 모드라고 판단할 근거는 없습니다.</p>
 <div class="callout model"><strong class="label">시험 조건</strong>
-<p>제어 바이트를 만드는 원본 구간 8개를 합성 버퍼에서 실행했습니다. 구간마다 첫 제어 바이트에 256개 값을 모두 넣고, 다른 입력 바이트와 목적지의 기존 비트도 고정된 난수 씨앗으로 바꿨습니다. 모두 2,048건에서 제어 비트와 나머지 비트의 보존이 기준식과 일치했습니다. 패커 전체, 자원 선택기, MMIO, 픽셀 엔진은 실행하지 않았습니다.</p></div>
+<p>제어 바이트를 만드는 원본 구간 8개를 합성 버퍼에서 실행했습니다. 구간마다 첫 제어 바이트에 256개 값을 모두 넣고 다른 입력 바이트와 목적지의 기존 비트도 고정된 난수 씨앗으로 바꿨습니다. 모두 2,048건에서 제어 비트와 나머지 비트의 보존이 기준식과 일치했습니다. 패커 전체, 자원 선택기, MMIO, 픽셀 엔진은 실행하지 않았습니다.</p></div>
 
 <details class="evidence"><summary>R2y 설정 경로의 세부 주소</summary>
 <div class="table-wrap"><table class="compact">
@@ -664,19 +664,19 @@ d[i] = clamp(y[i+1] − y[i], 0, 240)      → 8바이트 레코드를 고르는
 </figure>
 
 <h3>요청 경로</h3>
-<p>상위 JPEG 매크로는 작업을 큐에 제출합니다. <code>JpegCodecPipeService</code>의 생성자 <code>0x5304c74c</code>가 vtable을 설치하고, 이 vtable의 어댑터 <code>0x5304d538</code>이 실행 함수 <code>0x5304cd4c</code>로 이어집니다. 이후 <code>0x5304c7e8</code>이 하위 드라이버의 <code>0x5320b18c</code>를 호출합니다. 이 경로는 서비스 객체의 초기화와 메시지 전달이 성공한 경우를 설명합니다.</p>
+<p>상위 JPEG 매크로는 작업을 큐에 제출합니다. <code>JpegCodecPipeService</code>의 생성자 <code>0x5304c74c</code>가 vtable을 설치합니다. 이 vtable의 어댑터 <code>0x5304d538</code>은 실행 함수 <code>0x5304cd4c</code>로 이어집니다. 이후 <code>0x5304c7e8</code>이 하위 드라이버의 <code>0x5320b18c</code>를 호출합니다. 이 경로는 서비스 객체의 초기화와 메시지 전달이 성공한 경우를 설명합니다.</p>
 <p>하위 드라이버는 JPEG 블록의 MMIO 기준 주소 <code>0x298c0000</code>을 씁니다. Y 주소는 <code>+0x430</code>, CbCr 주소는 <code>+0x434</code>, 압축 결과를 담는 code 주소는 <code>+0x440</code>에 설정합니다. 시작 함수 <code>0x5320bd68</code>은 <code>+0x4</code>의 bit 0을 세웁니다. 버퍼 주소를 확인했다고 해서 모든 입력 모드의 크로마 서브샘플링과 메모리 배치까지 확정되는 것은 아닙니다.</p>
 
 <h3>양자화 표의 품질 배율</h3>
 <div class="callout plain"><strong class="label">쉽게 말하면</strong>
-<p>JPEG는 영상을 8×8 블록으로 나눠 주파수 성분(DCT 계수)으로 바꾼 다음, 각 성분을 양자화 표의 값으로 나누고 반올림합니다(<a href="https://www.w3.org/Graphics/JPEG/itu-t81.pdf">ITU-T T.81 A.3.4</a>). 표의 값이 클수록 정보를 많이 버려 파일이 작아집니다. 품질 설정은 이 표에 곱하는 배율을 바꿉니다.</p></div>
+<p>JPEG는 영상을 8×8 블록으로 나눠 주파수 성분(DCT 계수)으로 바꿉니다. 그다음 각 성분을 양자화 표의 값으로 나누고 반올림합니다(<a href="https://www.w3.org/Graphics/JPEG/itu-t81.pdf">ITU-T T.81 A.3.4</a>). 표의 값이 클수록 정보를 많이 버려 파일이 작아집니다. 품질 설정은 이 표에 곱하는 배율을 바꿉니다.</p></div>
 <p><code>0x5320ac78</code>은 64항짜리 기본 표 두 개에 품질 배율을 적용합니다. 함수 인수 Q를 10으로 나눈 값을 q로 씁니다.</p>
 <pre><code>q ≤ 50 :  배율 = trunc(1000 × 50 / q)
 q &gt; 50 :  배율 = trunc(1000 × (100 − q) / 50)
 항목   = (t × 배율 + 500) / 1000   → 1~255로 제한</code></pre>
 <ul>
 <li>계산 중간마다 float32 반올림을 거칩니다. 식의 결합 순서만 바꿔도 float32 경계에서 값이 달라질 수 있어, 검증기는 원래 명령의 순서를 따릅니다.</li>
-<li>결과는 RAM의 <code>0x547bd374</code>와 <code>0x547bd3b4</code>에 보관하고, 4항씩 묶어 MMIO <code>0x298c0100</code>과 <code>0x298c0140</code>에 기록합니다.</li>
+<li>결과는 RAM의 <code>0x547bd374</code>와 <code>0x547bd3b4</code>에 보관하고 4항씩 묶어 MMIO <code>0x298c0100</code>과 <code>0x298c0140</code>에 기록합니다.</li>
 <li>8비트 양자화 표의 값 범위가 1~255인 것은 JPEG 규격(<a href="https://www.w3.org/Graphics/JPEG/itu-t81.pdf">T.81 표 B.4</a>)과 같습니다.</li>
 </ul>
 <div class="callout"><strong class="label">참고</strong>
@@ -686,7 +686,7 @@ q &gt; 50 :  배율 = trunc(1000 × (100 − q) / 50)
 <p>이 시험은 양자화 표의 생성과 전달만 확인합니다. DCT, 실제 영상의 양자화 결과, 엔트로피 부호화는 시험 범위 밖입니다. Q=0과 범위를 벗어난 인수도 시험하지 않았습니다. 카메라의 JPEG 품질 메뉴와 이 Q 값 사이의 대응은 따로 확인해야 합니다.</p></div>
 
 <h3>압축 크기 정책과 완료 통지</h3>
-<p><code>0x5304ca20</code>의 정책 경로는 Q=950으로 예비 압축을 한 뒤, 실제 크기와 목표 크기로 품질을 추정해 본 압축을 요청합니다. 결과가 0이거나 용량을 넘으면 품질을 낮춰 다시 시도하는 분기가 있습니다. 기준 크기를 얻는 런타임 가상 호출은 풀지 못했고, 이 정책 전체를 수치로 재현하지는 않았습니다.</p>
+<p><code>0x5304ca20</code>의 정책 경로는 Q=950으로 예비 압축을 한 뒤, 실제 크기와 목표 크기로 품질을 추정해 본 압축을 요청합니다. 결과가 0이거나 용량을 넘으면 품질을 낮춰 다시 시도하는 분기가 있습니다. 기준 크기를 얻는 런타임 가상 호출은 풀지 못했고 이 정책 전체를 수치로 재현하지는 않았습니다.</p>
 <ol class="steps">
 <li><strong>인터럽트 분기</strong> <code>ImageInterruptService</code>의 입력 <code>0xd5</code>가 JPEG 처리기 <code>0x53201640</code>으로 분기합니다. 이 번호를 물리적인 CPU IRQ 번호로 확정하지 않았습니다.</li>
 <li><strong>상태 읽기</strong> 처리기는 MMIO의 <code>+0x480</code>과 <code>+0x2c</code>에서 상태를 읽고 확인 응답을 기록한 뒤, 관찰자 source <code>0x63</code> 또는 <code>0x64</code>에 통지합니다.</li>
@@ -731,9 +731,9 @@ q &gt; 50 :  배율 = trunc(1000 × (100 − q) / 50)
 
 <section id="clip-semantics">
 <h2>픽셀 처리 순서와 클리핑은 아직 알 수 없습니다</h2>
-<p class="takeaway">설정값이 기록되는 위치는 확인했지만, 그 값이 픽셀에 적용되는 순서와 값을 잘라 내는 방식은 현재 증거로 정할 수 없습니다.</p>
+<p class="takeaway">설정값이 기록되는 위치는 확인했지만 그 값이 픽셀에 적용되는 순서와 값을 잘라 내는 방식은 현재 증거로 정할 수 없습니다.</p>
 <div class="callout plain"><strong class="label">순서가 왜 중요한가</strong>
-<p>정규화한 입력 0.75에 gain 2를 곱하고 상한 1로 자른다고 해 봅니다. gain 다음에 자르면 결과는 1이고, 자른 다음에 gain을 곱하면 1.5입니다. 순서에 따른 차이를 보이는 수학 예시이며 펌웨어에서 측정한 픽셀 값이 아닙니다. 같은 레지스터 설정을 확인했더라도 처리 순서가 다르면 옮겨야 할 변환이 달라집니다.</p></div>
+<p>정규화한 입력 0.75에 gain 2를 곱하고 상한 1로 자른다고 해 봅니다. gain 다음에 자르면 결과는 1이고 자른 다음에 gain을 곱하면 1.5입니다. 순서에 따른 차이를 보이는 수학 예시이며 펌웨어에서 측정한 픽셀 값이 아닙니다. 같은 레지스터 설정을 확인했더라도 처리 순서가 다르면 옮겨야 할 변환이 달라집니다.</p></div>
 
 <h3>순서처럼 보이지만 픽셀 순서가 아닌 세 가지</h3>
 <div class="table-wrap"><table>
@@ -741,7 +741,7 @@ q &gt; 50 :  배율 = trunc(1000 × (100 − q) / 50)
 <tbody>
 <tr><th scope="row">시작 요청 순서</th><td>Develop은 R2y, B2r, B2b 순으로 시작 명령을 제출합니다.</td><td>CPU가 요청을 보내는 순서입니다.</td></tr>
 <tr><th scope="row">레지스터 기록 순서</th><td><code>0x53253eac</code>는 gain·offset·상한 후보 설정(갱신 플래그 4), 두 번째 매개변수 설정(플래그 5), Custom Image 표와 레지스터 적용(플래그 6)을 이 순서로 호출합니다.</td><td>설정을 써 넣는 순서입니다. 레지스터 주소의 크고 작음도 근거로 쓰지 않았습니다.</td></tr>
-<tr><th scope="row">버퍼 주소의 연결</th><td>특정 조건에서 B2r의 출력과 R2y의 입력이 같은 주소를 씁니다.</td><td>조건부 관계입니다. 실제 DMA 완료와 큐의 순서를 관측하지 않았고, R2y 안의 순서는 정해 주지 않습니다.</td></tr>
+<tr><th scope="row">버퍼 주소의 연결</th><td>특정 조건에서 B2r의 출력과 R2y의 입력이 같은 주소를 씁니다.</td><td>조건부 관계입니다. 실제 DMA 완료와 큐의 순서를 관측하지 않았고 R2y 안의 순서는 정해 주지 않습니다.</td></tr>
 </tbody></table></div>
 
 <h3 id="buffers">B2r 출력과 R2y 입력이 같은 버퍼를 쓰는 조건</h3>
@@ -750,7 +750,7 @@ q &gt; 50 :  배율 = trunc(1000 × (100 − q) / 50)
 <li>버퍼 모드 1에서 B2r의 출력 descriptor와 R2y의 입력 descriptor는 같은 입력, 같은 반복 인덱스, 같은 형식일 때 세 주소를 공유합니다.</li>
 <li>R2y의 하위 읽기 장치로 넘기는 변환에는 R2y 매개변수의 <code>+1==0</code> 조건도 붙습니다.</li>
 <li>두 준비 함수 <code>0x52e5a500</code>, <code>0x52e5a62c</code>는 입력의 <code>+0x60/+0x64/+0x68</code>에 같은 표 기반 오프셋을 더합니다. 형식 0의 배수는 1, 형식 8의 배수는 2입니다.</li>
-<li>일반 반복 준비 <code>0x52e5a99c</code>는 버퍼 모드 0을 넘기고, 이때 세 주소는 0으로 설정됩니다. 따라서 이 연결을 모든 현상 분기에 일반화하지 않습니다.</li>
+<li>일반 반복 준비 <code>0x52e5a99c</code>는 버퍼 모드 0을 넘기고 이때 세 주소는 0으로 설정됩니다. 그래서 이 연결을 모든 현상 분기에 일반화하지 않습니다.</li>
 </ul>
 <div class="callout model"><strong class="label">시험 조건</strong>
 <p>두 준비 함수 전체를 32조건에서 실행해 주소 계산, 행 수, geometry 필드를 대조했습니다. 두 버퍼 모드, 같은 형식과 다른 형식, 네 인덱스를 조합했습니다. 버퍼 모드 1에서 형식이 같으면 세 주소가 일치했고 형식이 다르면 일치하지 않았습니다. 픽셀 데이터와 하드웨어는 실행하지 않았습니다.</p></div>
@@ -772,23 +772,23 @@ q &gt; 50 :  배율 = trunc(1000 × (100 − q) / 50)
 <p class="small muted">앞의 세 항목은 <a href="color-algorithms.html">색 처리 알고리즘</a>의 원본 ARM 수치 시험(<a href="color-math-checks.json">행렬</a>, <a href="gamma-tone-checks.json">감마·톤</a>)에서 확인했습니다. 색공간별 감마와 JPEG 항목은 이 문서의 시험(<a href="colorspace-wb-checks.json">색공간·화이트밸런스</a>, <a href="jpeg-quantization-checks.json">JPEG</a>)에서 확인했습니다.</p>
 
 <h3>M2PCLIP의 비교 방식을 정할 수 없는 이유</h3>
-<p>M2PCLIP의 실제 픽셀 비교식은 확인하지 못했습니다. 이 문서에서 말하는 상위·하위는 레지스터 안의 16비트 위치를 뜻하며, 수치의 상한·하한으로 확정한 이름이 아닙니다.</p>
+<p>M2PCLIP의 실제 픽셀 비교식은 확인하지 못했습니다. 이 문서에서 말하는 상위·하위는 레지스터 안의 16비트 위치를 뜻하며 수치의 상한·하한으로 확정한 이름이 아닙니다.</p>
 <ul>
 <li><strong>값이 한 가지뿐입니다.</strong> 찾은 설정 위치가 모두 <code>0xffff</code>와 0을 쓰므로, 값을 비교해 방향이나 부호를 가려낼 수 없습니다.</li>
 <li><strong>읽는 방식의 차이는 증거가 되지 않습니다.</strong> 설정 함수는 상위 값을 <code>LDRH</code>(부호 없음)로, 하위 값을 <code>LDRSH</code>(부호 있음)로 읽습니다. 그러나 두 기록 함수는 결과의 하위 16비트만 남깁니다. CPU의 부호 확장 정보가 레지스터에 남지 않으므로 하드웨어가 부호 비교를 한다는 증거가 못 됩니다.</li>
-<li><strong>픽셀을 도는 코드가 없습니다.</strong> 채널 설정·시작·상태 함수를 더 읽었지만, descriptor의 값을 레지스터에 쓰고 제어 비트를 다룰 뿐입니다. 픽셀 배열을 돌며 샘플과 임계값을 비교하는 반복문은 없었습니다. 조사한 범위의 결과이며, 펌웨어 어디에도 CPU 참조 구현이 없다는 증명은 아닙니다.</li>
-<li><strong>공개 자료에도 없습니다.</strong> 제조사의 SC2000 제품 자료는 하드웨어 영상 기능을 나열하지만, 확인한 2쪽 문서에 M2PCLIP 비교식이나 R2y 레지스터 정의는 없습니다(<a href="https://socionextus.com/wp-content/uploads/2017/07/AD04-00113-3E_milbeaut_SC2000.pdf">Socionext SC2000 제품 자료, AD04-00113-3E, 2017년 5월</a>).</li>
+<li><strong>픽셀을 도는 코드가 없습니다.</strong> 채널 설정·시작·상태 함수를 더 읽었지만 descriptor의 값을 레지스터에 쓰고 제어 비트를 다룰 뿐입니다. 픽셀 배열을 돌며 샘플과 임계값을 비교하는 반복문은 없었습니다. 조사한 범위의 결과이며 펌웨어 어디에도 CPU 참조 구현이 없다는 증명은 아닙니다.</li>
+<li><strong>공개 자료에도 없습니다.</strong> 제조사의 SC2000 제품 자료는 하드웨어 영상 기능을 나열합니다. 하지만 확인한 2쪽 문서에 M2PCLIP 비교식이나 R2y 레지스터 정의는 없습니다(<a href="https://socionextus.com/wp-content/uploads/2017/07/AD04-00113-3E_milbeaut_SC2000.pdf">Socionext SC2000 제품 자료, AD04-00113-3E, 2017년 5월</a>).</li>
 </ul>
 <p>앞의 450개 설정 검사는 레지스터에 값이 올바로 채워지는지 본 결과입니다. 픽셀 비교를 시험한 것으로 세지 않습니다.</p>
 
 <h3 id="wblv-followup">R2y의 세 번째 필드와 WBLV 문자열</h3>
-<p>R2y의 gain·offset 객체에서 <code>+0x18</code>부터 읽는 세 번째 필드는 여전히 상한 후보입니다. 이 필드를 읽는 getter <code>0x530dd638</code>의 직접 호출은 B2r의 네 곳과 R2y의 세 곳이고, 모두 앞에서 본 레지스터 기록 경로에 속합니다. 이 값을 받아 CPU에서 픽셀을 자르는 코드는 검색 범위에서 찾지 못했습니다.</p>
-<p>진단 문자열에는 <code>R2Y_Core.OFG.WBLV_0/1</code>과 B2r의 <code>WBLVRB/GR</code>라는 표기가 있습니다. 이 문자열이 R2y의 <code>+0x30/+0x34</code> 레지스터를 가리킨다면 필드의 이름을 알 수 있습니다. 그러나 문자열과 레지스터 읽기를 잇는 포인터나 덤프 경로를 찾지 못했습니다. 그래서 WBLV라는 약어를 임의로 풀지 않았고, 세 번째 필드를 white level이나 clip threshold로 이름 붙이지 않았습니다. 이름과 레지스터 읽기가 함께 확인된 M2PCLIP보다 증거가 약합니다.</p>
+<p>R2y의 gain·offset 객체에서 <code>+0x18</code>부터 읽는 세 번째 필드는 여전히 상한 후보입니다. 이 필드를 읽는 getter <code>0x530dd638</code>의 직접 호출은 B2r의 네 곳과 R2y의 세 곳이고 모두 앞에서 본 레지스터 기록 경로에 속합니다. 이 값을 받아 CPU에서 픽셀을 자르는 코드는 검색 범위에서 찾지 못했습니다.</p>
+<p>진단 문자열에는 <code>R2Y_Core.OFG.WBLV_0/1</code>과 B2r의 <code>WBLVRB/GR</code>라는 표기가 있습니다. 이 문자열이 R2y의 <code>+0x30/+0x34</code> 레지스터를 가리킨다면 필드의 이름을 알 수 있습니다. 그러나 문자열과 레지스터 읽기를 잇는 포인터나 덤프 경로를 찾지 못했습니다. 그래서 WBLV라는 약어를 임의로 풀지 않았고 세 번째 필드를 white level이나 clip threshold로 이름 붙이지 않았습니다. 이름과 레지스터 읽기가 함께 확인된 M2PCLIP보다 증거가 약합니다.</p>
 <div class="table-wrap"><table>
 <caption>WBLV 문자열을 참조하는 코드를 찾으려고 쓴 검색 방법</caption>
 <thead><tr><th>검색 방법</th><th>관측</th><th>판단</th></tr></thead>
 <tbody>
-<tr><th scope="row">전체 이미지의 정렬된 A32 PC 상대 ADD/SUB</th><td>대상 문자열 묶음 후보 0건</td><td>여러 명령을 조합한 참조나 Thumb 참조까지 배제한 것은 아닙니다.</td></tr>
+<tr><th scope="row">전체 이미지의 정렬된 A32 PC 상대 ADD/SUB</th><td>대상 문자열 묶음 후보 0건</td><td>여러 명령을 조합한 참조나 Thumb 참조는 배제하지 않았습니다.</td></tr>
 <tr><th scope="row">PC 상대 LDR</th><td>넓은 B2r 주변 구간 5건</td><td>모두 객체·factory의 vtable 주소였습니다. WBLV 읽기가 아닙니다.</td></tr>
 <tr><th scope="row">97~1024바이트 떨어진 MOVW/MOVT</th><td>문자열 묶음 후보 656건 중 정확히 WBLV 주소인 것 3건</td><td>3건 모두 중간이나 직전에 레지스터를 다시 써서 탈락했습니다.</td></tr>
 <tr><th scope="row">자기 주소·+4·+8 기준 상대값 워드</th><td>문자열 묶음 후보 1,031건 중 정확히 WBLV 주소인 것 1건</td><td>주소 산술만 맞습니다. 이 워드를 읽어 쓰는 코드는 찾지 못했습니다.</td></tr>
@@ -800,11 +800,11 @@ q &gt; 50 :  배율 = trunc(1000 × (100 − q) / 50)
 <div class="table-wrap"><table class="compact">
 <thead><tr><th>후보</th><th>판정 근거</th></tr></thead>
 <tbody>
-<tr><td><code>0x525b07b4</code> → <code>0x525b08b0</code></td><td>기계적으로 조합하면 WBLV 주소 <code>0x53ca30f8</code>이 나오지만, 직전의 <code>0x525b08ac</code>가 하위 16비트를 다시 씁니다. 실제 최종 값은 <code>0x53cad46c</code>입니다.</td></tr>
+<tr><td><code>0x525b07b4</code> → <code>0x525b08b0</code></td><td>기계적으로 조합하면 WBLV 주소 <code>0x53ca30f8</code>이 나오지만 직전의 <code>0x525b08ac</code>가 하위 16비트를 다시 씁니다. 실제 최종 값은 <code>0x53cad46c</code>입니다.</td></tr>
 <tr><td><code>0x525b07b4</code> → <code>0x525b0ac4</code></td><td>직전의 <code>0x525b0ac0</code>이 하위 16비트를 다시 써서 실제 값은 <code>0x53cac21c</code>입니다.</td></tr>
 <tr><td><code>0x53330940</code> → <code>0x53330a60</code></td><td>앞선 <code>0x53330a54</code>가 하위 16비트를 다시 써서 실제 값은 <code>0x53cac4c8</code>입니다.</td></tr>
-<tr><td>상대값 워드 <code>0x53a330cc</code></td><td><code>0x53a330cc+4+0x00270028=0x53ca30f8</code>로 산술은 맞지만, 이 값을 읽어 더하는 코드가 확인되지 않아 문자열 참조로 채택하지 않았습니다.</td></tr>
-<tr><td>R2y 생성자 <code>0x53254790</code>, B2r 생성자 <code>0x531bd0a4</code></td><td>레지스터 기준 주소 인수를 객체 <code>+4</code>에 저장하고 각각 채널 vtable을 설치합니다. 문자열 주변 메타데이터와 클래스의 관계를 확인한 것이며, 이것만으로 WBLV라는 필드 이름과 특정 MMIO 오프셋을 잇지 않습니다.</td></tr>
+<tr><td>상대값 워드 <code>0x53a330cc</code></td><td><code>0x53a330cc+4+0x00270028=0x53ca30f8</code>로 산술은 맞지만 이 값을 읽어 더하는 코드가 확인되지 않아 문자열 참조로 채택하지 않았습니다.</td></tr>
+<tr><td>R2y 생성자 <code>0x53254790</code>, B2r 생성자 <code>0x531bd0a4</code></td><td>레지스터 기준 주소 인수를 객체 <code>+4</code>에 저장하고 각각 채널 vtable을 설치합니다. 문자열 주변 메타데이터와 클래스의 관계를 확인한 것이며 이것만으로 WBLV라는 필드 이름과 특정 MMIO 오프셋을 잇지 않습니다.</td></tr>
 </tbody></table></div>
 <p class="small">검색 범위와 후보 판정은 <a href="control-followup-evidence.json">control-followup-evidence.json</a>, 재현 결과는 <a href="wblv-reference-checks.json">wblv-reference-checks.json</a>, getter 호출 위치와 문자열 구간 해시는 <a href="isp-semantics-evidence.json">isp-semantics-evidence.json</a>, 후보별 반증 명령의 범위 해시는 <a href="deep-evidence.json">deep-evidence.json</a>에 있습니다.</p>
 </details>
@@ -827,9 +827,9 @@ q &gt; 50 :  배율 = trunc(1000 × (100 − q) / 50)
 <p class="takeaway">펌웨어의 컬러모드 행렬과 곡선을 DCP에 그대로 넣는 방식은 아직 성립하지 않습니다. 계수가 받는 입력 좌표와 적용되는 위치를 먼저 맞춰야 합니다.</p>
 <p>입력 색좌표, 화이트밸런스 적용 상태, 고정소수점 배율, 클리핑 위치가 일치해야 같은 연산이 됩니다. 지금까지 복원한 자료는 모드별 변환을 재현할 때 쓸 연산 모델과 피연산자 목록입니다.</p>
 <ul>
-<li><strong>이름이 같아도 같은 행렬이 아닙니다.</strong> DNG의 ColorMatrix는 XYZ에서 기준 카메라 색공간으로, ForwardMatrix는 화이트밸런스를 적용한 카메라 색에서 XYZ D50으로 가는 변환입니다. 펌웨어에서 찾은 3×3 행렬에도 ColorMatrix라는 이름이 붙어 있지만, 이름만으로 둘을 같다고 볼 수 없습니다. 변환 방향과 좌표계를 먼저 맞춰야 합니다. Adobe의 LookTable 역시 정해진 색공간과 적용 순서를 씁니다(<a href="https://helpx.adobe.com/content/dam/help/en/camera-raw/digital-negative/jcr_content/root/content/flex/items/position/position-par/download_section_733958301/download-1/DNG_Spec_1_7_1_0.pdf">Adobe DNG 규격 1.7.1.0, 33, 52–53, 57, 63–64쪽</a>).</li>
-<li><strong>제안하는 구조는 두 층입니다.</strong> 카메라 보정용 DCP가 센서 색과 화이트밸런스 해석을 맡고, 모드별 look은 확인된 변환을 Adobe가 기대하는 입력 좌표계에서 표현합니다.</li>
-<li><strong>Enhanced XMP의 RGB LUT는 적용 위치가 다릅니다.</strong> 더 자유로운 색 변환을 담을 수 있습니다. 2018년 Profile SDK는 RGB LUT의 최대 크기를 32×32×32로 설명합니다. 이 수치는 해당 SDK의 설명이며 모든 후속 버전의 한계로 일반화하지 않습니다(<a href="https://download.adobe.com/pub/adobe/lightroom/profile-sdk/ACR_and_Lightroom_Profile_SDK.zip">Adobe Profile SDK</a>).</li>
+<li><strong>이름이 같아도 같은 행렬이 아닙니다.</strong> DNG의 ColorMatrix는 XYZ에서 기준 카메라 색공간으로 가는 변환입니다. ForwardMatrix는 화이트밸런스를 적용한 카메라 색에서 XYZ D50으로 가는 변환입니다. 펌웨어에서 찾은 3×3 행렬에도 ColorMatrix라는 이름이 붙어 있지만 이름만으로 둘을 같다고 볼 수 없습니다. 변환 방향과 좌표계를 먼저 맞춰야 합니다. Adobe의 LookTable 역시 정해진 색공간과 적용 순서를 씁니다(<a href="https://helpx.adobe.com/content/dam/help/en/camera-raw/digital-negative/jcr_content/root/content/flex/items/position/position-par/download_section_733958301/download-1/DNG_Spec_1_7_1_0.pdf">Adobe DNG 규격 1.7.1.0, 33, 52–53, 57, 63–64쪽</a>).</li>
+<li><strong>제안하는 구조는 두 층입니다.</strong> 카메라 보정용 DCP가 센서 색과 화이트밸런스 해석을 맡고 모드별 look은 확인된 변환을 Adobe가 기대하는 입력 좌표계에서 표현합니다.</li>
+<li><strong>Enhanced XMP의 RGB LUT는 적용 위치가 다릅니다.</strong> 더 자유로운 색 변환을 담을 수 있습니다. 2018년 Profile SDK는 RGB LUT의 최대 크기를 32×32×32로 설명합니다. 이 수치는 해당 SDK의 설명이며 이후의 모든 버전의 한계로 일반화하지 않습니다(<a href="https://download.adobe.com/pub/adobe/lightroom/profile-sdk/ACR_and_Lightroom_Profile_SDK.zip">Adobe Profile SDK</a>).</li>
 </ul>
 
 <h3>아직 확보하지 못한 정보</h3>
@@ -839,7 +839,7 @@ q &gt; 50 :  배율 = trunc(1000 × (100 − q) / 50)
 <tr><th scope="row">입력 기준</th><td>black level, 센서 white level, 화이트밸런스 gain의 단위와 Adobe 입력 좌표의 대응</td><td>펌웨어의 수치 상한을 DCP·XMP의 정규화 값으로 바꾸는 기준이 됩니다.</td></tr>
 <tr><th scope="row">포화 위치</th><td>M2P와 R2y 필드의 비교식, gain·행렬·감마·톤 전후의 clip 위치</td><td>이미 사라진 채널 정보는 LUT로 되살릴 수 없으므로 포화 전과 후를 나눠 평가해야 합니다.</td></tr>
 <tr><th scope="row">경로 선택</th><td>실제 촬영에서의 mode·format·bypass·화이트밸런스 분기와 쓰이는 표</td><td>서로 다른 경로를 하나의 고정 모드로 합쳐 추정하지 않도록 조건을 고정합니다.</td></tr>
-<tr><th scope="row">출력 대응</th><td>같은 RAW의 카메라 출력과 Adobe 기준 현상, 고채도·중성·하이라이트 표본</td><td>좌표·톤·클리핑의 차이를 나누고, 별도 장면에서 색차를 검증합니다.</td></tr>
+<tr><th scope="row">출력 대응</th><td>같은 RAW의 카메라 출력과 Adobe 기준 현상, 고채도·중성·하이라이트 표본</td><td>좌표·톤·클리핑의 차이를 나누고 별도 장면에서 색차를 검증합니다.</td></tr>
 </tbody></table></div>
 
 <h3>변환 전에 고정할 항목</h3>
@@ -858,9 +858,9 @@ q &gt; 50 :  배율 = trunc(1000 × (100 − q) / 50)
 <h3 id="rawjpeg">같은 RAW의 카메라 출력으로 검증하는 방법</h3>
 <ol class="steps">
 <li><strong>출력 쌍 만들기</strong> 같은 RAW에서 모드별 카메라 JPEG를 만들고 가능한 설정을 고정합니다. 촬영 때의 화이트밸런스와 노출, 렌즈, 카메라 펌웨어, 출력 색공간, JPEG 품질, 노이즈 감소, 샤프닝, 자동 톤 설정을 함께 기록합니다. 비교할 모드가 그 렌즈와 촬영 조건에서 실제로 선택되는지도 확인합니다.</li>
-<li><strong>장면 고르기</strong> 색상표만으로 평가를 끝내지 않습니다. 회색 계조, 피부색, 잎과 강한 원색, 하이라이트가 있는 장면을 준비하고, 특성이 알려진 조명 조건을 나눠 비교합니다. 프로파일을 맞출 때 쓰지 않은 이미지로 다시 검사합니다.</li>
+<li><strong>장면 고르기</strong> 색상표만으로 평가를 끝내지 않습니다. 회색 계조, 피부색, 잎과 강한 원색, 하이라이트가 있는 장면을 준비하고 특성이 알려진 조명 조건을 나눠 비교합니다. 프로파일을 맞출 때 쓰지 않은 이미지로 다시 검사합니다.</li>
 <li><strong>평가하기</strong> 패치별 색차, 중성축 오차, 계조의 단조성, 노출 변화에 따른 오차, 채널별 클리핑 비율을 봅니다. 허용 오차는 사용 목적에 맞춰 정하고 측정 결과와 함께 공개합니다.</li>
-<li><strong>압축의 영향 분리하기</strong> JPEG 압축과 크로마 처리 때문에 파일 바이트가 완전히 같기를 합격 조건으로 삼기는 어렵습니다. 디코딩한 이미지에 같은 색 관리와 출력 크기를 적용하고, 패치 안쪽의 색과 경계 부근의 공간 오차를 나눠 평가합니다.</li>
+<li><strong>압축의 영향 분리하기</strong> JPEG 압축과 크로마 처리 때문에 파일 바이트가 완전히 같기를 합격 조건으로 삼기는 어렵습니다. 디코딩한 이미지에 같은 색 관리와 출력 크기를 적용하고 패치 안쪽의 색과 경계 부근의 공간 오차를 나눠 평가합니다.</li>
 </ol>
 <div class="callout"><strong class="label">현재 상태</strong>
 <p>이 문서의 추적에서는 RAW·JPEG 쌍, 카메라의 하드웨어 출력, Lightroom 적용 결과를 시험하지 않았습니다. 그 뒤에 한 실제 Lightroom 실험은 <a href="lightroom-bridge.html">Lightroom 색 프로파일</a> 주제에 있습니다. 카메라 JPEG와 색을 맞춘 모드별 프로파일은 아직 없습니다. Adobe 형식의 적용 위치와 기존 프로파일 구조는 <a href="color-lightroom.html">컬러모드 자원과 Lightroom</a>에 정리했습니다.</p></div>
@@ -887,7 +887,7 @@ q &gt; 50 :  배율 = trunc(1000 × (100 − q) / 50)
 <caption>코드를 실행하지 않는 검색 재현</caption>
 <thead><tr><th>검사</th><th>내용</th><th>결과 파일</th></tr></thead>
 <tbody>
-<tr><th scope="row">M2P·R2y 참조 검색</th><td>M2P의 세 대상에 대한 직접 참조 16곳, 관련 R2y helper 네 대상의 참조 58곳, 문자열 구간 해시 26개, M2P 정확 포인터 검색 0건을 대조합니다. 이 수는 실행된 함수의 수나 실제 도달 횟수가 아닙니다.</td><td><a href="isp-semantics-checks.json">isp-semantics-checks.json</a></td></tr>
+<tr><th scope="row">M2P·R2y 참조 검색</th><td>M2P 세 대상의 직접 참조 16곳, 관련 R2y helper 네 대상의 참조 58곳, 문자열 구간 해시 26개, M2P 정확 포인터 검색 0건을 대조합니다. 이 수는 실행된 함수의 수나 실제 도달 횟수가 아닙니다.</td><td><a href="isp-semantics-checks.json">isp-semantics-checks.json</a></td></tr>
 <tr><th scope="row">WBLV 후보 검색</th><td>네 가지 검색의 후보 수(0, 5, 1,031, 656)와 로컬 상수 계산 24,561워드를 재현합니다. 후보가 탈락한 이유는 별도의 명령 검토 결과입니다.</td><td><a href="wblv-reference-checks.json">wblv-reference-checks.json</a></td></tr>
 </tbody></table></div>
 
@@ -896,12 +896,12 @@ q &gt; 50 :  배율 = trunc(1000 × (100 − q) / 50)
 <li>이 문서의 주소, 분기, vtable, 설정 필드는 원본 ARM 목록과 대조했습니다. <a href="deep-evidence.json">deep-evidence.json</a>과 검증기는 그 기록의 바이트 일치와 연결 조건을 검사합니다. 바이트 검증이 모든 함수의 의미나 실제 카메라에서의 실행을 입증하지는 않습니다.</li>
 <li><code>deep-evidence.json</code>은 저장소의 여러 주제가 함께 쓰는 파일입니다. 지금은 분석 구간 1,232개, 분기 위치 7,389곳, 데이터 워드 492개, 조건부 연결 104개를 담고 있습니다.</li>
 <li>디컴파일한 C는 원래 소스 코드가 아닙니다. 타입, 부동소수점, 간접 호출의 해석에서 ARM 목록과 차이가 날 수 있습니다.</li>
-<li>에뮬레이터의 CPU 모델은 시험마다 다릅니다. WB → B2r 시험과 R2y 제어 바이트 시험은 Cortex-A15 모델, JPEG·R2y 설정·색공간 0x145·입력 클리핑 시험은 Cortex-A7 모델을 썼습니다.</li>
+<li>에뮬레이터의 CPU 모델은 시험마다 다릅니다. WB → B2r 시험과 R2y 제어 바이트 시험은 Cortex-A15 모델을 썼습니다. JPEG·R2y 설정·색공간 0x145·입력 클리핑 시험은 Cortex-A7 모델을 썼습니다.</li>
 </ul>
 
 <details><summary>조사 경과와 검토 기록</summary>
 <ul>
-<li>이 문서의 추적은 2026년 11월 7일 기준 기록에서 출발했습니다. JPEG와 Custom Image 설정 경로를 먼저 확인했고, 이어서 화이트밸런스·색공간·ISP 클리핑, R2y 제어 바이트와 WBLV, M2PCLIP 의미의 순서로 조사했습니다.</li>
+<li>이 문서의 추적은 2026년 11월 7일 기준 기록에서 출발했습니다. JPEG와 Custom Image 설정 경로를 먼저 확인했습니다. 이어서 화이트밸런스·색공간·ISP 클리핑, R2y 제어 바이트와 WBLV, M2PCLIP 의미의 순서로 조사했습니다.</li>
 <li>화이트밸런스·색공간·ISP 단계에서 의사코드 130개와 ARM 목록을 저장했습니다. M2PCLIP 의미 조사에서 M2P 8개, R2y 2개 함수의 의사코드와 전체 ARM 목록을 더했습니다. 제어 바이트 조사에서는 생산자·준비 함수 10개, WBLV 주변 생성자 2개, UI·업데이트 접근 함수 5개의 의사코드를 더했습니다. 당시 통합 목록의 고유 디컴파일 진입점은 389개였습니다.</li>
 <li>M2PCLIP 의미 조사를 마친 시점의 <code>deep-evidence.json</code>은 분석 구간 807개, 분기 위치 6,119곳, 데이터 워드 236개, 조건부 연결 50개였습니다. 그 뒤 다른 주제의 근거가 더해져 위에 적은 현재 값이 됐습니다.</li>
 <li>별도 검토자가 화이트밸런스·ISP·버퍼의 원본 범위 129개와 ARM 10,443워드를 대조하고 해당 수치 시험을 다시 실행했습니다. 구체적인 수정 권고는 없었습니다.</li>
@@ -915,21 +915,21 @@ q &gt; 50 :  배율 = trunc(1000 × (100 − q) / 50)
 <h2>한계와 남은 과제</h2>
 <p>실제 카메라, 센서, DMA, ISP의 픽셀 출력은 실행하지 않았습니다. 아래 항목은 레지스터 규격이나 관측할 수 있는 출력이 있어야 확정할 수 있습니다.</p>
 <ul>
-<li><strong>ISP 내부의 픽셀 계산</strong> — offset과 gain을 어떤 순서로 적용하는지, 클리핑이 행렬·감마 앞인지 뒤인지, 하드웨어가 LUT를 어떻게 보간하는지 모릅니다.</li>
-<li><strong>M2PCLIP의 의미</strong> — 상위·하위 값의 방향, 부호, 포함 여부, offset·shift와의 순서, <code>0xffff</code>가 임계값인지 표식인지 모릅니다.</li>
-<li><strong>R2y 세 번째 필드와 제어 비트</strong> — 상한 후보가 실제 클리핑 임계값인지, <code>R+0x10</code> bit 0과 <code>R+0x80</code>의 2비트가 무엇을 켜고 끄는지 모릅니다. WBLV 문자열이 가리키는 레지스터도 찾지 못했습니다.</li>
-<li><strong>화이트밸런스</strong> — 네 채널의 색 이름, gain의 실제 픽셀 배율, black level과의 관계, 디모자이크 전후 위치가 남아 있습니다.</li>
-<li><strong>JPEG</strong> — DCT와 엔트로피 부호화는 하드웨어 내부입니다. 형식 값 1·2가 어떤 크로마 서브샘플링인지, 품질 메뉴와 Q의 대응, 크기 정책의 수치 재현, 인터럽트 입력 <code>0xd5</code>의 물리 번호가 남아 있습니다.</li>
-<li><strong>블록 사이의 연결</strong> — Develop의 출력이 JPEG의 Y·CbCr 입력 버퍼로 이어지는 전체 계보, 큐와 DMA의 실제 순서를 확인하지 못했습니다.</li>
-<li><strong>실행 조건</strong> — 객체 초기화 순서, 런타임 vtable, 큐·잠금·스케줄러는 실행하지 않았습니다. 모든 간접 연결은 기록한 초기화가 유지된다는 조건에서 성립합니다.</li>
-<li><strong>색 일치</strong> — 카메라 출력과 Lightroom의 색 일치는 검증하지 않았습니다.</li>
+<li><strong>ISP 내부의 픽셀 계산</strong>: offset과 gain을 어떤 순서로 적용하는지, 클리핑이 행렬·감마 앞인지 뒤인지, 하드웨어가 LUT를 어떻게 보간하는지 모릅니다.</li>
+<li><strong>M2PCLIP의 의미</strong>: 상위·하위 값의 방향, 부호, 포함 여부, offset·shift와의 순서, <code>0xffff</code>가 임계값인지 표식인지 모릅니다.</li>
+<li><strong>R2y 세 번째 필드와 제어 비트</strong>: 상한 후보가 실제 클리핑 임계값인지, <code>R+0x10</code> bit 0과 <code>R+0x80</code>의 2비트가 무엇을 켜고 끄는지 모릅니다. WBLV 문자열이 가리키는 레지스터도 찾지 못했습니다.</li>
+<li><strong>화이트밸런스</strong>: 네 채널의 색 이름, gain의 실제 픽셀 배율, black level과의 관계, 디모자이크 전후 위치가 남아 있습니다.</li>
+<li><strong>JPEG</strong>: DCT와 엔트로피 부호화는 하드웨어 내부입니다. 형식 값 1·2가 어떤 크로마 서브샘플링인지, 품질 메뉴와 Q의 대응, 크기 정책의 수치 재현, 인터럽트 입력 <code>0xd5</code>의 물리 번호가 남아 있습니다.</li>
+<li><strong>블록 사이의 연결</strong>: Develop의 출력이 JPEG의 Y·CbCr 입력 버퍼로 이어지는 전체 계보, 큐와 DMA의 실제 순서를 확인하지 못했습니다.</li>
+<li><strong>실행 조건</strong>: 객체 초기화 순서, 런타임 vtable, 큐·잠금·스케줄러는 실행하지 않았습니다. 모든 간접 연결은 기록한 초기화가 유지된다는 조건에서 성립합니다.</li>
+<li><strong>색 일치</strong>: 카메라 출력과 Lightroom의 색 일치는 검증하지 않았습니다.</li>
 </ul>
 <p>수정 펌웨어와 UI 이식에 앞서 확인할 항목은 <a href="research-roadmap.html">수정·이식 선행 연구</a>에 따로 정리했습니다.</p>
 </section>
 
 <section id="reproduce">
 <h2>재현 방법</h2>
-<p>검증기는 추출기가 만든 <code>decoded.bin</code>을 입력으로 받고, RTOS의 SHA-256이 위에 적은 값과 같을 때만 실행합니다. 입력 펌웨어를 준비하는 방법은 <a href="firmware-structure.html">펌웨어 구조와 하드웨어</a>에 있습니다.</p>
+<p>검증기는 추출기가 만든 <code>decoded.bin</code>을 입력으로 받고 RTOS의 SHA-256이 위에 적은 값과 같을 때만 실행합니다. 입력 펌웨어를 준비하는 방법은 <a href="firmware-structure.html">펌웨어 구조와 하드웨어</a>에 있습니다.</p>
 <pre><code>python verify_deep_analysis.py path/to/decoded.bin
 python verify_jpeg_quantization.py path/to/decoded.bin --output jpeg-checks.json
 python verify_isp_configuration.py path/to/decoded.bin --output isp-checks.json
@@ -973,8 +973,8 @@ python decompile_sample.py path/to/decoded.bin 0x531bc180</code></pre>
 </main>
 </div>
 <!-- chrome:bottom -->
-<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">카메라 내부 색 처리 — 이 주제의 문서</h2><ol><li><a href="guide-color.html">색 처리 안내</a></li><li><a href="color-lightroom.html">컬러모드 자원과 Lightroom</a></li><li><a href="color-algorithms.html">색 처리 알고리즘<span>행렬·감마·톤</span></a></li><li><a href="color-mode-boundaries.html">색 모드별 행렬·감마 조건</a></li><li><a href="pipeline-report.html" aria-current="page">JPEG·ISP와 색 재현 경로</a></li></ol></nav>
-<nav class="pager" aria-label="이전·다음 문서"><a class="prev" href="color-mode-boundaries.html"><small>← 이전</small>색 모드별 행렬·감마 조건</a><a class="next" href="lightroom-bridge.html"><small>다음 →</small>Lightroom 프로파일 안내</a></nav>
+<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">카메라 내부 색 처리 — 이 주제의 문서</h2><ol><li><a href="guide-color.html">색 처리 안내</a></li><li><a href="color-lightroom.html">컬러모드 자원과 Lightroom</a></li><li><a href="color-algorithms.html">색 처리 알고리즘<span>행렬·감마·톤</span></a></li><li><a href="color-mode-boundaries.html">색 모드별 행렬·감마 조건</a></li><li><a href="pipeline-report.html" aria-current="page">JPEG·ISP와 색 재현 경로</a></li><li><a href="raw-nr-feasibility.html">RAW 노이즈 감소를 끌 수 있는가</a></li></ol></nav>
+<nav class="pager" aria-label="이전·다음 문서"><a class="prev" href="color-mode-boundaries.html"><small>← 이전</small>색 모드별 행렬·감마 조건</a><a class="next" href="raw-nr-feasibility.html"><small>다음 →</small>RAW 노이즈 감소를 끌 수 있는가</a></nav>
 <footer class="sitefoot"><div class="sitefoot-in"><nav aria-label="사이트"><a href="../index.html#map">문서 지도</a><a href="../index.html#levels">검증 수준 읽는 법</a><a href="../glossary.html">용어집</a><a href="research-program.html">세 기종 연구 본부</a><a href="https://github.com/yunhyok/pentax-k3iii-firmware-analysis">GitHub 저장소</a></nav><p>PENTAX 펌웨어 연구. PC에서 수행한 정적 분석과 에뮬레이션 결과이며, 카메라 실기에서 검증한 내용이 아닙니다. 원본 펌웨어와 추출한 독점 코드는 포함하지 않습니다.</p></div></footer>
 <!-- /chrome:bottom -->
 </body>

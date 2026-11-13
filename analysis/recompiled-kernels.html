@@ -10,7 +10,7 @@
 <body data-camera="k3iii">
 <!-- chrome:top -->
 <a class="skip" href="#main">본문 바로가기</a>
-<div class="topbar"><div class="topbar-in"><a class="brand" href="../index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="../index.html" aria-current="true">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="https://yunhyok.github.io/pentax-q7-firmware-analysis/">Q7</a></div><nav class="topnav" aria-label="주제"><a href="../index.html">개요</a><a href="guide-boot.html">부팅·저장소</a><a href="guide-update.html">업데이트</a><a href="guide-rebuild.html" aria-current="true">재구축</a><a href="guide-rtos.html">명령·셸</a><a href="guide-color.html">색 처리</a><a href="lightroom-bridge.html">Lightroom</a><a href="af-foundations.html">AF</a><a href="ui-port-contract.html">UI</a></nav></div></div>
+<div class="topbar"><div class="topbar-in"><a class="brand" href="../index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="../index.html" aria-current="true">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="https://yunhyok.github.io/pentax-q7-firmware-analysis/">Q7</a></div><nav class="topnav" aria-label="주제"><a href="../index.html">개요</a><a href="guide-boot.html">부팅·저장소</a><a href="guide-update.html">업데이트</a><a href="guide-rebuild.html" aria-current="true">재구축</a><a href="guide-rtos.html">명령·셸</a><a href="guide-color.html">색 처리</a><a href="guide-lightroom.html">Lightroom</a><a href="guide-af.html">AF</a><a href="guide-ui.html">UI</a></nav></div></div>
 <nav class="crumbs" aria-label="현재 위치"><ol><li><a href="../index.html">PENTAX K-3 Mark III</a></li><li><a href="guide-rebuild.html">펌웨어 재구축</a></li><li aria-current="page">수치 함수 C 재구현</li></ol></nav>
 <!-- /chrome:top -->
 <header class="page-head">
@@ -56,7 +56,7 @@
 
 <section id="background">
 <h2>배경: 왜 작은 함수부터 다시 만드는가</h2>
-<p>제조사의 원본 소스 코드는 공개되어 있지 않습니다. 펌웨어를 고치는 방법은 두 가지입니다. 기계어 몇 바이트를 직접 바꾸거나, 함수를 C로 새로 작성해 컴파일한 결과로 원본 함수를 대체하는 것입니다. 두 번째 방법이 유지하기 쉽지만, 새 코드가 원본과 <em>정확히 같은 결과</em>를 낸다는 것을 먼저 증명해야 합니다.</p>
+<p>제조사의 원본 소스 코드는 공개되어 있지 않습니다. 펌웨어를 고치는 방법은 두 가지입니다. 기계어 몇 바이트를 직접 바꾸거나, 함수를 C로 새로 작성해 컴파일한 결과로 원본 함수를 대체하는 것입니다. 두 번째 방법이 유지하기 쉽지만 새 코드가 원본과 <em>정확히 같은 결과</em>를 낸다는 것을 먼저 증명해야 합니다.</p>
 <p>그래서 다른 함수를 부르지 않고 계산만 하는 작은 함수(<dfn title="다른 함수를 호출하지 않는 말단 함수">leaf 함수</dfn>) 두 개를 골랐습니다. 입력과 출력이 분명해서 원본과 새 코드를 나란히 실행해 비교하기 쉽습니다.</p>
 
 <div class="table-wrap"><table>
@@ -70,7 +70,7 @@
 
 <section id="method">
 <h2>검증 방법: 원본과 새 코드를 같은 조건에서 실행</h2>
-<p class="takeaway">새 코드와 원본 코드를 서로 다른 주소에 올려 놓고, 같은 입력으로 각각 실행한 뒤 출력 바이트를 비교했습니다.</p>
+<p class="takeaway">새 코드와 원본 코드를 서로 다른 주소에 올려 놓고 같은 입력으로 각각 실행한 뒤 출력 바이트를 비교했습니다.</p>
 
 <figure class="diagram">
 <figcaption>검증 환경의 구성</figcaption>
@@ -125,11 +125,11 @@
 <h3>실행할 때마다 확인한 조건</h3>
 <p>출력값만 보지 않았습니다. 함수가 주변 상태를 망가뜨리지 않는지도 매번 검사했습니다.</p>
 <ul>
-<li><strong>출력</strong> — Python 기준식의 결과와 바이트 단위로 같아야 합니다. 정해진 출력 위치에 빠짐없이 쓰였는지도 확인했습니다.</li>
-<li><strong>쓰기 범위</strong> — 출력 버퍼와 스택 작업 영역 밖에는 쓰지 않아야 합니다.</li>
-<li><strong>읽기 범위</strong> — 넘겨준 버퍼, 스택, 그리고 원본 SAD·SSD가 쓰는 128바이트 마스크 표만 읽어야 합니다.</li>
-<li><strong>실행 범위</strong> — 함수 구간 안에서만 실행되고 정해 둔 복귀 주소로 돌아와야 합니다.</li>
-<li><strong>보존 레지스터</strong> — ARM 호출 규약(<a href="https://github.com/ARM-software/abi-aa/blob/main/aapcs32/aapcs32.rst">AAPCS32</a>)이 보존하라고 정한 r4–r11, d8–d15, SP와 호출자의 스택 인수, CPSR 제어 비트가 그대로여야 합니다.</li>
+<li><strong>출력</strong>: Python 기준식의 결과와 바이트 단위로 같아야 합니다. 정해진 출력 위치에 빠짐없이 쓰였는지도 확인했습니다.</li>
+<li><strong>쓰기 범위</strong>: 출력 버퍼와 스택 작업 영역 밖에는 쓰지 않아야 합니다.</li>
+<li><strong>읽기 범위</strong>: 넘겨준 버퍼, 스택, 그리고 원본 SAD·SSD가 쓰는 128바이트 마스크 표만 읽어야 합니다.</li>
+<li><strong>실행 범위</strong>: 함수 구간 안에서만 실행되고 정해 둔 복귀 주소로 돌아와야 합니다.</li>
+<li><strong>보존 레지스터</strong>: ARM 호출 규약(<a href="https://github.com/ARM-software/abi-aa/blob/main/aapcs32/aapcs32.rst">AAPCS32</a>)이 보존하라고 정한 r4–r11, d8–d15, SP와 호출자의 스택 인수, CPSR 제어 비트가 그대로여야 합니다.</li>
 </ul>
 <div class="callout model"><strong class="label">비교 기준에서 뺀 것</strong>
 <p>실행 시간과 계산 과정에서 바뀌는 조건 플래그 전체는 비교하지 않았습니다. 쓰지 않는 첫 인수(r0)에는 일부러 매핑하지 않은 주소를 넣어, 두 코드 모두 이 인수를 건드리지 않는다는 점을 확인했습니다.</p></div>
@@ -146,21 +146,21 @@
 </tbody></table></div>
 <p class="small muted">코드 크기는 함수 구간의 기계어 크기입니다. 원본 SAD·SSD가 따로 참조하는 128바이트 마스크 표는 포함하지 않았습니다. 스택 사용 깊이는 함수에 들어올 때의 스택 포인터 아래로 가장 멀리 쓴 위치입니다.</p>
 <div class="callout plain"><strong class="label">크기가 줄어든 이유</strong>
-<p>원본 SAD·SSD는 여러 값을 한 번에 처리하는 <dfn title="ARM의 SIMD 확장. 여러 데이터를 한 명령으로 처리합니다.">NEON</dfn> 명령을 씁니다. 새 코드는 값을 하나씩 처리하는 단순한 반복문이라 더 작습니다. 결과는 같지만 속도는 다를 수 있으며, 속도는 이번에 측정하지 않았습니다.</p></div>
+<p>원본 SAD·SSD는 여러 값을 한 번에 처리하는 <dfn title="ARM의 SIMD 확장. 여러 데이터를 한 명령으로 처리합니다.">NEON</dfn> 명령을 씁니다. 새 코드는 값을 하나씩 처리하는 단순한 반복문이라 더 작습니다. 결과는 같지만 속도는 다를 수 있으며 속도는 이번에 측정하지 않았습니다.</p></div>
 
 <h3 id="sad-ssd">SAD·SSD 함수</h3>
 <p>입력은 부호 없는 16비트 배열 두 개(r1, r2)와 양수인 원소 개수(r3)입니다. 결과는 스택으로 넘긴 포인터 두 곳에 32비트 값으로 저장됩니다.</p>
 <ul>
-<li><strong>시험한 길이</strong> — 1~17개, 그리고 8개 단위 경계 앞뒤(23·24·25, 31·32·33, … 1023·1024·1025). 길이마다 값이 모두 같은 경우, 차이가 최대인 경우, 번갈아 바뀌는 경우, 난수를 넣었습니다.</li>
-<li><strong>32비트를 넘는 경우</strong> — 모든 차이가 65,535일 때 길이 65,537의 SAD는 <code>0xffffffff</code>이고, 길이 65,538에서는 32비트를 넘어 <code>65534</code>가 됩니다. 원본과 새 코드 모두 넘친 값을 그대로 잘라 냅니다.</li>
-<li><strong>패딩</strong> — 원본은 마지막 NEON 벡터를 읽을 때 배열 끝을 조금 넘겨 읽을 수 있습니다. 그래서 원본에는 0이 아닌 패딩 값을 붙여 주고, 새 코드에는 유효한 원소만 주었습니다. 결과는 같았습니다.</li>
+<li><strong>시험한 길이</strong>: 1~17개, 그리고 8개 단위 경계 앞뒤(23·24·25, 31·32·33, … 1023·1024·1025). 길이마다 값이 모두 같은 경우, 차이가 최대인 경우, 번갈아 바뀌는 경우, 난수를 넣었습니다.</li>
+<li><strong>32비트를 넘는 경우</strong>: 모든 차이가 65,535일 때 길이 65,537의 SAD는 <code>0xffffffff</code>입니다. 길이 65,538에서는 32비트를 넘어 <code>65534</code>가 됩니다. 원본과 새 코드 모두 넘친 값을 그대로 잘라 냅니다.</li>
+<li><strong>패딩</strong>: 원본은 마지막 NEON 벡터를 읽을 때 배열 끝을 조금 넘겨 읽을 수 있습니다. 그래서 원본에는 0이 아닌 패딩 값을 붙여 주고 새 코드에는 유효한 원소만 주었습니다. 결과는 같았습니다.</li>
 </ul>
 
 <h3 id="q13">Q13 3×3 행렬 곱 함수</h3>
-<p>입력은 행 우선으로 놓인 부호 있는 16비트 행렬 두 개(r2, r3)이고, 출력 행렬은 r1이 가리킵니다. 원소마다 세 곱의 합에 4,096(Q13에서 0.5)을 더한 32비트 값을 오른쪽으로 13비트 논리 시프트하고 하위 16비트를 저장합니다.</p>
+<p>입력은 행 우선으로 놓인 부호 있는 16비트 행렬 두 개(r2, r3)이고 출력 행렬은 r1이 가리킵니다. 원소마다 세 곱의 합에 4,096(Q13에서 0.5)을 더한 32비트 값을 오른쪽으로 13비트 논리 시프트하고 하위 16비트를 저장합니다.</p>
 <ul>
-<li><strong>시험한 입력</strong> — 단위 행렬, 영 행렬, 양수·음수 반올림 경계, 합이 32비트를 넘는 경우, 결과가 16비트를 넘는 경우, 난수 96개.</li>
-<li><strong>범위를 넘을 때</strong> — 결과가 16비트 범위를 넘으면 최댓값으로 고정(포화)하지 않고 하위 16비트만 남깁니다. 원본과 새 코드가 같게 동작합니다.</li>
+<li><strong>시험한 입력</strong>: 단위 행렬, 영 행렬, 양수·음수 반올림 경계, 합이 32비트를 넘는 경우, 결과가 16비트를 넘는 경우, 난수 96개.</li>
+<li><strong>범위를 넘을 때</strong>: 결과가 16비트 범위를 넘으면 최댓값으로 고정(포화)하지 않고 하위 16비트만 남깁니다. 원본과 새 코드가 같게 동작합니다.</li>
 </ul>
 <div class="callout"><strong class="label">해석의 한계</strong>
 <p>출력이 같다는 사실만으로는 계산 중간의 시프트 방식이나 누산 폭까지 같다고 말할 수 없습니다. 그 부분의 해석은 <a href="color-algorithms.html">원본 명령 분석</a>에 근거합니다.</p></div>
@@ -224,7 +224,7 @@
 </main>
 </div>
 <!-- chrome:bottom -->
-<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">펌웨어 재구축 — 이 주제의 문서</h2><ol><li><a href="guide-rebuild.html">재구축 안내</a></li><li><a href="recompiled-kernels.html" aria-current="page">수치 함수 C 재구현<span>SAD·SSD와 Q13 행렬 곱</span></a></li><li><a href="recompiled-integration.html">재컴파일 함수 배치·재패키징</a></li><li><a href="selective-repack.html">압축 블록을 보존한 재패키징</a></li><li><a href="allocator-replay/report.html">설정에서 첫 task stack까지<span>원본 할당 경로 7조건과 RMW 5검증</span></a></li><li><a href="registry-replay/report.html">이름 registry 할당과 조회<span>원본 이름 배열 1200바이트 초기화와 조회 재현</span></a></li><li><a href="rmw-proof/report.html">RMW 8바이트의 수동 모형 검증<span>초기 64비트와 최종값의 관계, decoded만으로 재현</span></a></li><li><a href="rmw-scope/report.html">RMW 48바이트 분류와 4바이트 증명<span>전체 기록 검사 후 공개 필드 추리기, decoded와 accepted31 필요</span></a></li></ol></nav>
+<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">펌웨어 재구축 — 이 주제의 문서</h2><ol><li><a href="guide-rebuild.html">재구축 안내</a></li><li><a href="recompiled-kernels.html" aria-current="page">수치 함수 C 재구현<span>SAD·SSD와 Q13 행렬 곱</span></a></li><li><a href="recompiled-integration.html">재컴파일 함수 배치·재패키징</a></li><li><a href="selective-repack.html">압축 블록을 보존한 재패키징</a></li><li><a href="allocator-replay/report.html">설정에서 첫 task 스택까지<span>할당 경로 7조건</span></a></li><li><a href="registry-replay/report.html">이름 registry 할당과 조회<span>이름 배열의 할당·초기화·조회</span></a></li><li><a href="rmw-proof/report.html">RMW 8바이트의 수동 모형 검증<span>초기값과 무관한 최종 8바이트</span></a></li><li><a href="rmw-scope/report.html">RMW 48바이트 분류와 4바이트 증명<span>남은 바이트의 범위</span></a></li></ol></nav>
 <nav class="pager" aria-label="이전·다음 문서"><a class="prev" href="guide-rebuild.html"><small>← 이전</small>재구축 안내</a><a class="next" href="recompiled-integration.html"><small>다음 →</small>재컴파일 함수 배치·재패키징</a></nav>
 <footer class="sitefoot"><div class="sitefoot-in"><nav aria-label="사이트"><a href="../index.html#map">문서 지도</a><a href="../index.html#levels">검증 수준 읽는 법</a><a href="../glossary.html">용어집</a><a href="research-program.html">세 기종 연구 본부</a><a href="https://github.com/yunhyok/pentax-k3iii-firmware-analysis">GitHub 저장소</a></nav><p>PENTAX 펌웨어 연구. PC에서 수행한 정적 분석과 에뮬레이션 결과이며, 카메라 실기에서 검증한 내용이 아닙니다. 원본 펌웨어와 추출한 독점 코드는 포함하지 않습니다.</p></div></footer>
 <!-- /chrome:bottom -->

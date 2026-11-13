@@ -2,78 +2,236 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>K-3 III StringView의 그리기 표면</title>
-<meta name="description" content="K-3 III RTOS의 등록 Canvas에서 StringView로 표면을 전달하는 조건과 표면 필드의 가까운 생산자를 확인했습니다.">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>StringView가 그릴 표면을 받는 경로 — PENTAX K-3 Mark III 펌웨어 연구</title>
+<meta name="description" content="K-3 Mark III 펌웨어 2.20에서 등록된 Canvas의 그리기 표면 포인터가 조건을 거쳐 StringView의 텍스트 설정에 저장되는 경로와, 표면 기술자의 필드를 채우는 코드를 원본 RTOS를 읽어 대조했습니다.">
 <link rel="stylesheet" href="../assets/site.css">
-<style>
-.surface .flow{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,12rem),1fr));gap:.6rem;margin:.6rem 0 0;padding:0;list-style:none}
-.surface .flow li{padding:.65rem;border:1px solid var(--line);border-radius:.5rem}
-.surface .flow b{display:block}
-.surface .table-wrap:focus-visible{outline:2px solid var(--brand);outline-offset:3px}
-</style>
 </head>
 <body data-camera="k3iii">
 <!-- chrome:top -->
 <a class="skip" href="#main">본문 바로가기</a>
-<div class="topbar"><div class="topbar-in"><a class="brand" href="../index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="../index.html" aria-current="true">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="https://yunhyok.github.io/pentax-q7-firmware-analysis/">Q7</a></div><nav class="topnav" aria-label="주제"><a href="../index.html">개요</a><a href="guide-boot.html">부팅·저장소</a><a href="guide-update.html">업데이트</a><a href="guide-rebuild.html">재구축</a><a href="guide-rtos.html">명령·셸</a><a href="guide-color.html">색 처리</a><a href="lightroom-bridge.html">Lightroom</a><a href="af-foundations.html">AF</a><a href="ui-port-contract.html" aria-current="true">UI</a></nav></div></div>
-<nav class="crumbs" aria-label="현재 위치"><ol><li><a href="../index.html">PENTAX K-3 Mark III</a></li><li><a href="ui-port-contract.html">UI와 화면 자원</a></li><li aria-current="page">K-3 III StringView의 그리기 표면</li></ol></nav>
+<div class="topbar"><div class="topbar-in"><a class="brand" href="../index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="../index.html" aria-current="true">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="https://yunhyok.github.io/pentax-q7-firmware-analysis/">Q7</a></div><nav class="topnav" aria-label="주제"><a href="../index.html">개요</a><a href="guide-boot.html">부팅·저장소</a><a href="guide-update.html">업데이트</a><a href="guide-rebuild.html">재구축</a><a href="guide-rtos.html">명령·셸</a><a href="guide-color.html">색 처리</a><a href="guide-lightroom.html">Lightroom</a><a href="guide-af.html">AF</a><a href="guide-ui.html" aria-current="true">UI</a></nav></div></div>
+<nav class="crumbs" aria-label="현재 위치"><ol><li><a href="../index.html">PENTAX K-3 Mark III</a></li><li><a href="guide-ui.html">UI와 화면 자원</a></li><li aria-current="page">StringView가 그릴 표면을 받는 경로</li></ol></nav>
 <!-- /chrome:top -->
 <header class="page-head">
-<p class="eyebrow">UI와 화면 자원 · K-3 III 펌웨어 2.20</p>
-<h1>K-3 III StringView의 그리기 표면</h1>
-<p class="lead">등록 Canvas의 표면 포인터는 스냅샷을 거쳐 중첩 객체의 그리기 호출로 전달됩니다. 그리기 대상이 StringView의 내부 객체일 때, 원본 표의 +0x14 슬롯이 <code>0x52bedb40</code>을 선택합니다.</p>
+<p class="eyebrow">UI와 화면 자원 · K-3 III 펌웨어 2.20 · 글자 그리기 준비</p>
+<h1>StringView가 그릴 표면을 받는 경로</h1>
+<p class="lead">글자를 찍으려면 어느 메모리에 찍을지 알려 주는 표면 정보가 필요합니다. 이전 시험에서는 이 표면을 시험이 만들어 넣었습니다. 이 문서는 펌웨어가 등록된 Canvas에서 글자 객체까지 표면을 어떻게 넘기는지, 그 표면의 필드를 누가 채우는지 코드를 읽어 정리했습니다.</p>
 </header>
 <div class="layout">
 <!-- chrome:toc -->
-<nav class="toc" aria-label="이 문서의 목차"><h2 data-toc="no">이 문서에서</h2><ol><li><a href="#path">표면 포인터의 전달</a></li><li><a href="#descriptor">입력 버퍼 기술자에서 복사하는 필드</a></li><li><a href="#replay">정적 검증 재현</a></li></ol></nav>
+<nav class="toc" aria-label="이 문서의 목차"><h2 data-toc="no">이 문서에서</h2><ol><li><a href="#background">배경: Canvas, 스냅샷, 표면</a></li><li><a href="#path">표면 포인터가 Canvas에서 StringView까지 가는 길</a></li><li><a href="#descriptor">표면의 필드는 화면 입력 버퍼 기술자에서 옵니다</a></li><li><a href="#limits">한계와 남은 과제</a></li><li><a href="#replay">재현 방법</a></li><li><a href="#refs">근거 파일과 참고 자료</a></li></ol></nav>
 <!-- /chrome:toc -->
-<main class="doc surface" id="main">
-<section id="path">
-<h2>표면 포인터의 전달</h2>
-<figure class="diagram">
-<figcaption>활성 등록 슬롯에서 StringView까지 이어지는 조건부 경로</figcaption>
-<ol class="flow">
-<li><b>활성 슬롯 +8</b>조회한 표면 헤더 38바이트를 슬롯에 복사합니다.</li>
-<li><b>Canvas +0x1e0 → +0x1d8</b>보류 포인터를 Canvas에 넣고 뷰 스냅샷에서 그리기용 필드로 복사합니다.</li>
-<li><b>중첩 객체 슬롯 +0x14</b>하위 목록을 순회하며 표면을 <code>r1</code>으로 전달합니다.</li>
-<li><b>StringView 그리기</b>내부 표가 <code>0x5386fec0</code>이면 <code>0x52bedb40</code>이 선택됩니다.</li>
-</ol>
-</figure>
-<p><code>0x526d9454</code>는 +0x30이 활성인 0x34바이트 슬롯에서 표면을 조회하고, <code>0x526d951c–0x526d9524</code>가 슬롯의 Canvas 포인터와 슬롯+8을 <code>0x52bea3f0</code>에 전달합니다. 등록 갱신 함수는 <code>0x526d9560</code>의 검사 결과가 0이면 복귀합니다. 조건을 통과하면 갱신한 뒤 같은 활성 슬롯의 Canvas에 뷰 스냅샷을 호출합니다. Canvas 표 <code>0x5386f680</code>의 +0x60은 <code>0x52bea084</code>이며 +0x1e0을 +0x1d8로 복사합니다. 별도 그리기 함수 <code>0x52bea3f8</code>은 +0x1d8을 읽고, 표면의 u16 +0x1c가 0이면 돌아갑니다. <a href="ui-surface-producers.json">원본 구간·함수 표의 해시</a></p>
-<p>선택된 Canvas 분기는 내부 객체 +0x178과 같은 표면을 순회 함수에 전달합니다. 뷰 스냅샷의 <code>0x52c02608</code>은 하위 뷰 +0x114의 내부 객체 포인터를 가져옵니다. <code>0x52c02718</code>의 가상 호출은 내부 표 +0x14를 읽고 들어온 표면 포인터 <code>r1</code>을 유지합니다. 하위 호출은 저장한 포인터를 다시 <code>r1</code>에 넣습니다.</p>
-<p>생성자 연결은 자동 대조 38개와 별도로 고정 RTOS에서 확인했습니다. StringView를 V라 하면 <code>0x52bee2f0</code>이 리터럴 <code>0x52bee414</code>에서 표 주소 <code>0x5386fec0</code>을 읽고, <code>0x52bee2fc</code>가 내부 객체 V+0x11c에 씁니다. <code>0x52bee3fc → 0x52c0025c</code>는 그 내부 객체의 주소를 V+0x114에 저장합니다. 순회 대상이 이 객체이면 표 슬롯이 <code>0x52bedb40</code>을 선택합니다. 여기서 N+0x64가 0이 아닐 때 <code>0x52bedb78</code>이 표면을 N+0x6c의 config 첫 워드에 씁니다. 실제 메뉴에서 특정 StringView가 이 목록에 연결되는지는 미확인입니다. <a href="ui-viewport-producers.html">viewport와 텍스트 설정의 전달</a></p>
+<main class="doc" id="main">
+
+<section class="summary">
+<h2 data-toc="no">핵심 요약</h2>
+<ul>
+<li>등록된 Canvas가 가진 표면 포인터는 뷰 스냅샷을 거쳐 하위 객체들의 그리기 호출로 넘어갑니다. 받는 쪽이 StringView의 내부 객체이면 텍스트 설정의 첫 워드에 그 포인터를 저장합니다.</li>
+<li>이 길에는 <strong>조건이 네 번</strong> 걸립니다. 등록 갱신 검사, 표면의 16비트 필드, 내부 객체의 함수 표, 내부 객체의 플래그입니다. 조건이 맞지 않으면 중간에 돌아갑니다.</li>
+<li>표면의 RAM 시작 주소, 형식, 행 간격 같은 필드는 화면 입력 버퍼 기술자에서 복사됩니다. 조회가 성립하지 않으면 초기화된 상태가 남을 수 있습니다.</li>
+<li>모두 <strong>코드를 읽어 얻은 정적 분석</strong>입니다. 원본 코드를 실행하지 않았습니다. 실제 메뉴의 어떤 StringView가 이 길에 연결되는지, 버퍼의 주소·치수, LCD 출력은 확인하지 못했습니다.</li>
+</ul>
 </section>
-<section id="descriptor">
-<h2>입력 버퍼 기술자에서 복사하는 필드</h2>
-<p>슬롯에서 호출하는 <code>0x528f66a4 → 0x5310e4ec</code>는 먼저 표면 헤더를 초기화합니다. 조회 모드 1·2에서 필요한 객체와 레코드가 있으면 <code>0x53114538</code>이 화면 입력 버퍼 기술자 D의 필드를 표면 S에 복사합니다. 조회가 성립하지 않으면 초기화 상태가 남을 수 있습니다. 원본 진단의 파일명은 <code>ScreenBuffer/ScreenInputBuffer.cpp</code>입니다. <a href="ui-surface-producers.json">진단 문자열 및 필드 저장 근거</a></p>
-<div class="table-wrap" tabindex="0" role="region" aria-label="표면 필드의 가까운 생산자">
-<table><caption>조회가 성립한 경로의 복사</caption>
-<thead><tr><th scope="col">표면 필드</th><th scope="col">기술자 입력</th><th scope="col">원본 저장</th></tr></thead>
-<tbody>
-<tr><th scope="row">S+8, 데이터 시작 포인터</th><td>D+8</td><td><code>0x531128e4</code> 또는 <code>0x53112904</code></td></tr>
-<tr><th scope="row">S+2, u8 형식</th><td>D+0x19</td><td><code>0x53114608</code></td></tr>
-<tr><th scope="row">S+0x18, u16 전역 너비</th><td>D+0x1c</td><td><code>0x53114638</code></td></tr>
-<tr><th scope="row">S+0x1a, +0x1c, +0x1e, 각 u16</th><td>D+0x1e, +0x20, +0x22</td><td><code>0x53114668</code>, <code>0x53114698</code>, <code>0x531146b8</code></td></tr>
-</tbody>
-</table>
+
+<div class="scope">
+<div class="static"><h3><span class="badge static">정적 분석</span> 코드를 읽어 판단</h3>
+<ul>
+<li>등록 슬롯 → Canvas → 스냅샷 → 중첩 그리기로 이어지는 포인터 전달</li>
+<li>StringView 내부 객체의 함수 표와 표면 저장 명령</li>
+<li>표면 기술자에서 표면 필드로 복사하는 명령</li>
+<li>타입 5 전송에서 행 간격을 워드 단위로 쓰는 것</li>
+</ul></div>
+<div class="model"><h3><span class="badge model">모델</span> 이전 시험에서 정한 값</h3>
+<ul>
+<li>이전 시험의 256×144 RAM 표면(호스트가 공급)</li>
+</ul></div>
+<div class="open"><h3><span class="badge open">미확인</span> 확인하지 않은 것</h3>
+<ul>
+<li>실제 메뉴의 StringView가 이 목록에 연결되는지</li>
+<li>입력 버퍼 기술자의 실제 값, 버퍼 할당 주소와 치수</li>
+<li>네 조건이 실제 실행에서 성립하는지, LCD 출력</li>
+</ul></div>
 </div>
-<p><code>GetWidth</code>와 <code>GetHeight</code> 진단 이름은 자동 검사에 포함된 문자열 6개와 별도로 원본 <code>0x53a73e18</code>과 <code>0x53a73dcc</code>에서 확인했습니다.</p>
-<p>형식 5는 그리기 디스패처가 <code>0x528c2e74</code>에서 검사하는 조건입니다. 타입 5 비회전 전송에서 전역 너비는 32비트 워드 단위의 행 간격으로 쓰입니다. <code>0x528c265c</code>에서 워드 위치를 4배 해 바이트 주소로 바꾸고, <code>0x528c26c8</code>에서 한 워드를 씁니다. 이 경로를 사용하는 실제 메뉴 객체, 버퍼 할당 주소와 치수, LCD 출력은 확인되지 않았습니다. 이전 시험의 256×144는 호스트가 공급한 값입니다. <a href="colorspace-clip.html">기존 합성 RAM 표면의 경계 시험</a></p>
+
+<section id="background">
+<h2>배경: Canvas, 스냅샷, 표면</h2>
+<ul>
+<li><strong>표면</strong>은 그리기 대상 메모리를 설명하는 작은 구조체입니다. RAM 시작 주소, 픽셀 형식, 한 줄의 길이(<a href="../glossary.html#stride">스트라이드</a>) 같은 값이 들어 있습니다.</li>
+<li><strong>Canvas</strong>는 화면 요소들을 묶어 그리는 최상위 객체입니다. 펌웨어 진단 문자열에 <code>RegistCanvas</code>와 <code>6Canvas</code>라는 이름이 남아 있어 이 이름을 씁니다.</li>
+<li><strong>뷰 스냅샷</strong>은 그리기 전에 화면 요소들의 상태를 그리기용 필드로 옮겨 두는 단계입니다.</li>
+<li><strong>StringView</strong>는 글자 한 줄을 맡는 객체입니다. V+0x11c에 내부 객체 N을 둡니다. viewport와 텍스트 설정은 <a href="ui-viewport-producers.html">글자 viewport 문서</a>에서 다룹니다.</li>
+</ul>
+<p>객체가 어떤 함수를 부를지는 <a href="../glossary.html#vtable">가상 함수 표</a>의 칸으로 정해집니다. 아래의 “표 +0x14 슬롯”은 그 표의 여섯 번째 칸입니다.</p>
 </section>
+
+<section id="path">
+<h2>표면 포인터가 Canvas에서 StringView까지 가는 길</h2>
+<p class="takeaway">활성 등록 슬롯의 표면은 Canvas의 보류 칸에 들어갔다가 스냅샷에서 그리기 칸으로 옮겨집니다. 그 뒤 하위 객체 목록을 따라 전달되어 StringView 내부 객체의 텍스트 설정에 저장됩니다.</p>
+
+<figure class="diagram">
+<figcaption>등록 슬롯에서 텍스트 설정까지 표면 포인터의 전달과 조건</figcaption>
+<div class="dg-scroll">
+<svg class="dg" viewBox="0 0 800 340" role="img" aria-labelledby="dg-sf-title dg-sf-desc">
+<title id="dg-sf-title">Canvas 표면 포인터의 조건부 전달 경로</title>
+<desc id="dg-sf-desc">첫 줄에서 활성 등록 슬롯이 표면 조회 함수를 부르고, 조회 결과가 슬롯+8의 표면 헤더 38바이트에 들어갑니다. 입력 버퍼 기술자는 조회가 성립할 때 표면 필드를 채우며 실제 값은 미확인입니다. 둘째 줄에서 표면 포인터는 Canvas+0x1e0 보류 칸에 들어가고, 등록 갱신 검사가 0이 아니면 스냅샷이 +0x1e0을 +0x1d8로 복사합니다. Canvas 그리기 함수는 +0x1d8을 읽고 표면의 16비트 +0x1c가 0이면 돌아갑니다. 그다음 중첩 순회가 하위 객체마다 표의 +0x14 칸을 부르며 표면을 넘깁니다. 셋째 줄에서 하위 객체가 StringView 내부 객체이면 표 0x5386fec0의 +0x14 칸이 0x52bedb40을 고르고, N+0x64가 0이 아니면 표면을 N+0x6c에 씁니다. 그 뒤 설정이 스택으로 복사되어 비회전 전송으로 가는 과정은 viewport 문서에 있습니다. 실제 메뉴의 어느 StringView가 이 목록에 있는지는 미확인입니다.</desc>
+<defs><marker id="dg-sf-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0 0L10 5L0 10z"/></marker><marker id="dg-sf-aho" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah open" d="M0 0L10 5L0 10z"/></marker></defs>
+
+<rect class="b static" x="10" y="14" width="180" height="70" rx="8"/>
+<text class="t" x="22" y="38">활성 등록 슬롯</text>
+<text class="s" x="22" y="57">0x34바이트 · +0x30 활성</text>
+<text class="s" x="22" y="74">0x526d9454</text>
+
+<rect class="b static" x="210" y="14" width="180" height="70" rx="8"/>
+<text class="t" x="222" y="38">표면 조회</text>
+<text class="s" x="222" y="57">0x528f66a4</text>
+<text class="s" x="222" y="74">→ 0x5310e4ec</text>
+
+<rect class="b key" x="410" y="14" width="180" height="70" rx="8"/>
+<text class="t" x="422" y="38">표면 헤더 S</text>
+<text class="s" x="422" y="57">슬롯+8 · 38바이트</text>
+<text class="s" x="422" y="74">주소 · 형식 · 행 간격</text>
+
+<rect class="b open" x="610" y="14" width="180" height="70" rx="8"/>
+<text class="t" x="622" y="38">입력 버퍼 기술자 D</text>
+<text class="s" x="622" y="57">조회 성립 시 필드 복사</text>
+<text class="s" x="622" y="74">실제 값 미확인</text>
+
+<rect class="b static" x="10" y="134" width="180" height="70" rx="8"/>
+<text class="t" x="22" y="158">Canvas 보류 칸</text>
+<text class="s" x="22" y="177">+0x1e0 ← 표면</text>
+<text class="s" x="22" y="194">0x52bea3f0</text>
+
+<rect class="b static" x="210" y="134" width="180" height="70" rx="8"/>
+<text class="t" x="222" y="158">스냅샷 복사</text>
+<text class="s" x="222" y="177">+0x1e0 → +0x1d8</text>
+<text class="s tstatic" x="222" y="194">조건 1: 갱신 검사 ≠ 0</text>
+
+<rect class="b static" x="410" y="134" width="180" height="70" rx="8"/>
+<text class="t" x="422" y="158">Canvas 그리기</text>
+<text class="s" x="422" y="177">0x52bea3f8</text>
+<text class="s tstatic" x="422" y="194">조건 2: S+0x1c ≠ 0</text>
+
+<rect class="b static" x="610" y="134" width="180" height="70" rx="8"/>
+<text class="t" x="622" y="158">중첩 순회</text>
+<text class="s" x="622" y="177">하위마다 표 +0x14 호출</text>
+<text class="s" x="622" y="194">표면은 r1로 유지</text>
+
+<rect class="b static" x="610" y="254" width="180" height="70" rx="8"/>
+<text class="t" x="622" y="278">StringView 내부 N</text>
+<text class="s tstatic" x="622" y="297">조건 3: 표 0x5386fec0</text>
+<text class="s" x="622" y="314">→ 0x52bedb40</text>
+
+<rect class="b key" x="410" y="254" width="180" height="70" rx="8"/>
+<text class="t" x="422" y="278">표면 저장</text>
+<text class="s" x="422" y="297">N+0x6c ← 표면</text>
+<text class="s tstatic" x="422" y="314">조건 4: N+0x64 ≠ 0</text>
+
+<a href="ui-viewport-producers.html"><rect class="b static" x="210" y="254" width="180" height="70" rx="8"/>
+<text class="t" x="222" y="278">설정 → 스택 → 전송</text>
+<text class="s" x="222" y="297">64바이트 복사</text>
+<text class="s" x="222" y="314">viewport 문서</text></a>
+
+<rect class="b open" x="10" y="254" width="180" height="70" rx="8"/>
+<text class="t" x="22" y="278">실제 메뉴 연결</text>
+<text class="s" x="22" y="297">어느 StringView인지</text>
+<text class="s" x="22" y="314">미확인</text>
+
+<path class="e" d="M190 49H208" marker-end="url(#dg-sf-ah)"/>
+<path class="e" d="M390 49H408" marker-end="url(#dg-sf-ah)"/>
+<path class="e open" d="M610 49H592" marker-end="url(#dg-sf-aho)"/>
+<path class="e" d="M500 84V108H100V132" marker-end="url(#dg-sf-ah)"/>
+<path class="e" d="M190 169H208" marker-end="url(#dg-sf-ah)"/>
+<path class="e" d="M390 169H408" marker-end="url(#dg-sf-ah)"/>
+<path class="e" d="M590 169H608" marker-end="url(#dg-sf-ah)"/>
+<path class="e" d="M700 204V252" marker-end="url(#dg-sf-ah)"/>
+<path class="e" d="M610 289H592" marker-end="url(#dg-sf-ah)"/>
+<path class="e" d="M410 289H392" marker-end="url(#dg-sf-ah)"/>
+</svg>
+</div>
+<ul class="dg-legend"><li><i class="key"></i>표면 정보가 놓이는 곳</li><li><i class="static"></i>코드를 읽어 연결</li><li><i class="open"></i>미확인</li></ul>
+</figure>
+
+<ol class="steps">
+<li><strong>등록 슬롯</strong> <code>0x526d9454</code>는 +0x30이 활성인 0x34바이트 슬롯에서 표면을 조회합니다. <code>0x526d951c</code>–<code>0x526d9524</code>가 슬롯의 Canvas 포인터와 슬롯+8을 <code>0x52bea3f0</code>에 넘겨 Canvas+0x1e0에 둡니다.</li>
+<li><strong>스냅샷</strong> 등록 갱신 함수는 <code>0x526d9560</code>의 검사 결과가 0이면 복귀합니다. 통과하면 같은 활성 슬롯의 Canvas에 뷰 스냅샷을 부릅니다. Canvas 표 <code>0x5386f680</code>의 +0x60 칸인 <code>0x52bea084</code>가 +0x1e0을 +0x1d8로 복사합니다.</li>
+<li><strong>Canvas 그리기</strong> 별도 그리기 함수 <code>0x52bea3f8</code>은 +0x1d8을 읽습니다. 표면의 u16 +0x1c가 0이면 돌아갑니다. 선택된 분기는 내부 객체 +0x178과 같은 표면을 순회 함수에 넘깁니다.</li>
+<li><strong>중첩 순회</strong> 뷰 스냅샷의 <code>0x52c02608</code>은 하위 뷰 +0x114의 내부 객체 포인터를 가져옵니다. <code>0x52c02718</code>의 가상 호출은 표 +0x14를 읽으며 들어온 표면 r1을 그대로 넘깁니다. 하위 호출 때도 저장해 둔 포인터를 다시 r1에 넣습니다.</li>
+<li><strong>StringView에 저장</strong> 순회 대상이 StringView 내부 객체이면 표 슬롯이 <code>0x52bedb40</code>을 고릅니다. N+0x64가 0이 아니면 <code>0x52bedb78</code>이 표면을 N+0x6c(텍스트 설정의 첫 워드)에 씁니다.</li>
+</ol>
+
+<p>내부 객체가 이 표를 갖게 되는 연결은 자동 대조 38개와 별도로 고정 RTOS에서 확인했습니다. 생성자의 <code>0x52bee2f0</code>이 리터럴 <code>0x52bee414</code>에서 표 주소 <code>0x5386fec0</code>을 읽습니다. 이어서 <code>0x52bee2fc</code>가 그 값을 V+0x11c에 씁니다. <code>0x52bee3fc</code> → <code>0x52c0025c</code>는 내부 객체의 주소를 V+0x114에 저장합니다. 실제 메뉴에서 특정 StringView가 이 목록에 연결되는지는 확인하지 못했습니다.</p>
+</section>
+
+<section id="descriptor">
+<h2>표면의 필드는 화면 입력 버퍼 기술자에서 옵니다</h2>
+<p class="takeaway">조회가 성립하면 <code>0x53114538</code>이 화면 입력 버퍼 기술자 D의 필드를 표면 S로 복사합니다. 성립하지 않으면 초기화한 값이 그대로 남을 여지가 있습니다.</p>
+<p>슬롯에서 부르는 <code>0x528f66a4</code> → <code>0x5310e4ec</code>는 먼저 표면 헤더를 초기화합니다. 조회 모드 1·2에서 필요한 객체와 레코드가 있을 때만 복사가 일어납니다. 원본 진단 문자열의 파일 이름은 <code>ScreenBuffer/ScreenInputBuffer.cpp</code>입니다.</p>
+<div class="table-wrap"><table class="fit">
+<caption>조회가 성립한 경로에서 복사하는 필드</caption>
+<thead><tr><th>표면 필드</th><th>기술자 입력</th><th>원본 저장 위치</th></tr></thead>
+<tbody>
+<tr><td>S+8, 데이터 시작 포인터</td><td>D+8</td><td><code>0x531128e4</code> 또는 <code>0x53112904</code></td></tr>
+<tr><td>S+2, u8 형식</td><td>D+0x19</td><td><code>0x53114608</code></td></tr>
+<tr><td>S+0x18, u16 전역 너비</td><td>D+0x1c</td><td><code>0x53114638</code></td></tr>
+<tr><td>S+0x1a, +0x1c, +0x1e (각 u16)</td><td>D+0x1e, +0x20, +0x22</td><td><code>0x53114668</code>, <code>0x53114698</code>, <code>0x531146b8</code></td></tr>
+</tbody></table></div>
+<p>형식 5는 그리기 디스패처가 <code>0x528c2e74</code>에서 검사하는 값입니다. 타입 5 비회전 전송은 전역 너비를 32비트 워드 단위의 행 간격으로 씁니다. <code>0x528c265c</code>에서 워드 위치를 4배 해 바이트 주소로 바꾸고 <code>0x528c26c8</code>에서 한 워드를 씁니다. 이전 시험의 256×144는 호스트가 정한 값입니다(<a href="colorspace-clip.html">합성 RAM 표면의 경계 시험</a>).</p>
+<p>진단 이름 <code>GetWidth</code>와 <code>GetHeight</code>는 자동 검사의 문자열 6개와 별도로 원본 <code>0x53a73e18</code>, <code>0x53a73dcc</code>에서 확인했습니다.</p>
+</section>
+
+<section id="limits">
+<h2>한계와 남은 과제</h2>
+<ul>
+<li>경로 전체가 정적 분석입니다. 네 조건이 실제 실행에서 성립하는지는 원본 코드를 실행해 확인해야 합니다.</li>
+<li>이 경로를 쓰는 실제 메뉴 객체, 입력 버퍼의 할당 주소와 치수, LCD 출력은 확인하지 못했습니다.</li>
+<li>다음 단계는 표면을 넘기는 원본 호출자와, 그 +8·+0x18을 채우는 실제 값을 찾는 일입니다(<a href="ui-viewport-producers.html#limits">viewport 문서의 남은 과제</a>와 같습니다).</li>
+</ul>
+</section>
+
 <section id="replay">
-<h2>정적 검증 재현</h2>
-<p>재현 출력은 실행 중 다른 프로세스가 경로를 변경하지 않는 디렉터리에 둡니다.</p>
-<p>고정 RTOS 파일을 Python과 Capstone 5.0.7에서 읽습니다. 원본 31구간, A32 명령 38개, 표 값 7개, 진단 문자열 6개를 재구성합니다. 원래 검증 기록 전체의 SHA-256이 일치하면 명령 텍스트를 해시로 바꾸고, 공개 JSON 전체 해시까지 맞을 때 새 파일을 씁니다. CPU나 MMIO는 실행하지 않습니다. <a href="ui-surface-producers.json">원본과 공개 기록의 해시</a></p>
+<h2>재현 방법</h2>
+<p>고정 RTOS 파일을 Python과 Capstone 5.0.7로 읽어 원본 31구간, A32 명령 38개, 표 값 7개, 진단 문자열 6개를 다시 만듭니다. 원래 검증 기록 전체의 SHA-256이 맞으면 명령 텍스트를 해시로 바꿉니다. 공개 JSON 전체 해시까지 맞을 때만 새 파일을 씁니다. CPU나 MMIO는 실행하지 않습니다. 출력은 실행 중 다른 프로세스가 경로를 바꾸지 않는 디렉터리에 둡니다.</p>
 <pre><code>python -B tools/verify_ui_surface_producers.py rtos.bin --output surface-replay.json
 python -B -m unittest discover -s tests -p test_ui_surface_producers.py</code></pre>
-<p><a href="../tools/verify_ui_surface_producers.py">정적 검증기</a> · <a href="../tests/test_ui_surface_producers.py">입력과 출력 보호 테스트</a></p>
+<details class="evidence"><summary>함수 표 값, 진단 문자열, 해시</summary>
+<div class="table-wrap"><table class="compact">
+<caption>표 값 7개</caption>
+<thead><tr><th>읽은 주소</th><th>값</th><th>뜻</th></tr></thead>
+<tbody>
+<tr><td><code>0x526d894c</code></td><td><code>0x53608c48</code></td><td>등록 표 리터럴</td></tr>
+<tr><td><code>0x53608c78</code></td><td><code>0x526d86f0</code></td><td>등록 그리기 슬롯 → 활성 슬롯 그리기</td></tr>
+<tr><td><code>0x52bea59c</code></td><td><code>0x5386f680</code></td><td>Canvas 생성자 끝의 리터럴 → Canvas 표</td></tr>
+<tr><td><code>0x5386f6e0</code></td><td><code>0x52bea084</code></td><td>Canvas 스냅샷 칸(+0x60)</td></tr>
+<tr><td><code>0x5386f6b4</code></td><td><code>0x52bea008</code></td><td>Canvas 위치(geometry) 칸</td></tr>
+<tr><td><code>0x52bee414</code></td><td><code>0x5386fec0</code></td><td>StringView 내부 객체 표</td></tr>
+<tr><td><code>0x5386fed4</code></td><td><code>0x52bedb40</code></td><td>내부 객체 표 +0x14 = 그리기</td></tr>
+</tbody></table></div>
+<p>진단 문자열 6개: <code>0x53608c88</code> RegistCanvas, <code>0x5386f6f0</code> 6Canvas, <code>0x53a72754</code> ScreenBuffer/ScreenInputBuffer.cpp, <code>0x53a73e24</code> GetFormat, <code>0x53a73dfc</code> GetGlobalWidth, <code>0x53a73e30</code> GetGlobalHeight.</p>
+<dl class="kv">
+<dt>RTOS SHA-256</dt><dd><code class="wrap">342d2f35405e8daf1797dfe431d2e4aa70f4b52a2c242a29df48206672f1dfb4</code> (25,483,200바이트, 기준 주소 <code>0x52500000</code>)</dd>
+<dt>원래 검증 기록 SHA-256</dt><dd><code class="wrap">6fecee0406a30e86900a44d8c0cf2c0c169ff976c1812408a2053736c42767b2</code></dd>
+</dl>
+<p>원본 구간 31개와 명령 38개의 바이트 해시는 <a href="ui-surface-producers.json">ui-surface-producers.json</a>에 있습니다.</p>
+</details>
 </section>
+
+<section id="refs">
+<h2>근거 파일과 참고 자료</h2>
+<ul class="refs">
+<li><a href="ui-surface-producers.json">ui-surface-producers.json</a> — 원본 구간·함수 표·진단 문자열·명령의 해시</li>
+<li><a href="../tools/verify_ui_surface_producers.py">verify_ui_surface_producers.py</a> — 정적 검증기</li>
+<li><a href="../tests/test_ui_surface_producers.py">test_ui_surface_producers.py</a> — 입력과 출력 보호 테스트</li>
+<li><a href="ui-viewport-producers.html">글자 viewport가 전송 함수에 닿는 경로</a> — 표면이 저장된 뒤의 설정 복사와 전송</li>
+<li><a href="colorspace-clip.html">sRGB 글자 전송의 화면 경계</a> — 합성 RAM 표면에서 실행한 전송 시험</li>
+</ul>
+</section>
+
 </main>
 </div>
 <!-- chrome:bottom -->
-<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">UI와 화면 자원 — 이 주제의 문서</h2><ol><li><a href="ui-port-contract.html">UI 이식 설계·안내<span>세 기종 비교</span></a></li><li><a href="colorspace-ui.html">색공간 화면: 선택·확정·취소<span>16사례</span></a></li><li><a href="colorspace-ui-input.html">색공간 화면: 방향 입력·포커스<span>50사례</span></a></li><li><a href="colorspace-render.html">색공간 행의 아이콘과 글자 측정<span>원본 행·ICONBIN 복사, Latin 글꼴 준비와 sRGB 측정</span></a></li><li><a href="colorspace-text.html">색공간 sRGB 글자의 래스터와 픽셀 전송<span>원본 텍스트 비트맵·합성 표면 전송</span></a></li><li><a href="colorspace-clip.html">sRGB 글자 전송의 화면 경계<span>일곱 좌표에서 32비트 전송과 Q7 행 검사 비교</span></a></li><li><a href="ui-viewport-producers.html">K-3 III 텍스트 viewport의 생산 경로<span>부모 클립과 텍스트 설정의 전달</span></a></li><li><a href="ui-surface-producers.html" aria-current="page">K-3 III StringView의 그리기 표면<span>Canvas와 표면 기술자</span></a></li><li><a href="ui-render-chain.html">Q7 갱신에서 원본 픽셀까지<span>마커·두 텍스트·버퍼 교체의 합성 실행</span></a></li><li><a href="cross-ui-text.html">K-3 III와 Q7의 sRGB 글자 그리기 비교<span>32비트 커버리지 전송과 Q7 팔레트 번호·Q16 축소</span></a></li><li><a href="icon-resources.html">ICONBIN 아이콘 자원<span>저장 형식, 복사 규칙, 후보 아이콘</span></a></li></ol></nav>
-<nav class="pager" aria-label="이전·다음 문서"><a class="prev" href="ui-viewport-producers.html"><small>← 이전</small>K-3 III 텍스트 viewport의 생산 경로</a><a class="next" href="ui-render-chain.html"><small>다음 →</small>Q7 갱신에서 원본 픽셀까지</a></nav>
+<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">UI와 화면 자원 — 이 주제의 문서</h2><ol><li><a href="guide-ui.html">UI와 화면 자원 안내</a></li><li><a href="ui-port-contract.html">UI 이식 설계<span>세 기종 비교</span></a></li><li><a href="colorspace-ui.html">색공간 화면: 선택·확정·취소<span>16사례</span></a></li><li><a href="colorspace-ui-input.html">색공간 화면: 방향 입력·포커스<span>50사례</span></a></li><li><a href="colorspace-render.html">색공간 행의 아이콘·체크 표시와 글자 크기 측정<span>행·아이콘 복사와 글꼴 준비</span></a></li><li><a href="colorspace-text.html">sRGB 글자를 비트맵으로 만들어 표면에 옮기기<span>글자 비트맵과 표면 전송</span></a></li><li><a href="colorspace-clip.html">글자가 화면 가장자리에 걸릴 때의 전송<span>일곱 위치의 가장자리 처리</span></a></li><li><a href="ui-viewport-producers.html">글자 viewport가 전송 함수에 닿는 경로<span>부모 클립과 글자 영역</span></a></li><li><a href="ui-surface-producers.html" aria-current="page">StringView가 그릴 표면을 받는 경로<span>Canvas와 표면 기술자</span></a></li><li><a href="ui-render-chain.html">Q7 화면 갱신 한 번에서 픽셀까지<span>마커·두 글자 줄·버퍼 교체</span></a></li><li><a href="cross-ui-text.html">K-3 III와 Q7의 글자 그리기 비교<span>배율·좌표·픽셀 형식</span></a></li><li><a href="icon-resources.html">ICONBIN 아이콘 자원<span>저장 형식, 복사 규칙, 후보 아이콘</span></a></li></ol></nav>
+<nav class="pager" aria-label="이전·다음 문서"><a class="prev" href="ui-viewport-producers.html"><small>← 이전</small>글자 viewport가 전송 함수에 닿는 경로</a><a class="next" href="ui-render-chain.html"><small>다음 →</small>Q7 화면 갱신 한 번에서 픽셀까지</a></nav>
 <footer class="sitefoot"><div class="sitefoot-in"><nav aria-label="사이트"><a href="../index.html#map">문서 지도</a><a href="../index.html#levels">검증 수준 읽는 법</a><a href="../glossary.html">용어집</a><a href="research-program.html">세 기종 연구 본부</a><a href="https://github.com/yunhyok/pentax-k3iii-firmware-analysis">GitHub 저장소</a></nav><p>PENTAX 펌웨어 연구. PC에서 수행한 정적 분석과 에뮬레이션 결과이며, 카메라 실기에서 검증한 내용이 아닙니다. 원본 펌웨어와 추출한 독점 코드는 포함하지 않습니다.</p></div></footer>
 <!-- /chrome:bottom -->
 </body>

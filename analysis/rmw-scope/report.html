@@ -1,43 +1,265 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>RMW 48바이트 분류와 4바이트 수동 증명</title><link rel="stylesheet" href="../../assets/site.css"><style>.rmw-scope{max-width:1120px;margin:auto;padding:30px 24px 60px}.rmw-scope header{border-top:5px solid var(--brand);padding-top:16px}.rmw-scope .meta{color:var(--muted);font-size:.9rem}.rmw-scope .note{background:#fff5e6;border-left:4px solid #865000;padding:12px 18px}.rmw-scope .scroll{overflow-x:auto;margin:20px 0}.rmw-scope table{border-collapse:collapse;width:100%;font-size:.88rem}.rmw-scope th,.rmw-scope td{border:1px solid #bdcbd8;padding:9px;text-align:left;vertical-align:top}.rmw-scope th{background:#e6eff7}.rmw-scope svg{width:100%;height:auto}.rmw-scope pre{overflow:auto;white-space:pre-wrap;background:#142d40;color:#f1f6fc;padding:18px;border-radius:8px}.rmw-scope code{overflow-wrap:anywhere}.rmw-scope h2{margin-top:36px}@media print{.rmw-scope{padding:0}.rmw-scope table{font-size:8pt}}</style></head><body><!-- chrome:top -->
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>RMW 48바이트 분류와 할당 끝 칸 4바이트 증명 — PENTAX K-3 Mark III 펌웨어 연구</title>
+<meta name="description" content="할당기 재현에서 초기 메모리를 읽는 48바이트를 세 구간 여섯 레코드로 분류하고, 그중 할당 끝 칸의 4바이트가 초기 32비트와 관계없이 최종값이 정해짐을 수동 모형으로 증명했습니다. 전제와 남은 44바이트, 재현에 필요한 두 입력을 정리합니다.">
+<link rel="stylesheet" href="../../assets/site.css">
+</head>
+<body data-camera="k3iii">
+<!-- chrome:top -->
 <a class="skip" href="#main">본문 바로가기</a>
-<div class="topbar"><div class="topbar-in"><a class="brand" href="../../index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="../../index.html" aria-current="true">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="https://yunhyok.github.io/pentax-q7-firmware-analysis/">Q7</a></div><nav class="topnav" aria-label="주제"><a href="../../index.html">개요</a><a href="../guide-boot.html">부팅·저장소</a><a href="../guide-update.html">업데이트</a><a href="../guide-rebuild.html" aria-current="true">재구축</a><a href="../guide-rtos.html">명령·셸</a><a href="../guide-color.html">색 처리</a><a href="../lightroom-bridge.html">Lightroom</a><a href="../af-foundations.html">AF</a><a href="../ui-port-contract.html">UI</a></nav></div></div>
+<div class="topbar"><div class="topbar-in"><a class="brand" href="../../index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="../../index.html" aria-current="true">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="https://yunhyok.github.io/pentax-q7-firmware-analysis/">Q7</a></div><nav class="topnav" aria-label="주제"><a href="../../index.html">개요</a><a href="../guide-boot.html">부팅·저장소</a><a href="../guide-update.html">업데이트</a><a href="../guide-rebuild.html" aria-current="true">재구축</a><a href="../guide-rtos.html">명령·셸</a><a href="../guide-color.html">색 처리</a><a href="../guide-lightroom.html">Lightroom</a><a href="../guide-af.html">AF</a><a href="../guide-ui.html">UI</a></nav></div></div>
 <nav class="crumbs" aria-label="현재 위치"><ol><li><a href="../../index.html">PENTAX K-3 Mark III</a></li><li><a href="../guide-rebuild.html">펌웨어 재구축</a></li><li aria-current="page">RMW 48바이트 분류와 4바이트 증명</li></ol></nav>
-<!-- /chrome:top --><main id="main" class="rmw-scope"><header><p class="meta">III-RMW-SCOPE-PUBLIC-36 · 원본 CPU 실행 없는 기록 재검증</p><h1>RMW 48바이트 분류와<br>할당 tail 4바이트의 수동 증명</h1><p>기존 실행 기록에서 초기 메모리를 읽는 48바이트를 세 구간·여섯 레코드로 분류했습니다. 그중 <code>0x56493260</code>의 한 워드는 명시한 전제 아래 최종값이 초기 32비트와 무관함을 증명했습니다. <a href="verified.json">공개 결과 JSON</a>은 원본 35번 결과 전체를 재구성하고 정본 검사를 통과한 뒤 필요한 필드를 추린 것입니다.</p></header>
-<p class="note">실제 초기 기록자는 아직 모릅니다. 이번에 분류한 나머지 44바이트는 이 증명에 포함되지 않으며 기존 56바이트 RMW 허용 목록도 유지합니다. 중간 바이트 저장값은 초기값에 의존합니다. 초기화 완료나 전체 부팅 성공을 입증한 결과가 아닙니다.</p>
+<!-- /chrome:top -->
+<header class="page-head">
+<p class="eyebrow">펌웨어 재구축 · 초기 메모리 증명</p>
+<h1>RMW 48바이트를 분류하고 할당 끝 칸 4바이트를 증명하기</h1>
+<p class="lead">할당기 재현에서 초기 메모리를 읽어도 되도록 허용한 바이트가 어디에 쓰이는지 정리했습니다. 그 가운데 한 워드는 최종값이 초기 내용과 무관하다는 것을 수식 모형으로 보였습니다.</p>
+</header>
+<div class="layout">
 <!-- chrome:toc -->
-<nav class="toc" aria-label="이 문서의 목차"><h2 data-toc="no">이 문서에서</h2><ol><li><a href="#ranges">1. 세 구간과 기록 순서</a></li><li><a href="#proof">2. 선택한 4바이트의 최종값</a></li><li><a href="#gate">3. 전체 기록 검사 후 공개 필드 추리기</a></li><li><a href="#checks">4. 기본 검사와 입력을 사용한 검사</a></li><li><a href="#run">5. 재현 방법</a></li><li><a href="#limits">6. 이전 8바이트 증명과 남은 범위</a></li></ol></nav>
+<nav class="toc" aria-label="이 문서의 목차"><h2 data-toc="no">이 문서에서</h2><ol><li><a href="#background">배경: 왜 48바이트를 따로 보는가</a></li><li><a href="#ranges">48바이트는 세 구간, 여섯 레코드</a></li><li><a href="#proof">할당 끝 칸 4바이트의 최종값</a></li><li><a href="#gate">전체 기록을 검사한 뒤 공개 필드만 추림</a></li><li><a href="#checks">기본 검사와 두 입력을 쓰는 검사</a></li><li><a href="#run">재현 방법</a></li><li><a href="#limits">한계와 남은 과제</a></li><li><a href="#refs">근거 파일과 참고 자료</a></li></ol></nav>
 <!-- /chrome:toc -->
-<h2 id="ranges">1. 세 구간과 기록 순서</h2><p>주소 범위는 시작 주소를 포함하고 끝 주소를 제외합니다. 기준 주소는 <code>0x56492c80</code>, 레코드 간격은 8바이트입니다. 역할 이름은 할당 흐름과 저장값을 바탕으로 붙인 분석상 해석입니다.</p>
-<svg viewBox="0 0 1050 175" role="img" aria-labelledby="maptitle mapdesc"><title id="maptitle">분류한 48바이트와 증명한 4바이트</title><desc id="mapdesc">16바이트, 24바이트, 8바이트의 세 구간이다. 두 번째 구간의 첫 4바이트만 이번 모델로 증명했다. 주소 간격에 비례한 그림은 아니다.</desc><rect x="20" y="25" width="295" height="95" rx="8" fill="#e4edf6"/><rect x="345" y="25" width="390" height="95" rx="8" fill="#e4edf6"/><rect x="345" y="25" width="65" height="95" rx="8" fill="#8ad3bc"/><rect x="765" y="25" width="265" height="95" rx="8" fill="#e4edf6"/><g fill="#173247" font-family="monospace" font-size="17"><text x="40" y="56">0x56492c88 · 16 B</text><text x="40" y="93">index 1, 2</text><text x="365" y="56">0x56493260 · 24 B</text><text x="365" y="93">index BC, BD, BE</text><text x="785" y="56">0x564aa700 · 8 B</text><text x="785" y="93">index 2F50</text></g><text x="20" y="154" fill="#36566e" font-size="16">초록: 이번에 증명한 4 B · 파랑: 분류만 완료 · 주소 간격은 축척에 반영하지 않음</text></svg>
-<div class="scroll" tabindex="0" role="region" aria-label="48바이트의 첫 읽기와 후속 저장"><table><thead><tr><th scope="col">index</th><th scope="col">주소 범위</th><th scope="col">역할 해석</th><th scope="col">첫 raw read PC</th><th scope="col">앞선 guest store</th><th scope="col">후속 store 수</th><th scope="col">최종 두 워드</th></tr></thead><tbody><tr><td><code>0x1</code></td><td><code>0x56492c88–0x56492c90</code></td><td>초기 free head → 할당 head</td><td><code>0x525d8564</code></td><td>없음</td><td>8</td><td><code>0x7, 0x4</code></td></tr><tr><td><code>0x2</code></td><td><code>0x56492c90–0x56492c98</code></td><td>초기 free 길이 → 할당 길이</td><td><code>0x525d8594</code></td><td>없음</td><td>8</td><td><code>0x2f3, 0x0</code></td></tr><tr><td><code>0xbc</code></td><td><code>0x56493260–0x56493268</code></td><td>할당 영역 tail</td><td><code>0x525d8774</code></td><td>없음</td><td>4</td><td><code>0x2f3, 0x0</code></td></tr><tr><td><code>0xbd</code></td><td><code>0x56493268–0x56493270</code></td><td>남은 free head → 1-page 할당 head</td><td><code>0x525d8564</code></td><td>없음</td><td>8</td><td><code>0x2f6, 0x2f4</code></td></tr><tr><td><code>0xbe</code></td><td><code>0x56493270–0x56493278</code></td><td>남은 free 길이 → 다음 free head</td><td><code>0x525d8594</code></td><td>없음</td><td>8</td><td><code>0x1, 0x0</code></td></tr><tr><td><code>0x2f50</code></td><td><code>0x564aa700–0x564aa708</code></td><td>free 영역 tail</td><td><code>0x525d85d8</code></td><td>없음</td><td>12</td><td><code>0xba4d, 0x0</code></td></tr></tbody></table></div>
-<p>00·A5 초기 RAM 패턴마다 guest store 4,473개를 조사했습니다. 관련 메모리 이벤트의 <code>(stage, PC)</code>가 명령 추적에 정확히 한 번 나타날 때만 순서를 연결합니다. 바이트별 생산 집합을 재계산한 결과는 raw read의 미생산 바이트 수와 일치했습니다. 두 패턴 모두 48바이트의 첫 raw read 앞에는 guest store가 없고, 선택 실행 구간의 끝에는 모두 guest store가 있었습니다. <a href="verified.json">projection.cases</a>에 각 바이트의 첫 읽기·첫 기록과 후속 저장 순서가 있습니다.</p>
-<p>최종 두 워드는 이 기록의 마지막 저장값입니다. 호스트가 넣은 00·A5 패턴이나 선택된 실행 구간을 실제 하드웨어의 초기 상태와 동일시할 수는 없습니다. 읽기 로그는 모든 guest read를 담지 않으며, 조건부 미실행 명령이 명령 hook에 나타날 수 있어 실제 쓰기는 별도 메모리 이벤트로 확인합니다.</p>
-<h2 id="proof">2. 선택한 4바이트의 최종값</h2><p>대상은 <code>[0x56493260, 0x56493264)</code>입니다. 원본의 <code>[0x525d8774, 0x525d8790)</code>, 7개 A32 명령·28바이트에 대응하는 <a href="model.pseudo.c">작성한 의사코드</a>와 <a href="helpers/scope_model.py.inc">수동 모형</a>을 검증했습니다. 의사코드는 제조사 원본 소스나 빌드 대상이 아닙니다.</p>
+<main class="doc" id="main">
+
+<section class="summary">
+<h2 data-toc="no">핵심 요약</h2>
+<ul>
+<li>기존 실행 기록에서 쓰이기 전에 읽히는 48바이트를 <strong>세 구간, 여섯 개의 8바이트 레코드</strong>로 나누었습니다. 각 바이트를 처음 읽은 명령과 그 뒤의 쓰기를 정리했습니다.</li>
+<li>그중 할당 끝 칸의 첫 4바이트는 원본 명령 7개를 옮긴 수동 모형에서, 전제 아래 최종값이 초기 32비트와 관계없이 정해짐을 Z3로 증명했습니다.</li>
+<li>재현에는 decoded 이미지와 별도로 받아야 하는 과거 실행 기록(accepted31)이 둘 다 필요합니다. 원본 CPU 명령은 새로 실행하지 않습니다.</li>
+<li>나머지 44바이트는 이 증명 밖입니다. 중간 바이트 값은 초기값에 따라 달라집니다. 실제 초기 기록자는 아직 모르며 기존 56바이트 허용 목록도 그대로입니다.</li>
+</ul>
+</section>
+
+<div class="scope">
+<div class="ok"><h3><span class="badge ok">확인</span> 기록·파일 대조로 확인</h3>
+<ul>
+<li>과거 분석 결과 전체를 다시 구성해 고정 해시와 일치</li>
+<li>48바이트 모두 첫 읽기 전에 guest 쓰기가 없고 끝에는 모두 기록됨</li>
+<li>모형 블록(명령 7개, 28바이트)의 해시</li>
+</ul></div>
+<div class="model"><h3><span class="badge model">모델</span> 모형과 전제</h3>
+<ul>
+<li>할당 끝 칸 4바이트의 수동 모형과 네 가지 전제</li>
+<li>과거 실행의 초기 RAM 00·A5와 연구자가 고른 진입점</li>
+<li>레코드 역할 이름은 분석상 해석</li>
+</ul></div>
+<div class="open"><h3><span class="badge open">미확인</span> 확인하지 않은 것</h3>
+<ul>
+<li>나머지 44바이트의 초기값 의존성</li>
+<li>48바이트의 실제 초기 기록자</li>
+<li>MMIO, 동시 접근, fault, 전체 부팅</li>
+</ul></div>
+</div>
+
+<section id="background">
+<h2>배경: 왜 48바이트를 따로 보는가</h2>
+<p>할당기는 빈 페이지 목록을 만들 때 관리 칸 몇 곳을 <dfn title="read-modify-write. 메모리 값을 읽어 일부 비트만 바꿔 다시 쓰는 동작">RMW</dfn>로 고칩니다. 아직 아무도 쓰지 않은 칸을 읽으므로 켜질 때 남은 값이 결과에 섞일 수 있습니다. <a href="../allocator-replay/report.html">할당 경로 재현</a>은 이런 칸 48바이트에 연구자가 정한 값을 넣고 실행했습니다. <a href="../registry-replay/report.html">registry 재현</a>은 8바이트를 더해 56바이트를 허용했습니다.</p>
+<p>더해진 8바이트는 <a href="../rmw-proof/report.html">RMW 8바이트 모형 검증</a>에서 최종값을 증명했습니다. 이 문서는 남은 48바이트가 각각 무슨 칸인지부터 정리한 뒤 그중 한 워드를 증명합니다. 다시 만든 펌웨어에서 초기화를 줄이려면 칸마다 이런 근거가 필요합니다.</p>
+</section>
+
+<section id="ranges">
+<h2>48바이트는 세 구간, 여섯 레코드</h2>
+<p class="takeaway">48바이트는 관리 칸 1·2번, 0xbc~0xbe번, 0x2f50번의 여섯 레코드입니다. 두 초기 패턴 모두 첫 읽기 전에는 guest 쓰기가 없었고 실행 끝에는 모두 원본 코드가 썼습니다.</p>
+
+<figure class="diagram">
+<figcaption>분류한 48바이트와 증명 범위 (주소 간격은 축척 아님)</figcaption>
+<div class="dg-scroll">
+<svg class="dg" viewBox="0 0 800 300" role="img" aria-labelledby="dg-rs-title dg-rs-desc">
+<title id="dg-rs-title">RMW 48바이트의 세 구간과 증명한 4바이트</title>
+<desc id="dg-rs-desc">첫 구간은 0x56492c88부터 16바이트로 관리 칸 1번과 2번입니다. 둘째 구간은 0x56493260부터 24바이트로 0xbc, 0xbd, 0xbe번입니다. 그 가운데 0xbc번의 첫 4바이트를 이 문서에서 증명했습니다. 바로 뒤 4바이트는 별도 검토 기록에서 다룹니다. 둘째 구간 바로 뒤의 0xbf번 8바이트는 다른 문서의 8바이트 증명 대상이며 48바이트에는 들어가지 않습니다. 셋째 구간은 0x564aa700부터 8바이트로 0x2f50번입니다.</desc>
+<text class="h" x="16" y="26">구간 1 · 16바이트</text>
+<rect class="b mute" x="16" y="40" width="96" height="70" rx="8"/>
+<text class="t" x="28" y="66">1번</text>
+<text class="s" x="28" y="88">8B</text>
+<rect class="b mute" x="118" y="40" width="96" height="70" rx="8"/>
+<text class="t" x="130" y="66">2번</text>
+<text class="s" x="130" y="88">8B</text>
+<text class="n mono" x="16" y="128">0x56492c88</text>
+
+<text class="h" x="246" y="26">구간 2 · 24바이트</text>
+<rect class="b key" x="246" y="40" width="56" height="70" rx="8"/>
+<text class="t mid" x="274" y="66">0xbc</text>
+<text class="s mid" x="274" y="88">앞 4B</text>
+<rect class="b" x="306" y="40" width="56" height="70" rx="8"/>
+<text class="s mid" x="334" y="66">0xbc</text>
+<text class="s mid" x="334" y="88">뒤 4B</text>
+<rect class="b mute" x="368" y="40" width="96" height="70" rx="8"/>
+<text class="t" x="380" y="66">0xbd</text>
+<text class="s" x="380" y="88">8B</text>
+<rect class="b mute" x="470" y="40" width="96" height="70" rx="8"/>
+<text class="t" x="482" y="66">0xbe</text>
+<text class="s" x="482" y="88">8B</text>
+<rect class="b ok" x="572" y="40" width="96" height="70" rx="8"/>
+<text class="t" x="584" y="66">0xbf</text>
+<text class="s" x="584" y="88">48B 밖</text>
+<text class="n mono" x="246" y="128">0x56493260</text>
+<text class="n mono" x="572" y="128">0x56493278</text>
+
+<text class="h" x="692" y="26">구간 3 · 8B</text>
+<rect class="b mute" x="692" y="40" width="96" height="70" rx="8"/>
+<text class="t" x="704" y="66">0x2f50</text>
+<text class="s" x="704" y="88">8B</text>
+<text class="n mono" x="692" y="128">0x564aa700</text>
+
+<rect class="b key" x="16" y="160" width="370" height="58" rx="8"/>
+<text class="t" x="28" y="184">이 문서에서 증명한 4바이트</text>
+<text class="s" x="28" y="204">[0x56493260, 0x56493264) · 최종 = (pages&lt;&lt;2) | 3</text>
+<rect class="b" x="404" y="160" width="380" height="58" rx="8"/>
+<text class="t" x="416" y="184">인접 4바이트 (별도 검토 기록)</text>
+<text class="s" x="416" y="204">최종 0 · 이 패키지로는 재현하지 않음</text>
+<rect class="b ok" x="16" y="230" width="370" height="58" rx="8"/>
+<text class="t" x="28" y="254">0xbf번 8바이트 (다른 문서)</text>
+<text class="s" x="28" y="274">RMW 8바이트 모형 검증의 대상</text>
+<rect class="b mute" x="404" y="230" width="380" height="58" rx="8"/>
+<text class="t" x="416" y="254">분류만 한 나머지</text>
+<text class="s" x="416" y="274">1·2·0xbd·0xbe·0x2f50번, 증명 밖</text>
+</svg>
+</div>
+<ul class="dg-legend"><li><i class="key"></i>이 문서에서 증명</li><li><i></i>별도 검토 기록에서 다룬 범위(이 패키지 밖)</li><li><i class="ok"></i>다른 문서에서 증명한 8바이트</li><li><i class="mute"></i>분류만 함</li></ul>
+</figure>
+
+<div class="table-wrap"><table class="compact">
+<caption>여섯 레코드의 첫 읽기와 이후 기록</caption>
+<thead><tr><th>관리 칸</th><th>주소 범위</th><th>역할(분석상 해석)</th><th>첫 읽기 PC</th><th class="n">이후 쓰기 수</th><th>최종 두 워드</th></tr></thead>
+<tbody>
+<tr><td><code>0x1</code></td><td><code>0x56492c88–0x56492c90</code></td><td>처음 빈 블록의 머리 → 할당 블록 머리</td><td><code>0x525d8564</code></td><td class="n">8</td><td><code>0x7, 0x4</code></td></tr>
+<tr><td><code>0x2</code></td><td><code>0x56492c90–0x56492c98</code></td><td>처음 빈 블록 길이 → 할당 길이</td><td><code>0x525d8594</code></td><td class="n">8</td><td><code>0x2f3, 0x0</code></td></tr>
+<tr><td><code>0xbc</code></td><td><code>0x56493260–0x56493268</code></td><td>할당 영역 끝 칸</td><td><code>0x525d8774</code></td><td class="n">4</td><td><code>0x2f3, 0x0</code></td></tr>
+<tr><td><code>0xbd</code></td><td><code>0x56493268–0x56493270</code></td><td>남은 빈 블록 머리 → 1페이지 할당 머리</td><td><code>0x525d8564</code></td><td class="n">8</td><td><code>0x2f6, 0x2f4</code></td></tr>
+<tr><td><code>0xbe</code></td><td><code>0x56493270–0x56493278</code></td><td>남은 빈 블록 길이 → 다음 빈 블록 머리</td><td><code>0x525d8594</code></td><td class="n">8</td><td><code>0x1, 0x0</code></td></tr>
+<tr><td><code>0x2f50</code></td><td><code>0x564aa700–0x564aa708</code></td><td>빈 영역 끝 칸(분할마다 갱신)</td><td><code>0x525d85d8</code></td><td class="n">12</td><td><code>0xba4d, 0x0</code></td></tr>
+</tbody></table></div>
+<p>주소 범위는 시작을 포함하고 끝을 뺍니다. 기준 주소는 <code>0x56492c80</code>, 레코드 간격은 8바이트입니다. 모든 레코드에서 첫 읽기 전의 guest 쓰기는 없었습니다. 최종 두 워드는 과거 실행 기록의 마지막 저장값입니다.</p>
+<p>초기 RAM 00과 A5 각각에서 guest store 4,473개를 조사했습니다. 관련 메모리 사건의 (단계, PC)가 명령 기록에 정확히 한 번 나올 때만 순서를 이었습니다. 바이트별로 다시 계산한 "이미 쓰인 바이트" 집합은 기록된 미생산 바이트 수와 맞았습니다. 각 바이트의 첫 읽기·첫 기록과 이후 쓰기 순서는 <a href="verified.json">projection.cases</a>에 있습니다.</p>
+<div class="callout warn"><strong class="label">해석할 때 주의</strong>
+<p>연구자가 넣은 00·A5 패턴과 선택한 실행 구간을 실제 하드웨어의 초기 상태와 같다고 볼 수 없습니다. 읽기 기록은 모든 guest read를 담지 않습니다. 조건이 거짓인 명령도 명령 기록에 나타날 수 있어서 실제 쓰기는 별도의 메모리 사건으로 확인했습니다.</p></div>
+</section>
+
+<section id="proof">
+<h2>할당 끝 칸 4바이트의 최종값</h2>
+<p class="takeaway">대상 워드의 최종값은 (요청 페이지 수 &lt;&lt; 2) | 3입니다. 전제 아래 초기 32비트와 관계없습니다.</p>
+<p>대상은 <code>[0x56493260, 0x56493264)</code>입니다. 원본 <code>[0x525d8774, 0x525d8790)</code>의 A32 명령 7개(28바이트)에 대응하는 <a href="model.pseudo.c">의사코드</a>와 <a href="helpers/scope_model.py.inc">수동 모형</a>을 검증했습니다. 의사코드는 분석자가 쓴 것으로 제조사 소스나 빌드 대상이 아닙니다.</p>
 <pre><code>byte   = (old_word &amp; 0xff) | 3
 staged = (old_word &amp; 0xffffff00) | byte
 final  = (staged &amp; 3) | ((requested_pages &amp; 0x3fffffff) &lt;&lt; 2)
        = (requested_pages &lt;&lt; 2, 32-bit) | 3</code></pre>
-<p>부호 있는 페이지 수가 2보다 커서 tail 경로에 진입하고, 원본 <code>0x525d8740</code>이 LR에 페이지 수의 하위 30비트를 넣는다는 조건입니다. 대상은 고정된 little-endian 일반 RAM이며, 순차적으로 정상 종료하고 동시 쓰기·비동기 관찰·fault가 없다고 가정합니다. 주소 계산과 전체 레지스터·제어 흐름을 실행한 증명은 아닙니다.</p>
-<p>최종식의 반례와 서로 다른 초기 32비트에 따른 최종값 차이의 반례는 Z3에서 모두 <code>UNSAT</code>였습니다. 하위 2비트 설정 또는 상위 30비트 교체를 수동 모형에서 각각 생략하면 <code>SAT</code> 반례가 나옵니다. 원본 firmware를 변경한 실험은 아닙니다.</p>
-<div class="scroll" tabindex="0" role="region" aria-label="중간값과 최종값 비교"><table><thead><tr><th scope="col">초기 RAM 패턴</th><th scope="col">0x525d8780 바이트 저장</th><th scope="col">0x525d878c 워드 저장</th></tr></thead><tbody><tr><td>00</td><td>0x03</td><td>0x000002f3</td></tr><tr><td>A5</td><td>0xa7</td><td>0x000002f3</td></tr></tbody></table></div>
-<p>기존 기록의 남은 페이지 수 <code>0x2f50 → 0x2e94</code>에서 할당량 <code>0xbc</code>를 얻었습니다. 그 값으로 계산한 두 저장값이 기존 기록과 일치합니다. 중간 바이트가 달라지므로 원래 읽기가 불필요하다거나 중간 상태도 초기값과 무관하다고 해석하면 안 됩니다.</p>
-<h2 id="gate">3. 전체 기록 검사 후 공개 필드 추리기</h2><p><a href="verify.py">검증 CLI</a>는 사용자가 따로 제공한 decoded 이미지와 accepted31 JSON을 읽습니다. 일반 파일 여부·정확한 크기·SHA-256을 확인하고 정해진 크기보다 1바이트까지만 더 읽습니다. RTOS 구간과 모형 블록의 해시를 확인한 뒤 원본 35번의 모든 필드를 메모리에서 재구성합니다.</p>
-<p>정본 검사는 dict·list·str·int·bool을 구분하며 float·null을 허용하지 않습니다. 전체 기록을 키 정렬·공백 없는 UTF-8 JSON으로 정규화해 고정된 SHA-256과 비교합니다. bool을 정수로 바꾸거나 공개하지 않는 원본 역어셈블리 필드를 바꿔도 검사에 실패합니다. 이 검사를 통과해야 공개 필드를 추리는 함수가 실행됩니다. 정본 검사는 기존 결과 전체의 일치를 확인하며 실제 초기화 경로의 증거를 추가하지는 않습니다.</p>
-<p>명령 바이트·48개 원본 역어셈블리 목록·전체 accepted31 기록은 배포하지 않습니다. 원본 명령 정보는 재구성·정본 검사 중 메모리에서만 사용합니다. 공개 JSON의 <code>historical35</code>는 과거 결과와 환경의 출처이고, <code>current_execution</code>은 이번 CLI·helper 해시와 실제 실행 환경입니다. 둘을 같은 실행 기록으로 취급하지 않습니다. <a href="source.json">입력·구간·정본 핀</a></p>
-<h2 id="checks">4. 기본 검사와 입력을 사용한 검사</h2><p>표준 라이브러리만 사용하는 <a href="test_verify.py">기본 검사</a>는 <code>-S</code> 환경에서 22개 항목을 통과했습니다. 패키지 변조, 입력 크기·해시, 출력 별칭·기존 파일·hardlink·dangling symlink, 타입 구분과 투영 우회를 검사합니다. <code>-O</code> 실행을 거부하며 Capstone·Z3를 가져오지 않습니다. <a href="asset-free-test-results.json">기본 검사 기록</a></p>
-<p>두 입력을 제공한 모드는 33개 항목을 통과했습니다. 다른 폴더로 옮긴 CLI의 두 실행 결과가 공개 JSON과 바이트 단위로 일치했고 입력도 보존됐습니다. 전체 기록의 공개 필드와 비공개 필드를 바꾼 10개 변형도 거부했습니다. <a href="proof-test-results.json">입력 기반 검사 기록</a>에도 새 원본 CPU 실행은 없음을 구분해 기록했습니다.</p>
-<h2 id="run">5. 재현 방법</h2><p>Python 3.12.3에서 확인했습니다. 실제 재구성에는 <a href="requirements-proof.txt">capstone 5.0.9와 z3-solver 5.3.1.0</a>을 사용했습니다. 런타임 모듈 표시는 각각 5.0.7과 5.3.1입니다. 다른 버전에서 디코딩 표기나 solver 반례가 바뀌면 전체 정본 검사가 실패할 수 있습니다. 기존 결과와 일치하지 않은 실행을 성공으로 완화하지 않습니다.</p>
-<pre><code># firmware-free guards; existing work directory, fresh output
+<h3 id="premises">전제</h3>
+<ul>
+<li>signed 페이지 수가 2보다 커서 tail 경로에 들어옵니다.</li>
+<li>LR에는 원본 <code>0x525d8740</code>이 만든 값, 곧 요청 페이지 수의 하위 30비트가 들어 있습니다.</li>
+<li>대상은 고정된 주소의 쓰기 가능한 일반 RAM 워드이고 little-endian입니다.</li>
+<li>명령이 순서대로 정상 완료되며 동시 쓰기·비동기 관찰·fault가 없습니다.</li>
+</ul>
+<p>주소 계산과 레지스터·제어 흐름 전체는 전제로 두었고 모형에서 실행하지 않았습니다. 이 증명은 대상 4바이트만 다루며 바로 뒤 워드는 포함하지 않습니다.</p>
+<div class="table-wrap"><table class="fit">
+<caption>Z3 질의와 대조 모형</caption>
+<thead><tr><th>질의</th><th>결과</th></tr></thead>
+<tbody>
+<tr><td>최종값이 위 식과 다른 경우가 있는가</td><td><code>unsat</code></td></tr>
+<tr><td>서로 다른 초기 32비트가 다른 최종값을 내는가</td><td><code>unsat</code></td></tr>
+<tr><td>대조: 하위 2비트 설정을 뺀 모형</td><td><code>sat</code> (초기 <code>0x0</code>, 페이지 <code>0xbc</code>)</td></tr>
+<tr><td>대조: 상위 30비트 교체를 뺀 모형</td><td><code>sat</code> (초기 <code>0xfffffd0c</code>, 페이지 <code>0xbc</code>)</td></tr>
+</tbody></table></div>
+<p>요청 페이지 수는 기존 기록에서 얻었습니다. 남은 페이지 수가 <code>0x2f50</code>에서 <code>0x2e94</code>로 줄었으므로 할당량은 <code>0xbc</code>입니다. 식에 넣으면 <code>0x2f3</code>입니다. 그 값이 기록된 저장값과 같습니다.</p>
+<div class="table-wrap"><table class="fit">
+<caption>중간값과 최종값</caption>
+<thead><tr><th>초기 RAM 패턴</th><th><code>0x525d8780</code> 바이트 저장</th><th><code>0x525d878c</code> 워드 저장</th></tr></thead>
+<tbody>
+<tr><td>00</td><td><code>0x03</code></td><td><code>0x000002f3</code></td></tr>
+<tr><td>A5</td><td><code>0xa7</code></td><td><code>0x000002f3</code></td></tr>
+</tbody></table></div>
+<p>중간 바이트는 초기값에 따라 다릅니다. 원래의 읽기가 필요 없다거나 중간 상태까지 초기값과 무관하다고 해석하면 안 됩니다. 원본 펌웨어를 고친 실험은 아닙니다.</p>
+<details class="evidence"><summary>페이지 수를 읽은 위치와 모형 블록 해시</summary>
+<dl class="kv">
+<dt>페이지 수 기록</dt><dd>페이지 초기화 <code>0x525d8ae8</code>가 <code>0x54582f04</code>에 <code>0x2f50</code>을 쓴 뒤 task 표 초기화 <code>0x525d87f4</code>가 같은 주소에 <code>0x2e94</code>를 씀 (두 패턴 동일)</dd>
+<dt>모형 블록 SHA-256</dt><dd><code class="wrap">9f16d22aacd46f2fe17d576d9ceb07334d4c7e46ad8d7038efe964c74fb3a9d9</code></dd>
+<dt>solver</dt><dd>Z3 <code>5.3.1</code></dd>
+</dl>
+</details>
+</section>
+
+<section id="gate">
+<h2>전체 기록을 검사한 뒤 공개 필드만 추림</h2>
+<p class="takeaway">CLI는 과거 분석 결과 전체를 메모리에서 다시 만든 뒤 고정 해시와 맞을 때만 공개할 필드를 골라냅니다.</p>
+<p><a href="verify.py">검증 CLI</a>는 사용자가 따로 준비한 decoded 이미지와 accepted31 JSON을 읽습니다. 일반 파일인지, 크기와 SHA-256이 맞는지 확인하며 정해진 크기보다 1바이트까지만 더 읽습니다. RTOS 구간과 모형 블록의 해시를 확인한 뒤 원본 분석 결과의 모든 필드를 메모리에서 다시 구성합니다.</p>
+<ol class="steps">
+<li><strong>타입 구분</strong> dict·list·str·int·bool을 구분하고 float·null은 허용하지 않습니다.</li>
+<li><strong>정규화와 비교</strong> 전체 기록을 키 정렬·공백 없는 UTF-8 JSON으로 만들어 고정 SHA-256과 비교합니다. bool을 정수로 바꾸거나 공개하지 않는 원본 역어셈블리 필드를 바꿔도 실패합니다.</li>
+<li><strong>공개 필드 추리기</strong> 비교를 통과해야 공개 필드를 고르는 함수가 실행됩니다.</li>
+</ol>
+<p>이 검사는 기존 결과 전체가 그대로인지 확인할 뿐, 실제 초기화 경로의 증거를 더하지는 않습니다. 명령 바이트, 48개 원본 명령의 역어셈블리 목록, accepted31 전체는 배포하지 않습니다. 원본 명령 정보는 재구성과 비교 중 메모리에서만 씁니다.</p>
+<p>공개 JSON의 <code>historical35</code>는 과거 결과와 그 환경의 출처입니다. <code>current_execution</code>은 지금 CLI·helper의 해시와 실제 실행 환경입니다. 둘을 같은 실행 기록으로 다루지 않습니다(<a href="source.json">입력·구간·고정 해시</a>).</p>
+<details class="evidence"><summary>입력과 고정 해시</summary>
+<div class="table-wrap"><table class="compact">
+<thead><tr><th>대상</th><th class="n">크기</th><th>SHA-256</th></tr></thead>
+<tbody>
+<tr><td>decoded 이미지</td><td class="n">78,683,892</td><td><code class="wrap">7ff301d585ef7adcd620a15575faa39b4227cc5a27eaa8d754efe50f667a30f9</code></td></tr>
+<tr><td>accepted31(별도 공급, 미포함)</td><td class="n">7,200,103</td><td><code class="wrap">95a5ce68c95bcc4391894983e0650cf8098ae6f2c56878667b0a64cb01ef7b98</code></td></tr>
+<tr><td>과거 분석 결과 전체(정규화)</td><td class="n"></td><td><code class="wrap">6081eafffc91064d03f08e0d10648a64ff5a5b0ade374c752164d6053a446ddd</code></td></tr>
+</tbody></table></div>
+</details>
+</section>
+
+<section id="checks">
+<h2>기본 검사와 두 입력을 쓰는 검사</h2>
+<p class="takeaway">입력 없이 도는 기본 검사 22개와 두 입력으로 실제 증명까지 하는 검사 33개가 모두 통과했습니다.</p>
+<div class="table-wrap"><table class="fit">
+<caption>검사 두 가지</caption>
+<thead><tr><th>모드</th><th class="n">통과</th><th>내용</th></tr></thead>
+<tbody>
+<tr><td>기본 검사 (<code>-S</code>, 표준 라이브러리만)</td><td class="n">22</td><td>패키지 변조, 입력 크기·해시, 출력 별칭·기존 파일·hardlink·dangling symlink, 타입 구분, 공개 필드 추리기 우회. <code>-O</code> 실행을 거부하고 Capstone·Z3를 불러오지 않음 (<a href="asset-free-test-results.json">기록</a>)</td></tr>
+<tr><td>두 입력을 쓰는 검사</td><td class="n">33</td><td>다른 폴더로 옮긴 두 실행이 공개 JSON과 바이트 단위로 같고 입력도 보존됨. 전체 기록의 공개·비공개 필드를 바꾼 10개 변형을 거부 (<a href="proof-test-results.json">기록</a>)</td></tr>
+</tbody></table></div>
+<p>두 기록 모두 새 원본 CPU 실행이 없다는 것을 따로 표시합니다. <a href="test_verify.py">기본 검사 코드</a>도 함께 공개했습니다.</p>
+</section>
+
+<section id="run">
+<h2>재현 방법</h2>
+<p>Python 3.12.3에서 확인했습니다. 실제 재구성에는 <a href="requirements-proof.txt">capstone 5.0.9와 z3-solver 5.3.1.0</a>을 썼습니다. 실행 중 모듈 표시는 각각 5.0.7과 5.3.1입니다. 다른 버전에서 디코딩 표기나 solver 반례가 바뀌면 전체 비교가 실패할 수 있습니다. 기존 결과와 맞지 않는 실행을 성공으로 처리하지 않습니다.</p>
+<pre><code># 펌웨어 없이 하는 기본 검사 (작업 폴더는 이미 있어야 하고 출력은 새 파일)
 python -S test_verify.py --work-dir /existing/temp-parent --output /path/to/new-guards.json
 
-# two separately supplied, pinned inputs; no native CPU execution
+# 따로 받은 두 입력으로 재검증 (원본 CPU 실행 없음)
 python -m pip install -r requirements-proof.txt
 python verify.py /path/to/decoded.bin /path/to/accepted31.json --output /path/to/new-result.json
 python test_verify.py --work-dir /existing/temp-parent --decoded /path/to/decoded.bin --accepted31 /path/to/accepted31.json --output /path/to/new-proof-tests.json</code></pre>
-<p>명령은 이 패키지 폴더에서 실행하는 예입니다. 다른 위치에서는 스크립트의 절대 경로를 사용하십시오. decoded는 업데이트 파일 자체가 아니며 78,683,892바이트, accepted31은 7,200,103바이트입니다. 정확한 해시는 <a href="source.json">source.json</a>에 있습니다. accepted31은 별도로 공급해야 하므로 decoded만으로는 이 재검증을 완료할 수 없습니다. 기본 검사는 두 파일 없이 실행합니다.</p>
-<h2 id="limits">6. 이전 8바이트 증명과 남은 범위</h2><p><a href="../rmw-proof/report.html">이전 free 길이 8바이트 증명</a>은 다른 레코드의 두 워드 <code>((count &lt;&lt; 2) | 1, 0)</code>을 다뤘습니다. 이번 증명은 할당 tail의 첫 워드와 flag 값 3을 다룹니다. 두 결과를 합쳐 초기화 완료나 허용 목록 축소의 근거로 사용할 수는 없습니다.</p>
-<p><a href="../registry-replay/report.html">기존 31번 기록</a>에서 관측한 CP15 중단점은 <code>0x525b5a54</code>입니다. 그 뒤의 단계는 호스트가 별도로 선택한 진입점이며, 해당 중단점에서 연속 부팅을 재개한 결과가 아닙니다. 이번 패키지는 원본 CPU 명령을 새로 실행하거나 CP15·MPIDR 값을 대신 넣지 않습니다.</p><p>실제 초기 writer, 나머지 44바이트의 임의 초기값 의존성, MMIO·동시 접근·fault·전체 부팅 동작은 미확정입니다. 카메라 실행·빌드·플래시는 수행하지 않았습니다.</p></main><!-- chrome:bottom -->
-<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">펌웨어 재구축 — 이 주제의 문서</h2><ol><li><a href="../guide-rebuild.html">재구축 안내</a></li><li><a href="../recompiled-kernels.html">수치 함수 C 재구현<span>SAD·SSD와 Q13 행렬 곱</span></a></li><li><a href="../recompiled-integration.html">재컴파일 함수 배치·재패키징</a></li><li><a href="../selective-repack.html">압축 블록을 보존한 재패키징</a></li><li><a href="../allocator-replay/report.html">설정에서 첫 task stack까지<span>원본 할당 경로 7조건과 RMW 5검증</span></a></li><li><a href="../registry-replay/report.html">이름 registry 할당과 조회<span>원본 이름 배열 1200바이트 초기화와 조회 재현</span></a></li><li><a href="../rmw-proof/report.html">RMW 8바이트의 수동 모형 검증<span>초기 64비트와 최종값의 관계, decoded만으로 재현</span></a></li><li><a href="report.html" aria-current="page">RMW 48바이트 분류와 4바이트 증명<span>전체 기록 검사 후 공개 필드 추리기, decoded와 accepted31 필요</span></a></li></ol></nav>
+<p>명령은 이 패키지 폴더에서 실행하는 예입니다. 다른 위치에서는 스크립트의 절대 경로를 씁니다. decoded는 업데이트 파일 자체가 아닙니다. accepted31은 따로 받아야 하므로 decoded만으로는 이 재검증을 끝낼 수 없습니다. 정확한 해시는 <a href="source.json">source.json</a>에 있습니다.</p>
+</section>
+
+<section id="limits">
+<h2>한계와 남은 과제</h2>
+<ul>
+<li><a href="../rmw-proof/report.html">이전 8바이트 증명</a>은 다른 레코드(0xbf번)의 두 워드 <code>((count &lt;&lt; 2) | 1, 0)</code>을 다뤘습니다. 이 문서의 증명은 할당 끝 칸의 첫 워드와 flag 값 3을 다룹니다. 두 결과를 합쳐도 초기화 완료나 허용 목록 축소의 근거가 되지 않습니다.</li>
+<li><a href="../registry-replay/report.html">registry 재현의 실행 기록</a>에서 관측한 CP15 정지점은 <code>0x525b5a54</code>입니다. 그 뒤 단계는 연구자가 따로 고른 진입점이며 그 정지점에서 부팅을 이어 간 결과가 아닙니다. 이 패키지는 원본 CPU 명령을 새로 실행하지 않고 CP15·MPIDR 값을 대신 넣지도 않습니다.</li>
+<li>실제 초기 기록자, 나머지 44바이트의 초기값 의존성, MMIO·동시 접근·fault·전체 부팅 동작은 미확인입니다. 카메라 실행, 빌드, 플래시는 하지 않았습니다.</li>
+</ul>
+<div class="callout"><strong class="label">참고</strong>
+<p>바로 뒤 워드 <code>[0x56493264, 0x56493268)</code>는 별도 검토 기록에서 같은 종류의 전제 아래 최종값 0으로 확인됐습니다. 그 기록 기준으로 48바이트 중 조건부로 증명한 범위는 8바이트, 남은 범위는 40바이트입니다. 근거 파일은 비공개로 보관되어 이 패키지로는 재현할 수 없습니다(<a href="../research-checkpoint.html">독립 검토 기록 요약</a>).</p></div>
+</section>
+
+<section id="refs">
+<h2>근거 파일과 참고 자료</h2>
+<ul class="refs">
+<li><a href="verified.json">verified.json</a> — 공개 결과(분류 48바이트, 4바이트 증명, 한계)</li>
+<li><a href="source.json">source.json</a> — 입력·구간·고정 해시와 전제</li>
+<li><a href="model.pseudo.c">model.pseudo.c</a> · <a href="helpers/scope_model.py.inc">helpers/scope_model.py.inc</a> — 의사코드와 수동 모형</li>
+<li><a href="verify.py">verify.py</a> · <a href="test_verify.py">test_verify.py</a> — 검증 CLI와 검사</li>
+<li><a href="asset-free-test-results.json">asset-free-test-results.json</a> · <a href="proof-test-results.json">proof-test-results.json</a> — 두 모드의 검사 결과</li>
+<li><a href="document-qa.json">document-qa.json</a> — 문서 정적 검사 기록</li>
+<li>외부 자료: <a href="https://github.com/Z3Prover/z3">Z3 solver</a> · <a href="https://github.com/capstone-engine/capstone">Capstone 디스어셈블러</a></li>
+</ul>
+</section>
+
+</main>
+</div>
+<!-- chrome:bottom -->
+<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">펌웨어 재구축 — 이 주제의 문서</h2><ol><li><a href="../guide-rebuild.html">재구축 안내</a></li><li><a href="../recompiled-kernels.html">수치 함수 C 재구현<span>SAD·SSD와 Q13 행렬 곱</span></a></li><li><a href="../recompiled-integration.html">재컴파일 함수 배치·재패키징</a></li><li><a href="../selective-repack.html">압축 블록을 보존한 재패키징</a></li><li><a href="../allocator-replay/report.html">설정에서 첫 task 스택까지<span>할당 경로 7조건</span></a></li><li><a href="../registry-replay/report.html">이름 registry 할당과 조회<span>이름 배열의 할당·초기화·조회</span></a></li><li><a href="../rmw-proof/report.html">RMW 8바이트의 수동 모형 검증<span>초기값과 무관한 최종 8바이트</span></a></li><li><a href="report.html" aria-current="page">RMW 48바이트 분류와 4바이트 증명<span>남은 바이트의 범위</span></a></li></ol></nav>
 <nav class="pager" aria-label="이전·다음 문서"><a class="prev" href="../rmw-proof/report.html"><small>← 이전</small>RMW 8바이트의 수동 모형 검증</a><a class="next" href="../guide-rtos.html"><small>다음 →</small>RTOS 명령 안내</a></nav>
 <footer class="sitefoot"><div class="sitefoot-in"><nav aria-label="사이트"><a href="../../index.html#map">문서 지도</a><a href="../../index.html#levels">검증 수준 읽는 법</a><a href="../../glossary.html">용어집</a><a href="../research-program.html">세 기종 연구 본부</a><a href="https://github.com/yunhyok/pentax-k3iii-firmware-analysis">GitHub 저장소</a></nav><p>PENTAX 펌웨어 연구. PC에서 수행한 정적 분석과 에뮬레이션 결과이며, 카메라 실기에서 검증한 내용이 아닙니다. 원본 펌웨어와 추출한 독점 코드는 포함하지 않습니다.</p></div></footer>
-<!-- /chrome:bottom --></body></html>
+<!-- /chrome:bottom -->
+</body>
+</html>

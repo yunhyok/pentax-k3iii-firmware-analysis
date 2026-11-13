@@ -10,7 +10,7 @@
 <body data-camera="k3iii">
 <!-- chrome:top -->
 <a class="skip" href="#main">본문 바로가기</a>
-<div class="topbar"><div class="topbar-in"><a class="brand" href="../index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="../index.html" aria-current="true">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="https://yunhyok.github.io/pentax-q7-firmware-analysis/">Q7</a></div><nav class="topnav" aria-label="주제"><a href="../index.html">개요</a><a href="guide-boot.html">부팅·저장소</a><a href="guide-update.html" aria-current="true">업데이트</a><a href="guide-rebuild.html">재구축</a><a href="guide-rtos.html">명령·셸</a><a href="guide-color.html">색 처리</a><a href="lightroom-bridge.html">Lightroom</a><a href="af-foundations.html">AF</a><a href="ui-port-contract.html">UI</a></nav></div></div>
+<div class="topbar"><div class="topbar-in"><a class="brand" href="../index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="../index.html" aria-current="true">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="https://yunhyok.github.io/pentax-q7-firmware-analysis/">Q7</a></div><nav class="topnav" aria-label="주제"><a href="../index.html">개요</a><a href="guide-boot.html">부팅·저장소</a><a href="guide-update.html" aria-current="true">업데이트</a><a href="guide-rebuild.html">재구축</a><a href="guide-rtos.html">명령·셸</a><a href="guide-color.html">색 처리</a><a href="guide-lightroom.html">Lightroom</a><a href="guide-af.html">AF</a><a href="guide-ui.html">UI</a></nav></div></div>
 <nav class="crumbs" aria-label="현재 위치"><ol><li><a href="../index.html">PENTAX K-3 Mark III</a></li><li><a href="guide-update.html">펌웨어 업데이트 과정</a></li><li aria-current="page">하위 시간의 32비트 산술</li></ol></nav>
 <!-- /chrome:top -->
 <header class="page-head">
@@ -28,7 +28,7 @@
 <h2 data-toc="no">핵심 요약</h2>
 <ul>
 <li>하위 시간 변환 함수는 재적재 값과 현재 카운터의 차이에 1,000,000을 곱하고 6,749로 나눈 몫을 돌려줍니다. 이때 <strong>곱의 하위 32비트만 남깁니다</strong>.</li>
-<li>재적재 값을 6,749로 두고 차이를 0부터 6,749까지 바꿔 가며 원본 기계어를 실행했습니다. 경계 사례 4개를 합쳐 <strong>6,754회 실행</strong>했고, 결과는 모두 식과 같았습니다.</li>
+<li>재적재 값을 6,749로 두고 차이를 0부터 6,749까지 바꿔 가며 원본 기계어를 실행했습니다. 경계 사례 4개를 합쳐 <strong>6,754회 실행</strong>했고 결과는 모두 식과 같았습니다.</li>
 <li>차이가 4,294일 때 636,242이던 결과가 <strong>4,295에서 4로 떨어집니다</strong>. 곱이 32비트를 넘는 지점입니다.</li>
 <li>이것은 직접 만든 입력으로 본 계산 결과입니다. 실제 카메라의 카운터가 그 범위까지 가는지, 그래서 시각이 틀어지는지는 확인하지 못했습니다.</li>
 </ul>
@@ -61,8 +61,8 @@
 
 <section id="background">
 <h2>배경: 틱보다 잘게 시간을 재는 방법</h2>
-<p>커널의 64비트 카운터는 타이머 인터럽트가 올 때만 움직입니다(<a href="update-timer-clock.html">타이머 설정과 64비트 카운터</a>). 그 사이의 시간을 알고 싶으면 하드웨어 타이머가 지금 어디까지 세었는지를 읽어야 합니다. 이 문서의 함수가 그 일을 합니다. 재적재 값에서 현재 카운터 값을 빼면 “직전 재적재 뒤로 얼마나 세었는가”가 나오고, 여기에 상수를 곱하고 나누어 정수 하나로 환산합니다.</p>
-<p>환산 과정에서 문제가 되는 것은 중간값의 폭입니다. 32비트 레지스터끼리 곱하면 결과는 최대 64비트가 되지만, ARM의 <code>MUL</code> 명령은 그 가운데 하위 32비트만 남깁니다. C 언어의 부호 없는 32비트 곱셈과 같은 동작이고, 넘친 윗자리는 오류 없이 사라집니다.</p>
+<p>커널의 64비트 카운터는 타이머 인터럽트가 올 때만 움직입니다(<a href="update-timer-clock.html">타이머 설정과 64비트 카운터</a>). 그 사이의 시간을 알고 싶으면 하드웨어 타이머가 지금 어디까지 세었는지를 읽어야 합니다. 이 문서의 함수가 그 일을 합니다. 재적재 값에서 현재 카운터 값을 빼면 “직전 재적재 뒤로 얼마나 세었는가”가 나오고 여기에 상수를 곱하고 나누어 정수 하나로 환산합니다.</p>
+<p>환산 과정에서 문제가 되는 것은 중간값의 폭입니다. 32비트 레지스터끼리 곱하면 결과는 최대 64비트가 되지만 ARM의 <code>MUL</code> 명령은 그 가운데 하위 32비트만 남깁니다. C 언어의 부호 없는 32비트 곱셈과 같은 동작이고 넘친 윗자리는 오류 없이 사라집니다.</p>
 
 <figure class="diagram">
 <figcaption>타이머 사슬 일곱 문서와 이 문서의 위치</figcaption>
@@ -124,7 +124,7 @@
 
 <section id="formula">
 <h2>곱한 값의 하위 32비트만 남습니다</h2>
-<p class="takeaway">계산은 세 단계입니다. 차이를 구하고, 1,000,000을 곱해 32비트로 자르고, 6,749로 나눕니다. 둘째 단계에서 잘린 윗자리는 되살아나지 않습니다.</p>
+<p class="takeaway">계산은 세 단계입니다. 차이를 구하고 1,000,000을 곱해 32비트로 자르고 6,749로 나눕니다. 둘째 단계에서 잘린 윗자리는 되살아나지 않습니다.</p>
 
 <figure class="diagram">
 <figcaption>원본 명령이 하는 계산과 중간값의 폭</figcaption>
@@ -160,8 +160,8 @@
 <pre><code>d = (reload − current) mod 2³²
 p = (d × 1,000,000) mod 2³²
 result = floor((p × 0x9b5e1bb1) / 2⁴⁴)</code></pre>
-<p>이 식은 원본 ARM 명령을 그대로 옮긴 것입니다. 디컴파일된 C에는 부호 있는 정수의 곱셈과 나눗셈으로 나오는데, 그 표현으로는 중간값이 어디서 잘리는지 정확히 알 수 없습니다. 그래서 식은 ARM 명령에서 직접 세웠습니다.</p>
-<p>곱하는 상수 <code>0x9b5e1bb1</code>은 2<sup>44</sup>을 6,749로 나누어 올림한 값(2,606,635,953)입니다. 나눗셈을 곱셈과 자리 이동으로 바꾸는 흔한 방법이고, 32비트 범위의 모든 p에서 <code>p ÷ 6,749</code>의 몫과 같은 결과를 냅니다. 6,749는 보드 초기화가 타이머에 써넣는 재적재 값과 같은 수입니다.</p>
+<p>이 식은 원본 ARM 명령을 그대로 옮긴 것입니다. 디컴파일된 C에는 부호 있는 정수의 곱셈과 나눗셈으로 나오는데 그 표현으로는 중간값이 어디서 잘리는지 정확히 알 수 없습니다. 그래서 식은 ARM 명령에서 직접 세웠습니다.</p>
+<p>곱하는 상수 <code>0x9b5e1bb1</code>은 2<sup>44</sup>을 6,749로 나누어 올림한 값(2,606,635,953)입니다. 나눗셈을 곱셈과 자리 이동으로 바꾸는 흔한 방법이고 32비트 범위의 모든 p에서 <code>p ÷ 6,749</code>의 몫과 같은 결과를 냅니다. 6,749는 보드 초기화가 타이머에 써넣는 재적재 값과 같은 수입니다.</p>
 
 <details class="evidence"><summary>함수 구간과 핵심 명령</summary>
 <div class="table-wrap"><table class="compact">
@@ -182,7 +182,7 @@ result = floor((p × 0x9b5e1bb1) / 2⁴⁴)</code></pre>
 
 <section id="sweep">
 <h2>차이가 4,295가 되면 결과가 4로 떨어집니다</h2>
-<p class="takeaway">4,295 × 1,000,000은 2<sup>32</sup>보다 32,704만큼 큽니다. 32비트에는 그 32,704만 남고, 6,749로 나눈 몫은 4입니다.</p>
+<p class="takeaway">4,295 × 1,000,000은 2<sup>32</sup>보다 32,704만큼 큽니다. 32비트에는 그 32,704만 남고 6,749로 나눈 몫은 4입니다.</p>
 
 <figure class="photo">
 <img src="update-subtick-arithmetic.svg" width="864" height="403" alt="가로축이 합성 카운터 차이 0~6,749, 세로축이 반환값인 꺾은선 그래프. 0에서 시작해 차이 4,294에서 636,242까지 곧게 오른 뒤 4,295에서 4로 수직으로 떨어지고, 다시 같은 기울기로 올라 6,749에서 363,614로 끝난다. 떨어지는 지점에 ‘4294: 636,242, 4295: 4’라는 표시가 있다. 축 이름은 영어로, 가로는 ‘Synthetic reload − current (unsigned 32-bit)’, 세로는 ‘Raw return value (unit unverified)’이다.">
@@ -222,7 +222,7 @@ result = floor((p × 0x9b5e1bb1) / 2⁴⁴)</code></pre>
 <tr><td class="n">4,295</td><td class="n">4</td><td class="n">636,390</td><td>곱이 32비트를 넘음</td></tr>
 <tr><td class="n">6,749</td><td class="n">363,614</td><td class="n">1,000,000</td><td>이 조회의 마지막 입력</td></tr>
 </tbody></table></div>
-<p>재적재 값은 <a href="update-timer-clock.html#hardware">보드 초기화</a>에서 관측한 상수 6,749로 고정하고, 차이 d를 0부터 6,749까지 하나씩 바꿔 원본 ARM 코드를 실행했습니다. 6,750개 결과를 모두 정수식과 대조했고, 결과가 앞의 값보다 줄어드는 곳은 d = 4,295 한 곳뿐이었습니다. 출력 전체의 해시도 기록해 두었습니다.</p>
+<p>재적재 값은 <a href="update-timer-clock.html#hardware">보드 초기화</a>에서 관측한 상수 6,749로 고정하고 차이 d를 0부터 6,749까지 하나씩 바꿔 원본 ARM 코드를 실행했습니다. 6,750개 결과를 모두 정수식과 대조했고 결과가 앞의 값보다 줄어드는 곳은 d = 4,295 한 곳뿐이었습니다. 출력 전체의 해시도 기록해 두었습니다.</p>
 <p>“자르지 않았다면” 열은 같은 식에서 32비트 자르기만 뺀 계산값으로, 원본 코드가 내는 값이 아닙니다. 차이가 클 때 반환값이 얼마나 달라지는지 보려고 넣었습니다.</p>
 
 <h3>차이 계산 자체의 순환</h3>
@@ -238,7 +238,7 @@ result = floor((p × 0x9b5e1bb1) / 2⁴⁴)</code></pre>
 </tbody></table></div>
 
 <div class="callout model"><strong class="label">시험 조건</strong>
-<p>연속 조회 6,750개는 검증 기록에서 사례 하나로 셉니다. 경계 사례 4개를 더해 사례는 5개, ARM 실행은 6,754회입니다. 타이머 레지스터 주소는 에뮬레이터의 일반 메모리이고, 인터럽트 차단·복원 함수는 대체 함수입니다. 함수를 실행하기 전과 뒤에 레지스터 영역의 내용이 같은지도 매번 확인했습니다. 실제 카운터가 0부터 6,749까지의 범위를 모두 지난다는 가정은 검증하지 않았습니다.</p></div>
+<p>연속 조회 6,750개는 검증 기록에서 사례 하나로 셉니다. 경계 사례 4개를 더해 사례는 5개, ARM 실행은 6,754회입니다. 타이머 레지스터 주소는 에뮬레이터의 일반 메모리이고 인터럽트 차단·복원 함수는 대체 함수입니다. 함수를 실행하기 전과 뒤에 레지스터 영역의 내용이 같은지도 매번 확인했습니다. 실제 카운터가 0부터 6,749까지의 범위를 모두 지난다는 가정은 검증하지 않았습니다.</p></div>
 </section>
 
 <section id="callers">
@@ -251,9 +251,9 @@ result = floor((p × 0x9b5e1bb1) / 2⁴⁴)</code></pre>
 <tr><td><code>0x525ce390</code></td><td><code>0x525ce3fc</code></td><td><code>0x525ce400</code></td><td rowspan="2">함수에 들어올 때 둘째 인수(r1)로 받은 포인터</td></tr>
 <tr><td><code>0x525ce45c</code></td><td><code>0x525ce4c8</code></td><td><code>0x525ce4cc</code></td></tr>
 </tbody></table></div>
-<p>호출 관계는 코드를 읽어 확인했습니다. 두 함수의 선택한 경로는 <a href="update-clock-readers.html">시각 조회 함수</a>에서 원본 기계어로 따로 실행했고, 거기서도 하위 시간 출력은 이 문서의 식과 같았습니다. 그 함수들을 실제로 부르는 쪽과 출력이 쓰이는 곳은 아직 찾지 못했습니다.</p>
+<p>호출 관계는 코드를 읽어 확인했습니다. 두 함수의 선택한 경로는 <a href="update-clock-readers.html">시각 조회 함수</a>에서 원본 기계어로 따로 실행했고 거기서도 하위 시간 출력은 이 문서의 식과 같았습니다. 그 함수들을 실제로 부르는 쪽과 출력이 쓰이는 곳은 아직 찾지 못했습니다.</p>
 <div class="callout"><strong class="label">참고: 공개 T-Kernel 소스와 견주면</strong>
-<p>공개 T-Kernel 2.0의 참조 구현에는 같은 자리에 <code>get_hw_timer_nsec</code>가 있습니다. 직전 타이머 인터럽트 뒤 흐른 시간을 나노초로 돌려주는 함수이고, 곱셈을 64비트로 합니다. 이 펌웨어의 함수가 같은 역할이라면 반환값은 나노초이고 1,000,000은 1밀리초에 해당합니다. 그러나 이 펌웨어에서 단위를 확인한 것은 아니므로 해석으로만 둡니다.</p></div>
+<p>공개 T-Kernel 2.0의 참조 구현에는 같은 자리에 <code>get_hw_timer_nsec</code>가 있습니다. 직전 타이머 인터럽트 뒤 흐른 시간을 나노초로 돌려주는 함수이고 곱셈을 64비트로 합니다. 이 펌웨어의 함수가 같은 역할이라면 반환값은 나노초이고 1,000,000은 1밀리초에 해당합니다. 그러나 이 펌웨어에서 단위를 확인한 것은 아니므로 해석으로만 둡니다.</p></div>
 </section>
 
 <section id="limits">
@@ -269,7 +269,7 @@ result = floor((p × 0x9b5e1bb1) / 2⁴⁴)</code></pre>
 
 <section id="reproduce">
 <h2>재현 방법</h2>
-<p>입력은 따로 잘라 낸 RTOS 파일이나 통합 decoded 파일이고, 스크립트는 그 파일을 읽기만 합니다. SHA-256과 적재 주소는 <a href="update-ui-timer.html#reproduce">UI 타이머 문서의 재현 방법</a>과 같습니다. Python 패키지 <code>unicorn</code>이 필요합니다.</p>
+<p>입력은 따로 잘라 낸 RTOS 파일이나 통합 decoded 파일이고 스크립트는 그 파일을 읽기만 합니다. SHA-256과 적재 주소는 <a href="update-ui-timer.html#reproduce">UI 타이머 문서의 재현 방법</a>과 같습니다. Python 패키지 <code>unicorn</code>이 필요합니다.</p>
 <pre><code>python verify_update_subtick_arithmetic.py rtos.bin --output subtick-arithmetic.json</code></pre>
 <p class="small muted">공개하지 않고 보관한 자료는 디컴파일 C 1개, 보조 구간 2개, ARM 명령 113 words입니다. 그래프의 좌표는 정수식과 대조했습니다.</p>
 </section>
@@ -282,7 +282,7 @@ result = floor((p × 0x9b5e1bb1) / 2⁴⁴)</code></pre>
 <li><a href="../verify_update_subtick_arithmetic.py">verify_update_subtick_arithmetic.py</a> — 검증 스크립트</li>
 <li><a href="update-subtick-arithmetic.svg">update-subtick-arithmetic.svg</a> — 연속 조회 그래프</li>
 <li><a href="update-clock-readers.html">시각 조회 함수</a> — 이 값을 받아 출력하는 두 함수 · <a href="update-timer-clock.html">타이머 설정과 64비트 카운터</a> — 재적재 값 6,749의 출처</li>
-<li><a href="https://documentation-service.arm.com/static/5f8dacc8f86e16515cdb865a">ARM Architecture Reference Manual (ARM DDI 0100I)</a> — <code>MUL</code>은 곱의 하위 32비트만 남기고, <code>UMULL</code>은 64비트 결과를 레지스터 두 개에 나눠 담는다는 정의</li>
+<li><a href="https://documentation-service.arm.com/static/5f8dacc8f86e16515cdb865a">ARM Architecture Reference Manual (ARM DDI 0100I)</a> — <code>MUL</code>은 곱의 하위 32비트만 남기고 <code>UMULL</code>은 64비트 결과를 레지스터 두 개에 나눠 담는다는 정의</li>
 <li><a href="https://www.open-std.org/jtc1/sc22/wg14/www/docs/n1570.pdf">C11 표준 초안 N1570</a> 6.2.5절 9항 — 부호 없는 정수 계산은 넘치지 않고 표현 범위로 나눈 나머지가 된다는 규정</li>
 <li><a href="https://github.com/tron-forum/tkernel_2/blob/5778f619bdb354443551888dc2e9aa191e684da8/kernel/sysdepend/device/tef_em1d/tkdev_timer.h">T-Kernel 2.0 참조 구현의 tkdev_timer.h</a> — <code>get_hw_timer_nsec</code></li>
 </ul>
@@ -291,7 +291,7 @@ result = floor((p × 0x9b5e1bb1) / 2⁴⁴)</code></pre>
 </main>
 </div>
 <!-- chrome:bottom -->
-<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">펌웨어 업데이트 과정 — 이 주제의 문서</h2><ol><li><a href="guide-update.html">업데이트 과정 안내</a></li><li><a href="update-resources.html">업데이트 검사와 ICONBIN<span>프로젝트·버전·체크섬</span></a></li><li><a href="update-memory.html">입력 로더와 메모리 할당</a></li><li><a href="update-file-lifetimes.html">파일 인터페이스와 버퍼 수명</a></li><li><a href="update-volume-finalization.html">파일 경로·volume·종료 처리</a></li><li><a href="update-media-completion.html">매체 객체와 완료 통지</a></li><li><a href="update-partition-io.html">R 파티션과 sector I/O</a></li><li><a href="update-bank-selection.html">쓰기 bank와 BOOT 선택</a></li><li><a href="selector-policy.html">리소스 선택값과 헤더 기록 조건<span>FIFO 반례·표와 헤더의 쓰기 분기</span></a></li><li><a href="update-ui-consumer.html">완료 후 UI 작업</a></li><li><a href="update-ui-timer.html">UI 타이머와 콜백</a></li><li><a href="update-timer-abi.html">커널 호출과 예약 시각</a></li><li><a href="update-timer-insertion.html">기한 큐 삽입</a></li><li><a href="update-timer-clock.html">타이머 설정과 64비트 카운터</a></li><li><a href="update-timer-irq.html">타이머 등록과 지연 콜백</a></li><li><a href="update-subtick-arithmetic.html" aria-current="page">하위 시간의 32비트 산술</a></li><li><a href="update-clock-readers.html">시각 조회 함수</a></li></ol></nav>
+<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">펌웨어 업데이트 과정 — 이 주제의 문서</h2><ol><li><a href="guide-update.html">업데이트 과정 안내</a></li><li><a href="update-resources.html">업데이트 검사와 ICONBIN<span>프로젝트·버전·체크섬</span></a></li><li><a href="update-memory.html">입력 로더와 메모리 할당</a></li><li><a href="update-file-lifetimes.html">파일 인터페이스와 버퍼 수명</a></li><li><a href="update-volume-finalization.html">파일 경로·volume·종료 처리</a></li><li><a href="update-media-completion.html">매체 객체와 완료 통지</a></li><li><a href="update-partition-io.html">R 파티션과 sector I/O</a></li><li><a href="update-bank-selection.html">쓰기 bank와 BOOT 선택</a></li><li><a href="selector-policy.html">리소스 선택값과 헤더 기록 조건<span>선택값과 기록 조건</span></a></li><li><a href="update-ui-consumer.html">완료 후 UI 작업</a></li><li><a href="update-ui-timer.html">UI 타이머와 콜백</a></li><li><a href="update-timer-abi.html">커널 호출과 예약 시각</a></li><li><a href="update-timer-insertion.html">기한 큐 삽입</a></li><li><a href="update-timer-clock.html">타이머 설정과 64비트 카운터</a></li><li><a href="update-timer-irq.html">타이머 등록과 지연 콜백</a></li><li><a href="update-subtick-arithmetic.html" aria-current="page">하위 시간의 32비트 산술</a></li><li><a href="update-clock-readers.html">시각 조회 함수</a></li></ol></nav>
 <nav class="pager" aria-label="이전·다음 문서"><a class="prev" href="update-timer-irq.html"><small>← 이전</small>타이머 등록과 지연 콜백</a><a class="next" href="update-clock-readers.html"><small>다음 →</small>시각 조회 함수</a></nav>
 <footer class="sitefoot"><div class="sitefoot-in"><nav aria-label="사이트"><a href="../index.html#map">문서 지도</a><a href="../index.html#levels">검증 수준 읽는 법</a><a href="../glossary.html">용어집</a><a href="research-program.html">세 기종 연구 본부</a><a href="https://github.com/yunhyok/pentax-k3iii-firmware-analysis">GitHub 저장소</a></nav><p>PENTAX 펌웨어 연구. PC에서 수행한 정적 분석과 에뮬레이션 결과이며, 카메라 실기에서 검증한 내용이 아닙니다. 원본 펌웨어와 추출한 독점 코드는 포함하지 않습니다.</p></div></footer>
 <!-- /chrome:bottom -->

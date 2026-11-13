@@ -3,119 +3,246 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>K-3 III Joint 모드 1의 요청과 피드백 계산</title>
+<title>Joint 모드 1의 리셋, 요청 분기, 피드백 계산 — PENTAX K-3 Mark III 펌웨어 연구</title>
+<meta name="description" content="K-3 Mark III 펌웨어 2.20에서 PafMotor가 Joint 모드 1의 요청값과 렌즈 상태를 구동 인자로 바꾸는 과정을 세 구간으로 나눠 원본 ARM 코드로 실행한 기록입니다. 리셋 뒤의 ReloadTimer 메서드 5건, 요청 분기 19건과 채널 인자 4건, 요청 3의 피드백 계산 23건을 확인했습니다.">
 <link rel="stylesheet" href="../assets/site.css">
-<style>
-.mode1-routes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.8rem}
-.mode1-routes>div{min-width:0;padding:.65rem;border-top:2px solid var(--line-strong)}
-.mode1-routes p{margin:.35rem 0 .65rem}
-.mode1-routes .numeric{border-top-style:dashed}
-code.address{white-space:nowrap}
-@media(max-width:900px){.mode1-routes{grid-template-columns:1fr}}
-</style>
 </head>
 <body data-camera="k3iii">
 <!-- chrome:top -->
 <a class="skip" href="#main">본문 바로가기</a>
-<div class="topbar"><div class="topbar-in"><a class="brand" href="../index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="../index.html" aria-current="true">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="https://yunhyok.github.io/pentax-q7-firmware-analysis/">Q7</a></div><nav class="topnav" aria-label="주제"><a href="../index.html">개요</a><a href="guide-boot.html">부팅·저장소</a><a href="guide-update.html">업데이트</a><a href="guide-rebuild.html">재구축</a><a href="guide-rtos.html">명령·셸</a><a href="guide-color.html">색 처리</a><a href="lightroom-bridge.html">Lightroom</a><a href="af-foundations.html" aria-current="true">AF</a><a href="ui-port-contract.html">UI</a></nav></div></div>
-<nav class="crumbs" aria-label="현재 위치"><ol><li><a href="../index.html">PENTAX K-3 Mark III</a></li><li><a href="af-foundations.html">AF와 렌즈 제어</a></li><li aria-current="page">Joint 모드 1의 요청과 피드백 계산</li></ol></nav>
+<div class="topbar"><div class="topbar-in"><a class="brand" href="../index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="../index.html" aria-current="true">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="https://yunhyok.github.io/pentax-q7-firmware-analysis/">Q7</a></div><nav class="topnav" aria-label="주제"><a href="../index.html">개요</a><a href="guide-boot.html">부팅·저장소</a><a href="guide-update.html">업데이트</a><a href="guide-rebuild.html">재구축</a><a href="guide-rtos.html">명령·셸</a><a href="guide-color.html">색 처리</a><a href="guide-lightroom.html">Lightroom</a><a href="guide-af.html" aria-current="true">AF</a><a href="guide-ui.html">UI</a></nav></div></div>
+<nav class="crumbs" aria-label="현재 위치"><ol><li><a href="../index.html">PENTAX K-3 Mark III</a></li><li><a href="guide-af.html">AF와 렌즈 제어</a></li><li aria-current="page">Joint 모드 1의 요청과 피드백 계산</li></ol></nav>
 <!-- /chrome:top -->
 <header class="page-head">
-<h1>Joint 모드 1의 요청과 피드백 계산</h1>
-<p class="lead">K-3 III 펌웨어 2.20의 PafMotor가 요청값과 렌즈 상태를 구동 인자로 바꾸는 과정을 확인했습니다. 리셋 후속 호출, 요청 분기, 피드백 숫자 계산을 각각 원본 ARM으로 재생했습니다.</p>
+<p class="eyebrow">AF와 렌즈 제어 · Joint 쪽 하위 제어</p>
+<h1>Joint 모드 1의 리셋, 요청 분기, 피드백 계산</h1>
+<p class="lead">Joint 모드 1에서 PafMotor는 요청 번호와 렌즈 상태를 보고 서비스에 넘길 값을 만듭니다. 리셋 뒤 호출, 요청 번호별 분기, 피드백 숫자 계산을 각각 원본 코드로 실행해 확인했습니다.</p>
 </header>
 <div class="layout">
 <!-- chrome:toc -->
-<nav class="toc" aria-label="이 문서의 목차"><h2 data-toc="no">이 문서에서</h2><ol><li><a href="#entries">세 재생의 진입점</a></li><li><a href="#reset">리셋 후속 호출</a></li><li><a href="#parameters">요청 분기와 구동 인자</a></li><li><a href="#feedback">요청 3의 피드백 계산</a></li><li><a href="#reproduce">재현과 범위</a></li></ol></nav>
+<nav class="toc" aria-label="이 문서의 목차"><h2 data-toc="no">이 문서에서</h2><ol><li><a href="#background">배경: 모드 1에서 PafMotor가 하는 일</a></li><li><a href="#entries">세 구간을 따로 실행했습니다</a></li><li><a href="#reset">리셋은 ReloadTimer 메서드 세 개를 부릅니다</a></li><li><a href="#parameters">요청 번호마다 첫 값과 극성이 정해집니다</a></li><li><a href="#feedback">요청 3은 피드백을 누적해 표에서 값을 고릅니다</a></li><li><a href="#limits">한계와 남은 과제</a></li><li><a href="#reproduce">재현 방법</a></li><li><a href="#refs">근거 파일과 참고 자료</a></li></ol></nav>
 <!-- /chrome:toc -->
 <main class="doc" id="main">
-<section id="entries">
-<h2>세 재생의 진입점</h2>
-<figure class="diagram">
-<figcaption>각 열의 화살표는 해당 재생 안에서 이어진 원본 실행입니다</figcaption>
-<div class="mode1-routes">
-<div><strong>리셋 후속 호출</strong><p>별도 진입 <code class="address">0x52f0bb0c</code><br>→ ReloadTimer의 첫 읽기 직전</p><p>뒤의 두 메서드와 채널 인수 1도 별도 진입으로 확인</p></div>
-<div><strong>요청 분기와 구동 인자</strong><p>이벤트 처리기 → 리셋 진입 전 정지</p><p>별도 진입 <code class="address">0x52f0d8b0</code><br>→ 분기표 → 보조 호출 직전</p><p>구동 인자 생성도 별도 진입으로 확인</p></div>
-<div class="numeric"><strong>요청 3 피드백 숫자</strong><p>요청 3 → 첫 피드백 읽기 직전</p><p>별도 숫자 입력 <code class="address">0x52f0c7d8</code><br>→ 누적·조회 → 다음 MMIO 직전</p><p>로컬 호출자의 잔여값 계산도 별도 확인</p></div>
+
+<section class="summary">
+<h2 data-toc="no">핵심 요약</h2>
+<ul>
+<li>리셋은 채널 0의 ReloadTimer 메서드 세 개를 차례로 부릅니다. 세 메서드 모두 첫 레지스터 읽기 직전까지 인자를 확인했습니다. 채널 1 쪽 리셋은 서비스 칸이 비어 있어도 그냥 돌아왔습니다.</li>
+<li>요청 번호 0~9는 분기표로 갈립니다. 번호마다 PafPulse의 어느 값을 첫 값으로 쓰는지, 방향 표시(극성)를 어떻게 정하는지를 19건으로 확인했습니다.</li>
+<li>요청 3은 피드백 값을 누적한 뒤 표에서 값을 골라 PafMotor에 씁니다. 하드웨어 읽기는 실행하지 않았습니다. 읽기 결과 자리에 시험 수치를 넣어 그 뒤의 계산만 실행했습니다.</li>
+<li>세 구간은 서로 이어지지 않은 별도 실행입니다. 객체 상태와 요청·피드백 수치는 합성 입력입니다. 장치 피드백과 물리 단위는 확인하지 않았습니다.</li>
+</ul>
+</section>
+
+<div class="scope">
+<div class="ok"><h3><span class="badge ok">확인</span> 원본 코드 실행으로 확인</h3>
+<ul>
+<li>리셋 뒤 ReloadTimer 메서드 세 개의 인자 (5건)</li>
+<li>요청 0~9와 범위 밖 번호의 분기, 극성 계산 (19건)</li>
+<li>채널 1 수치 인터페이스의 부호 처리 (4건)</li>
+<li>요청 3의 누적·버킷 조회 14건, 로컬 호출 조건 9건</li>
+</ul></div>
+<div class="static"><h3><span class="badge static">정적 분석</span> 코드를 읽어 판단</h3>
+<ul>
+<li>첫 ReloadTimer 메서드의 읽기 이후 두 분기</li>
+<li><code>+0x68</code> 비영 분기의 두 저장 위치</li>
+</ul></div>
+<div class="model"><h3><span class="badge model">모델</span> 시험 조건으로 정한 것</h3>
+<ul>
+<li>렌즈·PafPulse 상태, 요청 값, 피드백 수치 <var>f</var></li>
+<li>일부 factory 포인터, 할당 주소, Udc 카운터</li>
+<li>리셋·보조 호출·장치 읽기의 반환은 합성하지 않고 건너뜀</li>
+</ul></div>
+<div class="open"><h3><span class="badge open">미확인</span> 확인하지 않은 것</h3>
+<ul>
+<li>실제 장치 피드백과 레지스터 응답</li>
+<li>모터의 물리적 구분, 시간·거리·각도 단위</li>
+<li>Pulse <code>+0xa88</code>과 PafMotor 보정 필드의 생산자</li>
+</ul></div>
 </div>
-<p>원본 명령은 검증된 RTOS에서 읽었습니다. 각 진입에 필요한 메모리와 레지스터는 하네스가 준비했습니다. MMIO 페이지는 매핑하지 않았고, 앞선 리셋·보조 호출·장치 읽기의 반환값을 합성하지 않았습니다.</p>
+
+<section id="background">
+<h2>배경: 모드 1에서 PafMotor가 하는 일</h2>
+<p><a href="af-joint-control.html">Joint 하위 제어 문서</a>에서 client 1이 Joint 모드 1을 고르는 것을, <a href="af-service-binding.html">AF 서비스 객체 문서</a>에서 그 서비스의 채널 0·1이 ReloadTimer와 Udc에 연결되는 것을 확인했습니다. 이 문서는 그 사이에서 PafMotor가 무엇을 계산하는지 봅니다.</p>
+<p>모드 1의 하위 객체가 PafMotor입니다. PafMotor는 PafPulse와 짝을 이룹니다. Joint가 넘긴 요청 번호(<code>Joint+0x74</code>), 방향 후보(<code>Joint+0x5c</code>), 표본 값(<code>Joint+0x68</code>)을 받아 서비스에 넘길 값을 만듭니다.</p>
+<div class="callout plain"><strong class="label">쉽게 말하면</strong><p>요청 번호는 메뉴 번호처럼 처리 방식을 고릅니다. 번호에 따라 기준 값을 고르고 방향 표시를 붙여 서비스로 넘깁니다. 요청 3은 피드백 값을 받아 누적하고 그 크기에 맞는 값을 표에서 찾아 둡니다. 숫자가 실제로 무엇을 뜻하는지는 아직 모릅니다.</p></div>
+<div class="table-wrap"><table class="compact">
+<caption>이 문서의 기호 (다섯 문서 공통 용어)</caption>
+<thead><tr><th scope="col">기호</th><th scope="col">가리키는 것</th><th scope="col">처음 소개한 문서</th></tr></thead>
+<tbody>
+<tr><th scope="row">Joint</th><td>Joint 제어 객체 (<code>AfJointLensControl</code>)</td><td><a href="af-drive-architecture.html">렌즈 구동 선택</a></td></tr>
+<tr><th scope="row">Paf</th><td>PafMotor. 모드 1의 하위 객체</td><td><a href="af-drive-architecture.html">렌즈 구동 선택</a>에서 이름만</td></tr>
+<tr><th scope="row">Pulse</th><td>PafPulse. PafMotor와 짝을 이루는 객체</td><td><a href="af-drive-architecture.html">렌즈 구동 선택</a>에서 이름만</td></tr>
+<tr><th scope="row">D1</th><td>기본 키 <code>0xd1</code>의 ReloadTimer (채널 0)</td><td><a href="af-service-binding.html">AF 서비스 객체</a></td></tr>
+<tr><th scope="row"><var>f</var>, <var>p</var></th><td>피드백 수치(읽기 결과 자리에 넣은 값), 요청 3의 인자</td><td>이 문서</td></tr>
+</tbody></table></div>
+</section>
+
+<section id="entries">
+<h2>세 구간을 따로 실행했습니다</h2>
+<p class="takeaway">각 구간은 앞 단계의 반환값을 합성하지 않고 다음 진입점에서 새로 시작했습니다. 그래서 구간 사이의 연결은 실행으로 확인한 것이 아닙니다.</p>
+<figure class="diagram"><figcaption>세 실행 구간과 정지 지점</figcaption><div class="dg-scroll">
+<svg class="dg" viewBox="0 0 800 380" role="img" aria-labelledby="dg-m1-title dg-m1-desc">
+<title id="dg-m1-title">리셋, 요청 분기, 요청 3 피드백의 세 실행 구간</title>
+<desc id="dg-m1-desc">첫째 줄은 리셋 뒤 호출입니다. 0x52f0bb0c에서 채널 0 리셋으로 별도 진입해 ReloadTimer 메서드 +0x7c, +0x54, +0x58을 거쳐 0x1e000020의 첫 레지스터 읽기 직전에 멈췄습니다. 채널 1 리셋은 따로 진입했고 서비스 칸이 비어 있어도 돌아왔습니다. 둘째 줄은 요청 분기입니다. 이벤트 처리기가 모드 1을 고르고 요청값을 읽은 뒤 리셋 진입 전에 멈췄습니다. 리셋 반환을 건너뛰고 0x52f0d8b0에서 다시 진입해 0~9 분기표로 첫 값과 극성을 정하고 보조 호출 직전에 멈췄습니다. 셋째 줄은 요청 3입니다. D1의 피드백 레지스터 0x1e000024를 읽기 직전에 멈췄고, 읽기 결과 자리에 수치 f를 넣어 0x52f0c7d8에서 별도로 시작해 누적과 버킷 조회를 거쳐 다음 레지스터 접근 직전에 멈췄습니다.</desc>
+<defs><marker id="dg-m1-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0 0L10 5L0 10z"/></marker></defs>
+<text class="h" x="20" y="22">① 리셋 뒤 호출</text>
+<rect class="b ok" x="20" y="32" width="170" height="64" rx="8"/><text class="t" x="32" y="57">채널 0 리셋</text><text class="s" x="32" y="78">진입 0x52f0bb0c</text>
+<path class="e" d="M190 64H216" marker-end="url(#dg-m1-ah)"/>
+<rect class="b ok" x="220" y="32" width="170" height="64" rx="8"/><text class="t" x="232" y="57">ReloadTimer 메서드</text><text class="s" x="232" y="78">+0x7c · +0x54 · +0x58</text>
+<path class="e" d="M390 64H416" marker-end="url(#dg-m1-ah)"/>
+<rect class="b open" x="420" y="32" width="170" height="64" rx="8"/><text class="t" x="432" y="57">첫 읽기 직전 정지</text><text class="s mono" x="432" y="78">[0x1e000020]</text>
+<rect class="b ok" x="620" y="32" width="170" height="64" rx="8"/><text class="t" x="632" y="57">채널 1 리셋</text><text class="s" x="632" y="78">빈 칸이어도 반환</text>
+<text class="h" x="20" y="142">② 요청 분기와 구동 인자</text>
+<rect class="b ok" x="20" y="152" width="170" height="64" rx="8"/><text class="t" x="32" y="177">이벤트 처리기</text><text class="s" x="32" y="198">모드 1 · 요청값 읽기</text>
+<path class="e model" d="M190 184H216" marker-end="url(#dg-m1-ah)"/>
+<rect class="b model" x="220" y="152" width="170" height="64" rx="8"/><text class="t" x="232" y="177">리셋 반환 건너뜀</text><text class="s" x="232" y="198">진입 0x52f0d8b0</text>
+<path class="e" d="M390 184H416" marker-end="url(#dg-m1-ah)"/>
+<rect class="b key" x="420" y="152" width="170" height="64" rx="8"/><text class="t" x="432" y="177">분기표 0~9</text><text class="s" x="432" y="198">첫 값 · 극성 결정</text>
+<path class="e" d="M590 184H616" marker-end="url(#dg-m1-ah)"/>
+<rect class="b open" x="620" y="152" width="170" height="64" rx="8"/><text class="t" x="632" y="177">보조 호출 직전</text><text class="s" x="632" y="198">0x52f06b24 미실행</text>
+<text class="h" x="20" y="262">③ 요청 3 피드백 숫자</text>
+<rect class="b open" x="20" y="272" width="170" height="64" rx="8"/><text class="t" x="32" y="297">D1 피드백 읽기</text><text class="s mono" x="32" y="318">[0x1e000024] 직전</text>
+<text class="n" x="20" y="358">읽은 값 대신 수치 f를 넣음 →</text>
+<path class="e model" d="M190 304H216" marker-end="url(#dg-m1-ah)"/>
+<rect class="b model" x="220" y="272" width="170" height="64" rx="8"/><text class="t" x="232" y="297">수치 f 공급</text><text class="s" x="232" y="318">진입 0x52f0c7d8</text>
+<path class="e" d="M390 304H416" marker-end="url(#dg-m1-ah)"/>
+<rect class="b key" x="420" y="272" width="170" height="64" rx="8"/><text class="t" x="432" y="297">누적 · 버킷 조회</text><text class="s" x="432" y="318">Paf +0x52 · ROM 표</text>
+<path class="e" d="M590 304H616" marker-end="url(#dg-m1-ah)"/>
+<rect class="b open" x="620" y="272" width="170" height="64" rx="8"/><text class="t" x="632" y="297">다음 레지스터 직전</text><text class="s" x="632" y="318">채널 서비스 안에서 정지</text>
+</svg></div>
+<ul class="dg-legend"><li><i class="ok"></i>원본 코드 실행으로 확인</li><li><i class="key"></i>이 문서의 중심 계산</li><li><i class="model"></i>건너뛰거나 시험 값을 넣은 자리</li><li><i class="open"></i>실행하지 않은 레지스터 접근·호출</li></ul>
 </figure>
-<p>이벤트와 모드 선택의 앞부분, ReloadTimer·Udc 객체의 실제 연결은 각각 앞선 원본 재생에서 확인했습니다. <a href="af-joint-control.html">Joint 이벤트 처리</a> · <a href="af-service-binding.html">서비스 객체 연결</a></p>
+<p>원본 명령은 해시를 확인한 RTOS에서 읽었습니다. 각 진입에 필요한 메모리와 레지스터는 검증 스크립트가 준비했습니다. 레지스터 페이지는 매핑하지 않았고 앞 단계의 리셋·보조 호출·장치 읽기의 반환값도 합성하지 않았습니다.</p>
 </section>
 
 <section id="reset">
-<h2>리셋 후속 호출</h2>
-<p><code class="address">0x52f0bb0c</code>에서 PafMotor <code>+8</code>의 서비스를 채널 인수 0으로 호출하면 <code class="address">0x531784c8</code>이 기본 장치 키 <code>0xd1</code>의 ReloadTimer를 사용합니다. 실제 ROM vtable의 세 슬롯을 아래와 같이 확인했습니다. 두 번째와 세 번째 행은 원본 호출 프레임을 준비한 뒤 각각 진입한 대조입니다.</p>
-<div class="table-wrap" tabindex="0" aria-label="리셋 후속 메서드"><table>
-<thead><tr><th scope="col">슬롯과 원본 대상</th><th scope="col">확인한 인자와 정지 지점</th></tr></thead>
+<h2>리셋은 ReloadTimer 메서드 세 개를 부릅니다</h2>
+<p class="takeaway">채널 0 리셋은 PafMotor <code>+8</code>의 서비스를 거쳐 D1의 ROM vtable 슬롯 세 개를 부릅니다. 세 메서드 모두 같은 레지스터 블록을 읽기 직전까지 실행했습니다.</p>
+<p><code>0x52f0bb0c</code>에서 서비스를 채널 인수 0으로 호출하면 <code>0x531784c8</code>이 기본 키 <code>0xd1</code>의 ReloadTimer를 씁니다. 두 번째와 세 번째 행은 원본 호출 프레임을 준비한 뒤 각각 따로 진입한 대조입니다.</p>
+<div class="table-wrap"><table>
+<caption>리셋 뒤 ReloadTimer 메서드</caption>
+<thead><tr><th scope="col">vtable 슬롯 → 원본 대상</th><th scope="col">확인한 인자</th><th scope="col">정지 지점</th></tr></thead>
 <tbody>
-<tr><th scope="row"><code>+0x7c</code> → <code class="address">0x5326d6b0</code></th><td><code>r1=0xffff</code>, <code>r2=1</code>. <code class="address">0x5326d6c8</code>에서 <code class="address">0x1e000020</code>의 첫 32비트 읽기 직전.</td></tr>
-<tr><th scope="row"><code>+0x54</code> → <code class="address">0x5326d740</code></th><td>원본 descriptor로 객체 <code>+0x30</code>을 0으로 쓰고 제어값 <code>0xc80</code>과 reload 후보 <code>0xffff</code>, 0을 준비. <code class="address">0x5326d8b4</code>에서 같은 읽기 직전.</td></tr>
-<tr><th scope="row"><code>+0x58</code> → <code class="address">0x5326d570</code></th><td><code>r1=0x1e000020</code>, <code>ip=0x1e000028</code>, <code>r2=0</code>. <code class="address">0x5326d57c</code>에서 첫 읽기 직전.</td></tr>
+<tr><th scope="row"><code>+0x7c</code> → <code>0x5326d6b0</code></th><td><code>r1=0xffff</code>, <code>r2=1</code></td><td><code>0x5326d6c8</code>, <code>0x1e000020</code>의 첫 32비트 읽기 직전</td></tr>
+<tr><th scope="row"><code>+0x54</code> → <code>0x5326d740</code></th><td>원본 descriptor로 객체 <code>+0x30</code>을 0으로 쓰고, 제어값 <code>0xc80</code>과 reload 후보 <code>0xffff</code>, 0을 준비</td><td><code>0x5326d8b4</code>, 같은 읽기 직전</td></tr>
+<tr><th scope="row"><code>+0x58</code> → <code>0x5326d570</code></th><td><code>r1=0x1e000020</code>, <code>ip=0x1e000028</code>, <code>r2=0</code></td><td><code>0x5326d57c</code>, 첫 읽기 직전</td></tr>
 </tbody></table></div>
-<p>첫 호출 앞에서 확인한 19바이트는 <code class="wrap">01000000 000001?? ffff0000 00000000 000003</code>입니다. <code>+7</code>은 A5·5A 대조에서 각각 초기값을 유지했습니다. D1이 없는 경우는 <code class="address">0x5317850c</code>에서 널 포인터 역참조 직전에 멈췄습니다.</p>
-<p>별도 <code class="address">0x52f0bb18</code>에서 채널 인수 1로 호출한 대조는 두 서비스 슬롯이 비어 있어도 스택 가드 확인 뒤 돌아왔습니다. 바깥 코드가 PafMotor <code>+0x20/+0x21/+0x32</code>를 0으로 썼습니다. 이 인수 1은 앞선 Udc 리셋에 사용된 객체의 채널 바이트와 별개입니다.</p>
-<details><summary>첫 ReloadTimer 메서드의 정적 반환 경로</summary>
-<p>원본 <code class="address">0x5326d6c8</code>에서 읽을 레지스터의 bit 12가 켜진 분기는 이 인자에서 <code class="address">0x1e00002c</code>에 값을 씁니다. bit 12가 꺼진 분기는 쓰기를 건너뛰고 거짓 조건을 assertion 서비스로 넘깁니다. 이 서비스가 반환하는 경우에만 이어지는 원본 코드가 0을 반환합니다. 호출자는 그 반환값을 검사하지 않고 다음 메서드로 넘어갑니다. 읽기 이후의 두 하드웨어 분기는 정적으로 확인했습니다.</p>
+<p>첫 호출 앞에서 확인한 descriptor 19바이트는 <code class="wrap">01000000 000001?? ffff0000 00000000 000003</code>입니다. <code>+7</code>(<code>??</code>)은 스택을 A5와 5A로 채운 두 대조에서 각각 채운 값을 그대로 유지했습니다. D1이 없으면 <code>0x5317850c</code>의 빈 포인터 역참조 직전에 멈췄습니다.</p>
+<p>채널 인수 1로 <code>0x52f0bb18</code>에서 따로 호출한 대조는 두 서비스 칸이 비어 있어도 스택 가드 확인 뒤 돌아왔습니다. 바깥 코드가 PafMotor <code>+0x20/+0x21/+0x32</code>를 0으로 썼습니다. 이 인수 1은 <a href="af-service-binding.html">AF 서비스 객체 문서</a>의 Udc 리셋에 쓰인 객체의 채널 바이트와 별개입니다.</p>
+<details><summary>첫 ReloadTimer 메서드의 읽기 이후 (정적 분석)</summary>
+<p>원본 <code>0x5326d6c8</code>에서 읽을 레지스터의 bit 12가 켜진 분기는 이 인자에서 <code>0x1e00002c</code>에 값을 씁니다. bit 12가 꺼진 분기는 쓰기를 건너뛰고 거짓 조건을 assertion 서비스로 넘깁니다. 이 서비스가 반환하는 경우에만 이어지는 원본 코드가 0을 반환합니다. 호출자는 그 반환값을 검사하지 않고 다음 메서드로 넘어갑니다.</p>
 </details>
-<p><a href="af-reset-tail-checks.json">5개 대조와 원본 범위</a> · <a href="../verify_af_reset_tail.py">리셋 후속 재현기</a></p>
+<p class="small">근거: <a href="af-reset-tail-checks.json">5개 대조와 원본 범위</a> · <a href="../verify_af_reset_tail.py">리셋 뒤 메서드 재현기</a></p>
 </section>
 
 <section id="parameters">
-<h2>요청 분기와 구동 인자</h2>
-<p>원본 <code class="address">0x52ef877c</code>가 client 1에서 Joint 모드 1을 선택했습니다. 그 뒤 <code class="address">0x52f08474</code>는 별도 <code>Joint+0x74</code>의 32비트 요청값을 읽습니다. <code class="address">0x52f0d8b0</code>은 이 값을 unsigned로 비교해 0–9의 점프 테이블을 사용합니다. <code>Joint+0x5c</code>의 32비트 값은 극성 계산 후보가 되며, <code>Joint+0x68</code>의 halfword는 Pulse <code>+0x2e</code>에 기록됩니다.</p>
-<div class="table-wrap" tabindex="0" aria-label="요청 코드와 첫 값"><table>
-<thead><tr><th scope="col">요청값</th><th scope="col">첫 값과 후속 분기</th></tr></thead>
+<h2>요청 번호마다 첫 값과 극성이 정해집니다</h2>
+<p class="takeaway">요청 번호 0~9는 분기표로 갈려 PafPulse의 서로 다른 값을 첫 값으로 씁니다. 방향 표시는 렌즈 바이트와 입력 word 두 가지로 정해집니다.</p>
+<p>원본 <code>0x52ef877c</code>가 client 1에서 Joint 모드 1을 고른 뒤 <code>0x52f08474</code>가 <code>Joint+0x74</code>의 32비트 요청값을 읽습니다. <code>0x52f0d8b0</code>은 이 값을 부호 없이 비교해 0~9의 점프 테이블을 씁니다. <code>Joint+0x5c</code>의 32비트 값은 극성 계산 후보가 되고 <code>Joint+0x68</code>의 halfword는 Pulse <code>+0x2e</code>에 기록됩니다.</p>
+<div class="table-wrap"><table>
+<caption>요청 번호와 첫 값</caption>
+<thead><tr><th scope="col">요청값</th><th scope="col">첫 값과 이어지는 분기</th></tr></thead>
 <tbody>
-<tr><th scope="row">0, 3, 범위 밖</th><td>Pulse <code>+0x2e</code>. 요청 3은 뒤에서 D1의 피드백을 읽습니다. 4도 같은 점프 목표를 가리키며 독립 대조는 생략했습니다.</td></tr>
-<tr><th scope="row">1, 2</th><td><code>(Pulse[+0x2e] + Pulse[+0xec]) mod 65536</code>. 요청 1에서 Pulse <code>+0x15</code>가 비영이면 합산 전에 별도 함수로 진입합니다.</td></tr>
-<tr><th scope="row">5</th><td>Pulse <code>+0xec</code>. 이전 <code>Paf+0x48</code>이 0이면 1, 그 외에는 0을 극성 계산에 넘기고 <code>+0x48/+0x4c</code>에 씁니다.</td></tr>
+<tr><th scope="row">0, 3, 범위 밖</th><td>Pulse <code>+0x2e</code>. 요청 3은 뒤에서 D1의 피드백을 읽습니다. 4도 같은 점프 목표를 가리키지만 따로 대조하지 않았습니다.</td></tr>
+<tr><th scope="row">1, 2</th><td><code>(Pulse[+0x2e] + Pulse[+0xec]) mod 65536</code>. 요청 1에서 Pulse <code>+0x15</code>가 0이 아니면 합산 전에 별도 함수로 들어갑니다.</td></tr>
+<tr><th scope="row">5</th><td>Pulse <code>+0xec</code>. 이전 <code>Paf+0x48</code>이 0이면 1, 아니면 0을 극성 계산에 넘기고 <code>+0x48/+0x4c</code>에 씁니다.</td></tr>
 <tr><th scope="row">6, 7</th><td>6은 <code>0xfffe</code>, 7은 Pulse <code>+0x2e</code>. 두 요청 모두 이전 <code>Paf+0x48</code>을 극성 계산에 넘깁니다.</td></tr>
-<tr><th scope="row">8</th><td>Pulse <code>+0x2e</code>를 읽고 별도 함수 <code class="address">0x52f0d000</code> 진입 직전에서 정지했습니다.</td></tr>
-<tr><th scope="row">9</th><td>Pulse <code>+0x2e</code>. 214 이하에서 밴드 기록을 건너뛰고 215–407, 408–540, 541 이상에서 <code>Paf+0x41</code>에 각각 0, 1, 2를 씁니다.</td></tr>
+<tr><th scope="row">8</th><td>Pulse <code>+0x2e</code>를 읽고 별도 함수 <code>0x52f0d000</code>에 들어가기 직전에 멈췄습니다.</td></tr>
+<tr><th scope="row">9</th><td>Pulse <code>+0x2e</code>. 214 이하는 구간 기록을 건너뜁니다. 215~407, 408~540, 541 이상에서 <code>Paf+0x41</code>에 각각 0, 1, 2를 씁니다.</td></tr>
 </tbody></table></div>
-<p><code class="address">0x52f0bd1c</code>은 렌즈 객체 <code>+0x134</code>의 바이트와 입력 word <var>d</var>를 읽습니다. 렌즈 바이트가 0이면 <var>d</var>가 1일 때, 렌즈 바이트가 비영이면 <var>d</var>가 0일 때만 결과가 0입니다. 그 외에는 1을 <code>Paf+0x42</code>에 쓰고 반환합니다.</p>
-<p>보조 호출 <code class="address">0x52f06b24</code>을 건너뛴 별도 진입에서 원본 구동 서비스 인자를 확인했습니다. 채널 0 대조는 준비한 값을 그대로 전달했습니다. 채널 1의 수치 인터페이스에 별도 값을 공급하면 <code>Paf+0x42=1</code>일 때 부호를 반전한 뒤 하위 16비트를 넘깁니다. 같은 <code>0x12348001</code>의 전달값은 상태에 따라 <code>0x8001</code> 또는 <code>0x7fff</code>였습니다.</p>
-<p><a href="af-mode1-parameter-checks.json">19개 요청 경로와 4개 별도 채널 인자 대조</a> · <a href="../verify_af_mode1_parameters.py">요청 분기 재현기</a></p>
+<p>극성 함수 <code>0x52f0bd1c</code>는 렌즈 객체 <code>+0x134</code>의 바이트와 입력 word <var>d</var>를 읽습니다. 결과가 0이 되는 경우는 두 가지뿐입니다. 렌즈 바이트가 0이고 <var>d</var>가 1일 때, 렌즈 바이트가 0이 아니고 <var>d</var>가 0일 때입니다. 그 밖에는 <code>Paf+0x42</code>에 1을 쓰고 돌아옵니다.</p>
+<div class="table-wrap"><table class="fit">
+<caption>채널 1 수치 인터페이스의 부호 처리 (4건, 보조 호출 <code>0x52f06b24</code>를 건너뛴 별도 진입)</caption>
+<thead><tr><th scope="col">공급한 word</th><th scope="col"><code>Paf+0x42</code></th><th scope="col">서비스에 넘어간 값</th></tr></thead>
+<tbody>
+<tr><td><code>0x12348001</code></td><td class="n">0</td><td><code>0x8001</code> (하위 16비트 그대로)</td></tr>
+<tr><td><code>0x12348001</code></td><td class="n">1</td><td><code>0x7fff</code> (부호 반전 뒤 하위 16비트)</td></tr>
+<tr><td><code>0x8000</code></td><td class="n">1</td><td><code>0x8000</code></td></tr>
+<tr><td><code>0xffff</code></td><td class="n">1</td><td><code>0x0001</code></td></tr>
+</tbody></table></div>
+<p>채널 0 대조는 준비한 값을 그대로 서비스에 넘겼습니다. 채널 1은 <code>Paf+0x42</code>가 1이면 부호를 뒤집은 뒤 하위 16비트를 넘깁니다. 네 건 모두 Udc의 첫 레지스터 주소 <code>0x1e00202c</code>를 읽기 직전에 멈췄습니다.</p>
+<p class="small">근거: <a href="af-mode1-parameter-checks.json">19개 요청 경로와 4개 별도 채널 인자 대조</a> · <a href="../verify_af_mode1_parameters.py">요청 분기 재현기</a></p>
 </section>
 
 <section id="feedback">
-<h2>요청 3의 피드백 계산</h2>
-<p>요청 3의 원본 D1 메서드는 <code class="address">0x5326d5e8</code>에서 <code class="address">0x1e000024</code>를 32비트로 읽습니다. 재생은 읽기 직전에 멈췄습니다. 다음 단계는 <code class="address">0x52f0c7d8</code>에서 수치 <var>f</var>를 <code>r0</code>에 공급해 시작했습니다. 원본 호출자 <code class="address">0x53178344</code>가 읽기 결과의 하위 16비트를 취하므로 입력 폭을 그에 맞췄습니다.</p>
+<h2>요청 3은 피드백을 누적해 표에서 값을 고릅니다</h2>
+<p class="takeaway">요청 3은 피드백 수치를 PafMotor <code>+0x52</code>에 누적합니다. 그 값으로 ROM 표의 버킷을 골라 <code>+0x5a/+0x5c</code>에 씁니다.</p>
+<p>요청 3의 D1 메서드는 <code>0x5326d5e8</code>에서 <code>0x1e000024</code>를 32비트로 읽습니다. 실행은 이 읽기 직전에 멈췄습니다. 다음 단계는 <code>0x52f0c7d8</code>에서 수치 <var>f</var>를 <code>r0</code>에 넣어 시작했습니다. 원본 호출자 <code>0x53178344</code>가 읽기 결과의 하위 16비트를 취하므로 입력 폭도 16비트로 맞췄습니다.</p>
 <pre><code>A = u16(Paf[+0x52] + Paf[+0x58] − s16(f))
 Paf[+0x52] = A
-x = u16((A의 bit 15가 켜져 있으면 0, 아니면 A) + p)</code></pre>
-<p><code class="address">0x52f0c7dc</code>의 <code>SXTH</code>가 <var>f</var>를 부호 확장합니다. bit 15가 켜져도 메모리의 <var>A</var>는 그대로 유지되고 조회에 쓰는 임시값만 0이 됩니다. 이전 누적 99와 <var>p</var>=1에서 <var>f</var>=<code>0xffff</code>는 조회 입력 101을, <var>f</var>=1은 99를 만들었습니다.</p>
-<p><code>Paf+0x43=0</code>과 <code>Paf+0x68=0</code>이면 <var>x</var>=0은 버킷 0, 그 외에는 <code>floor((x−1)/100)</code>을 사용합니다. ROM <code class="address">0x538f25e0</code>부터의 halfword 표는 버킷 28까지 사용합니다. 입력 2900과 2901은 모두 300을 냈지만, 실제 주소 기록은 버킷 28 읽기와 기본값 읽기를 구분했습니다. <code>+0x43</code>이 비영이면 조회를 건너뛰고 <code>2*p</code>의 하위 16비트를 채널 1로 먼저 넘깁니다.</p>
-<h3><code>+0x68</code> 비영 분기의 정정</h3>
-<p>앞선 요청 분기 기록에서 “범위 밖의 몫이나 <code>Paf+0x68</code>이 0이 아닌 분기는 기본값으로 간다”고 적었습니다. 당시 실행한 요청 대조는 <code>+0x68=0</code>이었고, 원본 명령을 다시 확인해 비영 분기의 설명을 아래와 같이 정정합니다.</p>
+x = u16((A의 bit 15가 켜져 있으면 0, 아니면 A) + p)
+버킷 = (x == 0) ? 0 : floor((x − 1) / 100)      ※ Paf+0x43 = 0, Paf+0x68 = 0일 때</code></pre>
+<p><code>0x52f0c7dc</code>의 <code>SXTH</code>가 <var>f</var>를 부호 확장합니다. bit 15가 켜져도 메모리의 <var>A</var>는 그대로 남고 조회에 쓰는 임시값만 0이 됩니다. ROM <code>0x538f25e0</code>부터의 표는 버킷 28까지 씁니다. <code>+0x43</code>이 0이 아니면 조회를 건너뛰고 <code>2*p</code>의 하위 16비트를 채널 1로 먼저 넘깁니다.</p>
+<div class="table-wrap"><table class="compact">
+<caption>누적·조회 14건 가운데 대표 사례</caption>
+<thead><tr><th scope="col">사례</th><th scope="col">입력</th><th scope="col">누적 <var>A</var></th><th scope="col">조회 입력 <var>x</var></th><th scope="col"><code>+0x5a / +0x5c</code></th></tr></thead>
+<tbody>
+<tr><th scope="row">음수 피드백</th><td>이전 99, <var>f</var>=<code>0xffff</code>, <var>p</var>=1</td><td class="n">100</td><td class="n">101</td><td>200 / 300</td></tr>
+<tr><th scope="row">양수 피드백</th><td>이전 99, <var>f</var>=1, <var>p</var>=1</td><td class="n">98</td><td class="n">99</td><td>100 / 300</td></tr>
+<tr><th scope="row">bit 15 켜짐</th><td>이전 0, <var>f</var>=<code>0x7fff</code>, <var>p</var>=101</td><td class="n">32,769</td><td class="n">101</td><td>200 / 300</td></tr>
+<tr><th scope="row">마지막 버킷</th><td>이전 2,800, <var>p</var>=100, <code>+0x56</code>=4</td><td class="n">2,800</td><td class="n">2,900</td><td>304 / 300</td></tr>
+<tr><th scope="row">버킷 범위 밖</th><td>이전 2,800, <var>p</var>=101, <code>+0x56</code>=4</td><td class="n">2,800</td><td class="n">2,901</td><td>304 / 300</td></tr>
+<tr><th scope="row"><code>+0x68</code> 비영</th><td><code>+0x68</code>=1, <code>+0x56</code>=4</td><td class="n">100</td><td>조회 안 함</td><td>5 / 300</td></tr>
+<tr><th scope="row"><code>+0x43</code>=4, 극성 1</th><td><var>p</var>=<code>0xffff</code></td><td>—</td><td>조회 안 함</td><td>채널 1에 2를 넘김</td></tr>
+</tbody></table></div>
+<p>입력 2,900과 2,901은 표에서 같은 값 300을 읽었고 <code>+0x56</code>의 4를 더해 304가 됐습니다. 주소 기록을 보면 2,900은 버킷 28을 읽었고 2,901은 범위를 벗어나 기본값 읽기로 갔습니다. 두 읽기가 같은 ROM 위치를 가리킵니다.</p>
+<div class="callout fix"><strong class="label">정정</strong><p>이전 요청 분기 기록은 “범위 밖의 몫이나 <code>Paf+0x68</code>이 0이 아닌 분기는 기본값으로 간다”고 적었습니다. 당시 실행한 요청 대조는 <code>+0x68=0</code>이었습니다. 원본 명령을 다시 확인한 결과는 아래와 같습니다.</p>
 <ul>
-<li>요청 9가 214 초과 경로로 들어가거나 요청 <code>0xff</code>를 처리할 때, <code class="address">0x52f0c8cc</code>가 읽은 비영 <code>+0x68</code>은 그대로 <code>+0x5a</code>에 저장됩니다. <code>+0x5c</code>는 ROM 기본값입니다. 원본 <code class="address">0x52f0c918</code>부터 이 분기를 따라가면 <code class="address">0x52f0c8c0</code>과 <code class="address">0x52f0c8c4</code>의 두 저장을 확인할 수 있습니다.</li>
-<li>요청 3의 조회 경로는 <code>+0x5a = u16(선택값 + Paf[+0x56])</code>입니다. <code>+0x68</code>이 비영이면 그 값이 선택값이며, <code>+0x5c</code>는 ROM 기본값을 받습니다. <code class="address">0x52f0c99c</code> 경로의 대조에서 <code>+0x68=1</code>, <code>+0x56=4</code>일 때 결과는 5와 300이었습니다.</li>
+<li>요청 9가 214 초과 경로로 들어가거나 요청 <code>0xff</code>를 처리할 때, <code>0x52f0c8cc</code>가 읽은 비영 <code>+0x68</code>은 그대로 <code>+0x5a</code>에 저장됩니다. <code>+0x5c</code>는 ROM 기본값입니다. 원본 <code>0x52f0c918</code>부터 따라가면 <code>0x52f0c8c0</code>과 <code>0x52f0c8c4</code>의 두 저장이 보입니다.</li>
+<li>요청 3의 조회 경로는 <code>+0x5a = u16(선택값 + Paf[+0x56])</code>입니다. <code>+0x68</code>이 0이 아니면 그 값이 선택값이고 <code>+0x5c</code>는 ROM 기본값을 받습니다. <code>0x52f0c99c</code> 경로 대조에서 <code>+0x68=1</code>, <code>+0x56=4</code>일 때 결과는 5와 300이었습니다.</li>
+</ul></div>
+<h3>로컬 호출자가 요청 3을 부르는 조건</h3>
+<p>별도 <code>0x52f0c9f0</code> 진입에서 아래 두 식을 확인했습니다. 결과는 Pulse <code>+0xf8</code>에 저장됩니다.</p>
+<pre><code>difference = u16(Pulse[+0xa88] − f)
+remainder  = s16(Pulse[+0x2e] − difference)</code></pre>
+<p>이 분기는 <code>Paf+0x1a=0</code>, <code>Paf+0x43</code>이 0 또는 4, <code>remainder&gt;0</code>일 때 <code>0x52f0ca44</code>에서 요청 3을 부릅니다. 9건 가운데 잔여값 1·32,767과 기준값 wrap 사례, 상태 4 사례가 요청 3으로 갔습니다. 잔여값 0·−1·−32,768, <code>+0x1a=1</code>, 상태 1은 요청 3을 부르지 않았습니다. 다른 호출 지점도 있으므로 이 조건은 이 로컬 분기에만 해당합니다.</p>
+<p class="small">근거: <a href="af-request3-feedback-checks.json">14개 누적·조회와 9개 로컬 호출 대조</a> · <a href="../verify_af_request3_feedback.py">피드백 수치 재현기</a></p>
+</section>
+
+<section id="limits">
+<h2>한계와 남은 과제</h2>
+<ul>
+<li><strong>구간 사이의 연결</strong> 세 구간은 각각 따로 진입했습니다. 리셋이 실제로 돌아온 뒤 분기표로 이어지는 실행은 하지 않았습니다.</li>
+<li><strong>장치 피드백</strong> <var>f</var>는 레지스터 읽기 결과 자리에 넣은 시험 수치입니다. 실제 장치가 어떤 값을 돌려주는지는 모릅니다.</li>
+<li><strong>남은 생산자</strong> Pulse <code>+0xa88</code>의 비영 기준값과 PafMotor 보정 필드(<code>+0x56</code>, <code>+0x68</code>)를 누가 쓰는지는 <a href="af-feedback-producers.html">기준값 쓰기 경로 문서</a>와 <a href="af-motor-fields.html">PafMotor 필드 문서</a>에서 이어서 추적합니다.</li>
+<li><strong>물리 의미</strong> 부팅 중 객체 수명, 모터의 물리적 구분, 시간·거리·각도 단위는 확인하지 않았습니다. 카메라에서 실행한 결과가 아닙니다.</li>
 </ul>
-<h3>로컬 호출자의 양수 조건</h3>
-<p>별도 <code class="address">0x52f0c9f0</code> 진입에서는 <code>difference = u16(Pulse[+0xa88] − f)</code>와 <code>remainder = s16(Pulse[+0x2e] − difference)</code>를 확인했습니다. 이 분기는 <code>Paf+0x1a=0</code>, <code>Paf+0x43</code>이 0 또는 4, <code>remainder&gt;0</code>일 때 <code class="address">0x52f0ca44</code>에서 요청 3을 호출합니다. 다른 호출 지점도 있으므로 이 조건은 이 로컬 분기에만 적용합니다.</p>
-<p><a href="af-request3-feedback-checks.json">14개 누적·조회와 9개 로컬 호출 대조</a> · <a href="../verify_af_request3_feedback.py">피드백 수치 재현기</a></p>
 </section>
 
 <section id="reproduce">
-<h2>재현과 범위</h2>
-<p>Unicorn 2.1.4에서 Cortex-A7 기본 실행과 Cortex-A7·A15의 호출자 저장 레지스터·NZCV 변경 대조가 일치했습니다. RTOS와 decoded 입력도 재현기마다 바이트 단위로 같은 JSON을 만들었습니다. 실행 후 RX 원본 매핑의 전체 SHA-256을 다시 확인했습니다.</p>
-<p>세 도구 모두 같은 RTOS 또는 decoded 파일을 입력받습니다. Python 최적화 모드를 끄고, 출력 경로에는 새 파일명을 사용합니다.</p>
+<h2>재현 방법</h2>
+<p class="takeaway">세 스크립트가 같은 RTOS 또는 decoded 파일을 받아 각 구간을 실행합니다.</p>
+<ul>
+<li>Unicorn 2.1.4에서 Cortex-A7 기본 실행과, 호출자 저장 레지스터·NZCV를 바꾼 Cortex-A7·A15 대조가 일치했습니다.</li>
+<li>RTOS와 decoded 입력이 스크립트마다 바이트 단위로 같은 JSON을 만들었습니다. 실행 뒤 원본 매핑 전체의 SHA-256도 다시 확인했습니다.</li>
+<li>원본 생성자와 레지스트리·바인더를 썼습니다. 일부 factory 포인터와 할당 주소, Udc 카운터, 렌즈·Pulse 상태, 요청·피드백 수치는 스크립트가 넣었습니다.</li>
+</ul>
+<dl class="kv">
+<dt>RTOS · 25,483,200바이트</dt><dd><code class="wrap">342d2f35405e8daf1797dfe431d2e4aa70f4b52a2c242a29df48206672f1dfb4</code></dd>
+<dt>Decoded · 78,683,892바이트</dt><dd><code class="wrap">7ff301d585ef7adcd620a15575faa39b4227cc5a27eaa8d754efe50f667a30f9</code> (RTOS 오프셋 <code>0x1c19c</code>)</dd>
+</dl>
 <pre><code>python verify_af_reset_tail.py /path/to/rtos.bin --output reset-tail.json
 python verify_af_mode1_parameters.py /path/to/decoded.bin --output mode1-parameters.json
 python verify_af_request3_feedback.py /path/to/rtos.bin --output request3-feedback.json</code></pre>
-<dl>
-<dt>RTOS · 25,483,200바이트</dt><dd><code class="wrap">342d2f35405e8daf1797dfe431d2e4aa70f4b52a2c242a29df48206672f1dfb4</code></dd>
-<dt>Decoded · 78,683,892바이트 · RTOS 오프셋 <code>0x1c19c</code></dt><dd><code class="wrap">7ff301d585ef7adcd620a15575faa39b4227cc5a27eaa8d754efe50f667a30f9</code></dd>
-</dl>
-<p>원본 생성자와 레지스트리·바인더를 사용했습니다. 일부 공장 포인터와 할당 주소, Udc warm 카운터, 렌즈·Pulse 상태와 요청·피드백 수치는 하네스가 제공했습니다. 실제 장치 피드백, 부팅 중 객체 수명, 모터의 물리적 구분과 시간·거리·각도 단위는 확인되지 않았습니다. 남은 소프트웨어 질문은 Pulse <code>+0xa88</code>의 비영 기준값과 PafMotor 보정 필드의 생산자입니다.</p>
-<p><a href="../tests/test_af_mode1_control.py">의존 소스 검증과 재생 진입점 시험</a></p>
+<p class="small muted">Python 최적화 모드를 끄고 출력 경로에는 새 파일 이름을 씁니다.</p>
 </section>
+
+<section id="refs">
+<h2>근거 파일과 참고 자료</h2>
+<ul class="refs">
+<li><a href="af-reset-tail-checks.json">af-reset-tail-checks.json</a> — 리셋 뒤 메서드 5건과 원본 범위 · <a href="../verify_af_reset_tail.py">verify_af_reset_tail.py</a></li>
+<li><a href="af-mode1-parameter-checks.json">af-mode1-parameter-checks.json</a> — 요청 분기 19건과 채널 인자 4건 · <a href="../verify_af_mode1_parameters.py">verify_af_mode1_parameters.py</a></li>
+<li><a href="af-request3-feedback-checks.json">af-request3-feedback-checks.json</a> — 누적·조회 14건과 로컬 호출 9건 · <a href="../verify_af_request3_feedback.py">verify_af_request3_feedback.py</a></li>
+<li><a href="../tests/test_af_mode1_control.py">tests/test_af_mode1_control.py</a> — 의존 소스 검증과 재생 진입점 시험</li>
+<li>관련 문서: <a href="guide-af.html">AF와 렌즈 제어 안내</a> · <a href="af-joint-control.html">Joint 이벤트 처리</a> · <a href="af-service-binding.html">서비스 객체 연결</a> · <a href="af-feedback-producers.html">PafPulse 기준값의 쓰기 경로</a></li>
+</ul>
+</section>
+
 </main>
 </div>
 <!-- chrome:bottom -->
-<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">AF와 렌즈 제어 — 이 주제의 문서</h2><ol><li><a href="af-foundations.html">AF와 렌즈 제어 안내<span>세 기종 비교</span></a></li><li><a href="af-drive-architecture.html">렌즈 구동 선택·명령·응답<span>렌즈 능력에 따른 구동 선택과 명령</span></a></li><li><a href="af-joint-control.html">Joint 요청과 하위 제어<span>이벤트 0x80에서 첫 서비스·레지스터 경계까지</span></a></li><li><a href="af-service-binding.html">AF 서비스 객체와 레지스터 경계<span>ReloadTimer·Udc의 두 별도 실행</span></a></li><li><a href="af-mode1-control.html" aria-current="page">Joint 모드 1의 요청과 피드백 계산<span>리셋 후속 호출, 요청 분기와 피드백 숫자 대조</span></a></li><li><a href="af-feedback-producers.html">PafPulse 기준값의 쓰기 경로<span>원본 객체 연결, 기준값 갱신과 별도 소비자 진입</span></a></li><li><a href="af-motor-fields.html">PafMotor와 PafPulse의 입력값 경로<span>디버그 요청, 설정 레코드 복사, 별도 LensInfo 계산</span></a></li><li><a href="af-driver-pwm.html">AF 드라이버와 PWM 연결<span>Motor 별칭, PWM 등록·리셋과 콜백 재생</span></a></li><li><a href="af-pwm-parameters.html">AF PWM 요청과 정수 변환<span>두 호출점, 16비트 레코드 패킹과 서비스 호출 전 경계</span></a></li><li><a href="af-state-producers.html">PafMotor 상태 바이트의 쓰기 경로<span>22개 직접 저장과 두 피드백·서비스 경계</span></a></li><li><a href="af-adaptive-input.html">AF 적응형 문턱의 입력<span>ElapsedTimer 표본과 unsigned 차이의 정수 환산</span></a></li><li><a href="af-request-consumer.html">AF 요청 큐와 완료 통지<span>요청 슬롯, 처리 task, 완료 통지</span></a></li></ol></nav>
+<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">AF와 렌즈 제어 — 이 주제의 문서</h2><ol><li><a href="guide-af.html">AF와 렌즈 제어 안내</a></li><li><a href="af-foundations.html">세 기종 AF 기초 비교</a></li><li><a href="af-drive-architecture.html">렌즈 구동 선택·명령·응답<span>렌즈 능력에 따른 구동 선택과 명령</span></a></li><li><a href="af-joint-control.html">Joint 요청과 하위 제어<span>요청 수신과 모드 분기</span></a></li><li><a href="af-service-binding.html">AF 서비스 객체와 레지스터 경계<span>ReloadTimer·Udc 객체의 생성과 연결</span></a></li><li><a href="af-mode1-control.html" aria-current="page">Joint 모드 1의 요청과 피드백 계산<span>리셋 뒤 호출, 요청 분기, 피드백 계산</span></a></li><li><a href="af-feedback-producers.html">PafPulse 기준값의 쓰기 경로<span>기준값을 쓰는 네 곳</span></a></li><li><a href="af-motor-fields.html">PafMotor와 PafPulse의 입력값 경로<span>필드별 쓰기·읽기 경로</span></a></li><li><a href="af-driver-pwm.html">AF 드라이버와 PWM 연결<span>드라이버 객체와 PWM 등록</span></a></li><li><a href="af-pwm-parameters.html">AF PWM 요청과 정수 변환<span>요청 패킹과 정수 변환</span></a></li><li><a href="af-state-producers.html">PafMotor 상태 바이트의 쓰기 경로<span>상태 바이트를 쓰는 22곳</span></a></li><li><a href="af-adaptive-input.html">AF 적응형 문턱의 입력<span>경과 시간 입력과 정수 환산</span></a></li><li><a href="af-request-consumer.html">AF 요청 큐와 완료 통지<span>요청 슬롯, 처리 task, 완료 통지</span></a></li></ol></nav>
 <nav class="pager" aria-label="이전·다음 문서"><a class="prev" href="af-service-binding.html"><small>← 이전</small>AF 서비스 객체와 레지스터 경계</a><a class="next" href="af-feedback-producers.html"><small>다음 →</small>PafPulse 기준값의 쓰기 경로</a></nav>
 <footer class="sitefoot"><div class="sitefoot-in"><nav aria-label="사이트"><a href="../index.html#map">문서 지도</a><a href="../index.html#levels">검증 수준 읽는 법</a><a href="../glossary.html">용어집</a><a href="research-program.html">세 기종 연구 본부</a><a href="https://github.com/yunhyok/pentax-k3iii-firmware-analysis">GitHub 저장소</a></nav><p>PENTAX 펌웨어 연구. PC에서 수행한 정적 분석과 에뮬레이션 결과이며, 카메라 실기에서 검증한 내용이 아닙니다. 원본 펌웨어와 추출한 독점 코드는 포함하지 않습니다.</p></div></footer>
 <!-- /chrome:bottom -->

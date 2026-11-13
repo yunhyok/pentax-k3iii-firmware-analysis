@@ -10,7 +10,7 @@
 <body data-camera="k3iii">
 <!-- chrome:top -->
 <a class="skip" href="#main">본문 바로가기</a>
-<div class="topbar"><div class="topbar-in"><a class="brand" href="../index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="../index.html" aria-current="true">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="https://yunhyok.github.io/pentax-q7-firmware-analysis/">Q7</a></div><nav class="topnav" aria-label="주제"><a href="../index.html">개요</a><a href="guide-boot.html">부팅·저장소</a><a href="guide-update.html" aria-current="true">업데이트</a><a href="guide-rebuild.html">재구축</a><a href="guide-rtos.html">명령·셸</a><a href="guide-color.html">색 처리</a><a href="lightroom-bridge.html">Lightroom</a><a href="af-foundations.html">AF</a><a href="ui-port-contract.html">UI</a></nav></div></div>
+<div class="topbar"><div class="topbar-in"><a class="brand" href="../index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="../index.html" aria-current="true">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="https://yunhyok.github.io/pentax-q7-firmware-analysis/">Q7</a></div><nav class="topnav" aria-label="주제"><a href="../index.html">개요</a><a href="guide-boot.html">부팅·저장소</a><a href="guide-update.html" aria-current="true">업데이트</a><a href="guide-rebuild.html">재구축</a><a href="guide-rtos.html">명령·셸</a><a href="guide-color.html">색 처리</a><a href="guide-lightroom.html">Lightroom</a><a href="guide-af.html">AF</a><a href="guide-ui.html">UI</a></nav></div></div>
 <nav class="crumbs" aria-label="현재 위치"><ol><li><a href="../index.html">PENTAX K-3 Mark III</a></li><li><a href="guide-update.html">펌웨어 업데이트 과정</a></li><li aria-current="page">완료 후 UI 작업</li></ol></nav>
 <!-- /chrome:top -->
 <header class="page-head">
@@ -66,7 +66,7 @@
 
 <section id="background">
 <h2>배경: 작업 큐와 상태별 처리 객체</h2>
-<p><a href="update-media-completion.html#completion">앞 문서</a>에서 완료 통지의 수신부가 두 가지 일을 하는 것을 확인했습니다. <code>FwUpdateModel</code>의 상태 값(+8)을 3으로 바꾸고, UI 작업 큐에 작업 ID <code>0x128</code>을 넣습니다. 이 문서는 그 뒤를 잇습니다.</p>
+<p><a href="update-media-completion.html#completion">앞 문서</a>에서 완료 통지의 수신부가 두 가지 일을 하는 것을 확인했습니다. <code>FwUpdateModel</code>의 상태 값(+8)을 3으로 바꾸고 UI 작업 큐에 작업 ID <code>0x128</code>을 넣습니다. 이 문서는 그 뒤를 잇습니다.</p>
 <p>화면 쪽 코드는 상태 ID에 따라 작업을 처리할 객체를 고릅니다. 큐는 “누가 처리할지”를 저장하지 않고 “지금 어떤 상태인지”만 기억합니다. 그래서 같은 작업 번호라도 상태에 따라 다른 객체가 받을 수 있습니다. 업데이트 완료가 화면에 어떻게 반영되는지 알려면 이 연결을 따라가야 합니다.</p>
 <div class="table-wrap"><table class="fit">
 <caption>이 문서에서 쓰는 용어</caption>
@@ -158,7 +158,7 @@
 <h3 id="queue-pop">큐에서 꺼내는 동작</h3>
 <ul>
 <li>큐 소비 함수는 읽기 위치와 쓰기 위치가 다르면 12바이트 항목 하나를 스택으로 복사합니다.</li>
-<li>읽기 위치를 1 늘려 mask를 적용하고, 16비트 개수(count)를 1 줄인 다음 unlock하고 항목을 전달합니다.</li>
+<li>읽기 위치를 1 늘려 mask를 적용하고 16비트 개수(count)를 1 줄인 다음 unlock하고 항목을 전달합니다.</li>
 <li>큐에 있던 원래 항목은 지우지 않습니다.</li>
 <li>되풀이할지는 count가 아니라 두 위치가 같은지로 정합니다.</li>
 </ul>
@@ -178,9 +178,9 @@
 
 <h3 id="state-resolve">상태 ID로 처리 객체를 찾는 과정</h3>
 <ul>
-<li><strong>상태 ID가 기록되는 곳</strong> — 일반 상태 설정 함수는 넘겨받은 ID를 controller의 +4와 큐의 +4에 쓰고, 전역 영역 <code>0x5458f264</code>의 <code>0x48</code>바이트를 지웁니다. ID 0, <code>0x0100000f</code>, <code>0xffffffff</code> 세 값으로 실행해 확인했습니다.</li>
-<li><strong>객체를 찾는 곳</strong> — 조회 함수는 정규화한 상태 ID가 <code>0x0100000f</code>이면 registry의 +0x54에 든 객체를 돌려줍니다. 그 자리가 비어 있으면 <code>0x1b0</code>바이트를 할당하고 생성자를 부르는 코드가 있습니다. 시험은 객체가 이미 있는 경우만 실행했습니다.</li>
-<li><strong>항목마다 다시 찾음</strong> — 전달 함수는 항목을 처리할 때마다 상태 객체를 다시 조회합니다. 합성 callback이 registry의 객체 포인터를 바꾼 사례에서 다음 항목은 새 객체로 갔습니다.</li>
+<li><strong>상태 ID가 기록되는 곳</strong>: 일반 상태 설정 함수는 넘겨받은 ID를 controller의 +4와 큐의 +4에 씁니다. 전역 영역 <code>0x5458f264</code>의 <code>0x48</code>바이트도 지웁니다. ID 0, <code>0x0100000f</code>, <code>0xffffffff</code> 세 값으로 실행해 확인했습니다.</li>
+<li><strong>객체를 찾는 곳</strong>: 조회 함수는 정규화한 상태 ID가 <code>0x0100000f</code>이면 registry의 +0x54에 든 객체를 돌려줍니다. 그 자리가 비어 있으면 <code>0x1b0</code>바이트를 할당하고 생성자를 부르는 코드가 있습니다. 시험은 객체가 이미 있는 경우만 실행했습니다.</li>
+<li><strong>항목마다 다시 찾음</strong>: 전달 함수는 항목을 처리할 때마다 상태 객체를 다시 조회합니다. 합성 callback이 registry의 객체 포인터를 바꾼 사례에서 다음 항목은 새 객체로 갔습니다.</li>
 </ul>
 <p>실제 업데이트 화면이 이 상태 ID로 들어가는 호출자는 아직 연결하지 못했습니다. 위 결과를 특정 화면 전환을 카메라에서 재현한 것으로 읽으면 안 됩니다.</p>
 
@@ -232,14 +232,14 @@
 <tr><td class="n"><code>0xffffffff</code></td><td>—</td><td>없음</td><td class="n">1</td></tr>
 </tbody></table></div>
 <ul>
-<li>값마다 다른 동작이 끝나면 공통 경로로 갑니다. 화면 갱신 함수를 부르고, 설정 구조의 +2 바이트에 “모델 값이 2가 아닌가”를 적어 설정 함수에 넘깁니다.</li>
+<li>값마다 다른 동작이 끝나면 공통 경로로 갑니다. 화면 갱신 함수를 부르고 설정 구조의 +2 바이트에 “모델 값이 2가 아닌가”를 적어 설정 함수에 넘깁니다.</li>
 <li>메시지 열은 <a href="update-media-completion.html#receive">앞 문서</a>의 합성 시험에서 수신부가 각 값을 기록한 메시지입니다. 값의 이름과 뜻은 정하지 않았습니다.</li>
 <li>8사례는 값 3에서 이전 handle이 있는 경우와 없는 경우, 새 handle이 0인 경우, 값 5에서 기존 +0x1ad가 0인 경우와 1인 경우를 나눠 실행한 수입니다.</li>
 </ul>
 
 <h3 id="schedule">값 3: 이전 요청 취소와 새 요청 등록</h3>
 <ol class="steps">
-<li><strong>이전 handle 정리</strong> 객체 +0x1a8에 저장된 handle이 0이 아니면 서비스의 취소 함수에 넘기고, 저장값을 0으로 만듭니다.</li>
+<li><strong>이전 handle 정리</strong> 객체 +0x1a8에 저장된 handle이 0이 아니면 서비스의 취소 함수에 넘기고 저장값을 0으로 만듭니다.</li>
 <li><strong>새 요청 등록</strong> 서비스의 등록 함수를 인수 (서비스, 1000, 객체 +0x188)로 부릅니다. +0x188은 callback을 받을 자리입니다.</li>
 <li><strong>handle 저장</strong> 등록 함수의 반환값을 그대로 +0x1a8에 저장합니다. 0이 돌아와도 저장합니다.</li>
 </ol>
@@ -265,7 +265,7 @@
 </ul>
 
 <h3 id="followup">후속 작업 함수</h3>
-<p>후속 작업 함수는 큐를 얻은 뒤 앞 문서의 큐 등록 함수로 넘어갑니다. 넘기는 값은 작업 5, 인수 4, callback 없음입니다. 이 연결은 코드를 읽어 확인했고, 시험에서는 함수에 들어왔다는 사실만 기록하는 대체 함수로 바꿨습니다. 작업 5가 어디에서 소비되는지, 실제 상태 전환과 재부팅이 일어나는지, 디코딩된 버퍼가 언제 회수되는지는 아직 조사하지 못했습니다.</p>
+<p>후속 작업 함수는 큐를 얻은 뒤 앞 문서의 큐 등록 함수로 넘어갑니다. 넘기는 값은 작업 5, 인수 4, callback 없음입니다. 이 연결은 코드를 읽어 확인했고 시험에서는 함수에 들어왔다는 사실만 기록하는 대체 함수로 바꿨습니다. 작업 5가 어디에서 소비되는지, 실제 상태 전환과 재부팅이 일어나는지, 디코딩된 버퍼가 언제 회수되는지는 아직 조사하지 못했습니다.</p>
 
 <details class="evidence"><summary>상태 처리·요청·callback 함수의 주소</summary>
 <div class="table-wrap"><table class="compact">
@@ -303,11 +303,11 @@
 
 <h3 id="limits">한계와 남은 과제</h3>
 <ul>
-<li><strong>대체한 호출</strong> — OS의 대기·lock·이벤트, observer, 화면 갱신, 설정 처리, 요청·취소, 큐를 비운 뒤의 판정 함수는 모두 대체 함수입니다. 대체 함수가 실패 값을 돌려준 사례를 실제 OS의 동작으로 읽으면 안 됩니다.</li>
-<li><strong>실행한 분기</strong> — 상태 ID 조회 함수는 전체 구간을 보존했지만, 실행한 것은 객체가 이미 있는 <code>0x0100000f</code> 경로뿐입니다.</li>
-<li><strong>디컴파일 C의 한계</strong> — 자동으로 복원한 C에는 큐의 읽기 위치 계산과 callback의 꼬리 호출에 오류와 누락이 있습니다. C 출력은 고치지 않았고, 원본의 덧셈·AND·16비트 저장 명령과 실행 결과를 해석의 기준으로 삼았습니다.</li>
-<li><strong>남은 과제</strong> — 실제 메시지 전달, UI 상태 진입, 서비스의 시간 단위와 callback 전달, 작업 5의 소비, 재부팅, bank 전환, 인증.</li>
-<li><strong>하지 않은 것</strong> — 카메라, OS, 저장소 입출력, 펌웨어 빌드, 플래시 기록.</li>
+<li><strong>대체한 호출</strong>: OS의 대기·lock·이벤트, observer, 화면 갱신, 설정 처리, 요청·취소, 큐를 비운 뒤의 판정 함수는 모두 대체 함수입니다. 대체 함수가 실패 값을 돌려준 사례를 실제 OS의 동작으로 읽으면 안 됩니다.</li>
+<li><strong>실행한 분기</strong>: 상태 ID 조회 함수는 전체 구간을 보존했지만 실행한 것은 객체가 이미 있는 <code>0x0100000f</code> 경로뿐입니다.</li>
+<li><strong>디컴파일 C의 한계</strong>: 자동으로 복원한 C에는 큐의 읽기 위치 계산과 callback의 꼬리 호출에 오류와 누락이 있습니다. C 출력은 고치지 않았고 원본의 덧셈·AND·16비트 저장 명령과 실행 결과를 해석의 기준으로 삼았습니다.</li>
+<li><strong>남은 과제</strong>: 실제 메시지 전달, UI 상태 진입, 서비스의 시간 단위와 callback 전달, 작업 5의 소비, 재부팅, bank 전환, 인증.</li>
+<li><strong>하지 않은 것</strong>: 카메라, OS, 저장소 입출력, 펌웨어 빌드, 플래시 기록.</li>
 </ul>
 </section>
 
@@ -337,7 +337,7 @@
 </main>
 </div>
 <!-- chrome:bottom -->
-<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">펌웨어 업데이트 과정 — 이 주제의 문서</h2><ol><li><a href="guide-update.html">업데이트 과정 안내</a></li><li><a href="update-resources.html">업데이트 검사와 ICONBIN<span>프로젝트·버전·체크섬</span></a></li><li><a href="update-memory.html">입력 로더와 메모리 할당</a></li><li><a href="update-file-lifetimes.html">파일 인터페이스와 버퍼 수명</a></li><li><a href="update-volume-finalization.html">파일 경로·volume·종료 처리</a></li><li><a href="update-media-completion.html">매체 객체와 완료 통지</a></li><li><a href="update-partition-io.html">R 파티션과 sector I/O</a></li><li><a href="update-bank-selection.html">쓰기 bank와 BOOT 선택</a></li><li><a href="selector-policy.html">리소스 선택값과 헤더 기록 조건<span>FIFO 반례·표와 헤더의 쓰기 분기</span></a></li><li><a href="update-ui-consumer.html" aria-current="page">완료 후 UI 작업</a></li><li><a href="update-ui-timer.html">UI 타이머와 콜백</a></li><li><a href="update-timer-abi.html">커널 호출과 예약 시각</a></li><li><a href="update-timer-insertion.html">기한 큐 삽입</a></li><li><a href="update-timer-clock.html">타이머 설정과 64비트 카운터</a></li><li><a href="update-timer-irq.html">타이머 등록과 지연 콜백</a></li><li><a href="update-subtick-arithmetic.html">하위 시간의 32비트 산술</a></li><li><a href="update-clock-readers.html">시각 조회 함수</a></li></ol></nav>
+<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">펌웨어 업데이트 과정 — 이 주제의 문서</h2><ol><li><a href="guide-update.html">업데이트 과정 안내</a></li><li><a href="update-resources.html">업데이트 검사와 ICONBIN<span>프로젝트·버전·체크섬</span></a></li><li><a href="update-memory.html">입력 로더와 메모리 할당</a></li><li><a href="update-file-lifetimes.html">파일 인터페이스와 버퍼 수명</a></li><li><a href="update-volume-finalization.html">파일 경로·volume·종료 처리</a></li><li><a href="update-media-completion.html">매체 객체와 완료 통지</a></li><li><a href="update-partition-io.html">R 파티션과 sector I/O</a></li><li><a href="update-bank-selection.html">쓰기 bank와 BOOT 선택</a></li><li><a href="selector-policy.html">리소스 선택값과 헤더 기록 조건<span>선택값과 기록 조건</span></a></li><li><a href="update-ui-consumer.html" aria-current="page">완료 후 UI 작업</a></li><li><a href="update-ui-timer.html">UI 타이머와 콜백</a></li><li><a href="update-timer-abi.html">커널 호출과 예약 시각</a></li><li><a href="update-timer-insertion.html">기한 큐 삽입</a></li><li><a href="update-timer-clock.html">타이머 설정과 64비트 카운터</a></li><li><a href="update-timer-irq.html">타이머 등록과 지연 콜백</a></li><li><a href="update-subtick-arithmetic.html">하위 시간의 32비트 산술</a></li><li><a href="update-clock-readers.html">시각 조회 함수</a></li></ol></nav>
 <nav class="pager" aria-label="이전·다음 문서"><a class="prev" href="selector-policy.html"><small>← 이전</small>리소스 선택값과 헤더 기록 조건</a><a class="next" href="update-ui-timer.html"><small>다음 →</small>UI 타이머와 콜백</a></nav>
 <footer class="sitefoot"><div class="sitefoot-in"><nav aria-label="사이트"><a href="../index.html#map">문서 지도</a><a href="../index.html#levels">검증 수준 읽는 법</a><a href="../glossary.html">용어집</a><a href="research-program.html">세 기종 연구 본부</a><a href="https://github.com/yunhyok/pentax-k3iii-firmware-analysis">GitHub 저장소</a></nav><p>PENTAX 펌웨어 연구. PC에서 수행한 정적 분석과 에뮬레이션 결과이며, 카메라 실기에서 검증한 내용이 아닙니다. 원본 펌웨어와 추출한 독점 코드는 포함하지 않습니다.</p></div></footer>
 <!-- /chrome:bottom -->

@@ -10,8 +10,8 @@
 <body data-camera="k3iii">
 <!-- chrome:top -->
 <a class="skip" href="#main">본문 바로가기</a>
-<div class="topbar"><div class="topbar-in"><a class="brand" href="../index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="../index.html" aria-current="true">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="https://yunhyok.github.io/pentax-q7-firmware-analysis/">Q7</a></div><nav class="topnav" aria-label="주제"><a href="../index.html">개요</a><a href="guide-boot.html">부팅·저장소</a><a href="guide-update.html">업데이트</a><a href="guide-rebuild.html">재구축</a><a href="guide-rtos.html">명령·셸</a><a href="guide-color.html">색 처리</a><a href="lightroom-bridge.html">Lightroom</a><a href="af-foundations.html" aria-current="true">AF</a><a href="ui-port-contract.html">UI</a></nav></div></div>
-<nav class="crumbs" aria-label="현재 위치"><ol><li><a href="../index.html">PENTAX K-3 Mark III</a></li><li><a href="af-foundations.html">AF와 렌즈 제어</a></li><li aria-current="page">AF 요청 큐와 완료 통지</li></ol></nav>
+<div class="topbar"><div class="topbar-in"><a class="brand" href="../index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="../index.html" aria-current="true">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="https://yunhyok.github.io/pentax-q7-firmware-analysis/">Q7</a></div><nav class="topnav" aria-label="주제"><a href="../index.html">개요</a><a href="guide-boot.html">부팅·저장소</a><a href="guide-update.html">업데이트</a><a href="guide-rebuild.html">재구축</a><a href="guide-rtos.html">명령·셸</a><a href="guide-color.html">색 처리</a><a href="guide-lightroom.html">Lightroom</a><a href="guide-af.html" aria-current="true">AF</a><a href="guide-ui.html">UI</a></nav></div></div>
+<nav class="crumbs" aria-label="현재 위치"><ol><li><a href="../index.html">PENTAX K-3 Mark III</a></li><li><a href="guide-af.html">AF와 렌즈 제어</a></li><li aria-current="page">AF 요청 큐와 완료 통지</li></ol></nav>
 <!-- /chrome:top -->
 <header class="page-head">
 <p class="eyebrow">AF와 렌즈 제어 · 전달과 완료 단계</p>
@@ -49,7 +49,7 @@
 </ul></div>
 <div class="model"><h3><span class="badge model">모델</span> 시험 조건으로 정한 것</h3>
 <ul>
-<li>OS 큐: 넣기는 요청을 기록만 하고, 꺼내기는 합성 노드를 공급</li>
+<li>OS 큐: 넣기는 요청을 기록만 하고 꺼내기는 합성 노드를 공급</li>
 <li>이벤트 대기: 첫 대기에 bit 0을 주고 둘째 대기에서 중단</li>
 <li>세 통과 조건의 상태 값과 교환 함수의 반환값</li>
 <li>CPU는 Unicorn의 Cortex-A15 모델</li>
@@ -64,9 +64,9 @@
 
 <section id="background">
 <h2>배경: 요청, 큐, task, 완료 통지</h2>
-<p><a href="af-drive-architecture.html#encoding">앞 문서</a>에서 InMotor 제어 객체가 구동 값을 명령 <code>0x8900</code>의 2바이트로 만드는 것을 확인했습니다. 이 문서는 그다음을 다룹니다. 만든 요청이 어디에 보관되고, 누가 꺼내고, 처리 뒤에 무엇이 돌아오는지입니다.</p>
+<p><a href="af-drive-architecture.html#encoding">앞 문서</a>에서 InMotor 제어 객체가 구동 값을 명령 <code>0x8900</code>의 2바이트로 만드는 것을 확인했습니다. 이 문서는 그다음을 다룹니다. 만든 요청이 어디에 보관되고 누가 꺼내고 처리 뒤에 무엇이 돌아오는지입니다.</p>
 <div class="callout plain"><strong class="label">쉽게 말하면</strong>
-<p>민원 창구와 비슷합니다. 신청서(요청)를 접수함(큐)에 넣으면 담당자(task)가 차례대로 꺼내 처리하고, 끝나면 신청인에게 “처리 완료”라고 알려 줍니다(완료 통지). 이 알림은 서류 처리가 끝났다는 뜻입니다. 신청한 물건이 실제로 도착했다는 뜻은 아닙니다. 이 문서의 결론도 같습니다.</p></div>
+<p>민원 창구와 비슷합니다. 신청서(요청)를 접수함(큐)에 넣으면 담당자(task)가 차례대로 꺼내 처리하고 끝나면 신청인에게 “처리 완료”라고 알려 줍니다(완료 통지). 이 알림은 서류 처리가 끝났음을 알립니다. 신청한 물건이 실제로 도착했는지는 알려 주지 않습니다. 이 문서의 결론도 같습니다.</p></div>
 <p>구동 방식이나 AF 알고리즘을 나중에 바꾼다면, 새 코드는 “요청이 접수됐다”, “렌즈 쪽으로 전달됐다”, “렌즈가 다 움직였다”를 서로 다른 사실로 다뤄야 합니다. 그래서 완료 통지가 정확히 어느 시점에, 어떤 조건에서 오는지를 확인했습니다.</p>
 <div class="table-wrap"><table>
 <caption>이 문서에서 쓰는 기호</caption>
@@ -85,7 +85,7 @@
 
 <section id="path">
 <h2>요청 하나가 지나가는 길</h2>
-<p class="takeaway">요청은 슬롯에 복사되어 큐로 들어가고, task가 꺼내 실행한 뒤, 요청을 보관하던 객체로 완료 통지가 돌아옵니다. 교환 함수부터 오른쪽은 실행하지 않았습니다.</p>
+<p class="takeaway">요청은 슬롯에 복사되어 큐로 들어가고 task가 꺼내 실행한 뒤, 요청을 보관하던 객체로 완료 통지가 돌아옵니다. 교환 함수부터 오른쪽은 실행하지 않았습니다.</p>
 <figure class="diagram">
 <figcaption>opcode 0x1b 요청의 실행과 완료 통지</figcaption>
 <div class="dg-scroll">
@@ -158,7 +158,7 @@
 <thead><tr><th>단계</th><th>일어나는 일</th><th>코드</th></tr></thead>
 <tbody>
 <tr><th scope="row">①</th><td>작성 함수가 descriptor S(명령 <code>0x8900</code>, 길이 2)를 만들고 opcode <code>0x1b</code>를 붙여 넘김</td><td><code>0x52efc7a0</code> → <code>0x52eff608</code> → <code>0x52eff524</code></td></tr>
-<tr><th scope="row">②</th><td>32칸 가운데 빈 슬롯에 S와 2바이트 데이터를 복사하고, 요청 기록 Req를 채움</td><td><code>0x52efeec0</code>, <code>0x52eff584</code>..<code>5a4</code></td></tr>
+<tr><th scope="row">②</th><td>32칸 가운데 빈 슬롯에 S와 2바이트 데이터를 복사하고 요청 기록 Req를 채움</td><td><code>0x52efeec0</code>, <code>0x52eff584</code>..<code>5a4</code></td></tr>
 <tr><th scope="row">③</th><td>A의 큐에 Req를 넣고 A의 이벤트에 bit 0을 설정</td><td><code>0x52eff5ac</code> → <code>0x52f148fc</code></td></tr>
 <tr><th scope="row">④</th><td>task가 이벤트를 기다리다 깨어나 큐에서 Req를 꺼내고 실행 함수에 넘김</td><td><code>0x52f16588</code> → <code>0x530edfa0</code> → <code>0x52f15e2c</code></td></tr>
 <tr><th scope="row">⑤</th><td>세 조건을 통과하면 명령 정보를 조회하고 교환 함수를 호출</td><td><code>0x52f15100</code> → <code>0x52f18490</code> → <code>0x52f182d4</code> → <code>0x52f18128</code></td></tr>
@@ -170,8 +170,8 @@
 
 <section id="descriptor">
 <h2>요청은 32칸 슬롯의 빈 칸에 복사됩니다</h2>
-<p class="takeaway">작성 함수가 스택에 만든 descriptor는 수명이 짧습니다. 그래서 <code>AfLensControl</code> 안의 슬롯으로 복사되고, 같은 슬롯 안에 큐로 넘길 요청 기록이 만들어집니다.</p>
-<p>작성 함수 <code>0x52efc7a0</code>은 스택에 descriptor S를 만듭니다(<code>0x52efc830</code>..<code>84c</code>). 앞 8바이트는 <code>02 00 00 89 00 00 00 00</code>이고, <code>S+8</code>은 2바이트 데이터를 가리키는 포인터, <code>S+c</code>는 0입니다. 길이 2와 명령 번호 <code>0x8900</code>이 든 기록이며, 렌즈와 주고받는 통신 프레임 자체라고 부르지 않습니다. 요청 종류 번호(opcode) <code>0x1b</code>는 <code>0x52eff608</code>이 따로 지정합니다.</p>
+<p class="takeaway">작성 함수가 스택에 만든 descriptor는 수명이 짧습니다. 그래서 <code>AfLensControl</code> 안의 슬롯으로 복사되고 같은 슬롯 안에 큐로 넘길 요청 기록이 만들어집니다.</p>
+<p>작성 함수 <code>0x52efc7a0</code>은 스택에 descriptor S를 만듭니다(<code>0x52efc830</code>..<code>84c</code>). 앞 8바이트는 <code>02 00 00 89 00 00 00 00</code>이고 <code>S+8</code>은 2바이트 데이터를 가리키는 포인터, <code>S+c</code>는 0입니다. 길이 2와 명령 번호 <code>0x8900</code>이 든 기록이며 렌즈와 주고받는 통신 프레임 자체라고 부르지 않습니다. 요청 종류 번호(opcode) <code>0x1b</code>는 <code>0x52eff608</code>이 따로 지정합니다.</p>
 <figure class="diagram">
 <figcaption>슬롯 한 칸의 내부 배치</figcaption>
 <div class="dg-scroll">
@@ -225,14 +225,14 @@
 <tbody>
 <tr><th scope="row">D의 위치</th><td><code>D = L+0xbc*i+0x2b0</code></td><td>할당 함수 <code>0x52efeec0</code>이 슬롯 32칸 가운데 비어 있는 첫 칸을 고릅니다.</td></tr>
 <tr><th scope="row">명령 번호</th><td><code>D.u16[14] = 0x8900</code></td><td><code>0x52efef44</code>에서 <code>S.u16[2]</code>를 읽어 <code>0x52efefa4</code>에서 저장합니다.</td></tr>
-<tr><th scope="row">데이터와 길이</th><td><code>D.ptr[8] = L+0xbc*i+0x212</code><br><code>D.u8[12] = 2</code></td><td><code>S.ptr[8]</code>에서 <code>S.u8[0]</code>바이트를 슬롯의 <code>+212</code>로 복사하고, <code>0x52eff020</code>과 <code>0x52eff028</code>에서 포인터와 길이를 저장합니다.</td></tr>
+<tr><th scope="row">데이터와 길이</th><td><code>D.ptr[8] = L+0xbc*i+0x212</code><br><code>D.u8[12] = 2</code></td><td><code>S.ptr[8]</code>에서 <code>S.u8[0]</code>바이트를 슬롯의 <code>+212</code>로 복사하고 <code>0x52eff020</code>과 <code>0x52eff028</code>에서 포인터와 길이를 저장합니다.</td></tr>
 <tr><th scope="row">추가 포인터</th><td><code>D.ptr[c]</code></td><td><code>S.ptr[c]</code>가 0이면 <code>0x52eff034</code>가 이 필드의 갱신을 건너뜁니다. 0이 아니면 따로 복사한 뒤 <code>0x52eff084</code>에서 슬롯의 <code>+292</code>를 저장합니다.</td></tr>
 <tr><th scope="row">요청 기록</th><td><code>Req = L+0xbc*i+0x29c</code></td><td><code>Req+4</code> = 콜백 객체 <code>L+1d4</code>, <code>Req+8</code> = D, <code>Req+c</code> = <code>0x1b</code>, <code>Req+10</code> = token. <code>0x52eff584</code>..<code>5a4</code>에서 씁니다.</td></tr>
 <tr><th scope="row">token</th><td><code>Req+10</code></td><td>명령 번호, 옵션, 슬롯 번호를 더해 만듭니다(아래 식). 상위 16비트에 들어가는 것은 <code>D.u16[14]</code>의 <strong><code>0x8900</code></strong>입니다. 요청 종류 번호 <code>0x1b</code>가 아닙니다.</td></tr>
 </tbody></table></div>
 <pre><code>token = ((descriptor_command &lt;&lt; 16) + (options.word4 &lt;&lt; 8) + i) mod 2^32</code></pre>
 <div class="callout"><strong class="label">두 가지 조심할 점</strong>
-<p>token은 덧셈으로 만듭니다. <code>options.word4</code>의 범위를 가정한 OR 식으로 일반화하지 않습니다. 그리고 추가 포인터 <code>D+c</code>는 생성자가 32칸을 초기화할 때 0이 되지만, <code>S+c</code>가 0인 요청은 이 필드를 다시 쓰지 않습니다. 슬롯을 재사용하는 모든 경로에서 이 값이 0으로 유지되는지는 확인하지 않았습니다. 실제로 낡은 포인터가 남는 일을 관찰한 것도 아닙니다.</p></div>
+<p>token은 덧셈으로 만듭니다. <code>options.word4</code>의 범위를 가정한 OR 식으로 일반화하지 않습니다. 그리고 추가 포인터 <code>D+c</code>는 생성자가 32칸을 초기화할 때 0이 되지만 <code>S+c</code>가 0인 요청은 이 필드를 다시 쓰지 않습니다. 슬롯을 재사용하는 모든 경로에서 이 값이 0으로 유지되는지는 확인하지 않았습니다. 실제로 낡은 포인터가 남는 일을 관찰한 것도 아닙니다.</p></div>
 
 <div class="table-wrap"><table class="fit">
 <caption>작성부터 큐에 넣기까지 이어 실행한 6건</caption>
@@ -245,28 +245,28 @@
 <tr><td class="n">1</td><td><code>0xffff</code></td><td>1</td><td><code>0xff</code></td><td><code>bf ff</code></td><td><code>0x8900ff01</code></td></tr>
 <tr><td class="n">31</td><td><code>0x12345678</code></td><td>0</td><td><code>0x42</code></td><td><code>16 78</code></td><td><code>0x8900421f</code></td></tr>
 </tbody></table></div>
-<p>여섯 건 모두 함수는 슬롯 번호를 돌려주었고, 큐에 넣는 함수는 그 슬롯의 Req 주소를 받았습니다. 그 밖에 세 가지 경계를 확인했습니다.</p>
+<p>여섯 건 모두 함수는 슬롯 번호를 돌려주었고 큐에 넣는 함수는 그 슬롯의 Req 주소를 받았습니다. 그 밖에 세 가지 경계를 확인했습니다.</p>
 <ul>
-<li><strong>슬롯 초기화</strong> — 생성자의 반복문 구간을 실행하니 32칸 모두에서 <code>D+c</code>가 0이 됐습니다.</li>
-<li><strong>추가 포인터 보존</strong> — <code>D+c</code>에 미리 <code>0x11223344</code>를 넣어 두고 요청을 만들었더니 값이 그대로 남았습니다.</li>
-<li><strong>슬롯 포화</strong> — 32칸을 모두 사용 중으로 만들면 함수는 <code>0xff</code>를 돌려주고 큐에 아무것도 넣지 않았습니다.</li>
+<li><strong>슬롯 초기화</strong>: 생성자의 반복문 구간을 실행하니 32칸 모두에서 <code>D+c</code>가 0이 됐습니다.</li>
+<li><strong>추가 포인터 보존</strong>: <code>D+c</code>에 미리 <code>0x11223344</code>를 넣어 두고 요청을 만들었더니 값이 그대로 남았습니다.</li>
+<li><strong>슬롯 포화</strong>: 32칸을 모두 사용 중으로 만들면 함수는 <code>0xff</code>를 돌려주고 큐에 아무것도 넣지 않았습니다.</li>
 </ul>
 </section>
 
 <section id="task">
 <h2>요청을 꺼내 실행하는 것은 AccessoryArbitrate task입니다</h2>
-<p class="takeaway">큐의 주인은 <code>AccessoryArbitrate</code>라는 task입니다. 이벤트 bit 0으로 깨어나 큐에서 요청을 꺼내고, 실행 함수를 직접 부릅니다.</p>
-<p><code>AfLensControl</code>은 초기화 때(<code>0x52efe7b4</code>..<code>7f8</code>) 싱글턴 <code>0x52f16c10</code>의 <code>+4</code>를 <code>L+1d8</code>에 저장해 둡니다. 이 객체가 A입니다. factory(<code>0x52f16ae0</code>..<code>ae4</code>)가 생성자 <code>0x52f14814</code>로 만들었고, 생성자는 <code>A+74</code>의 큐와 <code>A+88</code>의 이벤트를 초기화하고 <code>A+4</code>에 vtable 포인터 <code>0x538f3c68</code>을 설치합니다.</p>
+<p class="takeaway">큐의 주인은 <code>AccessoryArbitrate</code>라는 task입니다. 이벤트 bit 0으로 깨어나 큐에서 요청을 꺼내고 실행 함수를 직접 부릅니다.</p>
+<p><code>AfLensControl</code>은 초기화 때(<code>0x52efe7b4</code>..<code>7f8</code>) 싱글턴 <code>0x52f16c10</code>의 <code>+4</code>를 <code>L+1d8</code>에 저장해 둡니다. 이 객체가 A입니다. factory(<code>0x52f16ae0</code>..<code>ae4</code>)가 생성자 <code>0x52f14814</code>로 이 객체를 만들었습니다. 생성자는 <code>A+74</code>의 큐와 <code>A+88</code>의 이벤트를 초기화하고 <code>A+4</code>에 vtable 포인터 <code>0x538f3c68</code>을 설치합니다.</p>
 <div class="table-wrap"><table>
 <caption>task와 큐의 연결을 뒷받침하는 직접 증거</caption>
 <thead><tr><th>연결</th><th>직접 증거</th><th>상태</th></tr></thead>
 <tbody>
-<tr><th scope="row">task 등록</th><td><code>0x52f14130</code>..<code>134</code>가 <code>A+4</code>를 <code>0x530f4f60</code>에 넘깁니다. <code>0x530f5008</code> → <code>0x530f4e80</code>이 task 설정에 객체와 콜백 <code>0x530f3c10</code>을 넣고, <code>0x530f4f08</code> → <code>0x525b6ae8</code>로 등록합니다.</td><td><span class="badge static">정적 분석</span></td></tr>
+<tr><th scope="row">task 등록</th><td><code>0x52f14130</code>..<code>134</code>가 <code>A+4</code>를 <code>0x530f4f60</code>에 넘깁니다. <code>0x530f5008</code> → <code>0x530f4e80</code>이 task 설정에 객체와 콜백 <code>0x530f3c10</code>을 넣고 <code>0x530f4f08</code> → <code>0x525b6ae8</code>로 등록합니다.</td><td><span class="badge static">정적 분석</span></td></tr>
 <tr><th scope="row">task 진입점</th><td>공통 진입 함수가 <code>0x530f3c40</code>의 <code>BLX r2</code>로 <code>[vptr+8]</code>을 부릅니다. <code>A+4</code>의 표 <code>0x538f3c68</code>에서 그 칸의 주소는 <code>0x538f3c70</code>이고 값은 <code>0x52f166ec</code>입니다. 이 작은 연결 함수가 r0에서 4를 빼고 <code>0x52f16588</code>로 분기합니다.</td><td><span class="badge ok">확인</span></td></tr>
 <tr><th scope="row">큐에 넣기</th><td><code>0x52eff5ac</code> → <code>0x52f148fc</code>. <code>A+74</code>에 Req를 넣고 <code>A+88</code>에 이벤트 마스크 <code>0x1</code>(bit 0)을 설정합니다. 공통 넣기 함수 <code>0x530edc60</code>은 노드의 <code>+8</code>에 Req를 넣고 <code>0x530ede1c</code> → <code>0x525b7820</code>으로 넘깁니다.</td><td><span class="badge ok">확인</span> 넣기 함수 안쪽은 <span class="badge static">정적 분석</span></td></tr>
 <tr><th scope="row">꺼내기와 실행</th><td>task 루프가 이벤트 마스크 <code>0x2f</code>를 기다립니다. bit 0이 설정되어 있으면 <code>A+74</code>를 검사하고 <code>0x52f1665c</code> → <code>0x530edfa0</code>으로 꺼냅니다. <code>0x530ee07c</code> → <code>0x525b73a0</code>이 성공(반환 0)이면 노드의 <code>+8</code>을 첫 출력으로 복사합니다. 루프는 <code>0x52f16660</code>에서 그 Req를 읽어 <code>0x52f16674</code> → <code>0x52f15e2c</code>로 직접 호출합니다.</td><td><span class="badge ok">확인</span></td></tr>
 </tbody></table></div>
-<p>진입점은 주 vtable의 이름만 보고 짐작한 것이 아닙니다. 등록된 공통 진입 함수 <code>0x530f3c10</code>부터 실행해 간접 호출이 실제로 task 루프에 닿는 것을 확인했습니다. 다만 OS의 스케줄러를 실행한 것은 아닙니다. task를 시작시키는 별도 경로는 정적 근거로만 남겼습니다.</p>
+<p>진입점은 주 vtable의 이름만 보고 짐작한 것이 아닙니다. 등록된 공통 진입 함수 <code>0x530f3c10</code>부터 실행해 간접 호출이 실제로 task 루프에 닿는 것을 확인했습니다. 다만 OS의 스케줄러는 실행하지 않았습니다. task를 시작시키는 별도 경로는 정적 근거로만 남겼습니다.</p>
 <div class="table-wrap"><table class="fit">
 <caption>큐 꺼내기 함수 <code>0x530edfa0</code>의 검사 3건</caption>
 <thead><tr><th>OS 수신 함수의 반환(합성)</th><th>꺼내기 함수의 반환</th><th>출력 위치의 값</th></tr></thead>
@@ -374,13 +374,13 @@
 <li><strong>token 정리</strong> 전달 함수가 돌아오면 token의 하위 16비트는 그대로 두고 상위 16비트에 D의 명령 번호를 다시 넣습니다.</li>
 <li><strong>완료 통지</strong> <code>0x52f15ec0</code>에서 <code>Req+4</code>가 가리키는 객체의 vtable <code>+8</code> 함수를 이벤트 <code>0x0409001a</code>와 token으로 부릅니다.</li>
 </ol>
-<p>교환 함수 <code>0x52f18128</code> 안에는 패킷 번호 <code>0x63</code>과 명령 번호의 하위·상위 바이트를 놓는 코드, 송신 호출 <code>0x52f3a74c</code>와 수신 호출 <code>0x52f3a754</code>가 보입니다. 이번 검사는 이 함수의 입구에서 stub으로 바꿨습니다. 실제 전송이나 모터 동작은 실행하지도 검증하지도 않았습니다.</p>
+<p>교환 함수 <code>0x52f18128</code> 안에는 패킷 번호 <code>0x63</code>과 명령 번호의 하위·상위 바이트를 놓는 코드가 보입니다. 송신 호출 <code>0x52f3a74c</code>와 수신 호출 <code>0x52f3a754</code>도 보입니다. 이 검사에서는 이 함수의 입구를 stub으로 바꿨습니다. 실제 전송이나 모터 동작은 실행하지도 검증하지도 않았습니다.</p>
 
 <h3 id="callback">완료 통지를 받는 쪽</h3>
-<p><code>L+1d4</code>의 vtable 포인터는 <code>0x538f0568</code>이고, 실제로 불리는 칸 <code>0x538f0570</code>의 값은 <code>0x52eff43c</code>입니다. 이 작은 연결 함수가 포인터를 L로 되돌려 <code>0x52eff330</code>을 부릅니다. 콜백은 token에 든 명령 번호와 슬롯에 저장해 둔 명령 번호를 비교합니다. 일치하는 이벤트 <code>0x1a</code>에서 데이터 처리 함수 <code>0x52efde0c</code>와 정리 함수 <code>0x52eff2c8</code>을 부릅니다. 두 함수의 안쪽은 이번 범위 밖입니다.</p>
-<p>명령 번호가 다르면 어떻게 되는지도 한 건 확인했습니다. 검증 스크립트가 슬롯 0의 <code>L+210</code>에 <code>0x8900</code>을 써 두고 token에는 명령 번호 <code>0x8901</code>을 넣었더니, 콜백은 진단 출력 함수만 부르고 두 뒤처리 함수는 부르지 않았습니다.</p>
+<p><code>L+1d4</code>의 vtable 포인터는 <code>0x538f0568</code>이고 실제로 불리는 칸 <code>0x538f0570</code>의 값은 <code>0x52eff43c</code>입니다. 이 작은 연결 함수가 포인터를 L로 되돌려 <code>0x52eff330</code>을 부릅니다. 콜백은 token에 든 명령 번호와 슬롯에 저장해 둔 명령 번호를 비교합니다. 일치하는 이벤트 <code>0x1a</code>에서 데이터 처리 함수 <code>0x52efde0c</code>와 정리 함수 <code>0x52eff2c8</code>을 부릅니다. 두 함수의 안쪽은 이번 범위 밖입니다.</p>
+<p>명령 번호가 다르면 어떻게 되는지도 한 건 확인했습니다. 검증 스크립트가 슬롯 0의 <code>L+210</code>에 <code>0x8900</code>을 써 두고 token에는 명령 번호 <code>0x8901</code>을 넣었습니다. 그러자 콜백은 진단 출력 함수만 부르고 두 뒤처리 함수는 부르지 않았습니다.</p>
 <div class="callout warn"><strong class="label">주의</strong>
-<p>세 조건에 쓰이는 상태 바이트를 누가 언제 바꾸는지, 그 값이 무슨 뜻인지, 렌즈에 따라 어떻게 달라지는지는 확인하지 않았습니다. 검사에서 그 값을 바꿔 넣어 분기가 달라지는 것을 본 것이며, 특정 렌즈나 화면 조작이 그 값을 만든다는 증거는 아닙니다.</p></div>
+<p>세 조건에 쓰이는 상태 바이트를 누가 언제 바꾸는지, 그 값이 무슨 뜻인지, 렌즈에 따라 어떻게 달라지는지는 확인하지 않았습니다. 검사에서 그 값을 바꿔 넣어 분기가 달라지는 것을 본 것이며 특정 렌즈나 화면 조작이 그 값을 만든다는 증거는 아닙니다.</p></div>
 
 <details class="evidence"><summary>실행·완료 경로의 주소와 관측한 인수</summary>
 <div class="table-wrap"><table class="compact">
@@ -418,8 +418,8 @@
 <tr><th scope="row">합계</th><td class="n">18</td><td>앞 문서의 요청 작성 검사 320건은 여기에 더하지 않았습니다.</td></tr>
 </tbody></table></div>
 <ul>
-<li>OS의 큐 넣기 함수는 Req를 받아 기록하기만 하고, OS의 수신 함수는 합성 노드를 내줍니다. 실제 RTOS의 시간, 경쟁 상태, 실패한 뒤의 루프 동작은 이 검사로 입증되지 않습니다.</li>
-<li>task 루프는 둘째 대기에서 실행을 멈췄습니다. 끝없이 도는 루프이며, 정상적으로 끝나는 함수라고 주장하지 않습니다.</li>
+<li>OS의 큐 넣기 함수는 Req를 받아 기록하기만 하고 OS의 수신 함수는 합성 노드를 내줍니다. 실제 RTOS의 시간, 경쟁 상태, 실패한 뒤의 루프 동작은 이 검사로 입증되지 않습니다.</li>
+<li>task 루프는 둘째 대기에서 실행을 멈췄습니다. 끝없이 도는 루프이며 정상적으로 끝나는 함수라고 주장하지 않습니다.</li>
 <li>Unicorn의 Cortex-A15 모델을 썼습니다. 카메라에서 실행한 것과 같다는 뜻이 아닙니다.</li>
 <li>RTOS만 잘라 낸 파일과 전체 디코딩 이미지를 각각 SHA-256으로 확인한 뒤 실행해, 같은 18개 결과를 얻었습니다.</li>
 </ul>
@@ -432,7 +432,7 @@
 <tr><td><code>0x530edc60</code></td><td>큐 넣기. 요청을 기록하고 1을 반환. 실제 OS 큐 없음</td></tr>
 <tr><td><code>0x530ed03c</code></td><td>이벤트 설정. 기록만</td></tr>
 <tr><td><code>0x530ecb88</code></td><td>task 이벤트 준비. 0을 반환</td></tr>
-<tr><td><code>0x530ed1ac</code></td><td>이벤트 대기. 첫 호출에 마스크 <code>0x1</code>(bit 0)을 주고, 둘째 호출에서 실행을 멈춤</td></tr>
+<tr><td><code>0x530ed1ac</code></td><td>이벤트 대기. 첫 호출에 마스크 <code>0x1</code>(bit 0)을 주고 둘째 호출에서 실행을 멈춤</td></tr>
 <tr><td><code>0x530ed0f4</code></td><td>이벤트 지우기. 기록만</td></tr>
 <tr><td><code>0x530ee680</code></td><td>큐 길이. 1을 반환한 뒤 0을 반환</td></tr>
 <tr><td><code>0x525b73a0</code></td><td>OS 수신. 합성 노드를 주거나 정해 둔 실패 값을 반환</td></tr>
@@ -461,12 +461,12 @@
 <section id="limits">
 <h2>한계와 남은 과제</h2>
 <ul>
-<li><strong>물리 동작</strong> — 렌즈와의 실제 입출력, 드라이버 실행, 렌즈의 이동 완료, 시간, 기계적 조건은 확인하지 않았습니다. 2바이트 값의 단위와 방향의 뜻도 <a href="af-drive-architecture.html#encoding">앞 문서</a>에서 밝힌 대로 미해결입니다.</li>
-<li><strong>검사한 경로</strong> — 비동기 경로(<code>options</code>의 byte 0이 0)만 검사했습니다. 다른 요청 opcode, <code>options</code>가 0이 아닐 때의 대기·할당 분기, 특수 명령 1·2·3, 잘못된 descriptor의 일반적인 동작은 수치로 확인하지 않았습니다.</li>
-<li><strong>슬롯 재사용</strong> — 슬롯을 다시 쓰는 모든 과정과 초기화 경로를 따라가지 않았습니다.</li>
-<li><strong>상태 값의 출처</strong> — <code>C+52f3</code>, <code>A+9b</code>, 중재 상태를 만드는 코드는 이번 범위 밖입니다.</li>
-<li><strong>완료 뒤 함수</strong> — 콜백이 부르는 두 뒤처리 함수의 안쪽은 보지 않았습니다.</li>
-<li><strong>실행하지 않은 것</strong> — 카메라, 렌즈, RTOS 스케줄러, 실제 전송을 실행하지 않았습니다. 외부 장치 입출력, 펌웨어 수정·빌드·플래시도 하지 않았습니다.</li>
+<li><strong>물리 동작</strong>: 렌즈와의 실제 입출력, 드라이버 실행, 렌즈의 이동 완료, 시간, 기계적 조건은 확인하지 않았습니다. 2바이트 값의 단위와 방향의 뜻도 <a href="af-drive-architecture.html#encoding">앞 문서</a>에서 밝힌 대로 미해결입니다.</li>
+<li><strong>검사한 경로</strong>: 비동기 경로(<code>options</code>의 byte 0이 0)만 검사했습니다. 다른 요청 opcode, <code>options</code>가 0이 아닐 때의 대기·할당 분기, 특수 명령 1·2·3, 잘못된 descriptor의 일반적인 동작은 수치로 확인하지 않았습니다.</li>
+<li><strong>슬롯 재사용</strong>: 슬롯을 다시 쓰는 모든 과정과 초기화 경로를 따라가지 않았습니다.</li>
+<li><strong>상태 값의 출처</strong>: <code>C+52f3</code>, <code>A+9b</code>, 중재 상태를 만드는 코드는 이번 범위 밖입니다.</li>
+<li><strong>완료 뒤 함수</strong>: 콜백이 부르는 두 뒤처리 함수의 안쪽은 보지 않았습니다.</li>
+<li><strong>실행하지 않은 것</strong>: 카메라, 렌즈, RTOS 스케줄러, 실제 전송을 실행하지 않았습니다. 외부 장치 입출력, 펌웨어 수정·빌드·플래시도 하지 않았습니다.</li>
 </ul>
 </section>
 
@@ -485,8 +485,8 @@
 </main>
 </div>
 <!-- chrome:bottom -->
-<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">AF와 렌즈 제어 — 이 주제의 문서</h2><ol><li><a href="af-foundations.html">AF와 렌즈 제어 안내<span>세 기종 비교</span></a></li><li><a href="af-drive-architecture.html">렌즈 구동 선택·명령·응답<span>렌즈 능력에 따른 구동 선택과 명령</span></a></li><li><a href="af-joint-control.html">Joint 요청과 하위 제어<span>이벤트 0x80에서 첫 서비스·레지스터 경계까지</span></a></li><li><a href="af-service-binding.html">AF 서비스 객체와 레지스터 경계<span>ReloadTimer·Udc의 두 별도 실행</span></a></li><li><a href="af-mode1-control.html">Joint 모드 1의 요청과 피드백 계산<span>리셋 후속 호출, 요청 분기와 피드백 숫자 대조</span></a></li><li><a href="af-feedback-producers.html">PafPulse 기준값의 쓰기 경로<span>원본 객체 연결, 기준값 갱신과 별도 소비자 진입</span></a></li><li><a href="af-motor-fields.html">PafMotor와 PafPulse의 입력값 경로<span>디버그 요청, 설정 레코드 복사, 별도 LensInfo 계산</span></a></li><li><a href="af-driver-pwm.html">AF 드라이버와 PWM 연결<span>Motor 별칭, PWM 등록·리셋과 콜백 재생</span></a></li><li><a href="af-pwm-parameters.html">AF PWM 요청과 정수 변환<span>두 호출점, 16비트 레코드 패킹과 서비스 호출 전 경계</span></a></li><li><a href="af-state-producers.html">PafMotor 상태 바이트의 쓰기 경로<span>22개 직접 저장과 두 피드백·서비스 경계</span></a></li><li><a href="af-adaptive-input.html">AF 적응형 문턱의 입력<span>ElapsedTimer 표본과 unsigned 차이의 정수 환산</span></a></li><li><a href="af-request-consumer.html" aria-current="page">AF 요청 큐와 완료 통지<span>요청 슬롯, 처리 task, 완료 통지</span></a></li></ol></nav>
-<nav class="pager" aria-label="이전·다음 문서"><a class="prev" href="af-adaptive-input.html"><small>← 이전</small>AF 적응형 문턱의 입력</a><a class="next" href="ui-port-contract.html"><small>다음 →</small>UI 이식 설계·안내</a></nav>
+<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">AF와 렌즈 제어 — 이 주제의 문서</h2><ol><li><a href="guide-af.html">AF와 렌즈 제어 안내</a></li><li><a href="af-foundations.html">세 기종 AF 기초 비교</a></li><li><a href="af-drive-architecture.html">렌즈 구동 선택·명령·응답<span>렌즈 능력에 따른 구동 선택과 명령</span></a></li><li><a href="af-joint-control.html">Joint 요청과 하위 제어<span>요청 수신과 모드 분기</span></a></li><li><a href="af-service-binding.html">AF 서비스 객체와 레지스터 경계<span>ReloadTimer·Udc 객체의 생성과 연결</span></a></li><li><a href="af-mode1-control.html">Joint 모드 1의 요청과 피드백 계산<span>리셋 뒤 호출, 요청 분기, 피드백 계산</span></a></li><li><a href="af-feedback-producers.html">PafPulse 기준값의 쓰기 경로<span>기준값을 쓰는 네 곳</span></a></li><li><a href="af-motor-fields.html">PafMotor와 PafPulse의 입력값 경로<span>필드별 쓰기·읽기 경로</span></a></li><li><a href="af-driver-pwm.html">AF 드라이버와 PWM 연결<span>드라이버 객체와 PWM 등록</span></a></li><li><a href="af-pwm-parameters.html">AF PWM 요청과 정수 변환<span>요청 패킹과 정수 변환</span></a></li><li><a href="af-state-producers.html">PafMotor 상태 바이트의 쓰기 경로<span>상태 바이트를 쓰는 22곳</span></a></li><li><a href="af-adaptive-input.html">AF 적응형 문턱의 입력<span>경과 시간 입력과 정수 환산</span></a></li><li><a href="af-request-consumer.html" aria-current="page">AF 요청 큐와 완료 통지<span>요청 슬롯, 처리 task, 완료 통지</span></a></li></ol></nav>
+<nav class="pager" aria-label="이전·다음 문서"><a class="prev" href="af-adaptive-input.html"><small>← 이전</small>AF 적응형 문턱의 입력</a><a class="next" href="guide-ui.html"><small>다음 →</small>UI와 화면 자원 안내</a></nav>
 <footer class="sitefoot"><div class="sitefoot-in"><nav aria-label="사이트"><a href="../index.html#map">문서 지도</a><a href="../index.html#levels">검증 수준 읽는 법</a><a href="../glossary.html">용어집</a><a href="research-program.html">세 기종 연구 본부</a><a href="https://github.com/yunhyok/pentax-k3iii-firmware-analysis">GitHub 저장소</a></nav><p>PENTAX 펌웨어 연구. PC에서 수행한 정적 분석과 에뮬레이션 결과이며, 카메라 실기에서 검증한 내용이 아닙니다. 원본 펌웨어와 추출한 독점 코드는 포함하지 않습니다.</p></div></footer>
 <!-- /chrome:bottom -->
 </body>

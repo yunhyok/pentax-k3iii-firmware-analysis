@@ -10,7 +10,7 @@
 <body data-camera="k3iii">
 <!-- chrome:top -->
 <a class="skip" href="#main">본문 바로가기</a>
-<div class="topbar"><div class="topbar-in"><a class="brand" href="../index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="../index.html" aria-current="true">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="https://yunhyok.github.io/pentax-q7-firmware-analysis/">Q7</a></div><nav class="topnav" aria-label="주제"><a href="../index.html">개요</a><a href="guide-boot.html">부팅·저장소</a><a href="guide-update.html" aria-current="true">업데이트</a><a href="guide-rebuild.html">재구축</a><a href="guide-rtos.html">명령·셸</a><a href="guide-color.html">색 처리</a><a href="lightroom-bridge.html">Lightroom</a><a href="af-foundations.html">AF</a><a href="ui-port-contract.html">UI</a></nav></div></div>
+<div class="topbar"><div class="topbar-in"><a class="brand" href="../index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="../index.html" aria-current="true">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="https://yunhyok.github.io/pentax-q7-firmware-analysis/">Q7</a></div><nav class="topnav" aria-label="주제"><a href="../index.html">개요</a><a href="guide-boot.html">부팅·저장소</a><a href="guide-update.html" aria-current="true">업데이트</a><a href="guide-rebuild.html">재구축</a><a href="guide-rtos.html">명령·셸</a><a href="guide-color.html">색 처리</a><a href="guide-lightroom.html">Lightroom</a><a href="guide-af.html">AF</a><a href="guide-ui.html">UI</a></nav></div></div>
 <nav class="crumbs" aria-label="현재 위치"><ol><li><a href="../index.html">PENTAX K-3 Mark III</a></li><li><a href="guide-update.html">펌웨어 업데이트 과정</a></li><li aria-current="page">매체 객체와 완료 통지</li></ol></nav>
 <!-- /chrome:top -->
 <header class="page-head">
@@ -27,10 +27,10 @@
 <section class="summary">
 <h2 data-toc="no">핵심 요약</h2>
 <ul>
-<li>업데이트 파일 경로의 <strong>C는 <code>SdDriver</code>, R은 <code>Emmc</code></strong> 클래스의 객체로 이어집니다. 객체를 만드는 코드와 클래스 이름 문자열로 확인했습니다. 펌웨어 속 클래스 이름일 뿐이며, 카드가 꽂혀 있는지나 초기화에 성공했는지를 뜻하지는 않습니다.</li>
-<li>SD 쪽 객체에 저장되는 크기 값은 카드의 CSD 레지스터에서 계산한 <strong>512바이트 sector 수</strong>입니다. 합성 CSD 45개로 원본 계산 코드를 실행했고, 계산식은 SD 규격의 용량식과 같은 꼴입니다.</li>
+<li>업데이트 파일 경로의 <strong>C는 <code>SdDriver</code>, R은 <code>Emmc</code></strong> 클래스의 객체로 이어집니다. 객체를 만드는 코드와 클래스 이름 문자열로 확인했습니다. 펌웨어 속 클래스 이름일 뿐이며 카드가 꽂혀 있는지나 초기화에 성공했는지를 뜻하지는 않습니다.</li>
+<li>SD 쪽 객체에 저장되는 크기 값은 카드의 CSD 레지스터에서 계산한 <strong>512바이트 sector 수</strong>입니다. 합성 CSD 45개로 원본 계산 코드를 실행했고 계산식은 SD 규격의 용량식과 같은 꼴입니다.</li>
 <li>R 볼륨의 두 숫자는 <code>Emmc</code> 객체가 아니라 <strong>별도 객체 <code>EmmcPartition</code></strong>에 든 상수에서 옵니다.</li>
-<li>완료 통지는 메시지 하나로 나갑니다. 받는 쪽 코드는 <code>FwUpdateModel</code>의 상태 값을 3으로 바꾸고 UI 작업 큐에 작업 하나를 넣습니다. <strong>보내는 쪽과 받는 쪽을 따로 실행했고</strong>, 둘 사이의 실제 전달은 확인하지 못했습니다.</li>
+<li>완료 통지는 메시지 하나로 나갑니다. 받는 쪽 코드는 <code>FwUpdateModel</code>의 상태 값을 3으로 바꾸고 UI 작업 큐에 작업 하나를 넣습니다. <strong>보내는 쪽과 받는 쪽을 따로 실행했고</strong> 둘 사이의 실제 전달은 확인하지 못했습니다.</li>
 <li>상태 값 3을 저장소 기록 성공이나 인증 통과로 읽을 근거는 없습니다.</li>
 </ul>
 </section>
@@ -66,7 +66,7 @@
 
 <section id="background">
 <h2>배경: 파일 경로에서 저장 장치 객체까지</h2>
-<p>업데이트 프로그램은 파일 이름을 <code>C:\FWDC%ldB.BIN</code>과 <code>R:\FWDC%ldB.BIN</code> 두 형식으로 만듭니다. 경로의 첫 문자로 볼륨을 찾고, 볼륨은 저장 장치를 다루는 객체 하나를 가리킵니다. 여기까지는 <a href="update-volume-finalization.html">파일 경로·volume·종료 처리</a>에서 확인했습니다. 이 문서는 그 객체의 정체와, 객체 안의 크기 값이 어디에서 오는지를 다룹니다.</p>
+<p>업데이트 프로그램은 파일 이름을 <code>C:\FWDC%ldB.BIN</code>과 <code>R:\FWDC%ldB.BIN</code> 두 형식으로 만듭니다. 경로의 첫 문자로 볼륨을 찾고 볼륨은 저장 장치를 다루는 객체 하나를 가리킵니다. 여기까지는 <a href="update-volume-finalization.html">파일 경로·volume·종료 처리</a>에서 확인했습니다. 이 문서는 그 객체의 정체와, 객체 안의 크기 값이 어디에서 오는지를 다룹니다.</p>
 <p>문서 뒷부분은 업데이트 실행이 끝난 뒤의 일입니다. 종료 함수는 실행 결과가 0이 아닐 때 완료 통지 함수를 부릅니다. 이 통지가 화면을 담당하는 UI 쪽에 어떤 모습으로 도착하는지 따라갑니다.</p>
 
 <div class="table-wrap"><table class="fit">
@@ -144,7 +144,7 @@
 </svg>
 </div>
 <ul class="dg-legend"><li><i class="ok"></i>원본 코드 실행으로 확인</li><li><i class="model"></i>시험용으로 넣은 값</li><li><i class="open"></i>미확인</li></ul>
-<p>실선 화살표는 값이 복사되는 방향이고, 파선은 포인터가 가리키는 방향입니다.</p>
+<p>실선 화살표는 값이 복사되는 방향이고 파선은 포인터가 가리키는 방향입니다.</p>
 </figure>
 </section>
 
@@ -164,8 +164,8 @@
 
 <p>두 클래스는 같은 부모 생성자를 부릅니다. 부모 생성자는 넘겨받은 값의 하위 1바이트를 +0x14에 쓰고 +0x18을 0으로 만듭니다. <code>SdDriver</code>는 0을, <code>Emmc</code>는 3을 넘깁니다. 그래서 +0x18에 0이 아닌 값이 들어가려면 생성자와 다른 코드가 나중에 써야 합니다.</p>
 <ul>
-<li><strong>SD 쪽</strong> — 그 코드를 찾았습니다. 다음 절에서 설명합니다.</li>
-<li><strong>Emmc 쪽</strong> — 찾지 못했습니다. <code>Emmc</code>의 초기화 함수와 활성화 함수 두 개에는 +0x18에 직접 쓰는 명령이 없었습니다. 살펴본 두 함수에 없다는 뜻이며, 펌웨어 전체에서 이 값이 바뀌지 않는다는 결론은 아닙니다.</li>
+<li><strong>SD 쪽</strong>: 그 코드를 찾았습니다. 다음 절에서 설명합니다.</li>
+<li><strong>Emmc 쪽</strong>: 찾지 못했습니다. <code>Emmc</code>의 초기화 함수와 활성화 함수 두 개에는 +0x18에 직접 쓰는 명령이 없었습니다. 살펴본 두 함수에 없다는 뜻이며 펌웨어 전체에서 이 값이 바뀌지 않는다는 결론은 아닙니다.</li>
 </ul>
 <p>R만 번호 2를 쓰는 것은 아닙니다. 앞 문서의 등록 표에 따르면 문자 A, B, E, F, G, H, R 일곱 개가 모두 provider 번호 2에 연결됩니다.</p>
 
@@ -195,7 +195,7 @@
 
 <section id="csd">
 <h2>SD 객체의 크기 필드는 CSD에서 계산한 sector 수입니다</h2>
-<p class="takeaway">SD 활성화 함수는 조건이 맞을 때만 CSD 16바이트를 가져와 sector 수를 계산하고, 그 값을 객체의 +0x18에 넣습니다.</p>
+<p class="takeaway">SD 활성화 함수는 조건이 맞을 때만 CSD 16바이트를 가져와 sector 수를 계산하고 그 값을 객체의 +0x18에 넣습니다.</p>
 
 <ol class="flow">
 <li class="model"><strong>조건 검사</strong><span>gate 통과, 아직 준비 전, 카드 있음, 읽기 성공(최대 3회 시도)</span></li>
@@ -217,14 +217,14 @@
 <tr><th scope="row">카드 없음</th><td class="n">0회</td><td class="n">0</td><td>보존</td></tr>
 <tr><th scope="row">읽기가 계속 실패</th><td class="n">3회</td><td class="n">0</td><td>보존</td></tr>
 </tbody></table></div>
-<p class="small muted">카드에서 CSD를 읽어 오는 동작은 실행하지 않았습니다. 읽기 함수는 성공·실패만 돌려주는 대체 함수이고, CSD 바이트는 미리 전역 버퍼에 넣어 둔 합성 값입니다.</p>
+<p class="small muted">카드에서 CSD를 읽어 오는 동작은 실행하지 않았습니다. 읽기 함수는 성공·실패만 돌려주는 대체 함수이고 CSD 바이트는 미리 전역 버퍼에 넣어 둔 합성 값입니다.</p>
 
 <h3 id="csd-unit">이 값을 512바이트 sector 수로 읽는 근거</h3>
 <ul>
 <li>같은 전역 버퍼를 출력하는 진단 코드가 이 16바이트를 <code>CSD Register</code>라고 부르고 <code>CSD_STRUCTURE</code> 항목을 표시합니다.</li>
 <li>성공했을 때 남기는 로그가 계산값을 <code>total sectors</code>라고 부릅니다.</li>
 <li>두 매체 클래스 모두 vtable+0x4c의 getter가 512를 돌려줍니다.</li>
-<li>계산식이 512로 나눈 꼴이고, SD 규격의 용량식과 맞습니다(아래).</li>
+<li>계산식이 512로 나눈 꼴이고 SD 규격의 용량식과 맞습니다(아래).</li>
 </ul>
 <p>이 근거는 값의 단위를 정해 줄 뿐입니다. 실제 카드의 용량을 잰 결과가 아닙니다.</p>
 
@@ -240,7 +240,7 @@
 <tr><th scope="row">C_SIZE_MULT (CSD 1.0)</th><td>49–47</td><td><code>((b[9] &amp; 3) &lt;&lt; 1) | (b[10] &gt;&gt; 7)</code></td><td>m</td></tr>
 <tr><th scope="row">C_SIZE (CSD 2.0, 22비트)</th><td>69–48</td><td><code>((b[7] &amp; 63) &lt;&lt; 16) | (b[8] &lt;&lt; 8) | b[9]</code></td><td>C</td></tr>
 </tbody></table></div>
-<p>크기 필드 C는 함수 <code>0x532824fc</code>가 꺼내고, sector 수는 함수 <code>0x53282554</code>가 계산합니다. 아래에서 u32는 결과를 32비트로 자른다는 뜻입니다.</p>
+<p>크기 필드 C는 함수 <code>0x532824fc</code>가 꺼내고 sector 수는 함수 <code>0x53282554</code>가 계산합니다. 아래 식의 u32는 결과를 32비트로 자릅니다.</p>
 <pre><code>s=1:
 C = ((b[7] &amp; 63) &lt;&lt; 16) | (b[8] &lt;&lt; 8) | b[9]
 count = u32((C + 1) &lt;&lt; 10)
@@ -252,7 +252,7 @@ m = ((b[9] &amp; 3) &lt;&lt; 1) | (b[10] &gt;&gt; 7)
 count = u32((C + 1) * (LSL32(2, u32(r-1)) &gt;&gt; 9) * LSL32(2, m+1))
 
 s=2 또는 3: count = 0</code></pre>
-<p><code>LSL32</code>는 ARM의 레지스터 값만큼 왼쪽으로 미는 명령입니다. 미는 양은 하위 8비트만 쓰고, 32 이상이면 결과가 0입니다. 그래서 s=0 식은 r이 9 이상일 때 (C+1)×2<sup>m+2</sup>×2<sup>r</sup>÷512와 같고, r이 8 이하이면 0이 됩니다.</p>
+<p><code>LSL32</code>는 ARM의 레지스터 값만큼 왼쪽으로 미는 명령입니다. 미는 양은 하위 8비트만 쓰고 32 이상이면 결과가 0입니다. 그래서 s=0 식은 r이 9 이상일 때 (C+1)×2<sup>m+2</sup>×2<sup>r</sup>÷512와 같고 r이 8 이하이면 0이 됩니다.</p>
 
 <div class="table-wrap"><table class="fit">
 <caption>합성 CSD 45개 가운데 대표 사례 <span class="badge ok">확인</span></caption>
@@ -271,7 +271,7 @@ s=2 또는 3: count = 0</code></pre>
 <p class="small muted">45개는 형식 값 네 가지(4개), s=0에서 C·r·m의 경계 조합(20개), s=1에서 C 다섯 값(5개), 난수 16바이트(16개)입니다. 최댓값에서 0이 되는 사례는 계산 코드의 동작을 본 것입니다. 실제 카드가 그런 값을 내놓는다는 뜻이 아닙니다.</p>
 
 <h3 id="csd-spec">SD 규격과 맞춰 보기</h3>
-<p>SD Association의 Physical Layer Simplified Specification은 CSD 2.0의 용량을 (C_SIZE+1)×512KByte로 정의합니다. 512바이트로 나누면 (C_SIZE+1)×1024이고, 펌웨어의 s=1 식과 같습니다.</p>
+<p>SD Association의 Physical Layer Simplified Specification은 CSD 2.0의 용량을 (C_SIZE+1)×512KByte로 정의합니다. 512바이트로 나누면 (C_SIZE+1)×1024이고 펌웨어의 s=1 식과 같습니다.</p>
 <ul>
 <li>원래 조사에서는 규격 PDF 전문을 열지 못했습니다(내려받기 형식 문제와 HTTP 403 응답). 검색 색인에 나온 발췌(6.00판 인쇄 쪽 172의 C_SIZE·READ_BL_LEN 설명)만 확인했습니다.</li>
 <li>이번 검수에서도 규격 PDF는 약관 동의 뒤에만 받을 수 있어 열지 않았습니다. 대신 누구나 읽을 수 있는 Linux 커널의 CSD 해석 코드(<code>mmc_decode_csd</code>)와 대조했습니다. 위 표의 비트 위치, CSD 2.0의 <code>(1 + C_SIZE) &lt;&lt; 10</code>, CSD 1.0의 <code>(1 + C_SIZE) &lt;&lt; (C_SIZE_MULT + 2)</code>와 블록 길이 보정이 펌웨어의 식과 같은 꼴입니다.</li>
@@ -320,7 +320,7 @@ s=2 또는 3: count = 0</code></pre>
 <li>문자별 getter: <code>0x53298148</code>, <code>0x532981ec</code>. R에서 위 상수를 돌려줍니다.</li>
 <li>볼륨 설정 함수: <code>0x52f51028</code>, <code>0x52f5107c</code>. 종류 3이면 factory+0x1c의 <code>EmmcPartition</code>을 씁니다.</li>
 <li>record에 쓰는 명령: <code>0x52f527c4</code>(+0x0c), <code>0x52f528d0</code>(+0x10)와 뒤따르는 +0x14, +0x16 쓰기.</li>
-<li>시험 값: C 조건에서 매체 객체의 +0x18, +0x1c, +0x1e에 넣어 둔 값이 record의 +0x10, +0x14, +0x16으로 그대로 복사됐고 +0x0c는 0이었습니다.</li>
+<li>시험 값: C 조건에서 매체 객체의 +0x18, +0x1c, +0x1e에 넣어 둔 값이 record의 +0x10, +0x14, +0x16으로 그대로 복사됐습니다. +0x0c는 0이었습니다.</li>
 </ul>
 </details>
 </section>
@@ -381,15 +381,15 @@ s=2 또는 3: count = 0</code></pre>
 <h3 id="publish">보내는 쪽</h3>
 <ul>
 <li><strong>완료 함수</strong>는 메시지 ID <code>0x2640820b</code>와 인수 0을 골라 공통 송신 함수에 넘깁니다.</li>
-<li><strong>공통 송신 함수</strong>는 받은 두 값을 7 word짜리 봉투(envelope)의 첫 두 칸에 적고, 나머지 다섯 칸을 0으로 채웁니다. 그런 다음 통지 객체 +4에 있는 pipe를 거쳐 전송 함수로 넘깁니다.</li>
-<li><strong>반환값</strong> — 공유 소유자 포인터가 null인 시험 조건에서 송신 함수는 전송 함수의 반환값(0, 1, <code>0xffffffff</code>)을 그대로 돌려줬습니다. 완료 함수는 이 반환값으로 분기하지 않습니다. 반환값이 무엇이든 이벤트 경계에 <code>0x20</code>을 넘기고 마지막 통지 호출로 넘어갑니다.</li>
+<li><strong>공통 송신 함수</strong>는 받은 두 값을 7 word짜리 봉투(envelope)의 첫 두 칸에 적고 나머지 다섯 칸을 0으로 채웁니다. 그런 다음 통지 객체 +4에 있는 pipe를 거쳐 전송 함수로 넘깁니다.</li>
+<li><strong>반환값</strong>: 공유 소유자 포인터가 null인 시험 조건에서 송신 함수는 전송 함수의 반환값(0, 1, <code>0xffffffff</code>)을 그대로 돌려줬습니다. 완료 함수는 이 반환값으로 분기하지 않습니다. 반환값이 무엇이든 이벤트 경계에 <code>0x20</code>을 넘기고 마지막 통지 호출로 넘어갑니다.</li>
 </ul>
 
 <h3 id="receive">받는 쪽</h3>
 <ul>
-<li><strong>수신 router</strong>는 메시지 ID의 최상위 바이트(group)가 <code>0x26</code>인 분기를 고릅니다. 이어 판별 함수 두 개를 거칩니다. 다른 종류의 메시지인지 묻는 판별은 통과하지 못하고, update 메시지인지 묻는 판별을 통과해 수신부로 갑니다.</li>
+<li><strong>수신 router</strong>는 메시지 ID의 최상위 바이트(group)가 <code>0x26</code>인 분기를 고릅니다. 이어 판별 함수 두 개를 거칩니다. 다른 종류의 메시지인지 묻는 판별은 통과하지 못하고 update 메시지인지 묻는 판별을 통과해 수신부로 갑니다.</li>
 <li><strong>모델 객체</strong>는 getter가 돌려주는 전역 객체입니다. 생성자가 설치하는 vtable과 RTTI 이름으로 <code>FwUpdateModel</code>임을 확인했습니다.</li>
-<li><strong>수신부</strong>는 모델의 +8에 3을 쓰고, 작업 ID <code>0x128</code>과 인수 0, 0을 UI 작업 큐에 등록합니다.</li>
+<li><strong>수신부</strong>는 모델의 +8에 3을 쓰고 작업 ID <code>0x128</code>과 인수 0, 0을 UI 작업 큐에 등록합니다.</li>
 </ul>
 
 <div class="table-wrap"><table class="fit">
@@ -407,7 +407,7 @@ s=2 또는 3: count = 0</code></pre>
 <p>송신부와 수신부는 각각 원본 코드로 실행했습니다. 그러나 둘 사이의 구독, 전달, 스케줄링은 시험에서 연결하지 않았습니다. 상태 값 3을 실제 업데이트 성공이나 인증 통과로 해석하지 않습니다.</p></div>
 
 <h3 id="queue-full">UI 작업 큐에 넣는 조건과 큐가 가득 찬 경우</h3>
-<p>큐 등록 함수는 16비트 개수(count)와 용량(capacity)을 읽습니다. <code>count &lt; capacity − 1</code>일 때만 12바이트 항목에 작업 ID와 두 인수를 저장합니다. 그 뒤 count를 1 늘리고, 쓰기 위치를 <code>(위치 + 1) &amp; mask</code>로 옮기고, unlock과 wake를 부릅니다.</p>
+<p>큐 등록 함수는 16비트 개수(count)와 용량(capacity)을 읽습니다. <code>count &lt; capacity − 1</code>일 때만 12바이트 항목에 작업 ID와 두 인수를 저장합니다. 그 뒤 count를 1 늘리고 쓰기 위치를 <code>(위치 + 1) &amp; mask</code>로 옮기고 unlock과 wake를 부릅니다.</p>
 <div class="table-wrap"><table class="fit">
 <caption>8칸짜리 합성 큐에서 본 동작 <span class="badge ok">확인</span> (큐는 <span class="badge model">모델</span>)</caption>
 <thead><tr><th>시작 상태</th><th>결과</th></tr></thead>
@@ -461,18 +461,18 @@ s=2 또는 3: count = 0</code></pre>
 </tbody></table></div>
 <ul>
 <li>완료 통지는 공개 도구의 15사례와 별도로 독립 검토 4사례를 더 실행했습니다. 이 4사례는 공개 도구에 들어 있지 않습니다.</li>
-<li>분석 과정에서 만든 디컴파일 C 출력 17개와 원본 ARM 명령 1,878 word의 주소·해시를 로컬에 보관합니다. 다시 분석한 함수까지 센 수이며, 원본 소스 17개를 얻었다는 뜻이 아닙니다.</li>
+<li>분석 과정에서 만든 디컴파일 C 출력 17개와 원본 ARM 명령 1,878 word의 주소·해시를 로컬에 보관합니다. 다시 분석한 함수까지 센 수이며 원본 소스 17개를 얻었다는 뜻이 아닙니다.</li>
 <li>공개 저장소에는 분석 문서, 합성 검사, 주소·해시 같은 메타데이터만 둡니다. 원본 바이너리와 디컴파일 C는 싣지 않습니다.</li>
 </ul>
 
 <h3 id="limits">한계와 남은 과제</h3>
 <ul>
-<li><strong>대체한 호출</strong> — 매체 객체 시험에서 부모 클래스의 기반 생성자, 작업 조회, dynamic cast, 카드 읽기와 설정, 작은 메모리 복사는 대체 함수입니다. 완료 통지 시험은 초기화가 끝난 singleton과 직접 만든 큐를 쓰고, 실제 전송·OS 이벤트·업데이트 실행기는 대체했습니다.</li>
-<li><strong>실행한 분기</strong> — SD 활성화 함수는 고른 조건의 분기만 실행했습니다. 생성 함수와 <code>Emmc</code> 초기화·활성화 함수는 읽기만 했습니다.</li>
-<li><strong>Emmc 크기 필드</strong> — 0이 아닌 값을 넣는 코드를 찾지 못했습니다.</li>
-<li><strong>송신과 수신의 연결</strong> — 실제 큐 등록, 전달, 스케줄링을 실행하지 않았습니다.</li>
-<li><strong>디컴파일 C의 한계</strong> — 자동으로 복원한 C에는 꼬리 호출이 빠지거나 구조체·인덱스 추정이 틀린 곳이 있을 수 있습니다. C 출력은 고치지 않았고, 원본 ARM 명령과 실행 결과를 결론의 기준으로 삼았습니다.</li>
-<li><strong>하지 않은 것</strong> — 실제 저장 매체, 카메라, 펌웨어 빌드, 플래시 기록은 다루지 않았습니다.</li>
+<li><strong>대체한 호출</strong>: 매체 객체 시험에서 부모 클래스의 기반 생성자, 작업 조회, dynamic cast, 카드 읽기와 설정, 작은 메모리 복사는 대체 함수입니다. 완료 통지 시험은 초기화가 끝난 singleton과 직접 만든 큐를 쓰고 실제 전송·OS 이벤트·업데이트 실행기는 대체했습니다.</li>
+<li><strong>실행한 분기</strong>: SD 활성화 함수는 고른 조건의 분기만 실행했습니다. 생성 함수와 <code>Emmc</code> 초기화·활성화 함수는 읽기만 했습니다.</li>
+<li><strong>Emmc 크기 필드</strong>: 0이 아닌 값을 넣는 코드를 찾지 못했습니다.</li>
+<li><strong>송신과 수신의 연결</strong>: 실제 큐 등록, 전달, 스케줄링을 실행하지 않았습니다.</li>
+<li><strong>디컴파일 C의 한계</strong>: 자동으로 복원한 C에는 꼬리 호출이 빠지거나 구조체·인덱스 추정이 틀린 곳이 있을 수 있습니다. C 출력은 고치지 않았고 원본 ARM 명령과 실행 결과를 결론의 기준으로 삼았습니다.</li>
+<li><strong>하지 않은 것</strong>: 실제 저장 매체, 카메라, 펌웨어 빌드, 플래시 기록은 다루지 않았습니다.</li>
 </ul>
 </section>
 
@@ -506,7 +506,7 @@ python verify_update_completion_message.py rtos.bin --output completion-checks.j
 </main>
 </div>
 <!-- chrome:bottom -->
-<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">펌웨어 업데이트 과정 — 이 주제의 문서</h2><ol><li><a href="guide-update.html">업데이트 과정 안내</a></li><li><a href="update-resources.html">업데이트 검사와 ICONBIN<span>프로젝트·버전·체크섬</span></a></li><li><a href="update-memory.html">입력 로더와 메모리 할당</a></li><li><a href="update-file-lifetimes.html">파일 인터페이스와 버퍼 수명</a></li><li><a href="update-volume-finalization.html">파일 경로·volume·종료 처리</a></li><li><a href="update-media-completion.html" aria-current="page">매체 객체와 완료 통지</a></li><li><a href="update-partition-io.html">R 파티션과 sector I/O</a></li><li><a href="update-bank-selection.html">쓰기 bank와 BOOT 선택</a></li><li><a href="selector-policy.html">리소스 선택값과 헤더 기록 조건<span>FIFO 반례·표와 헤더의 쓰기 분기</span></a></li><li><a href="update-ui-consumer.html">완료 후 UI 작업</a></li><li><a href="update-ui-timer.html">UI 타이머와 콜백</a></li><li><a href="update-timer-abi.html">커널 호출과 예약 시각</a></li><li><a href="update-timer-insertion.html">기한 큐 삽입</a></li><li><a href="update-timer-clock.html">타이머 설정과 64비트 카운터</a></li><li><a href="update-timer-irq.html">타이머 등록과 지연 콜백</a></li><li><a href="update-subtick-arithmetic.html">하위 시간의 32비트 산술</a></li><li><a href="update-clock-readers.html">시각 조회 함수</a></li></ol></nav>
+<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">펌웨어 업데이트 과정 — 이 주제의 문서</h2><ol><li><a href="guide-update.html">업데이트 과정 안내</a></li><li><a href="update-resources.html">업데이트 검사와 ICONBIN<span>프로젝트·버전·체크섬</span></a></li><li><a href="update-memory.html">입력 로더와 메모리 할당</a></li><li><a href="update-file-lifetimes.html">파일 인터페이스와 버퍼 수명</a></li><li><a href="update-volume-finalization.html">파일 경로·volume·종료 처리</a></li><li><a href="update-media-completion.html" aria-current="page">매체 객체와 완료 통지</a></li><li><a href="update-partition-io.html">R 파티션과 sector I/O</a></li><li><a href="update-bank-selection.html">쓰기 bank와 BOOT 선택</a></li><li><a href="selector-policy.html">리소스 선택값과 헤더 기록 조건<span>선택값과 기록 조건</span></a></li><li><a href="update-ui-consumer.html">완료 후 UI 작업</a></li><li><a href="update-ui-timer.html">UI 타이머와 콜백</a></li><li><a href="update-timer-abi.html">커널 호출과 예약 시각</a></li><li><a href="update-timer-insertion.html">기한 큐 삽입</a></li><li><a href="update-timer-clock.html">타이머 설정과 64비트 카운터</a></li><li><a href="update-timer-irq.html">타이머 등록과 지연 콜백</a></li><li><a href="update-subtick-arithmetic.html">하위 시간의 32비트 산술</a></li><li><a href="update-clock-readers.html">시각 조회 함수</a></li></ol></nav>
 <nav class="pager" aria-label="이전·다음 문서"><a class="prev" href="update-volume-finalization.html"><small>← 이전</small>파일 경로·volume·종료 처리</a><a class="next" href="update-partition-io.html"><small>다음 →</small>R 파티션과 sector I/O</a></nav>
 <footer class="sitefoot"><div class="sitefoot-in"><nav aria-label="사이트"><a href="../index.html#map">문서 지도</a><a href="../index.html#levels">검증 수준 읽는 법</a><a href="../glossary.html">용어집</a><a href="research-program.html">세 기종 연구 본부</a><a href="https://github.com/yunhyok/pentax-k3iii-firmware-analysis">GitHub 저장소</a></nav><p>PENTAX 펌웨어 연구. PC에서 수행한 정적 분석과 에뮬레이션 결과이며, 카메라 실기에서 검증한 내용이 아닙니다. 원본 펌웨어와 추출한 독점 코드는 포함하지 않습니다.</p></div></footer>
 <!-- /chrome:bottom -->

@@ -10,8 +10,8 @@
 <body data-camera="k3iii">
 <!-- chrome:top -->
 <a class="skip" href="#main">본문 바로가기</a>
-<div class="topbar"><div class="topbar-in"><a class="brand" href="../index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="../index.html" aria-current="true">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="https://yunhyok.github.io/pentax-q7-firmware-analysis/">Q7</a></div><nav class="topnav" aria-label="주제"><a href="../index.html">개요</a><a href="guide-boot.html">부팅·저장소</a><a href="guide-update.html">업데이트</a><a href="guide-rebuild.html">재구축</a><a href="guide-rtos.html">명령·셸</a><a href="guide-color.html">색 처리</a><a href="lightroom-bridge.html" aria-current="true">Lightroom</a><a href="af-foundations.html">AF</a><a href="ui-port-contract.html">UI</a></nav></div></div>
-<nav class="crumbs" aria-label="현재 위치"><ol><li><a href="../index.html">PENTAX K-3 Mark III</a></li><li><a href="lightroom-bridge.html">Lightroom 색 프로파일</a></li><li aria-current="page">LookTable 대조 실험</li></ol></nav>
+<div class="topbar"><div class="topbar-in"><a class="brand" href="../index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="../index.html" aria-current="true">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="https://yunhyok.github.io/pentax-q7-firmware-analysis/">Q7</a></div><nav class="topnav" aria-label="주제"><a href="../index.html">개요</a><a href="guide-boot.html">부팅·저장소</a><a href="guide-update.html">업데이트</a><a href="guide-rebuild.html">재구축</a><a href="guide-rtos.html">명령·셸</a><a href="guide-color.html">색 처리</a><a href="guide-lightroom.html" aria-current="true">Lightroom</a><a href="guide-af.html">AF</a><a href="guide-ui.html">UI</a></nav></div></div>
+<nav class="crumbs" aria-label="현재 위치"><ol><li><a href="../index.html">PENTAX K-3 Mark III</a></li><li><a href="guide-lightroom.html">Lightroom 색 프로파일</a></li><li aria-current="page">LookTable 대조 실험</li></ol></nav>
 <!-- /chrome:top -->
 <header class="page-head">
 <p class="eyebrow">Lightroom 색 프로파일 · LookTable 대조 실험</p>
@@ -29,9 +29,9 @@
 <ul>
 <li>K-3 II RAW 한 장에 <strong>LookTable만 다른 시험 프로파일 두 개</strong>를 적용했습니다. 아무것도 바꾸지 않는 항등 표(채도 배율 1.0)와 채도 배율 0.8인 표입니다. 표가 없는 기준 프로파일의 출력까지 합쳐, 실제 Lightroom Classic 15.6이 내보낸 TIFF 다섯 개를 비교했습니다.</li>
 <li>같은 프로파일로 다시 내보낸 TIFF는 두 쌍 모두 <strong>24,064,000개 픽셀이 전부 같았습니다</strong>.</li>
-<li>채도 0.8 표는 출력에 뚜렷하게 반영됐습니다. 항등 표 대비 픽셀의 99.92%가 달라졌고, 24패치 ΔE00는 <strong>평균 4.645</strong>, 최대 10.031이었습니다. 24패치 모두 채도가 줄었습니다.</li>
+<li>채도 0.8 표는 출력에 뚜렷하게 반영됐습니다. 항등 표 대비 픽셀의 99.92%가 달라졌고 24패치 ΔE00는 <strong>평균 4.645</strong>, 최대 10.031이었습니다. 24패치 모두 채도가 줄었습니다.</li>
 <li>항등 표를 넣은 출력은 표가 없는 출력과 완전히 같지는 않았습니다. <strong>34,099픽셀(0.14%)</strong>에서 코드값이 −8~+6 달랐습니다. 24패치의 Lab 중앙값은 모두 같았습니다.</li>
-<li>RAW 한 장으로 태그의 효과를 본 대조 실험입니다. 이 작은 차이가 Lightroom 내부 어디에서 생기는지는 확인하지 못했고, 카메라 JPEG의 색을 재현한 것도 아닙니다.</li>
+<li>RAW 한 장으로 태그의 효과를 본 대조 실험입니다. 이 작은 차이가 Lightroom 내부 어디에서 생기는지는 확인하지 못했고 카메라 JPEG의 색을 재현한 것도 아닙니다.</li>
 </ul>
 </section>
 
@@ -69,13 +69,13 @@
 </tbody></table></div>
 <p>규격에 따르면 이 표는 선형 ProPhoto RGB 값을 HSV(색상·채도·명도)로 바꾼 좌표에서 적용합니다. 채도에는 배율을 곱한 뒤 1.0을 넘지 않게 자릅니다. 분할 수가 1인 축에서는 표가 그 축에 대해 상수입니다. 적용 위치는 노출 보정 뒤, 톤 곡선 앞입니다. 근거는 <a href="https://helpx.adobe.com/content/dam/help/en/camera-raw/digital-negative/jcr_content/root/content/flex/items/position/position-par/download_section_733958301/download-1/DNG_Spec_1_7_1_0.pdf#page=56">Adobe DNG 규격 1.7.1.0</a>의 56–57쪽, 63쪽, 103쪽입니다.</p>
 <div class="callout plain"><strong class="label">쉽게 말하면</strong>
-<p>이 실험의 표는 “모든 색의 채도에 같은 수를 곱하라”는 한 줄짜리 지시입니다. 1.0을 곱하면 아무것도 바뀌지 않아야 하고, 0.8을 곱하면 전체가 덜 선명해져야 합니다. 여기서 0.8은 표 안의 HSV 채도에 곱하는 수입니다. 출력에서 잰 채도가 정확히 0.8배가 된다는 뜻은 아닙니다.</p></div>
+<p>이 실험의 표는 “모든 색의 채도에 같은 수를 곱하라”는 한 줄짜리 지시입니다. 1.0을 곱하면 아무것도 바뀌지 않아야 하고 0.8을 곱하면 전체가 덜 선명해져야 합니다. 여기서 0.8은 표 안의 HSV 채도에 곱하는 수입니다. 출력에서 잰 채도가 정확히 0.8배가 된다는 뜻은 아닙니다.</p></div>
 <p>색차 <dfn title="CIEDE2000 색차. 두 색의 차이를 나타내는 수치로, 클수록 차이가 큽니다.">ΔE00</dfn>, 패치, 코드값 같은 용어와 측정 방법은 <a href="lightroom-tone-comparison.html#background">톤 곡선 비교</a>와 같습니다.</p>
 </section>
 
 <section id="design">
 <h2>실험 설계: 같은 색 행렬에 LookTable만 다르게 넣었습니다</h2>
-<p class="takeaway">두 시험 DCP는 기준 DCP에 가장 작은 LookTable 하나를 더한 것이고, 표 안의 채도 배율만 1.0과 0.8로 다릅니다.</p>
+<p class="takeaway">두 시험 DCP는 기준 DCP에 가장 작은 LookTable 하나를 더한 것이고 표 안의 채도 배율만 1.0과 0.8로 다릅니다.</p>
 <ol class="flow">
 <li class="ok"><strong>같은 RAW</strong><span>K-3 II DNG #1376. 기준 DCP와 같은 색 행렬·광원</span></li>
 <li class="model"><strong>시험 LookTable</strong><span>색상 1 × 채도 2 × 명도 1. 채도 배율 1.0 또는 0.8</span></li>
@@ -91,7 +91,7 @@
 <tr><th scope="row">첫째 칸 (입력 채도가 0인 쪽)</th><td class="n">0°</td><td class="n">1.0 또는 0.8</td><td class="n">1.0</td></tr>
 <tr><th scope="row">둘째 칸</th><td class="n">0°</td><td class="n">1.0 또는 0.8</td><td class="n">1.0</td></tr>
 </tbody></table></div>
-<p>RAW는 펌웨어 1.10으로 찍은 K-3 II DNG #1376입니다. 그 안의 색 행렬 두 개와 광원으로 만든 것이 기준 DCP이고, 두 시험 DCP에도 같은 모델 제한과 보정 태그를 넣었습니다. 기준 DCP에 더한 것은 프로파일 이름과 LookTable 태그 두 개뿐입니다. 기준 DCP를 만드는 레시피는 <a href="lightroom-matrix-1376.json">lightroom-matrix-1376.json</a>입니다.</p>
+<p>RAW는 펌웨어 1.10으로 찍은 K-3 II DNG #1376입니다. 그 안의 색 행렬 두 개와 광원으로 만든 것이 기준 DCP이고 두 시험 DCP에도 같은 모델 제한과 보정 태그를 넣었습니다. 기준 DCP에 더한 것은 프로파일 이름과 LookTable 태그 두 개뿐입니다. 기준 DCP를 만드는 레시피는 <a href="lightroom-matrix-1376.json">lightroom-matrix-1376.json</a>입니다.</p>
 <div class="callout"><strong class="label">참고</strong>
 <p>두 DCP를 처음 가져왔을 때는 Lightroom의 프로파일 목록에 보이지 않았습니다. Lightroom을 정상 종료하고 다시 열자 같은 파일이 목록에 나타났습니다. 파일의 이름이나 바이트는 바꾸지 않았습니다.</p></div>
 
@@ -107,7 +107,7 @@
 
 <section id="pixels">
 <h2>전체 픽셀 비교: 항등 표는 거의 같고 채도 0.8은 거의 전부 달라졌습니다</h2>
-<p class="takeaway">같은 프로파일은 같은 픽셀을 냈습니다. 표 없음과 항등 표 사이에는 0.14%의 픽셀에서 작은 차이가 있었고, 채도 0.8은 99.92%의 픽셀을 바꿨습니다.</p>
+<p class="takeaway">같은 프로파일은 같은 픽셀을 냈습니다. 표 없음과 항등 표 사이에는 0.14%의 픽셀에서 작은 차이가 있었고 채도 0.8은 99.92%의 픽셀을 바꿨습니다.</p>
 
 <figure class="diagram">
 <figcaption>TIFF 다섯 개와 비교 네 건</figcaption>
@@ -163,16 +163,16 @@
 <tr><th scope="row" class="nowrap">항등 ① → 채도 0.8</th><td class="n">24,045,661</td><td class="n">99.923791%</td><td class="n">−1,427 ~ +14,331</td><td class="n">531.422513</td><td class="n">4.645 / 10.031</td></tr>
 </tbody></table></div>
 <ul>
-<li><strong>같은 프로파일의 반복</strong> — 기준 프로파일의 두 TIFF(생략 ①, ②)는 픽셀이 같았습니다. 항등 표의 두 TIFF도 같았습니다. 같은 프로파일의 반복 결과는 이 촬영과 현상 조건에서 재현됐습니다.</li>
-<li><strong>표 없음 → 항등 표</strong> — 기준을 항등 표로 바꾸자 34,099픽셀의 코드값이 달라졌습니다. 34,099 ÷ 24,064,000 = 0.1417%입니다. 차이는 −8에서 +6 사이이고, 24패치의 Lab 중앙값은 모두 같아 패치 색차는 0입니다.</li>
-<li><strong>항등 표 → 채도 0.8</strong> — 24,045,661픽셀이 달라졌습니다. 코드값 차이는 −1,427에서 +14,331 사이입니다.</li>
+<li><strong>같은 프로파일의 반복</strong>: 기준 프로파일의 두 TIFF(생략 ①, ②)는 픽셀이 같았습니다. 항등 표의 두 TIFF도 같았습니다. 같은 프로파일의 반복 결과는 이 촬영과 현상 조건에서 재현됐습니다.</li>
+<li><strong>표 없음 → 항등 표</strong>: 기준을 항등 표로 바꾸자 34,099픽셀의 코드값이 달라졌습니다. 34,099 ÷ 24,064,000 = 0.1417%입니다. 차이는 −8에서 +6 사이이고 24패치의 Lab 중앙값은 모두 같아 패치 색차는 0입니다.</li>
+<li><strong>항등 표 → 채도 0.8</strong>: 24,045,661픽셀이 달라졌습니다. 코드값 차이는 −1,427에서 +14,331 사이입니다.</li>
 </ul>
 <div class="callout warn"><strong class="label">주의</strong>
 <p>항등 표는 색상 이동 0, 채도·명도 배율 1이라 계산식으로는 색을 바꾸지 않습니다. 그런데도 표가 없는 출력과 0.14%의 픽셀이 달랐습니다. 두 프로파일 모두 반복 출력이 완전히 같았으므로, 내보낼 때마다 달라지는 변동으로 보기는 어렵습니다. Lightroom 내부에서 이 차이가 생기는 경로는 아직 확인하지 못했습니다.</p></div>
 <p>생략 ①은 <a href="lightroom-tone-comparison.html">톤 곡선 비교</a>에서 “생략 재출력”으로 쓴 TIFF입니다. 그 실험의 첫 생략 출력까지 합치면, 기준 프로파일로 내보낸 TIFF 세 개의 픽셀 해시가 모두 같습니다.</p>
 
 <h3 id="digest">TIFF에 기록된 프로파일 지문도 맞았습니다</h3>
-<p>두 시험 DCP의 전체 프로파일 지문을 Adobe DNG SDK의 직렬화 순서로 계산했습니다. 항등 표는 <code>380E26299D96CE6BC04D061D711C8FFA</code>, 채도 0.8 표는 <code>D806FCB7CD7B2132B74AF1C13ED7E430</code>이고, 각각 해당 TIFF의 XMP에 적힌 <code>CameraProfileDigest</code>와 일치합니다. 계산 방법은 <a href="lightroom-profile-fingerprints.html">프로파일 지문 재현</a>과 같고, 정책 값 뒤에 LookTable 36바이트(크기 LONG 3개와 FLOAT 6개)를 더했습니다.</p>
+<p>두 시험 DCP의 전체 프로파일 지문을 Adobe DNG SDK의 직렬화 순서로 계산했습니다. 항등 표는 <code>380E26299D96CE6BC04D061D711C8FFA</code>, 채도 0.8 표는 <code>D806FCB7CD7B2132B74AF1C13ED7E430</code>입니다. 두 값은 각각 해당 TIFF의 XMP에 적힌 <code>CameraProfileDigest</code>와 일치합니다. 계산 방법은 <a href="lightroom-profile-fingerprints.html">프로파일 지문 재현</a>과 같습니다. 정책 값 뒤에는 LookTable 36바이트(크기 LONG 3개와 FLOAT 6개)를 더했습니다.</p>
 <div class="table-wrap"><table>
 <caption>TIFF 다섯 개의 프로파일 기록</caption>
 <thead><tr><th>TIFF</th><th>XMP의 프로파일 이름</th><th>LookTable</th><th>XMP의 CameraProfileDigest</th></tr></thead>
@@ -233,7 +233,7 @@
 
 <section id="chart">
 <h2>채도 0.8 표는 유채색 패치의 색을 크게, 무채색 패치는 조금 바꿨습니다</h2>
-<p class="takeaway">항등 표 대비 채도 0.8 표의 24패치 ΔE00는 평균 4.645입니다. 가장 큰 값은 8번 패치의 10.031이고, 무채색 패치 19~24번에서는 0.850을 넘지 않았습니다.</p>
+<p class="takeaway">항등 표 대비 채도 0.8 표의 24패치 ΔE00는 평균 4.645입니다. 가장 큰 값은 8번 패치의 10.031이고 무채색 패치 19~24번에서는 0.850을 넘지 않았습니다.</p>
 
 <figure class="diagram">
 <figcaption>항등 LookTable → 채도 배율 0.8: 패치별 ΔE00</figcaption>
@@ -350,14 +350,14 @@
 </svg>
 </div>
 <ul class="dg-legend"><li><i class="key"></i>유채색 패치 1~18번</li><li><i class="mute"></i>무채색 패치 19~24번</li></ul>
-<p>막대 길이는 측정 JSON의 ΔE00에 비례합니다. 오른쪽 열 ΔC*ab는 CIELAB에서 잰 채도의 변화로, 음수는 채도가 줄었다는 뜻입니다.</p>
+<p>막대 길이는 측정 JSON의 ΔE00에 비례합니다. 오른쪽 열 ΔC*ab는 CIELAB에서 잰 채도의 변화로, 음수면 채도가 줄었습니다.</p>
 </figure>
 <ul>
-<li><strong>채도</strong> — 패치의 Lab 중앙값에서 구한 C*ab는 24개 모두 줄었습니다. 줄어든 폭은 패치마다 달랐습니다.</li>
-<li><strong>무채색 패치</strong> — 원래 채도가 낮은 19~24번은 변화도 작습니다. 여섯 칸의 ΔE00 최댓값은 0.850입니다.</li>
-<li><strong>밝기</strong> — 24패치 모두 L*가 올랐습니다. 오른 폭은 0.03에서 10.31 사이로 패치마다 크게 다릅니다.</li>
+<li><strong>채도</strong>: 패치의 Lab 중앙값에서 구한 C*ab는 24개 모두 줄었습니다. 줄어든 폭은 패치마다 달랐습니다.</li>
+<li><strong>무채색 패치</strong>: 원래 채도가 낮은 19~24번은 변화도 작습니다. 여섯 칸의 ΔE00 최댓값은 0.850입니다.</li>
+<li><strong>밝기</strong>: 24패치 모두 L*가 올랐습니다. 오른 폭은 0.03에서 10.31 사이로 패치마다 크게 다릅니다.</li>
 </ul>
-<p>측정 방법은 앞선 실험과 같습니다. <a href="lightroom-render-comparison.html">실제 TIFF 6개 비교</a>에서 정한 패치 좌표를 썼고, 차트의 19개 지점에서 위치를 확인했습니다. 최대 이동량은 0.097픽셀입니다. 패치마다 RGB 16비트 값을 TIFF 내장 ICC로 D50 기준 Lab으로 바꾼 뒤 L*, a*, b*의 중앙값으로 ΔE00를 계산했습니다.</p>
+<p>측정 방법은 앞선 실험과 같습니다. <a href="lightroom-render-comparison.html">실제 TIFF 6개 비교</a>에서 정한 패치 좌표를 썼고 차트의 19개 지점에서 위치를 확인했습니다. 최대 이동량은 0.097픽셀입니다. 패치마다 RGB 16비트 값을 TIFF 내장 ICC로 D50 기준 Lab으로 바꾼 뒤 L*, a*, b*의 중앙값으로 ΔE00를 계산했습니다.</p>
 
 <details class="evidence"><summary>24패치별 ΔE00, ΔL*, ΔC*ab</summary>
 <div class="table-wrap"><table class="compact">
@@ -395,11 +395,11 @@
 <section id="limits">
 <h2>한계와 남은 과제</h2>
 <ul>
-<li><strong>대조 실험입니다</strong> — 표에 적은 값이 출력에 나타나는지를 본 것입니다. 0.8은 표 안의 HSV 채도 배율이며, 카메라의 어떤 색 모드를 흉내 낸 값이 아닙니다.</li>
-<li><strong>표 없음과 항등 표의 차이</strong> — 34,099픽셀의 차이가 Lightroom 내부의 어느 처리에서 생기는지 확인하지 못했습니다.</li>
-<li><strong>가장 작은 표만 시험했습니다</strong> — 색상이나 명도에 따라 값이 달라지는 표, 명도 축 인코딩은 다루지 않았습니다.</li>
-<li><strong>따로 통제하지 않은 태그</strong> — 시험 DCP에는 톤 곡선 태그와 <code>DefaultBlackRender</code> 태그가 없습니다. 톤 곡선과 검정 기준 처리는 Lightroom의 기본 동작에 맡겨져 있고, 다섯 TIFF에서 같은 조건입니다.</li>
-<li><strong>한 장면, 한 설정</strong> — RAW 한 장과 현상 설정 하나의 결과입니다. 카메라 JPEG의 색 정확도와 다른 촬영에서의 재현성은 따로 검증해야 합니다.</li>
+<li><strong>대조 실험입니다</strong>. 표에 적은 값이 출력에 나타나는지를 본 것입니다. 0.8은 표 안의 HSV 채도 배율이며 카메라의 어떤 색 모드를 흉내 낸 값이 아닙니다.</li>
+<li><strong>표 없음과 항등 표의 차이</strong>: 34,099픽셀의 차이가 Lightroom 내부의 어느 처리에서 생기는지 확인하지 못했습니다.</li>
+<li><strong>가장 작은 표만 시험했습니다.</strong> 색상이나 명도에 따라 값이 달라지는 표, 명도 축 인코딩은 다루지 않았습니다.</li>
+<li><strong>따로 통제하지 않은 태그</strong>: 시험 DCP에는 톤 곡선 태그와 <code>DefaultBlackRender</code> 태그가 없습니다. 톤 곡선과 검정 기준 처리는 Lightroom의 기본 동작에 맡겨져 있고 다섯 TIFF에서 같은 조건입니다.</li>
+<li><strong>한 장면, 한 설정</strong>: RAW 한 장과 현상 설정 하나의 결과입니다. 카메라 JPEG의 색 정확도와 다른 촬영에서의 재현성은 따로 검증해야 합니다.</li>
 </ul>
 </section>
 
@@ -437,7 +437,7 @@
 </main>
 </div>
 <!-- chrome:bottom -->
-<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">Lightroom 색 프로파일 — 이 주제의 문서</h2><ol><li><a href="lightroom-bridge.html">Lightroom 프로파일 안내<span>DCP 생성·검증의 전체 흐름</span></a></li><li><a href="raw-test-inputs.html">시험용 RAW 준비</a></li><li><a href="color-comparison-protocol.html">ColorChecker 비교 절차</a></li><li><a href="lightroom-render-comparison.html">실제 TIFF 6개 비교</a></li><li><a href="lightroom-tone-comparison.html">톤 곡선 비교</a></li><li><a href="lightroom-model-exports.html">K-3 III·Q7 DCP 내보내기</a></li><li><a href="lightroom-profile-fingerprints.html">프로파일 지문 재현</a></li><li><a href="lightroom-look-controls.html" aria-current="page">LookTable 대조 실험</a></li><li><a href="color-tone-residual.html">톤 보정 뒤 남는 색차</a></li><li><a href="color-scene-transfer.html">고정 톤의 독립 장면 비교<span>K-3 II #1363과 Lightroom 버전 대조</span></a></li><li><a href="lightroom-composed-tone.html">합성 톤 DCP의 실제 Lightroom 출력<span>두 장면·최대 색차 기준 미충족</span></a></li><li><a href="lightroom-tone-coordinates.html">Lightroom 톤과 RGB 좌표<span>같은 엔진·두 출력 색공간 대조</span></a></li><li><a href="lightroom-studio-baseline.html">K-3 III·Q7 Bright 스튜디오 비교<span>정합 통과 영역의 JPEG 대비 색차</span></a></li><li><a href="lightroom-studio-reference.html">K-3 III·Q7 참조 프로파일 비교<span>같은 장면의 공통 마스크·As Shot 대조</span></a></li><li><a href="lightroom-as-shot.html">As Shot과 프로파일별 백색점<span>같은 Q7 RAW의 SDK 수식 재현</span></a></li><li><a href="lightroom-pef-neutral.html">K-3 III PEF의 As Shot 중립값<span>두 DNG 변환과 세 프로파일 수식 재현</span></a></li><li><a href="lightroom-cfa-preservation.html">K-3 III PEF·DNG의 CFA 샘플 비교<span>변환 전후 전체 26,628,096개 샘플 대조</span></a></li><li><a href="lightroom-cfa-range.html">K-3 III DNG의 CFA 범위와 기본 크롭<span>활성 영역과 크롭의 WhiteLevel 대조</span></a></li><li><a href="lightroom-sdk-stage2.html">K-3 III DNG의 Adobe SDK Stage 2 실행<span>원본 SDK에서 활성 영역 25,891,840개 전수 대조</span></a></li><li><a href="lightroom-sdk-stage3.html">K-3 III DNG의 Adobe SDK Stage 3<span>카메라 채널 77,675,520개 보간 대조</span></a></li></ol></nav>
+<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">Lightroom 색 프로파일 — 이 주제의 문서</h2><ol><li><a href="guide-lightroom.html">Lightroom 색 프로파일 안내</a></li><li><a href="lightroom-bridge.html">DCP 구조와 생성 도구<span>세 기종 공통</span></a></li><li><a href="raw-test-inputs.html">시험용 RAW 준비</a></li><li><a href="color-comparison-protocol.html">ColorChecker 비교 절차</a></li><li><a href="lightroom-render-comparison.html">실제 TIFF 6개 비교</a></li><li><a href="lightroom-tone-comparison.html">톤 곡선 비교</a></li><li><a href="lightroom-model-exports.html">K-3 III·Q7 DCP 내보내기</a></li><li><a href="lightroom-profile-fingerprints.html">프로파일 지문 재현</a></li><li><a href="lightroom-look-controls.html" aria-current="page">LookTable 대조 실험</a></li><li><a href="color-tone-residual.html">톤 보정 뒤 남는 색차</a></li><li><a href="color-scene-transfer.html">고정 톤의 독립 장면 비교<span>K-3 II #1363과 Lightroom 버전 대조</span></a></li><li><a href="lightroom-composed-tone.html">합성 톤 DCP의 실제 Lightroom 출력<span>두 장면·최대 색차 기준 미충족</span></a></li><li><a href="lightroom-tone-coordinates.html">Lightroom 톤과 RGB 좌표<span>같은 엔진·두 출력 색공간 대조</span></a></li><li><a href="lightroom-studio-baseline.html">K-3 III·Q7 Bright 스튜디오 비교<span>정합 통과 영역의 JPEG 대비 색차</span></a></li><li><a href="lightroom-studio-reference.html">K-3 III·Q7 참조 프로파일 비교<span>같은 장면의 공통 마스크·As Shot 대조</span></a></li><li><a href="lightroom-as-shot.html">As Shot과 프로파일별 백색점<span>같은 Q7 RAW의 SDK 수식 재현</span></a></li><li><a href="lightroom-pef-neutral.html">K-3 III PEF의 As Shot 중립값<span>두 DNG 변환과 세 프로파일 수식 재현</span></a></li><li><a href="lightroom-cfa-preservation.html">K-3 III PEF·DNG의 CFA 샘플 비교<span>변환 전후 샘플 전수 대조</span></a></li><li><a href="lightroom-cfa-range.html">K-3 III DNG의 CFA 범위와 기본 크롭<span>활성 영역과 크롭의 WhiteLevel 대조</span></a></li><li><a href="lightroom-sdk-stage2.html">K-3 III DNG의 Adobe SDK Stage 2 실행<span>정규화 단계 전수 대조</span></a></li><li><a href="lightroom-sdk-stage3.html">K-3 III DNG의 Adobe SDK Stage 3<span>Bayer 보간 전수 대조</span></a></li></ol></nav>
 <nav class="pager" aria-label="이전·다음 문서"><a class="prev" href="lightroom-profile-fingerprints.html"><small>← 이전</small>프로파일 지문 재현</a><a class="next" href="color-tone-residual.html"><small>다음 →</small>톤 보정 뒤 남는 색차</a></nav>
 <footer class="sitefoot"><div class="sitefoot-in"><nav aria-label="사이트"><a href="../index.html#map">문서 지도</a><a href="../index.html#levels">검증 수준 읽는 법</a><a href="../glossary.html">용어집</a><a href="research-program.html">세 기종 연구 본부</a><a href="https://github.com/yunhyok/pentax-k3iii-firmware-analysis">GitHub 저장소</a></nav><p>PENTAX 펌웨어 연구. PC에서 수행한 정적 분석과 에뮬레이션 결과이며, 카메라 실기에서 검증한 내용이 아닙니다. 원본 펌웨어와 추출한 독점 코드는 포함하지 않습니다.</p></div></footer>
 <!-- /chrome:bottom -->

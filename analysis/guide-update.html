@@ -4,19 +4,19 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>업데이트 과정 안내 — PENTAX K-3 Mark III 펌웨어 연구</title>
-<meta name="description" content="K-3 Mark III가 SD 카드의 펌웨어 파일을 설치하는 과정을 다룬 문서 15개의 지도입니다. 파일 찾기부터 검사, 메모리, 저장소 기록, 완료 통지, 완료 화면의 타이머까지 어느 단계를 어느 문서가 다루고 검증이 어디서 끊기는지 정리했습니다.">
+<meta name="description" content="K-3 Mark III가 SD 카드의 펌웨어 파일을 설치하는 과정을 다룬 문서 16개의 지도입니다. 파일 찾기부터 검사, 메모리, 저장소 기록, 완료 통지, 완료 화면의 타이머까지 어느 단계를 어느 문서가 다루고 검증이 어디서 끊기는지 정리했습니다.">
 <link rel="stylesheet" href="../assets/site.css">
 </head>
 <body data-camera="k3iii">
 <!-- chrome:top -->
 <a class="skip" href="#main">본문 바로가기</a>
-<div class="topbar"><div class="topbar-in"><a class="brand" href="../index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="../index.html" aria-current="true">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="https://yunhyok.github.io/pentax-q7-firmware-analysis/">Q7</a></div><nav class="topnav" aria-label="주제"><a href="../index.html">개요</a><a href="guide-boot.html">부팅·저장소</a><a href="guide-update.html" aria-current="true">업데이트</a><a href="guide-rebuild.html">재구축</a><a href="guide-rtos.html">명령·셸</a><a href="guide-color.html">색 처리</a><a href="lightroom-bridge.html">Lightroom</a><a href="af-foundations.html">AF</a><a href="ui-port-contract.html">UI</a></nav></div></div>
+<div class="topbar"><div class="topbar-in"><a class="brand" href="../index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="../index.html" aria-current="true">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="https://yunhyok.github.io/pentax-q7-firmware-analysis/">Q7</a></div><nav class="topnav" aria-label="주제"><a href="../index.html">개요</a><a href="guide-boot.html">부팅·저장소</a><a href="guide-update.html" aria-current="true">업데이트</a><a href="guide-rebuild.html">재구축</a><a href="guide-rtos.html">명령·셸</a><a href="guide-color.html">색 처리</a><a href="guide-lightroom.html">Lightroom</a><a href="guide-af.html">AF</a><a href="guide-ui.html">UI</a></nav></div></div>
 <nav class="crumbs" aria-label="현재 위치"><ol><li><a href="../index.html">PENTAX K-3 Mark III</a></li><li aria-current="page">업데이트 과정 안내</li></ol></nav>
 <!-- /chrome:top -->
 <header class="page-head">
 <p class="eyebrow">펌웨어 업데이트 과정</p>
 <h1>업데이트 과정 안내</h1>
-<p class="lead">SD 카드에 넣은 펌웨어 파일을 카메라가 읽고, 검사하고, 내장 저장소에 기록한 뒤 “COMPLETE”를 띄우기까지 내부에서 일어나는 일을 추적한 주제입니다. 이 문서는 세부 문서 15개를 읽기 전에 보는 지도입니다.</p>
+<p class="lead">SD 카드에 넣은 펌웨어 파일을 카메라가 읽고, 검사하고, 내장 저장소에 기록한 뒤 “COMPLETE”를 띄우기까지 내부에서 일어나는 일을 추적한 주제입니다. 이 문서는 세부 문서 16개를 읽기 전에 보는 지도입니다.</p>
 </header>
 <div class="layout">
 <!-- chrome:toc -->
@@ -27,10 +27,10 @@
 <section class="summary">
 <h2 data-toc="no">핵심 요약</h2>
 <ul>
-<li>카메라의 실시간 운영체제(RTOS) 코드에서 업데이트의 <strong>파일 찾기 → 읽기 → 검사 → 기록 요청 → 완료 통지 → 완료 화면</strong> 순서를 단계별로 이었습니다. 각 단계는 원본 기계어를 PC 에뮬레이터에서 실행해 확인했고, 공개한 검사는 모두 610건입니다.</li>
-<li>가장 단단하게 확인한 부분은 <strong>파일 검사와 메모리 요청</strong>입니다. 파일은 프로젝트 값·종류·버전과 32비트 덧셈 체크섬 두 개로 검사합니다. 이 경로에서 암호학적 서명 검사는 찾지 못했지만, 카메라 전체에 인증이 없다는 뜻은 아닙니다.</li>
+<li>카메라의 실시간 운영체제(RTOS) 코드에서 업데이트의 <strong>파일 찾기 → 읽기 → 검사 → 기록 요청 → 완료 통지 → 완료 화면</strong> 순서를 단계별로 이었습니다. 각 단계는 원본 기계어를 PC 에뮬레이터에서 실행해 확인했습니다. 공개한 검사는 모두 610건입니다. 선택값·헤더 실험 4회는 따로 기록했습니다.</li>
+<li>가장 단단하게 확인한 부분은 <strong>파일 검사와 메모리 요청</strong>입니다. 파일은 프로젝트 값·종류·버전과 32비트 덧셈 체크섬 두 개로 검사합니다. 이 경로에서 암호학적 서명 검사는 찾지 못했습니다. 그렇다고 카메라 전체에 인증이 없다는 결론은 아닙니다.</li>
 <li>검증은 네 곳에서 끊깁니다. <strong>변환 장치의 내부, 실제 저장 장치에 남는 내용, 작업 사이의 메시지 전달, 재부팅과 새 펌웨어의 첫 부팅</strong>입니다. 모두 카메라가 있어야 확인할 수 있습니다.</li>
-<li>문서 15개 가운데 6개가 타이머를 다룹니다. 완료 통지를 따라가면 완료 화면이 타이머 요청을 등록하고, 그 요청이 커널의 시간 관리 코드로 내려가기 때문입니다. 업데이트 자체보다 <strong>RTOS의 타이머가 어떻게 동작하는지</strong>를 알려 주는 문서들입니다.</li>
+<li>문서 16개 가운데 6개가 타이머를 다룹니다. 완료 통지를 따라가면 완료 화면이 타이머 요청을 등록하며 그 요청이 커널의 시간 관리 코드로 내려가기 때문입니다. 업데이트 자체보다 <strong>RTOS의 타이머가 어떻게 동작하는지</strong>를 알려 주는 문서들입니다.</li>
 <li>카메라에서 실행한 실험은 없습니다. 이 주제의 결과로 수정한 펌웨어가 설치되거나 부팅된다고 말할 수 없습니다.</li>
 </ul>
 </section>
@@ -44,7 +44,7 @@
 <div class="dg-scroll">
 <svg class="dg" viewBox="0 0 800 652" role="img" aria-labelledby="dg-map-title dg-map-desc">
 <title id="dg-map-title">업데이트 과정 전체 지도</title>
-<desc id="dg-map-desc">맨 위는 사용자가 하는 일입니다. 파일을 SD 카드에 복사하고, MENU 버튼을 누른 채 전원을 켜고, NOW LOADING과 COMPLETE 문구를 봅니다. 그 아래는 카메라 내부의 네 줄입니다. 첫째 줄은 파일 찾기와 읽기로, 파일 이름과 volume은 문서 4, 매체 객체는 문서 5, 파일 인터페이스는 문서 3, 입력 로더와 메모리는 문서 2가 다룹니다. 둘째 줄은 검사와 변환으로, 헤더와 바깥 체크섬, 출력 버퍼 할당, 변환 장치, 안쪽 체크섬 순서이며 주로 문서 1이 다룹니다. 변환 장치의 내부는 확인하지 못했습니다. 셋째 줄은 저장소 기록으로, 레코드별 기록 요청은 문서 1, 쓰기 bank 선택은 문서 7, eMMC 드라이버는 문서 6이 다루고, 실제 저장 장치의 기록은 실행하지 않았습니다. 넷째 줄은 끝맺음과 화면으로, 종료 함수와 완료 통지는 문서 4와 5, UI 작업은 문서 8, UI 타이머 서비스는 문서 9, 커널 타이머는 문서 10부터 15까지가 다룹니다. 마지막의 재부팅과 새 펌웨어의 첫 부팅은 확인하지 못했습니다.</desc>
+<desc id="dg-map-desc">맨 위는 사용자가 하는 일입니다. 파일을 SD 카드에 복사하고, MENU 버튼을 누른 채 전원을 켜고, NOW LOADING과 COMPLETE 문구를 봅니다. 그 아래는 카메라 내부의 네 줄입니다. 첫째 줄은 파일 찾기와 읽기로, 파일 이름과 volume은 문서 4, 매체 객체는 문서 5, 파일 인터페이스는 문서 3, 입력 로더와 메모리는 문서 2가 다룹니다. 둘째 줄은 검사와 변환으로, 헤더와 바깥 체크섬, 출력 버퍼 할당, 변환 장치, 안쪽 체크섬 순서이며 주로 문서 1이 다룹니다. 변환 장치의 내부는 확인하지 못했습니다. 셋째 줄은 저장소 기록으로, 레코드별 기록 요청은 문서 1, 쓰기 bank 선택은 문서 7, 리소스 선택값과 표·헤더 기록 조건은 문서 8, eMMC 드라이버는 문서 6이 다루고, 실제 저장 장치의 기록은 실행하지 않았습니다. 넷째 줄은 끝맺음과 화면으로, 종료 함수와 완료 통지는 문서 4와 5, UI 작업은 문서 9, UI 타이머 서비스는 문서 10, 커널 타이머는 문서 11부터 16까지가 다룹니다. 마지막의 재부팅과 새 펌웨어의 첫 부팅은 확인하지 못했습니다.</desc>
 <defs><marker id="dg-map-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0 0L10 5L0 10z"/></marker><marker id="dg-map-aho" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah open" d="M0 0L10 5L0 10z"/></marker></defs>
 
 <text class="h" x="8" y="20">사용자가 하는 일 (Ricoh 공식 안내)</text>
@@ -106,7 +106,8 @@
 <text class="s" x="20" y="401">문서 1 · ICONBIN은 4번</text>
 <rect class="b ok" x="210" y="354" width="178" height="64" rx="8"/>
 <a href="update-bank-selection.html"><text class="t" x="222" y="381">쓰기 bank 선택</text></a>
-<text class="s" x="222" y="401">문서 7 · BOOT와 별개</text>
+<text class="s" x="222" y="401">문서 7 ·</text>
+<a href="selector-policy.html"><text class="s tk" x="268" y="401">문서 8 · 헤더 기록</text></a>
 <rect class="b ok" x="412" y="354" width="178" height="64" rx="8"/>
 <a href="update-partition-io.html"><text class="t" x="424" y="381">eMMC 드라이버</text></a>
 <text class="s" x="424" y="401">문서 6 · sector 입출력</text>
@@ -124,13 +125,13 @@
 <text class="s" x="20" y="509">문서 4·5 · 메시지 전송</text>
 <rect class="b ok" x="210" y="462" width="178" height="64" rx="8"/>
 <a href="update-ui-consumer.html"><text class="t" x="222" y="489">UI 작업 처리</text></a>
-<text class="s" x="222" y="509">문서 8 · 작업 0x128</text>
+<text class="s" x="222" y="509">문서 9 · 작업 0x128</text>
 <rect class="b ok" x="412" y="462" width="178" height="64" rx="8"/>
 <a href="update-ui-timer.html"><text class="t" x="424" y="489">UI 타이머 서비스</text></a>
-<text class="s" x="424" y="509">문서 9 · 예약과 콜백</text>
+<text class="s" x="424" y="509">문서 10 · 예약과 콜백</text>
 <rect class="b ok" x="614" y="462" width="178" height="64" rx="8"/>
 <a href="update-timer-abi.html"><text class="t" x="626" y="489">커널 타이머</text></a>
-<text class="s" x="626" y="509">문서 10~15 · 기한과 시각</text>
+<text class="s" x="626" y="509">문서 11~16 · 기한과 시각</text>
 <path class="e open" d="M186 494H208" marker-end="url(#dg-map-aho)"/>
 <path class="e" d="M388 494H410" marker-end="url(#dg-map-ah)"/>
 <path class="e" d="M590 494H612" marker-end="url(#dg-map-ah)"/>
@@ -143,24 +144,24 @@
 </svg>
 </div>
 <ul class="dg-legend"><li><i class="ok"></i>원본 코드를 에뮬레이터에서 실행해 확인한 단계</li><li><i class="static"></i>코드를 읽어 연결한 단계</li><li><i class="open"></i>확인하지 못한 곳, 점선 화살표는 확인하지 못한 전달</li><li><i></i>공식 안내에 나온 사용자 절차</li></ul>
-<p>“확인” 상자에서도 실제 파일, 저장 장치, 운영체제 호출은 값만 돌려주는 대체 함수였습니다. 단계 사이의 화살표는 코드에서 읽은 호출 관계이며, 전체를 한 번에 이어서 실행한 것이 아닙니다. 화면 문구(NOW LOADING, COMPLETE)가 내부의 어느 단계에서 표시되는지는 확인하지 않았습니다.</p>
+<p>“확인” 상자에서도 실제 파일, 저장 장치, 운영체제 호출은 값만 돌려주는 대체 함수였습니다. 단계 사이의 화살표는 코드에서 읽은 호출 관계입니다. 전체를 한 번에 이어서 실행한 것이 아닙니다. 화면 문구(NOW LOADING, COMPLETE)가 내부의 어느 단계에서 표시되는지는 확인하지 않았습니다.</p>
 </figure>
 
 <div class="callout"><strong class="label">참고: 입구는 두 개입니다</strong>
-<p>카메라에는 업데이트 파일의 버전만 알아보는 조회 경로와, 실제로 기록까지 가는 실행 경로가 따로 있습니다. 조회 요청(<code>CheckUpdateFirmware</code>)을 받는 코드는 <a href="startup-storage.html#receiver">M0 reset·SRAM remap·bank</a>에 있고, 두 경로 모두 위 그림의 파일 찾기·읽기·검사 단계를 함께 씁니다. 업데이트 전체의 상태 전이는 복원하지 못했습니다.</p></div>
+<p>카메라에는 업데이트 파일의 버전만 알아보는 조회 경로와, 실제로 기록까지 가는 실행 경로가 따로 있습니다. 조회 요청(<code>CheckUpdateFirmware</code>)을 받는 코드는 <a href="startup-storage.html#receiver">M0 reset·SRAM remap·bank</a>에 있습니다. 두 경로 모두 위 그림의 파일 찾기·읽기·검사 단계를 함께 씁니다. 업데이트 전체의 상태 전이는 복원하지 못했습니다.</p></div>
 </section>
 
 <section id="timers">
 <h2>타이머 문서가 많은 이유</h2>
-<p class="takeaway">완료 통지를 끝까지 따라가다 보니 UI의 타이머 서비스를 지나 커널의 시간 관리 코드까지 내려갔습니다. 문서 10~15는 그 길에서 만난 커널 타이머를 한 조각씩 확인한 기록입니다.</p>
-<p>업데이트 실행이 끝나면 완료 메시지가 나가고, 이를 받은 업데이트 화면의 제어 객체는 타이머 서비스에 “얼마 뒤에 나를 다시 불러 달라”는 요청을 등록합니다. 이 요청이 어떻게 처리되는지 알아야 완료 화면 다음에 무슨 일이 일어나는지 말할 수 있습니다. 그래서 요청이 커널로 내려가는 길과, 시간이 되어 다시 올라오는 길을 모두 추적했습니다.</p>
+<p class="takeaway">완료 통지를 끝까지 따라가다 보니 UI의 타이머 서비스를 지나 커널의 시간 관리 코드까지 내려갔습니다. 문서 11~16은 그 길에서 만난 커널 타이머를 한 조각씩 확인한 기록입니다.</p>
+<p>업데이트 실행이 끝나면 완료 메시지가 나갑니다. 이를 받은 업데이트 화면의 제어 객체는 타이머 서비스에 “얼마 뒤에 나를 다시 불러 달라”는 요청을 등록합니다. 이 요청이 어떻게 처리되는지 알아야 완료 화면 다음에 무슨 일이 일어나는지 말할 수 있습니다. 그래서 요청이 커널로 내려가는 길과, 시간이 되어 다시 올라오는 길을 모두 추적했습니다.</p>
 
 <figure class="diagram">
 <figcaption>완료 메시지에서 커널 타이머로 내려갔다가 UI로 돌아오는 길</figcaption>
 <div class="dg-scroll">
 <svg class="dg" viewBox="0 0 800 426" role="img" aria-labelledby="dg-tmr-title dg-tmr-desc">
 <title id="dg-tmr-title">완료 통지 이후의 타이머 경로</title>
-<desc id="dg-tmr-desc">UI 쪽에서는 완료 메시지가 모델 상태를 3으로 바꾸고 작업 0x128을 등록합니다. 업데이트 화면의 제어 객체가 타이머 요청을 만들고, UI 타이머 서비스가 그것을 슬롯에 적은 뒤 커널을 호출합니다. 커널 쪽에서는 세 가지 커널 호출이 예약 시각을 계산하고, 기한 큐에 삽입하고, 틱마다 시각이 증가하며, 기한이 되면 지연 큐를 거쳐 콜백을 부릅니다. 다시 UI 쪽에서는 이벤트와 작업을 거쳐 poll 함수가 제어 객체의 콜백을 부릅니다. 그 뒤의 후속 작업 5와 재부팅은 확인하지 못했습니다. 문서 14와 15는 틱 사이의 시간을 읽는 함수를 다루는 곁가지입니다.</desc>
+<desc id="dg-tmr-desc">UI 쪽에서는 완료 메시지가 모델 상태를 3으로 바꾸고 작업 0x128을 등록합니다. 업데이트 화면의 제어 객체가 타이머 요청을 만들고, UI 타이머 서비스가 그것을 슬롯에 적은 뒤 커널을 호출합니다. 커널 쪽에서는 세 가지 커널 호출이 예약 시각을 계산하고, 기한 큐에 삽입하고, 틱마다 시각이 증가하며, 기한이 되면 지연 큐를 거쳐 콜백을 부릅니다. 다시 UI 쪽에서는 이벤트와 작업을 거쳐 poll 함수가 제어 객체의 콜백을 부릅니다. 그 뒤의 후속 작업 5와 재부팅은 확인하지 못했습니다. 문서 15와 16는 틱 사이의 시간을 읽는 함수를 다루는 곁가지입니다.</desc>
 <defs><marker id="dg-tmr-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0 0L10 5L0 10z"/></marker><marker id="dg-tmr-aho" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah open" d="M0 0L10 5L0 10z"/></marker></defs>
 <text class="h" x="8" y="20">UI 쪽: 요청을 만든다</text>
 <rect class="b ok" x="8" y="30" width="236" height="64" rx="8"/>
@@ -168,10 +169,10 @@
 <text class="s" x="20" y="77">문서 5 · 작업 0x128 등록</text>
 <rect class="b ok" x="282" y="30" width="236" height="64" rx="8"/>
 <a href="update-ui-consumer.html"><text class="t" x="294" y="57">업데이트 화면 제어 객체</text></a>
-<text class="s" x="294" y="77">문서 8 · 타이머 요청(인수 1000)</text>
+<text class="s" x="294" y="77">문서 9 · 타이머 요청(인수 1000)</text>
 <rect class="b ok" x="556" y="30" width="236" height="64" rx="8"/>
 <a href="update-ui-timer.html"><text class="t" x="568" y="57">UI 타이머 서비스</text></a>
-<text class="s" x="568" y="77">문서 9 · 슬롯에 적고 커널 호출</text>
+<text class="s" x="568" y="77">문서 10 · 슬롯에 적고 커널 호출</text>
 <path class="e open" d="M244 62H280" marker-end="url(#dg-tmr-aho)"/>
 <path class="e" d="M518 62H554" marker-end="url(#dg-tmr-ah)"/>
 <path class="e" d="M703 94V140" marker-end="url(#dg-tmr-ah)"/>
@@ -179,16 +180,16 @@
 <text class="h" x="8" y="132">커널 쪽: 기한을 관리한다</text>
 <rect class="b ok" x="614" y="142" width="178" height="64" rx="8"/>
 <a href="update-timer-abi.html"><text class="t" x="626" y="169">커널 호출 세 개</text></a>
-<text class="s" x="626" y="189">문서 10 · 예약 시각 계산</text>
+<text class="s" x="626" y="189">문서 11 · 예약 시각 계산</text>
 <rect class="b ok" x="412" y="142" width="178" height="64" rx="8"/>
 <a href="update-timer-insertion.html"><text class="t" x="424" y="169">기한 큐에 삽입</text></a>
-<text class="s" x="424" y="189">문서 11 · 기한 순서로</text>
+<text class="s" x="424" y="189">문서 12 · 기한 순서로</text>
 <rect class="b ok" x="210" y="142" width="178" height="64" rx="8"/>
 <a href="update-timer-clock.html"><text class="t" x="222" y="169">틱마다 시각 증가</text></a>
-<text class="s" x="222" y="189">문서 12 · TTimPeriod</text>
+<text class="s" x="222" y="189">문서 13 · TTimPeriod</text>
 <rect class="b ok" x="8" y="142" width="178" height="64" rx="8"/>
 <a href="update-timer-irq.html"><text class="t" x="20" y="169">기한 도래 처리</text></a>
-<text class="s" x="20" y="189">문서 13 · 지연 큐와 콜백</text>
+<text class="s" x="20" y="189">문서 14 · 지연 큐와 콜백</text>
 <path class="e" d="M614 174H592" marker-end="url(#dg-tmr-ah)"/>
 <path class="e" d="M412 174H390" marker-end="url(#dg-tmr-ah)"/>
 <path class="e" d="M210 174H188" marker-end="url(#dg-tmr-ah)"/>
@@ -197,10 +198,10 @@
 <text class="h" x="120" y="244">다시 UI 쪽: 콜백이 돌아온다</text>
 <rect class="b ok" x="8" y="254" width="236" height="64" rx="8"/>
 <a href="update-ui-timer.html"><text class="t" x="20" y="281">이벤트 → 작업 → poll</text></a>
-<text class="s" x="20" y="301">문서 9 · 작업 0x1bc로 UI 큐에</text>
+<text class="s" x="20" y="301">문서 10 · 작업 0x1bc로 UI 큐에</text>
 <rect class="b ok" x="282" y="254" width="236" height="64" rx="8"/>
 <a href="update-ui-consumer.html"><text class="t" x="294" y="281">제어 객체의 콜백</text></a>
-<text class="s" x="294" y="301">문서 8·9 · 표식을 쓰고 조건 확인</text>
+<text class="s" x="294" y="301">문서 9·10 · 표식을 쓰고 조건 확인</text>
 <rect class="b open" x="556" y="254" width="236" height="64" rx="8"/>
 <text class="t" x="568" y="281">후속 작업 5와 재부팅</text>
 <text class="s" x="568" y="301">처리 과정은 미확인</text>
@@ -209,17 +210,17 @@
 
 <rect class="b" x="150" y="354" width="500" height="60" rx="8"/>
 <a href="update-subtick-arithmetic.html"><text class="t" x="164" y="379">곁가지: 틱 사이의 시간을 읽는 함수</text></a>
-<text class="s" x="164" y="399">문서 14·15 · 문서 12와 같은 타이머 장치의 카운터를 읽는 코드</text>
+<text class="s" x="164" y="399">문서 15·16 · 문서 13과 같은 타이머 장치의 카운터를 읽는 코드</text>
 </svg>
 </div>
 <ul class="dg-legend"><li><i class="ok"></i>원본 코드를 실행해 확인한 조각</li><li><i class="open"></i>확인하지 못한 곳, 점선 화살표는 확인하지 못한 전달</li><li><i></i>이 경로에 딸린 곁가지</li></ul>
-<p>각 상자는 따로 떼어 실행한 조각입니다. 실제 인터럽트가 걸리거나 시간이 흐르는 시험은 없었고, 상자 사이의 전달 가운데 메시지 큐와 인터럽트를 거치는 부분은 실행하지 못했습니다.</p>
+<p>각 상자는 따로 떼어 실행한 조각입니다. 실제 인터럽트가 걸리거나 시간이 흐르는 시험은 없었습니다. 상자 사이의 전달 가운데 메시지 큐와 인터럽트를 거치는 부분은 실행하지 못했습니다.</p>
 </figure>
 
 <ul>
 <li><strong>틱</strong>은 커널이 일정한 간격으로 시각 값을 올리는 한 걸음입니다. 이 펌웨어에서는 내장 설정 <code>TTimPeriod</code>의 값만큼 64비트 시각 값이 늘어납니다.</li>
 <li>타이머 요청의 인수 1000과 시각 값이 실제로 몇 초에 해당하는지는 정하지 못했습니다. 타이머 장치의 주파수를 확인하지 못했기 때문입니다.</li>
-<li>문서 14는 틱 사이의 시간을 계산하는 식에서 중간값이 32비트로 잘리는 것을 찾았습니다. 합성 입력에서 반환값이 갑자기 줄어드는 지점이 있습니다. 실제 카메라의 시각이 틀어진다는 증거는 아닙니다.</li>
+<li>문서 15는 틱 사이의 시간을 계산하는 식에서 중간값이 32비트로 잘리는 것을 찾았습니다. 합성 입력에서 반환값이 갑자기 줄어드는 지점이 있습니다. 실제 카메라의 시각이 틀어진다는 증거는 아닙니다.</li>
 </ul>
 </section>
 
@@ -227,7 +228,7 @@
 <h2>배경 지식</h2>
 <p>이 주제의 문서를 읽는 데 필요한 개념 여섯 가지입니다.</p>
 <h3>업데이트 파일과 사용자 절차</h3>
-<p>Ricoh는 K-3 Mark III 펌웨어 2.20을 <code>fwdc233b.bin</code>이라는 파일로 배포합니다. 사용자는 이 파일을 SD 카드의 최상위 폴더에 복사해 슬롯 1에 넣고, MENU 버튼을 누른 채 전원을 켭니다. 화면에 “NOW LOADING”이 나온 뒤 “COMPLETE”가 나오면 전원을 끕니다. 2.20으로 올린 뒤에는 2.13 이하로 되돌릴 수 없다고 안내합니다(<a href="https://www.ricoh-imaging.co.jp/english/support/digital/k-3-3.html">Ricoh 공식 안내</a>). 파일의 내부 구조는 <a href="firmware-structure.html">펌웨어 구조와 하드웨어</a>에 있습니다.</p>
+<p>Ricoh는 K-3 Mark III 펌웨어 2.20을 <code>fwdc233b.bin</code>이라는 파일로 배포합니다. 사용자는 이 파일을 SD 카드의 최상위 폴더에 복사해 슬롯 1에 넣은 뒤 MENU 버튼을 누른 채 전원을 켭니다. 화면에 “NOW LOADING”이 나온 뒤 “COMPLETE”가 나오면 전원을 끕니다. 2.20으로 올린 뒤에는 2.13 이하로 되돌릴 수 없다고 안내합니다(<a href="https://www.ricoh-imaging.co.jp/english/support/digital/k-3-3.html">Ricoh 공식 안내</a>). 파일의 내부 구조는 <a href="firmware-structure.html">펌웨어 구조와 하드웨어</a>에 있습니다.</p>
 <h3>RTOS와 그 안의 작업들</h3>
 <p>이 카메라는 Linux와 실시간 운영체제(RTOS)를 함께 돌립니다. 업데이트를 처리하는 코드는 RTOS 쪽에 있습니다. RTOS에서는 여러 작업(task)이 메시지를 주고받으며 일합니다. 한 작업이 “끝났다”는 메시지를 보내면 다른 작업이 자기 차례에 그것을 꺼내 처리합니다. 그래서 보내는 코드와 받는 코드를 각각 확인해도, 둘 사이의 전달은 따로 확인해야 합니다.</p>
 <h3>체크섬과 서명의 차이</h3>
@@ -235,14 +236,14 @@
 <h3>volume과 파일 시스템</h3>
 <p>volume은 파일 시스템 하나가 차지하는 저장 영역입니다. 이 펌웨어는 <code>C:</code>, <code>R:</code> 같은 글자로 volume을 구분합니다. SD 카드는 용량에 따라 FAT32(32GB 이하의 SDHC)나 exFAT(그보다 큰 SDXC)을 씁니다(<a href="https://www.sdcard.org/developers/sd-standard-overview/capacity-sd-sdhc-sdxc-sduc/">SD Association의 용량 구분</a>, <a href="https://learn.microsoft.com/en-us/windows/win32/fileio/exfat-specification">Microsoft exFAT 규격</a>).</p>
 <h3>내장 저장소 eMMC와 bank</h3>
-<p>펌웨어는 카메라 안의 eMMC라는 플래시 저장소에 기록됩니다. eMMC에는 일반 영역 말고도 부트로더를 두는 부팅 전용 영역이 따로 있습니다(<a href="https://www.kernel.org/doc/html/latest/driver-api/mmc/mmc-dev-parts.html">Linux 커널 문서의 MMC 장치 파티션</a>). 이 카메라의 파티션 표는 자원마다 설명자를 두 벌씩 두는데, 각 벌을 bank라고 부릅니다. 쓰는 쪽과 읽는 쪽이 어느 bank를 고르는지는 <a href="update-bank-selection.html">쓰기 bank와 BOOT 선택</a>과 <a href="guide-boot.html">부팅과 저장소 안내</a>에서 다룹니다.</p>
+<p>펌웨어는 카메라 안의 eMMC라는 플래시 저장소에 기록됩니다. eMMC에는 일반 영역 말고도 부트로더를 두는 부팅 전용 영역이 따로 있습니다(<a href="https://www.kernel.org/doc/html/latest/driver-api/mmc/mmc-dev-parts.html">Linux 커널 문서의 MMC 장치 파티션</a>). 이 카메라의 파티션 표는 자원마다 설명자를 두 벌씩 두며 각 벌을 bank라고 부릅니다. 쓰는 쪽과 읽는 쪽이 어느 bank를 고르는지는 <a href="update-bank-selection.html">쓰기 bank와 BOOT 선택</a>과 <a href="guide-boot.html">부팅과 저장소 안내</a>에서 다룹니다.</p>
 <h3>“확인”이라는 말의 범위</h3>
-<p>이 연구는 카메라를 쓰지 않았습니다. “확인”은 펌웨어에서 꺼낸 원본 기계어를 PC의 CPU 에뮬레이터에 올리고, 연구자가 만든 입력을 넣어 실행한 결과를 뜻합니다. 파일 읽기나 저장 장치 쓰기처럼 하드웨어가 필요한 호출은 정해 둔 값을 돌려주는 대체 함수로 바꿨습니다. 수준의 뜻은 <a href="../index.html#levels">검증 수준 읽는 법</a>에 있습니다.</p>
+<p>이 연구는 카메라를 쓰지 않았습니다. “확인”은 펌웨어에서 꺼낸 원본 기계어를 PC의 CPU 에뮬레이터에 올려 연구자가 만든 입력을 넣어 실행한 결과를 뜻합니다. 파일 읽기나 저장 장치 쓰기처럼 하드웨어가 필요한 호출은 정해 둔 값을 돌려주는 대체 함수로 바꿨습니다. 수준의 뜻은 <a href="../index.html#levels">검증 수준 읽는 법</a>에 있습니다.</p>
 </section>
 
 <section id="status">
 <h2>지금까지 알아낸 것과 아직 모르는 것</h2>
-<p class="takeaway">단계마다 코드의 동작은 확인했지만, 단계와 단계를 잇는 실제 실행과 하드웨어 쪽 결과는 대부분 남아 있습니다.</p>
+<p class="takeaway">단계마다 코드의 동작은 확인했습니다. 그러나 단계와 단계를 잇는 실제 실행과 하드웨어 쪽 결과는 대부분 남아 있습니다.</p>
 <div class="table-wrap"><table>
 <caption>업데이트 과정 전체의 확인 상태</caption>
 <thead><tr><th>단계</th><th>내용</th><th>상태</th><th>근거 문서</th></tr></thead>
@@ -262,60 +263,63 @@
 <tr><td>버전이 현재보다 낮으면 거부, 같으면 허용</td><td><span class="badge static">정적 분석</span></td><td><a href="update-resources.html#version">문서 1</a></td></tr>
 <tr><td>변환 장치의 내부 알고리즘과 인증 동작</td><td><span class="badge open">미확인</span></td><td><a href="update-resources.html#integrity">문서 1</a></td></tr>
 <tr><td>카메라 전체의 인증 정책. RTOS 업데이트 경로에서 서명 검사를 찾지 못했고, Stubby에는 “(No security)” 출력 경로가 있음</td><td><span class="badge open">미확인</span></td><td><a href="update-resources.html#signature">문서 1</a>, <a href="stubby-load-auth.html">Stubby 적재와 인증 경계</a></td></tr>
-<tr><th scope="row" rowspan="6">저장소 기록</th><td>레코드의 종류별 분기. ICONBIN은 저장소 인덱스 4로 기록되고 리소스 슬롯 5로 읽힘</td><td><span class="badge ok">확인</span></td><td><a href="update-resources.html#iconbin">문서 1</a></td></tr>
+<tr><th scope="row" rowspan="8">저장소 기록</th><td>레코드의 종류별 분기. ICONBIN은 저장소 인덱스 4로 기록되고 리소스 슬롯 5로 읽힘</td><td><span class="badge ok">확인</span></td><td><a href="update-resources.html#iconbin">문서 1</a></td></tr>
 <tr><td>일반 자원 기록 뒤에 파티션 표 → 부트 헤더 → BOOT 이미지 순서로 기록 요청</td><td><span class="badge ok">확인</span></td><td><a href="startup-storage.html#write-order">M0 reset·SRAM remap·bank</a></td></tr>
 <tr><td>RTOS가 쓸 bank를 고르는 칸과 BOOT가 읽을 bank를 고르는 칸이 서로 다름. 값이 다르면 쓰기가 성공해도 새 내용을 읽지 않음</td><td><span class="badge ok">확인</span></td><td><a href="update-bank-selection.html">문서 7</a></td></tr>
+<tr><td>M0가 받아 온 리소스 선택값은 BOOT 초기화에서 지워지지 않고 그대로 bank 선택에 쓰임. 선택값 1은 시험 입력</td><td><span class="badge ok">확인</span> <span class="badge model">모델</span></td><td><a href="selector-policy.html#selector19">문서 8</a></td></tr>
+<tr><td>완료 코드는 파티션 표 쓰기와 부트 헤더 쓰기가 모두 성공해야 다음 단계로 감. 하위 쓰기의 성공·실패는 모델</td><td><span class="badge ok">확인</span> <span class="badge model">모델</span></td><td><a href="selector-policy.html#policy20">문서 8</a></td></tr>
 <tr><td>내장 <code>R:</code> volume의 시작 sector와 총 sector 수, eMMC 읽기·쓰기 함수의 정렬 조건</td><td><span class="badge ok">확인</span></td><td><a href="update-partition-io.html">문서 6</a></td></tr>
-<tr><td>0이 아닌 bank 값을 만드는 코드, 실제 카메라의 표에 든 값</td><td><span class="badge open">미확인</span></td><td><a href="update-bank-selection.html">문서 7</a></td></tr>
+<tr><td>0이 아닌 bank 값을 만드는 코드, 리소스 선택값을 처음 정하는 코드, 실제 카메라의 표에 든 값</td><td><span class="badge open">미확인</span></td><td><a href="update-bank-selection.html">문서 7</a>, <a href="selector-policy.html#limits">문서 8</a></td></tr>
 <tr><td>eMMC에 실제로 남는 내용, 기록 도중 전원이 끊겼을 때의 상태</td><td><span class="badge open">미확인</span></td><td><a href="update-bank-selection.html">문서 7</a></td></tr>
 <tr><th scope="row" rowspan="4">끝맺음과 통지</th><td>종료 함수는 입력 버퍼 해제를 요청하고, 결과가 0이 아니면 완료 메시지 <code>0x2640820b</code>를 보냄</td><td><span class="badge ok">확인</span></td><td><a href="update-volume-finalization.html#finalization">문서 4</a></td></tr>
 <tr><td>메시지를 받는 코드는 업데이트 모델의 상태를 3으로 바꾸고 UI 작업 <code>0x128</code>을 등록</td><td><span class="badge ok">확인</span></td><td><a href="update-media-completion.html">문서 5</a></td></tr>
-<tr><td>업데이트 화면의 제어 객체는 모델 값 3에서 타이머 요청을 등록</td><td><span class="badge ok">확인</span></td><td><a href="update-ui-consumer.html">문서 8</a></td></tr>
-<tr><td>보내는 코드와 받는 코드 사이의 실제 메시지 전달, UI가 업데이트 화면 상태로 들어가는 과정</td><td><span class="badge open">미확인</span></td><td><a href="update-media-completion.html">문서 5</a>, <a href="update-ui-consumer.html">문서 8</a></td></tr>
-<tr><th scope="row" rowspan="7">타이머</th><td>타이머 요청이 슬롯·이벤트·작업 <code>0x1bc</code>·poll을 거쳐 콜백으로 돌아오는 순서</td><td><span class="badge ok">확인</span></td><td><a href="update-ui-timer.html">문서 9</a></td></tr>
-<tr><td>커널 호출 세 개의 대상 함수. 예약 시각은 현재 시각 + 지연 + 주기 값</td><td><span class="badge ok">확인</span></td><td><a href="update-timer-abi.html">문서 10</a></td></tr>
-<tr><td>기한 큐는 기한 순서로 삽입하고, 같은 기한이면 먼저 온 것 뒤에 둠</td><td><span class="badge ok">확인</span></td><td><a href="update-timer-insertion.html">문서 11</a></td></tr>
-<tr><td>주기 값은 내장 설정 <code>TTimPeriod</code>(기본값 1, 허용 1~50)이고, 그만큼 64비트 시각이 증가</td><td><span class="badge ok">확인</span></td><td><a href="update-timer-clock.html">문서 12</a></td></tr>
-<tr><td>기한이 된 요청을 CPU별 지연 실행 큐로 넘겨 콜백을 부르는 경로</td><td><span class="badge ok">확인</span></td><td><a href="update-timer-irq.html">문서 13</a></td></tr>
-<tr><td>틱 사이 시간 계산의 32비트 절단과 시각 조회 함수의 출력 배치</td><td><span class="badge ok">확인</span></td><td><a href="update-subtick-arithmetic.html">문서 14</a>, <a href="update-clock-readers.html">문서 15</a></td></tr>
-<tr><td>시간의 실제 단위와 타이머 주파수, 실제 인터럽트 전달, 후속 작업 5와 재부팅</td><td><span class="badge open">미확인</span></td><td><a href="update-timer-clock.html">문서 12</a>, <a href="update-timer-irq.html">문서 13</a>, <a href="update-ui-consumer.html">문서 8</a></td></tr>
+<tr><td>업데이트 화면의 제어 객체는 모델 값 3에서 타이머 요청을 등록</td><td><span class="badge ok">확인</span></td><td><a href="update-ui-consumer.html">문서 9</a></td></tr>
+<tr><td>보내는 코드와 받는 코드 사이의 실제 메시지 전달, UI가 업데이트 화면 상태로 들어가는 과정</td><td><span class="badge open">미확인</span></td><td><a href="update-media-completion.html">문서 5</a>, <a href="update-ui-consumer.html">문서 9</a></td></tr>
+<tr><th scope="row" rowspan="7">타이머</th><td>타이머 요청이 슬롯·이벤트·작업 <code>0x1bc</code>·poll을 거쳐 콜백으로 돌아오는 순서</td><td><span class="badge ok">확인</span></td><td><a href="update-ui-timer.html">문서 10</a></td></tr>
+<tr><td>커널 호출 세 개의 대상 함수. 예약 시각은 현재 시각 + 지연 + 주기 값</td><td><span class="badge ok">확인</span></td><td><a href="update-timer-abi.html">문서 11</a></td></tr>
+<tr><td>기한 큐는 기한 순서로 삽입하고, 같은 기한이면 먼저 온 것 뒤에 둠</td><td><span class="badge ok">확인</span></td><td><a href="update-timer-insertion.html">문서 12</a></td></tr>
+<tr><td>주기 값은 내장 설정 <code>TTimPeriod</code>(기본값 1, 허용 1~50)이고, 그만큼 64비트 시각이 증가</td><td><span class="badge ok">확인</span></td><td><a href="update-timer-clock.html">문서 13</a></td></tr>
+<tr><td>기한이 된 요청을 CPU별 지연 실행 큐로 넘겨 콜백을 부르는 경로</td><td><span class="badge ok">확인</span></td><td><a href="update-timer-irq.html">문서 14</a></td></tr>
+<tr><td>틱 사이 시간 계산의 32비트 절단과 시각 조회 함수의 출력 배치</td><td><span class="badge ok">확인</span></td><td><a href="update-subtick-arithmetic.html">문서 15</a>, <a href="update-clock-readers.html">문서 16</a></td></tr>
+<tr><td>시간의 실제 단위와 타이머 주파수, 실제 인터럽트 전달, 후속 작업 5와 재부팅</td><td><span class="badge open">미확인</span></td><td><a href="update-timer-clock.html">문서 13</a>, <a href="update-timer-irq.html">문서 14</a>, <a href="update-ui-consumer.html">문서 9</a></td></tr>
 </tbody></table></div>
-<p class="small muted">“확인”은 그 단계의 코드를 떼어 합성 입력으로 실행했다는 뜻입니다. 같은 단계가 카메라에서 같은 조건으로 실행된다는 뜻은 아닙니다. 조건과 한계는 각 문서의 검증 범위 상자에 있습니다.</p>
+<p class="small muted">“확인”은 그 단계의 코드를 떼어 합성 입력으로 실행했다는 의미입니다. 같은 단계가 카메라에서 같은 조건으로 실행된다는 뜻은 아닙니다. 조건과 한계는 각 문서의 검증 범위 상자에 있습니다.</p>
 </section>
 
 <section id="order">
 <h2>읽는 순서</h2>
-<p>앞의 아홉 문서는 조사한 순서와 같습니다. 타이머 문서 여섯 개는 요청이 흘러가는 순서로 다시 놓았습니다. 문서 1~4만 읽어도 “파일이 어떻게 검사되고 메모리에 올라가는가”는 파악할 수 있습니다.</p>
+<p>앞의 열 문서는 대체로 조사한 순서와 같습니다. 타이머 문서 여섯 개는 요청이 흘러가는 순서로 다시 놓았습니다. 문서 1~4만 읽어도 “파일이 어떻게 검사되고 메모리에 올라가는가”는 파악할 수 있습니다.</p>
 
 <h3>가. 파일을 읽어 검사하기</h3>
 <ul class="cards">
 <li class="card"><span class="tag">문서 1</span><h3><a href="update-resources.html">업데이트 검사와 ICONBIN</a></h3><p class="q">카메라는 파일을 설치하기 전에 무엇을 확인하는가</p><p>프로젝트 값, 종류, 버전, 32비트 덧셈 체크섬 두 개를 봅니다. 이 경로에서 서명 검사는 찾지 못했습니다.</p></li>
 <li class="card"><span class="tag">문서 2</span><h3><a href="update-memory.html">입력 로더와 메모리 할당</a></h3><p class="q">파일이 커지면 읽는 단계에서 막히는가</p><p>로더는 파일 크기 그대로 IMAGE1 풀에 요청하고 따로 상한을 두지 않습니다. 실제 여유는 확인하지 못했습니다.</p></li>
-<li class="card"><span class="tag">문서 3</span><h3><a href="update-file-lifetimes.html">파일 인터페이스와 버퍼 수명</a></h3><p class="q">파일 요청은 어디로 내려가고, 버퍼는 언제까지 남는가</p><p><code>FileSystem</code> 객체가 FAT·exFAT·Virtual로 나눠 보냅니다. 입력과 출력 버퍼는 변환 중에 함께 잡혀 있습니다.</p></li>
+<li class="card"><span class="tag">문서 3</span><h3><a href="update-file-lifetimes.html">파일 인터페이스와 버퍼 수명</a></h3><p class="q">파일 요청은 어디로 내려가며 버퍼는 언제까지 남는가</p><p><code>FileSystem</code> 객체가 FAT·exFAT·Virtual로 나눠 보냅니다. 입력과 출력 버퍼는 변환 중에 함께 잡혀 있습니다.</p></li>
 </ul>
 
 <h3>나. 파일이 있는 곳, 기록하는 곳, 끝맺음</h3>
 <ul class="cards">
-<li class="card"><span class="tag">문서 4</span><h3><a href="update-volume-finalization.html">파일 경로·volume·종료 처리</a></h3><p class="q">어떤 이름의 파일을 어디서 찾고, 끝나면 무엇을 하는가</p><p><code>C:\FWDC%ldB.BIN</code>만 조회합니다. 종료 함수는 입력 해제를 요청한 뒤 완료 메시지를 보냅니다.</p></li>
-<li class="card"><span class="tag">문서 5</span><h3><a href="update-media-completion.html">매체 객체와 완료 통지</a></h3><p class="q"><code>C:</code>와 <code>R:</code> 뒤에는 어떤 저장 장치가 있고, 완료 메시지는 누가 받는가</p><p><code>C:</code>는 SD 카드 드라이버, <code>R:</code>은 내장 eMMC 객체입니다. 메시지는 업데이트 모델의 상태를 바꾸고 UI 작업을 등록합니다.</p></li>
+<li class="card"><span class="tag">문서 4</span><h3><a href="update-volume-finalization.html">파일 경로·volume·종료 처리</a></h3><p class="q">어떤 이름의 파일을 어디서 찾으며 끝나면 무엇을 하는가</p><p><code>C:\FWDC%ldB.BIN</code>만 조회합니다. 종료 함수는 입력 해제를 요청한 뒤 완료 메시지를 보냅니다.</p></li>
+<li class="card"><span class="tag">문서 5</span><h3><a href="update-media-completion.html">매체 객체와 완료 통지</a></h3><p class="q"><code>C:</code>와 <code>R:</code> 뒤에는 어떤 저장 장치가 있으며 완료 메시지는 누가 받는가</p><p><code>C:</code>는 SD 카드 드라이버, <code>R:</code>은 내장 eMMC 객체입니다. 메시지는 업데이트 모델의 상태를 바꾸고 UI 작업을 등록합니다.</p></li>
 <li class="card"><span class="tag">문서 6</span><h3><a href="update-partition-io.html">R 파티션과 sector I/O</a></h3><p class="q">내장 <code>R:</code> volume의 두 숫자는 무엇을 뜻하는가</p><p>시작 sector와 총 sector 수이며 단위는 512바이트입니다. 읽기와 쓰기는 버퍼 정렬 조건이 다릅니다.</p></li>
 <li class="card"><span class="tag">문서 7</span><h3><a href="update-bank-selection.html">쓰기 bank와 BOOT 선택</a></h3><p class="q">새로 쓴 내용을 다음 부팅이 읽는다는 보장이 있는가</p><p>쓰는 쪽과 읽는 쪽이 서로 다른 칸으로 bank를 고릅니다. 두 값이 어긋나면 쓰기가 성공해도 새 내용을 읽지 않습니다.</p></li>
+<li class="card"><span class="tag">문서 8</span><h3><a href="selector-policy.html">리소스 선택값과 헤더 기록 조건</a></h3><p class="q">BOOT가 읽을 bank 값은 부팅 초기에 바뀌는가, 업데이트는 표와 헤더를 어떤 조건에서 쓰는가</p><p>시험으로 넣은 선택값 1은 지워지지 않고 bank 1 선택까지 갔습니다. 표와 헤더 쓰기가 모두 성공해야 다음 단계로 갑니다.</p></li>
 </ul>
 
 <h3>다. 완료 화면</h3>
 <ul class="cards">
-<li class="card"><span class="tag">문서 8</span><h3><a href="update-ui-consumer.html">완료 후 UI 작업</a></h3><p class="q">UI는 완료 작업을 받아 무엇을 하는가</p><p>업데이트 화면 상태일 때 전용 제어 객체가 작업을 받아, 모델 값이 3이면 타이머 요청을 등록합니다.</p></li>
-<li class="card"><span class="tag">문서 9</span><h3><a href="update-ui-timer.html">UI 타이머와 콜백</a></h3><p class="q">타이머 요청은 어떻게 다시 UI의 콜백으로 돌아오는가</p><p>슬롯에 등록한 요청이 이벤트, 작업, poll을 거쳐 콜백으로 이어지는 순서를 확인했습니다.</p></li>
+<li class="card"><span class="tag">문서 9</span><h3><a href="update-ui-consumer.html">완료 후 UI 작업</a></h3><p class="q">UI는 완료 작업을 받아 무엇을 하는가</p><p>업데이트 화면 상태일 때 전용 제어 객체가 작업을 받아, 모델 값이 3이면 타이머 요청을 등록합니다.</p></li>
+<li class="card"><span class="tag">문서 10</span><h3><a href="update-ui-timer.html">UI 타이머와 콜백</a></h3><p class="q">타이머 요청은 어떻게 다시 UI의 콜백으로 돌아오는가</p><p>슬롯에 등록한 요청이 이벤트, 작업, poll을 거쳐 콜백으로 이어지는 순서를 확인했습니다.</p></li>
 </ul>
 
 <h3>라. 커널 타이머 (관심 있을 때)</h3>
 <ul class="cards">
-<li class="card"><span class="tag">문서 10</span><h3><a href="update-timer-abi.html">커널 호출과 예약 시각</a></h3><p class="q">타이머 요청은 커널의 어느 함수로 가고, 예약 시각은 어떻게 정해지는가</p><p>호출 표에서 세 호출의 대상을 찾았습니다. 예약 시각은 현재 시각에 지연과 주기 값을 더한 것입니다.</p></li>
-<li class="card"><span class="tag">문서 11</span><h3><a href="update-timer-insertion.html">기한 큐 삽입</a></h3><p class="q">예약된 기한은 어떤 순서로 줄을 서는가</p><p>기한 순서로 끼워 넣고, 같은 기한이면 먼저 온 것 뒤에 둡니다. 지연 값 −1은 큐에 넣지 않는 특수한 경우입니다.</p></li>
-<li class="card"><span class="tag">문서 12</span><h3><a href="update-timer-clock.html">타이머 설정과 64비트 카운터</a></h3><p class="q">현재 시각과 주기 값은 어디서 오는가</p><p>내장 설정 <code>TTimPeriod</code>가 주기 값이고, 그만큼 64비트 시각이 늘어납니다. 실제 시간 단위는 정하지 못했습니다.</p></li>
-<li class="card"><span class="tag">문서 13</span><h3><a href="update-timer-irq.html">타이머 등록과 지연 콜백</a></h3><p class="q">기한이 된 요청은 어떻게 콜백으로 이어지는가</p><p>기한 큐에서 떼어 CPU별 지연 실행 큐로 넘긴 뒤 콜백을 부릅니다. 실제 인터럽트 전달은 검증하지 못했습니다.</p></li>
-<li class="card"><span class="tag">문서 14</span><h3><a href="update-subtick-arithmetic.html">하위 시간의 32비트 산술</a></h3><p class="q">틱 사이의 시간을 계산하는 식은 정확한가</p><p>곱셈의 중간값이 32비트로 잘려, 합성 입력에서 반환값이 줄어드는 지점이 있습니다. 실제 영향은 확인하지 못했습니다.</p></li>
-<li class="card"><span class="tag">문서 15</span><h3><a href="update-clock-readers.html">시각 조회 함수</a></h3><p class="q">시각을 읽는 함수는 값을 어떤 모양으로 돌려주는가</p><p>64비트 시각을 상위 단어부터 두 칸에 쓰고, 틱 사이의 값은 다른 포인터에 따로 씁니다.</p></li>
+<li class="card"><span class="tag">문서 11</span><h3><a href="update-timer-abi.html">커널 호출과 예약 시각</a></h3><p class="q">타이머 요청은 커널의 어느 함수로 가며 예약 시각은 어떻게 정해지는가</p><p>호출 표에서 세 호출의 대상을 찾았습니다. 예약 시각은 현재 시각에 지연과 주기 값을 더한 것입니다.</p></li>
+<li class="card"><span class="tag">문서 12</span><h3><a href="update-timer-insertion.html">기한 큐 삽입</a></h3><p class="q">예약된 기한은 어떤 순서로 줄을 서는가</p><p>기한 순서로 끼워 넣습니다. 같은 기한이면 먼저 온 것 뒤에 둡니다. 지연 값 −1은 큐에 넣지 않는 특수한 경우입니다.</p></li>
+<li class="card"><span class="tag">문서 13</span><h3><a href="update-timer-clock.html">타이머 설정과 64비트 카운터</a></h3><p class="q">현재 시각과 주기 값은 어디서 오는가</p><p>내장 설정 <code>TTimPeriod</code>가 주기 값입니다. 그만큼 64비트 시각이 늘어납니다. 실제 시간 단위는 정하지 못했습니다.</p></li>
+<li class="card"><span class="tag">문서 14</span><h3><a href="update-timer-irq.html">타이머 등록과 지연 콜백</a></h3><p class="q">기한이 된 요청은 어떻게 콜백으로 이어지는가</p><p>기한 큐에서 떼어 CPU별 지연 실행 큐로 넘긴 뒤 콜백을 부릅니다. 실제 인터럽트 전달은 검증하지 못했습니다.</p></li>
+<li class="card"><span class="tag">문서 15</span><h3><a href="update-subtick-arithmetic.html">하위 시간의 32비트 산술</a></h3><p class="q">틱 사이의 시간을 계산하는 식은 정확한가</p><p>곱셈의 중간값이 32비트로 잘려, 합성 입력에서 반환값이 줄어드는 지점이 있습니다. 실제 영향은 확인하지 못했습니다.</p></li>
+<li class="card"><span class="tag">문서 16</span><h3><a href="update-clock-readers.html">시각 조회 함수</a></h3><p class="q">시각을 읽는 함수는 값을 어떤 모양으로 돌려주는가</p><p>64비트 시각을 상위 단어부터 두 칸에 씁니다. 틱 사이의 값은 다른 포인터에 따로 씁니다.</p></li>
 </ul>
 </section>
 
@@ -327,7 +331,7 @@
 <li><a href="firmware-structure.html">펌웨어 구조와 하드웨어</a> — 업데이트 파일 안의 레코드 15개</li>
 <li><a href="guide-boot.html">부팅과 저장소 안내</a> — 요청 수신, 기록 순서, bank, 부팅 쪽 코드</li>
 <li><a href="research-roadmap.html">수정·이식 선행 연구</a> — 수정 펌웨어를 만들기 전에 확인할 항목</li>
-<li>검사 결과 파일: <a href="update-checksum-checks.json">체크섬 114건</a>, <a href="iconbin-loader-checks.json">ICONBIN 로더 39건</a>, <a href="update-file-loader-checks.json">로더 27건</a>, <a href="update-allocator-checks.json">메모리 풀 35건</a>, <a href="update-file-interface-checks.json">파일 인터페이스 49건</a>, <a href="update-buffer-lifetime-checks.json">버퍼 수명 33건</a>, <a href="update-volume-path-checks.json">파일 이름·volume 19건</a>, <a href="update-finalization-checks.json">종료 처리 26건</a>, <a href="update-volume-descriptor-checks.json">매체 객체 57건</a>, <a href="update-completion-message-checks.json">완료 통지 15건</a>, <a href="update-partition-io-checks.json">R 파티션 25건</a>, <a href="update-bank-selection-checks.json">bank 선택 12건</a>, <a href="update-ui-consumer-checks.json">UI 작업 28건</a>, <a href="update-ui-timer-checks.json">UI 타이머 39건</a>, <a href="update-timer-abi-checks.json">커널 호출 17건</a>, <a href="update-timer-insertion-checks.json">기한 큐 삽입 18건</a>, <a href="update-timer-clock-checks.json">타이머 설정 20건</a>, <a href="update-timer-irq-checks.json">지연 콜백 20건</a>, <a href="update-subtick-arithmetic-checks.json">하위 시간 산술 5건</a>, <a href="update-clock-readers-checks.json">시각 조회 12건</a></li>
+<li>검사 결과 파일: <a href="selector-policy-checks.json">선택값·헤더 실험 4회</a>(610건에 넣지 않음), <a href="update-checksum-checks.json">체크섬 114건</a>, <a href="iconbin-loader-checks.json">ICONBIN 로더 39건</a>, <a href="update-file-loader-checks.json">로더 27건</a>, <a href="update-allocator-checks.json">메모리 풀 35건</a>, <a href="update-file-interface-checks.json">파일 인터페이스 49건</a>, <a href="update-buffer-lifetime-checks.json">버퍼 수명 33건</a>, <a href="update-volume-path-checks.json">파일 이름·volume 19건</a>, <a href="update-finalization-checks.json">종료 처리 26건</a>, <a href="update-volume-descriptor-checks.json">매체 객체 57건</a>, <a href="update-completion-message-checks.json">완료 통지 15건</a>, <a href="update-partition-io-checks.json">R 파티션 25건</a>, <a href="update-bank-selection-checks.json">bank 선택 12건</a>, <a href="update-ui-consumer-checks.json">UI 작업 28건</a>, <a href="update-ui-timer-checks.json">UI 타이머 39건</a>, <a href="update-timer-abi-checks.json">커널 호출 17건</a>, <a href="update-timer-insertion-checks.json">기한 큐 삽입 18건</a>, <a href="update-timer-clock-checks.json">타이머 설정 20건</a>, <a href="update-timer-irq-checks.json">지연 콜백 20건</a>, <a href="update-subtick-arithmetic-checks.json">하위 시간 산술 5건</a>, <a href="update-clock-readers-checks.json">시각 조회 12건</a></li>
 <li>외부 자료: <a href="https://www.ricoh-imaging.co.jp/english/support/digital/k-3-3.html">Ricoh Imaging, K-3 Mark III 펌웨어 업데이트 안내</a> · <a href="https://www.ricoh-imaging.co.jp/japan/products/oss/k-3-3/K3mkIII_220.tar.gz">Ricoh 공개 오픈소스 묶음</a> · <a href="https://www.rfc-editor.org/rfc/rfc4949.txt">RFC 4949 Internet Security Glossary</a> · <a href="https://learn.microsoft.com/en-us/windows/win32/fileio/exfat-specification">Microsoft exFAT 규격</a> · <a href="https://www.sdcard.org/developers/sd-standard-overview/capacity-sd-sdhc-sdxc-sduc/">SD Association 용량 구분</a> · <a href="https://www.kernel.org/doc/html/latest/driver-api/mmc/mmc-dev-parts.html">Linux 커널 문서, MMC 장치 파티션</a> · <a href="https://github.com/tron-forum/tkernel_2/blob/5778f619bdb354443551888dc2e9aa191e684da8/include/sys/svc/tkfncd.h">T-Kernel 2.0 소스의 서비스 번호 표</a></li>
 </ul>
 </section>
@@ -335,7 +339,7 @@
 </main>
 </div>
 <!-- chrome:bottom -->
-<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">펌웨어 업데이트 과정 — 이 주제의 문서</h2><ol><li><a href="guide-update.html" aria-current="page">업데이트 과정 안내</a></li><li><a href="update-resources.html">업데이트 검사와 ICONBIN<span>프로젝트·버전·체크섬</span></a></li><li><a href="update-memory.html">입력 로더와 메모리 할당</a></li><li><a href="update-file-lifetimes.html">파일 인터페이스와 버퍼 수명</a></li><li><a href="update-volume-finalization.html">파일 경로·volume·종료 처리</a></li><li><a href="update-media-completion.html">매체 객체와 완료 통지</a></li><li><a href="update-partition-io.html">R 파티션과 sector I/O</a></li><li><a href="update-bank-selection.html">쓰기 bank와 BOOT 선택</a></li><li><a href="selector-policy.html">리소스 선택값과 헤더 기록 조건<span>FIFO 반례·표와 헤더의 쓰기 분기</span></a></li><li><a href="update-ui-consumer.html">완료 후 UI 작업</a></li><li><a href="update-ui-timer.html">UI 타이머와 콜백</a></li><li><a href="update-timer-abi.html">커널 호출과 예약 시각</a></li><li><a href="update-timer-insertion.html">기한 큐 삽입</a></li><li><a href="update-timer-clock.html">타이머 설정과 64비트 카운터</a></li><li><a href="update-timer-irq.html">타이머 등록과 지연 콜백</a></li><li><a href="update-subtick-arithmetic.html">하위 시간의 32비트 산술</a></li><li><a href="update-clock-readers.html">시각 조회 함수</a></li></ol></nav>
+<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">펌웨어 업데이트 과정 — 이 주제의 문서</h2><ol><li><a href="guide-update.html" aria-current="page">업데이트 과정 안내</a></li><li><a href="update-resources.html">업데이트 검사와 ICONBIN<span>프로젝트·버전·체크섬</span></a></li><li><a href="update-memory.html">입력 로더와 메모리 할당</a></li><li><a href="update-file-lifetimes.html">파일 인터페이스와 버퍼 수명</a></li><li><a href="update-volume-finalization.html">파일 경로·volume·종료 처리</a></li><li><a href="update-media-completion.html">매체 객체와 완료 통지</a></li><li><a href="update-partition-io.html">R 파티션과 sector I/O</a></li><li><a href="update-bank-selection.html">쓰기 bank와 BOOT 선택</a></li><li><a href="selector-policy.html">리소스 선택값과 헤더 기록 조건<span>선택값과 기록 조건</span></a></li><li><a href="update-ui-consumer.html">완료 후 UI 작업</a></li><li><a href="update-ui-timer.html">UI 타이머와 콜백</a></li><li><a href="update-timer-abi.html">커널 호출과 예약 시각</a></li><li><a href="update-timer-insertion.html">기한 큐 삽입</a></li><li><a href="update-timer-clock.html">타이머 설정과 64비트 카운터</a></li><li><a href="update-timer-irq.html">타이머 등록과 지연 콜백</a></li><li><a href="update-subtick-arithmetic.html">하위 시간의 32비트 산술</a></li><li><a href="update-clock-readers.html">시각 조회 함수</a></li></ol></nav>
 <nav class="pager" aria-label="이전·다음 문서"><a class="prev" href="header-alias-consumer.html"><small>← 이전</small>부트 헤더와 파티션 표</a><a class="next" href="update-resources.html"><small>다음 →</small>업데이트 검사와 ICONBIN</a></nav>
 <footer class="sitefoot"><div class="sitefoot-in"><nav aria-label="사이트"><a href="../index.html#map">문서 지도</a><a href="../index.html#levels">검증 수준 읽는 법</a><a href="../glossary.html">용어집</a><a href="research-program.html">세 기종 연구 본부</a><a href="https://github.com/yunhyok/pentax-k3iii-firmware-analysis">GitHub 저장소</a></nav><p>PENTAX 펌웨어 연구. PC에서 수행한 정적 분석과 에뮬레이션 결과이며, 카메라 실기에서 검증한 내용이 아닙니다. 원본 펌웨어와 추출한 독점 코드는 포함하지 않습니다.</p></div></footer>
 <!-- /chrome:bottom -->

@@ -8,7 +8,7 @@
 
 <sub>사진: © Jörgens.Mi/Wikipedia, [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/), [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Pentax_K3III_jm136770_ji.jpg) (크기 축소). 자세한 출처는 [assets/photos/CREDITS.md](assets/photos/CREDITS.md).</sub>
 
-> **먼저 알아 둘 점.** 모든 분석은 PC에서 했습니다. 수정한 펌웨어를 카메라에 설치하거나 실행한 적이 없습니다. 이 저장소에는 카메라에 넣을 수 있는 펌웨어가 없고, 원본 펌웨어와 제조사 코드도 없습니다.
+> **먼저 알아 둘 점.** 모든 분석은 PC에서 했습니다. 수정한 펌웨어를 카메라에 설치하거나 실행한 적이 없습니다. 이 저장소에는 카메라에 넣을 수 있는 펌웨어가 없고 원본 펌웨어와 제조사 코드도 없습니다.
 
 ## 무엇을 알아냈나
 
@@ -17,7 +17,7 @@
 | 질문 | 알아낸 것 | 아직 모르는 것 |
 |---|---|---|
 | 펌웨어를 고쳐서 다시 만들 수 있는가 | 무변경 재포장이 배포본과 바이트까지 같음. 색 행렬 함수를 C로 다시 짜서 넣은 후보가 원본 코드의 헤더·체크섬 검사를 통과 | 카메라가 수정본을 받아들이는지, 부팅하는지, 부팅 단계의 인증 |
-| Lightroom에서 카메라의 색을 낼 수 있는가 | 색 모드별 행렬·감마 조건. 시험용 프로파일(DCP)을 실제 Lightroom Classic에 적용해 TIFF 출력 | 카메라 JPEG와 얼마나 가까운지 (색차 실측은 K-3 II RAW 한 장) |
+| Lightroom에서 카메라의 색을 낼 수 있는가 | 색 모드별 행렬·감마 조건. 시험용 프로파일(DCP)을 실제 Lightroom Classic에 적용해 TIFF 출력 | 펌웨어의 값으로 만든 프로파일, 카메라 색과 맞는지 검증한 프로파일 (색차 실측은 K-3 II 두 장면과 K-3 Mark III·Q7 한 장면씩. Adobe의 Camera Matching 프로파일이 있는 두 기종에서는 시험용 프로파일이 그보다 가깝지 않았음) |
 | AF 동작을 바꿀 수 있는가 | AF 계산의 기본 연산, 렌즈 능력에 따른 구동 방식 분기, 요청 큐와 완료 통지 | 실제 렌즈 통신·모터 이동·초점 정확도 |
 | 이 카메라의 화면을 다른 기종에 옮길 수 있는가 | 색공간 선택 화면의 선택·확정·취소와 입력 처리, 아이콘 자원 형식 | 실제 버튼 입력에서 LCD까지. 이식은 시작하지 않음 |
 
@@ -25,7 +25,7 @@
 
 ## 문서 안내
 
-**새 조사:** [RAW 노이즈 감소와 펌웨어 On/Off 가능성 검토](docs/research/RAW_NR_FEASIBILITY_20261113_KO.md) — K-3 III ISO 200·K-3 II ISO 1600의 공개 NR 감지 근거, 제어 후보와 미검증 관문. 설치용 NR 패치가 아닌 연구 결과입니다.
+**새 조사:** [RAW 노이즈 감소를 끌 수 있는가](https://yunhyok.github.io/pentax-k3iii-firmware-analysis/analysis/raw-nr-feasibility.html)를 정리했습니다. K-3 III ISO 200·K-3 II ISO 1600의 공개 NR 감지 근거와 제어 후보, 아직 넘지 못한 검증 관문을 담았습니다. 설치용 NR 패치가 아니라 연구 결과입니다.
 
 주제마다 안내 문서가 있습니다. 안내 문서에서 전체 그림을 본 뒤 세부 문서로 들어가면 읽기 쉽습니다.
 
@@ -37,9 +37,9 @@
 | 펌웨어 재구축 | [재구축 안내](https://yunhyok.github.io/pentax-k3iii-firmware-analysis/analysis/guide-rebuild.html) |
 | RTOS 명령과 셸 | [RTOS 명령 안내](https://yunhyok.github.io/pentax-k3iii-firmware-analysis/analysis/guide-rtos.html) |
 | 카메라 내부 색 처리 | [색 처리 안내](https://yunhyok.github.io/pentax-k3iii-firmware-analysis/analysis/guide-color.html) |
-| Lightroom 색 프로파일 (세 기종) | [DCP 생성·검증 개요](https://yunhyok.github.io/pentax-k3iii-firmware-analysis/analysis/lightroom-bridge.html) |
-| AF와 렌즈 제어 (세 기종 비교) | [세 기종 AF 기초 비교](https://yunhyok.github.io/pentax-k3iii-firmware-analysis/analysis/af-foundations.html) |
-| UI와 화면 자원 (세 기종 비교) | [UI 이식 설계](https://yunhyok.github.io/pentax-k3iii-firmware-analysis/analysis/ui-port-contract.html) |
+| Lightroom 색 프로파일 (세 기종) | [Lightroom 색 프로파일 안내](https://yunhyok.github.io/pentax-k3iii-firmware-analysis/analysis/guide-lightroom.html) |
+| AF와 렌즈 제어 | [AF와 렌즈 제어 안내](https://yunhyok.github.io/pentax-k3iii-firmware-analysis/analysis/guide-af.html) · [세 기종 AF 기초 비교](https://yunhyok.github.io/pentax-k3iii-firmware-analysis/analysis/af-foundations.html) |
+| UI와 화면 자원 | [UI와 화면 자원 안내](https://yunhyok.github.io/pentax-k3iii-firmware-analysis/analysis/guide-ui.html) · [UI 이식 설계 (세 기종)](https://yunhyok.github.io/pentax-k3iii-firmware-analysis/analysis/ui-port-contract.html) |
 
 문서는 결과마다 얼마나 확실한지를 네 가지로 표시합니다: **확인**(원본 코드를 PC 에뮬레이터에서 실행해 관측), **정적 분석**(코드를 읽어서 판단), **모델**(실물 대신 넣은 값), **미확인**. 자세한 뜻은 [개요의 “검증 수준 읽는 법”](https://yunhyok.github.io/pentax-k3iii-firmware-analysis/#levels)에 있습니다.
 

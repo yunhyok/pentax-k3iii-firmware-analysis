@@ -10,7 +10,7 @@
 <body data-camera="k3iii">
 <!-- chrome:top -->
 <a class="skip" href="#main">본문 바로가기</a>
-<div class="topbar"><div class="topbar-in"><a class="brand" href="../index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="../index.html" aria-current="true">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="https://yunhyok.github.io/pentax-q7-firmware-analysis/">Q7</a></div><nav class="topnav" aria-label="주제"><a href="../index.html">개요</a><a href="guide-boot.html">부팅·저장소</a><a href="guide-update.html">업데이트</a><a href="guide-rebuild.html" aria-current="true">재구축</a><a href="guide-rtos.html">명령·셸</a><a href="guide-color.html">색 처리</a><a href="lightroom-bridge.html">Lightroom</a><a href="af-foundations.html">AF</a><a href="ui-port-contract.html">UI</a></nav></div></div>
+<div class="topbar"><div class="topbar-in"><a class="brand" href="../index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="../index.html" aria-current="true">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="https://yunhyok.github.io/pentax-q7-firmware-analysis/">Q7</a></div><nav class="topnav" aria-label="주제"><a href="../index.html">개요</a><a href="guide-boot.html">부팅·저장소</a><a href="guide-update.html">업데이트</a><a href="guide-rebuild.html" aria-current="true">재구축</a><a href="guide-rtos.html">명령·셸</a><a href="guide-color.html">색 처리</a><a href="guide-lightroom.html">Lightroom</a><a href="guide-af.html">AF</a><a href="guide-ui.html">UI</a></nav></div></div>
 <nav class="crumbs" aria-label="현재 위치"><ol><li><a href="../index.html">PENTAX K-3 Mark III</a></li><li><a href="guide-rebuild.html">펌웨어 재구축</a></li><li aria-current="page">재컴파일 함수 배치·재패키징</li></ol></nav>
 <!-- /chrome:top -->
 <header class="page-head">
@@ -27,8 +27,8 @@
 <section class="summary">
 <h2 data-toc="no">핵심 요약</h2>
 <ul>
-<li>C로 다시 만든 Q13 3×3 행렬 곱 함수를 원본 RTOS 안의 <strong>원래 주소에 그대로 올려놓고</strong>, 펌웨어 패키지를 다시 포장해 로컬 후보 파일 하나를 만들었습니다.</li>
-<li>이 후보를 다시 풀어, 같은 주소의 함수와 이 함수를 부르는 <strong>실제 색 행렬 준비 경로</strong>를 PC 에뮬레이터에서 실행했습니다. 출력과 보존 레지스터가 원본과 같았고, 원본 펌웨어의 헤더·체크섬 검사도 통과했습니다.</li>
+<li>C로 다시 만든 Q13 3×3 행렬 곱 함수를 원본 RTOS 안의 <strong>원래 주소에 그대로 올려놓고</strong> 펌웨어 패키지를 다시 포장해 로컬 후보 파일 하나를 만들었습니다.</li>
+<li>이 후보를 다시 풀어, 같은 주소의 함수와 이 함수를 부르는 <strong>실제 색 행렬 준비 경로</strong>를 PC 에뮬레이터에서 실행했습니다. 출력과 보존 레지스터가 원본과 같았고 원본 펌웨어의 헤더·체크섬 검사도 통과했습니다.</li>
 <li>확인한 범위는 행렬 함수 하나와 색공간 처리가 켜진 두 호출 분기입니다. <strong>카메라에서 실행하거나 업데이트로 적용하지는 않았습니다.</strong> 이번 후보는 압축을 풀어 저장하는 방식이라 원본보다 두 배 넘게 큽니다(줄이는 방법은 <a href="selective-repack.html">다음 문서</a>).</li>
 </ul>
 </section>
@@ -57,16 +57,16 @@
 
 <section id="background">
 <h2>배경: 함수를 원래 자리에 넣는다는 것</h2>
-<p><a href="recompiled-kernels.html">앞 문서</a>에서는 새로 만든 함수를 빈 주소에 따로 올려놓고 원본과 비교했습니다. 이것만으로는 “함수 자체가 같다”는 것까지만 알 수 있습니다. 펌웨어를 실제로 고치려면 한 걸음 더 나가야 합니다. 새 코드를 원본 함수가 있던 바로 그 주소에 넣고, 펌웨어 파일을 다시 포장한 다음, <em>그 주소를 부르는 다른 코드가 변함없이 동작하는지</em>까지 확인해야 합니다.</p>
-<p class="takeaway">대상은 색 변환에 쓰이는 Q13 3×3 행렬 곱 함수 하나입니다. 이 함수를 원래 주소에 넣고, 펌웨어 패키지를 다시 만든 뒤, 원본과 후보를 나란히 실행해 비교했습니다.</p>
+<p><a href="recompiled-kernels.html">앞 문서</a>에서는 새로 만든 함수를 빈 주소에 따로 올려놓고 원본과 비교했습니다. 이것만으로는 “함수 자체가 같다”는 것까지만 알 수 있습니다. 펌웨어를 실제로 고치려면 한 걸음 더 나가야 합니다. 새 코드를 원본 함수가 있던 바로 그 주소에 넣고 펌웨어 파일을 다시 포장한 다음, <em>그 주소를 부르는 다른 코드가 변함없이 동작하는지</em>까지 확인해야 합니다.</p>
+<p class="takeaway">대상은 색 변환에 쓰이는 Q13 3×3 행렬 곱 함수 하나입니다. 이 함수를 원래 주소에 넣고 펌웨어 패키지를 다시 만든 뒤, 원본과 후보를 나란히 실행해 비교했습니다.</p>
 <div class="callout plain"><strong class="label">쉽게 말하면</strong>
 <p>펌웨어 파일은 여러 부품을 압축해 담은 상자입니다. 부품 하나(RTOS)의 작은 함수만 새것으로 바꾸고 상자를 다시 봉한 뒤, 상자를 열어 그 함수가 제자리에 있고 이웃 부품이 멀쩡한지 확인한 셈입니다. 다만 다시 봉할 때 이번에는 압축을 하지 않아 상자가 커졌습니다.</p></div>
-<p>펌웨어 파일 <code>fwdc233b.bin</code>은 15개의 이름 붙은 레코드를 압축해 담고 있습니다. 바꾼 것은 그중 <dfn title="카메라 본체의 실시간 운영체제. ARM 코드로 되어 있고 적재 기준 주소는 0x52500000입니다.">RTOS</dfn> 레코드 하나뿐이고, 그 안에서도 함수 한 개의 구간만 교체했습니다.</p>
+<p>펌웨어 파일 <code>fwdc233b.bin</code>은 15개의 이름 붙은 레코드를 압축해 담고 있습니다. 바꾼 것은 그중 <dfn title="카메라 본체의 실시간 운영체제. ARM 코드로 되어 있고 적재 기준 주소는 0x52500000입니다.">RTOS</dfn> 레코드 하나뿐이고 그 안에서도 함수 한 개의 구간만 교체했습니다.</p>
 </section>
 
 <section id="placement">
 <h2>원래 주소에 넣고 끝 명령은 보존</h2>
-<p class="takeaway">함수 구간 116바이트 가운데 앞 112바이트를 새 코드로 덮고, 마지막 복귀 명령 4바이트는 원본 그대로 두었습니다. 새 코드는 그 직전에서 복귀하므로 보존한 끝 명령은 실행되지 않습니다.</p>
+<p class="takeaway">함수 구간 116바이트 가운데 앞 112바이트를 새 코드로 덮고 마지막 복귀 명령 4바이트는 원본 그대로 두었습니다. 새 코드는 그 직전에서 복귀하므로 보존한 끝 명령은 실행되지 않습니다.</p>
 
 <figure class="diagram">
 <figcaption>원본 함수 구간과 교체 범위</figcaption>
@@ -93,7 +93,7 @@
 <ul class="dg-legend"><li><i class="key"></i>이번에 넣은 새 코드</li><li><i></i>원본 그대로 보존</li></ul>
 </figure>
 
-<p>새 코드는 다른 함수를 부르지 않고, 코드 안에서 데이터를 참조하거나 재배치가 필요한 부분도 없습니다. ARM 명령 28개를 확인했고, 코드 안의 직접 분기 3개는 모두 함수 내부(새 코드 구간)를 가리켰습니다. 주소·해시는 아래 접이식에 있습니다.</p>
+<p>새 코드는 다른 함수를 부르지 않고 코드 안에서 데이터를 참조하거나 재배치가 필요한 부분도 없습니다. ARM 명령 28개를 확인했고 코드 안의 직접 분기 3개는 모두 함수 내부(새 코드 구간)를 가리켰습니다. 주소·해시는 아래 접이식에 있습니다.</p>
 
 <details class="evidence"><summary>교체 구간과 해시</summary>
 <dl class="kv">
@@ -168,18 +168,18 @@
 <p class="takeaway">함수를 직접 부르는 경우와, 색 행렬을 준비하는 실제 상위 함수가 이 함수를 거치는 경우를 모두 원본·후보에서 실행해 비교했습니다. 결과와 보존 상태가 같았습니다.</p>
 
 <h3 id="direct">직접 호출</h3>
-<p>원본과 다시 푼 후보에서 각각 106개 입력을 넣어 함수를 직접 실행했습니다. 부호 있는 16비트 입력, 반올림·정수 범위 경계, 난수에서 출력이 기준식과 같았습니다. 두 실행 모두 함수 밖으로 나가지 않고 복귀했으며, 보존 레지스터·스택 포인터와 출력 쓰기 범위를 확인했습니다. 진입 시점의 스택 포인터 아래로 가장 깊이 쓴 위치는 원본 28바이트, 후보 32바이트였습니다.</p>
+<p>원본과 다시 푼 후보에서 각각 106개 입력을 넣어 함수를 직접 실행했습니다. 부호 있는 16비트 입력, 반올림·정수 범위 경계, 난수에서 출력이 기준식과 같았습니다. 두 실행 모두 함수 밖으로 나가지 않고 복귀했으며 보존 레지스터·스택 포인터와 출력 쓰기 범위를 확인했습니다. 진입 시점의 스택 포인터 아래로 가장 깊이 쓴 위치는 원본 28바이트, 후보 32바이트였습니다.</p>
 
 <h3 id="caller">색 행렬 준비 경로</h3>
-<p>색공간(ColorSpace) 처리를 켠 합성 설정으로 원본 호출자 <code>0x5312ce30</code> 전체를 이미지마다 10회 실행했습니다. 수동 RGB 5회와 필터 5회가 직접 분기 세 곳을 거쳐 이미지당 행렬 함수를 20번 불렀습니다. 호출자와 하위 호출의 복귀 시점마다 보존 레지스터(<code>r4</code>–<code>r11</code>, <code>d8</code>–<code>d15</code>)와 스택 포인터가 그대로였고, 각 행렬 호출은 두 입력과 자기 스택 영역만 읽고 18바이트 출력과 자기 영역에만 썼습니다. 호출자 기준 가장 깊은 스택 쓰기는 원본 228바이트에서 후보 232바이트로 늘었고, 최종 출력은 두 이미지가 같았습니다.</p>
+<p>색공간(ColorSpace) 처리를 켠 합성 설정으로 원본 호출자 <code>0x5312ce30</code> 전체를 이미지마다 10회 실행했습니다. 수동 RGB 5회와 필터 5회가 직접 분기 세 곳을 거쳐 이미지당 행렬 함수를 20번 불렀습니다. 호출자와 하위 호출의 복귀 시점마다 보존 레지스터(<code>r4</code>–<code>r11</code>, <code>d8</code>–<code>d15</code>)와 스택 포인터가 그대로였습니다. 각 행렬 호출은 두 입력과 자기 스택 영역만 읽고 18바이트 출력과 자기 영역에만 썼습니다. 호출자 기준 가장 깊은 스택 쓰기는 원본 228바이트에서 후보 232바이트로 늘었습니다. 최종 출력은 두 이미지가 같았습니다.</p>
 
 <h3 id="qflag">계산 중 바뀌는 플래그 하나는 차이가 남</h3>
-<p>따로 만든 합성 행렬 하나에서는 출력 18바이트가 모두 0으로 같았지만, 복귀할 때 CPU의 포화 플래그(<dfn title="ARM CPSR의 Q 비트. 계산 도중 포화·오버플로가 일어나면 1이 되고, 한 번 서면 유지됩니다.">CPSR.Q</dfn>)가 원본은 0, 후보는 1로 달랐습니다. 원본은 반올림 상수 4,096을 누산한 뒤에 더하고 새 C 코드는 누산 전에 더해, 계산 중간의 부호 오버플로가 달라지기 때문입니다.</p>
+<p>따로 만든 합성 행렬 하나에서는 출력 18바이트가 모두 0으로 같았지만 복귀할 때 CPU의 포화 플래그(<dfn title="ARM CPSR의 Q 비트. 계산 도중 포화·오버플로가 일어나면 1이 되고, 한 번 서면 유지됩니다.">CPSR.Q</dfn>)가 원본은 0, 후보는 1로 달랐습니다. 원본은 반올림 상수 4,096을 누산한 뒤에 더하고 새 C 코드는 누산 전에 더해, 계산 중간의 부호 오버플로가 달라지기 때문입니다.</p>
 <div class="callout warn"><strong class="label">주의</strong>
-<p>이 플래그 차이가 뒤에 영향을 주는지 별도로 시험했습니다. 원본의 상위 호출 지점 네 곳에서 시작해, 하위 행렬 함수가 돌아올 때 Q만 0 또는 1로 바꿔 넣고 다음 처리 호출 직전까지 실행했습니다. 색공간을 켠 80쌍(160회)에서 실행 경로·쓰기·결과가 모두 같았습니다. 다만 ARM 호출 규약(AAPCS32)은 공개 함수 복귀 시 Q 값을 정하지 않으며, 이 시험만으로 다른 분기나 간접 호출에서 Q를 쓰는지까지는 알 수 없습니다.</p></div>
+<p>이 플래그 차이가 뒤에 영향을 주는지 별도로 시험했습니다. 원본의 상위 호출 지점 네 곳에서 시작해, 하위 행렬 함수가 돌아올 때 Q만 0 또는 1로 바꿔 넣고 다음 처리 호출 직전까지 실행했습니다. 색공간을 켠 80쌍(160회)에서 실행 경로·쓰기·결과가 모두 같았습니다. 다만 ARM 호출 규약(AAPCS32)은 공개 함수 복귀 시 Q 값을 정하지 않으며 이 시험만으로 다른 분기나 간접 호출에서 Q를 쓰는지까지는 알 수 없습니다.</p></div>
 
 <h3 id="gates">원본 펌웨어의 헤더·체크섬 검사</h3>
-<p>원본 펌웨어 안에 들어 있는 헤더 검사와 체크섬 검사 코드를 에뮬레이터에서 직접 실행했습니다. 원본과 후보 모두 정상 입력을 받아들였고, 프로젝트 값이나 매직 값을 바꾼 입력은 거절했습니다. 호스트에서 돌린 반례 검사에서는 바깥 합이 틀린 후보, 바깥 합만 다시 맞춘 내부 체크섬 오류, 체크섬을 다시 맞춘 뒤에도 보존 영역을 바꾼 후보를 각각 거절했습니다.</p>
+<p>원본 펌웨어 안에 들어 있는 헤더 검사와 체크섬 검사 코드를 에뮬레이터에서 직접 실행했습니다. 원본과 후보 모두 정상 입력을 받아들였고 프로젝트 값이나 매직 값을 바꾼 입력은 거절했습니다. 호스트에서 돌린 반례 검사에서는 바깥 합이 틀린 후보, 바깥 합만 다시 맞춘 내부 체크섬 오류, 체크섬을 다시 맞춘 뒤에도 보존 영역을 바꾼 후보를 각각 거절했습니다.</p>
 
 <details class="evidence"><summary>검증 수치와 주소</summary>
 <div class="table-wrap"><table class="compact">
@@ -192,7 +192,7 @@
 <tr><td>CPSR.Q 시험</td><td>상위 호출 4곳, 색공간 켠 쌍</td><td class="n">80쌍 · 160회 경로 일치</td></tr>
 <tr><td>헤더·체크섬 검사</td><td>원본 ARM <code>0x52ff4d08</code>–<code>0x52ff4f88</code></td><td class="n">8건 통과·거절 일치</td></tr>
 </tbody></table></div>
-<p class="small">근거: <a href="recompiled-integration.json">recompiled-integration.json</a>의 <code>direct_calls</code>·<code>caller</code>·<code>original_arm_gates</code>·<code>negative_checks</code>, CPSR.Q 후속 시험은 <a href="qflag-scope.json">qflag-scope.json</a>.</p>
+<p class="small">근거: <a href="recompiled-integration.json">recompiled-integration.json</a>의 <code>direct_calls</code>·<code>caller</code>·<code>original_arm_gates</code>·<code>negative_checks</code>, CPSR.Q 추가 시험은 <a href="qflag-scope.json">qflag-scope.json</a>.</p>
 </details>
 </section>
 
@@ -209,7 +209,7 @@
 <h2>재현 방법</h2>
 <p>검증기는 바이트가 동일한 공식 2.20 원본 패키지 <code>fwdc233b.bin</code>과, 해시가 확인된 Zig 컴파일러를 입력으로 받습니다. 같은 Python 패키지(<code>unicorn==2.1.4</code>, <code>pyelftools==0.33</code>, <code>capstone==5.0.7</code>)를 사용합니다.</p>
 <pre><code>python -B tools/verify_recompiled_integration.py fwdc233b.bin "&lt;Zig 폴더&gt;/zig.exe"</code></pre>
-<p class="small muted">실행하면 빌드 결과와 후보를 <code>.private/hq-integration/</code> 아래 새 작업 폴더에 남깁니다. 검사 중의 후보 파일 이름은 <code>matrix-offline.repacked.unverified.bin</code>이고, 모든 검사와 기록이 끝나면 <code>matrix-offline.repacked.bin</code>으로 바꿉니다. 공개 결과에는 해시와 합성 사례만 들어 있습니다.</p>
+<p class="small muted">실행하면 빌드 결과와 후보를 <code>.private/hq-integration/</code> 아래 새 작업 폴더에 남깁니다. 검사 중의 후보 파일 이름은 <code>matrix-offline.repacked.unverified.bin</code>입니다. 모든 검사와 기록이 끝나면 <code>matrix-offline.repacked.bin</code>으로 바꿉니다. 공개 결과에는 해시와 합성 사례만 들어 있습니다.</p>
 </section>
 
 <section id="refs">
@@ -229,7 +229,7 @@
 </main>
 </div>
 <!-- chrome:bottom -->
-<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">펌웨어 재구축 — 이 주제의 문서</h2><ol><li><a href="guide-rebuild.html">재구축 안내</a></li><li><a href="recompiled-kernels.html">수치 함수 C 재구현<span>SAD·SSD와 Q13 행렬 곱</span></a></li><li><a href="recompiled-integration.html" aria-current="page">재컴파일 함수 배치·재패키징</a></li><li><a href="selective-repack.html">압축 블록을 보존한 재패키징</a></li><li><a href="allocator-replay/report.html">설정에서 첫 task stack까지<span>원본 할당 경로 7조건과 RMW 5검증</span></a></li><li><a href="registry-replay/report.html">이름 registry 할당과 조회<span>원본 이름 배열 1200바이트 초기화와 조회 재현</span></a></li><li><a href="rmw-proof/report.html">RMW 8바이트의 수동 모형 검증<span>초기 64비트와 최종값의 관계, decoded만으로 재현</span></a></li><li><a href="rmw-scope/report.html">RMW 48바이트 분류와 4바이트 증명<span>전체 기록 검사 후 공개 필드 추리기, decoded와 accepted31 필요</span></a></li></ol></nav>
+<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">펌웨어 재구축 — 이 주제의 문서</h2><ol><li><a href="guide-rebuild.html">재구축 안내</a></li><li><a href="recompiled-kernels.html">수치 함수 C 재구현<span>SAD·SSD와 Q13 행렬 곱</span></a></li><li><a href="recompiled-integration.html" aria-current="page">재컴파일 함수 배치·재패키징</a></li><li><a href="selective-repack.html">압축 블록을 보존한 재패키징</a></li><li><a href="allocator-replay/report.html">설정에서 첫 task 스택까지<span>할당 경로 7조건</span></a></li><li><a href="registry-replay/report.html">이름 registry 할당과 조회<span>이름 배열의 할당·초기화·조회</span></a></li><li><a href="rmw-proof/report.html">RMW 8바이트의 수동 모형 검증<span>초기값과 무관한 최종 8바이트</span></a></li><li><a href="rmw-scope/report.html">RMW 48바이트 분류와 4바이트 증명<span>남은 바이트의 범위</span></a></li></ol></nav>
 <nav class="pager" aria-label="이전·다음 문서"><a class="prev" href="recompiled-kernels.html"><small>← 이전</small>수치 함수 C 재구현</a><a class="next" href="selective-repack.html"><small>다음 →</small>압축 블록을 보존한 재패키징</a></nav>
 <footer class="sitefoot"><div class="sitefoot-in"><nav aria-label="사이트"><a href="../index.html#map">문서 지도</a><a href="../index.html#levels">검증 수준 읽는 법</a><a href="../glossary.html">용어집</a><a href="research-program.html">세 기종 연구 본부</a><a href="https://github.com/yunhyok/pentax-k3iii-firmware-analysis">GitHub 저장소</a></nav><p>PENTAX 펌웨어 연구. PC에서 수행한 정적 분석과 에뮬레이션 결과이며, 카메라 실기에서 검증한 내용이 아닙니다. 원본 펌웨어와 추출한 독점 코드는 포함하지 않습니다.</p></div></footer>
 <!-- /chrome:bottom -->

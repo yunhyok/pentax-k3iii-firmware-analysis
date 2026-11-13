@@ -2,73 +2,248 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>K-3 III DNG의 Adobe SDK Stage 2 실행 — PENTAX 펌웨어 연구</title>
-<meta name="description" content="Adobe DNG SDK Build 2768을 실행해 K-3 III 변환 DNG의 Stage 2 샘플 25,891,840개를 기존 수식과 대조했습니다.">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>K-3 III DNG의 Adobe SDK Stage 2 실행 — PENTAX K-3 Mark III 펌웨어 연구</title>
+<meta name="description" content="공개 Adobe DNG SDK 1.7.1 Build 2768을 PC에서 빌드해 K-3 III 변환 DNG 한 개의 Stage 1·2 배열을 읽었습니다. Stage 2 값 25,891,840개가 정수 계산과 모두 일치했고 8,530개가 65,535에 이르렀습니다.">
 <link rel="stylesheet" href="../assets/site.css">
-<style>
-.sdk-stage2 .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,12rem),1fr));gap:.6rem;margin:0;padding:0;list-style:none}
-.sdk-stage2 .steps li{padding:.65rem;border:1px solid var(--line);border-radius:.5rem}
-.sdk-stage2 .steps b{display:block}
-.sdk-stage2 .table-wrap:focus-visible{outline:2px solid var(--brand);outline-offset:3px}
-</style>
 </head>
 <body data-camera="k3iii">
 <!-- chrome:top -->
 <a class="skip" href="#main">본문 바로가기</a>
-<div class="topbar"><div class="topbar-in"><a class="brand" href="../index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="../index.html" aria-current="true">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="https://yunhyok.github.io/pentax-q7-firmware-analysis/">Q7</a></div><nav class="topnav" aria-label="주제"><a href="../index.html">개요</a><a href="guide-boot.html">부팅·저장소</a><a href="guide-update.html">업데이트</a><a href="guide-rebuild.html">재구축</a><a href="guide-rtos.html">명령·셸</a><a href="guide-color.html">색 처리</a><a href="lightroom-bridge.html" aria-current="true">Lightroom</a><a href="af-foundations.html">AF</a><a href="ui-port-contract.html">UI</a></nav></div></div>
-<nav class="crumbs" aria-label="현재 위치"><ol><li><a href="../index.html">PENTAX K-3 Mark III</a></li><li><a href="lightroom-bridge.html">Lightroom 색 프로파일</a></li><li aria-current="page">K-3 III DNG의 Adobe SDK Stage 2 실행</li></ol></nav>
+<div class="topbar"><div class="topbar-in"><a class="brand" href="../index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="../index.html" aria-current="true">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="https://yunhyok.github.io/pentax-q7-firmware-analysis/">Q7</a></div><nav class="topnav" aria-label="주제"><a href="../index.html">개요</a><a href="guide-boot.html">부팅·저장소</a><a href="guide-update.html">업데이트</a><a href="guide-rebuild.html">재구축</a><a href="guide-rtos.html">명령·셸</a><a href="guide-color.html">색 처리</a><a href="guide-lightroom.html" aria-current="true">Lightroom</a><a href="guide-af.html">AF</a><a href="guide-ui.html">UI</a></nav></div></div>
+<nav class="crumbs" aria-label="현재 위치"><ol><li><a href="../index.html">PENTAX K-3 Mark III</a></li><li><a href="guide-lightroom.html">Lightroom 색 프로파일</a></li><li aria-current="page">K-3 III DNG의 Adobe SDK Stage 2 실행</li></ol></nav>
 <!-- /chrome:top -->
 <header class="page-head">
-<p class="eyebrow">Lightroom 색 프로파일 · K-3 III</p>
+<p class="eyebrow">Lightroom 색 프로파일 · RAW 처리 첫 단계 3</p>
 <h1>K-3 III DNG의 Adobe SDK Stage 2 실행</h1>
-<p class="lead">Adobe DNG SDK 1.7.1 Build 2768에서 읽은 Stage 2 값 25,891,840개가 고정 DNG에 대해 계산한 정수 모델과 모두 일치했습니다. 그중 8,530개가 uint16 최댓값 65,535에 도달했습니다.</p>
+<p class="lead">공개 DNG SDK를 직접 실행해, 블랙·화이트 레벨로 센서 값을 정규화하는 첫 단계의 결과를 꺼냈습니다. 수식으로만 계산했던 값이 실제 SDK 코드에서도 그대로 나오는지 확인하는 실험입니다.</p>
 </header>
 <div class="layout">
 <!-- chrome:toc -->
-<nav class="toc" aria-label="이 문서의 목차"><h2 data-toc="no">이 문서에서</h2><ol><li><a href="#samples">SDK에서 읽은 두 배열</a></li><li><a href="#path">호출 순서와 빌드 옵션</a></li><li><a href="#replay">같은 입력으로 재현하기</a></li></ol></nav>
+<nav class="toc" aria-label="이 문서의 목차"><h2 data-toc="no">이 문서에서</h2><ol><li><a href="#background">배경: DNG SDK의 Stage</a></li><li><a href="#samples">SDK에서 읽은 두 배열</a></li><li><a href="#match">모든 Stage 2 값이 정수 계산과 같았습니다</a></li><li><a href="#path">호출 순서와 빌드 조건</a></li><li><a href="#limits">한계와 남은 과제</a></li><li><a href="#replay">재현 방법</a></li><li><a href="#refs">근거 파일과 참고 자료</a></li></ol></nav>
 <!-- /chrome:toc -->
-<main id="main" class="doc sdk-stage2">
+<main class="doc" id="main">
+
+<section class="summary"><h2 data-toc="no">핵심 요약</h2><ul>
+<li>공개 Adobe DNG SDK 1.7.1 Build 2768을 PC에서 빌드했습니다. 고정한 K-3 III 변환 DNG 한 개로 Stage 1과 Stage 2까지 실행했습니다.</li>
+<li>SDK가 만든 <strong>Stage 2 값 25,891,840개가 정수 계산과 모두 일치</strong>했습니다. 그중 8,530개가 uint16 최댓값 65,535에 이르렀습니다.</li>
+<li>빈 폴더에서 오브젝트 276개를 새로 빌드해 다시 실행해도 두 배열과 실행 로그가 같았습니다.</li>
+<li>실행 범위는 Stage 2까지입니다. Stage 3 이후, SDK 렌더 단계, Lightroom과 Converter 내부, PEF를 직접 여는 경로는 다루지 않습니다.</li>
+</ul></section>
+
+<div class="scope">
+<div class="ok"><h3><span class="badge ok">확인</span> 공개 SDK를 실행해 관측</h3><ul>
+<li>SDK 1.7.1 Build 2768 원본 소스로 만든 하네스의 Stage 1·2 배열</li>
+<li>Stage 2 전 샘플과 정수 계산의 일치(불일치 0)</li>
+<li>새 빌드와 처음 실행의 배열·로그 일치</li>
+</ul></div>
+<div class="model"><h3><span class="badge model">모델</span> 연구자가 정한 조건</h3><ul>
+<li>XMP, baseline libjpeg, SDK AVX를 끈 Zig 0.15.2 빌드</li>
+<li>입력은 보존한 첫 변환 DNG 한 개</li>
+</ul></div>
+<div class="open"><h3><span class="badge open">미확인</span> 이 실행으로 알 수 없는 것</h3><ul>
+<li>Converter 18.7과 Lightroom이 PEF에 쓰는 화이트 레벨</li>
+<li>디모자이크와 최종 렌더</li>
+<li>공식 Windows 예제 빌드에서의 결과</li>
+</ul></div>
+</div>
+
+<section id="background">
+<h2>배경: DNG SDK의 Stage</h2>
+<p>Adobe는 DNG 파일을 읽고 쓰는 참조 구현을 DNG SDK로 공개합니다. SDK에 들어 있는 <code>dng_validate</code> 예제는 처리 중간의 배열을 Stage 1, 2, 3으로 나눠 꺼낼 수 있습니다.</p>
+<div class="table-wrap"><table class="fit">
+<caption>SDK가 RAW를 다루는 단계</caption>
+<thead><tr><th scope="col">단계</th><th scope="col">내용</th><th scope="col">이 주제에서</th></tr></thead>
+<tbody>
+<tr><th scope="row">Stage 1</th><td>파일에 저장된 CFA를 압축만 풀어 읽은 배열</td><td>이 문서에서 실행</td></tr>
+<tr><th scope="row">Stage 2</th><td>ActiveArea만 남기고 블랙을 뺀 뒤 0~65,535로 정규화한 배열</td><td>이 문서에서 실행</td></tr>
+<tr><th scope="row">Stage 3</th><td>디모자이크한 카메라 R·G·B 세 평면</td><td><a href="lightroom-sdk-stage3.html">SDK Stage 3</a>에서 실행</td></tr>
+<tr><th scope="row">렌더</th><td>화이트밸런스, 색 프로파일, 톤, 출력 색공간 적용</td><td>실행하지 않음</td></tr>
+</tbody></table></div>
+<figure class="diagram">
+<figcaption>RAW 처리 흐름과 이 주제의 네 문서가 다루는 구간</figcaption>
+<!--PIPE-->
+<div class="dg-scroll">
+<svg class="dg" viewBox="0 0 800 330" role="img" aria-labelledby="dg-pipe-title dg-pipe-desc">
+<title id="dg-pipe-title">SDK Stage 2 실행이 RAW 처리 흐름에서 차지하는 자리</title>
+<desc id="dg-pipe-desc">왼쪽부터 원본 PEF, Adobe DNG Converter 18.7로 만든 변환 DNG, SDK Stage 1(저장된 CFA 읽기), Stage 2(블랙·화이트 레벨로 선형화·정규화), Stage 3(Bayer 보간)이 화살표로 이어집니다. 위쪽 괄호는 이 주제의 네 문서가 각각 다루는 구간입니다. PEF·DNG CFA 비교는 PEF부터 Stage 1까지, 범위 집계·정수 계산은 Stage 1과 Stage 2, SDK Stage 2 문서는 Stage 2, SDK Stage 3 문서는 Stage 3을 다룹니다. 아래 줄의 점선 상자 두 개는 실행하지 않은 부분입니다. 변환 DNG에서 이어지는 Lightroom 현상과, Stage 3 뒤의 SDK 렌더 단계(화이트밸런스, 프로파일, 톤, 출력 색공간)입니다. 이 문서는 Stage 1과 Stage 2를 SDK로 실행합니다.</desc>
+<defs><marker id="dg-pipe-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0 0L10 5L0 10z"/></marker><marker id="dg-pipe-aho" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah open" d="M0 0L10 5L0 10z"/></marker></defs>
+<path class="e" d="M80 110V100H390V110"/>
+<a href="lightroom-cfa-preservation.html"><text class="n mid" x="235" y="92">PEF·DNG CFA 비교</text></a>
+<path class="e" d="M410 110V72H510V110"/>
+<a href="lightroom-cfa-range.html"><text class="n mid" x="460" y="64">범위 집계·정수 계산</text></a>
+<path class="e key" d="M530 110V100H620V110"/>
+<text class="n mid tk" x="575" y="92">SDK Stage 2 (이 문서)</text>
+<path class="e" d="M660 110V100H780V110"/>
+<a href="lightroom-sdk-stage3.html"><text class="n mid" x="720" y="92">SDK Stage 3</text></a>
+<rect class="b mute" x="10" y="120" width="140" height="64" rx="8"/>
+<text class="t" x="22" y="147">원본 PEF</text>
+<text class="s" x="22" y="168">K-3 III RAW 1장</text>
+<rect class="b mute" x="170" y="120" width="140" height="64" rx="8"/>
+<text class="t" x="182" y="147">변환 DNG</text>
+<text class="s" x="182" y="168">Converter 18.7</text>
+<rect class="b key" x="330" y="120" width="140" height="64" rx="8"/>
+<text class="t" x="342" y="147">Stage 1</text>
+<text class="s" x="342" y="168">저장 CFA 읽기</text>
+<rect class="b key" x="490" y="120" width="140" height="64" rx="8"/>
+<text class="t" x="502" y="147">Stage 2</text>
+<text class="s" x="502" y="168">선형화·정규화</text>
+<rect class="b ok" x="650" y="120" width="140" height="64" rx="8"/>
+<text class="t" x="662" y="147">Stage 3</text>
+<text class="s" x="662" y="168">Bayer 보간</text>
+<path class="e" d="M150 152H168" marker-end="url(#dg-pipe-ah)"/>
+<path class="e" d="M310 152H328" marker-end="url(#dg-pipe-ah)"/>
+<path class="e" d="M470 152H488" marker-end="url(#dg-pipe-ah)"/>
+<path class="e" d="M630 152H648" marker-end="url(#dg-pipe-ah)"/>
+<path class="e open" d="M240 184V238" marker-end="url(#dg-pipe-aho)"/>
+<rect class="b open" x="170" y="240" width="140" height="74" rx="8"/>
+<text class="t" x="182" y="266">Lightroom 현상</text>
+<text class="s" x="182" y="286">별도 엔진</text>
+<text class="s" x="182" y="303">실행하지 않음</text>
+<path class="e open" d="M720 184V238" marker-end="url(#dg-pipe-aho)"/>
+<rect class="b open" x="650" y="240" width="140" height="74" rx="8"/>
+<text class="t" x="662" y="266">SDK 렌더</text>
+<text class="s" x="662" y="286">WB·프로파일·톤</text>
+<text class="s" x="662" y="303">출력 색공간</text>
+<text class="n mid topen" x="480" y="272">점선 상자: 이 문서들에서</text>
+<text class="n mid topen" x="480" y="290">실행하지 않은 단계</text>
+</svg>
+</div>
+<ul class="dg-legend"><li><i class="key"></i>이 문서가 다루는 단계</li><li><i class="ok"></i>같은 주제의 다른 문서에서 다룬 단계</li><li><i class="mute"></i>입력 파일</li><li><i class="open"></i>실행하지 않은 단계</li></ul>
+<!--/PIPE-->
+</figure>
+<p>Stage 2의 계산식은 <a href="lightroom-cfa-range.html#stage2">CFA 범위와 기본 크롭</a>에서 SDK 소스를 읽어 Python으로 옮겨 두었습니다. 이 문서는 그 계산을 실제 SDK 실행 결과와 맞춰 봅니다.</p>
+</section>
+
 <section id="samples">
 <h2>SDK에서 읽은 두 배열</h2>
-<figure class="diagram">
-<figcaption>한 DNG의 저장 CFA에서 활성 영역 선형화까지</figcaption>
-<ol class="steps">
-<li><b>Stage 1 · 저장 CFA 읽기</b>425개 무손실 JPEG 타일을 풀어 26,628,096개 샘플을 읽습니다.</li>
-<li><b>Stage 2 · ActiveArea 선형화</b>블랙 64와 화이트 16,315로 25,891,840개 샘플을 uint16 범위에 옮깁니다.</li>
-<li><b>기본 크롭 · 배열 부분집합</b>Stage 2 배열에서 25,560,576개 샘플을 잘라 경계값을 다시 셉니다.</li>
+<p class="takeaway">Stage 2 배열은 ActiveArea 크기인 4160×6224입니다. 값은 69부터 65,535까지이며 0은 없습니다.</p>
+<ol class="flow">
+<li class="ok"><strong>Stage 1 · 저장 CFA 읽기</strong><span>무손실 JPEG 타일 425개를 풀어 26,628,096개 샘플</span></li>
+<li class="ok"><strong>Stage 2 · ActiveArea 정규화</strong><span>블랙 64, 화이트 16,315로 25,891,840개를 uint16 범위로</span></li>
+<li class="ok"><strong>기본 크롭 · 부분 영역</strong><span>Stage 2에서 25,560,576개를 잘라 다시 셈</span></li>
 </ol>
-</figure>
-<div class="table-wrap" role="region" tabindex="0" aria-label="SDK 배열별 크기와 값 범위">
-<table><caption>한 평면의 uint16 샘플 관측치</caption>
-<thead><tr><th scope="col">범위</th><th scope="col">행×열</th><th scope="col">샘플</th><th scope="col">최솟값–최댓값</th><th scope="col">값 0</th><th scope="col">값 65,535</th></tr></thead>
+<div class="table-wrap"><table>
+<caption>한 평면의 uint16 샘플 관측치</caption>
+<thead><tr><th scope="col">범위</th><th scope="col">행×열</th><th scope="col" class="n">샘플</th><th scope="col" class="n">최솟값–최댓값</th><th scope="col" class="n">값 0</th><th scope="col" class="n">값 65,535</th></tr></thead>
 <tbody>
-<tr><th scope="row">Stage 1</th><td>4224×6304</td><td>26,628,096</td><td>0–16,382</td><td>67,811</td><td>0</td></tr>
-<tr><th scope="row">Stage 2</th><td>4160×6224</td><td>25,891,840</td><td>69–65,535</td><td>0</td><td>8,530</td></tr>
-<tr><th scope="row">기본 크롭 부분집합</th><td>4128×6192</td><td>25,560,576</td><td>69–65,535</td><td>0</td><td>8,530</td></tr>
-</tbody></table>
-</div>
-<p>ActiveArea는 저장 배열에서 <code>[34,26,4194,6250)</code>입니다. 기본 크롭은 활성 영역 기준 <code>[24,28,4152,6220)</code>이며 SDK가 반환한 좌표로 Stage 2 배열에서 잘라 셌습니다. 65,535에 도달한 값은 R 1,457개, R 행 G 2,863개, B 행 G 2,821개, B 1,389개였습니다. 앞선 저장 배열에서 WhiteLevel을 넘은 활성 샘플 8,529개와 경계값에 해당하는 한 개가 여기에 포함됩니다. <a href="lightroom-cfa-range.html#stage2">이전 수식 계산</a> · <a href="sdk-stage2/observation.json">배열별 해시와 관측치</a></p>
+<tr><th scope="row">Stage 1</th><td>4224×6304</td><td class="n">26,628,096</td><td class="n">0–16,382</td><td class="n">67,811</td><td class="n">0</td></tr>
+<tr><th scope="row">Stage 2</th><td>4160×6224</td><td class="n">25,891,840</td><td class="n">69–65,535</td><td class="n">0</td><td class="n">8,530</td></tr>
+<tr><th scope="row">기본 크롭 부분 영역</th><td>4128×6192</td><td class="n">25,560,576</td><td class="n">69–65,535</td><td class="n">0</td><td class="n">8,530</td></tr>
+</tbody></table></div>
+<p>ActiveArea는 저장 배열에서 <code>[34,26,4194,6250)</code>입니다. 기본 크롭은 ActiveArea 기준 <code>[24,28,4152,6220)</code>입니다. SDK가 돌려준 이 좌표로 Stage 2 배열을 잘라 셌습니다.</p>
 </section>
+
+<section id="match">
+<h2>모든 Stage 2 값이 정수 계산과 같았습니다</h2>
+<p class="takeaway">SDK가 만든 Stage 2 배열과 소스를 옮긴 정수 계산을 한 값씩 비교한 결과, 25,891,840개 가운데 다른 값은 없었습니다.</p>
+<div class="table-wrap"><table class="fit">
+<caption>Stage 2에서 65,535에 이른 값의 CFA 위치별 개수</caption>
+<thead><tr><th scope="col">CFA 위치</th><th scope="col" class="n">65,535 개수</th><th scope="col" class="n">그중 WhiteLevel 초과</th></tr></thead>
+<tbody>
+<tr><th scope="row">R</th><td class="n">1,457</td><td class="n">1,457</td></tr>
+<tr><th scope="row">G · R 행</th><td class="n">2,863</td><td class="n">2,862</td></tr>
+<tr><th scope="row">G · B 행</th><td class="n">2,821</td><td class="n">2,821</td></tr>
+<tr><th scope="row">B</th><td class="n">1,389</td><td class="n">1,389</td></tr>
+<tr><th scope="row">합계</th><td class="n">8,530</td><td class="n">8,529</td></tr>
+</tbody></table></div>
+<p>65,535가 된 8,530개는 저장 배열에서 WhiteLevel을 넘은 활성 샘플 8,529개와 WhiteLevel과 같은 1개입니다. 이 개수는 <a href="lightroom-cfa-range.html#stage2">수식 계산</a>의 예측과 같습니다. 배열별 해시와 관측치는 <a href="sdk-stage2/observation.json">observation.json</a>에 기록했습니다.</p>
+</section>
+
 <section id="path">
-<h2>호출 순서와 빌드 옵션</h2>
-<p>기본 <code>dng_host</code>에서 DNG를 파싱하고 원본 <code>ReadStage1Image</code>, <code>ValidateRawImageDigest</code>, <code>SynchronizeMetadata</code>, <code>BuildStage2Image</code>를 호출했습니다. <code>DoBuildStage2</code>가 ActiveArea 크기의 <code>ttShort</code> 배열을 할당한 뒤 원본 <code>Linearize</code>를 실행했습니다. 기본 블랙 보존은 꺼져 있었고 Stage 2 직후 <code>Stage3BlackLevel()</code>은 0이었습니다. SDK 근거는 <code>dng_validate.cpp:172,207,239,248</code>, <code>dng_negative.cpp:5074,5314–5338,5586–5617</code>, <code>dng_linearization_info.cpp:494,765,803–824</code>입니다. <a href="sdk-stage2/probe.cpp">C++ 하네스</a> · <a href="https://helpx.adobe.com/camera-raw/desktop/dng-and-file-formats/digital-negative.html">Adobe DNG SDK</a></p>
-<p>공식 Windows 예제는 이 환경에서 ClangCL 부재 오류(MSB8020)로 중단됐습니다. 실행에는 Zig 0.15.2로 빌드한 하네스를 사용했습니다. XMP·baseline libjpeg·SDK AVX를 끄고 번들 JXL과 Highway는 스칼라로 빌드했습니다. IFD0에 XMP 태그가 있지만 이 빌드에서는 XMP 처리를 사용하지 않습니다. RAW 타일 425개는 모두 JPEG SOF3이고 원본 SDK의 무손실 JPEG 디코더가 처리했습니다. IFD0와 CFA SubIFD에는 opcode 목록 태그가 없었습니다. JXL 소스 사본에 XMP 조건부 가드 두 개만 추가했으며, Stage 1·2의 원본 소스와 무손실 JPEG 디코더는 그대로 컴파일했습니다. <a href="sdk-stage2/recipe.json">소스 해시와 전체 빌드 인자</a> · <a href="../profiles/Adobe-DNG-SDK-LICENSE.txt">SDK 라이선스</a></p>
-<p>Stage 3 호출 전에 실행을 마쳤습니다. 이 실험에서 확인한 범위는 변환 DNG 한 개의 디모자이크 전 처리입니다. Adobe Converter 18.7과 Lightroom이 네이티브 PEF에 사용하는 화이트 레벨, 디모자이크 또는 최종 렌더는 확인하지 않았습니다. <a href="lightroom-pef-neutral.html">변환 DNG의 출처</a> · <a href="lightroom-cfa-preservation.html">원본 PEF와 DNG의 저장 CFA 대조</a></p>
+<h2>호출 순서와 빌드 조건</h2>
+<p class="takeaway">SDK 원본 함수를 기본 설정으로 차례대로 불렀습니다. 빌드에서는 이 DNG를 읽는 데 쓰이지 않는 기능만 껐습니다.</p>
+<ol class="steps">
+<li><strong>파싱</strong> 기본 <code>dng_host</code>로 DNG를 파싱합니다.</li>
+<li><strong>Stage 1</strong> <code>ReadStage1Image</code>, <code>ValidateRawImageDigest</code>, <code>SynchronizeMetadata</code>를 부릅니다. RAW 타일 425개는 모두 JPEG SOF3(무손실)이며 SDK의 무손실 JPEG 디코더가 풉니다.</li>
+<li><strong>Stage 2</strong> <code>BuildStage2Image</code> 안의 <code>DoBuildStage2</code>가 ActiveArea 크기의 <code>ttShort</code> 배열을 만든 뒤 원본 <code>Linearize</code>를 실행합니다.</li>
+<li><strong>종료</strong> Stage 3 호출 전에 멈춥니다. 기본 블랙 보존은 꺼져 있었으며 Stage 2 직후 <code>Stage3BlackLevel()</code>은 0이었습니다.</li>
+</ol>
+<p>공식 Windows 예제 프로젝트는 이 환경에서 ClangCL이 없다는 오류(MSB8020)로 빌드되지 않았습니다. 그래서 Zig 0.15.2(clang 20.1.2)로 하네스를 빌드했습니다.</p>
+<div class="table-wrap"><table class="fit">
+<caption>빌드에서 바꾼 것과 그대로 둔 것</caption>
+<thead><tr><th scope="col">항목</th><th scope="col">설정</th></tr></thead>
+<tbody>
+<tr><th scope="row">XMP 처리</th><td>끔. IFD0에 XMP 태그(700)가 있지만 이 빌드는 읽지 않음</td></tr>
+<tr><th scope="row">baseline libjpeg, SDK AVX</th><td>끔</td></tr>
+<tr><th scope="row">번들 JXL, Highway</th><td>스칼라로 빌드</td></tr>
+<tr><th scope="row">JXL 소스 사본</th><td>XMP 조건부 가드 두 개만 추가</td></tr>
+<tr><th scope="row">Stage 1·2 소스, 무손실 JPEG 디코더</th><td>원본 그대로 컴파일</td></tr>
+<tr><th scope="row">opcode list 태그</th><td>IFD0와 CFA SubIFD에 없음</td></tr>
+</tbody></table></div>
+<details class="evidence"><summary>SDK 소스 근거와 실행 로그</summary>
+<div class="table-wrap"><table class="compact">
+<caption>SDK 1.7.1 Build 2768 소스에서 확인한 위치</caption>
+<thead><tr><th scope="col">파일</th><th scope="col">줄</th><th scope="col">확인한 내용</th></tr></thead>
+<tbody>
+<tr><th scope="row"><code>dng_validate.cpp</code></th><td>172, 207, 239, 248</td><td>파싱부터 Stage 2까지의 호출 순서</td></tr>
+<tr><th scope="row"><code>dng_negative.cpp</code></th><td>5074, 5314–5338, 5586–5617</td><td>Stage 1 형식, Stage 2 배열 할당, <code>DoBuildStage2</code></td></tr>
+<tr><th scope="row"><code>dng_linearization_info.cpp</code></th><td>494, 765, 803–824</td><td><code>Linearize</code>의 정수 경로</td></tr>
+</tbody></table></div>
+<p>하네스가 Stage 3 전에 남긴 로그입니다.</p>
+<pre><code>SDK=1.7.1 (2768) xmp=0 baseline_libjpeg=0 sdk_avx=0
+parsed_active=[34,26,4194,6250] white=16315 black=64 black_preservation=0
+default_crop_active_relative=[24,28,4152,6220]
+stage1 bounds=[0,0,4224,6304] planes=1 pixelType=3 samples=26628096 min=0 max=16382 zero=67811 max_count=0
+stage2 bounds=[0,0,4160,6224] planes=1 pixelType=3 samples=25891840 min=69 max=65535 zero=0 max_count=8530</code></pre>
+<p class="small"><a href="sdk-stage2/probe.cpp">C++ 하네스</a> · <a href="sdk-stage2/recipe.json">소스 해시와 전체 빌드 인자</a> · <a href="https://helpx.adobe.com/camera-raw/desktop/dng-and-file-formats/digital-negative.html">Adobe DNG SDK</a> · <a href="../profiles/Adobe-DNG-SDK-LICENSE.txt">SDK 라이선스</a></p>
+</details>
 </section>
+
+<section id="limits">
+<h2>한계와 남은 과제</h2>
+<ul>
+<li><strong>Stage 2까지</strong>: 이 실행이 확인한 범위는 변환 DNG 한 개의 디모자이크 전 처리입니다. 이 배열을 입력으로 한 보간은 <a href="lightroom-sdk-stage3.html">SDK Stage 3의 Bayer 보간과 전체 카메라 채널 값</a>에서 이어서 확인했습니다.</li>
+<li><strong>제품 내부와 다름</strong>: Adobe Converter 18.7과 Lightroom이 네이티브 PEF에 쓰는 화이트 레벨, 디모자이크, 최종 렌더는 확인하지 않았습니다. 변환 DNG의 출처는 <a href="lightroom-pef-neutral.html">K-3 III PEF의 As Shot 중립값</a>, 원본과의 대조는 <a href="lightroom-cfa-preservation.html">원본 PEF와 DNG의 저장 CFA 대조</a>에 있습니다.</li>
+<li><strong>기능을 줄인 빌드</strong>: XMP 등을 끈 하네스로 실행했습니다. 공식 예제 빌드에서 같은 결과가 나오는지는 확인하지 못했습니다.</li>
+</ul>
+</section>
+
 <section id="replay">
-<h2>같은 입력으로 재현하기</h2>
-<p>이 배열을 입력으로 <a href="lightroom-sdk-stage3.html">SDK Stage 3의 Bayer 보간과 전체 카메라 채널 값</a>을 이어서 검증했습니다.</p>
-<p>Windows x64의 Python 3.12 및 NumPy 1.26.4 환경에서, 고정한 첫 변환 <code>K3IIIhSLI0000100NR0.dng</code>, Adobe SDK 1.7.1 Build 2768 ZIP, Zig 0.15.2 Windows x64 전체 배포판의 <code>zig.exe</code>를 직접 지정합니다. 새 변환의 DNG 해시가 다르면 이 고정 입력 검사는 중단됩니다. Zig 배포판의 인접 라이브러리가 필요합니다. 검사는 실행 파일의 해시를 확인하며 배포판 전체에 대한 인증을 수행하지 않습니다.</p>
+<h2>재현 방법</h2>
+<p>Windows x64에서 Python 3.12와 NumPy 1.26.4를 씁니다. 고정한 첫 변환 <code>K3IIIhSLI0000100NR0.dng</code>, Adobe SDK 1.7.1 Build 2768 ZIP, Zig 0.15.2 Windows x64 전체 배포판의 <code>zig.exe</code>를 직접 지정합니다. 다시 변환한 DNG처럼 해시가 다르면 검사가 멈춥니다. Zig는 배포판 안의 인접 라이브러리가 있어야 실행됩니다. 검사는 실행 파일 해시만 확인합니다.</p>
 <pre><code>python -B tools/check_lightroom_sdk_stage2.py --sdk dng-sdk.zip --dng K3IIIhSLI0000100NR0.dng --zig C:\path\to\zig.exe --work sdk-stage2-run
 python -B -m unittest discover -s tests -p test_lightroom_sdk_stage2.py</code></pre>
-<p>재현 도구는 기존 경로를 거부하고 입력의 크기·SHA-256을 확인한 뒤 새 작업 디렉터리에서만 SDK를 풀고 빌드합니다. 실행하는 동안 다른 프로세스에서 이 작업 디렉터리의 파일을 바꾸지 마십시오. 내부 DNG 사본과 배열 덤프, SDK 소스, 빌드 캐시가 이 디렉터리에 남습니다. 해시·통계·호출 로그와 정수 모델의 전수 대조를 모두 통과하면 <code>result.json</code>을 씁니다. <a href="../tools/check_lightroom_sdk_stage2.py">빌드·재현 도구</a> · <a href="../tests/test_lightroom_sdk_stage2.py">입력·출력 보호 검사</a></p>
-<p>이 도구로 빈 작업 디렉터리에서 276개 오브젝트를 다시 빌드했습니다. 새 실행 파일의 SHA-256은 최초 실험과 달랐고, 두 배열과 실행 로그는 최초 실험과 일치했습니다. 최초 관측 JSON의 SHA-256은 <code>9355f35257b9717d2e9ef4ce852f61bdde6bb36762e5fd876c0b88bca9637704</code>입니다. <a href="sdk-stage2/observation.json">최초 관측 기록</a> · <a href="sdk-stage2/rebuild.json">새 빌드와 재실행 기록</a></p>
+<ol class="steps">
+<li><strong>입력 확인</strong> 이미 있는 작업 경로는 받지 않습니다. 입력의 크기와 SHA-256을 확인합니다.</li>
+<li><strong>빌드</strong> 새 작업 폴더에서만 SDK를 풀고 빌드합니다. 실행하는 동안 다른 프로세스에서 이 폴더의 파일을 바꾸지 마십시오.</li>
+<li><strong>대조와 기록</strong> 해시, 통계, 호출 로그, 정수 계산과의 전수 대조를 모두 통과하면 <code>result.json</code>을 씁니다. DNG 사본, 배열 덤프, SDK 소스, 빌드 캐시는 작업 폴더에 남습니다.</li>
+</ol>
+<p>이 도구로 빈 작업 폴더에서 오브젝트 276개를 다시 빌드했습니다. 새 실행 파일의 SHA-256은 처음 실험과 달랐습니다. 그래도 두 배열과 실행 로그는 처음 실험과 같았습니다. 기록은 <a href="sdk-stage2/observation.json">최초 관측 기록</a>과 <a href="sdk-stage2/rebuild.json">새 빌드와 재실행 기록</a>에 있습니다.</p>
+<details class="evidence"><summary>입력, 실행 파일, 배열의 해시</summary>
+<div class="table-wrap"><table class="compact">
+<thead><tr><th scope="col">자료</th><th scope="col">SHA-256</th></tr></thead>
+<tbody>
+<tr><th scope="row">변환 DNG (31,652,772바이트)</th><td><code class="wrap">4639584e7c807b46747ab4fac90b90b8459943c8e0f680ea68dfec6cdc580b07</code></td></tr>
+<tr><th scope="row">SDK ZIP (80,509,918바이트)</th><td><code class="wrap">c1d3a545ed45b150e59af2e6aa0695c1551f0e2bed34ad87436898a05194d2b1</code></td></tr>
+<tr><th scope="row">zig.exe (176,669,696바이트)</th><td><code class="wrap">d408dd38eed3e5204af841bcebf70502a4dbbb8399a3a3262be55059370bc018</code></td></tr>
+<tr><th scope="row">처음 실험의 하네스 실행 파일</th><td><code class="wrap">b325dbb26e4442ae1a2e7299d89857b0e16e8d09dfb73fadf7080f9042220991</code></td></tr>
+<tr><th scope="row">새 빌드의 하네스 실행 파일</th><td><code class="wrap">d2472036ed5496ea2e64ef0695427c0f651ab8844414ed8281f4a2ad8674ec4c</code></td></tr>
+<tr><th scope="row">Stage 1 배열 (LE uint16)</th><td><code class="wrap">b5dbb0a1bcaf6d4002a54c0069fbfd52e17964156cdf7359ae10395519b145b3</code></td></tr>
+<tr><th scope="row">Stage 2 배열</th><td><code class="wrap">81965d93a6d3474bac643a2f19c7f4473875105e9076f494ac56e641705d6fc6</code></td></tr>
+<tr><th scope="row">기본 크롭 부분 영역</th><td><code class="wrap">33534b223ac2e6da282546b6b9ca06308071c6ad53c90c2f07d6a0581ddfc3bd</code></td></tr>
+<tr><th scope="row">최초 관측 JSON</th><td><code class="wrap">9355f35257b9717d2e9ef4ce852f61bdde6bb36762e5fd876c0b88bca9637704</code></td></tr>
+</tbody></table></div>
+</details>
 </section>
+
+<section id="refs">
+<h2>근거 파일과 참고 자료</h2>
+<ul class="refs">
+<li><a href="sdk-stage2/observation.json">sdk-stage2/observation.json</a> — 배열별 해시와 관측치, 실행 로그</li>
+<li><a href="sdk-stage2/rebuild.json">sdk-stage2/rebuild.json</a> — 새 빌드와 재실행 기록</li>
+<li><a href="sdk-stage2/recipe.json">sdk-stage2/recipe.json</a> — 소스 해시, 컴파일 단위 276개, 빌드 인자</li>
+<li><a href="sdk-stage2/probe.cpp">sdk-stage2/probe.cpp</a> — C++ 하네스</li>
+<li><a href="../tools/check_lightroom_sdk_stage2.py">tools/check_lightroom_sdk_stage2.py</a> — 빌드·재현 도구</li>
+<li><a href="../tests/test_lightroom_sdk_stage2.py">tests/test_lightroom_sdk_stage2.py</a> — 입력·출력 보호 검사</li>
+<li>외부 자료: <a href="https://helpx.adobe.com/camera-raw/desktop/dng-and-file-formats/digital-negative.html">Adobe Digital Negative SDK</a>(SDK 1.7.1 Build 2768, 2026년 10월 13일 배포) · <a href="https://helpx.adobe.com/content/dam/help/en/camera-raw/digital-negative/jcr_content/root/content/flex/items/position/position-par/download_section_733958301/download-1/DNG_Spec_1_7_1_0.pdf">Adobe DNG 규격 1.7.1.0</a> · <a href="../profiles/Adobe-DNG-SDK-LICENSE.txt">SDK 라이선스</a></li>
+</ul>
+</section>
+
 </main>
 </div>
 <!-- chrome:bottom -->
-<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">Lightroom 색 프로파일 — 이 주제의 문서</h2><ol><li><a href="lightroom-bridge.html">Lightroom 프로파일 안내<span>DCP 생성·검증의 전체 흐름</span></a></li><li><a href="raw-test-inputs.html">시험용 RAW 준비</a></li><li><a href="color-comparison-protocol.html">ColorChecker 비교 절차</a></li><li><a href="lightroom-render-comparison.html">실제 TIFF 6개 비교</a></li><li><a href="lightroom-tone-comparison.html">톤 곡선 비교</a></li><li><a href="lightroom-model-exports.html">K-3 III·Q7 DCP 내보내기</a></li><li><a href="lightroom-profile-fingerprints.html">프로파일 지문 재현</a></li><li><a href="lightroom-look-controls.html">LookTable 대조 실험</a></li><li><a href="color-tone-residual.html">톤 보정 뒤 남는 색차</a></li><li><a href="color-scene-transfer.html">고정 톤의 독립 장면 비교<span>K-3 II #1363과 Lightroom 버전 대조</span></a></li><li><a href="lightroom-composed-tone.html">합성 톤 DCP의 실제 Lightroom 출력<span>두 장면·최대 색차 기준 미충족</span></a></li><li><a href="lightroom-tone-coordinates.html">Lightroom 톤과 RGB 좌표<span>같은 엔진·두 출력 색공간 대조</span></a></li><li><a href="lightroom-studio-baseline.html">K-3 III·Q7 Bright 스튜디오 비교<span>정합 통과 영역의 JPEG 대비 색차</span></a></li><li><a href="lightroom-studio-reference.html">K-3 III·Q7 참조 프로파일 비교<span>같은 장면의 공통 마스크·As Shot 대조</span></a></li><li><a href="lightroom-as-shot.html">As Shot과 프로파일별 백색점<span>같은 Q7 RAW의 SDK 수식 재현</span></a></li><li><a href="lightroom-pef-neutral.html">K-3 III PEF의 As Shot 중립값<span>두 DNG 변환과 세 프로파일 수식 재현</span></a></li><li><a href="lightroom-cfa-preservation.html">K-3 III PEF·DNG의 CFA 샘플 비교<span>변환 전후 전체 26,628,096개 샘플 대조</span></a></li><li><a href="lightroom-cfa-range.html">K-3 III DNG의 CFA 범위와 기본 크롭<span>활성 영역과 크롭의 WhiteLevel 대조</span></a></li><li><a href="lightroom-sdk-stage2.html" aria-current="page">K-3 III DNG의 Adobe SDK Stage 2 실행<span>원본 SDK에서 활성 영역 25,891,840개 전수 대조</span></a></li><li><a href="lightroom-sdk-stage3.html">K-3 III DNG의 Adobe SDK Stage 3<span>카메라 채널 77,675,520개 보간 대조</span></a></li></ol></nav>
+<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">Lightroom 색 프로파일 — 이 주제의 문서</h2><ol><li><a href="guide-lightroom.html">Lightroom 색 프로파일 안내</a></li><li><a href="lightroom-bridge.html">DCP 구조와 생성 도구<span>세 기종 공통</span></a></li><li><a href="raw-test-inputs.html">시험용 RAW 준비</a></li><li><a href="color-comparison-protocol.html">ColorChecker 비교 절차</a></li><li><a href="lightroom-render-comparison.html">실제 TIFF 6개 비교</a></li><li><a href="lightroom-tone-comparison.html">톤 곡선 비교</a></li><li><a href="lightroom-model-exports.html">K-3 III·Q7 DCP 내보내기</a></li><li><a href="lightroom-profile-fingerprints.html">프로파일 지문 재현</a></li><li><a href="lightroom-look-controls.html">LookTable 대조 실험</a></li><li><a href="color-tone-residual.html">톤 보정 뒤 남는 색차</a></li><li><a href="color-scene-transfer.html">고정 톤의 독립 장면 비교<span>K-3 II #1363과 Lightroom 버전 대조</span></a></li><li><a href="lightroom-composed-tone.html">합성 톤 DCP의 실제 Lightroom 출력<span>두 장면·최대 색차 기준 미충족</span></a></li><li><a href="lightroom-tone-coordinates.html">Lightroom 톤과 RGB 좌표<span>같은 엔진·두 출력 색공간 대조</span></a></li><li><a href="lightroom-studio-baseline.html">K-3 III·Q7 Bright 스튜디오 비교<span>정합 통과 영역의 JPEG 대비 색차</span></a></li><li><a href="lightroom-studio-reference.html">K-3 III·Q7 참조 프로파일 비교<span>같은 장면의 공통 마스크·As Shot 대조</span></a></li><li><a href="lightroom-as-shot.html">As Shot과 프로파일별 백색점<span>같은 Q7 RAW의 SDK 수식 재현</span></a></li><li><a href="lightroom-pef-neutral.html">K-3 III PEF의 As Shot 중립값<span>두 DNG 변환과 세 프로파일 수식 재현</span></a></li><li><a href="lightroom-cfa-preservation.html">K-3 III PEF·DNG의 CFA 샘플 비교<span>변환 전후 샘플 전수 대조</span></a></li><li><a href="lightroom-cfa-range.html">K-3 III DNG의 CFA 범위와 기본 크롭<span>활성 영역과 크롭의 WhiteLevel 대조</span></a></li><li><a href="lightroom-sdk-stage2.html" aria-current="page">K-3 III DNG의 Adobe SDK Stage 2 실행<span>정규화 단계 전수 대조</span></a></li><li><a href="lightroom-sdk-stage3.html">K-3 III DNG의 Adobe SDK Stage 3<span>Bayer 보간 전수 대조</span></a></li></ol></nav>
 <nav class="pager" aria-label="이전·다음 문서"><a class="prev" href="lightroom-cfa-range.html"><small>← 이전</small>K-3 III DNG의 CFA 범위와 기본 크롭</a><a class="next" href="lightroom-sdk-stage3.html"><small>다음 →</small>K-3 III DNG의 Adobe SDK Stage 3</a></nav>
 <footer class="sitefoot"><div class="sitefoot-in"><nav aria-label="사이트"><a href="../index.html#map">문서 지도</a><a href="../index.html#levels">검증 수준 읽는 법</a><a href="../glossary.html">용어집</a><a href="research-program.html">세 기종 연구 본부</a><a href="https://github.com/yunhyok/pentax-k3iii-firmware-analysis">GitHub 저장소</a></nav><p>PENTAX 펌웨어 연구. PC에서 수행한 정적 분석과 에뮬레이션 결과이며, 카메라 실기에서 검증한 내용이 아닙니다. 원본 펌웨어와 추출한 독점 코드는 포함하지 않습니다.</p></div></footer>
 <!-- /chrome:bottom -->
