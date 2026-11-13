@@ -47,6 +47,8 @@ GitHub에서 HTML 파일을 열면 소스가 보입니다. 오프라인으로 �
 
 펌웨어 없이, 공개된 문서·근거 파일·도구가 서로 맞는지 검사합니다. Python 3.12와 아래 패키지가 필요합니다.
 
+`tools/check_site.py`와 `tools/site_chrome.py`를 실행하려면 Git으로 복제한 저장소가 필요합니다. 릴리스 ZIP은 압축을 풀고 `index.html`을 브라우저에서 열어 읽을 수 있습니다.
+
 ```bash
 python -m pip install unicorn==2.1.4 numpy==1.26.4 Pillow==10.4.0 tifffile==2023.4.12 opencv-python-headless==4.11.0.86 scikit-image==0.24.0
 python inspect_firmware.py --self-test

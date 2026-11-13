@@ -198,21 +198,36 @@ def replace_region(html, region, block, page, required=True):
     return pattern.sub(lambda _: f"<!-- chrome:{region} -->\n{block}\n<!-- /chrome:{region} -->", html)
 
 
-def published_html():
-    names = subprocess.check_output(
-        ["git", "ls-files", "--cached", "--others", "--exclude-standard", "*.html"], cwd=ROOT, text=True
+def published_files(*patterns):
+    """List files in this checkout, excluding ignored untracked files."""
+    message = "Run this tool from a Git checkout of this repository. Release ZIPs can be read in a browser."
+    try:
+        top = subprocess.run(
+            ["git", "rev-parse", "--show-toplevel"], cwd=ROOT, capture_output=True, encoding="utf-8"
+        )
+    except FileNotFoundError:
+        sys.exit(message)
+    if top.returncode or Path(top.stdout.rstrip("\r\n")).resolve() != ROOT:
+        sys.exit(message)
+    return subprocess.check_output(
+        ["git", "ls-files", "--cached", "--others", "--exclude-standard", "--", *patterns],
+        cwd=ROOT, text=True,
     ).splitlines()
-    return {name for name in names if (ROOT / name).is_file()}
+
+
+def published_html():
+    return {name for name in published_files("*.html") if (ROOT / name).is_file()}
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--check", action="store_true", help="report stale or unlisted pages without writing")
     args = parser.parse_args()
+    pages = published_html()
     site = Site()
     problems, changed = [], 0
     listed = set(site.index) | set(site.sources.values()) | set(site.data.get("unlisted", []))
-    for name in sorted(published_html() - listed):
+    for name in sorted(pages - listed):
         problems.append(f"{name}: not listed in site-map.json")
     for page in site.index:
         path = site.source_path(page)

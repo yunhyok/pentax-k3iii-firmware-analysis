@@ -10,13 +10,12 @@ Checks, for each HTML file tracked by Git (or new and not ignored):
 
 Standard library only.
 """
-import subprocess
 import sys
 from html.parser import HTMLParser
 from pathlib import Path
 from urllib.parse import unquote, urlsplit
 
-from site_chrome import ROOT, Site
+from site_chrome import ROOT, Site, published_html
 
 FORBIDDEN = {"script", "iframe", "object", "embed"}
 
@@ -44,16 +43,9 @@ class Document(HTMLParser):
             self.problems.append(f"<{tag}> is not allowed")
 
 
-def published(pattern):
-    names = subprocess.check_output(
-        ["git", "ls-files", "--cached", "--others", "--exclude-standard", pattern], cwd=ROOT, text=True
-    ).splitlines()
-    return [name for name in names if (ROOT / name).is_file()]
-
-
 def main():
+    pages = sorted(published_html())
     site = Site()
-    pages = published("*.html")
     documents = {name: Document((ROOT / name).read_text(encoding="utf-8")) for name in pages}
     problems, links = [], 0
     for name, doc in documents.items():
@@ -90,10 +82,11 @@ def main():
                 problems.append(f"{name}: broken link {link}")
                 continue
             links += 1
-            relative = target.relative_to(ROOT).as_posix()
-            if ".private" in target.parts or "_workspace" in target.parts:
+            relative = target.relative_to(ROOT)
+            if ".private" in relative.parts or "_workspace" in relative.parts:
                 problems.append(f"{name}: link into a private folder: {link}")
-            if url.fragment and relative in documents and unquote(url.fragment) not in documents[relative].ids:
+            target_name = relative.as_posix()
+            if url.fragment and target_name in documents and unquote(url.fragment) not in documents[target_name].ids:
                 problems.append(f"{name}: missing anchor {link}")
     for name in site.index:
         if name not in documents:

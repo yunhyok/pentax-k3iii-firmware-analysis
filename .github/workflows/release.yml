@@ -59,6 +59,21 @@ jobs:
         run: python tools/check_research_program.py
       - if: steps.existing.outputs.exists == 'false'
         run: python tools/check_site.py
+      - name: Check existing tag target
+        if: steps.existing.outputs.exists == 'false'
+        shell: bash
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          TAG_REFS="$(git ls-remote --tags origin "refs/tags/$VERSION" "refs/tags/$VERSION^{}")"
+          TAG_SHA="$(printf '%s\n' "$TAG_REFS" | awk -v ref="refs/tags/$VERSION" '
+            $2 == ref { direct = $1 }
+            $2 == ref "^{}" { peeled = $1 }
+            END { print peeled ? peeled : direct }')"
+          if [ -n "$TAG_SHA" ] && [ "$TAG_SHA" != "$GITHUB_SHA" ]; then
+            echo "Tag $VERSION points to $TAG_SHA, but this archive would contain $GITHUB_SHA."
+            exit 1
+          fi
       - name: Build the archive
         if: steps.existing.outputs.exists == 'false'
         env:
