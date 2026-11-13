@@ -63,6 +63,7 @@ main.doc .sha{overflow-wrap:anywhere}
 </section>
 <section id="reproduce">
 <h2>재현 조건과 검증 범위</h2>
+<p>기록 정정: 최초 공개 JSON의 사례별 표면 높이에 글자 비트맵 높이 40이 잘못 기록됐습니다. 하네스의 변수를 분리해 256×144로 고쳤습니다. 정정 전 전체 관측 기록에서 이 높이만 바꾼 해시와 원본 코드 재실행 결과를 대조했습니다. 원본 명령·메모리 쓰기·최종 표면 해시는 변하지 않았습니다.</p>
 <p>Python 3.12와 Unicorn 2.1.4에서 K-3 III 2.20의 78,683,892바이트 decoded 파일을 읽었습니다. 검증기는 도우미 소스를 전부 캡처해 SHA-256을 확인한 뒤 실행하고, 같은 decoded 바이트에서 RTOS·ICONBIN과 글꼴 범위를 읽습니다. 전체 관측 기록의 정규 JSON 해시 세 개를 검증한 다음 공개 JSON을 씁니다. 파일·메모리 할당·앞 단계의 성공 단언 모델은 단계별로 기록돼 있습니다.</p>
 <pre><code>python -B tools/verify_colorspace_text.py decoded.bin --output colorspace-text-replay.json
 python -B -m unittest discover -s tests -p test_verify_colorspace_text.py</code></pre>

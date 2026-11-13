@@ -2,6 +2,7 @@
 
 from hashlib import sha256
 import importlib.util
+import json
 from pathlib import Path
 import shutil
 import subprocess
@@ -18,6 +19,13 @@ SPEC.loader.exec_module(verifier)
 
 
 class ReplayGuards(unittest.TestCase):
+    def test_surface_dimensions_remain_distinct_from_bitmap(self):
+        record = json.loads((SCRIPT.parents[1] / "analysis/colorspace-text.json").read_text(encoding="utf-8"))
+        self.assertEqual(record["fixture"]["surface_size"], [256, 144])
+        for case in record["cases"]:
+            self.assertEqual(case["surface_size"], record["fixture"]["surface_size"])
+            self.assertEqual(case["draw_bitmap"]["bitmap_layout"], [76, 40])
+
     def test_optimized_mode_exits_before_helper_loading(self):
         result = subprocess.run([sys.executable, "-I", "-S", "-B", "-O", str(SCRIPT)],
                                 capture_output=True, text=True)

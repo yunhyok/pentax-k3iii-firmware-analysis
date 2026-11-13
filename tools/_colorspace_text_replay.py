@@ -199,11 +199,11 @@ def patch_draw(src):
         scratch_width,scratch_height,scratch_stride=draw.pop('bitmap_native_shape_inputs')
         assert scratch_stride*scratch_height==glyph_scratch[1] and scratch_width<=scratch_stride
         draw['glyph_scratch_layout']=[scratch_width,scratch_height,scratch_stride]
-        width,height=draw['bitmap_layout']
-        stride=size//height
-        assert [width,height,stride]==[76,40,76] and stride*height==size,(width,height,stride,size,draw)
+        bitmap_width,bitmap_height=draw['bitmap_layout']
+        stride=size//bitmap_height
+        assert [bitmap_width,bitmap_height,stride]==[76,40,76] and stride*bitmap_height==size,(bitmap_width,bitmap_height,stride,size,draw)
         assert draw['bitmap_bounds_halfwords']==[0,2,75,37]
-        assert draw['mode1_return_words']==[start,width,height,width,height]
+        assert draw['mode1_return_words']==[start,bitmap_width,bitmap_height,bitmap_width,bitmap_height]
         draw['bitmap_stride']=stride
         raw=bytes(vm.mem_read(start,size))
         assert digest(raw)=='bc2ea81a624fd52f2a6db005102b5dc09bcb4e69aba0ad78d136e93ba1f96343'
