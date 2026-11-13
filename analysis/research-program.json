@@ -4,14 +4,14 @@
   "time_zone": "Asia/Seoul",
   "title": "펜탁스 펌웨어 연구 본부",
   "summary": "K-3 Mark III, K-3 II, Q7의 분석 결과를 네 가지 목표로 비교합니다. 각 항목에 근거가 있는 결과, 아직 넘지 못한 검증 단계, 다음에 확인할 일을 기록합니다.",
-  "boundary": "세 기종의 무변경 재포장과 일부 함수 재컴파일 후보를 원본 코드로 대조했습니다. 세 기종에서 시험 DCP를 적용한 Lightroom 출력을 얻었고, K-3 II 톤 후보는 사전 색차 기준 일부를 충족하지 못했습니다. 공개 SDK의 Stage 2 실행과 합성 RAM에서의 화면 전송은 각 시험 입력에 한정됩니다. 전체 소스 재빌드, 카메라의 수정 이미지 수용·부팅과 복구, 범용 색 재현, 렌즈 구동 변경과 대상 기종 UI 이식은 검증이 남아 있습니다.",
+  "boundary": "세 기종의 무변경 재포장과 일부 함수 재컴파일 후보를 원본 코드로 대조했습니다. 세 기종에서 시험 DCP를 적용한 Lightroom 출력을 얻었고, K-3 II 톤 후보는 사전 색차 기준 일부를 충족하지 못했습니다. K-3 III DNG의 공개 SDK Stage 2·3 실행과 합성 RAM에서의 화면 전송은 각 시험 입력에 한정됩니다. 전체 소스 재빌드, 카메라의 수정 이미지 수용·부팅과 복구, 범용 색 재현, 렌즈 구동 변경과 대상 기종 UI 이식은 검증이 남아 있습니다.",
   "cameras": [
     {
       "id": "k3iii",
       "name": "K-3 Mark III",
       "firmware_version": "2.20",
       "firmware_sha256": "3c9d466b8160689867af2f58ff2cf0bf3363bc3b42daff43685a33171b91eb1a",
-      "commit": "10c66576f616056534013b436ef54e831fc5afbe",
+      "commit": "ee71e5edd1fc5be69c06ace4656d56e6da355545",
       "digest_source": "iii-input",
       "digest_field": "input_sha256",
       "report_source": "iii-integration"
@@ -797,6 +797,41 @@
       "camera": "k3iii",
       "path": "analysis/rmw-scope/verified.json",
       "label": "전체 정본 검사 후 공개한 RMW 이력"
+    },
+    "iii-sdk-stage3": {
+      "camera": "k3iii",
+      "path": "analysis/lightroom-sdk-stage3.html",
+      "label": "SDK Stage 3 원본 실행과 Bayer 보간"
+    },
+    "iii-sdk-stage3-data": {
+      "camera": "k3iii",
+      "path": "analysis/sdk-stage3/observation.json",
+      "label": "Stage 3 전체 채널 통계"
+    },
+    "iii-sdk-stage3-bilinear": {
+      "camera": "k3iii",
+      "path": "analysis/sdk-stage3/bilinear.json",
+      "label": "Stage 3 독립 보간 전수 대조"
+    },
+    "iii-af-state": {
+      "camera": "k3iii",
+      "path": "analysis/af-state-producers.html",
+      "label": "PafMotor 상태 바이트의 쓰기 경로"
+    },
+    "iii-af-state-data": {
+      "camera": "k3iii",
+      "path": "analysis/af-state-producer-checks.json",
+      "label": "22개 직접 저장과 원본 구간 검사"
+    },
+    "iii-viewport": {
+      "camera": "k3iii",
+      "path": "analysis/ui-viewport-producers.html",
+      "label": "텍스트 viewport 생산자와 설정 복사"
+    },
+    "iii-viewport-data": {
+      "camera": "k3iii",
+      "path": "analysis/ui-viewport-producers.json",
+      "label": "전체 정적 기록과 추가 복사 조건"
     }
   },
   "tracks": [
@@ -920,9 +955,9 @@
       "dependency": "공식 펌웨어의 RAW+JPEG 촬영 쌍과 Lightroom으로 검증할 수 있어 수정 펌웨어 시험과 병행합니다. Bright 스튜디오 색차는 기종당 한 장면의 정합 통과 영역에서 두 현상 결과를 비교한 값입니다. 절대 색 정확도와 기종 간 우열은 확인하지 않았습니다.",
       "cards": {
         "k3iii": {
-          "state": "DCP·As Shot 대조 · 공개 SDK Stage 2 전수 일치",
-          "finding": "Natural·Portrait의 원본 ARM 행렬과 감마를 분리했습니다. 펌웨어 1.10 PEF 한 장의 Lightroom 16.0 출력에서, 공통 55영역·80,662픽셀의 Bright JPEG 대비 ΔE00 중앙값/90백분위수는 행렬 후보 2.028/4.922, Adobe Standard 1.944/4.548, Camera Bright 1.421/2.636이었습니다. 프로파일과 함께 As Shot 수치도 달라졌습니다. Converter 18.7 변환 두 건에서 중립값을 대조했고, 첫 변환 DNG와 PEF의 CFA 26,628,096개는 세 디코딩 배열에서 일치했습니다. PEF MakerNote와 DNG RAW SubIFD의 WhiteLevel은 16,378과 16,315였으며, DNG 기본 크롭의 초과값은 8,529개였습니다. 선행 정수 모형의 포화 예측을 별도 검증으로 확인했습니다. 공개 SDK Build 2768 하네스의 오브젝트 276개를 새로 빌드해 고정 DNG의 Stage 2 활성 영역 25,891,840개를 모형과 전수 대조했고, 기본 크롭의 8,530개가 65,535에 이르렀습니다. DNG에 XMP 태그가 있지만 이 빌드에서는 XMP 처리를 껐습니다. Stage 3, Converter 내부와 Lightroom 정규화는 실행 범위 밖입니다.",
-          "next": "펌웨어 2.20에서 조명이 다른 Bright·Natural RAW+JPEG를 확보하고, 고정 프로파일과 같은 ICC·마스크·색차 기준으로 비교합니다. 같은 CFA를 담은 PEF·DNG의 Lightroom 렌더가 일치하는지도 별도로 확인합니다.",
+          "state": "DCP·As Shot 대조 · SDK Stage 2·3 전수 일치",
+          "finding": "Natural·Portrait의 원본 ARM 행렬과 감마를 분리했습니다. 펌웨어 1.10 PEF 한 장의 Lightroom 16.0 출력에서, 공통 55영역·80,662픽셀의 Bright JPEG 대비 ΔE00 중앙값/90백분위수는 행렬 후보 2.028/4.922, Adobe Standard 1.944/4.548, Camera Bright 1.421/2.636이었습니다. 프로파일과 함께 As Shot 수치도 달라졌습니다. Converter 18.7 변환 두 건에서 중립값을 대조했고, 첫 변환 DNG와 PEF의 CFA 26,628,096개는 세 디코딩 배열에서 일치했습니다. PEF MakerNote와 DNG RAW SubIFD의 WhiteLevel은 16,378과 16,315였으며, DNG 기본 크롭의 초과값은 8,529개였습니다. 선행 정수 모형의 포화 예측을 별도 검증으로 확인했습니다. 공개 SDK Build 2768 하네스의 오브젝트 276개를 새로 빌드해 고정 DNG의 Stage 2 활성 영역 25,891,840개를 모형과 전수 대조했고, 기본 크롭의 8,530개가 65,535에 이르렀습니다. DNG에 XMP 태그가 있지만 이 빌드에서는 XMP 처리를 껐습니다. 이어 실행한 원본 SDK Stage 3의 카메라 채널 77,675,520개는 가장자리를 포함해 독립 Bayer 보간과 전부 일치했습니다. 값 65,535인 18,299개 성분은 센서 자리에서 유지된 8,530개와 보간된 9,769개입니다. SDK 렌더의 화이트밸런스·색공간·프로파일·톤, Converter 내부와 Lightroom 정규화는 이 실행 범위 밖입니다.",
+          "next": "SDK Stage 3 뒤의 화이트밸런스·프로파일·톤을 각각 확인하고, 같은 CFA를 담은 PEF·DNG를 고정 프로파일·백색점으로 Lightroom에서 비교합니다. 펌웨어 2.20에서 조명이 다른 Bright·Natural RAW+JPEG를 확보해 같은 ICC·마스크·색차 기준으로 비교합니다.",
           "sources": [
             "iii-color",
             "iii-lightroom",
@@ -940,7 +975,10 @@
             "iii-cfa-range-data",
             "iii-sdk-stage2",
             "iii-sdk-stage2-data",
-            "iii-sdk-stage2-rebuild"
+            "iii-sdk-stage2-rebuild",
+            "iii-sdk-stage3",
+            "iii-sdk-stage3-data",
+            "iii-sdk-stage3-bilinear"
           ]
         },
         "k3ii": {
@@ -1024,9 +1062,9 @@
       "dependency": "현재는 향후 변경에 필요한 알고리즘과 렌즈 제어를 오프라인에서 연구합니다. 특정 렌즈용 패치와 실기 구동 시험은 후속 단계입니다.",
       "cards": {
         "k3iii": {
-          "state": "드라이버·PWM 경계 · 정수 패킹 93조건",
-          "finding": "Joint 모드 선택, ReloadTimer·Udc 연결, PafPulse 요청·피드백 쓰기와 Motor 보정 필드를 원본 ARM에서 구간별로 대조했습니다. Driver+0x2c/+0x30과 두 PWM 서비스의 정적 연결, 생성자 접두 구간 및 호스트가 공급한 이벤트를 구분했습니다. 후속 93조건은 두 호출자의 분기와 한 개·두 개의 12바이트 입력 레코드 패킹을 재현했습니다. 각 정수에 signed32(843×x)를 계산하고 1000으로 0 방향 절삭한 뒤 1을 빼 16비트로 자릅니다. 두 값의 합이 65535를 넘으면 둘째 값을 줄입니다. 적응형 함수 호출 직전과 PWM 적용 직전에서 멈췄으며, 두 12바이트 입력과 하위 16바이트 스택 레코드는 별개입니다.",
-          "next": "적응형 함수의 입력 필드를 누가 채우고 반환값이 어떤 분기를 바꾸는지 먼저 추적합니다. +0x56/+0x68에 비영 값을 넣는 경로, 정수의 물리 단위와 스크루·렌즈 내 모터의 대응, 실제 피드백·광학적 초점은 미확인입니다.",
+          "state": "PWM 정수 패킹 · 상태 바이트 직접 쓰기 22곳",
+          "finding": "Joint 모드 선택, ReloadTimer·Udc 연결, PafPulse 요청·피드백 쓰기와 Motor 보정 필드를 원본 ARM에서 구간별로 대조했습니다. Driver+0x2c/+0x30과 두 PWM 서비스의 정적 연결, 생성자 접두 구간 및 호스트가 공급한 이벤트를 구분했습니다. 후속 93조건은 두 호출자의 분기와 한 개·두 개의 12바이트 입력 레코드 패킹을 재현했습니다. 각 정수에 signed32(843×x)를 계산하고 1000으로 0 방향 절삭한 뒤 1을 빼 16비트로 자릅니다. 두 값의 합이 65535를 넘으면 둘째 값을 줄입니다. 적응형 함수 호출 직전과 PWM 적용 직전에서 멈췄으며, 두 12바이트 입력과 하위 16바이트 스택 레코드는 별개입니다. 별도 정적 분석에서 PafMotor+0x43에 직접 쓰는 22곳을 확인했습니다. 두 상태 선택 함수와 Joint 요청 분기에서 0–5를 쓰며, 첫 함수는 Motor+0x34가 0·5가 아닐 때만 문턱을 비교합니다. r1=0의 피드백은 조건부 D1 결합과 하위 16비트 반환 경로이고, 적응형 함수의 별도 서비스 반환과 구분됩니다. 래퍼가 보관한 상태와 적응형 함수가 다시 읽는 상태의 동일성은 미확인입니다.",
+          "next": "적응형 함수의 별도 반환값 0x53106370과 Motor+0x80의 생산자를 추적하고, 값의 단위와 상태 변화의 관계를 확인합니다. +0x56/+0x68의 비영 값, 스크루·렌즈 내 모터의 대응과 실제 광학적 초점은 미확인입니다.",
           "sources": [
             "iii-af",
             "iii-kernels",
@@ -1046,7 +1084,9 @@
             "iii-af-driver",
             "iii-af-driver-data",
             "iii-af-pwm",
-            "iii-af-pwm-data"
+            "iii-af-pwm-data",
+            "iii-af-state",
+            "iii-af-state-data"
           ]
         },
         "k3ii": {
@@ -1100,9 +1140,9 @@
       "dependency": "첫 이식 단위는 세 기종에 공통인 촬영 색공간 선택 화면입니다. PC 화면 모형과 대상 기종의 렌더링·입력 연결은 단계별로 검증합니다.",
       "cards": {
         "k3iii": {
-          "state": "sRGB 글자 픽셀 · 일곱 좌표의 전송",
-          "finding": "색공간 선택·확정·취소와 포커스, 행의 아이콘·체크를 원본 ARM으로 대조했습니다. 256×144 RAM 표면에 그린 76×40 sRGB 마스크를 일곱 좌표에서 시험해 소스 읽기 순서, 32비트 대상 쓰기와 전체 프레임이 독립 계산과 일치했습니다. 기준 좌표는 StringView가 만들었고 나머지 여섯 좌표는 호출자 스택의 복사본에서 공급했습니다. 사례당 준비에 모델 호출 72개가 있었고 최종 전송에는 없었습니다. 부분 혼합에는 첫 대상 워드 하나를 배경으로 쓰며, 경계가 닿아 높이가 0인 사례도 그 워드를 읽었습니다. Q7은 다른 마스크와 8비트 인덱스를 사용합니다. 별도 타이머 실험에서는 합성 상태의 설정·삽입·만료·지연 콜백을 대조했습니다.",
-          "next": "실제 메뉴에서 viewport를 만드는 호출을 찾고, 대상 기종의 좌표·팔레트·입력 계약으로 색공간 한 행을 PC에서 대조합니다. 회전 모드, 실제 IRQ·입력, LCD와 재부팅 뒤 설정 유지는 미검증입니다.",
+          "state": "글자 전송 일곱 좌표 · viewport 생산자 추적",
+          "finding": "색공간 선택·확정·취소와 포커스, 행의 아이콘·체크를 원본 ARM으로 대조했습니다. 256×144 RAM 표면에 그린 76×40 sRGB 마스크를 일곱 좌표에서 시험해 소스 읽기 순서, 32비트 대상 쓰기와 전체 프레임이 독립 계산과 일치했습니다. 기준 좌표는 StringView가 만들었고 나머지 여섯 좌표는 호출자 스택의 복사본에서 공급했습니다. 사례당 준비에 모델 호출 72개가 있었고 최종 전송에는 없었습니다. 부분 혼합에는 첫 대상 워드 하나를 배경으로 쓰며, 경계가 닿아 높이가 0인 사례도 그 워드를 읽었습니다. Q7은 다른 마스크와 8비트 인덱스를 사용합니다. 별도 타이머 실험에서는 합성 상태의 설정·삽입·만료·지연 콜백을 대조했습니다. 후속 정적 대조에서 V+0x50의 부모·자식 클립이 config+0x14로 직접 복사되는 경로를 찾았습니다. 설정 63바이트 저장 뒤 선택된 그리기 분기에서 64바이트를 스택으로 옮기며, 표면 타입 5·회전값 0일 때 앞서 재현한 전송 함수로 향합니다. 예제 viewport 폭 80은 부모 폭 180과 자식 X 100에서 나오며, 호스트 RAM 폭 256과는 별개입니다.",
+          "next": "최상위 부모 클립과 표면 포인터·행 간격의 실제 생산자를 추적하고, 대상 기종의 좌표·팔레트·입력 계약으로 색공간 한 행을 PC에서 대조합니다. 실제 IRQ·입력, LCD와 재부팅 뒤 설정 유지는 미검증입니다.",
           "sources": [
             "iii-icon",
             "iii-ui",
@@ -1121,7 +1161,9 @@
             "iii-text",
             "iii-cross-text",
             "iii-clip",
-            "iii-clip-data"
+            "iii-clip-data",
+            "iii-viewport",
+            "iii-viewport-data"
           ]
         },
         "k3ii": {
