@@ -1,0 +1,467 @@
+{
+  "schema": 1,
+  "scope": "One fixed DNG CFA decode plus a model of the SDK 2768 default uint16 stage-2 arithmetic. No PEF rendering, DNG SDK execution, demosaic, output image, Lightroom, or proprietary tag inference.",
+  "input_sha256": {
+    "dng": "4639584e7c807b46747ab4fac90b90b8459943c8e0f680ea68dfec6cdc580b07",
+    "pef_identity_only": "28b0a4a0fae9b3c60d4950d8d4baeaa5a056a7fb130dfba0c2c212119ed29543",
+    "sdk_zip": "c1d3a545ed45b150e59af2e6aa0695c1551f0e2bed34ad87436898a05194d2b1"
+  },
+  "input_bytes": {
+    "dng": 31652772,
+    "pef_identity_only": 36368721,
+    "sdk_zip": 80509918
+  },
+  "sdk_member_sha256": {
+    "dng_flags.h": "619bee441fd1f844c1c40b6f8228de20b97f5010eaa1aecb2421db511432e704",
+    "dng_ifd.cpp": "3f9a0e2e803d3a349c575b6c190bcfb6414bf293957a64b7dd6f125a95ee9d61",
+    "dng_negative.cpp": "ed2b54b89b13813d51226010967b78cfe100e00c1ebcd660a1190e409bdd8a6a",
+    "dng_linearization_info.cpp": "257ddbd012cdfa4341be95e8593e393d86d859fa4b14fb405c61a622671cc8bd",
+    "dng_rect.h": "3674e610597c6be9a23e79fe654760848bc5cf9851c95b10e78b12476d0f8c6c",
+    "dng_utils.h": "0eb910dd59b46928d5fee734a0cc096eb1a99bab8594d6d2fec77ae0d6fb11e9"
+  },
+  "sdk_member_lines": {
+    "dng_flags.h": "30–31 build",
+    "dng_ifd.cpp": "1835–1876 H,V crop tags; 2038–2051 ActiveArea T,L,B,R; 4724–4779 crop bounds",
+    "dng_rect.h": "132–136 half-open point containment",
+    "dng_negative.cpp": "1507 initial Stage3BlackLevel; 3146–3157 default crop; 5314–5338 stage-2 type/size; 5548–5550 opcode1; 6504–6509 default black preservation",
+    "dng_linearization_info.cpp": "136–154 scale; 217–277 repeating black pattern; 455–495 integer scale LUT; 517–528 ActiveArea rebasing; 733–825 integer offset, shift, saturation; 1411–1536 MaxBlackLevel; 1588–1625 preservation/active overlap",
+    "dng_utils.h": "156–178 uint16 saturation; 651–672 rounding"
+  },
+  "runtime": {
+    "numpy": "1.26.4",
+    "tifffile": "2023.4.12",
+    "imagecodecs": "2023.1.23",
+    "rawpy": "not used in this run; stored-array SHA rechecked against its accepted public witness"
+  },
+  "cfa_sha256_little_endian_uint16": "b5dbb0a1bcaf6d4002a54c0069fbfd52e17964156cdf7359ae10395519b145b3",
+  "tags": {
+    "raw_ifd_offset": 323528,
+    "raw_shape_yx": [
+      4224,
+      6304
+    ],
+    "photometric": 32803,
+    "compression": 7,
+    "bits_per_sample": 16,
+    "sample_format": "uint16",
+    "orientation": 1,
+    "CFARepeatPatternDim_yx": [
+      2,
+      2
+    ],
+    "CFAPattern_codes": [
+      0,
+      1,
+      1,
+      2
+    ],
+    "black_level_rational": [
+      16384,
+      256,
+      16384,
+      256,
+      16384,
+      256,
+      16384,
+      256
+    ],
+    "white_level": 16315,
+    "DefaultScale_xy_rational": [
+      1,
+      1,
+      1,
+      1
+    ],
+    "DefaultCropOrigin_xy_rational": [
+      28,
+      1,
+      24,
+      1
+    ],
+    "DefaultCropSize_xy_rational": [
+      6192,
+      1,
+      4128,
+      1
+    ],
+    "ActiveArea_TLBR": [
+      34,
+      26,
+      4194,
+      6250
+    ],
+    "linearization_table_black_delta_masked_area_and_opcode_tags_absent": true
+  },
+  "threshold_sources": {
+    "dng_black": 64,
+    "dng_white": 16315,
+    "pef_makernote_white_code_only": 16378,
+    "pef_libraw_maximum_code_only": 16383
+  },
+  "model": {
+    "scale": 6.153467478924374e-05,
+    "denominator_white_minus_max_black": 16251,
+    "dst_black_code_default_zero": 0,
+    "integer_formula": "clip((round(raw*scale*65535*256) - round(64*scale*65535*256) + 128) >> 8, 0, 65535); round each positive term as SDK binary64 plus 0.5, truncate",
+    "selected_codes": {
+      "0": [
+        -258,
+        0
+      ],
+      "63": [
+        -4,
+        0
+      ],
+      "64": [
+        0,
+        0
+      ],
+      "65": [
+        4,
+        4
+      ],
+      "16314": [
+        65531,
+        65531
+      ],
+      "16315": [
+        65535,
+        65535
+      ],
+      "16316": [
+        65539,
+        65535
+      ],
+      "16378": [
+        65789,
+        65535
+      ],
+      "16382": [
+        65805,
+        65535
+      ]
+    },
+    "stored_max_normalized_before_clip": 1.0041228232108794,
+    "applied_area": "SDK stage-2 operates on ActiveArea; stored whole-image count is diagnostic, and default crop is a nested coordinate subset."
+  },
+  "regions": {
+    "stored_cfa": {
+      "sensor_TLBR_half_open": [
+        0,
+        0,
+        4224,
+        6304
+      ],
+      "total": {
+        "samples": 26628096,
+        "min": 0,
+        "max": 16382,
+        "below_black": 218495,
+        "equal_black": 80329,
+        "strictly_inside_black_white": 26320706,
+        "equal_dng_white": 1,
+        "above_dng_white": 8565,
+        "above_pef_makernote_white_code": 8481,
+        "equal_or_above_pef_libraw_maximum_code": 0,
+        "modeled_stage2_zero": 298824,
+        "modeled_stage2_u16_max": 8566,
+        "modeled_stage2_pre_saturation_negative": 218495,
+        "modeled_stage2_pre_saturation_above_u16_max": 8565
+      },
+      "CFA": {
+        "R": {
+          "active_relative_row_col_parity": [
+            0,
+            0
+          ],
+          "samples": 6657024,
+          "min": 0,
+          "max": 16382,
+          "below_black": 55348,
+          "equal_black": 20639,
+          "strictly_inside_black_white": 6579577,
+          "equal_dng_white": 0,
+          "above_dng_white": 1460,
+          "above_pef_makernote_white_code": 1450,
+          "equal_or_above_pef_libraw_maximum_code": 0,
+          "modeled_stage2_zero": 75987,
+          "modeled_stage2_u16_max": 1460,
+          "modeled_stage2_pre_saturation_negative": 55348,
+          "modeled_stage2_pre_saturation_above_u16_max": 1460
+        },
+        "G_on_R_row": {
+          "active_relative_row_col_parity": [
+            0,
+            1
+          ],
+          "samples": 6657024,
+          "min": 0,
+          "max": 16382,
+          "below_black": 54622,
+          "equal_black": 20260,
+          "strictly_inside_black_white": 6579262,
+          "equal_dng_white": 1,
+          "above_dng_white": 2879,
+          "above_pef_makernote_white_code": 2848,
+          "equal_or_above_pef_libraw_maximum_code": 0,
+          "modeled_stage2_zero": 74882,
+          "modeled_stage2_u16_max": 2880,
+          "modeled_stage2_pre_saturation_negative": 54622,
+          "modeled_stage2_pre_saturation_above_u16_max": 2879
+        },
+        "G_on_B_row": {
+          "active_relative_row_col_parity": [
+            1,
+            0
+          ],
+          "samples": 6657024,
+          "min": 0,
+          "max": 16382,
+          "below_black": 54562,
+          "equal_black": 19306,
+          "strictly_inside_black_white": 6580330,
+          "equal_dng_white": 0,
+          "above_dng_white": 2826,
+          "above_pef_makernote_white_code": 2801,
+          "equal_or_above_pef_libraw_maximum_code": 0,
+          "modeled_stage2_zero": 73868,
+          "modeled_stage2_u16_max": 2826,
+          "modeled_stage2_pre_saturation_negative": 54562,
+          "modeled_stage2_pre_saturation_above_u16_max": 2826
+        },
+        "B": {
+          "active_relative_row_col_parity": [
+            1,
+            1
+          ],
+          "samples": 6657024,
+          "min": 0,
+          "max": 16382,
+          "below_black": 53963,
+          "equal_black": 20124,
+          "strictly_inside_black_white": 6581537,
+          "equal_dng_white": 0,
+          "above_dng_white": 1400,
+          "above_pef_makernote_white_code": 1382,
+          "equal_or_above_pef_libraw_maximum_code": 0,
+          "modeled_stage2_zero": 74087,
+          "modeled_stage2_u16_max": 1400,
+          "modeled_stage2_pre_saturation_negative": 53963,
+          "modeled_stage2_pre_saturation_above_u16_max": 1400
+        }
+      }
+    },
+    "active_area": {
+      "sensor_TLBR_half_open": [
+        34,
+        26,
+        4194,
+        6250
+      ],
+      "total": {
+        "samples": 25891840,
+        "min": 81,
+        "max": 16382,
+        "below_black": 0,
+        "equal_black": 0,
+        "strictly_inside_black_white": 25883310,
+        "equal_dng_white": 1,
+        "above_dng_white": 8529,
+        "above_pef_makernote_white_code": 8479,
+        "equal_or_above_pef_libraw_maximum_code": 0,
+        "modeled_stage2_zero": 0,
+        "modeled_stage2_u16_max": 8530,
+        "modeled_stage2_pre_saturation_negative": 0,
+        "modeled_stage2_pre_saturation_above_u16_max": 8529
+      },
+      "CFA": {
+        "R": {
+          "active_relative_row_col_parity": [
+            0,
+            0
+          ],
+          "samples": 6472960,
+          "min": 81,
+          "max": 16382,
+          "below_black": 0,
+          "equal_black": 0,
+          "strictly_inside_black_white": 6471503,
+          "equal_dng_white": 0,
+          "above_dng_white": 1457,
+          "above_pef_makernote_white_code": 1450,
+          "equal_or_above_pef_libraw_maximum_code": 0,
+          "modeled_stage2_zero": 0,
+          "modeled_stage2_u16_max": 1457,
+          "modeled_stage2_pre_saturation_negative": 0,
+          "modeled_stage2_pre_saturation_above_u16_max": 1457
+        },
+        "G_on_R_row": {
+          "active_relative_row_col_parity": [
+            0,
+            1
+          ],
+          "samples": 6472960,
+          "min": 120,
+          "max": 16382,
+          "below_black": 0,
+          "equal_black": 0,
+          "strictly_inside_black_white": 6470097,
+          "equal_dng_white": 1,
+          "above_dng_white": 2862,
+          "above_pef_makernote_white_code": 2846,
+          "equal_or_above_pef_libraw_maximum_code": 0,
+          "modeled_stage2_zero": 0,
+          "modeled_stage2_u16_max": 2863,
+          "modeled_stage2_pre_saturation_negative": 0,
+          "modeled_stage2_pre_saturation_above_u16_max": 2862
+        },
+        "G_on_B_row": {
+          "active_relative_row_col_parity": [
+            1,
+            0
+          ],
+          "samples": 6472960,
+          "min": 124,
+          "max": 16382,
+          "below_black": 0,
+          "equal_black": 0,
+          "strictly_inside_black_white": 6470139,
+          "equal_dng_white": 0,
+          "above_dng_white": 2821,
+          "above_pef_makernote_white_code": 2801,
+          "equal_or_above_pef_libraw_maximum_code": 0,
+          "modeled_stage2_zero": 0,
+          "modeled_stage2_u16_max": 2821,
+          "modeled_stage2_pre_saturation_negative": 0,
+          "modeled_stage2_pre_saturation_above_u16_max": 2821
+        },
+        "B": {
+          "active_relative_row_col_parity": [
+            1,
+            1
+          ],
+          "samples": 6472960,
+          "min": 97,
+          "max": 16382,
+          "below_black": 0,
+          "equal_black": 0,
+          "strictly_inside_black_white": 6471571,
+          "equal_dng_white": 0,
+          "above_dng_white": 1389,
+          "above_pef_makernote_white_code": 1382,
+          "equal_or_above_pef_libraw_maximum_code": 0,
+          "modeled_stage2_zero": 0,
+          "modeled_stage2_u16_max": 1389,
+          "modeled_stage2_pre_saturation_negative": 0,
+          "modeled_stage2_pre_saturation_above_u16_max": 1389
+        }
+      }
+    },
+    "default_crop": {
+      "sensor_TLBR_half_open": [
+        58,
+        54,
+        4186,
+        6246
+      ],
+      "total": {
+        "samples": 25560576,
+        "min": 81,
+        "max": 16382,
+        "below_black": 0,
+        "equal_black": 0,
+        "strictly_inside_black_white": 25552046,
+        "equal_dng_white": 1,
+        "above_dng_white": 8529,
+        "above_pef_makernote_white_code": 8479,
+        "equal_or_above_pef_libraw_maximum_code": 0,
+        "modeled_stage2_zero": 0,
+        "modeled_stage2_u16_max": 8530,
+        "modeled_stage2_pre_saturation_negative": 0,
+        "modeled_stage2_pre_saturation_above_u16_max": 8529
+      },
+      "CFA": {
+        "R": {
+          "active_relative_row_col_parity": [
+            0,
+            0
+          ],
+          "samples": 6390144,
+          "min": 81,
+          "max": 16382,
+          "below_black": 0,
+          "equal_black": 0,
+          "strictly_inside_black_white": 6388687,
+          "equal_dng_white": 0,
+          "above_dng_white": 1457,
+          "above_pef_makernote_white_code": 1450,
+          "equal_or_above_pef_libraw_maximum_code": 0,
+          "modeled_stage2_zero": 0,
+          "modeled_stage2_u16_max": 1457,
+          "modeled_stage2_pre_saturation_negative": 0,
+          "modeled_stage2_pre_saturation_above_u16_max": 1457
+        },
+        "G_on_R_row": {
+          "active_relative_row_col_parity": [
+            0,
+            1
+          ],
+          "samples": 6390144,
+          "min": 120,
+          "max": 16382,
+          "below_black": 0,
+          "equal_black": 0,
+          "strictly_inside_black_white": 6387281,
+          "equal_dng_white": 1,
+          "above_dng_white": 2862,
+          "above_pef_makernote_white_code": 2846,
+          "equal_or_above_pef_libraw_maximum_code": 0,
+          "modeled_stage2_zero": 0,
+          "modeled_stage2_u16_max": 2863,
+          "modeled_stage2_pre_saturation_negative": 0,
+          "modeled_stage2_pre_saturation_above_u16_max": 2862
+        },
+        "G_on_B_row": {
+          "active_relative_row_col_parity": [
+            1,
+            0
+          ],
+          "samples": 6390144,
+          "min": 124,
+          "max": 16382,
+          "below_black": 0,
+          "equal_black": 0,
+          "strictly_inside_black_white": 6387323,
+          "equal_dng_white": 0,
+          "above_dng_white": 2821,
+          "above_pef_makernote_white_code": 2801,
+          "equal_or_above_pef_libraw_maximum_code": 0,
+          "modeled_stage2_zero": 0,
+          "modeled_stage2_u16_max": 2821,
+          "modeled_stage2_pre_saturation_negative": 0,
+          "modeled_stage2_pre_saturation_above_u16_max": 2821
+        },
+        "B": {
+          "active_relative_row_col_parity": [
+            1,
+            1
+          ],
+          "samples": 6390144,
+          "min": 97,
+          "max": 16382,
+          "below_black": 0,
+          "equal_black": 0,
+          "strictly_inside_black_white": 6388755,
+          "equal_dng_white": 0,
+          "above_dng_white": 1389,
+          "above_pef_makernote_white_code": 1382,
+          "equal_or_above_pef_libraw_maximum_code": 0,
+          "modeled_stage2_zero": 0,
+          "modeled_stage2_u16_max": 1389,
+          "modeled_stage2_pre_saturation_negative": 0,
+          "modeled_stage2_pre_saturation_above_u16_max": 1389
+        }
+      }
+    }
+  }
+}
