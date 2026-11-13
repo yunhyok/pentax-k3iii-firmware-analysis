@@ -1,0 +1,2646 @@
+{
+  "parent_recipe_sha256": "e302fad6da65065323d62ea622aa10493b68832691da0809a8593981a278bf2d",
+  "parent_build_receipt_sha256": "b015dad481b4b7f5288155bddd63872083bd69eb0c5e1675993e356cbefbc9ba",
+  "parent_link_response_sha256": "56aa422b9b78a310e9ab4e3dcf4ed0f868549d87f1180c8903fd1ef9c93cbf95",
+  "source_members": {
+    "dng_sdk_1_7_1/dng_sdk/source/dng_validate.cpp": "cf370b1d8e385821f460acfeefcbf5213765ef1725099ac60823abc3dde47767",
+    "dng_sdk_1_7_1/dng_sdk/source/dng_host.cpp": "4e9d7fd5a6d5af988b4855dc177f327c50d6b91cbd65892783db80601d0eac4a",
+    "dng_sdk_1_7_1/dng_sdk/source/dng_negative.cpp": "ed2b54b89b13813d51226010967b78cfe100e00c1ebcd660a1190e409bdd8a6a",
+    "dng_sdk_1_7_1/dng_sdk/source/dng_negative.h": "27a7492963642d1536ee0c887ed3d1809d9a5cc62bc013e228c2161301b044dd",
+    "dng_sdk_1_7_1/dng_sdk/source/dng_mosaic_info.cpp": "4ce079a44ad60346f0cbf02c4fd2120168cc8d24c1581e1ad967677db6c8e6a6",
+    "dng_sdk_1_7_1/dng_sdk/source/dng_mosaic_info.h": "b06cf4bf3c5db31b841206f3de73e3163f68ccb6d4b4ae87b42d9a8ea0111da0",
+    "dng_sdk_1_7_1/dng_sdk/source/dng_reference.cpp": "912afda9ed871fe50ff0037a1be3361d37c1b8ee1230b907eed36d7512c422b6",
+    "dng_sdk_1_7_1/dng_sdk/source/dng_render.cpp": "e8920b456e46b9b11a4bb775694aa516c9b5afe2998926acb0c4086eca71529c",
+    "dng_sdk_1_7_1/dng_sdk/source/dng_pixel_buffer.cpp": "3f5cbef70a307bc3bdbe8bc4e272ee0853a84823f83aebdfab853130ba5046cb",
+    "dng_sdk_1_7_1/dng_sdk/source/dng_ifd.cpp": "3f9a0e2e803d3a349c575b6c190bcfb6414bf293957a64b7dd6f125a95ee9d61",
+    "dng_sdk_1_7_1/dng_sdk/source/dng_ifd.h": "a4f5d1f73031a275445ea0a69cab5e24f8a86f2362fdd15a57f22917b0f52cc5"
+  },
+  "recipe_flag_groups": [
+    [
+      "c++",
+      "-target",
+      "x86_64-windows-gnu",
+      "-O1",
+      "-ffunction-sections",
+      "-fdata-sections",
+      "-std=c++17",
+      "-I@WORK@/source/dng_sdk_1_7_1/dng_sdk/source",
+      "-I@WORK@/source/dng_sdk_1_7_1/libjxl/libjxl/lib/include",
+      "-I@WORK@/source/dng_sdk_1_7_1/libjxl/client_projects/include",
+      "-I@WORK@/source/dng_sdk_1_7_1/xmp/toolkit/third-party/zlib",
+      "-DqWinOS=1",
+      "-DqDNGUseXMP=0",
+      "-DqDNGAVXSupport=0",
+      "-DqDNGUseLibJPEG=0",
+      "-DJXL_STATIC_DEFINE",
+      "-DJXL_THREADS_STATIC_DEFINE"
+    ],
+    [
+      "c++",
+      "-target",
+      "x86_64-windows-gnu",
+      "-O1",
+      "-ffunction-sections",
+      "-fdata-sections",
+      "-std=c++17",
+      "-I@WORK@/source/dng_sdk_1_7_1/dng_sdk/source",
+      "-I@WORK@/source/dng_sdk_1_7_1/libjxl/libjxl/lib/include",
+      "-I@WORK@/source/dng_sdk_1_7_1/libjxl/client_projects/include",
+      "-I@WORK@/source/dng_sdk_1_7_1/xmp/toolkit/third-party/zlib",
+      "-DqWinOS=1",
+      "-DqDNGUseXMP=0",
+      "-DqDNGAVXSupport=0",
+      "-DqDNGUseLibJPEG=0",
+      "-DJXL_STATIC_DEFINE",
+      "-DJXL_THREADS_STATIC_DEFINE",
+      "-include",
+      "time.h"
+    ],
+    [
+      "cc",
+      "-target",
+      "x86_64-windows-gnu",
+      "-O1",
+      "-ffunction-sections",
+      "-fdata-sections",
+      "-I@WORK@/source/dng_sdk_1_7_1/libjxl/libjxl",
+      "-I@WORK@/source/dng_sdk_1_7_1/libjxl/libjxl/lib/include",
+      "-I@WORK@/source/dng_sdk_1_7_1/libjxl/client_projects/include",
+      "-I@WORK@/source/dng_sdk_1_7_1/libjxl/libjxl/third_party/brotli/c/include",
+      "-I@WORK@/source/dng_sdk_1_7_1/libjxl/libjxl/third_party/highway",
+      "-I@WORK@/source/dng_sdk_1_7_1/libjxl/libjxl/third_party/skcms",
+      "-DDO_NOT_PREDEFINE__JXL_IS_DEBUG_BUILD",
+      "-DJXL_THREADS_STATIC_DEFINE",
+      "-DJXL_STATIC_DEFINE",
+      "-DJXL_INTERNAL_LIBRARY_BUILD",
+      "-DTEST_DATA_PATH=\"foo\"",
+      "-DJPEGXL_ENABLE_SKCMS=1",
+      "-DJPEGXL_BUNDLE_SKCMS=0",
+      "-DSKCMS_DISABLE_HSW",
+      "-DSKCMS_DISABLE_SKX",
+      "-DHWY_COMPILE_ONLY_SCALAR"
+    ],
+    [
+      "c++",
+      "-target",
+      "x86_64-windows-gnu",
+      "-O1",
+      "-ffunction-sections",
+      "-fdata-sections",
+      "-std=c++17",
+      "-I@WORK@/source/dng_sdk_1_7_1/libjxl/libjxl",
+      "-I@WORK@/source/dng_sdk_1_7_1/libjxl/libjxl/lib/include",
+      "-I@WORK@/source/dng_sdk_1_7_1/libjxl/client_projects/include",
+      "-I@WORK@/source/dng_sdk_1_7_1/libjxl/libjxl/third_party/brotli/c/include",
+      "-I@WORK@/source/dng_sdk_1_7_1/libjxl/libjxl/third_party/highway",
+      "-I@WORK@/source/dng_sdk_1_7_1/libjxl/libjxl/third_party/skcms",
+      "-DDO_NOT_PREDEFINE__JXL_IS_DEBUG_BUILD",
+      "-DJXL_THREADS_STATIC_DEFINE",
+      "-DJXL_STATIC_DEFINE",
+      "-DJXL_INTERNAL_LIBRARY_BUILD",
+      "-DTEST_DATA_PATH=\"foo\"",
+      "-DJPEGXL_ENABLE_SKCMS=1",
+      "-DJPEGXL_BUNDLE_SKCMS=0",
+      "-DSKCMS_DISABLE_HSW",
+      "-DSKCMS_DISABLE_SKX",
+      "-DHWY_COMPILE_ONLY_SCALAR"
+    ],
+    [
+      "c++",
+      "-target",
+      "x86_64-windows-gnu",
+      "-O1",
+      "-ffunction-sections",
+      "-fdata-sections",
+      "-std=c++17",
+      "-I@WORK@/source/dng_sdk_1_7_1/libjxl/libjxl",
+      "-I@WORK@/source/dng_sdk_1_7_1/libjxl/libjxl/lib/include",
+      "-I@WORK@/source/dng_sdk_1_7_1/libjxl/client_projects/include",
+      "-I@WORK@/source/dng_sdk_1_7_1/libjxl/libjxl/third_party/brotli/c/include",
+      "-I@WORK@/source/dng_sdk_1_7_1/libjxl/libjxl/third_party/highway",
+      "-I@WORK@/source/dng_sdk_1_7_1/libjxl/libjxl/third_party/skcms",
+      "-DDO_NOT_PREDEFINE__JXL_IS_DEBUG_BUILD",
+      "-DJXL_THREADS_STATIC_DEFINE",
+      "-DJXL_STATIC_DEFINE",
+      "-DJXL_INTERNAL_LIBRARY_BUILD",
+      "-DTEST_DATA_PATH=\"foo\"",
+      "-DJPEGXL_ENABLE_SKCMS=1",
+      "-DJPEGXL_BUNDLE_SKCMS=0",
+      "-DSKCMS_DISABLE_HSW",
+      "-DSKCMS_DISABLE_SKX",
+      "-DHWY_COMPILE_ONLY_SCALAR",
+      "-DFJXL_ENABLE_AVX512=0",
+      "-DFJXL_ENABLE_AVX2=0"
+    ],
+    [
+      "cc",
+      "-target",
+      "x86_64-windows-gnu",
+      "-O1",
+      "-ffunction-sections",
+      "-fdata-sections",
+      "-I@WORK@/source/dng_sdk_1_7_1/xmp/toolkit/third-party/zlib"
+    ]
+  ],
+  "compiler": {
+    "zig": "0.15.2",
+    "clang": "20.1.2 (7ef74e656cf8ddbd6bf891a8475892aa1afa6891)",
+    "target": "x86_64-windows-gnu"
+  },
+  "compiler_sha256": "d408dd38eed3e5204af841bcebf70502a4dbbb8399a3a3262be55059370bc018",
+  "sdk_zip_sha256": "c1d3a545ed45b150e59af2e6aa0695c1551f0e2bed34ad87436898a05194d2b1",
+  "sdk_license_sha256": "89d75e1bfd65269c41ec57be67adacd48926af81554574d92742f96296ed9166",
+  "probe_source_sha256": "f4347e4584d201f642edc3f3588668471955bef8a8264385114c3876116bec66",
+  "probe_original_flag_group": 0,
+  "probe_object_sha256": "8a9da7971fd39aad9551ccaed2fc9b69ac1f9fbc28d0782a1c88354286cd3ef3",
+  "reused_objects": [
+    {
+      "object": "obj-scalar/brotli-backward_references.c.o",
+      "object_sha256": "e2cb1c0d80a67bb7901b30aaf7aee85855da0f923367cb231c588c2a706a01aa",
+      "object_bytes": 711275,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/third_party/brotli/c/enc/backward_references.c",
+      "source_sha256": "d7ff76001a7126879ed5f69bcfb6e98580fab8dfa000dc4b47d4d57c6c47ad48",
+      "original_flag_group": 2
+    },
+    {
+      "object": "obj-scalar/brotli-backward_references_hq.c.o",
+      "object_sha256": "33765bf92c869b587981c97948854d6ca854b8e4704a74ce928df34bcea0a129",
+      "object_bytes": 130131,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/third_party/brotli/c/enc/backward_references_hq.c",
+      "source_sha256": "aa187661c10ed7737674b2aad76d54934409bf7b62ee9ce954b96fac76ae04db",
+      "original_flag_group": 2
+    },
+    {
+      "object": "obj-scalar/brotli-bit_cost.c.o",
+      "object_sha256": "5e2dcf1ff5bd6139a6ee4c362b78facad2ce3a72774aa067d922903e7c48ea56",
+      "object_bytes": 31652,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/third_party/brotli/c/enc/bit_cost.c",
+      "source_sha256": "e0cc40fe575cfd26ae83c275742924c6b6099da78b436ff61dc4f2ecce239ee9",
+      "original_flag_group": 2
+    },
+    {
+      "object": "obj-scalar/brotli-bit_reader.c.o",
+      "object_sha256": "b24fb9751204dcf639f433768dcd6ff6c4afc290a045731de1f658497089a6cc",
+      "object_bytes": 18373,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/third_party/brotli/c/dec/bit_reader.c",
+      "source_sha256": "c7afdfacabdeb75c8170ad92bac8e4bb54fa25a09c8789eada4802a23a4eed66",
+      "original_flag_group": 2
+    },
+    {
+      "object": "obj-scalar/brotli-block_splitter.c.o",
+      "object_sha256": "643011d7285101f616caf786e27ecbe97665412e0ebb884f4262df83e33f2b0e",
+      "object_bytes": 87505,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/third_party/brotli/c/enc/block_splitter.c",
+      "source_sha256": "209c7550d5b1ff7334c3c4524135f71dc5cb9782908dd147d8dbf182f3ab9a9b",
+      "original_flag_group": 2
+    },
+    {
+      "object": "obj-scalar/brotli-brotli_bit_stream.c.o",
+      "object_sha256": "b4e18a782c89deb2cd1be0e3b52545dd0691b354b9cbda0d2f67fc78e5456647",
+      "object_bytes": 157095,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/third_party/brotli/c/enc/brotli_bit_stream.c",
+      "source_sha256": "90e35d8d21be244932e191b89925a6f4fa7145e5241c17816b112b10d6b712a8",
+      "original_flag_group": 2
+    },
+    {
+      "object": "obj-scalar/brotli-cluster.c.o",
+      "object_sha256": "4d1a089118e87eb29a701f5234968fedcb272b63b86cf2b38bb7346948bf6d42",
+      "object_bytes": 76252,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/third_party/brotli/c/enc/cluster.c",
+      "source_sha256": "eae0be564d039e57ee37442a7dd9560fe1ccf72c0aa8995f15c6ac9762ab22cb",
+      "original_flag_group": 2
+    },
+    {
+      "object": "obj-scalar/brotli-command.c.o",
+      "object_sha256": "8ad9e5e70a83405ae0ad37a48d6c74c75828ab4568e9fe68213f43504733ce1f",
+      "object_bytes": 12464,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/third_party/brotli/c/enc/command.c",
+      "source_sha256": "f93d033669d672a31a699ab7bd55c829204e85681e12cefdcb4ac3652f0dacd8",
+      "original_flag_group": 2
+    },
+    {
+      "object": "obj-scalar/brotli-compound_dictionary.c.o",
+      "object_sha256": "8d278ba112c96578efb471bea2f74be81743234d66d018411e32c7e216cf39da",
+      "object_bytes": 21085,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/third_party/brotli/c/enc/compound_dictionary.c",
+      "source_sha256": "3aa6e51b450a30ab6175651913ad0bc34a4a6f03f4cf4bcd79959ccd7a557a48",
+      "original_flag_group": 2
+    },
+    {
+      "object": "obj-scalar/brotli-compress_fragment.c.o",
+      "object_sha256": "eec6c4783bac464f35522e7aa509ce2c5bfae30d8db6e500253710b66912ab11",
+      "object_bytes": 245129,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/third_party/brotli/c/enc/compress_fragment.c",
+      "source_sha256": "c122a8afad2be90ea58d584cc986cb4d242440b7439a2fd0e1e5b11fb448916e",
+      "original_flag_group": 2
+    },
+    {
+      "object": "obj-scalar/brotli-compress_fragment_two_pass.c.o",
+      "object_sha256": "05f9250907e45878698ba59a08a856f48b402e75adbeccb2f296cf5fe5d86344",
+      "object_bytes": 214040,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/third_party/brotli/c/enc/compress_fragment_two_pass.c",
+      "source_sha256": "48dad1cc4d92916b503a70fb675fc97c2a4905d16df290e072d350c59bca6ace",
+      "original_flag_group": 2
+    },
+    {
+      "object": "obj-scalar/brotli-constants.c.o",
+      "object_sha256": "db733d58c4a6747fdef989529001fe88c7bee0599962cbfbe2e555aad6622277",
+      "object_bytes": 12122,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/third_party/brotli/c/common/constants.c",
+      "source_sha256": "d3bc1f0582e0f9f4f506518b3d1696510669cd6695b036eb72f4c53d6fb3f7fd",
+      "original_flag_group": 2
+    },
+    {
+      "object": "obj-scalar/brotli-context.c.o",
+      "object_sha256": "9e66a61dcd85d9a0da0c8020b9ae6aa17860483f9839a41a21bd8dcb318b8973",
+      "object_bytes": 13640,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/third_party/brotli/c/common/context.c",
+      "source_sha256": "ecad01b8542ea42f0f58408cd73ceb2aa24feb814ba2f8c2ace6bb173a8179be",
+      "original_flag_group": 2
+    },
+    {
+      "object": "obj-scalar/brotli-decode.c.o",
+      "object_sha256": "a592e7512fc2a20a67dca9135a7bf4258d16c11b0e01d4c3b05396103483e75d",
+      "object_bytes": 195294,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/third_party/brotli/c/dec/decode.c",
+      "source_sha256": "d8ae8a954051f317ac26fe633f5ecaa0ec537296cc175a3afdb3bdb6a8dc2979",
+      "original_flag_group": 2
+    },
+    {
+      "object": "obj-scalar/brotli-dictionary.c.o",
+      "object_sha256": "a184e957e1b7e59dbb65253bb6b097b42c0f22eb8339783355efeda68421ed16",
+      "object_bytes": 137011,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/third_party/brotli/c/common/dictionary.c",
+      "source_sha256": "03e47c2060c511144045e1cedc0174a8ae076941aaa8060ac3a65bcb33ab392b",
+      "original_flag_group": 2
+    },
+    {
+      "object": "obj-scalar/brotli-dictionary_hash.c.o",
+      "object_sha256": "332fe990d24a9e0490b89db0a36c321b910dead1bf0003d20d06596593131735",
+      "object_bytes": 110186,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/third_party/brotli/c/enc/dictionary_hash.c",
+      "source_sha256": "be7df2cc9dff4184632ee23a487f1c4d7d52260ec7e74a4d6fa41cd3552c2365",
+      "original_flag_group": 2
+    },
+    {
+      "object": "obj-scalar/brotli-encode.c.o",
+      "object_sha256": "a45d67b1c9a037ef76ace3ca50c434b7b3f8f5b5742ebd25d7767c6fb0542ac2",
+      "object_bytes": 193079,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/third_party/brotli/c/enc/encode.c",
+      "source_sha256": "eafd05db348ac8e73e4ce43f69f28b1610bdd531ecfb498533ca0526fdbb9474",
+      "original_flag_group": 2
+    },
+    {
+      "object": "obj-scalar/brotli-encoder_dict.c.o",
+      "object_sha256": "4ece1d05d31e5e03482e1c8a81f5a7ae3aeaa53c0afe4120254846cd44705b5f",
+      "object_bytes": 239673,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/third_party/brotli/c/enc/encoder_dict.c",
+      "source_sha256": "e8c3c998d339b06e2424df22f82235793a4d2d081c2d0c033a811ff81233f0b2",
+      "original_flag_group": 2
+    },
+    {
+      "object": "obj-scalar/brotli-entropy_encode.c.o",
+      "object_sha256": "da40ca13fbf8081a2e76da40ddeee813a88d817c57a0660d0242a1ba14f5b575",
+      "object_bytes": 31737,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/third_party/brotli/c/enc/entropy_encode.c",
+      "source_sha256": "9c7888878d011780a0def57015bc79d3632cd0fb7f933e1a33dd59f6769e7ed6",
+      "original_flag_group": 2
+    },
+    {
+      "object": "obj-scalar/brotli-fast_log.c.o",
+      "object_sha256": "cac59adfde49ca0436669ffd8fbfdcfe78007130779d1859a8c8aada678468bb",
+      "object_bytes": 13598,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/third_party/brotli/c/enc/fast_log.c",
+      "source_sha256": "dd942802bed5f34cbbec595e46407f7b706f304e70e11cd1f616958153c75095",
+      "original_flag_group": 2
+    },
+    {
+      "object": "obj-scalar/brotli-histogram.c.o",
+      "object_sha256": "cac84b43a9e1dbc982c31768ac955037a5ed2cbfe717cb76e5a7ea466173ca03",
+      "object_bytes": 20012,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/third_party/brotli/c/enc/histogram.c",
+      "source_sha256": "cc95ce4153d567384744cd65b9b35208c6721675b950fe477415dd502362ab5d",
+      "original_flag_group": 2
+    },
+    {
+      "object": "obj-scalar/brotli-huffman.c.o",
+      "object_sha256": "36f90040a1a1fefe04dd5dbe9c755fe5aa26a2b5878364fe1a79b0cac9bb494c",
+      "object_bytes": 26554,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/third_party/brotli/c/dec/huffman.c",
+      "source_sha256": "a08c0ed49b694ce33c63b9d8474600f276d06c7d71edce107506a3fcd06c64c0",
+      "original_flag_group": 2
+    },
+    {
+      "object": "obj-scalar/brotli-literal_cost.c.o",
+      "object_sha256": "d523e62291e3448b423d00058017bbea0b25cefaac89c5d1b10a7e81f7169003",
+      "object_bytes": 19717,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/third_party/brotli/c/enc/literal_cost.c",
+      "source_sha256": "729fd847e69d598b668e8395f5389d86601ed46b3f94a639d567b96939d5cdbb",
+      "original_flag_group": 2
+    },
+    {
+      "object": "obj-scalar/brotli-memory.c.o",
+      "object_sha256": "59517d8912c00f3bb18b6831088b8f254304d0864d8135d896da18d7fe368ca0",
+      "object_bytes": 18001,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/third_party/brotli/c/enc/memory.c",
+      "source_sha256": "26be4d0b28439d2490c22d29add058a3d9d2e1ebc928134bfec4376600958a97",
+      "original_flag_group": 2
+    },
+    {
+      "object": "obj-scalar/brotli-metablock.c.o",
+      "object_sha256": "66098f8c6ffb330672e879958f0914d84851b545969cc451e75f21beb45569b2",
+      "object_bytes": 100008,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/third_party/brotli/c/enc/metablock.c",
+      "source_sha256": "22e4cc65ee3a582b417d786367bb3fbe633242943822b2c070a827d15bc9f255",
+      "original_flag_group": 2
+    },
+    {
+      "object": "obj-scalar/brotli-platform.c.o",
+      "object_sha256": "bf99807b704c31fc08eff23470be26279497d13967c2d11ae29988f0ccd25077",
+      "object_bytes": 13337,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/third_party/brotli/c/common/platform.c",
+      "source_sha256": "57ee8b0717d6c327abb4c552ecc8e528496f12476fc1e38103e9a5ff79c00732",
+      "original_flag_group": 2
+    },
+    {
+      "object": "obj-scalar/brotli-shared_dictionary.c.o",
+      "object_sha256": "69cd4d6a11879bdf003a03bd2bb9263eecd7df74854705aaa94d3293faa75f65",
+      "object_bytes": 32399,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/third_party/brotli/c/common/shared_dictionary.c",
+      "source_sha256": "442345022ae01ede176d228ede9de040aa7bf8f7e1651f4bb9125ba11947f892",
+      "original_flag_group": 2
+    },
+    {
+      "object": "obj-scalar/brotli-state.c.o",
+      "object_sha256": "f36e552ebfe22a04ad4dba699b243cab435bafb210e300363f1fa7ca4dd44168",
+      "object_bytes": 27264,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/third_party/brotli/c/dec/state.c",
+      "source_sha256": "3f8294a40be6bf417af7ac47b18507e375eb7737718de7ac95001025833211ee",
+      "original_flag_group": 2
+    },
+    {
+      "object": "obj-scalar/brotli-static_dict.c.o",
+      "object_sha256": "0b5e901e4d8f1f8efb83bf27bf9dc55f5e850ac7ced9625ccb7d9b56a8191779",
+      "object_bytes": 52533,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/third_party/brotli/c/enc/static_dict.c",
+      "source_sha256": "3998cd03d0a7a3bbb29d571c73e89bc2788177c0d9bee7b7589508b52eac0ef1",
+      "original_flag_group": 2
+    },
+    {
+      "object": "obj-scalar/brotli-transform.c.o",
+      "object_sha256": "641cdf43c0a870ba5b919a592970691c9e5eb7aaeb703daf216a941bb2e923eb",
+      "object_bytes": 21020,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/third_party/brotli/c/common/transform.c",
+      "source_sha256": "9f91d725dd2e6cbfd886ece385bed079edd2288a610031384f985dba38839486",
+      "original_flag_group": 2
+    },
+    {
+      "object": "obj-scalar/brotli-utf8_util.c.o",
+      "object_sha256": "7ea8e18455eb0af325d98c3300f19f2e9950ef04b1a8661e6a86a5be63fc8d1a",
+      "object_bytes": 14005,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/third_party/brotli/c/enc/utf8_util.c",
+      "source_sha256": "fbc9cbff09159ea252a18b06f140e91157eeee48c0bb9000cfbe1717901a7d75",
+      "original_flag_group": 2
+    },
+    {
+      "object": "obj-scalar/dng-dng_1d_function.cpp.o",
+      "object_sha256": "68bc1b0b5ab0b9768362d6458eef0cb1785c592ad40a8bb116d312aa4bb99643",
+      "object_bytes": 92634,
+      "source": "source/dng_sdk_1_7_1/dng_sdk/source/dng_1d_function.cpp",
+      "source_sha256": "edfc61429023a467533623a7a9cd9a228d24980d3713e778aabff12dbce020c8",
+      "original_flag_group": 0
+    },
+    {
+      "object": "obj-scalar/dng-dng_1d_table.cpp.o",
+      "object_sha256": "3b61360a8363d36cbc384735ee036d8dc304519056907132fac62faca659e3a4",
+      "object_bytes": 30293,
+      "source": "source/dng_sdk_1_7_1/dng_sdk/source/dng_1d_table.cpp",
+      "source_sha256": "fcc8c96bc20866beb0ff183d011d585dc77546c736cc329dd6f40145346f5ff0",
+      "original_flag_group": 0
+    },
+    {
+      "object": "obj-scalar/dng-dng_abort_sniffer.cpp.o",
+      "object_sha256": "d08adf3c858888dfa9723883121567d648b79efced8f30215c759bf2bb3e4198",
+      "object_bytes": 45271,
+      "source": "source/dng_sdk_1_7_1/dng_sdk/source/dng_abort_sniffer.cpp",
+      "source_sha256": "879560ecf8f36ae523a0f956d3c6e0f4857c5070807a6fb822dc287c10680a00",
+      "original_flag_group": 0
+    },
+    {
+      "object": "obj-scalar/dng-dng_area_task.cpp.o",
+      "object_sha256": "d42b964538b7333d807dee03fb5aa7cc1ececfadc44b43dcc25a00f87e7f07f3",
+      "object_bytes": 127606,
+      "source": "source/dng_sdk_1_7_1/dng_sdk/source/dng_area_task.cpp",
+      "source_sha256": "985085dbee6831794f2c316d52aecf33faf4307403458b683a1f71d992e25730",
+      "original_flag_group": 0
+    },
+    {
+      "object": "obj-scalar/dng-dng_bad_pixels.cpp.o",
+      "object_sha256": "c859cbcc89f2a908ff61713fef26c13141b9cdcdf58fcad2ed9aa9fbcad1d9e4",
+      "object_bytes": 306226,
+      "source": "source/dng_sdk_1_7_1/dng_sdk/source/dng_bad_pixels.cpp",
+      "source_sha256": "4cfd97b962b9c9d30ed308b982ebe3af33fe1fa3f0ea26ca6d887c13e4337ac4",
+      "original_flag_group": 0
+    },
+    {
+      "object": "obj-scalar/dng-dng_big_table.cpp.o",
+      "object_sha256": "565e54a05658c8340ff3cb8d4cd09d40be38723c10fe77ca51792d7f3363784c",
+      "object_bytes": 1552533,
+      "source": "source/dng_sdk_1_7_1/dng_sdk/source/dng_big_table.cpp",
+      "source_sha256": "ffab9d6af22fd7a05ec20fb7ffa99e3f7dfce5463b392391d7ea59a344909efa",
+      "original_flag_group": 0
+    },
+    {
+      "object": "obj-scalar/dng-dng_bmff.cpp.o",
+      "object_sha256": "24c73941c4f9777b9249bc92389104ff64bf72cd64249516d5bc233cf4be8682",
+      "object_bytes": 266620,
+      "source": "source/dng_sdk_1_7_1/dng_sdk/source/dng_bmff.cpp",
+      "source_sha256": "ffdc6e7c60132ce370201f485db30bb1dec02156d9a745b35f802ddb47b9cccf",
+      "original_flag_group": 0
+    },
+    {
+      "object": "obj-scalar/dng-dng_bottlenecks.cpp.o",
+      "object_sha256": "75c0a7ab1de7bc6995fa530f77e4f765dddf70a228f7a3ca9b40b005133b4e8b",
+      "object_bytes": 24316,
+      "source": "source/dng_sdk_1_7_1/dng_sdk/source/dng_bottlenecks.cpp",
+      "source_sha256": "b3bdaf03c0ee994e3a879ec8c1bb87d6ebf386dd24c3c84135352186335851f3",
+      "original_flag_group": 0
+    },
+    {
+      "object": "obj-scalar/dng-dng_camera_profile.cpp.o",
+      "object_sha256": "6c41692466f9c8ce2e25090de410134ad8815723472a0dbebf9358cf07779094",
+      "object_bytes": 332885,
+      "source": "source/dng_sdk_1_7_1/dng_sdk/source/dng_camera_profile.cpp",
+      "source_sha256": "988d3d9531ddfefd0faa0b6b4ebf85276a872a55b1956fd2bb964f89c1dd801f",
+      "original_flag_group": 0
+    },
+    {
+      "object": "obj-scalar/dng-dng_color_space.cpp.o",
+      "object_sha256": "e51aacb252ff7484322a93003086f059436d6ddaac208b5b3692e92a18d5bac1",
+      "object_bytes": 153071,
+      "source": "source/dng_sdk_1_7_1/dng_sdk/source/dng_color_space.cpp",
+      "source_sha256": "5d174ef271270acd1ffcff37134b083418aa41032190e81bf2172c9d76526575",
+      "original_flag_group": 0
+    },
+    {
+      "object": "obj-scalar/dng-dng_color_spec.cpp.o",
+      "object_sha256": "52c31b1dddadad486aed7602cff1f9b023cffb53075a12b1e6007a46664643ff",
+      "object_bytes": 89000,
+      "source": "source/dng_sdk_1_7_1/dng_sdk/source/dng_color_spec.cpp",
+      "source_sha256": "6fb9ab59dcbdae9cb27a893c67810416ba7b2651a537673caa7d728d16d7ec0a",
+      "original_flag_group": 0
+    },
+    {
+      "object": "obj-scalar/dng-dng_date_time.cpp.o",
+      "object_sha256": "8d4361b47881d1258f909cd4aa5a86130db6e026fe331ab6b946591d54aaef1d",
+      "object_bytes": 73813,
+      "source": "source/dng_sdk_1_7_1/dng_sdk/source/dng_date_time.cpp",
+      "source_sha256": "6721f7eb2eadcac83fcb441797961f262a4e9d2816cf413143f382dc2d170734",
+      "original_flag_group": 0
+    },
+    {
+      "object": "obj-scalar/dng-dng_exceptions.cpp.o",
+      "object_sha256": "15ea095a75fbada131aa9a71f5fda8a8964e96b362eca7f260b56e19f3c79c07",
+      "object_bytes": 49710,
+      "source": "source/dng_sdk_1_7_1/dng_sdk/source/dng_exceptions.cpp",
+      "source_sha256": "f42dd09daaee60c8a5645181ac8e1b08f976dd455eb04edbc854b62262089f4b",
+      "original_flag_group": 0
+    },
+    {
+      "object": "obj-scalar/dng-dng_exif.cpp.o",
+      "object_sha256": "dba33a8a7d3a84f9aca8a5302354e8a62a271086d6f051459cded45b44be5a73",
+      "object_bytes": 134787,
+      "source": "source/dng_sdk_1_7_1/dng_sdk/source/dng_exif.cpp",
+      "source_sha256": "f50a6ce8445abfa7327099e5bdd575928c463960d279db0f9a2cf78922c71afd",
+      "original_flag_group": 0
+    },
+    {
+      "object": "obj-scalar/dng-dng_file_stream.cpp.o",
+      "object_sha256": "5d85f3c29006838bc2915d06b50fb41280f7cd6f654e372406c41a847cd918ec",
+      "object_bytes": 29433,
+      "source": "source/dng_sdk_1_7_1/dng_sdk/source/dng_file_stream.cpp",
+      "source_sha256": "1b3eb7dfc72524720c205f50a35e815cff3a26e469984cf9f762b5f81a2d89fd",
+      "original_flag_group": 0
+    },
+    {
+      "object": "obj-scalar/dng-dng_filter_task.cpp.o",
+      "object_sha256": "27572d307f9a43b0a19e38799e83a5807a32597405b2b10c135cbb0ba082a73a",
+      "object_bytes": 40091,
+      "source": "source/dng_sdk_1_7_1/dng_sdk/source/dng_filter_task.cpp",
+      "source_sha256": "aa3c9513ac2fe5ea057dc29cee4e30d0ba643830ca154789cd76fb278883d820",
+      "original_flag_group": 0
+    },
+    {
+      "object": "obj-scalar/dng-dng_fingerprint.cpp.o",
+      "object_sha256": "87e6081f6a6c4df24a6f84b493b346f0baf32ce8f6fde54a34039071639a1fe2",
+      "object_bytes": 82509,
+      "source": "source/dng_sdk_1_7_1/dng_sdk/source/dng_fingerprint.cpp",
+      "source_sha256": "10e01281183acd1737e92bd90b315cbf08030f9ae8eadcd32a69e3a44a9644af",
+      "original_flag_group": 0
+    },
+    {
+      "object": "obj-scalar/dng-dng_gain_map.cpp.o",
+      "object_sha256": "76c81ae0f7f6f18928be762b4b88371419c1f85b0ee29c7e2cd9fde58b783dd1",
+      "object_bytes": 137035,
+      "source": "source/dng_sdk_1_7_1/dng_sdk/source/dng_gain_map.cpp",
+      "source_sha256": "2521b53cc72c2ea80f640df5f7ff50bcd01ca32c5e9a151827831b21063af220",
+      "original_flag_group": 0
+    },
+    {
+      "object": "obj-scalar/dng-dng_globals.cpp.o",
+      "object_sha256": "9f1175268167d92a9b18a85ed8902b1b12cbc66495d02815f6d5d061efc5261e",
+      "object_bytes": 13939,
+      "source": "source/dng_sdk_1_7_1/dng_sdk/source/dng_globals.cpp",
+      "source_sha256": "d44ad473beed5951f510e76ee7999d1589e3a4ec694a6df77a0c0c23be2b366d",
+      "original_flag_group": 0
+    },
+    {
+      "object": "obj-scalar/dng-dng_host.cpp.o",
+      "object_sha256": "63e86c880d9be25008a7d5fae6fc7ce1805bceea744f2a5f7135ea544d45fd8c",
+      "object_bytes": 96028,
+      "source": "source/dng_sdk_1_7_1/dng_sdk/source/dng_host.cpp",
+      "source_sha256": "4e9d7fd5a6d5af988b4855dc177f327c50d6b91cbd65892783db80601d0eac4a",
+      "original_flag_group": 0
+    },
+    {
+      "object": "obj-scalar/dng-dng_hue_sat_map.cpp.o",
+      "object_sha256": "eecbe1ec371a61db8abbcb5400eaccb7b421369650dcda2629d9d08722b3956c",
+      "object_bytes": 80743,
+      "source": "source/dng_sdk_1_7_1/dng_sdk/source/dng_hue_sat_map.cpp",
+      "source_sha256": "7bdb0661575cfe6294e89c9305b2bddc10f9a4288930b8e29c66e3c65cf356e6",
+      "original_flag_group": 0
+    },
+    {
+      "object": "obj-scalar/dng-dng_ifd.cpp.o",
+      "object_sha256": "d09f7787449d268c341763290c1ab5544e37717e0bd317aae69489f5c4d6c87c",
+      "object_bytes": 356237,
+      "source": "source/dng_sdk_1_7_1/dng_sdk/source/dng_ifd.cpp",
+      "source_sha256": "3f9a0e2e803d3a349c575b6c190bcfb6414bf293957a64b7dd6f125a95ee9d61",
+      "original_flag_group": 0
+    },
+    {
+      "object": "obj-scalar/dng-dng_image.cpp.o",
+      "object_sha256": "8ff51c8537907e5beff6f7b1f37ef1039fd94edce69977b82e67d9d03300cf59",
+      "object_bytes": 112855,
+      "source": "source/dng_sdk_1_7_1/dng_sdk/source/dng_image.cpp",
+      "source_sha256": "68d85dda768c00bb826fc120914216877516f5730ecc5a39083e0f49bea94112",
+      "original_flag_group": 0
+    },
+    {
+      "object": "obj-scalar/dng-dng_image_writer.cpp.o",
+      "object_sha256": "3aab83525ff8d5001c06494b8d87472df18b1b03db4cb1b933fd2c79efcc522b",
+      "object_bytes": 1421346,
+      "source": "source/dng_sdk_1_7_1/dng_sdk/source/dng_image_writer.cpp",
+      "source_sha256": "2f627124740ea4dc7a6e9400c91d6772f077a00fb447577ecefe313ba4f6bd33",
+      "original_flag_group": 0
+    },
+    {
+      "object": "obj-scalar/dng-dng_info.cpp.o",
+      "object_sha256": "679dbdd058d7b25b70ad5fda5f1f50a8ccf7014dca3c7b3bf94435328447b4bf",
+      "object_bytes": 197627,
+      "source": "source/dng_sdk_1_7_1/dng_sdk/source/dng_info.cpp",
+      "source_sha256": "ad0f39425a16d9c267e53c7d36f0e172fb2dab2561bda21f9c8dce61174c6bdb",
+      "original_flag_group": 0
+    },
+    {
+      "object": "obj-scalar/dng-dng_iptc.cpp.o",
+      "object_sha256": "00131a7aeae2593127100bdc4e8e34c9619b6e20d381ce7ef2108ba5c3ca7e8d",
+      "object_bytes": 56050,
+      "source": "source/dng_sdk_1_7_1/dng_sdk/source/dng_iptc.cpp",
+      "source_sha256": "5713e646c87b2996421ba3af2de2fd53ef434d200018af0737dfbe31813e62cf",
+      "original_flag_group": 0
+    },
+    {
+      "object": "obj-scalar/dng-dng_jpeg_image.cpp.o",
+      "object_sha256": "49c504017959cfd7292a84a34e7c150d2a228adc226c9bd0b65893d670233aca",
+      "object_bytes": 311428,
+      "source": "source/dng_sdk_1_7_1/dng_sdk/source/dng_jpeg_image.cpp",
+      "source_sha256": "4ec22ba9015d6d1381b4a668ad5bf4d26b231f4f0ac7d3af4e271a10c6f1d575",
+      "original_flag_group": 0
+    },
+    {
+      "object": "obj-scalar/dng-dng_jpeg_memory_source.cpp.o",
+      "object_sha256": "8ed3c72d8cb862ffe6bb24dbab4548aeb634f77dee9c4dd73c29ecf63dbe869c",
+      "object_bytes": 12082,
+      "source": "source/dng_sdk_1_7_1/dng_sdk/source/dng_jpeg_memory_source.cpp",
+      "source_sha256": "8c824e37befbf6c5eccb15deabdec6b504c18ec51408c732a7651f72dd210b1e",
+      "original_flag_group": 0
+    },
+    {
+      "object": "obj-scalar/dng-dng_jxl_no_xmp_v2.cpp.o",
+      "object_sha256": "961fad9d4f33c474983f10fb8f78e93df636311fe61854e70327dafa30a02323",
+      "object_bytes": 499300,
+      "source": "dng_jxl_no_xmp_v2.cpp",
+      "source_sha256": "d30527fcd3c15c85375ccc32cd6c308818efa30611b551d24eb5af98ef51d9dd",
+      "original_flag_group": 0
+    },
+    {
+      "object": "obj-scalar/dng-dng_lens_correction.cpp.o",
+      "object_sha256": "7a26f7de92fc4c9d8c3bd04305f14d42ef94da463bd5f5e1b2c693c6b96b0548",
+      "object_bytes": 329724,
+      "source": "source/dng_sdk_1_7_1/dng_sdk/source/dng_lens_correction.cpp",
+      "source_sha256": "0298d597db9140419b38dfecc68fc63f254abf388592c4ad2fc38b4097713ee1",
+      "original_flag_group": 0
+    },
+    {
+      "object": "obj-scalar/dng-dng_linearization_info.cpp.o",
+      "object_sha256": "caf6f7cf415ae72ec9d106b038c7ce18c08139d24e71d2ed8298bc76fd0b52d8",
+      "object_bytes": 114104,
+      "source": "source/dng_sdk_1_7_1/dng_sdk/source/dng_linearization_info.cpp",
+      "source_sha256": "257ddbd012cdfa4341be95e8593e393d86d859fa4b14fb405c61a622671cc8bd",
+      "original_flag_group": 0
+    },
+    {
+      "object": "obj-scalar/dng-dng_local_string.cpp.o",
+      "object_sha256": "8df5ba65d83901edcfbcfafd74e4600fc46574c665ae38dc55ff86a519565067",
+      "object_bytes": 105878,
+      "source": "source/dng_sdk_1_7_1/dng_sdk/source/dng_local_string.cpp",
+      "source_sha256": "2aa184c498473c4d87d1e3f3388d39b57e8777d4b8afc0df864004684b58fc92",
+      "original_flag_group": 0
+    },
+    {
+      "object": "obj-scalar/dng-dng_lossless_jpeg.cpp.o",
+      "object_sha256": "0e163a7f08f9ba913681c3a4531b282e6ae7f60f1c0af7895cafff2a9e9c61d8",
+      "object_bytes": 428016,
+      "source": "source/dng_sdk_1_7_1/dng_sdk/source/dng_lossless_jpeg.cpp",
+      "source_sha256": "5c0792c6877f46a636736f748b6781ab5c681ce003cebc6688662857bb0aa7d1",
+      "original_flag_group": 0
+    },
+    {
+      "object": "obj-scalar/dng-dng_lossless_jpeg_shared.cpp.o",
+      "object_sha256": "a192e1f9d05b1ff95c6ecf1aff125a0042eebd03e3d857110eb86a05a4fd23de",
+      "object_bytes": 12094,
+      "source": "source/dng_sdk_1_7_1/dng_sdk/source/dng_lossless_jpeg_shared.cpp",
+      "source_sha256": "f230c4ead86cc5d928859d5a1ef7ef253e76b5bdce6e537c8e980fc8690d7710",
+      "original_flag_group": 0
+    },
+    {
+      "object": "obj-scalar/dng-dng_matrix.cpp.o",
+      "object_sha256": "e75eeafa4d3c06ebdbcf73b28122036dbab23473cd9eea0252dcdfbc243af931",
+      "object_bytes": 125844,
+      "source": "source/dng_sdk_1_7_1/dng_sdk/source/dng_matrix.cpp",
+      "source_sha256": "a6d53a5e74fb425a17b73c89782c099d01d7f56bd1244f81c91365dd032ef9aa",
+      "original_flag_group": 0
+    },
+    {
+      "object": "obj-scalar/dng-dng_memory.cpp.o",
+      "object_sha256": "6e4bb57813e3cf9ba2878f40461ea003137df9b7ebabe6b8a841487143771b43",
+      "object_bytes": 54463,
+      "source": "source/dng_sdk_1_7_1/dng_sdk/source/dng_memory.cpp",
+      "source_sha256": "1ddbed35849c6c851e12c85c068a3e91061c332dfd988446e42fbe92a521c6d4",
+      "original_flag_group": 0
+    },
+    {
+      "object": "obj-scalar/dng-dng_memory_stream.cpp.o",
+      "object_sha256": "37702952301f99dca19ff2dcc461eadf35aefcfa2168d124c9983d470c3666ec",
+      "object_bytes": 41939,
+      "source": "source/dng_sdk_1_7_1/dng_sdk/source/dng_memory_stream.cpp",
+      "source_sha256": "ddfafa3822a6cc8ea5e24632766d1f0788e0d5ab7d3b72db03b3b01efc50bd83",
+      "original_flag_group": 0
+    },
+    {
+      "object": "obj-scalar/dng-dng_misc_opcodes.cpp.o",
+      "object_sha256": "9d9771221df15d5f2213f24cea1bd7bb234816ce665100f6803366471fc1e8e0",
+      "object_bytes": 171917,
+      "source": "source/dng_sdk_1_7_1/dng_sdk/source/dng_misc_opcodes.cpp",
+      "source_sha256": "856c687734c31016c71815581bc6544ffd00c45a381d40f52522423b19c301ab",
+      "original_flag_group": 0
+    },
+    {
+      "object": "obj-scalar/dng-dng_mosaic_info.cpp.o",
+      "object_sha256": "4af8a5e753e55ecbe349a4099294ad804a15d976fbc74521aab090fc456d7564",
+      "object_bytes": 136107,
+      "source": "source/dng_sdk_1_7_1/dng_sdk/source/dng_mosaic_info.cpp",
+      "source_sha256": "4ce079a44ad60346f0cbf02c4fd2120168cc8d24c1581e1ad967677db6c8e6a6",
+      "original_flag_group": 0
+    },
+    {
+      "object": "obj-scalar/dng-dng_mutex.cpp.o",
+      "object_sha256": "08fabb6e5813ac69bcd1f7833faa8a9b6336e11218d49814efedf31a601d2f04",
+      "object_bytes": 42477,
+      "source": "source/dng_sdk_1_7_1/dng_sdk/source/dng_mutex.cpp",
+      "source_sha256": "85be6323ef220a3d1369ceb9e9cc4875df8d322b4f27723e33b3440ee7f79619",
+      "original_flag_group": 0
+    },
+    {
+      "object": "obj-scalar/dng-dng_negative.cpp.o",
+      "object_sha256": "002ba9306a67802bc76a8368faf83b4c9f9ee4a9c89198b9b31d9b34055d3ffc",
+      "object_bytes": 1501172,
+      "source": "source/dng_sdk_1_7_1/dng_sdk/source/dng_negative.cpp",
+      "source_sha256": "ed2b54b89b13813d51226010967b78cfe100e00c1ebcd660a1190e409bdd8a6a",
+      "original_flag_group": 0
+    },
+    {
+      "object": "obj-scalar/dng-dng_opcode_list.cpp.o",
+      "object_sha256": "e93328b69ca8efd74df7e6251cfc1394fd32137db0abbc561fc19aa8bf62ca99",
+      "object_bytes": 88123,
+      "source": "source/dng_sdk_1_7_1/dng_sdk/source/dng_opcode_list.cpp",
+      "source_sha256": "ebdf1cbf73a25fdabc39877e6bea22a9008f681f51cb92928ca9c42918ec8ff9",
+      "original_flag_group": 0
+    },
+    {
+      "object": "obj-scalar/dng-dng_opcodes.cpp.o",
+      "object_sha256": "0e263667d262488a82f956a73b15440295b10630a2798120322b5a498d918f36",
+      "object_bytes": 90145,
+      "source": "source/dng_sdk_1_7_1/dng_sdk/source/dng_opcodes.cpp",
+      "source_sha256": "f0fea0142c416bd6b916e09aa452e9b3f3a7951725ae6d4d2a5759adda760c2d",
+      "original_flag_group": 0
+    },
+    {
+      "object": "obj-scalar/dng-dng_orientation.cpp.o",
+      "object_sha256": "4d78b3d964671feac264b13a16eb69ce2285fe68cddcceeb3fcccd9a8dd70744",
+      "object_bytes": 27802,
+      "source": "source/dng_sdk_1_7_1/dng_sdk/source/dng_orientation.cpp",
+      "source_sha256": "1799a1af73ad5a1952bebebb6869bfcd188e89b8574f40b52960d538e8d0d95d",
+      "original_flag_group": 0
+    },
+    {
+      "object": "obj-scalar/dng-dng_parse_utils.cpp.o",
+      "object_sha256": "00557fbb64b8ab2ce99fc4460a2cd2dfbb7ecafca04a3d13dbe630df43583a95",
+      "object_bytes": 42545,
+      "source": "source/dng_sdk_1_7_1/dng_sdk/source/dng_parse_utils.cpp",
+      "source_sha256": "610d27f9563dcb9e41481600ec18edf733a928266ea4014056688831cd85f5dd",
+      "original_flag_group": 0
+    },
+    {
+      "object": "obj-scalar/dng-dng_pixel_buffer.cpp.o",
+      "object_sha256": "89f13044ee135bc1c8e5504db394f8d5379261f52b4cf0051f52269d6feb14bd",
+      "object_bytes": 126425,
+      "source": "source/dng_sdk_1_7_1/dng_sdk/source/dng_pixel_buffer.cpp",
+      "source_sha256": "3f5cbef70a307bc3bdbe8bc4e272ee0853a84823f83aebdfab853130ba5046cb",
+      "original_flag_group": 0
+    },
+    {
+      "object": "obj-scalar/dng-dng_point.cpp.o",
+      "object_sha256": "625297ea34c5e1417b21c7878f5d420b65defb6f7ed1b8206c1fd4f12dfe8400",
+      "object_bytes": 12000,
+      "source": "source/dng_sdk_1_7_1/dng_sdk/source/dng_point.cpp",
+      "source_sha256": "39a4742099ba62731c1973fc97237f553a434b3c5e3999648956a532be9af11a",
+      "original_flag_group": 0
+    },
+    {
+      "object": "obj-scalar/dng-dng_preview.cpp.o",
+      "object_sha256": "1d11e1a6ec95b986a66d3101feaec65d68da1a8fa3c5c6f43d93e87db84072d5",
+      "object_bytes": 361396,
+      "source": "source/dng_sdk_1_7_1/dng_sdk/source/dng_preview.cpp",
+      "source_sha256": "4603b9644b4917f3f30aafed8befe18de6f6c7304a6299f2f98b2874ecd7f9a0",
+      "original_flag_group": 0
+    },
+    {
+      "object": "obj-scalar/dng-dng_pthread.cpp.o",
+      "object_sha256": "a5aedb41eae935ad27e4cd1635c73bbc0c30e28853b813ff303c665d6087dbad",
+      "object_bytes": 188711,
+      "source": "source/dng_sdk_1_7_1/dng_sdk/source/dng_pthread.cpp",
+      "source_sha256": "60b649f9a2e9f1136a5033a5124c1a444535aba9996019746171b09198c25b39",
+      "original_flag_group": 1
+    },
+    {
+      "object": "obj-scalar/dng-dng_rational.cpp.o",
+      "object_sha256": "1cf3fc5913da130977b5f2a50eae82ccece4566f933f6b4fcd212f5de629efdc",
+      "object_bytes": 31241,
+      "source": "source/dng_sdk_1_7_1/dng_sdk/source/dng_rational.cpp",
+      "source_sha256": "928d259c79c4c97df2b5191ac58c90a622042f127356d398277b4532c8762992",
+      "original_flag_group": 0
+    },
+    {
+      "object": "obj-scalar/dng-dng_read_image.cpp.o",
+      "object_sha256": "3383fc44289fe608b1c121204e4873745a212287bb3c8f179ae8e003f9ccddaf",
+      "object_bytes": 443080,
+      "source": "source/dng_sdk_1_7_1/dng_sdk/source/dng_read_image.cpp",
+      "source_sha256": "61be62b561ac8740e7ac17ba6e549e166ed2551cdacfe42708bdb292b41e6526",
+      "original_flag_group": 0
+    },
+    {
+      "object": "obj-scalar/dng-dng_rect.cpp.o",
+      "object_sha256": "4ecc60f83e192287861d547c32f25ec37eb145c323d63ce31a3186521806fd0f",
+      "object_bytes": 31321,
+      "source": "source/dng_sdk_1_7_1/dng_sdk/source/dng_rect.cpp",
+      "source_sha256": "bcb1f62aef72e37b918ef47807ce108251c45fb445de8a1f416611aee0209de5",
+      "original_flag_group": 0
+    },
+    {
+      "object": "obj-scalar/dng-dng_ref_counted_block.cpp.o",
+      "object_sha256": "1d73e5047c49e10007d42f17c6a54779dc911149a88da79c72f50dc682643374",
+      "object_bytes": 32719,
+      "source": "source/dng_sdk_1_7_1/dng_sdk/source/dng_ref_counted_block.cpp",
+      "source_sha256": "5bdccff589fbb8c987713f1f2ba18ae9687940a8ff1b223f75175f59f292d21d",
+      "original_flag_group": 0
+    },
+    {
+      "object": "obj-scalar/dng-dng_reference.cpp.o",
+      "object_sha256": "2756ba4ed5f80ba3723ba50a1e91b3dacb29fa33fef0569d370c3a546f424a2b",
+      "object_bytes": 229580,
+      "source": "source/dng_sdk_1_7_1/dng_sdk/source/dng_reference.cpp",
+      "source_sha256": "912afda9ed871fe50ff0037a1be3361d37c1b8ee1230b907eed36d7512c422b6",
+      "original_flag_group": 0
+    },
+    {
+      "object": "obj-scalar/dng-dng_render.cpp.o",
+      "object_sha256": "76572ba60a432692f0dcfecd17c0fedf09ac31787f395999956a4c6697e2c93e",
+      "object_bytes": 258564,
+      "source": "source/dng_sdk_1_7_1/dng_sdk/source/dng_render.cpp",
+      "source_sha256": "e8920b456e46b9b11a4bb775694aa516c9b5afe2998926acb0c4086eca71529c",
+      "original_flag_group": 0
+    },
+    {
+      "object": "obj-scalar/dng-dng_resample.cpp.o",
+      "object_sha256": "79aafe55246d71cc447d326b2501ea3a03dcdb2ad812dff4d19f567567eff39a",
+      "object_bytes": 98854,
+      "source": "source/dng_sdk_1_7_1/dng_sdk/source/dng_resample.cpp",
+      "source_sha256": "8bf19ca7650e8c10f1f85b985dec41fce022c35ead53ad5deebc05c57a0652da",
+      "original_flag_group": 0
+    },
+    {
+      "object": "obj-scalar/dng-dng_safe_arithmetic.cpp.o",
+      "object_sha256": "2475172597bb182ce051e31a45a75d578c4f3a694c449dd410f21239a40ee07f",
+      "object_bytes": 70603,
+      "source": "source/dng_sdk_1_7_1/dng_sdk/source/dng_safe_arithmetic.cpp",
+      "source_sha256": "3ae6f2a032633941d185663df219fb3f2f145f2cc4555dcf7498ff29e4f67da3",
+      "original_flag_group": 0
+    },
+    {
+      "object": "obj-scalar/dng-dng_shared.cpp.o",
+      "object_sha256": "3e52834b46b9a693b3f22cf801c36974be00aec919e9aa46cf86f2a89beaad4b",
+      "object_bytes": 442798,
+      "source": "source/dng_sdk_1_7_1/dng_sdk/source/dng_shared.cpp",
+      "source_sha256": "d0a574d1e9f69379645c95c29b6a8148f3aca19568174608f769ce964a84bb3f",
+      "original_flag_group": 0
+    },
+    {
+      "object": "obj-scalar/dng-dng_simple_image.cpp.o",
+      "object_sha256": "c3a4ae749a74d0fc3e7f873a5930c0ad25d2230490ac3850d30e292016fa2238",
+      "object_bytes": 43226,
+      "source": "source/dng_sdk_1_7_1/dng_sdk/source/dng_simple_image.cpp",
+      "source_sha256": "8d1986cba07e20e211b6ce9bb75721a2ef1bc797f51715276510d6c4838e4bb4",
+      "original_flag_group": 0
+    },
+    {
+      "object": "obj-scalar/dng-dng_spline.cpp.o",
+      "object_sha256": "dffa17441a135d27b12adc59e017aed91b6ba14a5dbdc60de9a8bc69d964c89c",
+      "object_bytes": 82700,
+      "source": "source/dng_sdk_1_7_1/dng_sdk/source/dng_spline.cpp",
+      "source_sha256": "4680e704bd1ee8b2c061a09574da20a5c1eccc802cc786e8b1ea54166318d839",
+      "original_flag_group": 0
+    },
+    {
+      "object": "obj-scalar/dng-dng_stream.cpp.o",
+      "object_sha256": "a22b3dc98e1847e90c97c9cdd4026195fcd9bcc7261d052e5cd9d2e4b4092dd8",
+      "object_bytes": 140476,
+      "source": "source/dng_sdk_1_7_1/dng_sdk/source/dng_stream.cpp",
+      "source_sha256": "c8f79378e9bda0d6bf69f349531c8880b1d3d858d23f846e19d73460788bd8e9",
+      "original_flag_group": 0
+    },
+    {
+      "object": "obj-scalar/dng-dng_string.cpp.o",
+      "object_sha256": "5221466596e375f5c37a26a157062ffc9f6ba14fbfd14283d2bb347f189d8a16",
+      "object_bytes": 283737,
+      "source": "source/dng_sdk_1_7_1/dng_sdk/source/dng_string.cpp",
+      "source_sha256": "eec14b5fa43962114c8cce252fad118993bf1b23e240b0e817230675c4581b7d",
+      "original_flag_group": 0
+    },
+    {
+      "object": "obj-scalar/dng-dng_string_list.cpp.o",
+      "object_sha256": "6d969aae175485027a1855041baf643955c0ee98072cd7950179b5872363946f",
+      "object_bytes": 89662,
+      "source": "source/dng_sdk_1_7_1/dng_sdk/source/dng_string_list.cpp",
+      "source_sha256": "07623d9ed1a2db190e06e8db67578824cd7ad3a7c80d0ed940b847d421a74dde",
+      "original_flag_group": 0
+    },
+    {
+      "object": "obj-scalar/dng-dng_tag_types.cpp.o",
+      "object_sha256": "da581458ebc65294e299408ef6e33972c1dd7562e57cce41e34fe9b695e1e0d3",
+      "object_bytes": 13237,
+      "source": "source/dng_sdk_1_7_1/dng_sdk/source/dng_tag_types.cpp",
+      "source_sha256": "426d0637034a9861910f8c1bd18cb94cf8b79e9d95056845b1b8ccbe14adb671",
+      "original_flag_group": 0
+    },
+    {
+      "object": "obj-scalar/dng-dng_temperature.cpp.o",
+      "object_sha256": "763dc1da404148f2f03112bdf1ccf63539b58071e58a203fa43547fd36254435",
+      "object_bytes": 100744,
+      "source": "source/dng_sdk_1_7_1/dng_sdk/source/dng_temperature.cpp",
+      "source_sha256": "a747c94d8b56a821631935ed43ff003fbf35a06b6f978160a17310bad66d3427",
+      "original_flag_group": 0
+    },
+    {
+      "object": "obj-scalar/dng-dng_tile_iterator.cpp.o",
+      "object_sha256": "95a2c1af063d5ad32a245cbabeb917b16f21c08b8dbc304ccd82555d09a1c067",
+      "object_bytes": 74616,
+      "source": "source/dng_sdk_1_7_1/dng_sdk/source/dng_tile_iterator.cpp",
+      "source_sha256": "f321b806fb68ad69d1d93b071737aeabcec78beac5b7a4265016bbd502d54b78",
+      "original_flag_group": 0
+    },
+    {
+      "object": "obj-scalar/dng-dng_tone_curve.cpp.o",
+      "object_sha256": "ca6352875a8465d7607a8279dfe24e5767f0fb0ea5af24ab0ee5bcbca15889cd",
+      "object_bytes": 65187,
+      "source": "source/dng_sdk_1_7_1/dng_sdk/source/dng_tone_curve.cpp",
+      "source_sha256": "9ea072a234282fc300e7c6271bd324bc0bfa0d8cfae7294dad6aeaf1aea01620",
+      "original_flag_group": 0
+    },
+    {
+      "object": "obj-scalar/dng-dng_utils.cpp.o",
+      "object_sha256": "266de553b07583bc2777feb1c8d295a805859c2c7beb1040d4c31a9734dfbd66",
+      "object_bytes": 257068,
+      "source": "source/dng_sdk_1_7_1/dng_sdk/source/dng_utils.cpp",
+      "source_sha256": "4fd3e92d16a5f653eea02acfd9f904501dfcaced11ad12b3a3448ff6eb8e8659",
+      "original_flag_group": 0
+    },
+    {
+      "object": "obj-scalar/dng-dng_xmp.cpp.o",
+      "object_sha256": "01408b1793b3d9731803e33f1cb6a223d91796952b075940c840de64c95df3d7",
+      "object_bytes": 11992,
+      "source": "source/dng_sdk_1_7_1/dng_sdk/source/dng_xmp.cpp",
+      "source_sha256": "95ca4a5a86a47380550ded807786cf3e595f9133de7eae59835c6fc93bceb4ae",
+      "original_flag_group": 0
+    },
+    {
+      "object": "obj-scalar/dng-dng_xy_coord.cpp.o",
+      "object_sha256": "4f0c84dda18cc90f92249aeba70d5823e3700c010c6c17db6dc4a2b40f023b1a",
+      "object_bytes": 137250,
+      "source": "source/dng_sdk_1_7_1/dng_sdk/source/dng_xy_coord.cpp",
+      "source_sha256": "fc28d228f6a8811568d42be52f0d45eb714b45aa11224d6e86b09598b94a490d",
+      "original_flag_group": 0
+    },
+    {
+      "object": "obj-scalar/highway-abort.cc.o",
+      "object_sha256": "c67a6280a2c75ac24d83b207199e63b27b95b106d8eab288b1c1ab29096be8f5",
+      "object_bytes": 59419,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/third_party/highway/hwy/abort.cc",
+      "source_sha256": "32412a96faad735e180ac4a3afcfe52e7080bd04cf22b98d9bd4a09bc1e63b9d",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/highway-aligned_allocator.cc.o",
+      "object_sha256": "999c2703bbb345c23af55b6a8d79c9cf50fdb345f9e9dee6f86b62bb1120d2c8",
+      "object_bytes": 27165,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/third_party/highway/hwy/aligned_allocator.cc",
+      "source_sha256": "382116e27809e0004a50ae186ff60600318e418617fbab8efc0d78b12a31f30b",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/highway-image.cc.o",
+      "object_sha256": "e134eb3aa77dd36400e109df854913793ed36ea1c9858948f3f72f1efcdf4f34",
+      "object_bytes": 35901,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/third_party/highway/hwy/contrib/image/image.cc",
+      "source_sha256": "b86827b57abb6b888b722b04d47595c66f6046d942ba419c44c435ecab6a4cba",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/highway-per_target.cc.o",
+      "object_sha256": "0beb56ab82f8d018c5bacb0dfcfd2a4cd7f39cfa727bde841d97c33d12201d1e",
+      "object_bytes": 19807,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/third_party/highway/hwy/per_target.cc",
+      "source_sha256": "8cbd5e4b725ea0e9afa2c7ccc307cf136ebd5adcd0545e7d54c054d1ffff7fa9",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/highway-print.cc.o",
+      "object_sha256": "8e0e86f667a8e3b2f772db31beb6edc0cba16ad827371b852e043e3481ba01d6",
+      "object_bytes": 29532,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/third_party/highway/hwy/print.cc",
+      "source_sha256": "7b903fce125f472c142fee0052f29e15824408e02016a8b961c9debdc602de62",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/highway-stats.cc.o",
+      "object_sha256": "742c8f1ce324543a6864c3720c09fb79c22a932b051c755d8d7ff89676b6cac1",
+      "object_bytes": 58575,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/third_party/highway/hwy/stats.cc",
+      "source_sha256": "329c02dfaf0f48ca9d25bdb7e2b36535e7557f72b57b39be6aedbda9039862bd",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/highway-targets.cc.o",
+      "object_sha256": "ff0f8ee61143e1f7317f693482b8d8563632baa231f7bd4319c1f4ce451dc9a2",
+      "object_bytes": 29390,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/third_party/highway/hwy/targets.cc",
+      "source_sha256": "bbd1402ec7f8a01be2b5965591de643c648b20d7c2a343d72a18997532ae9c63",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/highway-topology.cc.o",
+      "object_sha256": "cae6c97e8646a43e305eea0d0b3864055a7515d0cae15b81f5eb415e974cbb37",
+      "object_bytes": 43591,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/third_party/highway/hwy/contrib/thread_pool/topology.cc",
+      "source_sha256": "fcb3741de3229847accf2f8919ac750822aec235b0df580736041494f10c9307",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/highway-vqsort_128a.cc.o",
+      "object_sha256": "ed935a7d72d32720c900ce3791b91c9fd9db186dbfb612624067a0dd781250ae",
+      "object_bytes": 22456,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/third_party/highway/hwy/contrib/sort/vqsort_128a.cc",
+      "source_sha256": "ccce80baf4a10b4d41a022aea9156369f59fbe320b73dd7f05e56622fc46522a",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/highway-vqsort_128d.cc.o",
+      "object_sha256": "283bfd3ee5b17f8f9139cbcf906090a68d1d8ea3b3c7301903ba39e9992a5f29",
+      "object_bytes": 22486,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/third_party/highway/hwy/contrib/sort/vqsort_128d.cc",
+      "source_sha256": "1f246b99b4b2c49ec8b4ee215a08a148cd7601f89f341c2caa64504191eb5975",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/highway-vqsort_f32a.cc.o",
+      "object_sha256": "2c31864bebe8b6da42853ce99e8110573aa181fb664a69827098b76c628504b3",
+      "object_bytes": 21830,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/third_party/highway/hwy/contrib/sort/vqsort_f32a.cc",
+      "source_sha256": "8530ef0873c43b7bdbcec7e51d8dcf76e28b7055353c1b14bd32523411c40bbf",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/highway-vqsort_f32d.cc.o",
+      "object_sha256": "b7903d0d6d2f2f570128d4c4711dc43247961e1d4f2497bd986bfd61358de661",
+      "object_bytes": 21860,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/third_party/highway/hwy/contrib/sort/vqsort_f32d.cc",
+      "source_sha256": "fd36cc255b49148d7492a8308b9ff8a4cd4e29df51f8e590999491e40cfc6aeb",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/highway-vqsort_f64a.cc.o",
+      "object_sha256": "6e38e2e95aa9a4decbbbd2926627ea642713250ddc65db35cd9503a4629a37ab",
+      "object_bytes": 21830,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/third_party/highway/hwy/contrib/sort/vqsort_f64a.cc",
+      "source_sha256": "a03c1f6e560ec959ddb9b9aa64f26e02e736da83382dfccc452528d0147d824d",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/highway-vqsort_f64d.cc.o",
+      "object_sha256": "779ddd0301ef8e3c687e1aee2d0abe00269a52980ceae858c810d199a5b142a2",
+      "object_bytes": 21860,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/third_party/highway/hwy/contrib/sort/vqsort_f64d.cc",
+      "source_sha256": "96e4f0b8335ecf512c2091913abbeaed44d0260d5da1c6755cdb890ce8fa0fa3",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/highway-vqsort_i16a.cc.o",
+      "object_sha256": "4596cabe7ad8dcbda2b4daa3630e329a4a470ae2452d060d7f099910a9b2ee47",
+      "object_bytes": 21846,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/third_party/highway/hwy/contrib/sort/vqsort_i16a.cc",
+      "source_sha256": "4e2b250b422c4866516706afd2842d4d49279be8efcf26ff563bb6035c3b6a64",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/highway-vqsort_i16d.cc.o",
+      "object_sha256": "1d6bdb487020b67a31dcd654ba083ffe74a365ebf19a90c8ac15e14708e2baa1",
+      "object_bytes": 21876,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/third_party/highway/hwy/contrib/sort/vqsort_i16d.cc",
+      "source_sha256": "2d2ebc00e7d38956c436829078fe09702abddfc2ca3de1cebc2e9375cdc69f94",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/highway-vqsort_i32a.cc.o",
+      "object_sha256": "8f58542bfc9fe7b2dca3b90a8b171a50518c3fee465df4505c90ff7b8ee3ef67",
+      "object_bytes": 21846,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/third_party/highway/hwy/contrib/sort/vqsort_i32a.cc",
+      "source_sha256": "173188b5754d3fee3d31f0158cc8cc794b9953be57f555151ab1656b20e4e147",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/highway-vqsort_i32d.cc.o",
+      "object_sha256": "b31f9a2eae5007bbafa8f0cf77779f40850c1c56705d96446249124904931080",
+      "object_bytes": 21876,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/third_party/highway/hwy/contrib/sort/vqsort_i32d.cc",
+      "source_sha256": "2731c190a2368d1c11e7195932320ef4caabbdafb2dd9bf60cec2b9775344ea8",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/highway-vqsort_i64a.cc.o",
+      "object_sha256": "94807e4ab29f7f02f39a8ecab625f1a4b06ba8ae3f3f909ae80e51be8d98f47f",
+      "object_bytes": 21846,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/third_party/highway/hwy/contrib/sort/vqsort_i64a.cc",
+      "source_sha256": "e1e256a711dc2dc370d1a45a90712e47f2dd96ed7ec9b51bd346776f755ccae1",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/highway-vqsort_i64d.cc.o",
+      "object_sha256": "4b29c91c065c4e8c69947faa4b314e44834890290811fdff30066a356c939131",
+      "object_bytes": 21876,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/third_party/highway/hwy/contrib/sort/vqsort_i64d.cc",
+      "source_sha256": "a2da37f94550f0d1f7638d8b7eac2d1e80236b803d2ce602d21f8e7255b16c73",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/highway-vqsort_u16a.cc.o",
+      "object_sha256": "bffc05388764f7c9e035dc6f9a2474fbdeb3439cd0e76fd6b13104e2c91bcb59",
+      "object_bytes": 21850,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/third_party/highway/hwy/contrib/sort/vqsort_u16a.cc",
+      "source_sha256": "f280df911dd3a1bb5839347fedbf369e25774b879127b2f5b7a7c27fa6237561",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/highway-vqsort_u16d.cc.o",
+      "object_sha256": "709503f8227c67752801daac5ac4e371adaa54fd25154f08b148ca17a05ccc6b",
+      "object_bytes": 21880,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/third_party/highway/hwy/contrib/sort/vqsort_u16d.cc",
+      "source_sha256": "e16c28fe42d55fac6babf82244cde836b228841895aa20ee2e279856427377b4",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/highway-vqsort_u32a.cc.o",
+      "object_sha256": "de6b5dfdcf7c6f5e20aed7773e9ccb2a02177d0104b16ad2bda97b1b54884c09",
+      "object_bytes": 21850,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/third_party/highway/hwy/contrib/sort/vqsort_u32a.cc",
+      "source_sha256": "813cbd12f7edc4acaf36abde88fe70443dfa5d962b04913ede85d97500e90f13",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/highway-vqsort_u32d.cc.o",
+      "object_sha256": "e45fd2ce502c456febef60ff7b72eed182ccc6c8b0eb161844ac0efdc17d46ab",
+      "object_bytes": 21880,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/third_party/highway/hwy/contrib/sort/vqsort_u32d.cc",
+      "source_sha256": "63292f6c4bffe404ca04d548d8225de9ac8e98edc22131dd9da3ced141bb38ed",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/highway-vqsort_u64a.cc.o",
+      "object_sha256": "4cb35512585c9ed84b3d74d12a0e59295cf4807a920a0485cdfde1034c303eed",
+      "object_bytes": 21850,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/third_party/highway/hwy/contrib/sort/vqsort_u64a.cc",
+      "source_sha256": "ad5d7c2c146f060596d7cc01d062bb652787c5cb96e788621acca7056054dfcc",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/highway-vqsort_u64d.cc.o",
+      "object_sha256": "a9adabab388a6b6ab2ffc6a925c23e2e5897b7655ba47d182b2689cc28f42fa9",
+      "object_bytes": 21880,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/third_party/highway/hwy/contrib/sort/vqsort_u64d.cc",
+      "source_sha256": "19ccbcfb7d53631ab14fa36ebef9227d009141a373c2ecf26b845239bf2d65fd",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-ac_strategy.cc.o",
+      "object_sha256": "b5118224d446593d0b5efbab5307eeccab4b5aa7d8fba3d49930abc021565d40",
+      "object_bytes": 43493,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/jxl/ac_strategy.cc",
+      "source_sha256": "68eebf806bffe173070349f356202e0e68da9d9120adb052b69e5c38e540beac",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-alpha.cc.o",
+      "object_sha256": "46f409d1e0129cd43b0109616f2d8121d1579fe79136b03e0056c11e9602b5fb",
+      "object_bytes": 34393,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/jxl/alpha.cc",
+      "source_sha256": "c041c5751c7daeb2fc780adbe605a44d05c95478f0e0ba9f4f8c537a30870ed7",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-ans_common.cc.o",
+      "object_sha256": "3ba8d3a4ccf3accd6249eca847a06e0fde32fce317f9e15affdc3e6d0966bc64",
+      "object_bytes": 91531,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/jxl/ans_common.cc",
+      "source_sha256": "900da59739af296cac8c789ce0716a0a77b3fa4d01f777e97008535b439eddb9",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-blending.cc.o",
+      "object_sha256": "87dc1b1d18f833f3dd808b279a3a8fd43625ee83b677106eda6430a58ad06b08",
+      "object_bytes": 54938,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/jxl/blending.cc",
+      "source_sha256": "62e6581e2553409fd793566de04f2dae83b3c4d5284e61af6901a8826fe1b116",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-box_content_decoder.cc.o",
+      "object_sha256": "c980ee8f2899eaa338ff8209ec0de3b0ad7a43e8bfe42c5fd698a84545692f70",
+      "object_bytes": 23080,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/jxl/box_content_decoder.cc",
+      "source_sha256": "f41eb743f4603ad10c2f4a1f348b16e82fe8ff3eedc08db319fc343b5cc3c484",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-butteraugli.cc.o",
+      "object_sha256": "91f4dfe82259aea67d6bda5a0ef94ee72f55fe3a18fc36d859254765730d2ead",
+      "object_bytes": 435782,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/jxl/butteraugli/butteraugli.cc",
+      "source_sha256": "4b47b9ff13d10ed6a73a259d87696790d5cd9f390d40f1a450942e5237a24f57",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-chroma_from_luma.cc.o",
+      "object_sha256": "b05cf5c027a735705232c268a2ccd86e36cd0580e749d486d09f370c368d08f1",
+      "object_bytes": 45778,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/jxl/chroma_from_luma.cc",
+      "source_sha256": "36c066d724275182c3593e74342cbdc91048432629506e6bdd346e44cb8457c0",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-coeff_order.cc.o",
+      "object_sha256": "35782b6d331f503b8fb30d0b5cb890e496df9ad5f8620b7205f3b91783178a99",
+      "object_bytes": 167062,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/jxl/coeff_order.cc",
+      "source_sha256": "9a58cbd715c14d9b5ca845f379e476fbcb3fd4f576361c03d6090c75089f2341",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-color_encoding_internal.cc.o",
+      "object_sha256": "3ef581dfcdde7bf0c87e4f9e8cffdbef7941cec428f0f591c80156dd4f6b6f22",
+      "object_bytes": 626526,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/jxl/color_encoding_internal.cc",
+      "source_sha256": "32473d7e7db4c5750895206733654d802dfe2627c2a354ef9041eb4dd7cf2d68",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-compressed_dc.cc.o",
+      "object_sha256": "2e113f3fa9f44bc4aeb618057c038203ca5d595949cf45e6d1c6df431b8cf406",
+      "object_bytes": 125684,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/jxl/compressed_dc.cc",
+      "source_sha256": "e51085211af5969d667105af270f2942cff88af6ffcea61313b34ef53b4e7f7f",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-convolve_separable5.cc.o",
+      "object_sha256": "4011ed4f4f5fc7362f84ff85f2ce948584545939497c847e2e1f5f2bebabcf3b",
+      "object_bytes": 178793,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/jxl/convolve_separable5.cc",
+      "source_sha256": "da295016a4f9196280fba0db83fff56dd714a45d84f0af4881e95c9c4e495680",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-convolve_slow.cc.o",
+      "object_sha256": "5376c8e79cd4aaeb176b1e0dc24d0d679d9813b5622c4c54c3475899ccf6efd9",
+      "object_bytes": 77129,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/jxl/convolve_slow.cc",
+      "source_sha256": "ecfe6b71284d6c852ad620f77aa10a6583c4cf8b6016e8f5675d816ae0471754",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-convolve_symmetric3.cc.o",
+      "object_sha256": "cf2e8cb43da03190fd4eefbb795a5e96d4904289847c2febab5d0b75692b3ccb",
+      "object_bytes": 99405,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/jxl/convolve_symmetric3.cc",
+      "source_sha256": "074bac952fb4e1806a10e2d3ce444ece73a46d88a09873a53f0cafdc328f66ad",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-convolve_symmetric5.cc.o",
+      "object_sha256": "ecd5a97f8fc60a4b2bc1eacf191a4152a3229b75cfc65cf83ec93cf5cd3cd460",
+      "object_bytes": 86811,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/jxl/convolve_symmetric5.cc",
+      "source_sha256": "c34bcb6b1f240d71220dbd8165a32b1d0ffa1e556c7e766d1eac5d87a38283ac",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-dct_scales.cc.o",
+      "object_sha256": "cc96c69b2dd284e2c903ba0d1b0ea3036cfaca7bea7c3da3d9651e9a4c6edaba",
+      "object_bytes": 12540,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/jxl/dct_scales.cc",
+      "source_sha256": "3e0c9cb14582f6a2e1f5b0c46fe5955b0a418f6932908ffd13a4a40ea14782f6",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-dec_ans.cc.o",
+      "object_sha256": "f1f78e32540ce575568860d0c85aef14ca2b3a1cf58a1868c28bd21f22ec85ab",
+      "object_bytes": 234314,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/jxl/dec_ans.cc",
+      "source_sha256": "bc5c14019387a9f0e6962332e5b585f85f5eaef0030ab33cf1a408e6c8b7dd8c",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-dec_cache.cc.o",
+      "object_sha256": "88fe39f30c35ab7165fbf75ac7aedaf3c1f4991b2646b3213a185b83c5ef5f00",
+      "object_bytes": 738267,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/jxl/dec_cache.cc",
+      "source_sha256": "d253d9c0805445bb916da3b768d81ca40d8ace4bac328005f685852603617420",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-dec_context_map.cc.o",
+      "object_sha256": "3f304906ed6614826dbab3c210b47b7af597a49cb60f91ab47d1af0b08a1f8db",
+      "object_bytes": 150360,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/jxl/dec_context_map.cc",
+      "source_sha256": "6461ff2565fc92617b3b2d6517091c4fc409ad23498168d09d7387349031ea78",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-dec_external_image.cc.o",
+      "object_sha256": "b5f8e3eb8fd48bfb00f9c9b85d580069a139a65c34adc6149d8ff0e1c3bc8514",
+      "object_bytes": 353123,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/jxl/dec_external_image.cc",
+      "source_sha256": "fe98d8d6647f824ad457eb0ddb8025b6c8bce60b1ff3aefa9de48fa12d514cde",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-dec_frame.cc.o",
+      "object_sha256": "0f24862d149c9d0f2281fd12991134a32ae2b66068318d7deb81074d1469fa5a",
+      "object_bytes": 978075,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/jxl/dec_frame.cc",
+      "source_sha256": "38162b804fa92b372461a5bc8b32b3a7c3bfcb3bf58c3c5aae11e0c32b9d7e63",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-dec_group.cc.o",
+      "object_sha256": "7fa6dfd513858c8c590588d7415ee88a8146a892504b27dd7e7344493c169b29",
+      "object_bytes": 695131,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/jxl/dec_group.cc",
+      "source_sha256": "bbd36ec7dcf3f3c1465388610b5e6df39d22df89abfb777057dce7d4a74085d5",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-dec_group_border.cc.o",
+      "object_sha256": "cabc180ccef55a5cc284c6540190a265f91c7f5f15b00c7cf9f17b7752cb7582",
+      "object_bytes": 65748,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/jxl/dec_group_border.cc",
+      "source_sha256": "40e5b2db4f757b99655edd962f3f9bf273e7b9cdd23f9f0655cb49b01f3678cd",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-dec_huffman.cc.o",
+      "object_sha256": "4641c089565ad515a5231281818e7ccafc5c4706cd686146b6d626d492477d9d",
+      "object_bytes": 76557,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/jxl/dec_huffman.cc",
+      "source_sha256": "f41ce069bb1eac0fc4e36453e6d987c9145dc2a78e65c211232d7d75e811a13e",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-dec_jpeg_data.cc.o",
+      "object_sha256": "3e4b0ae353ea2617e51540d0f3a61e822113c59757afb1c1669cf08beb56917f",
+      "object_bytes": 46377,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/jxl/jpeg/dec_jpeg_data.cc",
+      "source_sha256": "459d8d85f24246c48a1115a1da46c031b0145b49ec5349b4f072951e479467d1",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-dec_jpeg_data_writer.cc.o",
+      "object_sha256": "93c9b1cb752dc31e86bdc86806e41722559b7dc6e18178060042f3ece8b0e814",
+      "object_bytes": 568598,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/jxl/jpeg/dec_jpeg_data_writer.cc",
+      "source_sha256": "ca0411e32ce823ca0d52f8c03dcfe645d324fd640ee958393ff669e2eaccd2cd",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-dec_ma.cc.o",
+      "object_sha256": "4bb9113e0d34f9af9d6c2046c4278b95827e02ea3ffcd55a8ff5a7fa10819d4e",
+      "object_bytes": 164378,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/jxl/modular/encoding/dec_ma.cc",
+      "source_sha256": "2e6c6fc0323b52c8ddbb7ee86aae9d33669b67e643d60bdcb1ee5143a9511e3d",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-dec_modular.cc.o",
+      "object_sha256": "af1bb26612cc381a39337310030710c10cb7199826b9642e57d35751623ee0b0",
+      "object_bytes": 513914,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/jxl/dec_modular.cc",
+      "source_sha256": "56008f8a274a05625df95ec0116e4ee9536fdda47e2bf8fc5e3202a07b7d54fd",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-dec_noise.cc.o",
+      "object_sha256": "32baf05220c4879918904d9597230d054527dca71f073ca05814c7a354c3f38a",
+      "object_bytes": 72061,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/jxl/dec_noise.cc",
+      "source_sha256": "e30992145910ca565f1d29660f8eabbf7c90958469ea32b7f4baab4ad5d39d0a",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-dec_patch_dictionary.cc.o",
+      "object_sha256": "5226fb4e378a8527a0889256546622a2a1c6659e261f6835750fa5d489c1e4a8",
+      "object_bytes": 450854,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/jxl/dec_patch_dictionary.cc",
+      "source_sha256": "1d1e7b83ea9078feb27ae938c9eceaa5e72bfec2029907d6f262387c1810aa0a",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-dec_transforms_testonly.cc.o",
+      "object_sha256": "4c837b75218352ca3934fb255425004038d3c08e7f15e9ccaded98a2af098592",
+      "object_bytes": 369338,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/jxl/dec_transforms_testonly.cc",
+      "source_sha256": "89d367b6d315ccf348c49ce1a98a02fb1fadc7340bec0c2dbd60068b0cdfc250",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-dec_xyb.cc.o",
+      "object_sha256": "666c0c2db53628f19e7ea95db3fff268494b00695bad6aad3d083cc4cfc473da",
+      "object_bytes": 178927,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/jxl/dec_xyb.cc",
+      "source_sha256": "85bbd1b05f9a87656d5788078ca76c56938e6a022018659b699499911549eb0e",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-decode.cc.o",
+      "object_sha256": "0830011a7a5ab7093eed887ee480a31eee08dacb042671aeb6b0df3dbdf893b2",
+      "object_bytes": 1836851,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/jxl/decode.cc",
+      "source_sha256": "aa336c5a367a45dfebba460f5bd532c74d71ccf6e0a7272865266b0b084eebf2",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-decode_to_jpeg.cc.o",
+      "object_sha256": "df48d2decde36151358740ce1dc631769a73c460ccbd626ac0dc12e1d1287182",
+      "object_bytes": 161981,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/jxl/decode_to_jpeg.cc",
+      "source_sha256": "6c5a8abc2e9bb1dcbb671643d044eae44b5718898be088a8c983d40efac496c1",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-enc_ac_strategy.cc.o",
+      "object_sha256": "38bd05a3e7cac6eb11f6ce79b8cfa144363dd74e7838f2f220a465bdad5c16f3",
+      "object_bytes": 547497,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/jxl/enc_ac_strategy.cc",
+      "source_sha256": "388dded51112a03f45e3f1d290ef46389758ce9946c432325c3cc13c93e9da3c",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-enc_adaptive_quantization.cc.o",
+      "object_sha256": "4e39e72bc13a87ce7a0e60c370f5a2fbbf5fd9b44768ae71ed0d50c6854a5a6f",
+      "object_bytes": 905356,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/jxl/enc_adaptive_quantization.cc",
+      "source_sha256": "9467b8fc4593a1c7874b37dec6e235f3f9239aecb7256c70fa86234c75b46888",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-enc_ans.cc.o",
+      "object_sha256": "25ab728261d2b6aadedab7c2754b865c99880bff4b2c2c0578fe6e1f88cf32bd",
+      "object_bytes": 1283907,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/jxl/enc_ans.cc",
+      "source_sha256": "7a1c9ba24f2039f8161d9c66632cfbb00b9aac9ecb2c2addfc3ffb418b8abc03",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-enc_aux_out.cc.o",
+      "object_sha256": "2d10f77380640eab679395792d358615b82a7910783a48e4eec9887143b9e822",
+      "object_bytes": 23309,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/jxl/enc_aux_out.cc",
+      "source_sha256": "e427f5083d4ffc66251ef8c38022d4629e31c44ac5a44e278b093580655126d1",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-enc_bit_writer.cc.o",
+      "object_sha256": "57d4ba719668d50c842de54bf7ed929c950569a1c933c1d301b14f83e666aa43",
+      "object_bytes": 120771,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/jxl/enc_bit_writer.cc",
+      "source_sha256": "9899faeb97f9631051a1ee714ffd9217b4b33c53b1aebb0f92ca8f37a0060248",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-enc_butteraugli_comparator.cc.o",
+      "object_sha256": "686f1e46275ba5c0ecf34d9d842cda47b19036ef1beb8d354af11552c3108e26",
+      "object_bytes": 208941,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/jxl/enc_butteraugli_comparator.cc",
+      "source_sha256": "2eb39465db67b907820b5f988d82899c13b06a7f02caab5724c98c6282c6e6a8",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-enc_cache.cc.o",
+      "object_sha256": "9356e9098351676b73639c95726b905d02700154dfd5888b1a8cc3d6700d46de",
+      "object_bytes": 799826,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/jxl/enc_cache.cc",
+      "source_sha256": "565a32d4731944181f9ec5edbc596f1a8fb40290581c79d7fbfd426103525c75",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-enc_chroma_from_luma.cc.o",
+      "object_sha256": "0e6de0d10900af5ac253cebe3b92e1a101e331695e1e4bfe2bd819f4934d6930",
+      "object_bytes": 510959,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/jxl/enc_chroma_from_luma.cc",
+      "source_sha256": "5337a6fcdf5bf572832636334264455dbcc809c94796ecdd46b0087badf77b46",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-enc_cluster.cc.o",
+      "object_sha256": "9355f0bf98afab0c39fdd20c5d20157380410d4774745b9b0f4b8d01a658a5fa",
+      "object_bytes": 399591,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/jxl/enc_cluster.cc",
+      "source_sha256": "f06be1ee57482ae1879f5a844ff43fd2782a605f60565e8d971463b7a3bda517",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-enc_coeff_order.cc.o",
+      "object_sha256": "83679d54d8e6fc9c8e7a0a3a78552e037150ed18449ab6083b92f4a2ce1573fd",
+      "object_bytes": 338655,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/jxl/enc_coeff_order.cc",
+      "source_sha256": "4589143f501221d9ee56ed8ebd578f673866d8630e145b1fd2e5111d025d067e",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-enc_comparator.cc.o",
+      "object_sha256": "283cc52ec28861031f3b054d5e0204859eae69af6fa66dd27a58e1a5fb6c4501",
+      "object_bytes": 517381,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/jxl/enc_comparator.cc",
+      "source_sha256": "4076667e3bf5c66391c8ff214c8f0f15aa517612e34affd7b44a8dd406333154",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-enc_context_map.cc.o",
+      "object_sha256": "7b83b16dacdfab6ec5a69d0aa5b3dd719f491668cdcf8155d32bf42df4b5be30",
+      "object_bytes": 392778,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/jxl/enc_context_map.cc",
+      "source_sha256": "01a01f38920667316344002c2d2d8bb190fd17b20281da9f88c4a872c7ce8d2e",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-enc_debug_image.cc.o",
+      "object_sha256": "7d936e65450d5d9281464451607a824978f5bc5f4b7de150fbe0b159592bee5c",
+      "object_bytes": 141171,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/jxl/enc_debug_image.cc",
+      "source_sha256": "2299999482623b8a47ef3e0c3017aaf626e08bd63d93df26ce77a02c7faac3f6",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-enc_debug_tree.cc.o",
+      "object_sha256": "7dbe97a78175671c623fe62014eb0674eb4e9bd97f800d1945e316a2a9c1f18c",
+      "object_bytes": 73012,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/jxl/modular/encoding/enc_debug_tree.cc",
+      "source_sha256": "18e0bd6c2b0fd725c3a4bcc2ccabdc0eb56347ed1b784ef3fb3bda9f74f411af",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-enc_detect_dots.cc.o",
+      "object_sha256": "034292baca71ce00e14e4087ba74b97de07f72b1e5258c280ede0a65049a6f4c",
+      "object_bytes": 463709,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/jxl/enc_detect_dots.cc",
+      "source_sha256": "c9b2b700710dec0c2b132d709342d4efad922d787705c442bb73b9a553506a8e",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-enc_dot_dictionary.cc.o",
+      "object_sha256": "0f30a89f571f9aff774c0abec6fdc08a748f6c59f097054c5cd05fe2bd858ae4",
+      "object_bytes": 72611,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/jxl/enc_dot_dictionary.cc",
+      "source_sha256": "8540ea13f88695b3c799019c005c2770303d453caddbcc547370d9253367fb2e",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-enc_encoding.cc.o",
+      "object_sha256": "d1ee5c42b2bd2f87a68f5fbefe19795f844b5107432809e0ededac9c05dedb40",
+      "object_bytes": 904266,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/jxl/modular/encoding/enc_encoding.cc",
+      "source_sha256": "e76334f0561df0c85c9375829e53a6a5ec2f06217125d8ad092de56c408ef0f1",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-enc_entropy_coder.cc.o",
+      "object_sha256": "2ed5efc1e076ca083917789639267f2986c321af2d50c654e72dd190abcd3814",
+      "object_bytes": 97761,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/jxl/enc_entropy_coder.cc",
+      "source_sha256": "2f070d8a464cf7a9c30a9e7c5521bff68a48871967d73c30b84214c01ac117c1",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-enc_external_image.cc.o",
+      "object_sha256": "bd2ccf703ca190463c1afa207279994d1e7e64e82ac11f2ad20d1f5be9a4eaf3",
+      "object_bytes": 114850,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/jxl/enc_external_image.cc",
+      "source_sha256": "f06feb29e14f059e3ccad0738e79c15ebf864f15e45190244097971717e9d246",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-enc_fast_lossless.cc.o",
+      "object_sha256": "fdcbfffe1adef54222f600705030883a5f0fc05c171fa75798ce3e9ff1e72611",
+      "object_bytes": 960668,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/jxl/enc_fast_lossless.cc",
+      "source_sha256": "4ad5b5faaef9e75dd3201359cdb14602b0152ce0af6160076767401cf7d8cf60",
+      "original_flag_group": 4
+    },
+    {
+      "object": "obj-scalar/jxl-enc_fields.cc.o",
+      "object_sha256": "33ea0f1833bde44f8ee811fb8a56ba7aab3e66d49973dbbd76af4a44846fa011",
+      "object_bytes": 177071,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/jxl/enc_fields.cc",
+      "source_sha256": "31d0d03f31d99c8d3dbcecba87de25ab710e0e1f02d6aed977baadcc2ee80d96",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-enc_frame.cc.o",
+      "object_sha256": "2820b1e1670ce802d415531547fc24fbe2f98df9a6638c8f9f77796b162cd17e",
+      "object_bytes": 2796137,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/jxl/enc_frame.cc",
+      "source_sha256": "1601f957e2e64c2dcb2a3b623b0b9744a90cc1395cbca27585a55f771c78e21c",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-enc_gaborish.cc.o",
+      "object_sha256": "a5782c9c16453d063bb4c44f40eeeb54805ec64cf34ce2313d2394b8cc885e9c",
+      "object_bytes": 35518,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/jxl/enc_gaborish.cc",
+      "source_sha256": "1ded3a77ae7a14125a77201a10d4791f870b33c66e5aa55e381766fe70a08078",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-enc_group.cc.o",
+      "object_sha256": "c6911a1949f95ec25df975b72a73059d968eb1e7b49a68b05ea8aba7868487bd",
+      "object_bytes": 531544,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/jxl/enc_group.cc",
+      "source_sha256": "aaa2ed75f3a3e524f409ab992669db8a4d8d6265d23f7083a1e90db556f8ae39",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-enc_heuristics.cc.o",
+      "object_sha256": "cca3d22dd9d18e5c576c28cbaeabdbfa7148abd8fc4cea796a70b0cb0c2b3523",
+      "object_bytes": 1129448,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/jxl/enc_heuristics.cc",
+      "source_sha256": "544728b8f4c6f3a79f8cf32045c755084ab3678bac7c73aed2f86a2992b8c91a",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-enc_huffman.cc.o",
+      "object_sha256": "39e66fec17dd66ab2e2b24c65492a6732abf69c8faea0df2ab4966b27a173467",
+      "object_bytes": 27011,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/jxl/enc_huffman.cc",
+      "source_sha256": "4cae8e84c1868cb526c532845e383f5b21d479729bf1d1da9ce08cb42688e918",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-enc_huffman_tree.cc.o",
+      "object_sha256": "8f1f4775af34b198785b2ff39786300e9ff28d8f1b4b54bf919995f55fda996f",
+      "object_bytes": 148350,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/jxl/enc_huffman_tree.cc",
+      "source_sha256": "4ceffe10712cf67074b7e41c554fb148e3f610991d489ebf88126df6fcf58e68",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-enc_icc_codec.cc.o",
+      "object_sha256": "d538e2584ce0384fa8d2affbb5854c25a661be95e5783c0fbb54646536c22b21",
+      "object_bytes": 400278,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/jxl/enc_icc_codec.cc",
+      "source_sha256": "aab89d620eb1f0f883a8e3f3ef04cf0edd954bed04bf9e468fc8a98fde6ed170",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-enc_image_bundle.cc.o",
+      "object_sha256": "703be2f5f078bdb509416493914dfaba15a9ad93c8cf3c0b02e5e8f821253b5f",
+      "object_bytes": 196602,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/jxl/enc_image_bundle.cc",
+      "source_sha256": "9768b2a0f998294ec594f201d9cd2cc78b10edf2de9daff969b09856b8d4dc4a",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-enc_jpeg_data.cc.o",
+      "object_sha256": "5a4cee20960ecedcfd911c77be79507942cd1e8839855f3d4b90ae0927b00f3e",
+      "object_bytes": 448735,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/jxl/jpeg/enc_jpeg_data.cc",
+      "source_sha256": "4e0f9a846c2414d3ffe5fe2632d1712023ef53b054b79d56bad40e6aaf077fb5",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-enc_jpeg_data_reader.cc.o",
+      "object_sha256": "3b2e6f4fec768451c335dc2fe6ed597344883ae1311e3ec27ed06c94381063d9",
+      "object_bytes": 407334,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/jxl/jpeg/enc_jpeg_data_reader.cc",
+      "source_sha256": "bf55dea177dff069600775107b93392622b16d1e792f7854a788c358ebbbee32",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-enc_jpeg_huffman_decode.cc.o",
+      "object_sha256": "4a6be4903709beda961971d6be0acf7587ebb4dc07a9587e17da7ac3c6c053eb",
+      "object_bytes": 17019,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/jxl/jpeg/enc_jpeg_huffman_decode.cc",
+      "source_sha256": "7779086ec92b17272f645d8b6813576c95142ba00b0365b10414aedc7d347546",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-enc_linalg.cc.o",
+      "object_sha256": "6f59675dcfd6b942432c12783def597311779e9d16ae63271c201c6adfbf6843",
+      "object_bytes": 19006,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/jxl/enc_linalg.cc",
+      "source_sha256": "f0749ebbe395d0fc7066c3a144584eaf4c8ec325a2eae42a7bdfd9658134b07d",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-enc_ma.cc.o",
+      "object_sha256": "86fc42391b0ec14d9ce4b07829bac9d6bee2a14014b0dc437ab97422d5b79d39",
+      "object_bytes": 816624,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/jxl/modular/encoding/enc_ma.cc",
+      "source_sha256": "f9df65313011405b91ab7324a9df45f7cfa432032db6762acaf1ba3227e888fd",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-enc_modular.cc.o",
+      "object_sha256": "1df169b2d0c6f390e58f02034b564830d6046e911b6043cf8189c1984f11d0e3",
+      "object_bytes": 1889379,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/jxl/enc_modular.cc",
+      "source_sha256": "9b32132188936029a4a78a6a3547347ddd595d298caf4b132415a01620e2b651",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-enc_noise.cc.o",
+      "object_sha256": "2ebbc84ed7f524123eaabb2c5ec29b804d274372b09033fca9aa6023fd59e400",
+      "object_bytes": 174495,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/jxl/enc_noise.cc",
+      "source_sha256": "f4375a04843c36c081c11d078947aeee334b0fe4c8ae07c76b27091f8aa4ba62",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-enc_palette.cc.o",
+      "object_sha256": "1ce859224c6f1ca092ee90fc69e0da33cf6facc6c5613d76b06965835147c1aa",
+      "object_bytes": 1319537,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/jxl/modular/transform/enc_palette.cc",
+      "source_sha256": "9d04dbcf0fa72ab2e1887f4c5b5a9cf207f421d61b3b0b7327b1aba56a4c2cd3",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-enc_patch_dictionary.cc.o",
+      "object_sha256": "0d122d4c3f71ca2e881f48c3405f934b3c496690c96fe460796830b2826ead50",
+      "object_bytes": 1558741,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/jxl/enc_patch_dictionary.cc",
+      "source_sha256": "39c4acf6293ea3f9fdfee526e38846e4f0435f646c347af5d70c31ba1681d503",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-enc_photon_noise.cc.o",
+      "object_sha256": "7e4837daaa80804e858e7ec770504e8243593244fa63cbb371219b31dbeb28e6",
+      "object_bytes": 19559,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/jxl/enc_photon_noise.cc",
+      "source_sha256": "66d9b209d1b45fb39c8b288ae4f09dbb483e1c014b9762a81180c2d1145b3dd6",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-enc_progressive_split.cc.o",
+      "object_sha256": "c392b35978441737e89f4a2b2e333aacf812528bc3df5c7ee83a6b0f74a0537a",
+      "object_bytes": 26266,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/jxl/enc_progressive_split.cc",
+      "source_sha256": "02305133f7b3b25be5c1be907e81124b4e3660ca4969089b79005b9f97548814",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-enc_quant_weights.cc.o",
+      "object_sha256": "77d27c4d0be5c399511b69490216e1ad5b7c1cf87996ef3ae5167864d8fd0e21",
+      "object_bytes": 269529,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/jxl/enc_quant_weights.cc",
+      "source_sha256": "b587282dd22697306c1e63fffb57b3eaa008e09e64da7a7032e2c949d1102155",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-enc_rct.cc.o",
+      "object_sha256": "820aa650fd1e4723c0995ec50498da520919f3d736b392f53a15eb564eeb2bff",
+      "object_bytes": 41709,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/jxl/modular/transform/enc_rct.cc",
+      "source_sha256": "44947708054e80553f31f4aea37a6f9553d3112c6904f30d4768f85f5572bf0b",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-enc_splines.cc.o",
+      "object_sha256": "44434d22c685cc9ca904ffaf8bccc4c620c493d9e9fc41d0c48b4a05817d170e",
+      "object_bytes": 247631,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/jxl/enc_splines.cc",
+      "source_sha256": "466eb57ec8a2c36f58d4267937df63c19ef4e19d2d12eb01226e2108de46c9f7",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-enc_squeeze.cc.o",
+      "object_sha256": "717560ce83708bae4e21ede6becb9b1ce50b3b81540eb66ec2fdf1538551c420",
+      "object_bytes": 108876,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/jxl/modular/transform/enc_squeeze.cc",
+      "source_sha256": "778c447c73e670218ddcf7afa67269d6a7c427b31da7f51d69b3778e264fc9ca",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-enc_toc.cc.o",
+      "object_sha256": "6f836f4d20ee53e8af172098715e8d83d1415bec97052c0aae83434ac31ef4f2",
+      "object_bytes": 100380,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/jxl/enc_toc.cc",
+      "source_sha256": "6a92df24cba214d41d199276e6e2c5dfeeb3de315039dd1e37753696a9034ed6",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-enc_transform.cc.o",
+      "object_sha256": "d1b5b970ec84d7a1de70719b50e4e829a51ac480df08784d7fcfa1692152bae0",
+      "object_bytes": 67020,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/jxl/modular/transform/enc_transform.cc",
+      "source_sha256": "c3e5f55d54dec9cd6967709751d6fc4273935b320c21031e52734ec139af64ce",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-enc_transforms.cc.o",
+      "object_sha256": "5c59ec2eb20a84e07a1e40d2e1a153600364253bcf1cc81a01d9f817c67fe63d",
+      "object_bytes": 382016,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/jxl/enc_transforms.cc",
+      "source_sha256": "1de4e3650815e26052af43cc195014b3f3f97eda8d82aa4459b5b496bb2fd30c",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-enc_xyb.cc.o",
+      "object_sha256": "f013ceca5a6c62fb4d500ab673b8811991bcd554d4e835dc2404ba4b868e1563",
+      "object_bytes": 194741,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/jxl/enc_xyb.cc",
+      "source_sha256": "47443d4cbdc810bb2072701334e5696d149e600a8784276e4a1da4cd81526e85",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-encode.cc.o",
+      "object_sha256": "f28e19604ae7feff514d3468f6a6a77390568822191bf6614f47840dc3745b72",
+      "object_bytes": 2251196,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/jxl/encode.cc",
+      "source_sha256": "18bdbfe2f15fb8779b20c2c105a42b0194946e9b7b5e305dbd550b527096ad52",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-encoding.cc.o",
+      "object_sha256": "4de1248a933b63437ae51aceb60415c3ba87425332732975221f5f7a2713ee0b",
+      "object_bytes": 761391,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/jxl/modular/encoding/encoding.cc",
+      "source_sha256": "b8c83652f2a768328f53ca00053949be6a6f4e94d1cdd975819a4f86c78e5b6d",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-entropy_coder.cc.o",
+      "object_sha256": "509d2072ddce2aadcd1882cc718f50c829e77cb4c9851afa4f7b39176e164c63",
+      "object_bytes": 129499,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/jxl/entropy_coder.cc",
+      "source_sha256": "780064f7bbb5f9697bc870c74f2695bca6be36e3b368b976a5df982fe65e1e40",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-epf.cc.o",
+      "object_sha256": "37a2b319d73b8fb52697985e2843719bf969a2f8c5fca8e39869809c533442ea",
+      "object_bytes": 26233,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/jxl/epf.cc",
+      "source_sha256": "828542fb20e62e2e7eb4472dee77dc183cca276356086e2a9be3d0d95b880bc5",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-fields.cc.o",
+      "object_sha256": "9bcd3811b3bff4fbf7b010f521ed0612e6e2b6c993583aa45a6dd10184ed50b9",
+      "object_bytes": 136658,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/jxl/fields.cc",
+      "source_sha256": "45706f870df2c6da99c5b3e0f0bbaddeb72ce22b58247407bfdd52b565b7b5b8",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-frame_header.cc.o",
+      "object_sha256": "628ee00ccd76035178e4c7f1e895fd741ca216e25588636299c40ea884b4ddb5",
+      "object_bytes": 176295,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/jxl/frame_header.cc",
+      "source_sha256": "fc687683e08242ff03aa6b5b9a8c236328e7d3167fb94395890193b3192962af",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-gain_map.cc.o",
+      "object_sha256": "9d3b6db9a93ba9122da301899fc12d38ee29eee239039f1e3e7f27d682236d51",
+      "object_bytes": 619679,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/extras/gain_map.cc",
+      "source_sha256": "20d086f665fbf0caa482735d5a6516ec79775b0333e3a92f1f858854f45fe1f6",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-headers.cc.o",
+      "object_sha256": "fc1c1cca560241fc6917508eeaf4d7949dfad11d9fb7e5f2254ef59592851449",
+      "object_bytes": 45408,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/jxl/headers.cc",
+      "source_sha256": "d420e11b6fe78aba8b387382754fb8fdfd66638431931a4b89aa5b067b34228b",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-huffman_table.cc.o",
+      "object_sha256": "e3dd92122c0debee5d3d5e9268630e2c0acd2c423b0313270d79c020abe26e23",
+      "object_bytes": 38529,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/jxl/huffman_table.cc",
+      "source_sha256": "3d284881132f53fb12951b2f08d6fa2cf3f74757594cefefd506b9112974d03f",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-icc_codec.cc.o",
+      "object_sha256": "c37311dc33c8dd38eabfe1c27b1f87618638c8803ad79ed78abb1742ca91e90c",
+      "object_bytes": 110400,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/jxl/icc_codec.cc",
+      "source_sha256": "1f8795d844077d8cabe8e5cc1d7bd440a84f16f9f67ada8c02ff2bc1c8c9ac71",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-icc_codec_common.cc.o",
+      "object_sha256": "ccf788d5c7aa0cb68e51227559a252ca132c76d2d2496347823f6a898b15cee6",
+      "object_bytes": 38537,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/jxl/icc_codec_common.cc",
+      "source_sha256": "7ab321165dfafded9f15b66a40e15ace039a34b200feafc091bc2db94bc5292a",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-image.cc.o",
+      "object_sha256": "ed41bcd46f3289c3913aaf36fdf37339cbbb11c734f4586b9bf7f21197e382fa",
+      "object_bytes": 25229,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/jxl/image.cc",
+      "source_sha256": "b4179fc3fb64d24ee4ae324968aa3fac6196b7eaff72689d3ec3c9b07450bb4c",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-image_bundle.cc.o",
+      "object_sha256": "31c3426d4d70d980f0171126576e89f769001b6e2072bdad76873ef76ffde4a2",
+      "object_bytes": 147001,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/jxl/image_bundle.cc",
+      "source_sha256": "4cce9601df72cb581f85017ad0f683d549363035c03d4ad9e99fc3d537d6a3e9",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-image_metadata.cc.o",
+      "object_sha256": "cf7fb06e318d3bbd5cda7f5d227006a0e292ed486edb65976f830c52f340805e",
+      "object_bytes": 213041,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/jxl/image_metadata.cc",
+      "source_sha256": "09d396828e24196d465d2c32f248fc03673f4ea6345f037f5d4dd4fa7b10e32e",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-image_ops.cc.o",
+      "object_sha256": "d80794687f5496a64fe80a086424c6a0d98f8cf91d1aab82693f7e27b20f8440",
+      "object_bytes": 55773,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/jxl/image_ops.cc",
+      "source_sha256": "1ab8bc1635799b5fa1eeb2b8927fffb5f15d0dc760aaf993cdc89ac9ad4a7e92",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-jpeg_data.cc.o",
+      "object_sha256": "65d834cd82679bfde5d575cfacd3a1bb67f6ccf518ea94336aa10f4f6a042cf7",
+      "object_bytes": 371685,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/jxl/jpeg/jpeg_data.cc",
+      "source_sha256": "0f44e79eed53dd4ffbf72265b592bd37062c45d9d95b05f8095341643f72f696",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-jxl_cms.cc.o",
+      "object_sha256": "0a31c8c8b9d1f5b537a083641029c0f6e673f26f8cc573a9085e3c7593174d22",
+      "object_bytes": 791822,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/jxl/cms/jxl_cms.cc",
+      "source_sha256": "2144421a58577ea7023613b7d031904e41701b731201d89c26f694838353fbc2",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-loop_filter.cc.o",
+      "object_sha256": "d13284f7b23654a9149945de1a0222fbd5d39d9577fd5e3ec8454b79203e5a28",
+      "object_bytes": 27974,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/jxl/loop_filter.cc",
+      "source_sha256": "89d36b94ccb403883767fde7802b18116742cf2c47f05acfd73266d25f55d800",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-low_memory_render_pipeline.cc.o",
+      "object_sha256": "7ccee74650810797c1b235cf6dafc03dfea2a3bc38cd18ff66250f9c19104681",
+      "object_bytes": 674158,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/jxl/render_pipeline/low_memory_render_pipeline.cc",
+      "source_sha256": "fe2442b46f2d91ecb21c23f713316f11fd2c7e33bf58080c472d22ee7f98e227",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-luminance.cc.o",
+      "object_sha256": "d066b73cf1525bbce8f8355a3b3d424aa6dcc73bb71d7a4beb5981dd99e32b7b",
+      "object_bytes": 17036,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/jxl/luminance.cc",
+      "source_sha256": "fec79995dd1f6ba68358334a03f699c54437d6c25d7356ab74db6d6b9bb79b3b",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-memory_manager_internal.cc.o",
+      "object_sha256": "f7b791406bb3fe37303da31cc7ecfc2211205fc71abbf6fd9838f9cdfe53bf5c",
+      "object_bytes": 37997,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/jxl/memory_manager_internal.cc",
+      "source_sha256": "a8d27ffe643a711f346b50489fef2a9420dde344e22dd0a930839b0cf61fa3a8",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-modular_image.cc.o",
+      "object_sha256": "a92f6cfa86441112e1de03c03d1b6382be4c46cd6967688e1191f15d058e3d5f",
+      "object_bytes": 213055,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/jxl/modular/modular_image.cc",
+      "source_sha256": "7a37025c590e8077be8df9ab815fcf06b36e059c088151c2b49643de3dc176f1",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-opsin_params.cc.o",
+      "object_sha256": "8675dec48221efc6ae36debbf842c8b1bd93c52baf80d3b4cafbe4cc47685144",
+      "object_bytes": 18975,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/jxl/opsin_params.cc",
+      "source_sha256": "9050aab9f7d6fa44fee9df326031be5c0f7f2d4c1b49f7f086538a18c5e3419b",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-palette.cc.o",
+      "object_sha256": "cf1c802f4e91a20cd27a3106eafbe85d0c440127623e924a3ec16b733a9a0c0c",
+      "object_bytes": 258271,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/jxl/modular/transform/palette.cc",
+      "source_sha256": "736299f2914dcd14efe0cb2446e63eefdaf63a84c00185af151c77d44a20bec7",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-passes_state.cc.o",
+      "object_sha256": "a640ae390e09f6726b595ac9194c77a0502772e47ce0e1d46c04734ece3c11e4",
+      "object_bytes": 111816,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/jxl/passes_state.cc",
+      "source_sha256": "5a19a6ea375d8bcbfe4e12ded2549510a7e97de58cf47edf11d995e40b1306bc",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-quant_weights.cc.o",
+      "object_sha256": "9ed8504b7516698aa28de0889a1a9efb183d183ebd6ec5413a1663d1396ed1db",
+      "object_bytes": 241438,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/jxl/quant_weights.cc",
+      "source_sha256": "c1c63ad1eaaa1b9ad6b75c2d568fe06504cd7e957acc3078aa64417fbb3fe911",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-quantizer.cc.o",
+      "object_sha256": "7a75881a51bf921b7799fc6165acb6b93f6a0cba874fdd4e4f77bb7088761120",
+      "object_bytes": 99036,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/jxl/quantizer.cc",
+      "source_sha256": "4e0a3c9e7a78eb13a17b0b8ff0180e1011fed7ecfd6d6a09f8deecedfd9fc742",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-rct.cc.o",
+      "object_sha256": "9aff833bd7f6f6aa7c463fcec935ac176db3ba2ff5da828f1a636f6d107d1b71",
+      "object_bytes": 82138,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/jxl/modular/transform/rct.cc",
+      "source_sha256": "1ee8feb3897978c1d79ee0a66283e8486d8b22eeb103639160adb94d31cc5d48",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-render_pipeline.cc.o",
+      "object_sha256": "01806171c40cf2efb821c8c1ab29882b7a850b83f3d8d12e493dbbb31470f474",
+      "object_bytes": 281844,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/jxl/render_pipeline/render_pipeline.cc",
+      "source_sha256": "75f4ceadbce6fae9cc3e82705fb397d5d74596114a660b1746f733265b93999a",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-resizable_parallel_runner.cc.o",
+      "object_sha256": "dd05b9efff37e74aeeb43d37930a852023fb4caaba18bf62ed09ab8081383e0c",
+      "object_bytes": 131291,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/threads/resizable_parallel_runner.cc",
+      "source_sha256": "9d7d11fb0c11b5e0677a1b256d1236771a39399f9a4b28d32653c4ffe4dc13a8",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-simd_util.cc.o",
+      "object_sha256": "1583df3ee272c911721a1d515feb20be72f2b092c911ace418023db0ce530c87",
+      "object_bytes": 15387,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/jxl/simd_util.cc",
+      "source_sha256": "a9b24203b4e32827c706eec5df5087917930c39d6644bf0db0c79f54a1d5bbcd",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-simple_render_pipeline.cc.o",
+      "object_sha256": "dd5d44acaba210d91eaaefdeeb79b352d89abc51adae7641d5e79202b2e68943",
+      "object_bytes": 278882,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/jxl/render_pipeline/simple_render_pipeline.cc",
+      "source_sha256": "8a623253f7395e90ea4d631294e0d91153d4f99532dc710fbfac56b593f19483",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-skcms.cc.o",
+      "object_sha256": "da0125d82c2b65968ef0b7f3aed372e1b147198050c99adb83a114703719eeab",
+      "object_bytes": 201579,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/third_party/skcms/skcms.cc",
+      "source_sha256": "2545c1133c79e574356f676e04d8e442ac8c889272aa09687f6c5d42874b04bd",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-skcms_TransformBaseline.cc.o",
+      "object_sha256": "3ba64fd13beedea378f47402de1189f0d3264a803119c75689d053e260e8a4f7",
+      "object_bytes": 235870,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/third_party/skcms/src/skcms_TransformBaseline.cc",
+      "source_sha256": "8f1f0977c03ad208d11ecd3ed300c07d591596c98afb23f04512b430bf90e78e",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-splines.cc.o",
+      "object_sha256": "942648c3a283e3a4a0be6c92314ec5fde729d7f62e952c67e2b7b984f3913e6b",
+      "object_bytes": 553408,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/jxl/splines.cc",
+      "source_sha256": "68cd51ab7790e4aa1a4f3199405837fff07a1478bfd0282fe70809f5dbdee041",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-squeeze.cc.o",
+      "object_sha256": "dbf596903fbfb757b67c7e211a389fd415e4bb4e37e25c7ffa36a27619f3bd25",
+      "object_bytes": 180378,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/jxl/modular/transform/squeeze.cc",
+      "source_sha256": "5ce03b45ec6f3152f0f728e9e14ea0ffd7462b41bd058a4e323019ddad8e1963",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-stage_blending.cc.o",
+      "object_sha256": "ea280bf99e632b7c55bcceac805411a008c21303371be09883826d3739cb224a",
+      "object_bytes": 181742,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/jxl/render_pipeline/stage_blending.cc",
+      "source_sha256": "d38d26243c87fbbb84b41a66c01e57fdf8fa0930ce1da7a53f06326c32ddb8c0",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-stage_chroma_upsampling.cc.o",
+      "object_sha256": "ee34e9cc9903d85c75fd8fbfcec54e3425e41ea0740315d9a6474b001a2456b7",
+      "object_bytes": 64229,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/jxl/render_pipeline/stage_chroma_upsampling.cc",
+      "source_sha256": "9f3497889724950a1b28cad71ca1e247df678c9516c393583b1ef274e0adcfa8",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-stage_cms.cc.o",
+      "object_sha256": "a5906febc20a93a881651740a3be8ada767b45346fc9eb6a178e588d6e0b863c",
+      "object_bytes": 168673,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/jxl/render_pipeline/stage_cms.cc",
+      "source_sha256": "cf841d0d64c861c2026c465506089ab899774fa448987b6e6130d5feb08a1f8a",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-stage_epf.cc.o",
+      "object_sha256": "7e2897bc125c04a5d3f73665516fa1f0c58b5beb5fa1b4f3beae8255bd85d472",
+      "object_bytes": 131886,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/jxl/render_pipeline/stage_epf.cc",
+      "source_sha256": "3280528f75a15d87c600f90dfd197fd50c235acd8f8669a493457bf9a9ae4268",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-stage_from_linear.cc.o",
+      "object_sha256": "4d3a2fac9583a34c107c486d071eba406017d1f11b31050c9d35d2cf943e7335",
+      "object_bytes": 214054,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/jxl/render_pipeline/stage_from_linear.cc",
+      "source_sha256": "2be9271c57354d601fb0a01777b7d136e6933aaffd9066c6a71327104d74c03f",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-stage_gaborish.cc.o",
+      "object_sha256": "e14b1685f17f6a78e942e665557387c08ed5a68ed467f03ba8f6d259dc8e8ace",
+      "object_bytes": 57301,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/jxl/render_pipeline/stage_gaborish.cc",
+      "source_sha256": "325438da38d647782590182c724976b5e415e0d622f8546ce725d91726913796",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-stage_noise.cc.o",
+      "object_sha256": "7dc6d7165215bb7f267035d6e42e558c79ae589dfea4f0750c456dd113621af2",
+      "object_bytes": 95634,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/jxl/render_pipeline/stage_noise.cc",
+      "source_sha256": "8fadc4557b6b5c786f99557c0e030babbe0010f40816293626c1441a9772a86b",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-stage_patches.cc.o",
+      "object_sha256": "1cd033c9776786c61bd42361f26f18390bb4f5317fc140948e457bdcb8552e1f",
+      "object_bytes": 69355,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/jxl/render_pipeline/stage_patches.cc",
+      "source_sha256": "db599194bd6357994986063470a5e3ee6f1b02ed8eeadb033389709e81d4da24",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-stage_splines.cc.o",
+      "object_sha256": "cc4afd1f17f3f934c1489bef705dad5f04530be3fd0ef1d543209cc82f0d3fec",
+      "object_bytes": 45684,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/jxl/render_pipeline/stage_splines.cc",
+      "source_sha256": "22c036c9abacaae39386174e8e447d280e646ff3dabb80f86432824fc7156f1e",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-stage_spot.cc.o",
+      "object_sha256": "4d84a9a1e013446281dfc7cb65698ab47f1acf46a4548f5ded2d3e4d0b5c75cc",
+      "object_bytes": 45717,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/jxl/render_pipeline/stage_spot.cc",
+      "source_sha256": "f06aa577e7b0da81b1f41fdf67423878fcf221767253b0b349886a2d40c682d8",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-stage_to_linear.cc.o",
+      "object_sha256": "c0c1564c264576696ed30431eaf5e291201f5bbb64846c5c4aba54d277cb44ec",
+      "object_bytes": 219707,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/jxl/render_pipeline/stage_to_linear.cc",
+      "source_sha256": "11280c290cac0772bbbdfab691aba6bd18aedfb0f657d9018e6ab829f57d7e78",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-stage_tone_mapping.cc.o",
+      "object_sha256": "2b7a007b6554ec03c88ed9d3fbaff8f7b29ff8e5172ce257265c2cea5eb3adb1",
+      "object_bytes": 201261,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/jxl/render_pipeline/stage_tone_mapping.cc",
+      "source_sha256": "508ad796566b5d8c26b5fe8a64b513fb651454ff600168afb79410b5680e306d",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-stage_upsampling.cc.o",
+      "object_sha256": "8f8d99bb0d107db6a608948a75e859141c4494fa63fa2cb34542c6df5bc5d906",
+      "object_bytes": 83238,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/jxl/render_pipeline/stage_upsampling.cc",
+      "source_sha256": "1abf31be228ecd5ced46cf2258d6cb477a7be977c0dedc368332fb393e50ae22",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-stage_write.cc.o",
+      "object_sha256": "4b994d65a1a1256ea50d62c8065097e9c04bbf8de34decfa947286873f73899c",
+      "object_bytes": 378211,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/jxl/render_pipeline/stage_write.cc",
+      "source_sha256": "60bc45df384426523bf1c2c2bfbc387ef2419d748e70c0653b6050554f41ace7",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-stage_xyb.cc.o",
+      "object_sha256": "ac6d8f254a2092429cf0436ff6dda8a3aaf6185b849cd86f2958f19a9cdc4546",
+      "object_bytes": 76241,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/jxl/render_pipeline/stage_xyb.cc",
+      "source_sha256": "89a8046ebe491147045abf3240fd843b752c2f3b01cbd35224fc6dcbb73941ea",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-stage_ycbcr.cc.o",
+      "object_sha256": "1781b32f63c55cd0a3d2ded157ea0ccc5fc0c92e26e896438b664bf7e3386981",
+      "object_bytes": 51184,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/jxl/render_pipeline/stage_ycbcr.cc",
+      "source_sha256": "0942f3aff5d2591cbbf798762330c8ca8907e8fc4133477972caddab47c61b30",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-thread_parallel_runner.cc.o",
+      "object_sha256": "c1ac41f83fbdd0087326b319a2ae662f502517fcb114c6f35afc3e4f190fe4aa",
+      "object_bytes": 21539,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/threads/thread_parallel_runner.cc",
+      "source_sha256": "10a7e3bd230f7a3f95830331cb476b9c3dfdc4ac72de0f82bac6840f59a7d716",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-thread_parallel_runner_internal.cc.o",
+      "object_sha256": "77edfdbe2ba2b5c4e05eab57efc67e1c4dd81d634509f87a6ea0f1793f8108db",
+      "object_bytes": 143786,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/threads/thread_parallel_runner_internal.cc",
+      "source_sha256": "c33be883c717acb3b8cf2dbbded8dfb3e6fb69056e18e8bf8846c84f5bb5802e",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-toc.cc.o",
+      "object_sha256": "0ed2e9dddea96f815112de406a6fcbb8ed227a82151c3dce3d43aad43a76b648",
+      "object_bytes": 102802,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/jxl/toc.cc",
+      "source_sha256": "cc79d6c1f88ef191951cbc250cbe80b5c500440ae3fc5a521c12709814f2ceae",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/jxl-transform.cc.o",
+      "object_sha256": "37f7142cef984b69ce56bb1418ee0e3ba58566ebdc6a325afb3c20a32595f5a6",
+      "object_bytes": 91524,
+      "source": "source/dng_sdk_1_7_1/libjxl/libjxl/lib/jxl/modular/transform/transform.cc",
+      "source_sha256": "3aa0ca7690568b33f0b7b7bb9bf633753b343e0dc8396030e6d9cc0b254c1975",
+      "original_flag_group": 3
+    },
+    {
+      "object": "obj-scalar/zlib-adler32.c.o",
+      "object_sha256": "478ebc316f6b3c7372c4cb4ebac24f0ad0834caacee09e1975b1ad2cd14db914",
+      "object_bytes": 17572,
+      "source": "source/dng_sdk_1_7_1/xmp/toolkit/third-party/zlib/adler32.c",
+      "source_sha256": "d7f1b6e44fee20ab41cef1d650776a039a2348935eb96bcbd294a4096139be3a",
+      "original_flag_group": 5
+    },
+    {
+      "object": "obj-scalar/zlib-compress.c.o",
+      "object_sha256": "39c95b561aa0c9c4c0b04281d28e5545e35d9e37b987f5aa24d6e012496ac828",
+      "object_bytes": 15630,
+      "source": "source/dng_sdk_1_7_1/xmp/toolkit/third-party/zlib/compress.c",
+      "source_sha256": "4a46dbf1f60fbc6340020e09a04bddafa81a7e2fddaad81223a8171da0e6e36f",
+      "original_flag_group": 5
+    },
+    {
+      "object": "obj-scalar/zlib-crc32.c.o",
+      "object_sha256": "e1a3e7746c28904047306e8846883bfe107fc8dcfe5a8a6bdc29bba0657003ae",
+      "object_bytes": 28667,
+      "source": "source/dng_sdk_1_7_1/xmp/toolkit/third-party/zlib/crc32.c",
+      "source_sha256": "a04af273e83ecc351bf3794974ab2098d8d960df4044b7b44734c41443ee26d0",
+      "original_flag_group": 5
+    },
+    {
+      "object": "obj-scalar/zlib-deflate.c.o",
+      "object_sha256": "75fb6c772a235425df46b05e010d459355055b0970683ca02e8ea2607d361353",
+      "object_bytes": 77490,
+      "source": "source/dng_sdk_1_7_1/xmp/toolkit/third-party/zlib/deflate.c",
+      "source_sha256": "11fd6b0328b65c4ad4b5c204d892a97a9083628a7e77dc47836c8e0c799f8da0",
+      "original_flag_group": 5
+    },
+    {
+      "object": "obj-scalar/zlib-infback.c.o",
+      "object_sha256": "4216ec305db0f97e9b330bc46da90b26de8a90f41a9c3c52c5f785cc29120da0",
+      "object_bytes": 30374,
+      "source": "source/dng_sdk_1_7_1/xmp/toolkit/third-party/zlib/infback.c",
+      "source_sha256": "abe44873b5af2ea68ea1d281d915b2800f1832f846d2c05442a4711adbe6f269",
+      "original_flag_group": 5
+    },
+    {
+      "object": "obj-scalar/zlib-inffast.c.o",
+      "object_sha256": "875b70504dca2c9ad138e72c01ed2de8cbd3db8ce1aca91c51672824b57d45a0",
+      "object_bytes": 21440,
+      "source": "source/dng_sdk_1_7_1/xmp/toolkit/third-party/zlib/inffast.c",
+      "source_sha256": "4d496ab2a3d29df5fadc3dbff6067e039806aaceae6cfcd09ea77d46c2b848fd",
+      "original_flag_group": 5
+    },
+    {
+      "object": "obj-scalar/zlib-inflate.c.o",
+      "object_sha256": "e8a240f3e9d6064cd4c5fb44fa40dc5ab2b2f43986bafd5bb428bff3b399c42f",
+      "object_bytes": 64984,
+      "source": "source/dng_sdk_1_7_1/xmp/toolkit/third-party/zlib/inflate.c",
+      "source_sha256": "8b6c599c3563c14c447c47db0d7dc9a16e8c246a078ec95a169ddcebaaebd811",
+      "original_flag_group": 5
+    },
+    {
+      "object": "obj-scalar/zlib-inftrees.c.o",
+      "object_sha256": "6680ba32b392adacac0fbf7ec82f6fab8cd9b4135eff249b0fcd7c5ace2a15fb",
+      "object_bytes": 17034,
+      "source": "source/dng_sdk_1_7_1/xmp/toolkit/third-party/zlib/inftrees.c",
+      "source_sha256": "1960ca67384376f65b6ce8c08fdb501f8eb33923e11ef5f61a855708c6cb0a8a",
+      "original_flag_group": 5
+    },
+    {
+      "object": "obj-scalar/zlib-trees.c.o",
+      "object_sha256": "917dc1ee7151fe044e2c28bb527baa11ab03551e2ff85af6d7792c5e8a512410",
+      "object_bytes": 48086,
+      "source": "source/dng_sdk_1_7_1/xmp/toolkit/third-party/zlib/trees.c",
+      "source_sha256": "f2a5f949ea70dde7c23a54c793aeed630a03df4bb72417cd3aa008000c44699b",
+      "original_flag_group": 5
+    },
+    {
+      "object": "obj-scalar/zlib-uncompr.c.o",
+      "object_sha256": "8246ec557949b3fae0db30bbc0645078ba0ad62de29eb2e5d0b361b22de1cc31",
+      "object_bytes": 14202,
+      "source": "source/dng_sdk_1_7_1/xmp/toolkit/third-party/zlib/uncompr.c",
+      "source_sha256": "8a9d1e622c525c2dd36a3ff06b511fda6a1d697367b8f885374e78be4f3fac56",
+      "original_flag_group": 5
+    },
+    {
+      "object": "obj-scalar/zlib-zutil.c.o",
+      "object_sha256": "9e22598b492453308746db964eda5265fd516ef096396e6f1355dcabd551204a",
+      "object_bytes": 15610,
+      "source": "source/dng_sdk_1_7_1/xmp/toolkit/third-party/zlib/zutil.c",
+      "source_sha256": "f7fdc9ef326a2683eb33c794face54e83c751ec17f3d1ba581847a62af36ddcd",
+      "original_flag_group": 5
+    }
+  ],
+  "link_inputs": [
+    "-target",
+    "x86_64-windows-gnu",
+    "-Wl,--gc-sections",
+    "-lws2_32",
+    "-ladvapi32",
+    "-o",
+    "stage3_probe.exe",
+    "obj-scalar/brotli-backward_references.c.o",
+    "obj-scalar/brotli-backward_references_hq.c.o",
+    "obj-scalar/brotli-bit_cost.c.o",
+    "obj-scalar/brotli-bit_reader.c.o",
+    "obj-scalar/brotli-block_splitter.c.o",
+    "obj-scalar/brotli-brotli_bit_stream.c.o",
+    "obj-scalar/brotli-cluster.c.o",
+    "obj-scalar/brotli-command.c.o",
+    "obj-scalar/brotli-compound_dictionary.c.o",
+    "obj-scalar/brotli-compress_fragment.c.o",
+    "obj-scalar/brotli-compress_fragment_two_pass.c.o",
+    "obj-scalar/brotli-constants.c.o",
+    "obj-scalar/brotli-context.c.o",
+    "obj-scalar/brotli-decode.c.o",
+    "obj-scalar/brotli-dictionary.c.o",
+    "obj-scalar/brotli-dictionary_hash.c.o",
+    "obj-scalar/brotli-encode.c.o",
+    "obj-scalar/brotli-encoder_dict.c.o",
+    "obj-scalar/brotli-entropy_encode.c.o",
+    "obj-scalar/brotli-fast_log.c.o",
+    "obj-scalar/brotli-histogram.c.o",
+    "obj-scalar/brotli-huffman.c.o",
+    "obj-scalar/brotli-literal_cost.c.o",
+    "obj-scalar/brotli-memory.c.o",
+    "obj-scalar/brotli-metablock.c.o",
+    "obj-scalar/brotli-platform.c.o",
+    "obj-scalar/brotli-shared_dictionary.c.o",
+    "obj-scalar/brotli-state.c.o",
+    "obj-scalar/brotli-static_dict.c.o",
+    "obj-scalar/brotli-transform.c.o",
+    "obj-scalar/brotli-utf8_util.c.o",
+    "obj-scalar/dng-dng_1d_function.cpp.o",
+    "obj-scalar/dng-dng_1d_table.cpp.o",
+    "obj-scalar/dng-dng_abort_sniffer.cpp.o",
+    "obj-scalar/dng-dng_area_task.cpp.o",
+    "obj-scalar/dng-dng_bad_pixels.cpp.o",
+    "obj-scalar/dng-dng_big_table.cpp.o",
+    "obj-scalar/dng-dng_bmff.cpp.o",
+    "obj-scalar/dng-dng_bottlenecks.cpp.o",
+    "obj-scalar/dng-dng_camera_profile.cpp.o",
+    "obj-scalar/dng-dng_color_space.cpp.o",
+    "obj-scalar/dng-dng_color_spec.cpp.o",
+    "obj-scalar/dng-dng_date_time.cpp.o",
+    "obj-scalar/dng-dng_exceptions.cpp.o",
+    "obj-scalar/dng-dng_exif.cpp.o",
+    "obj-scalar/dng-dng_file_stream.cpp.o",
+    "obj-scalar/dng-dng_filter_task.cpp.o",
+    "obj-scalar/dng-dng_fingerprint.cpp.o",
+    "obj-scalar/dng-dng_gain_map.cpp.o",
+    "obj-scalar/dng-dng_globals.cpp.o",
+    "obj-scalar/dng-dng_host.cpp.o",
+    "obj-scalar/dng-dng_hue_sat_map.cpp.o",
+    "obj-scalar/dng-dng_ifd.cpp.o",
+    "obj-scalar/dng-dng_image.cpp.o",
+    "obj-scalar/dng-dng_image_writer.cpp.o",
+    "obj-scalar/dng-dng_info.cpp.o",
+    "obj-scalar/dng-dng_iptc.cpp.o",
+    "obj-scalar/dng-dng_jpeg_image.cpp.o",
+    "obj-scalar/dng-dng_jpeg_memory_source.cpp.o",
+    "obj-scalar/dng-dng_jxl_no_xmp_v2.cpp.o",
+    "obj-scalar/dng-dng_lens_correction.cpp.o",
+    "obj-scalar/dng-dng_linearization_info.cpp.o",
+    "obj-scalar/dng-dng_local_string.cpp.o",
+    "obj-scalar/dng-dng_lossless_jpeg.cpp.o",
+    "obj-scalar/dng-dng_lossless_jpeg_shared.cpp.o",
+    "obj-scalar/dng-dng_matrix.cpp.o",
+    "obj-scalar/dng-dng_memory.cpp.o",
+    "obj-scalar/dng-dng_memory_stream.cpp.o",
+    "obj-scalar/dng-dng_misc_opcodes.cpp.o",
+    "obj-scalar/dng-dng_mosaic_info.cpp.o",
+    "obj-scalar/dng-dng_mutex.cpp.o",
+    "obj-scalar/dng-dng_negative.cpp.o",
+    "obj-scalar/dng-dng_opcode_list.cpp.o",
+    "obj-scalar/dng-dng_opcodes.cpp.o",
+    "obj-scalar/dng-dng_orientation.cpp.o",
+    "obj-scalar/dng-dng_parse_utils.cpp.o",
+    "obj-scalar/dng-dng_pixel_buffer.cpp.o",
+    "obj-scalar/dng-dng_point.cpp.o",
+    "obj-scalar/dng-dng_preview.cpp.o",
+    "obj-scalar/dng-dng_pthread.cpp.o",
+    "obj-scalar/dng-dng_rational.cpp.o",
+    "obj-scalar/dng-dng_read_image.cpp.o",
+    "obj-scalar/dng-dng_rect.cpp.o",
+    "obj-scalar/dng-dng_ref_counted_block.cpp.o",
+    "obj-scalar/dng-dng_reference.cpp.o",
+    "obj-scalar/dng-dng_render.cpp.o",
+    "obj-scalar/dng-dng_resample.cpp.o",
+    "obj-scalar/dng-dng_safe_arithmetic.cpp.o",
+    "obj-scalar/dng-dng_shared.cpp.o",
+    "obj-scalar/dng-dng_simple_image.cpp.o",
+    "obj-scalar/dng-dng_spline.cpp.o",
+    "obj-scalar/dng-dng_stream.cpp.o",
+    "obj-scalar/dng-dng_string.cpp.o",
+    "obj-scalar/dng-dng_string_list.cpp.o",
+    "obj-scalar/dng-dng_tag_types.cpp.o",
+    "obj-scalar/dng-dng_temperature.cpp.o",
+    "obj-scalar/dng-dng_tile_iterator.cpp.o",
+    "obj-scalar/dng-dng_tone_curve.cpp.o",
+    "obj-scalar/dng-dng_utils.cpp.o",
+    "obj-scalar/dng-dng_xmp.cpp.o",
+    "obj-scalar/dng-dng_xy_coord.cpp.o",
+    "stage3_probe.o",
+    "obj-scalar/highway-abort.cc.o",
+    "obj-scalar/highway-aligned_allocator.cc.o",
+    "obj-scalar/highway-image.cc.o",
+    "obj-scalar/highway-per_target.cc.o",
+    "obj-scalar/highway-print.cc.o",
+    "obj-scalar/highway-stats.cc.o",
+    "obj-scalar/highway-targets.cc.o",
+    "obj-scalar/highway-topology.cc.o",
+    "obj-scalar/highway-vqsort_128a.cc.o",
+    "obj-scalar/highway-vqsort_128d.cc.o",
+    "obj-scalar/highway-vqsort_f32a.cc.o",
+    "obj-scalar/highway-vqsort_f32d.cc.o",
+    "obj-scalar/highway-vqsort_f64a.cc.o",
+    "obj-scalar/highway-vqsort_f64d.cc.o",
+    "obj-scalar/highway-vqsort_i16a.cc.o",
+    "obj-scalar/highway-vqsort_i16d.cc.o",
+    "obj-scalar/highway-vqsort_i32a.cc.o",
+    "obj-scalar/highway-vqsort_i32d.cc.o",
+    "obj-scalar/highway-vqsort_i64a.cc.o",
+    "obj-scalar/highway-vqsort_i64d.cc.o",
+    "obj-scalar/highway-vqsort_u16a.cc.o",
+    "obj-scalar/highway-vqsort_u16d.cc.o",
+    "obj-scalar/highway-vqsort_u32a.cc.o",
+    "obj-scalar/highway-vqsort_u32d.cc.o",
+    "obj-scalar/highway-vqsort_u64a.cc.o",
+    "obj-scalar/highway-vqsort_u64d.cc.o",
+    "obj-scalar/jxl-ac_strategy.cc.o",
+    "obj-scalar/jxl-alpha.cc.o",
+    "obj-scalar/jxl-ans_common.cc.o",
+    "obj-scalar/jxl-blending.cc.o",
+    "obj-scalar/jxl-box_content_decoder.cc.o",
+    "obj-scalar/jxl-butteraugli.cc.o",
+    "obj-scalar/jxl-chroma_from_luma.cc.o",
+    "obj-scalar/jxl-coeff_order.cc.o",
+    "obj-scalar/jxl-color_encoding_internal.cc.o",
+    "obj-scalar/jxl-compressed_dc.cc.o",
+    "obj-scalar/jxl-convolve_separable5.cc.o",
+    "obj-scalar/jxl-convolve_slow.cc.o",
+    "obj-scalar/jxl-convolve_symmetric3.cc.o",
+    "obj-scalar/jxl-convolve_symmetric5.cc.o",
+    "obj-scalar/jxl-dct_scales.cc.o",
+    "obj-scalar/jxl-dec_ans.cc.o",
+    "obj-scalar/jxl-dec_cache.cc.o",
+    "obj-scalar/jxl-dec_context_map.cc.o",
+    "obj-scalar/jxl-dec_external_image.cc.o",
+    "obj-scalar/jxl-dec_frame.cc.o",
+    "obj-scalar/jxl-dec_group.cc.o",
+    "obj-scalar/jxl-dec_group_border.cc.o",
+    "obj-scalar/jxl-dec_huffman.cc.o",
+    "obj-scalar/jxl-dec_jpeg_data.cc.o",
+    "obj-scalar/jxl-dec_jpeg_data_writer.cc.o",
+    "obj-scalar/jxl-dec_ma.cc.o",
+    "obj-scalar/jxl-dec_modular.cc.o",
+    "obj-scalar/jxl-dec_noise.cc.o",
+    "obj-scalar/jxl-dec_patch_dictionary.cc.o",
+    "obj-scalar/jxl-dec_transforms_testonly.cc.o",
+    "obj-scalar/jxl-dec_xyb.cc.o",
+    "obj-scalar/jxl-decode.cc.o",
+    "obj-scalar/jxl-decode_to_jpeg.cc.o",
+    "obj-scalar/jxl-enc_ac_strategy.cc.o",
+    "obj-scalar/jxl-enc_adaptive_quantization.cc.o",
+    "obj-scalar/jxl-enc_ans.cc.o",
+    "obj-scalar/jxl-enc_aux_out.cc.o",
+    "obj-scalar/jxl-enc_bit_writer.cc.o",
+    "obj-scalar/jxl-enc_butteraugli_comparator.cc.o",
+    "obj-scalar/jxl-enc_cache.cc.o",
+    "obj-scalar/jxl-enc_chroma_from_luma.cc.o",
+    "obj-scalar/jxl-enc_cluster.cc.o",
+    "obj-scalar/jxl-enc_coeff_order.cc.o",
+    "obj-scalar/jxl-enc_comparator.cc.o",
+    "obj-scalar/jxl-enc_context_map.cc.o",
+    "obj-scalar/jxl-enc_debug_image.cc.o",
+    "obj-scalar/jxl-enc_debug_tree.cc.o",
+    "obj-scalar/jxl-enc_detect_dots.cc.o",
+    "obj-scalar/jxl-enc_dot_dictionary.cc.o",
+    "obj-scalar/jxl-enc_encoding.cc.o",
+    "obj-scalar/jxl-enc_entropy_coder.cc.o",
+    "obj-scalar/jxl-enc_external_image.cc.o",
+    "obj-scalar/jxl-enc_fast_lossless.cc.o",
+    "obj-scalar/jxl-enc_fields.cc.o",
+    "obj-scalar/jxl-enc_frame.cc.o",
+    "obj-scalar/jxl-enc_gaborish.cc.o",
+    "obj-scalar/jxl-enc_group.cc.o",
+    "obj-scalar/jxl-enc_heuristics.cc.o",
+    "obj-scalar/jxl-enc_huffman.cc.o",
+    "obj-scalar/jxl-enc_huffman_tree.cc.o",
+    "obj-scalar/jxl-enc_icc_codec.cc.o",
+    "obj-scalar/jxl-enc_image_bundle.cc.o",
+    "obj-scalar/jxl-enc_jpeg_data.cc.o",
+    "obj-scalar/jxl-enc_jpeg_data_reader.cc.o",
+    "obj-scalar/jxl-enc_jpeg_huffman_decode.cc.o",
+    "obj-scalar/jxl-enc_linalg.cc.o",
+    "obj-scalar/jxl-enc_ma.cc.o",
+    "obj-scalar/jxl-enc_modular.cc.o",
+    "obj-scalar/jxl-enc_noise.cc.o",
+    "obj-scalar/jxl-enc_palette.cc.o",
+    "obj-scalar/jxl-enc_patch_dictionary.cc.o",
+    "obj-scalar/jxl-enc_photon_noise.cc.o",
+    "obj-scalar/jxl-enc_progressive_split.cc.o",
+    "obj-scalar/jxl-enc_quant_weights.cc.o",
+    "obj-scalar/jxl-enc_rct.cc.o",
+    "obj-scalar/jxl-enc_splines.cc.o",
+    "obj-scalar/jxl-enc_squeeze.cc.o",
+    "obj-scalar/jxl-enc_toc.cc.o",
+    "obj-scalar/jxl-enc_transform.cc.o",
+    "obj-scalar/jxl-enc_transforms.cc.o",
+    "obj-scalar/jxl-enc_xyb.cc.o",
+    "obj-scalar/jxl-encode.cc.o",
+    "obj-scalar/jxl-encoding.cc.o",
+    "obj-scalar/jxl-entropy_coder.cc.o",
+    "obj-scalar/jxl-epf.cc.o",
+    "obj-scalar/jxl-fields.cc.o",
+    "obj-scalar/jxl-frame_header.cc.o",
+    "obj-scalar/jxl-gain_map.cc.o",
+    "obj-scalar/jxl-headers.cc.o",
+    "obj-scalar/jxl-huffman_table.cc.o",
+    "obj-scalar/jxl-icc_codec.cc.o",
+    "obj-scalar/jxl-icc_codec_common.cc.o",
+    "obj-scalar/jxl-image.cc.o",
+    "obj-scalar/jxl-image_bundle.cc.o",
+    "obj-scalar/jxl-image_metadata.cc.o",
+    "obj-scalar/jxl-image_ops.cc.o",
+    "obj-scalar/jxl-jpeg_data.cc.o",
+    "obj-scalar/jxl-jxl_cms.cc.o",
+    "obj-scalar/jxl-loop_filter.cc.o",
+    "obj-scalar/jxl-low_memory_render_pipeline.cc.o",
+    "obj-scalar/jxl-luminance.cc.o",
+    "obj-scalar/jxl-memory_manager_internal.cc.o",
+    "obj-scalar/jxl-modular_image.cc.o",
+    "obj-scalar/jxl-opsin_params.cc.o",
+    "obj-scalar/jxl-palette.cc.o",
+    "obj-scalar/jxl-passes_state.cc.o",
+    "obj-scalar/jxl-quant_weights.cc.o",
+    "obj-scalar/jxl-quantizer.cc.o",
+    "obj-scalar/jxl-rct.cc.o",
+    "obj-scalar/jxl-render_pipeline.cc.o",
+    "obj-scalar/jxl-resizable_parallel_runner.cc.o",
+    "obj-scalar/jxl-simd_util.cc.o",
+    "obj-scalar/jxl-simple_render_pipeline.cc.o",
+    "obj-scalar/jxl-skcms.cc.o",
+    "obj-scalar/jxl-skcms_TransformBaseline.cc.o",
+    "obj-scalar/jxl-splines.cc.o",
+    "obj-scalar/jxl-squeeze.cc.o",
+    "obj-scalar/jxl-stage_blending.cc.o",
+    "obj-scalar/jxl-stage_chroma_upsampling.cc.o",
+    "obj-scalar/jxl-stage_cms.cc.o",
+    "obj-scalar/jxl-stage_epf.cc.o",
+    "obj-scalar/jxl-stage_from_linear.cc.o",
+    "obj-scalar/jxl-stage_gaborish.cc.o",
+    "obj-scalar/jxl-stage_noise.cc.o",
+    "obj-scalar/jxl-stage_patches.cc.o",
+    "obj-scalar/jxl-stage_splines.cc.o",
+    "obj-scalar/jxl-stage_spot.cc.o",
+    "obj-scalar/jxl-stage_to_linear.cc.o",
+    "obj-scalar/jxl-stage_tone_mapping.cc.o",
+    "obj-scalar/jxl-stage_upsampling.cc.o",
+    "obj-scalar/jxl-stage_write.cc.o",
+    "obj-scalar/jxl-stage_xyb.cc.o",
+    "obj-scalar/jxl-stage_ycbcr.cc.o",
+    "obj-scalar/jxl-thread_parallel_runner.cc.o",
+    "obj-scalar/jxl-thread_parallel_runner_internal.cc.o",
+    "obj-scalar/jxl-toc.cc.o",
+    "obj-scalar/jxl-transform.cc.o",
+    "obj-scalar/zlib-adler32.c.o",
+    "obj-scalar/zlib-compress.c.o",
+    "obj-scalar/zlib-crc32.c.o",
+    "obj-scalar/zlib-deflate.c.o",
+    "obj-scalar/zlib-infback.c.o",
+    "obj-scalar/zlib-inffast.c.o",
+    "obj-scalar/zlib-inflate.c.o",
+    "obj-scalar/zlib-inftrees.c.o",
+    "obj-scalar/zlib-trees.c.o",
+    "obj-scalar/zlib-uncompr.c.o",
+    "obj-scalar/zlib-zutil.c.o"
+  ],
+  "compile_log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "link_log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "probe_exe_sha256": "69006d886e2bea2d7487add20d587d02b990aba5e5f565c1aeab4953e87c741d"
+}
