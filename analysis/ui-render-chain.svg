@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="360" height="416" viewBox="0 0 360 416" role="img" aria-labelledby="title desc">
+  <title id="title">Q7 색공간 갱신에서 색인 픽셀까지</title>
+  <desc id="desc">시험이 버퍼 17과 18의 등록표를 공급하고 원본 코드가 활성 포인터를 선택한다. 큐 모델이 원본 갱신 요청을 전달한다. 한 갱신에서 원본 MIPS가 포커스 마커와 sRGB, AdobeRGB를 차례로 그린다. 원본 버퍼 교체와 게시 요청을 기록한 뒤 0x80adf468 명령 직전에 멈춘다.</desc>
+  <defs><marker id="arrow" markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto"><path d="M0 0L6 3L0 6" fill="none" stroke="#526072" stroke-width="1.4"/></marker></defs>
+  <style>
+    text {font-family:system-ui,sans-serif;fill:#18222f}
+    .label {font-size:14px;font-weight:700}
+    .sub {font-size:11.8px;fill:#526072}
+    .addr {font-family:monospace;font-size:11.5px;fill:#526072}
+    .base {fill:#fff;stroke:#aab5c5}
+    .model {fill:#eef2f7;stroke:#8190a4;stroke-dasharray:5 3}
+    .draw {fill:#fff5f1;stroke:#b55738}
+    .line {stroke:#526072;stroke-width:1.35;marker-end:url(#arrow)}
+  </style>
+  <rect x="1" y="1" width="358" height="414" rx="12" fill="#f5f6f8" stroke="#dbe1ea"/>
+  <rect class="model" x="18" y="15" width="324" height="46" rx="6"/>
+  <text class="label" x="33" y="34">시험이 공급한 두 컨텍스트</text>
+  <text class="sub" x="33" y="50">등록표 17·18, 960×480 색인 버퍼</text>
+  <path class="line" d="M180 62V75"/>
+  <rect class="base" x="18" y="76" width="324" height="47" rx="6"/>
+  <text class="label" x="33" y="95">원본 컨텍스트 선택 · ID 17</text>
+  <text class="addr" x="33" y="111">0x8024a59c → 0x21000000</text>
+  <path class="line" d="M180 124V137"/>
+  <rect class="model" x="18" y="138" width="324" height="44" rx="6"/>
+  <text class="label" x="33" y="157">큐 모델이 원본 갱신 레코드 전달</text>
+  <text class="addr" x="33" y="172">0x80ae00f0 → 0x80adf734</text>
+  <path class="line" d="M180 183V196"/>
+  <rect class="draw" x="18" y="197" width="324" height="77" rx="6"/>
+  <text class="label" x="33" y="218">원본 MIPS가 한 버퍼에 쓰기</text>
+  <text class="sub" x="33" y="235">마커 → sRGB 4개 → AdobeRGB 8개 글리프</text>
+  <text class="addr" x="33" y="252">0x8043f42c · 0x80226748</text>
+  <text class="sub" x="33" y="267">세 호출 복귀마다 전체 프레임 해시 확인</text>
+  <path class="line" d="M180 275V288"/>
+  <rect class="base" x="18" y="289" width="324" height="49" rx="6"/>
+  <text class="label" x="33" y="309">원본 버퍼 교체 · 그리기 18 / 표시 17</text>
+  <text class="sub" x="33" y="326">캐시·표시 요청은 기록 모델</text>
+  <path class="line" d="M180 339V352"/>
+  <rect class="base" x="18" y="353" width="324" height="47" rx="21"/>
+  <text class="label" x="33" y="373">0x80adf468 명령 직전에 멈춤</text>
+  <text class="sub" x="33" y="389">최종 프레임·가드 확인, 바깥 루프 복귀 전</text>
+</svg>

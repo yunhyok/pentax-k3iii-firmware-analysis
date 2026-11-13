@@ -165,7 +165,7 @@ class Site:
         return (
             f'{related}<nav class="pager" aria-label="이전·다음 문서">{"".join(pager)}</nav>\n'
             f'<footer class="sitefoot"><div class="sitefoot-in"><nav aria-label="사이트">{"".join(foot)}</nav>'
-            f'<p>{esc(self.data["name"])} {esc(self.data["firmware"])} 분석 문서. {esc(self.data["footer"])}</p></div></footer>'
+            f'<p>PENTAX 펌웨어 연구. {esc(self.data["footer"])}</p></div></footer>'
         )
 
     def site_map(self, page):

@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Q7 색공간 갱신과 두 선택지의 픽셀 — PENTAX 펌웨어 연구</title>
+<meta name="description" content="Q7 원본 색공간 갱신 한 번에서 마커와 두 글자 행이 같은 합성 8비트 버퍼에 그려지는지 검증했습니다.">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-camera="k3iii">
+<!-- chrome:top -->
+<a class="skip" href="#main">본문 바로가기</a>
+<div class="topbar"><div class="topbar-in"><a class="brand" href="../index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="../index.html" aria-current="true">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="https://yunhyok.github.io/pentax-q7-firmware-analysis/">Q7</a></div><nav class="topnav" aria-label="주제"><a href="../index.html">개요</a><a href="guide-boot.html">부팅·저장소</a><a href="guide-update.html">업데이트</a><a href="guide-rebuild.html">재구축</a><a href="guide-rtos.html">명령·셸</a><a href="guide-color.html">색 처리</a><a href="lightroom-bridge.html">Lightroom</a><a href="af-foundations.html">AF</a><a href="ui-port-contract.html" aria-current="true">UI</a></nav></div></div>
+<nav class="crumbs" aria-label="현재 위치"><ol><li><a href="../index.html">PENTAX K-3 Mark III</a></li><li><a href="ui-port-contract.html">UI와 화면 자원</a></li><li aria-current="page">Q7 갱신에서 원본 픽셀까지</li></ol></nav>
+<!-- /chrome:top -->
+<header class="page-head">
+<h1>Q7 색공간 갱신에서 두 선택지의 픽셀까지</h1>
+<p class="lead">Q7 1.01 원본 MIPS가 색공간 화면을 한 번 갱신하면서 sRGB 포커스 마커와 sRGB·AdobeRGB 텍스트를 같은 합성 8비트 버퍼에 그렸습니다. 세 호출의 복귀 지점과 갱신 종료 직전의 460,800바이트 프레임이 원본 자원으로 독립 계산한 값과 일치했습니다.</p>
+</header>
+<div class="layout">
+<!-- chrome:toc -->
+<nav class="toc" aria-label="이 문서의 목차"><h2 data-toc="no">이 문서에서</h2><ol><li><a href="#run">실행 범위</a></li><li><a href="#pixels">픽셀과 버퍼 교체</a></li><li><a href="#provenance">실행 기록의 범위와 의존성</a></li><li><a href="#verify">검증 명령</a></li></ol></nav>
+<!-- /chrome:toc -->
+<main class="doc" id="main">
+<section id="run">
+<h2>실행 범위</h2>
+<figure>
+<img src="ui-render-chain.svg" alt="Q7 원본 갱신이 모델 큐를 거쳐 마커와 두 텍스트를 한 버퍼에 그리고, 원본 버퍼 교체 뒤 명령 직전에서 멈추는 흐름" width="360" height="416" style="max-width:100%;height:auto">
+<figcaption>한 갱신 안의 원본 코드와 합성 상태의 경계</figcaption>
+</figure>
+<p>시험은 로케일 0, sRGB 포커스, 버퍼 ID 17·18의 등록표와 960×480 합성 RAM을 공급했습니다. 원본 코드가 활성 컨텍스트를 선택하고 갱신 레코드를 만들었습니다. 큐 모델은 그 레코드 <code>[128, 1, 0, 0]</code>를 원본 소비자에게 전달했습니다. 이후 같은 상태에서 두 옵션의 속성·텍스트와 마커 호출을 실행했습니다. <a href="ui-render-chain.json">실행 기록</a> · <a href="ui-render-chain-boundary.json">종료 직전 관측값</a></p>
+<ul>
+<li><strong>실행한 경로</strong> 컨텍스트 선택 <code>0x8024a59c</code>, 갱신 요청 <code>0x80ae00f0</code>과 소비 <code>0x80adf734</code>, 두 옵션의 속성 <code>0x8024bf9c</code> 및 텍스트 <code>0x8024928c</code>, 글리프 축소 <code>0x80226748</code>, 마커 <code>0x8043f42c</code>, 버퍼 교체 <code>0x8043ca4c</code>.</li>
+<li><strong>대체한 경계</strong> 큐 전달·대기, 잠금, 할당, FileX, 버퍼 주소·크기 조회를 모델로 제공했습니다. 캐시와 표시 게시 요청은 인수만 기록했습니다. 화면 지우기·선·나머지 아이콘과 제목·도움말 등은 픽셀 쓰기를 생략했습니다.</li>
+<li><strong>멈춘 지점</strong> 두 번의 그리기 순회가 반환하고, 새 그리기 ID 18과 표시 ID 17이 설정된 뒤 <code>0x80adf468</code> 명령 직전에 멈췄습니다. 이 명령과 바깥 소비 루프 복귀 <code>0x80adf980</code>는 실행 범위 밖입니다. 실제 부팅 시 ID 17·18 생성, 전체 화면 합성, 팔레트의 RGB 값과 LCD 출력은 미확인입니다.</li>
+</ul>
+</section>
+<section id="pixels">
+<h2>픽셀과 버퍼 교체</h2>
+<div class="table-wrap"><table>
+<thead><tr><th scope="col">원본 호출 복귀</th><th scope="col">이번 호출 쓰기</th><th scope="col">누적 변경</th></tr></thead>
+<tbody>
+<tr><th scope="row">마커 <code>0x25</code> · <code>0x80acdf50</code></th><td>330바이트</td><td>330바이트</td></tr>
+<tr><th scope="row">sRGB · <code>0x802493ec</code></th><td>2,464바이트</td><td>2,794바이트</td></tr>
+<tr><th scope="row">AdobeRGB · <code>0x802493ec</code></th><td>4,881바이트</td><td>7,675바이트</td></tr>
+</tbody>
+</table></div>
+<p>마커는 ELF 가상 주소 <code>0x808aee78</code>의 296바이트 RLE를 사용했습니다. 텍스트는 ELF의 옵션별 로케일 0 descriptor와 패키지 오프셋 <code>0x9d1ac0</code>의 130,886바이트 LatinFont를 사용했습니다. 48×48 속성 요청을 거친 12개 글리프는 높이를 유지하고 가로로 축소했습니다. 최종 프레임과 마지막 그리기 체크포인트의 SHA-256은 <code class="wrap">2dcde64321668521e62bf6b510985559039d5a1e7d4dc0da8cfefeae5a2a9b6e</code>입니다. 보조 프레임은 초기값을 유지했고, 두 프레임과 마커 임시 버퍼 양옆의 8바이트 가드 총 6개도 일치했습니다. <a href="ui-render-chain-boundary.json">프레임·가드 기록</a></p>
+<p>원본은 <code>0x21000000</code>에서 <code>0x21040000</code>으로 활성 컨텍스트를 바꿨습니다. 캐시 모델에는 <code>0x802296c8</code>의 텍스트 요청 두 건과 <code>0x8043ca94</code>의 버퍼 교체 요청 한 건이 들어왔습니다. 세 요청 모두 <code>0x20000000</code>부터 460,800바이트를 지정했습니다. <a href="ui-render-chain.json">캐시 인수와 복귀 주소</a></p>
+</section>
+<section id="provenance">
+<h2>실행 기록의 범위와 의존성</h2>
+<p>원본 실행은 angr 10.0.5/VEX에서 223,407개 블록을 거쳤습니다. 기록에 적힌 Q7 코드 파일 10개의 해시는 지정 커밋과 일치합니다. 다만 그중 inspect_q7.py가 가져오는 pentax_lz.py는 실행 당시의 해시 확인 목록에서 빠져 있었습니다. 이번 글꼴 읽기는 그 디코더를 호출하지 않지만, 당시 모듈 바이트를 별도로 확인했다는 뜻은 아닙니다. 아래 빠른 검증기는 Q7 모듈을 불러오지 않고, 기록된 실행과 원본 자원에서 독립 계산한 프레임을 대조합니다. <a href="ui-render-chain-dependencies.json">의존성 감사와 해시</a></p>
+</section>
+<section id="verify">
+<h2>검증 명령</h2>
+<pre><code>python -B tools/check_ui_render_chain.py fwdc603p.bin main-expanded.elf</code></pre>
+<p>사용자가 별도로 확보한 Q7 1.01 패키지와 분석 ELF가 필요합니다. ELF를 준비하는 명령은 Q7 저장소의 디코더와 ELF 생성 도구에서 확인할 수 있습니다. 검증기는 네 입력의 SHA-256과 ELF 코드 9개 구간을 확인한 뒤, 마커와 글리프를 다시 계산해 세 체크포인트 및 최종 프레임 해시와 비교합니다. 캐시 호출 명령, 기록된 인수와 가드도 검사합니다. 이 명령은 Python 표준 라이브러리만 사용하며 새 MIPS 실행은 하지 않습니다. <a href="../tools/check_ui_render_chain.py">검증기와 해시 목록</a> · <a href="https://github.com/yunhyok/pentax-q7-firmware-analysis/blob/3e2cee712f5470ce565534d99f8df273c263eabe/analysis/colorspace-render.json">Q7 갱신 소스 근거</a> · <a href="https://github.com/yunhyok/pentax-q7-firmware-analysis/blob/3e2cee712f5470ce565534d99f8df273c263eabe/analysis/context-binding.json">컨텍스트 선택 근거</a> · <a href="https://github.com/yunhyok/pentax-q7-firmware-analysis/blob/3e2cee712f5470ce565534d99f8df273c263eabe/tools/decode_segments.py">Q7 디코더</a> · <a href="https://github.com/yunhyok/pentax-q7-firmware-analysis/blob/3e2cee712f5470ce565534d99f8df273c263eabe/tools/build_analysis_elf.py">분석 ELF 생성 도구</a></p>
+</section>
+</main>
+</div>
+<!-- chrome:bottom -->
+<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">UI와 화면 자원 — 이 주제의 문서</h2><ol><li><a href="ui-port-contract.html">UI 이식 설계·안내<span>세 기종 비교</span></a></li><li><a href="colorspace-ui.html">색공간 화면: 선택·확정·취소<span>16사례</span></a></li><li><a href="colorspace-ui-input.html">색공간 화면: 방향 입력·포커스<span>50사례</span></a></li><li><a href="ui-render-chain.html" aria-current="page">Q7 갱신에서 원본 픽셀까지<span>마커·두 텍스트·버퍼 교체의 합성 실행</span></a></li><li><a href="icon-resources.html">ICONBIN 아이콘 자원<span>저장 형식, 복사 규칙, 후보 아이콘</span></a></li></ol></nav>
+<nav class="pager" aria-label="이전·다음 문서"><a class="prev" href="colorspace-ui-input.html"><small>← 이전</small>색공간 화면: 방향 입력·포커스</a><a class="next" href="icon-resources.html"><small>다음 →</small>ICONBIN 아이콘 자원</a></nav>
+<footer class="sitefoot"><div class="sitefoot-in"><nav aria-label="사이트"><a href="../index.html#map">문서 지도</a><a href="../index.html#levels">검증 수준 읽는 법</a><a href="../glossary.html">용어집</a><a href="research-program.html">세 기종 연구 본부</a><a href="https://github.com/yunhyok/pentax-k3iii-firmware-analysis">GitHub 저장소</a></nav><p>PENTAX 펌웨어 연구. PC에서 수행한 정적 분석과 에뮬레이션 결과이며, 카메라 실기에서 검증한 내용이 아닙니다. 원본 펌웨어와 추출한 독점 코드는 포함하지 않습니다.</p></div></footer>
+<!-- /chrome:bottom -->
+</body>
+</html>

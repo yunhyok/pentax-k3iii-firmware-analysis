@@ -1,0 +1,187 @@
+{
+  "revision": "3e2cee712f5470ce565534d99f8df273c263eabe",
+  "recorded_q7_replay_modules": {
+    "tools/check_colorspace_ui.py": {
+      "sha256": "cfc5d3ffed73cd9e420e95813c7b2bfd86f2279be25f2fc620b2f5de2242cb64",
+      "pinned_q7_imports": [
+        "check_isp_registers"
+      ],
+      "other_imports": [
+        "angr",
+        "argparse",
+        "json",
+        "os",
+        "pathlib"
+      ]
+    },
+    "tools/check_colorspace_render.py": {
+      "sha256": "3fc8175f5a90236a24b24887097d5aa4ce04d02f9167f3b984e8a81fc7339607",
+      "pinned_q7_imports": [
+        "check_colorspace_ui",
+        "check_isp_registers",
+        "check_q7_portability"
+      ],
+      "other_imports": [
+        "angr",
+        "argparse",
+        "hashlib",
+        "json",
+        "os",
+        "pathlib",
+        "struct"
+      ]
+    },
+    "tools/check_colorspace_glyph.py": {
+      "sha256": "cc5a69d3a826a0a81137806e5eab44562c7904c2201023067f142340ea6480e2",
+      "pinned_q7_imports": [
+        "check_colorspace_raster",
+        "check_colorspace_ui",
+        "check_isp_registers",
+        "check_q7_portability",
+        "q7_symbols"
+      ],
+      "other_imports": [
+        "angr",
+        "argparse",
+        "collections",
+        "hashlib",
+        "json",
+        "os",
+        "pathlib",
+        "struct"
+      ]
+    },
+    "tools/check_colorspace_raster.py": {
+      "sha256": "ad0127dca8888364653837d6072097b7a0b52d63dc1f40ba6523974772694e29",
+      "pinned_q7_imports": [
+        "check_colorspace_render",
+        "check_colorspace_ui",
+        "check_isp_registers",
+        "check_q7_portability"
+      ],
+      "other_imports": [
+        "angr",
+        "argparse",
+        "collections",
+        "hashlib",
+        "json",
+        "os",
+        "pathlib"
+      ]
+    },
+    "tools/check_colorspace_attributes.py": {
+      "sha256": "4c4f24cc88582f9db58318bca674999dc3199c1b32f439ea98ed57e118d3ebc1",
+      "pinned_q7_imports": [
+        "check_colorspace_glyph",
+        "check_colorspace_render",
+        "check_colorspace_ui",
+        "check_isp_registers",
+        "check_q7_portability",
+        "q7_symbols"
+      ],
+      "other_imports": [
+        "angr",
+        "argparse",
+        "collections",
+        "hashlib",
+        "json",
+        "os",
+        "pathlib",
+        "struct"
+      ]
+    },
+    "tools/check_context_binding.py": {
+      "sha256": "612bacafa5597938bb899528569953c94639c00a13dbaa13acafbeec8b6034ad",
+      "pinned_q7_imports": [
+        "check_colorspace_render",
+        "check_colorspace_ui",
+        "check_isp_registers",
+        "check_q7_portability",
+        "q7_symbols"
+      ],
+      "other_imports": [
+        "angr",
+        "argparse",
+        "hashlib",
+        "json",
+        "os",
+        "pathlib",
+        "struct"
+      ]
+    },
+    "tools/check_q7_portability.py": {
+      "sha256": "63d52486e6979a15520e97cf33c003f897dae7fbcce4dde08011dce265706af7",
+      "pinned_q7_imports": [
+        "check_isp_registers"
+      ],
+      "other_imports": [
+        "angr",
+        "argparse",
+        "hashlib",
+        "json",
+        "pathlib",
+        "struct"
+      ]
+    },
+    "tools/check_isp_registers.py": {
+      "sha256": "f04d12f97d55624ffab5fa59eddf8bce8b2900d7ef3127bd30761ae7d074cf92",
+      "pinned_q7_imports": [],
+      "other_imports": [
+        "angr",
+        "argparse",
+        "hashlib",
+        "io",
+        "json",
+        "pathlib",
+        "struct"
+      ]
+    },
+    "tools/q7_symbols.py": {
+      "sha256": "2b1e228deee232cc7b78ed347cf7319bed711ce1e54dc1bbfc1e63de4e3f0ec7",
+      "pinned_q7_imports": [
+        "inspect_q7"
+      ],
+      "other_imports": [
+        "argparse",
+        "hashlib",
+        "json",
+        "pathlib",
+        "struct"
+      ]
+    },
+    "tools/inspect_q7.py": {
+      "sha256": "3e8df227d9bf96c6b2bdbd20433e2c80a1d80019d05c0778d978736c606bc2b8",
+      "pinned_q7_imports": [],
+      "other_imports": [
+        "argparse",
+        "collections",
+        "hashlib",
+        "json",
+        "math",
+        "pathlib",
+        "pentax_lz",
+        "re",
+        "struct"
+      ]
+    }
+  },
+  "public_oracle_imports": [
+    "argparse",
+    "hashlib",
+    "json",
+    "pathlib",
+    "struct"
+  ],
+  "additional_static_imports_not_in_recorded_probe_pin_set": {
+    "tools/pentax_lz.py": "5a8a60bdbaf7be7c5acead0ab04877b93a3c6e753e8b8f332281974f36c3b6bf"
+  },
+  "optional_elf_acquisition_sources": {
+    "tools/build_analysis_elf.py": "2dae569e60f7f46c101341b44e87d7a08c230d9fa81ef517b2f88c64d6db557b",
+    "tools/decode_segments.py": "fdad9e9abbbd4dfe1ee36bdf340ac8cbd5cea9064d5345ab32165c78dd12ba9d",
+    "analysis/segment-decode.json": "917eb1aaf80a3ad59676e33e5ff30b5e672a477463825d7850f2fa28a86174e6",
+    "tools/inspect_q7.py": "3e8df227d9bf96c6b2bdbd20433e2c80a1d80019d05c0778d978736c606bc2b8",
+    "tools/q7_symbols.py": "2b1e228deee232cc7b78ed347cf7319bed711ce1e54dc1bbfc1e63de4e3f0ec7",
+    "tools/pentax_lz.py": "5a8a60bdbaf7be7c5acead0ab04877b93a3c6e753e8b8f332281974f36c3b6bf"
+  },
+  "scope": "Public oracle executes only Python standard library. Historical replay pinned its ten listed Q7 modules, but inspect_q7 imported pentax_lz outside that list. The optional ELF acquisition tools are references, not called by the public verifier."
+}

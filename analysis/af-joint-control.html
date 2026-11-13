@@ -23,7 +23,7 @@
 <main class="doc" id="main">
 <section id="selection">
 <h2>객체 선택과 Joint 내부의 분기는 서로 다른 값을 읽습니다</h2>
-<figure class="diagram"><figcaption>객체 선택 뒤에 다시 갈라지는 Joint 내부 제어</figcaption><div class="dg-scroll">
+<figure class="diagram"><figcaption>객체 선택 뒤에 다시 갈라지는 Joint 내부 제어 · 좁은 화면에서는 좌우로 이동해 전체 경로를 볼 수 있습니다.</figcaption><div class="dg-scroll">
 <svg class="dg" viewBox="0 0 800 300" role="img" aria-labelledby="joint-title joint-desc">
 <title id="joint-title">Joint와 InMotor 선택 및 첫 실행 경계</title><desc id="joint-desc">능력 비트 6이 0이면 Joint 요청과 이벤트 루프로 이어집니다. Joint 내부에서는 client와 상태로 두 모드를 고릅니다. 모드 1은 하위 서비스 직전, 모드 2는 레지스터 읽기 직전에 멈췄습니다. 비트 6이 1인 InMotor는 이번 시험에서 facade 반환까지만 실행했습니다.</desc>
 <defs><marker id="joint-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0 0L10 5L0 10z"/></marker></defs>
@@ -83,7 +83,7 @@ python verify_af_joint.py /path/to/original-decoded.bin --output fresh-decoded-j
 <!-- chrome:bottom -->
 <nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">AF와 렌즈 제어 — 이 주제의 문서</h2><ol><li><a href="af-foundations.html">AF와 렌즈 제어 안내<span>세 기종 비교</span></a></li><li><a href="af-drive-architecture.html">렌즈 구동 선택·명령·응답<span>렌즈 능력에 따른 구동 선택과 명령</span></a></li><li><a href="af-joint-control.html" aria-current="page">Joint 요청과 하위 제어<span>이벤트 0x80에서 첫 서비스·레지스터 경계까지</span></a></li><li><a href="af-request-consumer.html">AF 요청 큐와 완료 통지<span>요청 슬롯, 처리 task, 완료 통지</span></a></li></ol></nav>
 <nav class="pager" aria-label="이전·다음 문서"><a class="prev" href="af-drive-architecture.html"><small>← 이전</small>렌즈 구동 선택·명령·응답</a><a class="next" href="af-request-consumer.html"><small>다음 →</small>AF 요청 큐와 완료 통지</a></nav>
-<footer class="sitefoot"><div class="sitefoot-in"><nav aria-label="사이트"><a href="../index.html#map">문서 지도</a><a href="../index.html#levels">검증 수준 읽는 법</a><a href="../glossary.html">용어집</a><a href="research-program.html">세 기종 연구 본부</a><a href="https://github.com/yunhyok/pentax-k3iii-firmware-analysis">GitHub 저장소</a></nav><p>PENTAX K-3 Mark III 펌웨어 2.20 분석 문서. PC에서 수행한 정적 분석과 에뮬레이션 결과이며, 카메라 실기에서 검증한 내용이 아닙니다. 원본 펌웨어와 추출한 독점 코드는 포함하지 않습니다.</p></div></footer>
+<footer class="sitefoot"><div class="sitefoot-in"><nav aria-label="사이트"><a href="../index.html#map">문서 지도</a><a href="../index.html#levels">검증 수준 읽는 법</a><a href="../glossary.html">용어집</a><a href="research-program.html">세 기종 연구 본부</a><a href="https://github.com/yunhyok/pentax-k3iii-firmware-analysis">GitHub 저장소</a></nav><p>PENTAX 펌웨어 연구. PC에서 수행한 정적 분석과 에뮬레이션 결과이며, 카메라 실기에서 검증한 내용이 아닙니다. 원본 펌웨어와 추출한 독점 코드는 포함하지 않습니다.</p></div></footer>
 <!-- /chrome:bottom -->
 </body>
 </html>
