@@ -268,7 +268,7 @@
 <div class="dg-scroll">
 <img src="lightroom-tone-controls.svg" width="566" alt="위아래 두 그래프. 위 그래프는 가로축이 패치 19~24번, 세로축이 L* 중앙값(0~100)이다. 생략(Omitted)과 ACR3 선은 94에서 12까지 완전히 겹쳐 내려간다. 항등(Identity)은 80에서 13까지, Lift는 82에서 14까지로 두 선 모두 생략보다 아래에 있고 Lift가 항등보다 조금 위에 있다. 아래 그래프는 ACR3에서 생략을 뺀 L* 차이를 확대한 것으로, 22번이 +0.0015, 24번이 −0.0031이고 나머지 네 칸은 0이다.">
 </div>
-<p>위 그래프는 TIFF에서 잰 L* 중앙값이고 선은 측정점을 이은 것입니다. 생략(Omitted)과 명시 ACR3는 겹쳐서 한 선으로 보입니다. 아래 그래프는 그 둘의 차이만 따로 떼어 세로축을 크게 확대한 것입니다. 그림 속 영어 표기는 Omitted=생략, Identity=항등, Neutral patch=무채색 칸입니다.</p>
+<p>위 그래프는 TIFF에서 잰 L* 중앙값이고 선은 측정점을 이은 것입니다. 생략(Omitted)과 명시 ACR3는 겹쳐서 한 선으로 보입니다. 아래 그래프에는 그 둘의 차이만 따로 떼어 세로축을 크게 확대해 그렸습니다. 그림 속 영어 표기는 Omitted=생략, Identity=항등, Neutral patch=무채색 칸입니다.</p>
 </figure>
 
 <div class="table-wrap"><table>
@@ -283,9 +283,9 @@
 <tr><th scope="row">24번 · black</th><td class="n">12.17670</td><td class="n">12.74434</td><td class="n">13.61410</td><td class="n">+0.86976</td><td class="n">−0.003052</td></tr>
 </tbody></table></div>
 <ul>
-<li><strong>생략 → 항등</strong> — 무채색 칸의 L* 변화는 −20.13580에서 +0.56764 사이였습니다. 중간 회색(21번)이 가장 많이 어두워졌고 검정(24번)만 조금 밝아졌습니다. 24패치 전체로 보면 23개가 어두워졌습니다.</li>
-<li><strong>항등 → Lift</strong> — 여섯 칸의 L*가 0.86976~2.07370 높아졌습니다. 유채색 칸까지 포함해 24패치 모두 L*가 올랐습니다.</li>
-<li><strong>생략 재출력 → 명시 ACR3</strong> — L*는 22번에서 +0.001526, 24번에서 −0.003052 달라졌고 나머지는 같았습니다. a*는 21번에서만 +0.001945 달라졌고 b*는 여섯 칸 모두 같았습니다.</li>
+<li><strong>생략 → 항등</strong>: 무채색 칸의 L* 변화는 −20.13580에서 +0.56764 사이였습니다. 중간 회색(21번)이 가장 많이 어두워졌고 검정(24번)만 조금 밝아졌습니다. 24패치 전체로 보면 23개가 어두워졌습니다.</li>
+<li><strong>항등 → Lift</strong>: 여섯 칸의 L*가 0.86976~2.07370 높아졌습니다. 유채색 칸까지 포함해 24패치 모두 L*가 올랐습니다.</li>
+<li><strong>생략 재출력 → 명시 ACR3</strong>: L*는 22번에서 +0.001526, 24번에서 −0.003052 달라졌고 나머지는 같았습니다. a*는 21번에서만 +0.001945 달라졌고 b*는 여섯 칸 모두 같았습니다.</li>
 </ul>
 <p>+0.001526이라는 크기는 변환 과정을 검증할 때 16비트 입력의 1코드 차이가 남긴 L* 차이와 같습니다(<a href="lightroom-render-comparison.html">실제 TIFF 6개 비교</a>의 측정 방법 참고). 명시 ACR3와 생략의 L* 차이는 그 한 단계와 두 단계에 해당합니다.</p>
 </section>
@@ -294,7 +294,7 @@
 <h2>ACR3 곡선의 출처는 Adobe DNG SDK의 내장 표입니다</h2>
 <p class="takeaway">명시 ACR3 프로파일의 곡선은 Adobe DNG SDK 1.7.1 소스에 있는 표의 값 1,025개를 그대로 옮겨 적은 것입니다.</p>
 <ol class="steps">
-<li><strong>표를 읽습니다</strong> SDK의 <code>dng_render.cpp</code> 208–482행에 있는 함수 <code>dng_tone_curve_acr3_default::Evaluate</code>의 순방향 표에서 세로 좌표 1,025개를 읽었습니다.</li>
+<li><strong>표를 읽습니다</strong> SDK의 <code>dng_render.cpp</code> 208–482행에 함수 <code>dng_tone_curve_acr3_default::Evaluate</code>가 있습니다. 이 함수의 순방향 표에서 세로 좌표 1,025개를 읽었습니다.</li>
 <li><strong>가로 좌표를 붙입니다</strong> i번째 값에 <code>x = i/1024</code>를 짝지어 (x, y) 점 1,025개를 만들었습니다.</li>
 <li><strong>태그로 적습니다</strong> 32비트 실수(FLOAT) 2,050개, 8,200바이트로 직렬화해 <code>ProfileToneCurve</code> 태그에 넣었습니다.</li>
 </ol>
@@ -345,15 +345,15 @@
 <dt>출력</dt><dd>ProPhoto RGB, 비압축 RGB 16비트 TIFF, 6016×4000</dd>
 <dt>기록일</dt><dd>2026-11-08</dd>
 </dl>
-<p>TIFF의 XMP에 기록된 현상 속성 114개를 비교했습니다. 프로파일을 바꾼 TIFF에서는 프로파일 이름(<code>CameraProfile</code>)과 프로파일 지문(<code>CameraProfileDigest</code>)만 달랐고 중첩 요소 6개는 같았습니다. 내보낼 때마다 바뀌는 파일 날짜와 문서 ID 같은 기록은 따로 비교했습니다. 생략 TIFF 두 개는 그런 기록 때문에 파일 해시가 서로 다르지만 디코딩한 픽셀 배열의 해시는 같습니다. 프로파일 지문이 무엇인지는 <a href="lightroom-profile-fingerprints.html">프로파일 지문 재현</a>에서 다룹니다.</p>
+<p>TIFF의 XMP에 기록된 현상 속성 114개를 비교했습니다. 프로파일을 바꾼 TIFF에서는 프로파일 이름(<code>CameraProfile</code>)과 프로파일 지문(<code>CameraProfileDigest</code>)만 달랐습니다. 중첩 요소 6개는 같았습니다. 내보낼 때마다 바뀌는 파일 날짜와 문서 ID 같은 기록은 따로 비교했습니다. 생략 TIFF 두 개는 그런 기록 때문에 파일 해시가 서로 다르지만 디코딩한 픽셀 배열의 해시는 같습니다. 프로파일 지문이 무엇인지는 <a href="lightroom-profile-fingerprints.html">프로파일 지문 재현</a>에서 다룹니다.</p>
 
 <h3>색차를 잰 방법</h3>
 <ul>
 <li><strong>측정 영역</strong> — <a href="lightroom-render-comparison.html">실제 TIFF 6개 비교</a>와 같은 24개 영역을 썼습니다. 각 패치 안쪽의 200×200픽셀입니다.</li>
-<li><strong>위치 확인</strong> — 차트의 19개 지점에서 TIFF끼리 위치가 어긋나지 않았는지 확인했습니다. 생략 재출력과 명시 ACR3 사이에서 추정한 최대 잔차는 0.005806픽셀입니다. 픽셀이 완전히 같은 생략 두 개 사이에서도 0.005841픽셀이 나오므로, 이 값을 실제 영상 이동으로 해석하지 않았습니다. 항등과 Lift에서는 추정값이 각각 0.392, 0.364픽셀이었고 검사 기준인 1픽셀보다 작습니다.</li>
-<li><strong>끝값</strong> — 생략, 생략 재출력, 명시 ACR3의 영상 전체에서 코드값 0과 65,535의 개수가 채널마다 같았습니다. 다섯 TIFF 모두 측정 영역 안에는 두 끝값이 없었습니다.</li>
-<li><strong>색 변환</strong> — TIFF에 들어 있는 ICC 프로파일을 Little CMS로 처리해 D50 기준 CIELAB(32비트 실수)로 바꿨습니다. 변환 의도는 상대 색도, 검정점 보정은 끔입니다.</li>
-<li><strong>색차</strong> — 패치마다 L*, a*, b*의 중앙값을 구하고 그 값에 ΔE00를 적용했습니다(kL=kC=kH=1). 영역을 고른 근거와 절차는 <a href="color-comparison-protocol.html">ColorChecker 비교 절차</a>에 있습니다.</li>
+<li><strong>위치 확인</strong>: 차트의 19개 지점에서 TIFF끼리 위치가 어긋나지 않았는지 확인했습니다. 생략 재출력과 명시 ACR3 사이에서 추정한 최대 잔차는 0.005806픽셀입니다. 픽셀이 완전히 같은 생략 두 개 사이에서도 0.005841픽셀이 나옵니다. 그래서 이 값을 실제 영상 이동으로 해석하지 않았습니다. 항등과 Lift에서는 추정값이 각각 0.392, 0.364픽셀이었고 검사 기준인 1픽셀보다 작습니다.</li>
+<li><strong>끝값</strong>: 생략, 생략 재출력, 명시 ACR3의 영상 전체에서 코드값 0과 65,535의 개수가 채널마다 같았습니다. 다섯 TIFF 모두 측정 영역 안에는 두 끝값이 없었습니다.</li>
+<li><strong>색 변환</strong>: TIFF에 들어 있는 ICC 프로파일을 Little CMS로 처리해 D50 기준 CIELAB(32비트 실수)로 바꿨습니다. 변환 의도는 상대 색도, 검정점 보정은 끔입니다.</li>
+<li><strong>색차</strong>: 패치마다 L*, a*, b*의 중앙값을 구하고 그 값에 ΔE00를 적용했습니다(kL=kC=kH=1). 영역을 고른 근거와 절차는 <a href="color-comparison-protocol.html">ColorChecker 비교 절차</a>에 있습니다.</li>
 </ul>
 
 <details class="evidence"><summary>DCP 네 개의 파일과 태그 해시</summary>
@@ -411,11 +411,11 @@
 <section id="limits">
 <h2>한계와 남은 과제</h2>
 <ul>
-<li><strong>한 장면, 한 설정</strong> — 명시 ACR3는 이 장면과 현상 설정에서 생략 출력에 가까웠습니다. 다른 노출·조명·Process Version에서도 그런지는 확인하지 않았습니다.</li>
-<li><strong>Lightroom 내부</strong> — 출력이 가깝다는 사실만으로 Lightroom이 내부에서 SDK와 같은 표, 같은 순서로 처리한다고 말할 수 없습니다. 남은 작은 차이의 원인도 정하지 못했습니다.</li>
-<li><strong>카메라 JPEG과의 관계</strong> — 이 실험은 카메라 JPEG의 톤을 추정하거나 색을 맞추는 보정을 포함하지 않습니다. 시험 프로파일은 대조용이며 카메라 색을 맞춘 최종 프로파일이 아닙니다.</li>
-<li><strong>측정 단위</strong> — 색차는 패치 중앙값으로 계산했습니다. 패치 안 픽셀 단위의 차이나 차트 밖 영역의 차이는 전체 픽셀 비교의 통계로만 다뤘습니다.</li>
-<li><strong>따로 통제하지 않은 태그</strong> — 시험 DCP에는 검정 기준 처리를 지정하는 <code>DefaultBlackRender</code> 태그가 없습니다. DNG 규격의 기본값은 0(Auto)이고 이때 현상 프로그램은 영상에 따라 검정 기준을 자동으로 뺄 수 있습니다. 이 동작이 결과에 미친 영향은 재지 않았습니다.</li>
+<li><strong>한 장면, 한 설정</strong>: 명시 ACR3는 이 장면과 현상 설정에서 생략 출력에 가까웠습니다. 다른 노출·조명·Process Version에서도 그런지는 확인하지 않았습니다.</li>
+<li><strong>Lightroom 내부</strong>: 출력이 가깝다는 사실만으로 Lightroom이 내부에서 SDK와 같은 표, 같은 순서로 처리한다고 말할 수 없습니다. 남은 작은 차이의 원인도 정하지 못했습니다.</li>
+<li><strong>카메라 JPEG과의 관계</strong>: 이 실험은 카메라 JPEG의 톤을 추정하거나 색을 맞추는 보정을 포함하지 않습니다. 시험 프로파일은 대조용이며 카메라 색을 맞춘 최종 프로파일이 아닙니다.</li>
+<li><strong>측정 단위</strong>: 색차는 패치 중앙값으로 계산했습니다. 패치 안 픽셀 단위의 차이나 차트 밖 영역의 차이는 전체 픽셀 비교의 통계로만 다뤘습니다.</li>
+<li><strong>따로 통제하지 않은 태그</strong>: 시험 DCP에는 검정 기준 처리를 지정하는 <code>DefaultBlackRender</code> 태그가 없습니다. DNG 규격의 기본값은 0(Auto)이고 이때 현상 프로그램은 영상에 따라 검정 기준을 자동으로 뺄 수 있습니다. 이 동작이 결과에 미친 영향은 재지 않았습니다.</li>
 </ul>
 <p>같은 방식으로 색 보정 표 태그를 시험한 결과는 <a href="lightroom-look-controls.html">LookTable 대조 실험</a>에 있습니다.</p>
 </section>

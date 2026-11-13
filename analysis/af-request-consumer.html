@@ -66,7 +66,7 @@
 <h2>배경: 요청, 큐, task, 완료 통지</h2>
 <p><a href="af-drive-architecture.html#encoding">앞 문서</a>에서 InMotor 제어 객체가 구동 값을 명령 <code>0x8900</code>의 2바이트로 만드는 것을 확인했습니다. 이 문서는 그다음을 다룹니다. 만든 요청이 어디에 보관되고 누가 꺼내고 처리 뒤에 무엇이 돌아오는지입니다.</p>
 <div class="callout plain"><strong class="label">쉽게 말하면</strong>
-<p>민원 창구와 비슷합니다. 신청서(요청)를 접수함(큐)에 넣으면 담당자(task)가 차례대로 꺼내 처리하고 끝나면 신청인에게 “처리 완료”라고 알려 줍니다(완료 통지). 이 알림은 서류 처리가 끝났다는 뜻입니다. 신청한 물건이 실제로 도착했다는 뜻은 아닙니다. 이 문서의 결론도 같습니다.</p></div>
+<p>민원 창구와 비슷합니다. 신청서(요청)를 접수함(큐)에 넣으면 담당자(task)가 차례대로 꺼내 처리하고 끝나면 신청인에게 “처리 완료”라고 알려 줍니다(완료 통지). 이 알림은 서류 처리가 끝났음을 알립니다. 신청한 물건이 실제로 도착했는지는 알려 주지 않습니다. 이 문서의 결론도 같습니다.</p></div>
 <p>구동 방식이나 AF 알고리즘을 나중에 바꾼다면, 새 코드는 “요청이 접수됐다”, “렌즈 쪽으로 전달됐다”, “렌즈가 다 움직였다”를 서로 다른 사실로 다뤄야 합니다. 그래서 완료 통지가 정확히 어느 시점에, 어떤 조건에서 오는지를 확인했습니다.</p>
 <div class="table-wrap"><table>
 <caption>이 문서에서 쓰는 기호</caption>
@@ -256,7 +256,7 @@
 <section id="task">
 <h2>요청을 꺼내 실행하는 것은 AccessoryArbitrate task입니다</h2>
 <p class="takeaway">큐의 주인은 <code>AccessoryArbitrate</code>라는 task입니다. 이벤트 bit 0으로 깨어나 큐에서 요청을 꺼내고 실행 함수를 직접 부릅니다.</p>
-<p><code>AfLensControl</code>은 초기화 때(<code>0x52efe7b4</code>..<code>7f8</code>) 싱글턴 <code>0x52f16c10</code>의 <code>+4</code>를 <code>L+1d8</code>에 저장해 둡니다. 이 객체가 A입니다. factory(<code>0x52f16ae0</code>..<code>ae4</code>)가 생성자 <code>0x52f14814</code>로 만들었고 생성자는 <code>A+74</code>의 큐와 <code>A+88</code>의 이벤트를 초기화하고 <code>A+4</code>에 vtable 포인터 <code>0x538f3c68</code>을 설치합니다.</p>
+<p><code>AfLensControl</code>은 초기화 때(<code>0x52efe7b4</code>..<code>7f8</code>) 싱글턴 <code>0x52f16c10</code>의 <code>+4</code>를 <code>L+1d8</code>에 저장해 둡니다. 이 객체가 A입니다. factory(<code>0x52f16ae0</code>..<code>ae4</code>)가 생성자 <code>0x52f14814</code>로 이 객체를 만들었습니다. 생성자는 <code>A+74</code>의 큐와 <code>A+88</code>의 이벤트를 초기화하고 <code>A+4</code>에 vtable 포인터 <code>0x538f3c68</code>을 설치합니다.</p>
 <div class="table-wrap"><table>
 <caption>task와 큐의 연결을 뒷받침하는 직접 증거</caption>
 <thead><tr><th>연결</th><th>직접 증거</th><th>상태</th></tr></thead>
@@ -266,7 +266,7 @@
 <tr><th scope="row">큐에 넣기</th><td><code>0x52eff5ac</code> → <code>0x52f148fc</code>. <code>A+74</code>에 Req를 넣고 <code>A+88</code>에 이벤트 마스크 <code>0x1</code>(bit 0)을 설정합니다. 공통 넣기 함수 <code>0x530edc60</code>은 노드의 <code>+8</code>에 Req를 넣고 <code>0x530ede1c</code> → <code>0x525b7820</code>으로 넘깁니다.</td><td><span class="badge ok">확인</span> 넣기 함수 안쪽은 <span class="badge static">정적 분석</span></td></tr>
 <tr><th scope="row">꺼내기와 실행</th><td>task 루프가 이벤트 마스크 <code>0x2f</code>를 기다립니다. bit 0이 설정되어 있으면 <code>A+74</code>를 검사하고 <code>0x52f1665c</code> → <code>0x530edfa0</code>으로 꺼냅니다. <code>0x530ee07c</code> → <code>0x525b73a0</code>이 성공(반환 0)이면 노드의 <code>+8</code>을 첫 출력으로 복사합니다. 루프는 <code>0x52f16660</code>에서 그 Req를 읽어 <code>0x52f16674</code> → <code>0x52f15e2c</code>로 직접 호출합니다.</td><td><span class="badge ok">확인</span></td></tr>
 </tbody></table></div>
-<p>진입점은 주 vtable의 이름만 보고 짐작한 것이 아닙니다. 등록된 공통 진입 함수 <code>0x530f3c10</code>부터 실행해 간접 호출이 실제로 task 루프에 닿는 것을 확인했습니다. 다만 OS의 스케줄러를 실행한 것은 아닙니다. task를 시작시키는 별도 경로는 정적 근거로만 남겼습니다.</p>
+<p>진입점은 주 vtable의 이름만 보고 짐작한 것이 아닙니다. 등록된 공통 진입 함수 <code>0x530f3c10</code>부터 실행해 간접 호출이 실제로 task 루프에 닿는 것을 확인했습니다. 다만 OS의 스케줄러는 실행하지 않았습니다. task를 시작시키는 별도 경로는 정적 근거로만 남겼습니다.</p>
 <div class="table-wrap"><table class="fit">
 <caption>큐 꺼내기 함수 <code>0x530edfa0</code>의 검사 3건</caption>
 <thead><tr><th>OS 수신 함수의 반환(합성)</th><th>꺼내기 함수의 반환</th><th>출력 위치의 값</th></tr></thead>
@@ -374,11 +374,11 @@
 <li><strong>token 정리</strong> 전달 함수가 돌아오면 token의 하위 16비트는 그대로 두고 상위 16비트에 D의 명령 번호를 다시 넣습니다.</li>
 <li><strong>완료 통지</strong> <code>0x52f15ec0</code>에서 <code>Req+4</code>가 가리키는 객체의 vtable <code>+8</code> 함수를 이벤트 <code>0x0409001a</code>와 token으로 부릅니다.</li>
 </ol>
-<p>교환 함수 <code>0x52f18128</code> 안에는 패킷 번호 <code>0x63</code>과 명령 번호의 하위·상위 바이트를 놓는 코드, 송신 호출 <code>0x52f3a74c</code>와 수신 호출 <code>0x52f3a754</code>가 보입니다. 이번 검사는 이 함수의 입구에서 stub으로 바꿨습니다. 실제 전송이나 모터 동작은 실행하지도 검증하지도 않았습니다.</p>
+<p>교환 함수 <code>0x52f18128</code> 안에는 패킷 번호 <code>0x63</code>과 명령 번호의 하위·상위 바이트를 놓는 코드가 보입니다. 송신 호출 <code>0x52f3a74c</code>와 수신 호출 <code>0x52f3a754</code>도 보입니다. 이 검사에서는 이 함수의 입구를 stub으로 바꿨습니다. 실제 전송이나 모터 동작은 실행하지도 검증하지도 않았습니다.</p>
 
 <h3 id="callback">완료 통지를 받는 쪽</h3>
 <p><code>L+1d4</code>의 vtable 포인터는 <code>0x538f0568</code>이고 실제로 불리는 칸 <code>0x538f0570</code>의 값은 <code>0x52eff43c</code>입니다. 이 작은 연결 함수가 포인터를 L로 되돌려 <code>0x52eff330</code>을 부릅니다. 콜백은 token에 든 명령 번호와 슬롯에 저장해 둔 명령 번호를 비교합니다. 일치하는 이벤트 <code>0x1a</code>에서 데이터 처리 함수 <code>0x52efde0c</code>와 정리 함수 <code>0x52eff2c8</code>을 부릅니다. 두 함수의 안쪽은 이번 범위 밖입니다.</p>
-<p>명령 번호가 다르면 어떻게 되는지도 한 건 확인했습니다. 검증 스크립트가 슬롯 0의 <code>L+210</code>에 <code>0x8900</code>을 써 두고 token에는 명령 번호 <code>0x8901</code>을 넣었더니, 콜백은 진단 출력 함수만 부르고 두 뒤처리 함수는 부르지 않았습니다.</p>
+<p>명령 번호가 다르면 어떻게 되는지도 한 건 확인했습니다. 검증 스크립트가 슬롯 0의 <code>L+210</code>에 <code>0x8900</code>을 써 두고 token에는 명령 번호 <code>0x8901</code>을 넣었습니다. 그러자 콜백은 진단 출력 함수만 부르고 두 뒤처리 함수는 부르지 않았습니다.</p>
 <div class="callout warn"><strong class="label">주의</strong>
 <p>세 조건에 쓰이는 상태 바이트를 누가 언제 바꾸는지, 그 값이 무슨 뜻인지, 렌즈에 따라 어떻게 달라지는지는 확인하지 않았습니다. 검사에서 그 값을 바꿔 넣어 분기가 달라지는 것을 본 것이며 특정 렌즈나 화면 조작이 그 값을 만든다는 증거는 아닙니다.</p></div>
 
@@ -461,12 +461,12 @@
 <section id="limits">
 <h2>한계와 남은 과제</h2>
 <ul>
-<li><strong>물리 동작</strong> — 렌즈와의 실제 입출력, 드라이버 실행, 렌즈의 이동 완료, 시간, 기계적 조건은 확인하지 않았습니다. 2바이트 값의 단위와 방향의 뜻도 <a href="af-drive-architecture.html#encoding">앞 문서</a>에서 밝힌 대로 미해결입니다.</li>
-<li><strong>검사한 경로</strong> — 비동기 경로(<code>options</code>의 byte 0이 0)만 검사했습니다. 다른 요청 opcode, <code>options</code>가 0이 아닐 때의 대기·할당 분기, 특수 명령 1·2·3, 잘못된 descriptor의 일반적인 동작은 수치로 확인하지 않았습니다.</li>
+<li><strong>물리 동작</strong>: 렌즈와의 실제 입출력, 드라이버 실행, 렌즈의 이동 완료, 시간, 기계적 조건은 확인하지 않았습니다. 2바이트 값의 단위와 방향의 뜻도 <a href="af-drive-architecture.html#encoding">앞 문서</a>에서 밝힌 대로 미해결입니다.</li>
+<li><strong>검사한 경로</strong>: 비동기 경로(<code>options</code>의 byte 0이 0)만 검사했습니다. 다른 요청 opcode, <code>options</code>가 0이 아닐 때의 대기·할당 분기, 특수 명령 1·2·3, 잘못된 descriptor의 일반적인 동작은 수치로 확인하지 않았습니다.</li>
 <li><strong>슬롯 재사용</strong> — 슬롯을 다시 쓰는 모든 과정과 초기화 경로를 따라가지 않았습니다.</li>
 <li><strong>상태 값의 출처</strong> — <code>C+52f3</code>, <code>A+9b</code>, 중재 상태를 만드는 코드는 이번 범위 밖입니다.</li>
 <li><strong>완료 뒤 함수</strong> — 콜백이 부르는 두 뒤처리 함수의 안쪽은 보지 않았습니다.</li>
-<li><strong>실행하지 않은 것</strong> — 카메라, 렌즈, RTOS 스케줄러, 실제 전송을 실행하지 않았습니다. 외부 장치 입출력, 펌웨어 수정·빌드·플래시도 하지 않았습니다.</li>
+<li><strong>실행하지 않은 것</strong>: 카메라, 렌즈, RTOS 스케줄러, 실제 전송을 실행하지 않았습니다. 외부 장치 입출력, 펌웨어 수정·빌드·플래시도 하지 않았습니다.</li>
 </ul>
 </section>
 

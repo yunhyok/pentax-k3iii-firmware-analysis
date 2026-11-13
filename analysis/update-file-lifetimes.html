@@ -40,7 +40,7 @@
 <ul>
 <li>객체 연결, 경로 첫 글자 검색, 처리기 선택 22건</li>
 <li>열기·읽기·정보 조회·닫기의 전달과 반환값 27건</li>
-<li>변환 실패 분기와 출력 인계 13건</li>
+<li>변환 실패 분기와 출력 전달 13건</li>
 <li>입력 정리와 풀 소속 검사 20건</li>
 </ul></div>
 <div class="static"><h3><span class="badge static">정적 분석</span> 코드를 읽어 판단</h3>
@@ -112,7 +112,7 @@
 <h3>이 문서에서 쓰는 말</h3>
 <dl class="kv">
 <dt>volume</dt><dd>파일 시스템 하나가 차지하는 저장 영역입니다. 이 펌웨어는 <code>C:</code>, <code>R:</code>처럼 글자로 구분합니다. exFAT 규격은 volume을 “사용자 데이터를 저장하고 꺼내는 데 필요한 파일 시스템 구조와 데이터 공간 전체”로 정의합니다(<a href="https://learn.microsoft.com/en-us/windows/win32/fileio/exfat-specification">Microsoft exFAT 규격</a>).</dd>
-<dt>FAT과 exFAT</dt><dd>메모리 카드에 널리 쓰이는 두 파일 시스템입니다. SD 규격은 2GB 초과 32GB 이하의 SDHC 카드에 FAT32를, 32GB를 넘는 SDXC 카드에 exFAT을 쓰도록 정합니다(<a href="https://www.sdcard.org/developers/sd-standard-overview/capacity-sd-sdhc-sdxc-sduc/">SD Association의 용량 구분</a>).</dd>
+<dt>FAT과 exFAT</dt><dd>메모리 카드에 널리 쓰이는 두 파일 시스템입니다. SD 규격은 2GB 초과 32GB 이하의 SDHC 카드에 FAT32를 쓰도록 정합니다. 32GB를 넘는 SDXC 카드에는 exFAT을 쓰도록 정합니다(<a href="https://www.sdcard.org/developers/sd-standard-overview/capacity-sd-sdhc-sdxc-sduc/">SD Association의 용량 구분</a>).</dd>
 <dt>처리기(backend)</dt><dd>공통 창구 뒤에서 실제 일을 하는 객체입니다. 여기서는 <code>FatFileSystem</code>, <code>ExFatFileSystem</code>, <code>VirtualFileSystem</code> 세 가지입니다.</dd>
 <dt>핸들</dt><dd>열린 파일 하나를 가리키는 값입니다. 읽기와 닫기는 이 값을 받아 동작합니다.</dd>
 <dt>RTTI</dt><dd>C++ 컴파일러가 실행 파일에 남기는 클래스 이름 정보입니다. 가상 함수 표 바로 앞에 이름 문자열로 가는 포인터가 있습니다.</dd>
@@ -124,7 +124,7 @@
 <p class="takeaway">로더가 부르는 객체는 공장 객체가 만들어 연결한 <code>FileSystem</code>이고 네 가지 요청은 volume마다 정해진 처리기로 전달됩니다.</p>
 
 <h3>객체가 만들어져 로더에 연결되는 과정</h3>
-<p>파일 시스템을 만드는 공장 객체(<code>FileSystemFactory</code>, 주소 <code>0x54787088</code>)의 초기화 함수가 <code>0x30</code>바이트짜리 객체를 할당해 <code>FileSystem</code> 생성자를 부르고 그 주소를 공장 객체의 <code>+0x14</code>에 저장합니다. 자원 관리 객체는 이 값을 가져가 <code>+0x38</code>에 둡니다. 로더가 쓰던 바로 그 칸입니다.</p>
+<p>파일 시스템을 만드는 공장 객체(<code>FileSystemFactory</code>, 주소 <code>0x54787088</code>)의 초기화 함수가 <code>0x30</code>바이트짜리 객체를 할당해 <code>FileSystem</code> 생성자를 부릅니다. 그리고 그 주소를 공장 객체의 <code>+0x14</code>에 저장합니다. 자원 관리 객체는 이 값을 가져가 <code>+0x38</code>에 둡니다. 로더가 쓰던 바로 그 칸입니다.</p>
 <div class="table-wrap"><table>
 <caption>초기화 함수가 저장하는 연결</caption>
 <thead><tr><th>저장 위치</th><th>저장하는 값</th><th>저장 명령</th></tr></thead>
@@ -173,9 +173,9 @@
 
 <h3>핸들과 반환값이 전달되는 방식</h3>
 <ul>
-<li><strong>열기</strong> — 처리기가 성공을 돌려주면 8바이트짜리 포장 구조체를 할당해 처리기의 핸들과 volume 번호를 적고 그 구조체의 주소를 호출자에게 줍니다. 포장 구조체 할당이 실패하는 경우는 시험에서 실행하지 않았습니다.</li>
-<li><strong>읽기·닫기</strong> — 포장 구조체의 <code>+4</code>(volume 번호)로 처리기를 고르고 <code>+0</code>(처리기의 핸들)을 넘깁니다. 읽기는 버퍼와 크기를 그대로 전달합니다.</li>
-<li><strong>잘못된 입력</strong> — 핸들이 없거나, 번호가 음수이거나, 처리기가 없으면 아래로 내려가지 않고 반환값 0과 오류 번호 12를 냅니다. 정보 조회에서 경로가 맞지 않으면 반환값 0과 오류 번호 2입니다.</li>
+<li><strong>열기</strong>: 처리기가 성공을 돌려주면 8바이트짜리 포장 구조체를 할당해 처리기의 핸들과 volume 번호를 적습니다. 그 구조체의 주소는 호출자에게 줍니다. 포장 구조체 할당이 실패하는 경우는 시험에서 실행하지 않았습니다.</li>
+<li><strong>읽기·닫기</strong>: 포장 구조체의 <code>+4</code>(volume 번호)로 처리기를 고르고 <code>+0</code>(처리기의 핸들)을 넘깁니다. 읽기는 버퍼와 크기를 그대로 전달합니다.</li>
+<li><strong>잘못된 입력</strong>: 핸들이 없거나, 번호가 음수이거나, 처리기가 없으면 아래로 내려가지 않고 반환값 0과 오류 번호 12를 냅니다. 정보 조회에서 경로가 맞지 않으면 반환값 0과 오류 번호 2입니다.</li>
 <li><strong>닫기의 정리</strong> — 처리기가 실패를 돌려줘도 포장 구조체를 해제하는 함수는 호출합니다.</li>
 <li><strong>열린 파일 수</strong> — 열기가 성공하면 늘리고 닫기가 성공하면 줄이는 계수도 이 계층에 있습니다.</li>
 </ul>
@@ -203,7 +203,7 @@
 <p>화살표 왼쪽은 객체 주소에서 4를 빼 원래 객체를 되찾은 뒤 분기하는 짧은 중계 코드(thunk)입니다. 여기에 더해 Fat 읽기의 <code>0x52f4a510</code> → <code>0x533681c4</code>, ExFat 읽기의 <code>0x52f45a84</code> → <code>0x5337f554</code> 직접 호출까지 확인했습니다. 그 아래의 라이브러리 내부, 작업 간 통신, 장치 드라이버는 추적하거나 실행하지 않았습니다. 두 호출은 소프트웨어에서 확인할 수 있는 경계이고 실제 입출력의 증거가 아닙니다.</p>
 
 <div class="callout model"><strong class="label">시험 조건</strong>
-<p>파일 인터페이스 49건은 객체 연결 4건, 첫 글자 검색 10건, 처리기 분기 8건, 열기 반환값 4건과 잘못된 경로 1건, 읽기 7건과 잘못된 입력 3건, 정보 조회 7건과 잘못된 경로 1건, 닫기 4건입니다. 공장 초기화는 함수 전체가 아니라 <code>0x52f51644</code>–<code>0x52f516d8</code> 조각을 합성 레지스터와 스택으로 실행했습니다. 대체한 것은 처리기 콜백, 할당, 잠금, assert, 핸들 기록과 해제, 문자열 길이 함수, <code>FileSystem</code> 초기화 경계입니다. 수천만 바이트를 실제로 할당하거나 읽지 않았고 CPU는 Unicorn의 Cortex-A15 모델입니다.</p></div>
+<p>파일 인터페이스 49건은 객체 연결 4건, 첫 글자 검색 10건, 처리기 분기 8건, 열기 반환값 4건과 잘못된 경로 1건, 읽기 7건과 잘못된 입력 3건, 정보 조회 7건과 잘못된 경로 1건, 닫기 4건입니다. 공장 초기화는 함수 전체를 실행하지 않고 <code>0x52f51644</code>–<code>0x52f516d8</code> 조각만 합성 레지스터와 스택으로 실행했습니다. 대체한 것은 처리기 콜백, 할당, 잠금, assert, 핸들 기록과 해제, 문자열 길이 함수, <code>FileSystem</code> 초기화 경계입니다. 수천만 바이트를 실제로 할당하거나 읽지는 않았습니다. CPU는 Unicorn의 Cortex-A15 모델입니다.</p></div>
 
 <details class="evidence"><summary>클래스 이름, 가상 함수 표, 함수 구간</summary>
 <div class="table-wrap"><table class="compact">
@@ -220,7 +220,7 @@
 <ul>
 <li>공장 객체를 돌려주는 함수는 <code>0x52f50f6c</code>입니다. 처음 만들 때 <code>0x52f50fc8</code>에서 <code>+0x14</code>를 0으로 둡니다. 공장 객체의 가상 함수 표는 <code>0x539014c0</code>이고 <code>+8</code> 칸이 초기화 함수 <code>0x52f510e8</code>입니다. 초기화 함수 안에서 <code>0x52f51644</code>–<code>0x52f5165c</code>가 할당, 생성자 <code>0x52f4e66c</code> 호출, 저장을 수행합니다.</li>
 <li>처리기 선택 함수 안에서 조건과 저장은 <code>0x52f4fdd0</code>–<code>0x52f4fe0c</code>에 있습니다. mount 함수는 <code>0x52f50264</code>에서 선택 함수를 부르고 실패 경로의 <code>0x52f502b8</code>에서 칸을 지웁니다. 설명 객체는 <code>0x52f52630</code>이 기록의 첫 칸에서 얻습니다. volume 관리 객체는 기록표를 <code>+0x14</code>, 기록표의 칸 수를 <code>+0x20</code>에 둡니다. 이 값이 등록된 개수가 아니라 용량이라는 점은 <a href="update-volume-finalization.html#volume">다음 문서</a>에서 확인했습니다.</li>
-<li>열기 함수는 <code>0x52f50498</code>에서 포장 구조체를 할당하고 <code>0x52f504d4</code>에 처리기의 핸들, <code>0x52f504e0</code>에 volume 번호를 적은 뒤 <code>0x52f504e4</code>에서 호출자에게 넘깁니다.</li>
+<li>열기 함수는 <code>0x52f50498</code>에서 포장 구조체를 할당합니다. <code>0x52f504d4</code>에 처리기의 핸들, <code>0x52f504e0</code>에 volume 번호를 적은 뒤 <code>0x52f504e4</code>에서 호출자에게 넘깁니다.</li>
 </ul>
 <div class="table-wrap"><table class="compact">
 <thead><tr><th>함수</th><th>구간</th><th>SHA-256</th></tr></thead>
@@ -246,7 +246,7 @@
 <div class="dg-scroll">
 <svg class="dg" viewBox="0 0 800 212" role="img" aria-labelledby="dg-life-title dg-life-desc">
 <title id="dg-life-title">입력 버퍼와 출력 버퍼의 수명</title>
-<desc id="dg-life-desc">왼쪽에서 오른쪽으로 단계가 진행됩니다. 단계는 파일 읽기, 헤더와 바깥 체크섬, 출력 버퍼 할당, 변환, 길이 확인, 안쪽 체크섬, 상위로 인계, 입력 정리입니다. 입력 버퍼는 파일 읽기부터 입력 정리까지 잡혀 있습니다. 출력 버퍼는 출력 버퍼 할당 단계에서 생기고, 최종 해제 시점은 확인하지 못했습니다. 출력 버퍼 할당부터 입력 정리 전까지 두 버퍼가 함께 메모리에 있습니다.</desc>
+<desc id="dg-life-desc">왼쪽에서 오른쪽으로 단계가 진행됩니다. 단계는 파일 읽기, 헤더와 바깥 체크섬, 출력 버퍼 할당, 변환, 길이 확인, 안쪽 체크섬, 상위로 전달, 입력 정리입니다. 입력 버퍼는 파일 읽기부터 입력 정리까지 잡혀 있습니다. 출력 버퍼는 출력 버퍼 할당 단계에서 생기고, 최종 해제 시점은 확인하지 못했습니다. 출력 버퍼 할당부터 입력 정리 전까지 두 버퍼가 함께 메모리에 있습니다.</desc>
 <rect class="gf" x="202" y="8" width="84" height="150"/>
 <rect class="gf" x="370" y="8" width="84" height="150"/>
 <rect class="gf" x="538" y="8" width="84" height="150"/>
@@ -261,7 +261,7 @@
 <text class="n mid" x="580" y="24">안쪽</text>
 <text class="n mid" x="580" y="40">체크섬</text>
 <text class="n mid" x="664" y="24">상위로</text>
-<text class="n mid" x="664" y="40">인계</text>
+<text class="n mid" x="664" y="40">전달</text>
 <text class="n mid" x="748" y="30">입력 정리</text>
 <text class="s" x="8" y="79">입력 버퍼</text>
 <rect class="b key" x="118" y="56" width="630" height="36" rx="6"/>
@@ -279,11 +279,11 @@
 <p>가로 길이는 시간에 비례하지 않습니다. 단계의 순서만 나타냅니다. 입력 정리가 실제로 해제를 요청하는 조건은 <a href="#cleanup">아래 절</a>에 있습니다.</p>
 </figure>
 
-<p>종류 2의 검증 진입 함수 <code>0x52fefb84</code>는 상태 객체에 있던 입력 주소와 길이를 패키지 문맥으로 넘기고 그 값은 다시 검증 객체로 전달됩니다. 검증 객체는 헤더·종류·바깥 체크섬을 확인한 뒤 변환 함수 <code>0x52ff4f88</code>에서 출력 버퍼를 따로 할당하고 입력의 <code>+0x80</code> 주소(압축된 본문의 시작)를 변환 장치에 넘깁니다. 이 구간에는 입력 버퍼를 해제하는 호출이 없습니다.</p>
+<p>종류 2의 검증 진입 함수 <code>0x52fefb84</code>는 상태 객체에 있던 입력 주소와 길이를 패키지 문맥으로 넘깁니다. 그 값은 다시 검증 객체로 전달됩니다. 검증 객체는 헤더·종류·바깥 체크섬을 확인한 뒤 변환 함수 <code>0x52ff4f88</code>에서 출력 버퍼를 따로 할당합니다. 그리고 입력의 <code>+0x80</code> 주소(압축된 본문의 시작)를 변환 장치에 넘깁니다. 이 구간에는 입력 버퍼를 해제하는 호출이 없습니다.</p>
 <ol class="flow">
 <li class="ok"><strong>입력 유지</strong><span>상태 <code>+0x48</code> → 패키지 문맥 <code>+0x1c</code> → 검증 객체 <code>+8</code></span></li>
 <li class="ok"><strong>출력 할당</strong><span>같은 IMAGE1 풀, footer <code>+0x10</code>의 길이</span></li>
-<li class="ok"><strong>검증 뒤 인계</strong><span>검증 객체 <code>+0x10</code>·<code>+0x14</code> → 패키지 문맥 <code>+0x24</code>·<code>+0x28</code> → CPU 문맥 <code>+0x24</code>·<code>+0x28</code></span></li>
+<li class="ok"><strong>검증 뒤 전달</strong><span>검증 객체 <code>+0x10</code>·<code>+0x14</code> → 패키지 문맥 <code>+0x24</code>·<code>+0x28</code> → CPU 문맥 <code>+0x24</code>·<code>+0x28</code></span></li>
 </ol>
 <p><a href="update-memory.html#formula">입력 로더와 메모리 할당</a>에서 구한 요청 합계를 이제 두 버퍼가 함께 있는 시점과 연결할 수 있습니다.</p>
 <div class="table-wrap"><table class="fit">
@@ -311,7 +311,7 @@
 <tr><th scope="row">변환 장치가 0을 반환</th><td>풀의 가상 함수 <code>+0xc</code> 호출</td><td>기존 값 유지</td><td><code>0x52ff5058</code> → <code>0x52ff515c</code></td></tr>
 <tr><th scope="row">출력 길이 불일치</th><td>풀의 가상 함수 <code>+0xc</code> 호출</td><td>기존 값 유지</td><td><code>0x52ff5064</code> → <code>0x52ff50ac</code></td></tr>
 <tr><th scope="row">안쪽 체크섬 실패</th><td>이 함수에서는 호출하지 않음</td><td>새 출력 주소·길이가 남음</td><td><code>0x52ff50e4</code>·<code>0x52ff50ec</code>에서 기록한 뒤 <code>0x52ff50f0</code>에서 검사</td></tr>
-<tr><th scope="row">검증 성공</th><td>이 함수에서는 호출하지 않음</td><td>새 출력 주소·길이가 남음</td><td>조회 함수 <code>0x52ff4c44</code>로 상위 문맥에 인계</td></tr>
+<tr><th scope="row">검증 성공</th><td>이 함수에서는 호출하지 않음</td><td>새 출력 주소·길이가 남음</td><td>조회 함수 <code>0x52ff4c44</code>로 상위 문맥에 전달</td></tr>
 </tbody></table></div>
 <p>실패했을 때 기존 값이 유지되는지는 필드에 표식 값을 넣어 두고 원본 코드를 실행해 확인했습니다. 안쪽 체크섬 실패는 출력 주소를 기록한 다음에 일어납니다. 그 뒤 전체 상태 전환이나 재부팅에서 회수되는지, 검증이 실제로 반복 호출될 수 있는지는 확인하지 못했습니다. 그래서 이것을 메모리 누수로 단정하지 않습니다.</p>
 <p>성공 경로에서는 풀린 출력이 패키지 문맥과 CPU 문맥으로 전달됩니다. 그다음 하위 구획 7을 찾지 못하면 상위 함수는 0을 돌려주지만 이미 전달한 주소는 그대로 남습니다. 하위 구획을 검증하는 함수 두 개는 합성 반환값으로 대체했으며 딸린 펌웨어나 장치의 실제 검증은 수행하지 않았습니다.</p>
@@ -353,7 +353,7 @@
 <thead><tr><th>함수</th><th>구간</th><th>SHA-256</th></tr></thead>
 <tbody>
 <tr><td>종류별 검증 진입</td><td><code>0x52fefb84</code>–<code>0x52fefd08</code></td><td><code class="wrap">03a3516b0511cceee6a01ed9059f875d422fda3524b3df4ea5d1e87251d9d124</code></td></tr>
-<tr><td>패키지 검증과 인계</td><td><code>0x52ff2e04</code>–<code>0x52ff2f1c</code></td><td><code class="wrap">eaa4b36787a8fc00362720e5c6aa53331b1ed306e762ac5dfba76bbe1894f746</code></td></tr>
+<tr><td>패키지 검증과 전달</td><td><code>0x52ff2e04</code>–<code>0x52ff2f1c</code></td><td><code class="wrap">eaa4b36787a8fc00362720e5c6aa53331b1ed306e762ac5dfba76bbe1894f746</code></td></tr>
 <tr><td>변환·할당·해제</td><td><code>0x52ff4f88</code>–<code>0x52ff5168</code></td><td><code class="wrap">c1e91ec883dfb83798891073391e4662fd0a9cdb45523fc5a49ca050114564f4</code></td></tr>
 <tr><td>입력 정리</td><td><code>0x52feec18</code>–<code>0x52feecf8</code></td><td><code class="wrap">ae02a8b9a8a04cd2437215006b8a60630a45ac71d36a7b9a7fd026d851b6764c</code></td></tr>
 <tr><td>해제 요청</td><td><code>0x52ff622c</code>–<code>0x52ff62fc</code></td><td><code class="wrap">cabfb232cd7fd21ec9ed6f76030ca4d421b0f236804de65505764fac3c56cc37</code></td></tr>
@@ -375,7 +375,7 @@
 <ul>
 <li>82건은 모두 합성 입력으로 원본 ARM 코드를 실행한 것입니다. 두 도구는 RTOS 단독 이미지와 통합 이미지에서 같은 결과를 냈습니다. 실제 장치·저장소·운영체제·변환 장치는 실행하지 않았습니다.</li>
 <li>공장 초기화를 부르는 가장 위쪽의 작업·시작 코드와 실제 mount 상태는 확인하지 못했습니다.</li>
-<li>설명 객체 두 숫자의 단위는 이 문서의 근거만으로 정하지 못했습니다. SD 경로의 <code>+0x18</code>은 <a href="update-media-completion.html">매체 객체와 완료 통지</a>에서, 업데이트 파일 이름이 어느 volume으로 이어지는지는 <a href="update-volume-finalization.html#volume">파일 경로·volume·종료 처리</a>에서 이어서 다룹니다.</li>
+<li>설명 객체 두 숫자의 단위는 이 문서의 근거만으로 정하지 못했습니다. SD 경로의 <code>+0x18</code>은 <a href="update-media-completion.html">매체 객체와 완료 통지</a>에서 이어서 다룹니다. 업데이트 파일 이름이 어느 volume으로 이어지는지는 <a href="update-volume-finalization.html#volume">파일 경로·volume·종료 처리</a>에서 다룹니다.</li>
 <li>FAT·exFAT 처리기 아래의 드라이버, 풀린 출력의 최종 회수 시점, 검증이 반복 호출되는 조건이 남아 있습니다.</li>
 <li>디컴파일한 C 17개(파일 인터페이스 8개, 버퍼 수명 9개)와 원본 ARM 2,422개 단어의 주소·해시를 따로 보관했습니다. 디컴파일 결과는 자동 출력 그대로이며 조건과 주소는 ARM 명령을 기준으로 삼았습니다. 공개 자료에는 바이너리와 의사코드 본문 대신 분석과 검사 도구만 있습니다.</li>
 <li>이 결과는 파일 입력 경로와 메모리 수명의 범위를 좁혀 줍니다. 카메라가 수정 펌웨어를 받아들이거나 정상 실행한다는 근거로 쓸 수 없습니다.</li>

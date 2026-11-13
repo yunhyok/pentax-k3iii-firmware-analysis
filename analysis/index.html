@@ -160,7 +160,7 @@
 </ol>
 <p>요청 수신 이후 셔터 GPIO와 AF 상관 연산까지의 추적은 <a href="dispatch-af.html">디스패처·셔터·AF 상관 연산</a>에서 이어집니다.</p>
 </figure>
-<p>촬영 제어의 대표 명령 셋을 짚어 봅니다. ID 30은 캡처·릴리스 요청이고 ID 391 <code>AE_Capture</code>는 상태에 따라 프레임 수를 정해 버퍼를 요청하는 <strong>측광 프레임 덤프</strong>이며 ID 710 <code>shtrctrl_bulb</code>는 별도 벌브 진단 경로입니다.</p>
+<p>촬영 제어의 대표 명령 셋을 짚어 봅니다. ID 30은 캡처·릴리스 요청입니다. ID 391 <code>AE_Capture</code>는 상태에 따라 프레임 수를 정해 버퍼를 요청하는 <strong>측광 프레임 덤프</strong>입니다. ID 710 <code>shtrctrl_bulb</code>는 별도 벌브 진단 경로입니다.</p>
 <details class="evidence"><summary>촬영 명령 주소</summary>
 <dl class="kv">
 <dt>ID 30 <code>camctl_control_capture</code></dt><dd>진입 <code>0x525118e8</code>. 요청 ID 3, 슬롯 1에 시작 0·정지 1. <code>0x52511c0c</code>에서 공통 제출 함수를 부릅니다.</dd>
@@ -248,7 +248,7 @@
 <tr><th scope="row">창 밖 분기</th><td class="n">15</td><td>분석 창 밖으로 향하는 분기</td></tr>
 </tbody></table></div>
 <p>상세 대조 범위는 경계 주소가 서로 다른 디컴파일 함수 36개와 추가 역어셈블 구간 6개입니다. 각 구간에는 시작·끝 주소와 원본 바이트의 SHA-256을 붙였습니다. 957개 일괄 분석은 각 명령 진입점에서 제어흐름 그래프를 만들고 다음 진입점 주소를 탐색 상한으로 썼습니다. 마지막 명령의 상한은 다음 별도 프롤로그 <code>0x525b2cd8</code>이고 스택 보호 실패 함수 <code>0x532fb9c8</code>은 종료점으로 취급했습니다.</p>
-<p>탐색 창에는 리터럴이나 다른 코드가 섞일 수 있어, 창 안의 코드 비율을 소스 복원율로 쓰면 안 됩니다. 예를 들어 요청 전송 함수는 484바이트 중 432바이트, 셔터 드라이버 구간은 180바이트 중 60바이트만 해당 그래프에 나타나, 나머지는 전체 ARM 목록과 직접 대조했습니다. 자동 생성한 C에는 타입·호출 규약 오인과 분기 누락이 있어, 재현 시 입력 바이트·명령 주소·호출 목적지를 우선 대조합니다. TSV의 <code>cfg_bytes</code>·<code>window_bytes</code>는 그래프와 창의 크기, <code>c_sha256</code>은 저장한 C 텍스트의 해시입니다.</p>
+<p>탐색 창에는 리터럴이나 다른 코드가 섞일 수 있으므로 창 안의 코드 비율을 소스 복원율로 쓰면 안 됩니다. 예를 들어 요청 전송 함수는 484바이트 중 432바이트, 셔터 드라이버 구간은 180바이트 중 60바이트만 해당 그래프에 나타났습니다. 나머지는 전체 ARM 목록과 직접 대조했습니다. 자동 생성한 C에는 타입·호출 규약 오인과 분기 누락이 있습니다. 그래서 재현할 때는 입력 바이트·명령 주소·호출 목적지를 먼저 대조합니다. TSV의 <code>cfg_bytes</code>·<code>window_bytes</code>는 그래프와 창의 크기, <code>c_sha256</code>은 저장한 C 텍스트의 해시입니다.</p>
 </section>
 
 <section id="reproduce">
@@ -260,7 +260,7 @@ python verify_command_analysis.py .private/my-decode/decoded.bin</code></pre>
 <p>개별 명령의 의사코드는 <code>angr==10.0.5</code> 환경에서 ID 또는 주소로 다시 생성합니다. 출력은 C 형태의 의사코드입니다.</p>
 <pre><code>python decompile_sample.py .private/my-decode/decoded.bin 39
 python decompile_sample.py .private/my-decode/decoded.bin 0x530b6810</code></pre>
-<p class="small muted">상용 디스어셈블러로 원시 RTOS 이미지를 여는 시도는 <code>unsupported binary format</code>으로 실패해, 확인한 적재 주소 <code>0x52500000</code>에서 angr와 Capstone으로 읽었습니다. 카메라 실행이나 플래싱은 하지 않았습니다.</p>
+<p class="small muted">상용 디스어셈블러로 원시 RTOS 이미지를 여는 시도는 <code>unsupported binary format</code>으로 실패했습니다. 그래서 확인한 적재 주소 <code>0x52500000</code>에서 angr와 Capstone으로 읽었습니다. 카메라 실행이나 플래싱은 하지 않았습니다.</p>
 </section>
 
 <section id="refs">

@@ -164,7 +164,7 @@
 <pre><code>R' = a11·R + a12·G + a13·B
 G' = a21·R + a22·G + a23·B
 B' = a31·R + a32·G + a33·B</code></pre>
-<p>센서의 색을 표준 색공간으로 옮기거나, 컬러모드마다 다른 색 표현을 만들 때 씁니다. 펌웨어는 계수를 <dfn title="실수 1.0을 정수 8192(2의 13제곱)로 나타내는 고정소수점 표기">Q13 고정소수점</dfn>으로 계산합니다. 공통 행렬, 모드 행렬, 채도 행렬을 곱해 하나로 합친 뒤 12비트 계수로 줄여 하드웨어에 넘깁니다. 정수 연산의 반올림과 자리 넘침이 결과에 영향을 주므로 실수 행렬 곱으로 바꿔 계산하면 같은 값이 나오지 않을 수 있습니다.</p>
+<p>센서의 색을 표준 색공간으로 옮기거나, 컬러모드마다 다른 색 표현을 만들 때 씁니다. 펌웨어는 계수를 <dfn title="실수 1.0을 정수 8192(2의 13제곱)로 나타내는 고정소수점 표기">Q13 고정소수점</dfn>으로 계산합니다. 공통 행렬, 모드 행렬, 채도 행렬을 곱해 하나로 합친 뒤 12비트 계수로 줄여 하드웨어에 넘깁니다. 정수 연산의 반올림과 자리 넘침이 결과에 영향을 주므로 실수 행렬 곱으로 바꿔 계산하면 같은 값이 나온다는 보장이 없습니다.</p>
 
 <h3>감마와 톤 곡선</h3>
 <p>센서 값은 빛의 양에 거의 비례합니다. 사진 파일은 이 값을 그대로 저장하지 않고 어두운 쪽에 더 많은 단계를 배정하는 곡선을 거쳐 저장합니다. 이 곡선이 감마입니다. 컬러모드의 대비나 밝기 느낌은 여기에 더해지는 톤 곡선이 만듭니다.</p>
@@ -241,7 +241,7 @@ Cr =  0.5 R − 0.4187 G − 0.0813 B + 128</code></pre>
 <tr><th scope="row">색공간 선택의 전달</th><td><span class="badge ok">확인</span></td><td>설정 요청 처리 1,536사례. 큐를 거치는 연결은 코드를 읽어 확인했습니다.</td><td><a href="pipeline-report.html#0x145">④</a></td></tr>
 <tr><th scope="row">행렬·감마·톤 표의 전달</th><td><span class="badge ok">확인</span></td><td>R2y 레지스터와 표 영역에 기록되는 위치와 비트 폭 312검사</td><td><a href="pipeline-report.html#r2y">④</a></td></tr>
 <tr><th scope="row">JPEG 양자화 표</th><td><span class="badge ok">확인</span></td><td>품질 인수에 따른 표 계산과 기록 4,000조건</td><td><a href="pipeline-report.html#jpeg">④</a></td></tr>
-<tr><th scope="row">Adobe Camera Matching 프로파일</th><td><span class="badge ok">확인</span></td><td>Bright, Natural, Portrait, Landscape, Vibrant 다섯 파일의 구조를 읽었습니다. 파일 구조의 확인이며 색을 비교한 것은 아닙니다.</td><td><a href="color-lightroom.html">①</a></td></tr>
+<tr><th scope="row">Adobe Camera Matching 프로파일</th><td><span class="badge ok">확인</span></td><td>Bright, Natural, Portrait, Landscape, Vibrant 다섯 파일의 구조를 읽었습니다. 파일 구조만 확인했고 색은 비교하지 않았습니다.</td><td><a href="color-lightroom.html">①</a></td></tr>
 <tr><th scope="row">시험에 넣은 입력</th><td><span class="badge model">모델</span></td><td>설정값·버퍼·객체는 합성 값입니다. 메뉴에서 같은 값이 만들어지는지는 따로 확인해야 합니다.</td><td>전체</td></tr>
 <tr><th scope="row">하드웨어 안의 픽셀 계산</th><td><span class="badge open">미확인</span></td><td>화이트밸런스·행렬·감마·톤이 적용되는 순서, 표의 보간 방식, 중간 값의 비트 폭</td><td><a href="pipeline-report.html#clip-semantics">④</a></td></tr>
 <tr><th scope="row">클리핑의 위치와 방식</th><td><span class="badge open">미확인</span></td><td>입력 클리핑 레지스터의 비교 방식, R2y의 상한 후보 필드가 실제로 하는 일</td><td><a href="pipeline-report.html#clip-semantics">④</a></td></tr>
@@ -304,17 +304,17 @@ Cr =  0.5 R − 0.4187 G − 0.0813 B + 128</code></pre>
 <tbody>
 <tr><th scope="row">묻는 것</th><td>카메라가 RAW를 JPEG로 만들 때 어떤 값을 쓰는가</td><td>Lightroom이 DCP 프로파일로 RAW를 어떻게 현상하는가</td></tr>
 <tr><th scope="row">방법</th><td>펌웨어의 기계어를 읽고 PC 에뮬레이터에서 실행</td><td>실제 Lightroom Classic에서 실제 RAW 파일을 현상해 결과를 측정</td></tr>
-<tr><th scope="row">결과의 성격</th><td>설정값의 계산식과 전달 경로. 카메라에서 실행한 것은 아닙니다.</td><td>Lightroom의 실제 출력. 카메라를 측정한 것은 아닙니다.</td></tr>
+<tr><th scope="row">결과의 성격</th><td>설정값의 계산식과 전달 경로. 카메라에서는 실행하지 않았습니다.</td><td>Lightroom의 실제 출력. 카메라는 측정하지 않았습니다.</td></tr>
 </tbody></table></div>
 
 <h3>두 주제가 만나는 지점</h3>
 <ul>
-<li><strong>이미 있는 프로파일</strong> — Adobe는 K-3 Mark III용 Camera Matching 프로파일을 다섯 모드에 제공합니다. 그 파일의 구조는 <a href="color-lightroom.html">컬러모드 자원과 Lightroom</a>에서 읽었습니다. 나머지 모드에는 대응하는 프로파일이 없습니다.</li>
-<li><strong>닮은 관측</strong> — 펌웨어에서 Natural과 Portrait는 감마 곡선이 같고 행렬만 달랐습니다. Adobe의 Camera Natural과 Camera Portrait 프로파일도 톤 곡선과 LookTable이 같고 ForwardMatrix만 다릅니다. 두 관측이 같은 변환을 뜻한다는 증거는 아닙니다. 자세한 내용은 <a href="color-mode-boundaries.html">색 모드별 행렬·감마 조건</a>에 있습니다.</li>
-<li><strong>옮기기 위한 조건</strong> — 펌웨어의 행렬과 곡선을 프로파일로 옮기려면 입력 색좌표, 화이트밸런스 적용 상태, 클리핑 위치를 먼저 알아야 합니다. 조건의 목록은 <a href="pipeline-report.html#lightroom">JPEG·ISP와 색 재현 경로</a>에 있습니다.</li>
+<li><strong>이미 있는 프로파일</strong>: Adobe는 K-3 Mark III용 Camera Matching 프로파일을 다섯 모드에 제공합니다. 그 파일의 구조는 <a href="color-lightroom.html">컬러모드 자원과 Lightroom</a>에서 읽었습니다. 나머지 모드에는 대응하는 프로파일이 없습니다.</li>
+<li><strong>닮은 관측</strong>: 펌웨어에서 Natural과 Portrait는 감마 곡선이 같고 행렬만 달랐습니다. Adobe의 Camera Natural과 Camera Portrait 프로파일도 톤 곡선과 LookTable이 같고 ForwardMatrix만 다릅니다. 두 관측이 같은 변환을 뜻한다는 증거는 아닙니다. 자세한 내용은 <a href="color-mode-boundaries.html">색 모드별 행렬·감마 조건</a>에 있습니다.</li>
+<li><strong>옮기기 위한 조건</strong>: 펌웨어의 행렬과 곡선을 프로파일로 옮기려면 입력 색좌표, 화이트밸런스 적용 상태, 클리핑 위치를 먼저 알아야 합니다. 조건의 목록은 <a href="pipeline-report.html#lightroom">JPEG·ISP와 색 재현 경로</a>에 있습니다.</li>
 </ul>
 <div class="callout warn"><strong class="label">주의</strong>
-<p>펌웨어에서 찾은 행렬에 ColorMatrix라는 이름이 붙어 있어도 DNG 프로파일의 ColorMatrix와 같은 것이 아닙니다. Adobe의 설명에 따르면 DNG의 ColorMatrix는 XYZ 값을 화이트밸런스 전의 카메라 값으로, ForwardMatrix는 화이트밸런스를 적용한 카메라 값을 D50 기준 XYZ로 바꿉니다(<a href="https://android.googlesource.com/platform/external/dng_sdk/+/refs/heads/main/source/dng_camera_profile.h">Adobe DNG SDK, dng_camera_profile.h</a>). 펌웨어 행렬의 입력과 출력 좌표는 아직 모릅니다.</p></div>
+<p>펌웨어에서 찾은 행렬에 ColorMatrix라는 이름이 붙어 있어도 DNG 프로파일의 ColorMatrix와 같은 것이 아닙니다. Adobe의 설명에 따르면 DNG의 ColorMatrix는 XYZ 값을 화이트밸런스 전의 카메라 값으로 바꿉니다. ForwardMatrix는 화이트밸런스를 적용한 카메라 값을 D50 기준 XYZ로 바꿉니다(<a href="https://android.googlesource.com/platform/external/dng_sdk/+/refs/heads/main/source/dng_camera_profile.h">Adobe DNG SDK, dng_camera_profile.h</a>). 펌웨어 행렬의 입력과 출력 좌표는 아직 모릅니다.</p></div>
 </section>
 
 <section id="reading">

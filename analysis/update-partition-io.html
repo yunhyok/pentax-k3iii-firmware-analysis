@@ -71,9 +71,9 @@
 <div class="callout plain"><strong class="label">쉽게 말하면</strong>
 <p>큰 저장 장치의 한 구역을 볼륨 하나로 씁니다. 파일시스템은 그 구역 안에서 0번부터 번호를 매깁니다. 장치 드라이버는 장치 전체 기준의 번호를 받습니다. 그래서 둘 사이에 “구역이 시작하는 번호를 더하는” 단계가 필요합니다. 이 문서는 그 덧셈이 어디에서 일어나는지 찾은 기록입니다.</p></div>
 <ul>
-<li><strong>sector</strong> — 저장 장치를 읽고 쓰는 기본 단위입니다. 용량이 2GiB를 넘는 eMMC와 SDHC·SDXC 카드는 512바이트 sector 번호로 주소를 지정합니다. Linux 커널의 MMC 드라이버도 이 장치들의 용량을 512바이트 sector 수로 다룹니다.</li>
+<li><strong>sector</strong>: 저장 장치를 읽고 쓰는 기본 단위입니다. 용량이 2GiB를 넘는 eMMC와 SDHC·SDXC 카드는 512바이트 sector 번호로 주소를 지정합니다. Linux 커널의 MMC 드라이버도 이 장치들의 용량을 512바이트 sector 수로 다룹니다.</li>
 <li><strong><code>Emmc</code></strong> — R 볼륨이 가리키는 매체 객체의 클래스 이름입니다. 읽기·쓰기 요청은 이 객체의 가상 함수로 전달됩니다.</li>
-<li><strong>FAT 연결 함수</strong> — 파일시스템 라이브러리와 매체 객체 사이에 있는 펌웨어 쪽 함수입니다. 분석 기록에서는 FAT adapter, callback이라고 불렀습니다.</li>
+<li><strong>FAT 연결 함수</strong>: 파일시스템 라이브러리와 매체 객체 사이에 있는 펌웨어 쪽 함수입니다. 분석 기록에서는 FAT adapter, callback이라고 불렀습니다.</li>
 </ul>
 <div class="callout"><strong class="label">참고</strong>
 <p>여기서 다루는 volume record는 파일시스템 볼륨의 항목입니다. <code>FwPartition</code>의 bank record와 다른 구조이며 이 문서의 값으로 RTOS의 bank 선택을 설명할 수는 없습니다. bank는 <a href="update-bank-selection.html">쓰기 bank와 BOOT 선택</a>에서 다룹니다.</p></div>
@@ -281,10 +281,10 @@
 
 <h3 id="limits">한계와 남은 과제</h3>
 <ul>
-<li><strong>시험 조건</strong> — 직접 만든 R record와 기본 <code>Emmc</code> vptr를 썼습니다. 저장 장치 입출력, OS lock, cache, 라이브러리 조회, 등록 준비, 메모리 복사는 모두 명시적인 대체 함수입니다. 읽기는 합성 바이트를 채워 주고 쓰기는 버퍼의 해시만 기록합니다.</li>
-<li><strong>실행하지 않은 것</strong> — 초기화, mount, 실제 파일 접근, 다른 mode와 재정의된 callback, 카메라, 펌웨어 빌드, 플래시 기록.</li>
-<li><strong>CPU 모델</strong> — Unicorn의 Cortex-A15 모델로 산술과 메모리 흐름을 본 것입니다. 카메라의 CPU나 주변 장치를 재현한 것이 아닙니다.</li>
-<li><strong>남은 과제</strong> — R 볼륨의 실제 포맷과 mount 때 고르는 파일시스템, 물리 주소와의 대응, 상위 라이브러리와 하위 드라이버의 범위 검사.</li>
+<li><strong>시험 조건</strong>: 직접 만든 R record와 기본 <code>Emmc</code> vptr를 썼습니다. 저장 장치 입출력, OS lock, cache, 라이브러리 조회, 등록 준비, 메모리 복사는 모두 명시적인 대체 함수입니다. 읽기는 합성 바이트를 채워 주고 쓰기는 버퍼의 해시만 기록합니다.</li>
+<li><strong>실행하지 않은 것</strong>: 초기화, mount, 실제 파일 접근, 다른 mode와 재정의된 callback, 카메라, 펌웨어 빌드, 플래시 기록.</li>
+<li><strong>CPU 모델</strong>: Unicorn의 Cortex-A15 모델로 산술과 메모리 흐름을 본 것입니다. 카메라의 CPU나 주변 장치를 재현한 것이 아닙니다.</li>
+<li><strong>남은 과제</strong>: R 볼륨의 실제 포맷과 mount 때 고르는 파일시스템, 물리 주소와의 대응, 상위 라이브러리와 하위 드라이버의 범위 검사.</li>
 </ul>
 </section>
 

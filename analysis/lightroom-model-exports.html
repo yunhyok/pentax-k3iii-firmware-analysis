@@ -147,8 +147,8 @@
 </details>
 
 <details class="evidence"><summary>XMP에 기록된 현상 설정 전체와 픽셀 값 범위</summary>
-<p class="small"><strong>K-3 III #4678</strong> — <code>WhiteBalance=As Shot</code>, <code>Exposure2012=0.00</code>, <code>ProcessVersion=15.4</code>, <code>HDREditMode=0</code>, <code>Temperature=5500</code>, <code>Tint=+15</code>, <code>HasCrop=False</code>, <code>CropLeft=0</code>, <code>CropTop=0</code>, <code>CropRight=1</code>, <code>CropBottom=1</code>, <code>CropAngle=0</code>, <code>Contrast2012=0</code>, <code>Highlights2012=0</code>, <code>Shadows2012=0</code>, <code>Whites2012=0</code>, <code>Blacks2012=0</code>, <code>LensProfileEnable=0</code>, <code>AutoLateralCA=0</code>, <code>Sharpness=40</code>, <code>SharpenRadius=+1.0</code>, <code>SharpenDetail=25</code>, <code>SharpenEdgeMasking=0</code>, <code>LuminanceSmoothing=0</code>, <code>ColorNoiseReduction=25</code>, <code>HasSettings=True</code></p>
-<p class="small"><strong>Q7 #1760</strong> — <code>WhiteBalance=As Shot</code>, <code>Exposure2012=0.00</code>, <code>ProcessVersion=15.4</code>, <code>HDREditMode=0</code>, <code>Temperature=4050</code>, <code>Tint=+22</code>, <code>HasCrop=True</code>, <code>CropLeft=0</code>, <code>CropTop=0.056</code>, <code>CropRight=1</code>, <code>CropBottom=0.944</code>, <code>CropAngle=0</code>, <code>Contrast2012=0</code>, <code>Highlights2012=0</code>, <code>Shadows2012=0</code>, <code>Whites2012=0</code>, <code>Blacks2012=0</code>, <code>LensProfileEnable=0</code>, <code>AutoLateralCA=0</code>, <code>Sharpness=40</code>, <code>SharpenRadius=+1.0</code>, <code>SharpenDetail=25</code>, <code>SharpenEdgeMasking=0</code>, <code>LuminanceSmoothing=0</code>, <code>ColorNoiseReduction=25</code>, <code>HasSettings=True</code></p>
+<p class="small"><strong>K-3 III #4678</strong>: <code>WhiteBalance=As Shot</code>, <code>Exposure2012=0.00</code>, <code>ProcessVersion=15.4</code>, <code>HDREditMode=0</code>, <code>Temperature=5500</code>, <code>Tint=+15</code>, <code>HasCrop=False</code>, <code>CropLeft=0</code>, <code>CropTop=0</code>, <code>CropRight=1</code>, <code>CropBottom=1</code>, <code>CropAngle=0</code>, <code>Contrast2012=0</code>, <code>Highlights2012=0</code>, <code>Shadows2012=0</code>, <code>Whites2012=0</code>, <code>Blacks2012=0</code>, <code>LensProfileEnable=0</code>, <code>AutoLateralCA=0</code>, <code>Sharpness=40</code>, <code>SharpenRadius=+1.0</code>, <code>SharpenDetail=25</code>, <code>SharpenEdgeMasking=0</code>, <code>LuminanceSmoothing=0</code>, <code>ColorNoiseReduction=25</code>, <code>HasSettings=True</code></p>
+<p class="small"><strong>Q7 #1760</strong>: <code>WhiteBalance=As Shot</code>, <code>Exposure2012=0.00</code>, <code>ProcessVersion=15.4</code>, <code>HDREditMode=0</code>, <code>Temperature=4050</code>, <code>Tint=+22</code>, <code>HasCrop=True</code>, <code>CropLeft=0</code>, <code>CropTop=0.056</code>, <code>CropRight=1</code>, <code>CropBottom=0.944</code>, <code>CropAngle=0</code>, <code>Contrast2012=0</code>, <code>Highlights2012=0</code>, <code>Shadows2012=0</code>, <code>Whites2012=0</code>, <code>Blacks2012=0</code>, <code>LensProfileEnable=0</code>, <code>AutoLateralCA=0</code>, <code>Sharpness=40</code>, <code>SharpenRadius=+1.0</code>, <code>SharpenDetail=25</code>, <code>SharpenEdgeMasking=0</code>, <code>LuminanceSmoothing=0</code>, <code>ColorNoiseReduction=25</code>, <code>HasSettings=True</code></p>
 <div class="table-wrap"><table class="compact">
 <caption>디코딩한 TIFF의 채널별 최솟값·최댓값(R / G / B)과 RAW의 관련 태그</caption>
 <thead><tr><th>표본</th><th class="n">TIFF 최솟값</th><th class="n">TIFF 최댓값</th><th>RAW의 <code>AsShotNeutral</code></th><th class="n">RAW의 <code>BaselineExposure</code></th></tr></thead>
@@ -163,7 +163,7 @@
 <section id="crop">
 <h2>TIFF 크기는 RAW의 기본 크롭과 같습니다</h2>
 <p class="takeaway">K-3 III는 크롭 기록 없이, Q7은 XMP에 적힌 크롭을 거쳐, 두 기종 모두 RAW가 정한 기본 크롭 크기로 출력됐습니다.</p>
-<p>RAW 파일은 최종 사진보다 조금 넓은 영역을 담습니다. DNG는 이 관계를 태그로 적습니다. <code>ActiveArea</code>는 센서 배열 가운데 가려지지 않고 영상을 담는 영역이고 <code>DefaultCropOrigin</code>과 <code>DefaultCropSize</code>는 그 안에서 최종 사진이 될 영역의 시작점과 크기입니다. 내보낼 때 크기를 조정하지 않았으므로, 예상 TIFF 크기는 센서 배열 전체가 아니라 <code>DefaultCropSize</code>에서 나옵니다.</p>
+<p>RAW 파일은 최종 사진보다 조금 넓은 영역을 담습니다. DNG는 이 관계를 태그로 적습니다. <code>ActiveArea</code>는 센서 배열 가운데 가려지지 않고 영상을 담는 영역입니다. <code>DefaultCropOrigin</code>과 <code>DefaultCropSize</code>는 그 안에서 최종 사진이 될 영역의 시작점과 크기입니다. 내보낼 때 크기를 조정하지 않았으므로 예상 TIFF 크기는 센서 배열 전체가 아니라 <code>DefaultCropSize</code>에서 나옵니다.</p>
 
 <figure class="diagram">
 <figcaption>센서 배열, 활성 영역, 기본 크롭의 관계</figcaption>
@@ -198,8 +198,8 @@
 </figure>
 
 <ul>
-<li><strong>K-3 III</strong> — XMP는 <code>HasCrop=False</code>이고 크롭 좌표는 전체 범위 [0, 0, 1, 1]입니다. TIFF는 기본 크롭 크기인 6192×4128입니다.</li>
-<li><strong>Q7</strong> — XMP는 <code>HasCrop=True</code>입니다. 왼쪽·위·오른쪽·아래 경계가 [0, 0.056, 1, 0.944]이고 각도는 0입니다. 4000×3000 활성 영역에서 168 ÷ 3000 = 0.056, 2832 ÷ 3000 = 0.944이므로, 위아래 168행씩을 뺀 RAW 기본 크롭 4000×2664와 정확히 일치합니다.</li>
+<li><strong>K-3 III</strong>: XMP는 <code>HasCrop=False</code>이고 크롭 좌표는 전체 범위 [0, 0, 1, 1]입니다. TIFF는 기본 크롭 크기인 6192×4128입니다.</li>
+<li><strong>Q7</strong>: XMP는 <code>HasCrop=True</code>입니다. 왼쪽·위·오른쪽·아래 경계가 [0, 0.056, 1, 0.944]이고 각도는 0입니다. 4000×3000 활성 영역에서 168 ÷ 3000 = 0.056, 2832 ÷ 3000 = 0.944입니다. 이 경계는 위아래 168행씩을 뺀 RAW 기본 크롭 4000×2664와 정확히 일치합니다.</li>
 </ul>
 <p>두 RAW 모두 방향 태그는 1이고 <code>DefaultScale</code>은 1×1입니다. 사용자 크롭을 뜻하는 <code>DefaultUserCrop</code> 태그는 두 파일 모두에 없습니다.</p>
 
@@ -241,11 +241,11 @@
 <section id="limits">
 <h2>한계와 남은 과제</h2>
 <ul>
-<li><strong>색은 재지 않았습니다</strong> — 프로파일이 선택되고 출력됐다는 사실까지만 확인했습니다. 카메라 JPEG와의 색 차이나 프로파일의 보정 정확도는 측정하지 않았습니다.</li>
+<li><strong>색은 재지 않았습니다</strong>. 프로파일이 선택되고 출력됐다는 사실까지만 확인했습니다. 카메라 JPEG와의 색 차이나 프로파일의 보정 정확도는 측정하지 않았습니다.</li>
 <li><strong>표본 한 장씩</strong> — 기종마다 RAW 한 장, 현상 설정 하나입니다. 표본을 찍은 펌웨어 버전도 분석 대상 버전과 다릅니다.</li>
 <li><strong>DNG만 시험했습니다</strong> — 두 표본은 모두 DNG입니다. PEF 형식 RAW에 같은 DCP가 적용되는지는 확인하지 않았습니다.</li>
-<li><strong>Q7의 모델 이름</strong> — 끝 공백을 보존한 DCP가 선택되는 것만 확인했습니다. 공백이 없는 이름으로 만든 DCP는 시험하지 않았습니다.</li>
-<li><strong>Q7의 크롭 기록</strong> — Lightroom이 Q7에서만 <code>HasCrop=True</code>로 기록한 이유는 조사하지 않았습니다. 결과 크기가 RAW 기본 크롭과 같다는 점만 확인했습니다.</li>
+<li><strong>Q7의 모델 이름</strong>: 끝 공백을 보존한 DCP가 선택되는 것만 확인했습니다. 공백이 없는 이름으로 만든 DCP는 시험하지 않았습니다.</li>
+<li><strong>Q7의 크롭 기록</strong>: Lightroom이 Q7에서만 <code>HasCrop=True</code>로 기록한 이유는 조사하지 않았습니다. 결과 크기가 RAW 기본 크롭과 같다는 점만 확인했습니다.</li>
 </ul>
 </section>
 

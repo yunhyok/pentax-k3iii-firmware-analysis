@@ -259,7 +259,7 @@
 
 <section id="soc">
 <h2>어떤 칩을 대상으로 만든 펌웨어인가</h2>
-<p class="takeaway">펌웨어 안의 장치 트리와 커널 설정은 Socionext Milbeaut SC2000A 계열과 Cortex-A7을 가리킵니다. 이것은 “Linux가 무엇을 대상으로 빌드되었는가”의 직접 증거이고 실장된 부품을 눈으로 확인한 것은 아닙니다.</p>
+<p class="takeaway">펌웨어 안의 장치 트리와 커널 설정은 Socionext Milbeaut SC2000A 계열과 Cortex-A7을 가리킵니다. 이것은 “Linux가 무엇을 대상으로 빌드되었는가”의 직접 증거입니다. 실장된 부품을 눈으로 확인하지는 않았습니다.</p>
 
 <h3>펌웨어 안의 증거</h3>
 <div class="table-wrap"><table>
@@ -281,11 +281,11 @@
 <tbody>
 <tr><th scope="row"><a href="https://www.socionext.com/en/pr/sn_pr20170105_01e.pdf">Socionext 보도자료</a> (2017-01-05)</th><td>SC2000은 Milbeaut 영상 프로세서 8세대인 “M10V” 시리즈의 제품입니다. CPU는 “ARM Cortex A7 Quad 660MHz”이고 컴퓨터 비전에 맞춘 DSP를 갖췄다고 설명합니다.</td></tr>
 <tr><th scope="row"><a href="https://lkml.rescloud.iu.edu/1902.2/02222.html">Linux 커널 메일링 리스트의 SC2000 지원 패치 소개</a> (Socionext, 2019-02)</th><td>“M10V”는 SC2000의 내부 이름이라고 밝힙니다. 구성으로 Cortex-A7 4코어, NEON, DSP, GPU, 최대 3GB DDR3, 전원 제어용 Cortex-M0를 듭니다.</td></tr>
-<tr><th scope="row">Linux 업스트림 소스</th><td><a href="https://github.com/torvalds/linux/blob/master/arch/arm/mach-milbeaut/Kconfig">Kconfig</a>에 “Milbeaut SC2000/M10V platform”이 있습니다. <a href="https://github.com/torvalds/linux/blob/master/arch/arm/boot/dts/socionext/milbeaut-m10v.dtsi">장치 트리 소스</a>의 루트 <code>compatible</code>은 <code>socionext,sc2000a</code>이고 <code>arm,cortex-a7</code> CPU 노드가 넷(<code>reg</code> <code>0xf00</code>~<code>0xf03</code>)이며 직렬 포트가 <code>0x1e700010</code>에 있습니다.</td></tr>
+<tr><th scope="row">Linux 업스트림 소스</th><td><a href="https://github.com/torvalds/linux/blob/master/arch/arm/mach-milbeaut/Kconfig">Kconfig</a>에 “Milbeaut SC2000/M10V platform”이 있습니다. <a href="https://github.com/torvalds/linux/blob/master/arch/arm/boot/dts/socionext/milbeaut-m10v.dtsi">장치 트리 소스</a>의 루트 <code>compatible</code>은 <code>socionext,sc2000a</code>입니다. <code>arm,cortex-a7</code> CPU 노드는 넷(<code>reg</code> <code>0xf00</code>~<code>0xf03</code>)이고 직렬 포트는 <code>0x1e700010</code>에 있습니다.</td></tr>
 <tr><th scope="row">Ricoh Imaging 제품 설명</th><td><a href="https://www.ricoh-imaging.co.jp/english/products/k-3-3/feature/02.html">K-3 Mark III</a>는 “PRIME V imaging engine”과 “second-generation accelerator unit”을 쓴다고 설명합니다. <a href="https://www.ricoh-imaging.co.jp/english/products/k-3-2/feature/05.html">K-3 II</a>의 영상 엔진은 PRIME III입니다.</td></tr>
 <tr><th scope="row"><a href="https://ameblo.jp/akinas/entry-12845980402.html">akinas의 K-3 Mark III 펌웨어 분석</a></th><td>개인 연구자의 독립 분석도 메인 SoC를 Socionext SC2000으로 지목합니다.</td></tr>
 </tbody></table></div>
-<p>펌웨어의 장치 트리에 적힌 CPU 노드 번호(<code>cpu@3</code>, <code>reg 0xf03</code>)와 직렬 포트 주소는 업스트림 SC2000A 장치 트리의 네 번째 CPU와 직렬 포트 주소에 그대로 들어맞습니다. 제조사 접두어만 <code>milbeaut,</code>와 <code>socionext,</code>로 다릅니다.</p>
+<p>펌웨어의 장치 트리에는 CPU 노드 번호(<code>cpu@3</code>, <code>reg 0xf03</code>)와 직렬 포트 주소가 적혀 있습니다. 이 두 값은 업스트림 SC2000A 장치 트리의 네 번째 CPU, 직렬 포트 주소와 그대로 들어맞습니다. 제조사 접두어만 <code>milbeaut,</code>와 <code>socionext,</code>로 다릅니다.</p>
 
 <figure class="diagram">
 <figcaption>근거가 닿는 범위에서 그린 소프트웨어와 하드웨어 구성</figcaption>
@@ -343,7 +343,7 @@
 </svg>
 </div>
 <ul class="dg-legend"><li><i class="key"></i>펌웨어 레코드(내용을 분석함)</li><li><i class="ok"></i>파일에서 직접 읽은 값</li><li><i class="open"></i>확인하지 못한 부분, 점선은 확인하지 못한 연결</li></ul>
-<p>화살표는 다음 단계를 준비하거나 적재한다는 뜻입니다. 각 연결의 근거와 한계는 <a href="startup-storage.html">M0 reset·SRAM remap·bank</a>와 <a href="stubby-load-auth.html">Stubby 적재와 인증 경계</a>에 있습니다. DSP·SRIC·CPU 레코드는 쓰임을 확인하지 못해 그림에 넣지 않았습니다.</p>
+<p>화살표는 다음 단계의 준비나 적재를 나타냅니다. 각 연결의 근거와 한계는 <a href="startup-storage.html">M0 reset·SRAM remap·bank</a>와 <a href="stubby-load-auth.html">Stubby 적재와 인증 경계</a>에 있습니다. DSP·SRIC·CPU 레코드는 쓰임을 확인하지 못해 그림에 넣지 않았습니다.</p>
 </figure>
 
 <h3>이 식별의 한계</h3>
@@ -428,7 +428,7 @@
 <p>두 셸 파일이 BIN 안에서 놓인 경로는 <code>license/update-rc.d/update-rc.d.txt</code>와 <code>license/run-postinsts/run-postinsts.txt</code>입니다. 배포용 소스 사본이며 카메라가 부팅할 때 이 경로에서 실행되었다는 증거는 없습니다. 원저작권 표시와 라이선스 전문을 함께 보존했습니다(<a href="../source/COPYING">GPL</a>, <a href="../source/COPYING.MIT">MIT</a>).</p>
 
 <h3>Ricoh의 오픈소스 묶음</h3>
-<p>Ricoh Imaging은 <a href="https://www.ricoh-imaging.co.jp/english/products/oss/">기종·버전별 오픈소스 목록</a>을 공개하고 K-3 Mark III 2.20용 묶음(<a href="https://www.ricoh-imaging.co.jp/japan/products/oss/k-3-3/K3mkIII_220.tar.gz">K3mkIII_220.tar.gz</a>)을 2024-10-30 날짜로 올려 두었습니다.</p>
+<p>Ricoh Imaging은 <a href="https://www.ricoh-imaging.co.jp/english/products/oss/">기종·버전별 오픈소스 목록</a>을 공개합니다. K-3 Mark III 2.20용 묶음(<a href="https://www.ricoh-imaging.co.jp/japan/products/oss/k-3-3/K3mkIII_220.tar.gz">K3mkIII_220.tar.gz</a>)도 2024-10-30 날짜로 올려 두었습니다.</p>
 <ul>
 <li>묶음은 195,945,425바이트이고 패키지 아카이브 18개가 들어 있습니다. 커널, Stubby 부트로더, BusyBox, glibc, systemd 등입니다.</li>
 <li><code>linux-kernel-1.60.1.tar.gz</code>의 1.60.1은 패키지 번호입니다. 실제 커널 버전은 <strong>4.4.15</strong>입니다.</li>

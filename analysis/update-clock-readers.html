@@ -201,7 +201,7 @@
 <p>카운터가 4,294,967,295일 때 카운터만 읽는 함수는 +0에 0, +4에 4,294,967,295를 씁니다. little-endian 방식에서는 64비트 정수의 하위 워드가 앞에 오므로, 이 8바이트를 그런 정수로 읽으면 전혀 다른 큰 수가 됩니다. 출력은 “워드 두 개짜리 구조체”로 다뤄야 합니다.</p></div>
 <p>NOW64는 틱마다 오르는 카운터이고 OFFSET64는 타이머 초기화가 카운터와 함께 0으로 만드는 또 하나의 64비트 변수입니다. 이 값을 0이 아닌 값으로 바꾸는 코드는 이 문서에서 다루지 않았습니다.</p>
 <div class="callout"><strong class="label">참고: 공개 T-Kernel 소스와 견주면</strong>
-<p>공개 T-Kernel 2.0의 시스템 시각 구조체 <code>SYSTIM</code>은 상위 32비트 <code>hi</code>가 앞, 하위 32비트 <code>lo</code>가 뒤입니다. 그 소스에는 시각 구조체와 나노초 단위의 잔 값을 함께 돌려주는 <code>td_get_tim</code>과 <code>td_get_otm</code>이 있습니다. 앞의 것은 동작 시간에 보정값을 더한 시각을, 뒤의 것은 동작 시간만 돌려줍니다. 이 문서의 두 함수와 같은 모양이지만 이름과 단위를 이 펌웨어에서 확인한 것은 아닙니다.</p></div>
+<p>공개 T-Kernel 2.0의 시스템 시각 구조체 <code>SYSTIM</code>은 상위 32비트 <code>hi</code>가 앞, 하위 32비트 <code>lo</code>가 뒤입니다. 그 소스에는 시각 구조체와 나노초 단위의 잔 값을 함께 돌려주는 <code>td_get_tim</code>과 <code>td_get_otm</code>이 있습니다. 앞의 것은 동작 시간에 보정값을 더한 시각을, 뒤의 것은 동작 시간만 돌려줍니다. 이 문서의 두 함수와 같은 모양입니다. 다만 이름과 단위는 이 펌웨어에서 확인하지 않았습니다.</p></div>
 
 <details class="evidence"><summary>함수 구간과 핵심 명령</summary>
 <div class="table-wrap"><table class="compact">

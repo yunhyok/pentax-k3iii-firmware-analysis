@@ -289,7 +289,7 @@
 <p>절대 기한 경로는 콜백과 인수를 레지스터가 아니라 스택(들어올 때의 SP와 SP+4)에서 읽습니다. 노드에 기한, 콜백, 인수를 적고 삽입 함수로 넘어갑니다. 알람 시작이 계산한 예약 시각이 이 경로로 들어옵니다. 그 계산은 <a href="update-timer-abi.html#arithmetic">커널 호출과 예약 시각</a>에 있습니다.</p>
 
 <div class="callout"><strong class="label">참고: 공개 T-Kernel 소스와 견주면</strong>
-<p>공개 T-Kernel 2.0의 타이머 코드에도 같은 구성의 함수 셋이 있습니다. <code>timer_insert</code>는 부호 있는 대기 시간을 받고 값이 <code>TMO_FEVR</code>(−1, 무한 대기)이면 큐에 넣지 않고 노드의 연결만 초기화합니다. 주석은 그 까닭을 “나중에 삭제 함수가 불려도 괜찮게 하려는 것”이라고 적습니다. <code>timer_insert_reltim</code>은 부호 없는 상대 시간을, <code>timer_insert_abs</code>는 절대 시각을 받습니다. 큐에 넣는 <code>enqueue_tmeb</code>는 새 시각이 노드의 시각보다 작아지는 첫 자리 앞에 넣습니다. 이 펌웨어에서 본 동작과 같은 모양이지만 같은 소스라고 확인한 것은 아닙니다.</p></div>
+<p>공개 T-Kernel 2.0의 타이머 코드에도 같은 구성의 함수 셋이 있습니다. <code>timer_insert</code>는 부호 있는 대기 시간을 받고 값이 <code>TMO_FEVR</code>(−1, 무한 대기)이면 큐에 넣지 않고 노드의 연결만 초기화합니다. 주석은 그 까닭을 “나중에 삭제 함수가 불려도 괜찮게 하려는 것”이라고 적습니다. <code>timer_insert_reltim</code>은 부호 없는 상대 시간을, <code>timer_insert_abs</code>는 절대 시각을 받습니다. 큐에 넣는 <code>enqueue_tmeb</code>는 새 시각이 노드의 시각보다 작아지는 첫 자리 앞에 넣습니다. 이 펌웨어에서 본 동작과 같은 모양입니다. 다만 같은 소스인지는 확인하지 않았습니다.</p></div>
 
 <details class="evidence"><summary>진입 함수의 명령</summary>
 <div class="table-wrap"><table class="compact">

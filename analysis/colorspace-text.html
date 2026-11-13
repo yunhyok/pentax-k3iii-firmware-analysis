@@ -52,7 +52,7 @@
 <div class="open"><h3><span class="badge open">미확인</span> 확인하지 않은 것</h3>
 <ul>
 <li>확장 팔레트와 팔레트 생성자의 반환</li>
-<li>값 255(완전히 덮인 칸)를 쓰는 분기</li>
+<li>값 <code>0xff</code>인 칸을 단색으로 쓰는 분기</li>
 <li>LCD의 채널 배치와 실제 색</li>
 <li>메뉴 이벤트, 설정 저장, 다른 기종 이식</li>
 </ul></div>
@@ -60,7 +60,7 @@
 
 <section id="background">
 <h2>배경: 글자는 덮인 정도를 담은 비트맵으로 그립니다</h2>
-<p>화면 글자는 글꼴의 윤곽선을 픽셀 격자에 맞춰 칠해서 만듭니다. 이 결과물을 <a href="../glossary.html#glyph">글리프</a> 비트맵이라고 합니다. K-3 III의 비트맵은 칸마다 1바이트이며 그 칸이 글자 획에 얼마나 덮였는지를 담습니다. 0은 빈칸이고 값이 클수록 많이 덮인 칸입니다. 이런 값을 커버리지라고 부릅니다.</p>
+<p>화면 글자는 글꼴의 윤곽선을 픽셀 격자에 맞춰 칠해서 만듭니다. 이 결과물을 <a href="../glossary.html#glyph">글리프</a> 비트맵이라고 합니다. K-3 III의 비트맵은 칸마다 1바이트이며 그 칸이 글자 획에 얼마나 덮였는지를 담습니다. 0은 빈칸이고 1~15는 획이 일부 걸린 칸입니다. 이런 값을 커버리지라고 부릅니다.</p>
 <p>덮인 정도가 중간인 칸은 글자색과 바탕색을 섞어 칠합니다. 이 방식을 알파 혼합이라고 하며 일반적인 계산은 <code>결과 = 전경 × a + 배경 × (1 − a)</code>입니다(<a href="https://graphics.pixar.com/library/Compositing/paper.pdf">Porter·Duff, 1984</a>). 펌웨어는 커버리지 값마다 전경 가중치와 배경 가중치를 ROM 표에 따로 적어 둡니다. 그 표로 색 16개를 미리 계산해 캐시에 담고 픽셀을 쓸 때는 캐시에서 고릅니다.</p>
 
 <figure class="diagram">
@@ -68,17 +68,17 @@
 <div class="dg-scroll">
 <svg class="dg" viewBox="0 0 800 352" role="img" aria-labelledby="dg-blend-title dg-blend-desc">
 <title id="dg-blend-title">커버리지, 가중치, 전경과 배경 워드로 혼합 색을 만드는 흐름</title>
-<desc id="dg-blend-desc">왼쪽 위의 비트맵 칸 값이 0이면 쓰기를 건너뜁니다. 값이 1에서 15 사이이면 혼합 캐시에서 색을 고릅니다. 혼합 캐시는 세 입력으로 만듭니다. 팔레트 26번의 전경 워드 0xffffffff, 전송 시작 때 교차 영역 왼쪽 위에서 한 번 읽은 배경 워드 0x31425364, ROM의 float32 가중치 표입니다. 바이트마다 전경 곱하기 전경 가중치와 배경 곱하기 배경 가중치를 float32로 더한 뒤 정수로 자릅니다. 값 1의 가중치는 0.4와 0.6이고, 결과 워드는 0x838d97a2입니다. 결과 워드를 표면의 해당 위치에 씁니다. 값 255이면 팔레트 28번 워드를 그대로 쓰는 분기가 있지만 이 시험의 비트맵에는 그런 칸이 없었습니다.</desc>
+<desc id="dg-blend-desc">왼쪽 위의 비트맵 칸 값이 0이면 쓰기를 건너뜁니다. 값이 1에서 15 사이이면 혼합 캐시에서 색을 고릅니다. 혼합 캐시는 세 입력으로 만듭니다. 팔레트 26번의 전경 워드 0xffffffff, 전송 시작 때 교차 영역 왼쪽 위에서 한 번 읽은 배경 워드 0x31425364, ROM의 float32 가중치 표입니다. 바이트마다 전경 곱하기 전경 가중치와 배경 곱하기 배경 가중치를 float32로 더한 뒤 정수로 자릅니다. 값 1의 가중치는 0.4와 0.6이고, 결과 워드는 0x838d97a2입니다. 결과 워드를 표면의 해당 위치에 씁니다. 값 0xff이면 팔레트 28번 워드를 그대로 쓰는 분기가 있지만 이 시험의 비트맵에는 그런 칸이 없었습니다.</desc>
 <defs><marker id="dg-blend-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0 0L10 5L0 10z"/></marker><marker id="dg-blend-aho" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah open" d="M0 0L10 5L0 10z"/></marker></defs>
 <rect class="b ok" x="8" y="20" width="176" height="72" rx="8"/>
 <text class="t" x="20" y="45">비트맵 칸 값 k</text>
 <text class="s" x="20" y="64">76×40, 1바이트</text>
-<text class="s" x="20" y="82">0 · 1~15 · 255</text>
-<rect class="b mute" x="8" y="132" width="176" height="56" rx="8"/>
-<text class="t" x="20" y="156">k = 0</text>
-<text class="s" x="20" y="175">쓰기 건너뜀 (2,335칸)</text>
+<text class="s" x="20" y="82">0 · 1~15 · 0xff</text>
+<rect class="b mute" x="40" y="132" width="144" height="56" rx="8"/>
+<text class="t" x="52" y="156">k = 0</text>
+<text class="s" x="52" y="175">쓰기 건너뜀 (2,335칸)</text>
 <rect class="b open" x="8" y="232" width="176" height="56" rx="8"/>
-<text class="t" x="20" y="256">k = 255</text>
+<text class="t" x="20" y="256">k = 0xff</text>
 <text class="s" x="20" y="275">팔레트 28번 그대로</text>
 <text class="n" x="20" y="306">이 비트맵에는 0칸</text>
 <rect class="b ok" x="236" y="14" width="200" height="66" rx="8"/>
@@ -103,8 +103,8 @@
 <text class="t" x="500" y="241">표면에 4바이트 쓰기</text>
 <text class="s" x="500" y="260">k = 1~15인 칸: 705개</text>
 <text class="s" x="500" y="278">위치·값·순서 모두 독립 계산과 일치</text>
-<path class="e" d="M96 92V130" marker-end="url(#dg-blend-ah)"/>
-<path class="e open" d="M96 188V230" marker-end="url(#dg-blend-aho)"/>
+<path class="e" d="M112 92V130" marker-end="url(#dg-blend-ah)"/>
+<path class="e open" d="M22 92V230" marker-end="url(#dg-blend-aho)"/>
 <path class="e" d="M184 56H210V320H640V290" marker-end="url(#dg-blend-ah)"/>
 <text class="n" x="214" y="314">k = 1~15이면 캐시의 k번째 색을 고름</text>
 <path class="e" d="M436 48H486" marker-end="url(#dg-blend-ah)"/>
@@ -148,14 +148,14 @@
 <section id="palette">
 <h2>팔레트는 기본 항목까지만 만들어졌습니다</h2>
 <p class="takeaway">팔레트 생성은 확장 항목을 만들기 전에 멈췄습니다. 글자 그리기는 이미 채워진 26번과 28번 항목만 읽었습니다.</p>
-<p>원본 생성자가 옵저버 관리자를 만든 뒤 하네스가 준비 플래그를 켰습니다. 원본 팔레트 코드는 관리자를 통해 팔레트를 등록하고 프로필 0의 ROM 값과 같은 RGB 항목과 32비트 색 항목 42개를 채웠습니다. 확장 팔레트에 필요한 현재 UserData는 확보하지 못했습니다.</p>
-<p>그리기 호출에는 팔레트 준비 플래그를 공급했습니다. 반환하지 않은 팔레트 생성 구간이 만든 값 가운데 26번과 28번만 읽도록 검사했고 두 항목은 프로필 0 생성자가 나중에 쓰는 로컬 쓰기 대상에 들어 있지 않습니다. 이후의 알림과 생성자 반환은 실행 범위 밖입니다.</p>
+<p>원본 생성자가 옵저버 관리자를 만든 뒤 하네스가 준비 플래그를 켰습니다. 원본 팔레트 코드는 관리자에 팔레트를 등록하고 프로필 0의 ROM 값과 같은 RGB 항목과 32비트 색 항목 42개를 채웠습니다. 확장 팔레트에 필요한 현재 UserData는 확보하지 못했습니다.</p>
+<p>그리기 호출에는 팔레트 준비 플래그를 공급했습니다. 반환하지 않은 팔레트 생성 구간이 만든 값 가운데 26번과 28번만 읽도록 검사했습니다. 두 항목은 프로필 0 생성자가 나중에 쓰는 로컬 쓰기 대상에 들어 있지 않습니다. 이후의 알림과 생성자 반환은 실행 범위 밖입니다.</p>
 <div class="table-wrap"><table class="fit">
 <caption>전송이 읽은 팔레트 항목</caption>
 <thead><tr><th>항목</th><th>값</th><th>쓰임</th></tr></thead>
 <tbody>
 <tr><th scope="row">26번</th><td><code>0xffffffff</code></td><td>부분 커버리지의 전경색. 혼합 캐시의 입력</td></tr>
-<tr><th scope="row">28번</th><td><code>0xff000000</code></td><td>값 255인 칸의 색. 읽었지만 해당 칸이 없어 쓰이지 않음</td></tr>
+<tr><th scope="row">28번</th><td><code>0xff000000</code></td><td>값 <code>0xff</code>인 칸의 색. 읽었지만 해당 칸이 없어 쓰이지 않음</td></tr>
 </tbody></table></div>
 <p>혼합 캐시는 1,448바이트 할당을 0으로 채운 상태에서 시작합니다. 그리기 중에 클립 왼쪽 위의 표면 워드 <code>0x31425364</code>와 26번 항목을 받아 빈 캐시에 새 항목을 만들었습니다. ROM의 float32 가중치를 썼고 항목을 복사한 뒤 삽입 위치를 0에서 1로 올렸습니다.</p>
 
@@ -184,7 +184,7 @@
 <tbody>
 <tr><th scope="row">값 0인 칸</th><td class="n">2,335</td><td>표면 쓰기 없음</td></tr>
 <tr><th scope="row">부분 커버리지 칸</th><td class="n">705</td><td><code>0x528c26c8</code>에서 차례로 쓴 705워드가 모두 일치</td></tr>
-<tr><th scope="row">값 255인 칸</th><td class="n">0</td><td>이 분기의 원본 직접 쓰기는 실행 범위 밖</td></tr>
+<tr><th scope="row">값 <code>0xff</code>인 칸</th><td class="n">0</td><td>이 분기의 원본 직접 쓰기는 실행 범위 밖</td></tr>
 <tr><th scope="row">최종 표면 147,456바이트</th><td class="n">—</td><td>표면 전체와 경계 가드가 예상값과 일치</td></tr>
 </tbody></table></div>
 
@@ -208,7 +208,7 @@
 <ul>
 <li>이 재현은 준비된 첫 행의 글자와 합성 RAM 전송까지입니다. 실제 LCD의 픽셀 해석과 색은 확인하지 않았습니다.</li>
 <li>팔레트는 기본 42개 항목까지만 원본으로 만들었습니다. 시작 때의 팔레트 초기화와 확장 팔레트는 따로 검증해야 합니다.</li>
-<li>값 255인 칸이 없어 단색 직접 쓰기 분기는 실행되지 않았습니다. 화면 가장자리에서 일어나는 일은 <a href="colorspace-clip.html">화면 경계에서의 sRGB 전송</a>에서 다룹니다.</li>
+<li>값 <code>0xff</code>인 칸이 없어 단색 직접 쓰기 분기는 실행되지 않았습니다. 화면 가장자리에서 일어나는 일은 <a href="colorspace-clip.html">화면 경계에서의 sRGB 전송</a>에서 다룹니다.</li>
 <li>메뉴 이벤트와 설정 저장, 다른 기종의 UI 이식은 별도 검증이 필요합니다(<a href="ui-port-contract.html">세 기종 이식 검증 조건</a>).</li>
 </ul>
 <div class="callout fix"><strong class="label">정정</strong>

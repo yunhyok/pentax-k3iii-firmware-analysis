@@ -190,7 +190,7 @@
 <p class="small muted">값은 <a href="lightroom-render-comparison.json">lightroom-render-comparison.json</a>의 패치별 색차에서 다시 계산했습니다. 90백분위는 선형 보간 방식입니다.</p>
 
 <h3>시험 DCP와 Adobe Standard의 차이</h3>
-<p>시험 DCP는 Lightroom 화면에서 직접 선택했고 내보낸 TIFF의 <code>CameraProfile</code>과 <code>CameraProfileDigest</code>에서도 이 프로파일이 쓰였음을 확인했습니다. 이 표본의 sRGB 출력에서 시험 DCP의 평균(3.073)과 90백분위(4.741)는 Adobe Standard(3.476, 5.130)보다 낮았습니다. 중앙값은 0.053 높았습니다.</p>
+<p>시험 DCP는 Lightroom 화면에서 직접 선택했습니다. 내보낸 TIFF의 <code>CameraProfile</code>과 <code>CameraProfileDigest</code>에서도 이 프로파일이 쓰였음을 확인했습니다. 이 표본의 sRGB 출력에서 시험 DCP의 평균(3.073)과 90백분위(4.741)는 Adobe Standard(3.476, 5.130)보다 낮았습니다. 중앙값은 0.053 높았습니다.</p>
 <div class="callout warn"><strong class="label">주의</strong>
 <p>이 차이는 직접 만든 프로파일을 불러와 출력한 파일에서 잰 값입니다. 시험 DCP가 Adobe Standard보다 “더 정확하다”는 뜻이 아닙니다. 시험 DCP에는 카메라 색 모드에 맞춘 보정이 들어 있지 않습니다. 프로파일을 바꾸면 출력이 달라진다는 사실, 다시 말해 조작이 결과에 반영된다는 사실까지 확인한 것입니다.</p></div>
 </section>
@@ -344,7 +344,7 @@
 <ul>
 <li><strong>Camera Natural이 가장 가깝지 않은 패치는 네 개</strong>입니다. 6번 bluish green과 20번·21번 중립 패치는 시험 DCP가, 19번 흰색은 Adobe Standard가 더 가까웠습니다. ProPhoto RGB 출력에서도 같습니다.</li>
 <li><strong>Camera Natural의 가장 큰 차이는 19번 흰색</strong>입니다. ΔE<sub>00</sub>은 3.295이고 Lightroom 출력의 밝기 L*가 내장 JPEG보다 5.376 낮았습니다.</li>
-<li><strong>중립 패치 여섯 개는 세 프로파일 모두에서 Lightroom 쪽이 더 어둡습니다</strong>(ΔL*가 모두 음수). 색을 맞추더라도 밝기 곡선의 차이가 따로 남는다는 뜻입니다.</li>
+<li><strong>중립 패치 여섯 개는 세 프로파일 모두에서 Lightroom 쪽이 더 어둡습니다</strong>(ΔL*가 모두 음수). 색을 맞추더라도 밝기 곡선의 차이는 따로 남습니다.</li>
 </ul>
 
 <div class="table-wrap"><table class="compact">
@@ -427,7 +427,7 @@
 </tbody></table></div>
 
 <ul>
-<li><strong>끝값은 프로파일마다 네 개 이하의 패치에 몰려 있습니다.</strong> Adobe Standard에서는 18번 cyan의 측정 영역 40,000픽셀 전체와 13번 blue의 38,061픽셀에서 R이 0이었고 16번 yellow의 39,964픽셀에서 B가 0이었습니다.</li>
+<li><strong>끝값은 프로파일마다 네 개 이하의 패치에 몰려 있습니다.</strong> Adobe Standard에서는 18번 cyan의 측정 영역 40,000픽셀 전체와 13번 blue의 38,061픽셀에서 R이 0이었습니다. 16번 yellow의 39,964픽셀에서는 B가 0이었습니다.</li>
 <li><strong>밝은 쪽 끝값은 Adobe Standard에만 있습니다.</strong> 7번 orange에서 R=65535인 픽셀이 41개였고 그중 37개가 재변환에서 같은 위치에 나타났습니다.</li>
 <li><strong>Camera Natural에는 끝값이 거의 없습니다.</strong> R=0이 9개, B=0이 6개뿐입니다.</li>
 <li><strong>끝값은 색차 숫자에도 영향을 줍니다.</strong> Adobe Standard의 18번 cyan은 sRGB TIFF에서 ΔE<sub>00</sub> 3.020이지만 ProPhoto RGB TIFF에서는 6.216입니다. sRGB 값은 채널이 0으로 잘린 뒤의 색으로 잰 것입니다.</li>
@@ -450,7 +450,7 @@
 <tr><th scope="row">시험 DCP</th><td>16 yellow</td><td>B = 0</td><td class="n">36,917</td><td class="n">37,078</td><td class="n">36,917</td><td class="n">-0.0235</td><td class="n">0.415</td></tr>
 <tr><th scope="row">시험 DCP</th><td>18 cyan</td><td>R = 0</td><td class="n">15,487</td><td class="n">15,716</td><td class="n">15,487</td><td class="n">-0.0233</td><td class="n">0.106</td></tr>
 </tbody></table></div>
-<p class="small">“선형 값의 극값”은 ProPhoto RGB TIFF의 Lab 값에 sRGB ICC의 색도 행렬을 거꾸로 적용해 얻은, 전달 곡선을 적용하기 전의 선형 sRGB 값입니다. 끝값 0에는 영역 안 최솟값을, 65535에는 최댓값을 적었습니다. 0보다 작거나 1보다 크면 sRGB로 표현할 수 없는 색입니다.</p>
+<p class="small">“선형 값의 극값”은 전달 곡선을 적용하기 전의 선형 sRGB 값입니다. ProPhoto RGB TIFF의 Lab 값에 sRGB ICC의 색도 행렬을 거꾸로 적용해 얻었습니다. 끝값 0에는 영역 안 최솟값을, 65535에는 최댓값을 적었습니다. 0보다 작거나 1보다 크면 sRGB로 표현할 수 없는 색입니다.</p>
 </details>
 
 <details class="evidence"><summary>재변환 방법에 따른 R=0 / B=0 개수</summary>
@@ -498,7 +498,7 @@
 <p>공통 설정은 Process Version 15.4, 화이트밸런스 As Shot, 현상 노출 0, 자르기 없음, 렌즈 프로파일 보정과 자동 색수차 제거 끔입니다. 6016×4000 RGB16 TIFF로 내보내면서 크기 변경과 출력 샤프닝을 껐습니다. 그래도 Lightroom의 기본 캡처 샤프닝 40과 색 노이즈 감소 25는 현상 값에 남아 있습니다.</p>
 
 <div class="callout"><strong class="label">화이트밸런스 숫자가 프로파일마다 다른 이유</strong>
-<p>카메라에 설정된 색온도는 5000 K입니다(MakerNote). Lightroom에서 As Shot을 그대로 두면 Adobe 프로파일 두 개에서는 5300 K·Tint −2로, 시험 DCP에서는 5200 K·Tint +2로 표시됐습니다. DNG 규격은 카메라가 기록한 중립값을 색도 좌표로 바꿀 때 프로파일의 색 행렬을 쓰도록 정하므로, 프로파일이 바뀌면 환산된 숫자도 달라질 수 있습니다. 세 프로파일에서 실제 백색점이 같았는지는 따로 측정해야 합니다. 촬영 때의 노출 보정 −0.7 EV와 Lightroom의 현상 노출 0도 서로 다른 값입니다.</p></div>
+<p>카메라에 설정된 색온도는 5000 K입니다(MakerNote). Lightroom에서 As Shot을 그대로 두면 Adobe 프로파일 두 개에서는 5300 K·Tint −2로, 시험 DCP에서는 5200 K·Tint +2로 표시됐습니다. DNG 규격은 카메라가 기록한 중립값을 색도 좌표로 바꿀 때 프로파일의 색 행렬을 쓰도록 정합니다. 그래서 프로파일이 바뀌면 환산된 숫자도 달라질 수 있습니다. 세 프로파일에서 실제 백색점이 같았는지는 따로 측정해야 합니다. 촬영 때의 노출 보정 −0.7 EV와 Lightroom의 현상 노출 0도 서로 다른 값입니다.</p></div>
 
 <details class="evidence"><summary>현상 설정과 카메라 쪽 촬영 설정 전체</summary>
 <p class="small">Lightroom 현상 설정(여섯 TIFF 공통, 온도와 Tint 제외):</p>
@@ -547,7 +547,7 @@
 <dt><code>Pentax:Saturation</code></dt><dd>0 (normal)</dd>
 <dt><code>Pentax:ShadowCorrection</code></dt><dd>Auto</dd>
 </dl>
-<p class="small">TIFF의 소프트웨어 태그는 <code>Adobe Photoshop Lightroom Classic 15.6 (Windows)</code>, 저장 형식은 부호 없는 16비트 RGB(채널 교차 저장)이고 방향 태그는 없습니다. sRGB TIFF의 ICC 설명은 <code>sRGB IEC61966-2.1</code>입니다.</p>
+<p class="small">TIFF의 소프트웨어 태그는 <code>Adobe Photoshop Lightroom Classic 15.6 (Windows)</code>입니다. 저장 형식은 부호 없는 16비트 RGB(채널 교차 저장)이고 방향 태그는 없습니다. sRGB TIFF의 ICC 설명은 <code>sRGB IEC61966-2.1</code>입니다.</p>
 </details>
 
 <h3>JPEG와 TIFF의 위치 맞춤</h3>
@@ -557,7 +557,7 @@
 </figure>
 <p>내장 JPEG와 Lightroom TIFF는 크기가 6016×4000으로 같지만 차트의 위치는 몇십 픽셀 어긋나 있습니다. 그래서 좌표를 그대로 쓰지 않고 다음 순서로 맞췄습니다.</p>
 <ol class="steps">
-<li><strong>모서리 4곳으로 변환 구하기</strong> 녹색 채널의 윤곽 세기(가우시안 σ 1.4, Sobel)를 구하고 차트 모서리 표식 4곳에서 140픽셀 크기의 조각을 서로 맞춰 사영 변환을 구했습니다.</li>
+<li><strong>모서리 4곳으로 변환 구하기</strong> 녹색 채널의 윤곽 세기(가우시안 σ 1.4, Sobel)를 구했습니다. 이어 차트 모서리 표식 4곳에서 140픽셀 크기의 조각을 서로 맞춰 사영 변환을 구했습니다.</li>
 <li><strong>따로 둔 15곳으로 검사하기</strong> 변환을 구할 때 쓰지 않은 패치 사이 교차점 15곳에서 실제 어긋남과 변환이 예측한 어긋남을 비교했습니다. 가장 큰 차이는 2.712픽셀이었습니다.</li>
 <li><strong>측정 영역 옮기기</strong> 각 패치의 200×200 영역을 중심의 이동량만큼 정수 픽셀로 옮겼습니다. 픽셀을 다시 보간하지 않았습니다. 옮긴 상자의 모서리와 변환이 예측한 모서리의 차이는 최대 2.96픽셀입니다.</li>
 <li><strong>TIFF끼리 확인하기</strong> 나머지 TIFF는 첫 TIFF와 같은 위치 19곳(모서리 4곳과 교차점 15곳)을 대조했습니다. 프로파일과 출력 색공간을 바꾼 모든 비교에서 가장 큰 이동은 0.167픽셀이었습니다.</li>
@@ -622,10 +622,10 @@
 
 <h3>계산 도구의 정밀도</h3>
 <ul>
-<li><strong>내장 JPEG의 색공간</strong> — 추출한 JPEG에는 ICC 프로파일이 없습니다. DNG의 <code>PreviewColorSpace</code> 태그가 sRGB이므로 sRGB로 지정했습니다. TIFF는 파일에 들어 있는 ICC를 그대로 썼습니다.</li>
-<li><strong>색 변환</strong> — LittleCMS 2.12의 <code>tificc</code>로 D50 기준 CIELAB(32비트 실수)으로 바꿨습니다. 변환 의도는 상대 색도계, 흑점 보정은 끔입니다. 16비트 입력에서 코드 1의 차이는 L* 0.001526의 차이로 남았습니다.</li>
-<li><strong>ΔE<sub>00</sub> 구현</strong> — scikit-image 0.24.0의 구현을 Sharma·Wu·Dalal이 공개한 검증 자료 34쌍으로 시험했습니다. 소수 넷째 자리로 주어진 기준값과의 차이는 최대 0.00005 미만이었습니다.</li>
-<li><strong>sRGB 지정 방식의 영향</strong> — 내장 JPEG에 도구 내장 sRGB 대신 TIFF와 같은 sRGB ICC를 지정해도 JPEG 패치의 Lab 값은 최대 ΔE<sub>00</sub> 0.03144만 달라졌습니다(19번 패치).</li>
+<li><strong>내장 JPEG의 색공간</strong>: 추출한 JPEG에는 ICC 프로파일이 없습니다. DNG의 <code>PreviewColorSpace</code> 태그가 sRGB이므로 sRGB로 지정했습니다. TIFF는 파일에 들어 있는 ICC를 그대로 썼습니다.</li>
+<li><strong>색 변환</strong>: LittleCMS 2.12의 <code>tificc</code>로 D50 기준 CIELAB(32비트 실수)으로 바꿨습니다. 변환 의도는 상대 색도계, 흑점 보정은 끔입니다. 16비트 입력에서 코드 1의 차이는 L* 0.001526의 차이로 남았습니다.</li>
+<li><strong>ΔE<sub>00</sub> 구현</strong>: scikit-image 0.24.0의 구현을 Sharma·Wu·Dalal이 공개한 검증 자료 34쌍으로 시험했습니다. 소수 넷째 자리로 주어진 기준값과의 차이는 최대 0.00005 미만이었습니다.</li>
+<li><strong>sRGB 지정 방식의 영향</strong>: 내장 JPEG에 도구 내장 sRGB 대신 TIFF와 같은 sRGB ICC를 지정해 보았습니다. JPEG 패치의 Lab 값은 최대 ΔE<sub>00</sub> 0.03144만 달라졌습니다(19번 패치).</li>
 <li><strong>영역 크기의 영향</strong> — 패치 한가운데 100×100픽셀만 써서 다시 계산하면 패치별 색차가 최대 0.2083 달라졌습니다.</li>
 </ul>
 <details class="evidence"><summary>민감도 검사 수치와 도구 버전</summary>
@@ -649,11 +649,11 @@
 <section id="limits">
 <h2>한계와 남은 과제</h2>
 <ul>
-<li><strong>장면 한 장</strong> — 이 수치는 #1376 한 장의 카메라 Natural 내장 JPEG와 얼마나 가까운지를 보여 줍니다. 조명이나 노출이 다른 장면에서는 순서와 크기가 달라질 수 있습니다.</li>
-<li><strong>절대 색 정확도가 아님</strong> — 기준은 차트의 표준 색 값이 아니라 같은 사진의 카메라 JPEG입니다. 차트 실물의 상태와 조명은 확인되지 않았습니다.</li>
-<li><strong>내장 JPEG와 저장 JPEG</strong> — 내장 미리보기가 카메라에 따로 저장되는 JPEG와 색·톤·압축까지 같은지는 확인하지 못했습니다.</li>
-<li><strong>펌웨어 버전</strong> — 표본은 K-3 II 펌웨어 1.10으로 촬영됐습니다. 세 기종 연구에서 분석한 K-3 II 펌웨어는 1.12입니다.</li>
-<li><strong>기종</strong> — 시험 DCP를 선택해 내보낸 뒤 카메라 JPEG와 색차까지 잰 기종은 K-3 II뿐입니다. K-3 Mark III와 Q7은 <a href="lightroom-model-exports.html">내보내기가 되는지</a>까지만 확인했습니다.</li>
+<li><strong>장면 한 장</strong>: 이 수치는 #1376 한 장의 카메라 Natural 내장 JPEG와 얼마나 가까운지를 보여 줍니다. 조명이나 노출이 다른 장면에서는 순서와 크기가 달라질 수 있습니다.</li>
+<li><strong>절대 색 정확도가 아님</strong>: 기준은 차트의 표준 색 값이 아니라 같은 사진의 카메라 JPEG입니다. 차트 실물의 상태와 조명은 확인되지 않았습니다.</li>
+<li><strong>내장 JPEG와 저장 JPEG</strong>: 내장 미리보기가 카메라에 따로 저장되는 JPEG와 색·톤·압축까지 같은지는 확인하지 못했습니다.</li>
+<li><strong>펌웨어 버전</strong>: 표본은 K-3 II 펌웨어 1.10으로 촬영됐습니다. 세 기종 연구에서 분석한 K-3 II 펌웨어는 1.12입니다.</li>
+<li><strong>기종</strong>: 시험 DCP를 선택해 내보낸 뒤 카메라 JPEG와 색차까지 잰 기종은 K-3 II뿐입니다. K-3 Mark III와 Q7은 <a href="lightroom-model-exports.html">내보내기가 되는지</a>까지만 확인했습니다.</li>
 </ul>
 <p>이 기준선 다음에는 색 행렬과 광원을 그대로 두고 프로파일의 태그를 하나씩 바꿔, Lightroom이 그 태그에 어떻게 반응하는지 확인했습니다. <code>ProfileToneCurve</code>를 바꾼 결과는 <a href="lightroom-tone-comparison.html">톤 곡선 비교</a>에, <code>ProfileLookTable</code>을 바꾼 결과는 <a href="lightroom-look-controls.html">LookTable 대조 실험</a>에 있습니다. 보정 후보를 평가하려면 그 뒤에 독립된 노출과 장면이 더 필요합니다.</p>
 </section>
@@ -661,7 +661,7 @@
 <section id="reproduce">
 <h2 id="replay">재현 방법</h2>
 <p>공개 JSON에는 좌표, 패치별 색차, 여섯 TIFF의 해시, 프로파일 식별값, ICC 해시가 들어 있습니다. 원본 TIFF와 DCP는 공개하지 않습니다. 아래 명령은 해시가 같은 TIFF 여섯 개를 가진 사람이 같은 수치를 다시 얻는 절차입니다. Lightroom에서 새로 내보낸 TIFF는 메타데이터가 달라 해시가 맞지 않으므로 별도의 증거로 다뤄야 합니다.</p>
-<p>필요한 것은 Python 3.11 이상과 NumPy, OpenCV, Pillow, tifffile, scikit-image, 그리고 <code>exiftool</code>과 <code>tificc</code>입니다. 두 실행 파일은 PATH에 두거나 <code>--exiftool</code>, <code>--tificc</code>로 경로를 지정합니다. DNG는 <a href="https://raw.pixls.us/getfile.php/1376/nice/Pentax%20-%20K-3%20II%20-%2014bit%20%283:2%29.dng">CC0 원본</a>을 받고 CIEDE2000 검증 자료는 <a href="https://hajim.rochester.edu/ece/sites/gsharma/ciede2000/dataNprograms/ciede2000testdata.txt">저자 배포 파일</a>을 받습니다.</p>
+<p>Python 3.11 이상과 NumPy, OpenCV, Pillow, tifffile, scikit-image, 그리고 <code>exiftool</code>과 <code>tificc</code>가 필요합니다. 두 실행 파일은 PATH에 두거나 <code>--exiftool</code>, <code>--tificc</code>로 경로를 지정합니다. DNG는 <a href="https://raw.pixls.us/getfile.php/1376/nice/Pentax%20-%20K-3%20II%20-%2014bit%20%283:2%29.dng">CC0 원본</a>을 받습니다. CIEDE2000 검증 자료는 <a href="https://hajim.rochester.edu/ece/sites/gsharma/ciede2000/dataNprograms/ciede2000testdata.txt">저자 배포 파일</a>을 받습니다.</p>
 <p>입력 파일은 아래처럼 배치합니다. <code>fixtures/work</code>는 미리 만들어 둔 비공개 작업 폴더입니다.</p>
 <pre><code>fixtures/
   pentax-k3ii-1376.dng

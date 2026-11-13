@@ -194,7 +194,7 @@
 <ul class="dg-legend"><li><i class="key"></i>예약 한 건을 이루는 필드</li><li><i></i>원본 객체의 필드</li><li><i class="model"></i>시험에서 대체한 부분</li></ul>
 </figure>
 
-<p>생성자는 서비스 안의 두 위치(listener 1과 listener 2)에 서로 다른 가상 함수 표 주소를 적습니다. 서비스 하나가 listener 두 개 노릇을 한다는 뜻입니다. 슬롯을 만들 때는 listener 1의 주소를 타이머 객체 생성자에 넘기고 타이머 객체가 그 주소를 보관합니다.</p>
+<p>생성자는 서비스 안의 두 위치(listener 1과 listener 2)에 서로 다른 가상 함수 표 주소를 적습니다. 서비스 하나가 listener 두 개 노릇을 합니다. 슬롯을 만들 때는 listener 1의 주소를 타이머 객체 생성자에 넘기고 타이머 객체가 그 주소를 보관합니다.</p>
 <p>생성자는 counter에 1을 적습니다. 그래서 이 값에서 출발하면 첫 예약의 handle은 2입니다. 생성과 등록 과정은 코드를 읽어 확인한 내용이고 실제 커널 등록은 실행하지 않았습니다.</p>
 
 <details class="evidence"><summary>생성자와 가상 함수 표</summary>
@@ -246,7 +246,7 @@
 
 <section id="flow">
 <h2>만료된 예약은 두 listener를 거쳐 콜백이 됩니다</h2>
-<p class="takeaway">타이머가 울리면 첫 번째 listener가 event flag를 세우고 event task가 UI 작업 <code>0x1bc</code>를 큐에 넣고 두 번째 listener가 그 작업을 받아 poll을 돌립니다.</p>
+<p class="takeaway">타이머가 울리면 첫 번째 listener가 event flag를 세웁니다. 이어서 event task가 UI 작업 <code>0x1bc</code>를 큐에 넣고 두 번째 listener가 그 작업을 받아 poll을 돌립니다.</p>
 
 <figure class="diagram">
 <figcaption>예약부터 콜백까지의 호출 순서</figcaption>

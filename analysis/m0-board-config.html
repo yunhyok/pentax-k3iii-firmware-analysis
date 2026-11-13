@@ -65,7 +65,7 @@
 <h2>배경: M0 단계와 보드 설정</h2>
 <p>펌웨어 패키지에는 <code>M0</code>라는 이름의 레코드(92,164바이트)가 있습니다. 전원이 들어온 뒤 이른 단계에 실행되는 코드로 해석하며 클록·메모리·저장소를 준비하고 다음 단계의 진입 주소를 마련합니다. 이 문서의 주소는 정적 분석 기준 주소 <code>0x3ffe0300</code>에 M0 레코드를 놓았을 때의 값입니다. 전체 흐름은 <a href="startup-storage.html#m0-reset-chain">M0 reset·SRAM remap·bank</a>에서 다룹니다.</p>
 <div class="callout"><strong class="label">참고: M0라는 이름</strong>
-<p>펌웨어에서 확인한 것은 레코드 이름 <code>M0</code>와 이 코드가 Thumb 명령으로 되어 있다는 점입니다. 검증 도구도 이 코드를 Cortex-M0 모델에서 실행합니다. Socionext 개발자가 Linux 커널 메일링 리스트에 올린 <a href="https://lkml.rescloud.iu.edu/1902.2/02222.html">SC2000 소개</a>에는 Cortex-A7 4코어와 함께 “전원 제어용 Cortex-M0”가 나옵니다. M0 레코드가 그 코어에서 도는 코드라는 것은 이 공개 설명에서 나온 추정이며 카메라에서 확인한 사실이 아닙니다.</p></div>
+<p>펌웨어에서는 레코드 이름 <code>M0</code>를 확인했습니다. 이 코드는 Thumb 명령으로 되어 있습니다. 검증 도구도 이 코드를 Cortex-M0 모델에서 실행합니다. Socionext 개발자가 Linux 커널 메일링 리스트에 올린 <a href="https://lkml.rescloud.iu.edu/1902.2/02222.html">SC2000 소개</a>에는 Cortex-A7 4코어와 함께 “전원 제어용 Cortex-M0”가 나옵니다. M0 레코드가 그 코어에서 도는 코드라는 판단은 이 공개 설명에서 나온 추정입니다. 카메라에서 확인하지는 않았습니다.</p></div>
 <p>M0의 reset 초기화는 기판에 연결된 입력에서 <dfn title="기판(보드) 종류를 구분하려고 입력 핀 상태에서 계산하는 작은 정수">보드 선택값</dfn>을 만들고 그 값에 맞는 설정 코드를 부릅니다. 이 문서는 그 설정 코드의 내용을 다룹니다.</p>
 <p>조사한 이유는 두 가지입니다.</p>
 <ul>
@@ -185,7 +185,7 @@
 <tr><th scope="row">12</th><td><code>0x3ffe29a0</code>–<code>0x3ffe2ca0</code></td><td>–<code>0x3ffe2f98</code></td><td><code class="wrap">1e116279eba1303a0787c18e354fe19ad14d62532d01706552d079c42dfe65bf</code></td></tr>
 <tr><th scope="row">기본</th><td><code>0x3ffe2f98</code>–<code>0x3ffe3298</code></td><td>–<code>0x3ffe3594</code></td><td><code class="wrap">a9209c8401f86e133d1c8c3e4c3dc3aff4f02ad0570205766b398156c6571549</code></td></tr>
 </tbody></table></div>
-<p class="small">구간의 끝 주소는 포함하지 않습니다. 여섯 본체의 기록 주소 순서를 묶은 해시는 모두 <code class="wrap">36e6800e537793218bddf5d1f02f614d42f5f7e54788ce35f451086cea8f3959</code>로 같습니다. 분기 표는 <code>0x3fff4dfc</code>부터 4바이트씩 13칸이고 표를 읽어 분기하는 명령은 <code>0x3ffe35a4</code>에 있습니다. 근거 파일에는 여섯 본체의 명령 2,304개(4,608바이트), 분기·호출 50개, 분기 표 연결 13개가 기록되어 있습니다.</p>
+<p class="small">구간의 끝 주소는 포함하지 않습니다. 여섯 본체의 기록 주소 순서를 묶은 해시는 모두 <code class="wrap">36e6800e537793218bddf5d1f02f614d42f5f7e54788ce35f451086cea8f3959</code>로 같습니다. 분기 표는 <code>0x3fff4dfc</code>부터 4바이트씩 13칸입니다. 표를 읽어 분기하는 명령은 <code>0x3ffe35a4</code>에 있습니다. 근거 파일에 기록된 것은 여섯 본체의 명령 2,304개(4,608바이트), 분기·호출 50개, 분기 표 연결 13개입니다.</p>
 <p class="small">M0 레코드 SHA-256: <code class="wrap">63dd8f3b2668ef68f3ab0f8ecd0f4cda8c46a78c5388646fc9e1fe85e39a070e</code></p>
 </details>
 </section>
@@ -292,7 +292,7 @@
 <tbody>
 <tr><th scope="row"><code>0x4d021090</code></th><td><code>0x1d021090</code> — <code>CLK_CRRRS</code> (base <code>0x1d021000</code> + 오프셋 <code>0x90</code>)</td><td><code>arch/arm/mach-milbeaut/snapshot.c</code> 46행(<code>CLK_CRRRS_OFFSET=0x90</code> 정의), 2602행(base 매핑), 2630행·2733행(읽기와 복원)</td><td><code>0x30000000</code></td></tr>
 <tr><th scope="row"><code>0x4dffb208</code></th><td><code>0x1dffb000</code> + <code>0x208</code> — CM0 pinctrl의 <code>EPCR</code> 영역</td><td><code>sc2000.dtsi</code>의 주석 처리된 디버그용 노드, 드라이버 <code>pinctrl-mlb01-cm0.c</code></td><td><code>0x30000000</code></td></tr>
-<tr><th scope="row"><code>0x2000fffc</code></th><td><code>0x0100fffc</code> — BOOT가 모드를 읽는 곳. 공개 Stubby 설정의 SRAM(base <code>0x01000000</code>) 마지막 4바이트</td><td><a href="startup-storage.html#m0-address-map">M0·BOOT 주소 대응</a></td><td><code>0x1f000000</code></td></tr>
+<tr><th scope="row"><code>0x2000fffc</code></th><td><code>0x0100fffc</code>: BOOT가 모드를 읽는 곳. 공개 Stubby 설정의 SRAM(base <code>0x01000000</code>) 마지막 4바이트</td><td><a href="startup-storage.html#m0-address-map">M0·BOOT 주소 대응</a></td><td><code>0x1f000000</code></td></tr>
 </tbody></table></div>
 
 <h3>CLK_CRRRS</h3>
@@ -327,7 +327,7 @@
 <p class="takeaway">기본 본체와 선택값 0 본체를 네 번 실행했고 기록 횟수·순서·읽기 범위가 명령을 읽어 얻은 결론과 같았습니다.</p>
 
 <div class="callout model"><strong class="label">시험 조건</strong>
-<p>M0 레코드의 원본 바이트를 Unicorn의 Cortex-M0 모델에 올렸습니다. 본체가 기록하는 네 주소 범위에는 서로 독립된 일반 RAM을 두고 초기값을 모두 <code>0x00</code>으로 채운 경우와 모두 <code>0xff</code>로 채운 경우(32비트로 읽으면 <code>0xffffffff</code>)를 각각 실행했습니다. 바깥 함수를 대체한 것은 없습니다. SRAM 후보 두 주소는 서로 연결하지 않았습니다.</p></div>
+<p>M0 레코드의 원본 바이트를 Unicorn의 Cortex-M0 모델에 올렸습니다. 본체가 기록하는 네 주소 범위에는 서로 독립된 일반 RAM을 두었습니다. 초기값을 모두 <code>0x00</code>으로 채운 경우와 모두 <code>0xff</code>로 채운 경우(32비트로 읽으면 <code>0xffffffff</code>)를 각각 실행했습니다. 바깥 함수를 대체한 것은 없습니다. SRAM 후보 두 주소는 서로 연결하지 않았습니다.</p></div>
 
 <div class="table-wrap"><table>
 <caption>실행 결과 (공개 검증 도구의 4사례)</caption>
@@ -343,7 +343,7 @@
 <li>실행 위치가 본체의 코드 범위를 벗어나지 않고 정해 둔 복귀 주소로 돌아옵니다.</li>
 <li>기록은 모두 4바이트이고 네 주소 범위 안에만 일어납니다.</li>
 <li><code>0x4dffb208</code>에는 <code>0x20</code>, <code>0x4d021090</code>에는 <code>0x3f</code>가 한 번씩 기록됩니다.</li>
-<li>RAM 초기값이 달라도 기록 순서와 값이 같습니다. 본체가 기존 값을 읽지 않는다는 뜻입니다.</li>
+<li>RAM 초기값이 달라도 기록 순서와 값이 같습니다. 이 결과로 보아 본체는 기존 값을 읽지 않습니다.</li>
 <li>r4–r11과 스택 포인터가 실행 전과 같습니다.</li>
 </ul>
 <p>같은 도구에 M0 레코드만 넣었을 때와 압축을 푼 전체 스트림(<code>decoded.bin</code>)을 넣었을 때 결과가 같았습니다.</p>

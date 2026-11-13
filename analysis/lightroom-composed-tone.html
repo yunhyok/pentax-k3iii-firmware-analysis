@@ -3,12 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>합성 톤 DCP의 Lightroom 출력 검증 — PENTAX K-3 II</title>
-<meta name="description" content="K-3 II 합성 톤 DCP의 실제 Lightroom 출력과 고정 오프라인 예측을 두 장면에서 비교했습니다.">
+<title>합성 톤 DCP를 실제 Lightroom에서 내보낸 결과 — PENTAX K-3 Mark III 펌웨어 연구</title>
+<meta name="description" content="차트 #1376에서 정한 톤 곡선을 DCP 한 개에 넣어 Lightroom Classic 16.0으로 차트와 별도 장면을 내보냈습니다. 상대 기준은 두 장면 모두 통과했지만 차트 7번 주황 패치가 최대 허용값을 넘어 미리 정한 기준을 모두 충족하지는 못했습니다.">
 <link rel="stylesheet" href="../assets/site.css">
-<style>
-.flow{grid-template-columns:1fr;gap:1.3rem}.flow>li:not(:last-child)::after{content:"↓";right:auto;left:1rem;top:auto;bottom:-1.25rem;transform:none}
-</style>
 </head>
 <body data-camera="k3iii">
 <!-- chrome:top -->
@@ -17,69 +14,241 @@
 <nav class="crumbs" aria-label="현재 위치"><ol><li><a href="../index.html">PENTAX K-3 Mark III</a></li><li><a href="guide-lightroom.html">Lightroom 색 프로파일</a></li><li aria-current="page">합성 톤 DCP의 실제 Lightroom 출력</li></ol></nav>
 <!-- /chrome:top -->
 <header class="page-head">
-<p class="eyebrow">색 처리 · K-3 II Lightroom 프로파일</p>
-<h1>합성 톤 DCP의 Lightroom 출력 검증</h1>
-<p class="lead">한 차트에서 정한 톤을 DCP에 옮겨 같은 차트와 별도 장면에서 내보냈습니다. 두 장면 모두 오프라인 예측에 가까워졌고, 차트의 주황 패치는 미리 정한 최대 허용값을 넘었습니다.</p>
+<p class="eyebrow">Lightroom 색 프로파일 · 실험 DCP 판정</p>
+<h1>합성 톤 DCP를 실제 Lightroom에서 내보낸 결과</h1>
+<p class="lead">PC에서 계산한 톤 보정을 프로파일 파일 하나에 담았을 때 Lightroom이 그 계산대로 출력하는지 확인했습니다. 미리 정한 판정 기준 가운데 하나를 넘지 못했습니다.</p>
 </header>
 <div class="layout">
 <!-- chrome:toc -->
-<nav class="toc" aria-label="이 문서의 목차"><h2 data-toc="no">이 문서에서</h2><ol><li><a href="#model">이미 렌더된 톤을 프로파일 곡선으로 옮기는 조건</a></li><li><a href="#delivery">고정 오프라인 목표에 얼마나 가까워졌나</a></li><li><a href="#camera-reference">카메라 내장 JPEG와 비교한 색차</a></li><li><a href="#reproduce">프로파일 생성과 측정 재현</a></li><li><a href="#refs">근거 파일</a></li></ol></nav>
+<nav class="toc" aria-label="이 문서의 목차"><h2 data-toc="no">이 문서에서</h2><ol><li><a href="#background">배경: 오프라인 목표와 합성 곡선</a></li><li><a href="#model">이미 렌더된 톤을 프로파일 곡선으로 옮기는 조건</a></li><li><a href="#delivery">오프라인 목표에 얼마나 가까워졌나</a></li><li><a href="#camera-reference">카메라 내장 JPEG와 비교한 색차</a></li><li><a href="#limits">한계와 남은 과제</a></li><li><a href="#reproduce">프로파일 생성과 측정 재현</a></li><li><a href="#refs">근거 파일과 참고 자료</a></li></ol></nav>
 <!-- /chrome:toc -->
 <main class="doc" id="main">
 
+<section class="summary">
+<h2 data-toc="no">핵심 요약</h2>
+<ul>
+<li>차트 #1376에서 정한 톤 곡선 G를 Adobe 기본 곡선의 대리값과 합성해 실험 <a href="../glossary.html#dcp">DCP</a> 하나에 넣었습니다. 이 DCP로 <strong>실제 Lightroom Classic 16.0</strong>에서 차트 #1376과 별도 장면 #1363을 내보냈습니다.</li>
+<li><strong>판정: 미리 정한 기준을 모두 충족하지는 못했습니다.</strong> 상대 기준(기준 오차의 절반 미만)은 두 장면 모두 통과했습니다(5.28%, 2.90%). 차트 패치 기준 가운데 평균 0.1554는 허용값 0.25 이하로 통과했습니다. 그러나 최대는 <strong>7번 주황 패치 0.8918로 허용값 0.75를 넘었습니다</strong>.</li>
+<li>카메라 Natural 내장 JPEG와 비교하면 실제 후보는 기준 행렬보다 가까웠습니다. 영역 평균 ΔE<sub>00</sub>은 차트 3.1847 → 2.0653, 별도 장면 5.3743 → 4.0573입니다. 줄어든 영역은 각각 24곳 중 19곳과 24곳입니다.</li>
+<li>RAW 두 장과 Lightroom 한 버전에서 얻은 결과입니다. 허용값은 연구용 판정선일 뿐 눈으로 같아 보인다는 기준은 아닙니다. 주황 패치 잔차의 원인도 이 측정으로 정하지 못했습니다.</li>
+</ul>
+</section>
+
+<div class="scope">
+<div class="ok"><h3><span class="badge ok">확인</span> 실제 Lightroom 출력에서 잰 값</h3>
+<ul>
+<li>Lightroom Classic 16.0(Camera Raw 19.0)에서 내보낸 TIFF의 프로파일 이름·지문, CRS 속성 115개와 중첩 설정 6개</li>
+<li>기준 TIFF·후보 TIFF와 오프라인 목표 사이의 색차, TIFF 쌍의 위치 맞춤</li>
+<li>두 장면의 내장 JPEG 대비 색차</li>
+</ul></div>
+<div class="model"><h3><span class="badge model">모델</span> 연구자가 정한 것</h3>
+<ul>
+<li>오프라인 목표: 기준 TIFF에 고정 곡선 G를 PC에서 적용한 값</li>
+<li>Lightroom 기본 곡선의 대리값으로 쓴 DNG SDK 1.7.1 Build 2768의 ACR3 표</li>
+<li>상대 기준과 차트 허용값(0.25, 0.75)</li>
+</ul></div>
+<div class="open"><h3><span class="badge open">미확인</span> 남은 것</h3>
+<ul>
+<li>Lightroom의 실제 내부 기본 곡선과 처리 순서</li>
+<li>7번 주황 패치 잔차의 원인(<a href="lightroom-tone-coordinates.html">톤과 RGB 좌표</a>에서 계속)</li>
+<li>다른 장면·조명·Lightroom 버전에서의 결과</li>
+</ul></div>
+</div>
+
+<section id="background">
+<h2>배경: 오프라인 목표와 합성 곡선</h2>
+<p><a href="color-tone-residual.html">톤 보정 뒤 남는 색차</a>의 계산은 Lightroom이 이미 내보낸 TIFF에 곡선 G를 PC에서 덧씌운 것입니다. 실제로 쓰려면 같은 효과가 프로파일 안에 들어가 Lightroom이 직접 그렇게 출력해야 합니다. 이 문서는 그 전달이 얼마나 정확한지 잽니다.</p>
+<p><dfn title="이 실험에서 '기대하는 정답'으로 정한 값. 톤 곡선이 없는 기준 DCP로 내보낸 TIFF에 고정 곡선 G를 PC에서 적용해 만듭니다">오프라인 목표</dfn>는 톤 곡선이 없는 기준 DCP로 내보낸 TIFF에 G를 PC에서 적용한 결과입니다. 후보 DCP로 내보낸 TIFF가 이 목표에 가까울수록 프로파일이 계산을 그대로 전달한 것입니다. 카메라 JPEG와 얼마나 가까운지는 별도로 쟀습니다.</p>
+
+<figure class="diagram">
+<figcaption>같은 RAW를 두 DCP로 내보내 오프라인 목표와 비교하는 경로</figcaption>
+<div class="dg-scroll">
+<svg class="dg" viewBox="0 0 800 316" role="img" aria-labelledby="dg-path-title dg-path-desc">
+<title id="dg-path-title">기준 DCP와 후보 DCP의 실제 Lightroom 출력을 오프라인 목표와 비교하는 구성</title>
+<desc id="dg-path-desc">왼쪽의 RAW 두 장(#1376 차트, #1363 장면)을 Lightroom Classic 16.0에서 두 DCP로 내보냅니다. 위쪽 기준 DCP는 톤 태그가 없는 행렬 프로파일이고, 아래쪽 후보 DCP는 G와 ACR3를 합성한 1,025점 곡선을 담았습니다. 기준 TIFF에 고정 곡선 G를 PC에서 적용해 오프라인 목표를 만들고, 후보 TIFF와 기준 TIFF가 각각 이 목표에서 얼마나 떨어졌는지 ΔE00으로 비교합니다.</desc>
+<defs><marker id="dg-path-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0 0L10 5L0 10z"/></marker><marker id="dg-path-ahk" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah key" d="M0 0L10 5L0 10z"/></marker></defs>
+<rect class="gf" x="176" y="12" width="210" height="270" rx="12"/>
+<text class="h mid" x="281" y="32">LIGHTROOM 16.0</text>
+<rect class="b mute" x="12" y="112" width="140" height="82" rx="8"/>
+<text class="t" x="24" y="138">RAW 두 장</text>
+<text class="s" x="24" y="158">#1376 차트</text>
+<text class="s" x="24" y="176">#1363 별도 장면</text>
+<rect class="b" x="188" y="46" width="186" height="64" rx="8"/>
+<text class="t" x="200" y="73">기준 DCP</text>
+<text class="s" x="200" y="93">행렬만 · 톤 태그 없음</text>
+<rect class="b key" x="188" y="200" width="186" height="64" rx="8"/>
+<text class="t" x="200" y="227">후보 DCP</text>
+<text class="s" x="200" y="247">G∘ACR3 · FLOAT 1,025점</text>
+<rect class="b ok" x="414" y="46" width="150" height="64" rx="8"/>
+<text class="t" x="426" y="73">기준 TIFF</text>
+<text class="s" x="426" y="93">ProPhoto 16비트</text>
+<rect class="b ok" x="414" y="200" width="150" height="64" rx="8"/>
+<text class="t" x="426" y="227">후보 TIFF</text>
+<text class="s" x="426" y="247">ProPhoto 16비트</text>
+<rect class="b model" x="600" y="46" width="188" height="64" rx="8"/>
+<text class="t" x="612" y="73">오프라인 목표</text>
+<text class="s" x="612" y="93">기준 TIFF + G (PC 계산)</text>
+<rect class="b ok" x="600" y="200" width="188" height="64" rx="8"/>
+<text class="t" x="612" y="227">목표와의 ΔE00</text>
+<text class="s" x="612" y="247">후보 오차 ÷ 기준 오차</text>
+<path class="e" d="M152 140H168V78H186" marker-end="url(#dg-path-ah)"/>
+<path class="e" d="M152 168H168V232H186" marker-end="url(#dg-path-ah)"/>
+<path class="e" d="M374 78H412" marker-end="url(#dg-path-ah)"/>
+<path class="e" d="M374 232H412" marker-end="url(#dg-path-ah)"/>
+<path class="e" d="M564 78H598" marker-end="url(#dg-path-ah)"/>
+<path class="e key" d="M694 110V198" marker-end="url(#dg-path-ahk)"/>
+<path class="e" d="M564 232H598" marker-end="url(#dg-path-ah)"/>
+<path class="e dash" d="M489 110V150H650V198" marker-end="url(#dg-path-ah)"/>
+<text class="n" x="498" y="142">기준 TIFF의 오차</text>
+<text class="n" x="12" y="304">카메라 내장 JPEG와의 색차는 이 경로와 따로 계산했습니다.</text>
+</svg>
+</div>
+<ul class="dg-legend"><li><i class="mute"></i>공개 RAW</li><li><i class="key"></i>이 연구에서 만든 후보 DCP</li><li><i class="ok"></i>실제 출력과 측정</li><li><i class="model"></i>PC에서 계산한 목표</li></ul>
+</figure>
+</section>
+
 <section id="model">
 <h2>이미 렌더된 톤을 프로파일 곡선으로 옮기는 조건</h2>
-<p>기존 실험은 행렬 DCP로 내보낸 #1376 TIFF에서 무채색 여섯 패치의 밝기를 기준으로 단조 PCHIP 곡선 <var>G</var>를 정했습니다. 이 실험은 그 곡선을 그대로 사용합니다. <a href="color-tone-residual.html">톤 잔차 실험</a></p>
-<figure class="diagram">
-<figcaption>공통 행렬에서 실제 Lightroom 출력과 고정 오프라인 목표까지</figcaption>
-<ol class="flow">
-<li class="key"><strong>두 K-3 II RAW</strong><span>#1376 차트와 별도 장면 #1363</span><span>두 DCP에 #1376의 동일 행렬과 광원 적용</span></li>
-<li class="ok"><strong>기준·후보 프로파일</strong><span>기준은 톤 태그 생략</span><span>후보는 <var>G</var>∘ACR3의 FLOAT 1,025점</span></li>
-<li class="ok"><strong>실제 Lightroom 내보내기</strong><span>각 장면을 두 프로파일로 내보내 TIFF 네 장 확보</span><span>동일 현상 설정과 ProPhoto ICC 확인</span></li>
-</ol>
-<p>기준 TIFF에 고정 <var>G</var>를 적용해 오프라인 목표를 만들고 실제 후보 TIFF와 비교했습니다. 카메라 내장 JPEG와의 색차는 별도로 계산했습니다.</p>
-</figure>
-<p>Adobe 참조 SDK에서는 유효한 프로파일 곡선이 장면 기준 기본 곡선 <var>B</var>를 대체합니다. 같은 선형 ProPhoto RGB에서 높은 채널과 낮은 채널에 곡선을 적용하고, 중간 채널은 두 채널 사이의 상대 위치를 유지합니다. <var>B</var>가 엄격히 증가하면 이 RGB 연산을 <var>B</var>와 <var>G</var>에 차례로 적용한 결과는 <var>G</var>∘<var>B</var>를 한 번 적용한 결과와 같습니다. 같은 전단 상태를 사용하고, 두 연산 사이에 채널 혼합이나 클리핑이 없을 때 성립합니다. SDK는 노출 보정 함수와 프로파일 곡선을 합성하므로 후보를 만들 때 노출 보정을 역변환하지 않았습니다. <a href="https://helpx.adobe.com/content/dam/help/en/camera-raw/digital-negative/jcr_content/root/content/flex/items/position/position-par/download_section_733958301/download-1/DNG_Spec_1_7_1_0.pdf#page=51">Adobe DNG 규격 51쪽</a></p>
-<p>기본 곡선의 대리값으로 DNG SDK 1.7.1 Build 2768의 ACR3 순방향 표를 사용했습니다. 후보는 각 ACR3 출력값에 <var>G</var>를 적용한 1,025개의 FLOAT 점을 넣습니다. 끝점은 (0,0), (1,1)이고 SDK의 자연 3차 스플라인 모델에서 모든 구간의 도함수 최솟값이 양수였습니다. Lightroom의 실제 내부 기본 곡선과 처리 순서는 이 실험에서 분리해 확인할 수 없습니다. <a href="lightroom-tone-comparison.html">기존 항등·Lift·ACR3 대조</a> · <a href="lightroom-composed-tone.json">SDK 소스 범위와 레시피 해시</a></p>
+<p class="takeaway">프로파일 곡선은 Lightroom의 기본 곡선을 대신하므로, G만 넣지 않고 "기본 곡선 다음에 G"를 합성한 곡선을 넣었습니다.</p>
+<p>G는 행렬 DCP로 내보낸 #1376 TIFF에서 무채색 6칸의 밝기를 기준으로 정한 단조 PCHIP 곡선입니다(<a href="color-tone-residual.html">톤 잔차 실험</a>). 이 실험은 그 곡선을 바꾸지 않고 씁니다.</p>
+<p>Adobe 참조 SDK에서는 유효한 프로파일 곡선이 장면 기준 기본 곡선 B를 대체합니다. 곡선은 선형 ProPhoto RGB의 가장 높은 채널과 낮은 채널에 적용됩니다. 중간 채널은 두 채널 사이의 상대 위치를 유지합니다. B가 엄격히 증가하면 이 연산을 B, G 순서로 두 번 적용한 결과와 합성 곡선 G∘B를 한 번 적용한 결과가 같습니다. 같은 전단 상태를 쓰고 두 연산 사이에 채널 혼합이나 클리핑이 없을 때만 성립합니다. 공개 명세는 <a href="../glossary.html#tone-curve-tag">ProfileToneCurve</a>(태그 50940)를 선형 감마의 FLOAT 점 쌍으로 정의합니다(<a href="https://helpx.adobe.com/content/dam/help/en/camera-raw/digital-negative/jcr_content/root/content/flex/items/position/position-par/download_section_733958301/download-1/DNG_Spec_1_7_1_0.pdf#page=51">Adobe DNG 규격 51쪽</a>).</p>
+<div class="table-wrap"><table>
+<caption>후보 DCP를 만든 방법</caption>
+<thead><tr><th scope="col">항목</th><th scope="col">내용</th></tr></thead>
+<tbody>
+<tr><th scope="row">B의 대리값</th><td>DNG SDK 1.7.1 Build 2768의 ACR3 순방향 표</td></tr>
+<tr><th scope="row">곡선 점</th><td>x = i/1024마다 ACR3 출력값에 G를 적용한 FLOAT 1,025점, 끝점 (0,0)과 (1,1)</td></tr>
+<tr><th scope="row">단조성</th><td>SDK의 자연 3차 스플라인 모델에서 모든 구간의 도함수 최솟값이 양수</td></tr>
+<tr><th scope="row">노출 보정</th><td>SDK가 노출 보정 함수와 프로파일 곡선을 합성하므로 역변환하지 않음</td></tr>
+<tr><th scope="row">나머지 태그</th><td>기존 #1376 DCP와 같은 모델 이름, 색 행렬 두 개, 보정 광원 두 개</td></tr>
+</tbody></table></div>
+<div class="callout warn"><strong class="label">주의</strong>
+<p>ACR3 표는 Lightroom 기본 곡선의 대리값입니다. Lightroom의 실제 내부 기본 곡선과 처리 순서는 이 실험에서 따로 확인할 수 없습니다. 비교 대조군은 <a href="lightroom-tone-comparison.html">기존 항등·Lift·ACR3 대조</a>에, SDK 소스 범위와 레시피 해시는 <a href="lightroom-composed-tone.json">결과 JSON</a>에 있습니다.</p></div>
 </section>
 
 <section id="delivery">
-<h2>고정 오프라인 목표에 얼마나 가까워졌나</h2>
-<p>Lightroom Classic 16.0, Camera Raw 19.0, Process Version 15.4의 6,016×4,000 무압축 ProPhoto RGB 16비트 TIFF를 사용했습니다. 두 장면에서 비교한 CRS 속성은 각각 115개이며, 그중 프로파일 이름과 지문만 달랐습니다. 중첩 설정 6개는 모두 일치했습니다. As Shot 수치는 #1376에서 5200 K/+2, #1363에서 4650 K/+28이었고, 노출은 두 장면 모두 EV 0.00이었습니다.</p>
-<p>TIFF 쌍의 최대 정합 이동은 각각 0.0974px와 0.0154px로, 모두 사전에 정한 1px 미만 조건을 충족했습니다. 새 TIFF를 읽기 전에 #1376의 고정 정합 지점을 기존 homography로 TIFF 좌표에 옮기는 수정을 기록했습니다. 평가 영역과 허용값은 그대로였고, 후보의 미세 이동은 보정하지 않았습니다. <a href="lightroom-composed-tone.json">정합 지점과 현상값 대조</a></p>
+<h2>오프라인 목표에 얼마나 가까워졌나</h2>
+<p class="takeaway">두 장면 모두 오프라인 목표에 크게 다가갔지만 차트 7번 주황 패치가 최대 허용값을 넘어 전체 판정은 불합격입니다.</p>
+
 <div class="table-wrap"><table>
-<caption>고정 오프라인 목표 대비 ΔE00. 각 영역의 픽셀 중앙값을 구한 뒤 24개 영역을 같은 비중으로 평균했습니다.</caption>
-<thead><tr><th scope="col">장면</th><th scope="col" class="n">기준 행렬 TIFF</th><th scope="col" class="n">실제 후보 TIFF</th><th scope="col" class="n">후보 / 기준</th></tr></thead>
+<caption>오프라인 목표 대비 ΔE<sub>00</sub> · 영역마다 픽셀 중앙값을 구한 뒤 24개 영역을 같은 비중으로 평균</caption>
+<thead><tr><th scope="col">장면</th><th scope="col" class="n">기준 행렬 TIFF</th><th scope="col" class="n">실제 후보 TIFF</th><th scope="col" class="n">후보 ÷ 기준</th><th scope="col">상대 기준(50% 미만)</th></tr></thead>
 <tbody>
-<tr><th scope="row">#1376 차트</th><td class="n">3.0372</td><td class="n">0.1603</td><td class="n">5.28%</td></tr>
-<tr><th scope="row">#1363 별도 장면</th><td class="n">4.4480</td><td class="n">0.1288</td><td class="n">2.90%</td></tr>
+<tr><th scope="row">#1376 차트</th><td class="n">3.0372</td><td class="n">0.1603</td><td class="n">5.28%</td><td><span class="badge ok">통과</span></td></tr>
+<tr><th scope="row">#1363 별도 장면</th><td class="n">4.4480</td><td class="n">0.1288</td><td class="n">2.90%</td><td><span class="badge ok">통과</span></td></tr>
 </tbody></table></div>
-<div class="callout warn"><strong class="label">상대 기준 충족, 차트 최대 허용값 초과</strong><p>두 장면 모두 후보 오차가 기준의 절반 미만이었습니다. 별도 차트 지표인 패치별 Lab 중앙값의 ΔE00는 평균 0.1554로 기준 0.25 이했습니다. 최대값은 7번 주황 패치의 0.8918로 기준 0.75를 넘었습니다. 같은 패치의 중앙 100×100에서도 0.8917이었습니다. 따라서 사전 기준을 모두 충족하지는 못했습니다.</p></div>
-<p>차트의 같은 지표에서 무채색 6개 평균은 0.0102, 유채색 18개 평균은 0.2038이었습니다. 허용값은 두 장면을 평가하기 위한 실험 기준입니다. 관측된 차이만으로 주황 패치 잔차의 원인을 정할 수 없습니다.</p>
+
+<figure class="diagram">
+<figcaption>미리 정한 세 기준과 측정값</figcaption>
+<div class="dg-scroll">
+<svg class="dg" viewBox="0 0 800 306" role="img" aria-labelledby="dg-gate-title dg-gate-desc">
+<title id="dg-gate-title">합성 톤 DCP의 판정 기준별 측정값과 통과 여부</title>
+<desc id="dg-gate-desc">위 두 줄은 후보 오차를 기준 오차로 나눈 비율입니다. 기준선 50% 대비 #1376 차트 5.28%, #1363 장면 2.90%로 둘 다 통과입니다. 아래 두 줄은 차트 패치별 Lab 중앙값의 ΔE00입니다. 평균 0.1554는 허용값 0.25 이하로 통과, 최대 0.8918(7번 주황 패치)은 허용값 0.75를 넘어 미달입니다. 맨 아래 상자: 세 기준을 모두 만족해야 하므로 전체 판정은 기준 미충족입니다.</desc>
+<text class="h" x="16" y="24">상대 기준 · 후보 오차 ÷ 기준 오차</text>
+<path class="g" d="M300 34V108"/><text class="n mid" x="300" y="122">0%</text>
+<path class="g" d="M433 34V108"/><text class="n mid" x="433" y="122">20%</text>
+<path class="g" d="M567 34V108"/><text class="n mid" x="567" y="122">40%</text>
+<path class="e key" d="M633 32V110"/><text class="n mid tk" x="633" y="122">기준 50%</text>
+<text class="s end" x="288" y="57">#1376 차트</text>
+<rect class="b ok" x="300" y="44" width="35.2" height="18" rx="3"><title>#1376 5.28%</title></rect>
+<text class="mono" x="344" y="58">5.28%</text>
+<text class="s end" x="288" y="93">#1363 별도 장면</text>
+<rect class="b ok" x="300" y="80" width="19.3" height="18" rx="3"><title>#1363 2.90%</title></rect>
+<text class="mono" x="328" y="94">2.90%</text>
+<text class="t tok" x="740" y="57">통과</text>
+<text class="t tok" x="740" y="93">통과</text>
+<text class="h" x="16" y="152">차트 절대 허용값 · 패치별 Lab 중앙값의 ΔE00</text>
+<path class="g" d="M300 162V236"/><text class="n mid" x="300" y="250">0</text>
+<path class="g" d="M500 162V236"/><text class="n mid" x="500" y="250">0.5</text>
+<path class="g" d="M700 162V236"/><text class="n mid" x="700" y="250">1.0</text>
+<path class="e key" d="M400 162V200"/><text class="n tk" x="404" y="174">0.25</text>
+<path class="e key" d="M600 198V238"/><text class="n tk" x="604" y="236">0.75</text>
+<text class="s end" x="288" y="185">24패치 평균</text>
+<rect class="b ok" x="300" y="172" width="62.2" height="18" rx="3"><title>평균 0.1554</title></rect>
+<text class="mono" x="412" y="186">0.1554</text>
+<text class="s end" x="288" y="221">최대 · 7번 주황</text>
+<rect class="b key" x="300" y="208" width="356.7" height="18" rx="3"><title>최대 0.8918</title></rect>
+<text class="mono tk" x="664" y="222">0.8918</text>
+<text class="t tok" x="740" y="185">통과</text>
+<text class="t tk" x="740" y="221">미달</text>
+<rect class="b key" x="160" y="262" width="480" height="36" rx="8"/>
+<text class="t mid" x="400" y="285">전체 판정: 기준 미충족 (세 기준을 모두 만족해야 통과)</text>
+</svg>
+</div>
+<ul class="dg-legend"><li><i class="ok"></i>기준 안의 값</li><li><i class="key"></i>기준을 넘은 값과 판정선</li></ul>
+</figure>
+
+<div class="callout warn"><strong class="label">판정</strong>
+<p>상대 기준은 두 장면 모두 충족했습니다. 차트 패치별 Lab 중앙값의 ΔE<sub>00</sub> 평균은 0.1554로 허용값 0.25 이하였습니다. 최댓값은 7번 주황 패치의 0.8918로 허용값 0.75를 넘었습니다. 같은 패치의 중앙 100×100픽셀에서도 0.8917이었습니다. 그래서 미리 정한 기준을 모두 충족하지는 못했습니다(<code>delivery_tolerances_met</code> = false).</p></div>
+<p>같은 차트 지표에서 무채색 6칸 평균은 0.0102, 유채색 18칸 평균은 0.2038이었습니다. 오차가 유채색에 몰려 있습니다. 허용값은 두 장면을 판정하려고 정한 실험 기준입니다. 관측한 차이만으로 주황 패치 잔차의 원인을 정할 수는 없습니다.</p>
+
+<details class="evidence"><summary>현상 조건과 위치 맞춤</summary>
+<ul>
+<li>Lightroom Classic 16.0, Camera Raw 19.0, Process Version 15.4. 6,016×4,000 무압축 ProPhoto RGB 16비트 TIFF.</li>
+<li>두 장면에서 비교한 CRS 속성은 각각 115개이고 그중 프로파일 이름과 지문만 달랐습니다. 중첩 설정 6개는 모두 같았습니다.</li>
+<li>As Shot 수치는 #1376에서 5200 K/+2, #1363에서 4650 K/+28이었고 노출은 두 장면 모두 0.00 EV였습니다.</li>
+<li>TIFF 쌍의 최대 위치 이동은 #1376 0.0974픽셀, #1363 0.0154픽셀로 미리 정한 1픽셀 미만 조건을 충족했습니다.</li>
+<li>새 TIFF를 읽기 전에 #1376의 고정 정합 지점을 기존 homography로 TIFF 좌표에 옮기도록 방법을 고친 기록이 있습니다. 평가 영역과 허용값은 그대로였고 후보의 미세 이동은 보정하지 않았습니다.</li>
+</ul>
+<p>정합 지점과 현상값 대조: <a href="lightroom-composed-tone.json">lightroom-composed-tone.json</a></p>
+</details>
 </section>
 
 <section id="camera-reference">
 <h2>카메라 내장 JPEG와 비교한 색차</h2>
+<p class="takeaway">실제 후보는 기준 행렬보다 카메라 JPEG에 가까웠고 오프라인 톤과 거의 같은 수준이었습니다.</p>
 <div class="table-wrap"><table>
-<caption>Natural 내장 JPEG 대비 영역 중앙 ΔE00 평균</caption>
-<thead><tr><th scope="col">장면</th><th scope="col" class="n">기준 행렬</th><th scope="col" class="n">고정 오프라인 톤</th><th scope="col" class="n">실제 후보</th></tr></thead>
+<caption>Natural 내장 JPEG 대비 영역별 중앙 ΔE<sub>00</sub>의 평균</caption>
+<thead><tr><th scope="col">장면</th><th scope="col" class="n">기준 행렬</th><th scope="col" class="n">고정 오프라인 톤</th><th scope="col" class="n">실제 후보</th><th scope="col" class="n">후보가 기준보다 나은 영역</th></tr></thead>
 <tbody>
-<tr><th scope="row">#1376 차트</th><td class="n">3.1847</td><td class="n">2.0123</td><td class="n">2.0653</td></tr>
-<tr><th scope="row">#1363 별도 장면</th><td class="n">5.3743</td><td class="n">4.0672</td><td class="n">4.0573</td></tr>
+<tr><th scope="row">#1376 차트</th><td class="n">3.1847</td><td class="n">2.0123</td><td class="n">2.0653</td><td class="n">19/24</td></tr>
+<tr><th scope="row">#1363 별도 장면</th><td class="n">5.3743</td><td class="n">4.0672</td><td class="n">4.0573</td><td class="n">24/24</td></tr>
 </tbody></table></div>
-<p>실제 후보의 색차가 기준 행렬보다 줄어든 영역은 #1376에서 19/24, #1363에서 24/24였습니다. #1363에서는 고정 계획의 영역과 기존 세 TIFF로 만든 마스크를 재사용했습니다. 새 후보는 마스크에 들어갈 픽셀을 정하는 데 쓰지 않았고, 새 장면에서 곡선·WB·노출을 다시 맞추지 않았습니다. 내장 JPEG는 카메라가 처리한 출력이므로 이 비교에서 확인한 범위는 두 장면의 완성 출력입니다. <a href="color-scene-plan.json">고정 장면 계획</a></p>
+<p>#1363에서는 <a href="color-scene-plan.json">고정 장면 계획</a>의 영역과 기존 세 TIFF로 만든 마스크를 그대로 썼습니다. 새 후보 TIFF는 마스크 픽셀을 고르는 데 쓰지 않았습니다. 새 장면에서도 곡선·WB·노출을 다시 맞추지 않았습니다. 내장 JPEG는 카메라가 처리한 출력이므로, 이 비교로 확인한 범위는 두 장면의 완성 출력까지입니다.</p>
+<details class="evidence"><summary>차트 패치별 Lab 중앙값으로 본 JPEG 대비 색차</summary>
+<div class="table-wrap"><table class="fit">
+<caption>#1376 차트 · 내장 JPEG 대비 패치 ΔE<sub>00</sub></caption>
+<thead><tr><th scope="col">출력</th><th scope="col" class="n">24패치 평균</th><th scope="col" class="n">최대</th><th scope="col" class="n">최대 패치</th></tr></thead>
+<tbody>
+<tr><th scope="row">기준 행렬</th><td class="n">3.088</td><td class="n">5.048</td><td class="n">23</td></tr>
+<tr><th scope="row">고정 오프라인 톤</th><td class="n">1.734</td><td class="n">5.740</td><td class="n">7</td></tr>
+<tr><th scope="row">실제 후보</th><td class="n">1.786</td><td class="n">6.113</td><td class="n">7</td></tr>
+</tbody></table></div>
+</details>
+</section>
+
+<section id="limits">
+<h2>한계와 남은 과제</h2>
+<ul>
+<li>K-3 II RAW 두 장, Lightroom Classic 16.0 한 버전에서 얻은 결과입니다. 이 사이트가 펌웨어를 분석하는 K-3 Mark III의 RAW는 쓰지 않았습니다.</li>
+<li>허용값 0.25·0.75와 50% 상대 기준은 연구용 판정선입니다. 눈으로 같아 보인다는 주장은 하지 않습니다.</li>
+<li>Lightroom 내부 기본 곡선 대신 SDK의 ACR3 표를 썼으므로, 주황 패치 잔차가 대리값 탓인지 처리 순서 탓인지 알 수 없습니다. 같은 엔진에서 채널 순서를 비교한 분석은 <a href="lightroom-tone-coordinates.html">Lightroom 톤과 RGB 좌표</a>에 있습니다.</li>
+</ul>
 </section>
 
 <section id="reproduce">
 <h2>프로파일 생성과 측정 재현</h2>
-<p>실험 프로파일 이름은 <code>PENTAX K-3 II 1376 Composed Tone Offline v1</code>입니다. 기존 #1376 DCP의 모델·행렬 두 개·광원 두 개는 동일합니다. 생성되는 8,500바이트 파일의 SHA-256은 <code class="wrap">5eaf0636e72197f0c94d79df12c2a20fa5d77a4f7641e9319d3ca7d858e212d2</code>이고, 실제 TIFF의 프로파일 지문은 <code class="wrap">830CCADC7EB96FB2A9A81857DA6E1544</code>였습니다.</p>
+<p>실험 프로파일 이름은 <code>PENTAX K-3 II 1376 Composed Tone Offline v1</code>입니다. 기존 #1376 DCP의 모델·행렬 두 개·광원 두 개는 그대로입니다.</p>
+<dl class="kv">
+<dt>파일 크기</dt><dd>8,500바이트</dd>
+<dt>DCP SHA-256</dt><dd><code class="wrap">5eaf0636e72197f0c94d79df12c2a20fa5d77a4f7641e9319d3ca7d858e212d2</code></dd>
+<dt>TIFF에 기록된 프로파일 지문</dt><dd><code class="wrap">830CCADC7EB96FB2A9A81857DA6E1544</code></dd>
+</dl>
 <p><a href="../profiles/pentax-k3ii-1376-composed-tone-offline-v1.dcp" download>실험 DCP 다운로드</a> · <a href="../profiles/Adobe-DNG-SDK-NOTICE.txt">파생 곡선의 출처와 Adobe 고지</a> · <a href="../profiles/Adobe-DNG-SDK-LICENSE.txt">Adobe SDK 라이선스</a></p>
-<p>같은 DCP를 재생성하려면 사용자가 확보한 Adobe DNG SDK 1.7.1 Build 2768 ZIP이 필요합니다. Adobe 페이지의 배포 빌드는 바뀔 수 있으므로 ZIP SHA-256으로 확인합니다. 다운로드 파일은 위 SHA-256과 일치하는 실험판입니다. Adobe SDK 소스와 원본 ACR3 표는 별도 ZIP에 있습니다. <a href="https://helpx.adobe.com/camera-raw/desktop/dng-and-file-formats/digital-negative.html">Adobe SDK 배포처</a> · <a href="raw-test-inputs.html">RAW 출처와 CC0 기록</a></p>
+<p>다운로드 파일은 위 SHA-256과 일치하는 실험판입니다. 위 판정대로 기준을 모두 통과한 프로파일은 아닙니다. 같은 DCP를 다시 만들려면 직접 확보한 Adobe DNG SDK 1.7.1 Build 2768 ZIP이 필요합니다. Adobe 페이지의 배포 빌드는 바뀔 수 있으므로 ZIP SHA-256으로 확인합니다. Adobe SDK 소스와 원본 ACR3 표는 별도 ZIP에 있습니다(<a href="https://helpx.adobe.com/camera-raw/desktop/dng-and-file-formats/digital-negative.html">Adobe SDK 배포처</a>, <a href="raw-test-inputs.html">RAW 출처와 CC0 기록</a>).</p>
 <pre><code>python tools/check_lightroom_composed_tone.py build --sdk dng-sdk-2768.zip --output candidate.dcp</code></pre>
-<p>Lightroom에 가져오기 전에 두 RAW를 각각 <code>pentax-k3ii-1376.dng</code>와 <code>pentax-k3ii-1363.dng</code>로 저장합니다. 검증기는 TIFF의 XMP에서 이 원본 이름을 확인합니다. 두 DNG에서 <code>SubIFD1:PreviewImage</code>를 추출해 비교용 JPEG로 사용합니다. <a href="raw-test-inputs.html">#1376 RAW와 내장 JPEG</a> · <a href="color-scene-transfer.html#replay">#1363 RAW와 현상·내보내기 설정</a></p>
+<p>Lightroom에 가져오기 전에 두 RAW를 각각 <code>pentax-k3ii-1376.dng</code>와 <code>pentax-k3ii-1363.dng</code>로 저장합니다. 검증기가 TIFF의 XMP에서 이 원본 이름을 확인합니다. 두 DNG에서 <code>SubIFD1:PreviewImage</code>를 꺼내 비교용 JPEG로 씁니다(<a href="raw-test-inputs.html">#1376 RAW와 내장 JPEG</a>, <a href="color-scene-transfer.html#replay">#1363 RAW와 현상·내보내기 설정</a>).</p>
 <pre><code>exiftool -b -SubIFD1:PreviewImage -w %d%f-preview.jpg pentax-k3ii-1376.dng pentax-k3ii-1363.dng</code></pre>
-<p>TIFF 여섯 장은 다음 프로파일로 내보냅니다. <code>--matrix-1376</code>과 <code>--matrix-1363</code>에는 <code>PENTAX RAW matrix test 1376</code>을, <code>--candidate-1376</code>과 <code>--candidate-1363</code>에는 <code>PENTAX K-3 II 1376 Composed Tone Offline v1</code>을 적용합니다. #1363의 <code>--natural-1363</code>과 <code>--standard-1363</code>에는 각각 <code>Camera Natural</code>과 <code>Adobe Standard</code>를 적용합니다.</p>
-<p>아래 명령에 직접 내보낸 TIFF를 전달하면 같은 실험 조건에서 새 결과를 계산합니다. 기록 당시 TIFF로 기준 결과를 검증하려면 <code>--fresh-exports</code>를 빼고 실행합니다. #1363의 기존 Camera Natural·Adobe Standard TIFF는 마스크 복원에만 씁니다. Python의 NumPy·SciPy·OpenCV·Pillow·tifffile·scikit-image, ExifTool과 LittleCMS <code>tificc</code>가 필요합니다.</p>
+<div class="table-wrap"><table>
+<caption>TIFF 여섯 장과 적용할 프로파일</caption>
+<thead><tr><th scope="col">인수</th><th scope="col">프로파일</th><th scope="col">쓰임</th></tr></thead>
+<tbody>
+<tr><th scope="row"><code>--matrix-1376</code>, <code>--matrix-1363</code></th><td><code>PENTAX RAW matrix test 1376</code></td><td>기준 TIFF</td></tr>
+<tr><th scope="row"><code>--candidate-1376</code>, <code>--candidate-1363</code></th><td><code>PENTAX K-3 II 1376 Composed Tone Offline v1</code></td><td>후보 TIFF</td></tr>
+<tr><th scope="row"><code>--natural-1363</code></th><td><code>Camera Natural</code></td><td>#1363 마스크 복원</td></tr>
+<tr><th scope="row"><code>--standard-1363</code></th><td><code>Adobe Standard</code></td><td>#1363 마스크 복원</td></tr>
+</tbody></table></div>
+<p>직접 내보낸 TIFF를 넘기면 같은 실험 조건에서 새 결과를 계산합니다. 기록 당시 TIFF로 기준 결과를 검증하려면 <code>--fresh-exports</code>를 빼고 실행합니다. 필요한 도구는 Python의 NumPy·SciPy·OpenCV·Pillow·tifffile·scikit-image, ExifTool, LittleCMS <code>tificc</code>입니다.</p>
 <pre><code>python tools/check_lightroom_composed_tone.py replay --fresh-exports \
   --dcp candidate.dcp --raw-1376 pentax-k3ii-1376.dng --preview-1376 pentax-k3ii-1376-preview.jpg \
   --matrix-1376 chart-matrix.tif --candidate-1376 chart-candidate.tif \
@@ -87,17 +256,26 @@
   --matrix-1363 scene-matrix.tif --candidate-1363 scene-candidate.tif \
   --natural-1363 scene-natural.tif --standard-1363 scene-standard.tif \
   --scratch work --output fresh-result.json</code></pre>
-<p>입력 경로를 실제 파일로 바꾸고 <code>work</code>는 기존 디렉터리로 지정합니다. <code>--exiftool</code>과 <code>--tificc</code>로 실행 파일 경로를 줄 수 있습니다. 새 TIFF에서도 RAW·DCP·ICC 해시, 기록된 현상값과 중첩 설정 전체, TIFF 간 정합을 확인합니다. 고정 차트 좌표를 유지하기 위해 #1376의 기준 행렬 TIFF는 파일 컨테이너가 달라도 디코딩한 RGB 픽셀이 기록 당시와 같아야 합니다. #1363의 두 마스크는 선택된 픽셀까지 기존과 같아야 합니다. 픽셀이 달라지면 같은 마스크로 바꿔 끼우지 않고 오류를 반환합니다. 새 결과에는 실제 파일·픽셀·ICC·XMP 해시와 별도 실험 판정을 기록합니다.</p>
+<p>입력 경로는 실제 파일로 바꾸고 <code>work</code>는 이미 있는 디렉터리로 지정합니다. 실행 파일 경로는 <code>--exiftool</code>과 <code>--tificc</code>로 줍니다. 새 TIFF로 돌릴 때 검증기가 하는 일은 다음과 같습니다.</p>
+<ul>
+<li>RAW·DCP·ICC 해시, 기록된 현상값과 중첩 설정 전체, TIFF 사이 위치 맞춤을 확인합니다.</li>
+<li>고정 차트 좌표를 지키기 위해 #1376 기준 행렬 TIFF는 파일 컨테이너가 달라도 디코딩한 RGB 픽셀이 기록 당시와 같아야 합니다.</li>
+<li>#1363의 두 마스크는 선택된 픽셀까지 기존과 같아야 합니다. 픽셀이 다르면 마스크를 바꿔 끼우지 않고 오류를 냅니다.</li>
+<li>새 결과에는 실제 파일·픽셀·ICC·XMP 해시와 별도 실험 판정을 기록합니다.</li>
+</ul>
 </section>
 
 <section id="refs">
-<h2>근거 파일</h2>
+<h2>근거 파일과 참고 자료</h2>
 <ul class="refs">
-<li><a href="lightroom-composed-tone.json">전체 측정 JSON과 원본 결과 해시</a></li>
-<li><a href="../tools/check_lightroom_composed_tone.py">DCP 생성·출력 비교 도구</a> · <a href="../tests/test_lightroom_composed_tone.py">입력 검증 시험</a></li>
+<li><a href="lightroom-composed-tone.json">lightroom-composed-tone.json</a> — 전체 측정값, 판정 필드, 원본 결과 해시</li>
+<li><a href="../tools/check_lightroom_composed_tone.py">tools/check_lightroom_composed_tone.py</a> — DCP 생성·출력 비교 도구</li>
+<li><a href="../tests/test_lightroom_composed_tone.py">tests/test_lightroom_composed_tone.py</a> — 입력 검증과 판정(상대 기준 통과, 절대 기준 미달) 고정 시험</li>
 <li><a href="lightroom-matrix-1376.json">#1376 기준 행렬 레시피</a> · <a href="color-scene-plan.json">고정 곡선과 #1363 평가 영역</a></li>
+<li><a href="https://helpx.adobe.com/content/dam/help/en/camera-raw/digital-negative/jcr_content/root/content/flex/items/position/position-par/download_section_733958301/download-1/DNG_Spec_1_7_1_0.pdf#page=51">DNG Specification 1.7.1.0</a> — ProfileToneCurve 정의</li>
 </ul>
 </section>
+
 </main>
 </div>
 <!-- chrome:bottom -->

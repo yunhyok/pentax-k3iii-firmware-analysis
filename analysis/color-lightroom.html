@@ -29,7 +29,7 @@
 <ul>
 <li>펌웨어의 모드 표에는 <strong>항목이 22개</strong> 있습니다. 메뉴의 Custom Image 13개, 펌웨어 업데이트로 추가된 6개(SATOBI, KATEN, KYUSHU, FUYUNO, HARUBENI, Gold), 내부용 Monochrome 항목 3개입니다.</li>
 <li>모드마다 달라지는 색 자원은 주로 <strong>모드 행렬 하나</strong>입니다. 공통 행렬은 22개 항목이 모두 같은 것을 쓰고 채도 행렬 표와 색상 자원은 각각 두 종류뿐입니다. Gold는 채널별 곡선을, Reversal Film은 별도 감마 생성기를 더 씁니다.</li>
-<li>Adobe는 이 카메라용 <strong>Camera Matching 프로파일 다섯 개</strong>(Bright, Natural, Portrait, Landscape, Vibrant)를 제공합니다. 파일을 직접 읽어 보니 ColorMatrix는 다섯 개가 같고 ForwardMatrix는 모두 다르며 톤 곡선과 LookTable은 두 묶음으로 나뉩니다.</li>
+<li>Adobe는 이 카메라용 <strong>Camera Matching 프로파일 다섯 개</strong>(Bright, Natural, Portrait, Landscape, Vibrant)를 제공합니다. 파일을 직접 읽어 보니 ColorMatrix는 다섯 개가 같고 ForwardMatrix는 모두 다릅니다. 톤 곡선과 LookTable은 두 묶음으로 나뉩니다.</li>
 <li>나머지 모드를 옮기려면 펌웨어의 숫자만으로는 부족합니다. 좌표계와 적용 순서를 맞추고 <strong>같은 RAW의 카메라 출력과 비교</strong>해야 합니다. 그 절차를 제안했고 K-3 Mark III에서 색차를 잰 결과는 아직 없습니다.</li>
 </ul>
 </section>
@@ -107,8 +107,8 @@
 </tbody></table></div>
 <p>셸 이름 <code>miyabi</code>, <code>pop</code>, <code>honoka</code>는 일본어 모드 이름과 통합니다. 리코의 일본어 페이지는 영어 페이지의 Vibrant, Radiant, Muted 자리에 雅(MIYABI), ポップチューン, ほのか를 적습니다.</p>
 <ul>
-<li><strong>내부 Monochrome 항목</strong> — 표에 있다는 사실만으로 컬러 센서를 쓰는 K-3 Mark III에서 이 세 항목을 메뉴로 고를 수 있다고 판단할 수 없습니다.</li>
-<li><strong>Auto Select와 Cross Processing</strong> — 두 모드에는 자원을 고르기 전에 선택값과 파라미터를 바꾸는 경로가 있습니다. 위 표의 인덱스는 바꾸기 전의 기본 레코드일 뿐이어서 이것만으로 최종 결과를 정할 수 없습니다.</li>
+<li><strong>내부 Monochrome 항목</strong>: 표에 있다는 사실만으로는 컬러 센서를 쓰는 K-3 Mark III에서 이 세 항목을 메뉴로 고를 수 있다고 판단할 수 없습니다.</li>
+<li><strong>Auto Select와 Cross Processing</strong>: 두 모드에는 자원을 고르기 전에 선택값과 파라미터를 바꾸는 경로가 있습니다. 위 표의 인덱스는 바꾸기 전의 기본 레코드일 뿐이어서 이것만으로 최종 결과를 정할 수 없습니다.</li>
 </ul>
 
 <h3>업데이트로 추가된 모드와 렌즈 조건</h3>
@@ -195,7 +195,7 @@
 <ul class="dg-legend"><li><i class="ok"></i>바이트를 읽어 확인한 표</li><li><i class="key"></i>모드마다 다른 자원</li><li><i></i>두 종류로 나뉘는 자원</li><li><i class="mute"></i>모든 항목이 함께 쓰는 자원</li></ul>
 </figure>
 
-<p>ImageTuning의 자원 선택 함수는 모드 인덱스를 계산한 뒤, 읽기 함수 세 개로 ColorMatrix, MultiAxial, YCbCrMatrix 자원의 포인터를 얻습니다. ColorMatrix 디스크립터의 앞쪽 필드는 공통 행렬, 모드 행렬, 채도·필터 행렬 포인터 배열을 가리킵니다. 이 행렬들이 곱해지는 순서와 반올림 방식은 <a href="color-algorithms.html#matrix">계산식 문서의 색 행렬 절</a>에 있습니다.</p>
+<p>ImageTuning의 자원 선택 함수는 모드 인덱스를 계산합니다. 그런 다음 읽기 함수 세 개로 ColorMatrix, MultiAxial, YCbCrMatrix 자원의 포인터를 얻습니다. ColorMatrix 디스크립터의 앞쪽 필드는 공통 행렬, 모드 행렬, 채도·필터 행렬 포인터 배열을 가리킵니다. 이 행렬들이 곱해지는 순서와 반올림 방식은 <a href="color-algorithms.html#matrix">계산식 문서의 색 행렬 절</a>에 있습니다.</p>
 
 <div class="table-wrap"><table>
 <caption>22개 항목 사이에서 같은 것과 다른 것</caption>
@@ -375,7 +375,7 @@
 <p>톤 곡선과 LookTable이 같은 파일끼리도 ForwardMatrix는 다릅니다. 그러므로 이 다섯 파일의 차이를 톤 곡선이나 표 하나만으로 설명할 수 없습니다. 같은 폴더의 Adobe Standard 프로파일도 읽었습니다. 이 파일에는 90×30×1 크기의 HueSatMap이 광원 두 개용으로 들어 있고 ColorMatrix는 Camera Matching 다섯 파일과 같습니다.</p>
 
 <h3>Lightroom에서 쓰는 방법과 지원 범위</h3>
-<p>Lightroom에서 K-3 Mark III의 DNG나 PEF를 열고 프로파일 브라우저의 Camera Matching 묶음에서 위 다섯 가지를 고를 수 있습니다. Adobe의 카메라 지원표는 이 기종의 DNG·PEF와 Camera Matching 지원을 적고 있고 최소 버전은 Camera Raw 13.3, Lightroom 4.3, Lightroom Classic 10.3입니다.</p>
+<p>Lightroom에서 K-3 Mark III의 DNG나 PEF를 열고 프로파일 브라우저의 Camera Matching 묶음에서 위 다섯 가지를 고를 수 있습니다. Adobe의 카메라 지원표에는 이 기종의 DNG·PEF와 Camera Matching 지원이 적혀 있습니다. 최소 버전은 Camera Raw 13.3, Lightroom 4.3, Lightroom Classic 10.3입니다.</p>
 <p>이 문서에서 확인한 것은 <strong>설치된 파일의 존재와 구조</strong>입니다. 다섯 프로파일을 K-3 Mark III의 RAW에 적용해 카메라 JPEG와 비교하지는 않았습니다. 이어진 실험의 현재 상태는 아래와 같습니다.</p>
 <ul>
 <li><span class="badge ok">확인</span> K-3 Mark III RAW 한 장에 시험용 DCP를 적용해 Lightroom에서 TIFF를 내보냈습니다(<a href="lightroom-model-exports.html">K-3 III·Q7 DCP 내보내기</a>). 이 시험용 DCP는 RAW 안의 색 행렬로 만든 것이고 Camera Matching 프로파일이 아닙니다. 카메라 JPEG와의 색차는 재지 않았습니다.</li>
@@ -468,15 +468,15 @@
 <p>아래는 다음 실험의 설계입니다. 이 절차로 잰 색차 결과는 아직 없습니다.</p>
 <ol class="steps">
 <li><strong>카메라 출력 만들기</strong> 같은 RAW를 카메라의 RAW 현상으로 Custom Image마다 JPEG나 TIFF로 출력합니다. 모드, 세부 파라미터, 화이트밸런스, 노출 보정, 색공간, 렌즈 보정, 명료도, 노이즈 감소 설정을 기록합니다. 제조사 사양은 RAW 현상에서 Custom Image와 이런 설정을 바꿀 수 있다고 적습니다.</li>
-<li><strong>Adobe 기준 현상</strong> 같은 RAW를 Adobe에서 기준 DCP, 화이트밸런스, 노출, 자동 보정 설정을 고정해 현상합니다. 두 결과를 같은 색공간으로 바꿉니다. 계조 차트, 색 패치, 피부, 식물, 고채도 장면을 준비하고 광원 두 가지 이상과 노출 변화, 따로 떼어 둔 검증 장면을 써서 특정 사진에만 맞는 변환을 피합니다.</li>
+<li><strong>Adobe 기준 현상</strong> 같은 RAW를 Adobe에서 기준 DCP, 화이트밸런스, 노출, 자동 보정 설정을 고정해 현상합니다. 두 결과를 같은 색공간으로 바꿉니다. 계조 차트, 색 패치, 피부, 식물, 고채도 장면을 준비합니다. 광원 두 가지 이상과 노출 변화, 따로 떼어 둔 검증 장면을 써서 특정 사진에만 맞는 변환을 피합니다.</li>
 <li><strong>변환 추정</strong> 색·톤 변환을 추정해 확장 프로파일의 HSV 표나 RGB LUT로 표현합니다. Adobe의 처리 단계에 맞춰 표의 입력·출력 색공간을 고정하고 기준 DCP에 이미 들어 있는 톤·색 변환이 두 번 적용되지 않는지 확인합니다.</li>
 <li><strong>검증</strong> 제작에 쓰지 않은 장면에서 평균과 상위 분위 색차, 중성축과 피부색 오차, 하이라이트 클리핑, 계조를 비교합니다. 위치에 따라 달라지는 샤프닝·노이즈 감소·렌즈 보정과 장면에 따라 바뀌는 처리는 LUT만으로 맞출 수 없으므로 따로 평가합니다.</li>
 </ol>
 
 <h3>고정 프로파일로 다루기 어려운 모드</h3>
 <ul>
-<li><strong>Auto Select</strong> — 카메라가 실제 적용할 모드를 고르므로, 고정 프로파일은 실제로 선택된 모드를 대상으로 삼아야 합니다.</li>
-<li><strong>Cross Processing</strong> — 무작위, 프리셋 1~3, 저장한 설정 1~3에 따라 결과가 달라집니다. 특정 결과 하나를 대상으로 삼아야 합니다.</li>
+<li><strong>Auto Select</strong>: 카메라가 실제 적용할 모드를 고르므로 고정 프로파일은 실제로 선택된 모드를 대상으로 삼아야 합니다.</li>
+<li><strong>Cross Processing</strong>: 무작위, 프리셋 1~3, 저장한 설정 1~3에 따라 결과가 달라집니다. 특정 결과 하나를 대상으로 삼아야 합니다.</li>
 <li><strong>Monochrome</strong> — 필터와 토닝 설정마다 목표가 달라집니다.</li>
 </ul>
 <p>정리하면, 이미 있는 Adobe 프로파일 다섯 개는 바로 쓸 수 있는 후보입니다. 나머지 모드는 검증용 RAW와 목표 출력, 색 처리 계수의 연결을 더 확보해야 합니다.</p>
@@ -485,11 +485,11 @@
 <section id="limits">
 <h2>한계와 남은 과제</h2>
 <ul>
-<li><span class="badge open">미확인</span> <strong>색 일치</strong> — 새 <code>.dcp</code>나 <code>.xmp</code>가 카메라의 모드와 얼마나 맞는지, RAW에서 JPEG까지 픽셀이 일치하는지를 입증한 결과는 없습니다. 다섯 Adobe 프로파일도 K-3 Mark III에서는 카메라 JPEG와 비교하지 않았습니다.</li>
-<li><span class="badge open">미확인</span> <strong>실행 중 상태</strong> — 자원 표는 펌웨어 파일의 초기값입니다. 실행 중에 RAM의 값이 바뀌는지, Auto Select와 Cross Processing이 어떤 값으로 바꾸는지는 관측하지 않았습니다.</li>
-<li><span class="badge open">미확인</span> <strong>좌표계</strong> — 펌웨어 행렬이 받는 색의 원색과 전달함수를 모릅니다. 그래서 DNG 규격이 정한 방향의 행렬로 바꿀 수 없습니다.</li>
-<li><span class="badge static">정적 분석</span> <strong>RAW 현상 경로</strong> — 호출 관계는 코드를 읽어 확인한 것입니다. 카메라에서 RAW 현상을 실행해 본 것이 아닙니다.</li>
-<li><span class="badge open">미확인</span> <strong>외부 사실</strong> — Auto Select가 모드를 고르는 기준은 제조사 자료에서 찾지 못했습니다. Adobe 지원표의 최소 버전은 조사 기준일에 읽은 값입니다.</li>
+<li><span class="badge open">미확인</span> <strong>색 일치</strong>: 새 <code>.dcp</code>나 <code>.xmp</code>가 카메라의 모드와 얼마나 맞는지, RAW에서 JPEG까지 픽셀이 일치하는지를 입증한 결과는 없습니다. 다섯 Adobe 프로파일도 K-3 Mark III에서는 카메라 JPEG와 비교하지 않았습니다.</li>
+<li><span class="badge open">미확인</span> <strong>실행 중 상태</strong>: 자원 표는 펌웨어 파일의 초기값입니다. 실행 중에 RAM의 값이 바뀌는지, Auto Select와 Cross Processing이 어떤 값으로 바꾸는지는 관측하지 않았습니다.</li>
+<li><span class="badge open">미확인</span> <strong>좌표계</strong>: 펌웨어 행렬이 받는 색의 원색과 전달함수를 모릅니다. 그래서 DNG 규격이 정한 방향의 행렬로 바꿀 수 없습니다.</li>
+<li><span class="badge static">정적 분석</span> <strong>RAW 현상 경로</strong>: 호출 관계는 코드를 읽어 확인한 것입니다. 카메라에서 RAW 현상을 실행해 보지는 않았습니다.</li>
+<li><span class="badge open">미확인</span> <strong>외부 사실</strong>: Auto Select가 모드를 고르는 기준은 제조사 자료에서 찾지 못했습니다. Adobe 지원표의 최소 버전은 조사 기준일에 읽은 값입니다.</li>
 </ul>
 </section>
 

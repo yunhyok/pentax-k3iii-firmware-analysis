@@ -179,7 +179,7 @@
 </dl>
 
 <div class="callout warn"><strong class="label">주의</strong>
-<p>ICONBIN 안에는 descriptor가 없습니다. 그래서 아이콘의 <strong>크기를 바꾸려면</strong> ICONBIN뿐 아니라 RTOS에 있는 descriptor와, 그 뒤에 오는 모든 아이콘의 offset까지 함께 검토해야 합니다. 이 문서의 후보는 크기와 descriptor를 그대로 두고 픽셀 값만 바꿨습니다.</p></div>
+<p>ICONBIN 안에는 descriptor가 없습니다. 그래서 아이콘의 <strong>크기를 바꾸려면</strong> ICONBIN, RTOS에 있는 descriptor, 그 뒤에 오는 모든 아이콘의 offset을 함께 검토해야 합니다. 이 문서의 후보는 크기와 descriptor를 그대로 두고 픽셀 값만 바꿨습니다.</p></div>
 
 <details class="evidence"><summary>표의 주소와 해시</summary>
 <div class="table-wrap"><table class="compact">
@@ -261,9 +261,9 @@
 </figure>
 
 <ul>
-<li><strong>번호 저장</strong> — IconView의 <code>+0x17c</code>에 16비트 번호를 씁니다. 값이 이전과 다를 때만 다시 그리기 요청 함수(<code>0x52c0205c</code>)를 부릅니다.</li>
+<li><strong>번호 저장</strong>: IconView의 <code>+0x17c</code>에 16비트 번호를 씁니다. 값이 이전과 다를 때만 다시 그리기 요청 함수(<code>0x52c0205c</code>)를 부릅니다.</li>
 <li><strong>그리기용 사본</strong> — 번호와 위치 사각형을 그리기용 필드로 복사합니다.</li>
-<li><strong>그리기 호출</strong> — IconView 안에 든 그리기 객체가 가상 함수 표로 그리기 함수에 연결되고 설정 객체의 <code>+0x24</code>가 전달됩니다. 여기까지는 명령을 읽어 확인했습니다.</li>
+<li><strong>그리기 호출</strong>: IconView 안에 든 그리기 객체가 가상 함수 표로 그리기 함수에 연결되고 설정 객체의 <code>+0x24</code>가 전달됩니다. 여기까지는 명령을 읽어 확인했습니다.</li>
 </ul>
 <p>실제 메뉴 동작이 ID 5를 고르는 지점은 찾지 못했습니다. 아이콘의 모양만 보고 메뉴 이름을 붙이지도 않았습니다.</p>
 
@@ -410,7 +410,7 @@ copy u32 pixel only when (pixel &gt;&gt; 24) != drawObject.byte7</code></pre>
 <p>복사 시험은 원본을 읽은 위치와 목적지에 쓴 위치가 버퍼 밖으로 나가지 않는지도 매번 확인합니다. 입력 검사 28건은 도구가 잘못된 자료를 걸러 내는지를 본 것이며 펌웨어가 같은 입력을 거부한다는 주장이 아닙니다.</p>
 
 <h3>디컴파일 결과와 원본 명령의 차이</h3>
-<p>디컴파일 결과 6개와 보조 구간 8개를 로컬에 보관하고 원본 ARM word 573개, 분기 96개, 데이터 구간 16개, 포인터 word 1,728개를 대조했습니다. angr가 만든 C에는 원본과 다른 곳이 두 군데 있었습니다. 분석과 계산 모델은 원본 명령과 실행 결과를 따랐고 C는 고치지 않고 보관했습니다.</p>
+<p>디컴파일 결과 6개와 보조 구간 8개를 로컬에 보관했습니다. 원본 ARM word 573개, 분기 96개, 데이터 구간 16개, 포인터 word 1,728개를 대조했습니다. angr가 만든 C에는 원본과 다른 곳이 두 군데 있었습니다. 분석과 계산 모델은 원본 명령과 실행 결과를 따랐고 C는 고치지 않고 보관했습니다.</p>
 <ul>
 <li>복사 함수의 C는 조건부 저장 <code>STRNE</code>를 무조건 저장으로 표현합니다. 그대로 믿으면 건너뛰기 규칙이 사라집니다.</li>
 <li>번호 저장 함수의 C는 다시 그리기 요청으로 가는 꼬리 호출을 빠뜨립니다.</li>
@@ -446,8 +446,8 @@ copy u32 pixel only when (pixel &gt;&gt; 24) != drawObject.byte7</code></pre>
 <ul>
 <li><strong>어느 화면의 아이콘인지</strong> — ID 5를 고르는 메뉴 동작을 찾지 못했습니다.</li>
 <li><strong>색의 뜻</strong> — 하위 3바이트의 채널 순서, 감마, 화면 합성에서의 알파 처리를 모릅니다. 미리보기는 회색 아이콘에만 통합니다.</li>
-<li><strong>다른 그리기 경로</strong> — 회전이 없는 복사 함수 하나만 실행했습니다. 분배 함수의 나머지 분기와 그 뒤의 디스플레이 처리는 보지 않았습니다.</li>
-<li><strong>실행 환경</strong> — GUI의 이벤트 처리, 디스플레이 장치, 카메라 플래시 기록은 실행하지 않았습니다. Cortex-A15 모델의 에뮬레이션은 카메라 하드웨어와 똑같다는 보장이 아닙니다.</li>
+<li><strong>다른 그리기 경로</strong>: 회전이 없는 복사 함수 하나만 실행했습니다. 분배 함수의 나머지 분기와 그 뒤의 디스플레이 처리는 보지 않았습니다.</li>
+<li><strong>실행 환경</strong>: GUI의 이벤트 처리, 디스플레이 장치, 카메라 플래시 기록은 실행하지 않았습니다. Cortex-A15 모델로 에뮬레이션해도 카메라 하드웨어와 똑같다는 보장은 없습니다.</li>
 <li><strong>패키지</strong> — 후보 패키지를 하드웨어 디코더와 업데이트 프로그램이 받아들이는지 모릅니다.</li>
 </ul>
 

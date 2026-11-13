@@ -27,7 +27,7 @@
 <section class="summary">
 <h2 data-toc="no">핵심 요약</h2>
 <ul>
-<li>Lightroom Classic 15.6이 내보낸 TIFF의 XMP에는 <code>CameraProfileDigest</code>라는 16진수 32자리 값이 있습니다. Adobe DNG SDK 소스에 있는 “전체 프로파일 지문” 계산 절차를 따라 <strong>시험 DCP 여섯 개에서 이 값을 직접 계산했고 여섯 개 모두 TIFF의 값과 같았습니다</strong>.</li>
+<li>Lightroom Classic 15.6이 내보낸 TIFF의 XMP에는 <code>CameraProfileDigest</code>라는 16진수 32자리 값이 있습니다. Adobe DNG SDK 소스에 있는 “전체 프로파일 지문” 계산 절차를 따라 <strong>시험 DCP 여섯 개에서 이 값을 직접 계산했습니다. 여섯 개 모두 TIFF의 값과 같았습니다</strong>.</li>
 <li>이 지문은 DCP 파일 전체의 해시가 아닙니다. 광원, 정규화하고 반올림한 색 행렬, 프로파일 이름, 정책 값, 그리고 있으면 톤 곡선을 정해진 순서로 이어 붙인 바이트 열의 MD5입니다.</li>
 <li>그래서 <strong>지문이 같아도 파일은 다를 수 있습니다</strong>. 합성 DCP로 시험했을 때 모델 제한 문자열, 반올림에서 사라지는 작은 계수 차이, 행렬 전체에 곱한 배율, 파일의 바이트 순서는 지문을 바꾸지 않았습니다.</li>
 <li>확인한 대상은 색 행렬 두 개와 선택적 톤 곡선만 가진 DCP 여섯 개입니다. 지문은 프로파일을 구분하는 값일 뿐이며 파일이 진짜임을 보증하거나 색이 정확함을 뜻하지 않습니다.</li>
@@ -74,7 +74,7 @@
 <tr><th scope="row">모델 제한 문자열</th><td>DCP의 <code>UniqueCameraModel</code> 태그입니다. 이 프로파일을 쓸 수 있는 카메라 모델을 가리킵니다.</td></tr>
 <tr><th scope="row">embed policy</th><td>프로파일을 다른 파일에 복사·내장해도 되는지를 적는 <code>ProfileEmbedPolicy</code> 태그의 값입니다. 태그가 없으면 기본값 0(복사 허용)입니다.</td></tr>
 </tbody></table></div>
-<p>Adobe는 Lightroom의 코드를 공개하지 않지만 DNG SDK의 소스는 공개합니다. SDK 소스에는 <code>CameraProfileDigest</code>라는 이름이 나오지 않습니다. 그래서 SDK의 지문 계산 절차를 읽고 같은 계산을 Python으로 옮긴 뒤, 결과가 Lightroom이 적은 값과 같은지 실제 TIFF로 확인했습니다. SDK를 컴파일해 실행한 것은 아닙니다.</p>
+<p>Adobe는 Lightroom의 코드를 공개하지 않지만 DNG SDK의 소스는 공개합니다. SDK 소스에는 <code>CameraProfileDigest</code>라는 이름이 나오지 않습니다. 그래서 SDK의 지문 계산 절차를 읽고 같은 계산을 Python으로 옮긴 뒤, 결과가 Lightroom이 적은 값과 같은지 실제 TIFF로 확인했습니다. SDK를 컴파일해 실행하지는 않았습니다.</p>
 </section>
 
 <section id="results">
@@ -191,7 +191,7 @@
 <ol class="steps">
 <li><strong>DCP를 읽습니다</strong> 광원 두 개, 색 행렬 두 개, 프로파일 이름, 그리고 있으면 톤 곡선을 읽습니다. DCP 파일의 바이트 순서(little-endian 또는 big-endian)에 맞춰 값으로 해석합니다.</li>
 <li><strong>색 행렬을 정규화합니다</strong> 행렬에 D50 백색을 곱해 나온 세 값 가운데 최댓값을 구합니다. 그 값이 양수이고 0.99~1.01 범위를 벗어나면 행렬 전체를 그 값으로 나눕니다.</li>
-<li><strong>소수 넷째 자리로 반올림합니다</strong> 각 원소에 배정밀도 실수로 10,000을 곱한 뒤 부호를 고려해 정수로 반올림합니다(양수는 0.5를 더하고 음수는 0.5를 빼고 소수부를 버림).</li>
+<li><strong>소수 넷째 자리로 반올림합니다</strong> 각 원소에 배정밀도 실수로 10,000을 곱합니다. 그다음 부호를 고려해 정수로 반올림합니다(양수는 0.5를 더하고 음수는 0.5를 빼고 소수부를 버림).</li>
 <li><strong>정해진 순서로 이어 붙입니다</strong> 아래 표의 순서대로 little-endian 바이트 열을 만듭니다.</li>
 <li><strong>MD5를 계산합니다</strong> 결과 16바이트를 16진수 대문자 32자리로 적은 것이 전체 프로파일 지문입니다.</li>
 </ol>
@@ -323,9 +323,9 @@
 </tbody></table></div>
 <ul>
 <li><strong>이름과 모델 제한</strong> — 이름만 바꾸면 전체 지문만 달라졌습니다. 모델 제한을 바꾸면 두 지문 모두 그대로였습니다.</li>
-<li><strong>작은 계수와 배율</strong> — 넷째 자리 반올림에서 사라지는 작은 계수 변화, 정규화에서 상쇄되는 균일한 배율은 지문을 바꾸지 않았습니다. 유효 자릿수가 달라지는 행렬 수정, 광원 수정, 곡선 수정은 두 지문에 모두 반영됐습니다.</li>
-<li><strong>파일의 바이트 순서</strong> — 합성 DCP를 big-endian 파일로 다시 담아도 읽은 값이 같으면 지문은 같았습니다. 반대로 MD5 입력 자체를 big-endian으로 직렬화하면 두 지문이 모두 달라졌습니다.</li>
-<li><strong>embed policy</strong> — MD5 입력의 정책 값을 0에서 1로 바꾸면 전체 지문만 달라졌습니다. 이 시험은 DCP의 태그가 아니라 MD5 입력 값만 바꾼 것입니다. 정책 태그가 명시된 DCP는 검사기가 받지 않습니다.</li>
+<li><strong>작은 계수와 배율</strong>: 넷째 자리 반올림에서 사라지는 작은 계수 변화, 정규화에서 상쇄되는 균일한 배율은 지문을 바꾸지 않았습니다. 유효 자릿수가 달라지는 행렬 수정, 광원 수정, 곡선 수정은 두 지문에 모두 반영됐습니다.</li>
+<li><strong>파일의 바이트 순서</strong>: 합성 DCP를 big-endian 파일로 다시 담아도 읽은 값이 같으면 지문은 같았습니다. 반대로 MD5 입력 자체를 big-endian으로 직렬화하면 두 지문이 모두 달라졌습니다.</li>
+<li><strong>embed policy</strong>: MD5 입력의 정책 값을 0에서 1로 바꾸면 전체 지문만 달라졌습니다. 이 시험은 DCP의 태그는 그대로 두고 MD5 입력 값만 바꿨습니다. 정책 태그가 명시된 DCP는 검사기가 받지 않습니다.</li>
 </ul>
 
 <h3>행렬 원소가 0일 때의 표기는 정하지 못했습니다</h3>
@@ -345,10 +345,10 @@
 <section id="limits">
 <h2>한계와 남은 과제</h2>
 <ul>
-<li><strong>대상이 좁습니다</strong> — 색 행렬 두 개와 선택적 톤 곡선을 가진 DCP 여섯 개, Lightroom Classic 15.6 하나에서 확인했습니다. ForwardMatrix나 HueSatMap, 저작권 문자열, 명시된 정책 태그를 가진 DCP는 이 검사기의 범위 밖입니다.</li>
-<li><strong>계산을 옮겨 적은 것입니다</strong> — SDK 소스를 읽고 Python으로 같은 계산을 구현했습니다. Lightroom이 내부에서 SDK와 같은 코드를 쓴다는 것을 본 것이 아니라, 결과 값이 같다는 것을 확인했습니다.</li>
+<li><strong>대상이 좁습니다</strong>. 색 행렬 두 개와 선택적 톤 곡선을 가진 DCP 여섯 개, Lightroom Classic 15.6 하나에서 확인했습니다. ForwardMatrix나 HueSatMap, 저작권 문자열, 명시된 정책 태그를 가진 DCP는 이 검사기의 범위 밖입니다.</li>
+<li><strong>계산을 옮겨 적은 것입니다</strong>. SDK 소스를 읽고 Python으로 같은 계산을 구현했습니다. 결과 값이 같다는 것은 확인했습니다. Lightroom이 내부에서 SDK와 같은 코드를 쓰는지는 직접 보지 않았습니다.</li>
 <li><strong>0의 표기</strong> — 행렬 원소가 0인 프로파일에서 Lightroom이 어떤 표기를 쓰는지는 확인하지 못했습니다.</li>
-<li><strong>지문의 용도</strong> — 같은 지문이어도 DCP 파일의 바이트나 모델 제한은 다를 수 있습니다. 이 대조는 프로파일 지문의 재현에 한정되며 파일 인증이나 색 정확도는 다루지 않습니다.</li>
+<li><strong>지문의 용도</strong>: 같은 지문이어도 DCP 파일의 바이트나 모델 제한은 다를 수 있습니다. 이 대조는 프로파일 지문의 재현에 한정되며 파일 인증이나 색 정확도는 다루지 않습니다.</li>
 </ul>
 </section>
 

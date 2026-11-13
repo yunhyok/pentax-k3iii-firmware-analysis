@@ -30,7 +30,7 @@
 <li>업데이트 파일 경로의 <strong>C는 <code>SdDriver</code>, R은 <code>Emmc</code></strong> 클래스의 객체로 이어집니다. 객체를 만드는 코드와 클래스 이름 문자열로 확인했습니다. 펌웨어 속 클래스 이름일 뿐이며 카드가 꽂혀 있는지나 초기화에 성공했는지를 뜻하지는 않습니다.</li>
 <li>SD 쪽 객체에 저장되는 크기 값은 카드의 CSD 레지스터에서 계산한 <strong>512바이트 sector 수</strong>입니다. 합성 CSD 45개로 원본 계산 코드를 실행했고 계산식은 SD 규격의 용량식과 같은 꼴입니다.</li>
 <li>R 볼륨의 두 숫자는 <code>Emmc</code> 객체가 아니라 <strong>별도 객체 <code>EmmcPartition</code></strong>에 든 상수에서 옵니다.</li>
-<li>완료 통지는 메시지 하나로 나갑니다. 받는 쪽 코드는 <code>FwUpdateModel</code>의 상태 값을 3으로 바꾸고 UI 작업 큐에 작업 하나를 넣습니다. <strong>보내는 쪽과 받는 쪽을 따로 실행했고</strong>, 둘 사이의 실제 전달은 확인하지 못했습니다.</li>
+<li>완료 통지는 메시지 하나로 나갑니다. 받는 쪽 코드는 <code>FwUpdateModel</code>의 상태 값을 3으로 바꾸고 UI 작업 큐에 작업 하나를 넣습니다. <strong>보내는 쪽과 받는 쪽을 따로 실행했고</strong> 둘 사이의 실제 전달은 확인하지 못했습니다.</li>
 <li>상태 값 3을 저장소 기록 성공이나 인증 통과로 읽을 근거는 없습니다.</li>
 </ul>
 </section>
@@ -165,7 +165,7 @@
 <p>두 클래스는 같은 부모 생성자를 부릅니다. 부모 생성자는 넘겨받은 값의 하위 1바이트를 +0x14에 쓰고 +0x18을 0으로 만듭니다. <code>SdDriver</code>는 0을, <code>Emmc</code>는 3을 넘깁니다. 그래서 +0x18에 0이 아닌 값이 들어가려면 생성자와 다른 코드가 나중에 써야 합니다.</p>
 <ul>
 <li><strong>SD 쪽</strong> — 그 코드를 찾았습니다. 다음 절에서 설명합니다.</li>
-<li><strong>Emmc 쪽</strong> — 찾지 못했습니다. <code>Emmc</code>의 초기화 함수와 활성화 함수 두 개에는 +0x18에 직접 쓰는 명령이 없었습니다. 살펴본 두 함수에 없다는 뜻이며 펌웨어 전체에서 이 값이 바뀌지 않는다는 결론은 아닙니다.</li>
+<li><strong>Emmc 쪽</strong>: 찾지 못했습니다. <code>Emmc</code>의 초기화 함수와 활성화 함수 두 개에는 +0x18에 직접 쓰는 명령이 없었습니다. 살펴본 두 함수에 없다는 뜻이며 펌웨어 전체에서 이 값이 바뀌지 않는다는 결론은 아닙니다.</li>
 </ul>
 <p>R만 번호 2를 쓰는 것은 아닙니다. 앞 문서의 등록 표에 따르면 문자 A, B, E, F, G, H, R 일곱 개가 모두 provider 번호 2에 연결됩니다.</p>
 
@@ -240,7 +240,7 @@
 <tr><th scope="row">C_SIZE_MULT (CSD 1.0)</th><td>49–47</td><td><code>((b[9] &amp; 3) &lt;&lt; 1) | (b[10] &gt;&gt; 7)</code></td><td>m</td></tr>
 <tr><th scope="row">C_SIZE (CSD 2.0, 22비트)</th><td>69–48</td><td><code>((b[7] &amp; 63) &lt;&lt; 16) | (b[8] &lt;&lt; 8) | b[9]</code></td><td>C</td></tr>
 </tbody></table></div>
-<p>크기 필드 C는 함수 <code>0x532824fc</code>가 꺼내고 sector 수는 함수 <code>0x53282554</code>가 계산합니다. 아래에서 u32는 결과를 32비트로 자른다는 뜻입니다.</p>
+<p>크기 필드 C는 함수 <code>0x532824fc</code>가 꺼내고 sector 수는 함수 <code>0x53282554</code>가 계산합니다. 아래 식의 u32는 결과를 32비트로 자릅니다.</p>
 <pre><code>s=1:
 C = ((b[7] &amp; 63) &lt;&lt; 16) | (b[8] &lt;&lt; 8) | b[9]
 count = u32((C + 1) &lt;&lt; 10)
@@ -320,7 +320,7 @@ s=2 또는 3: count = 0</code></pre>
 <li>문자별 getter: <code>0x53298148</code>, <code>0x532981ec</code>. R에서 위 상수를 돌려줍니다.</li>
 <li>볼륨 설정 함수: <code>0x52f51028</code>, <code>0x52f5107c</code>. 종류 3이면 factory+0x1c의 <code>EmmcPartition</code>을 씁니다.</li>
 <li>record에 쓰는 명령: <code>0x52f527c4</code>(+0x0c), <code>0x52f528d0</code>(+0x10)와 뒤따르는 +0x14, +0x16 쓰기.</li>
-<li>시험 값: C 조건에서 매체 객체의 +0x18, +0x1c, +0x1e에 넣어 둔 값이 record의 +0x10, +0x14, +0x16으로 그대로 복사됐고 +0x0c는 0이었습니다.</li>
+<li>시험 값: C 조건에서 매체 객체의 +0x18, +0x1c, +0x1e에 넣어 둔 값이 record의 +0x10, +0x14, +0x16으로 그대로 복사됐습니다. +0x0c는 0이었습니다.</li>
 </ul>
 </details>
 </section>
@@ -382,7 +382,7 @@ s=2 또는 3: count = 0</code></pre>
 <ul>
 <li><strong>완료 함수</strong>는 메시지 ID <code>0x2640820b</code>와 인수 0을 골라 공통 송신 함수에 넘깁니다.</li>
 <li><strong>공통 송신 함수</strong>는 받은 두 값을 7 word짜리 봉투(envelope)의 첫 두 칸에 적고 나머지 다섯 칸을 0으로 채웁니다. 그런 다음 통지 객체 +4에 있는 pipe를 거쳐 전송 함수로 넘깁니다.</li>
-<li><strong>반환값</strong> — 공유 소유자 포인터가 null인 시험 조건에서 송신 함수는 전송 함수의 반환값(0, 1, <code>0xffffffff</code>)을 그대로 돌려줬습니다. 완료 함수는 이 반환값으로 분기하지 않습니다. 반환값이 무엇이든 이벤트 경계에 <code>0x20</code>을 넘기고 마지막 통지 호출로 넘어갑니다.</li>
+<li><strong>반환값</strong>: 공유 소유자 포인터가 null인 시험 조건에서 송신 함수는 전송 함수의 반환값(0, 1, <code>0xffffffff</code>)을 그대로 돌려줬습니다. 완료 함수는 이 반환값으로 분기하지 않습니다. 반환값이 무엇이든 이벤트 경계에 <code>0x20</code>을 넘기고 마지막 통지 호출로 넘어갑니다.</li>
 </ul>
 
 <h3 id="receive">받는 쪽</h3>
@@ -467,11 +467,11 @@ s=2 또는 3: count = 0</code></pre>
 
 <h3 id="limits">한계와 남은 과제</h3>
 <ul>
-<li><strong>대체한 호출</strong> — 매체 객체 시험에서 부모 클래스의 기반 생성자, 작업 조회, dynamic cast, 카드 읽기와 설정, 작은 메모리 복사는 대체 함수입니다. 완료 통지 시험은 초기화가 끝난 singleton과 직접 만든 큐를 쓰고 실제 전송·OS 이벤트·업데이트 실행기는 대체했습니다.</li>
-<li><strong>실행한 분기</strong> — SD 활성화 함수는 고른 조건의 분기만 실행했습니다. 생성 함수와 <code>Emmc</code> 초기화·활성화 함수는 읽기만 했습니다.</li>
+<li><strong>대체한 호출</strong>: 매체 객체 시험에서 부모 클래스의 기반 생성자, 작업 조회, dynamic cast, 카드 읽기와 설정, 작은 메모리 복사는 대체 함수입니다. 완료 통지 시험은 초기화가 끝난 singleton과 직접 만든 큐를 쓰고 실제 전송·OS 이벤트·업데이트 실행기는 대체했습니다.</li>
+<li><strong>실행한 분기</strong>: SD 활성화 함수는 고른 조건의 분기만 실행했습니다. 생성 함수와 <code>Emmc</code> 초기화·활성화 함수는 읽기만 했습니다.</li>
 <li><strong>Emmc 크기 필드</strong> — 0이 아닌 값을 넣는 코드를 찾지 못했습니다.</li>
 <li><strong>송신과 수신의 연결</strong> — 실제 큐 등록, 전달, 스케줄링을 실행하지 않았습니다.</li>
-<li><strong>디컴파일 C의 한계</strong> — 자동으로 복원한 C에는 꼬리 호출이 빠지거나 구조체·인덱스 추정이 틀린 곳이 있을 수 있습니다. C 출력은 고치지 않았고 원본 ARM 명령과 실행 결과를 결론의 기준으로 삼았습니다.</li>
+<li><strong>디컴파일 C의 한계</strong>: 자동으로 복원한 C에는 꼬리 호출이 빠지거나 구조체·인덱스 추정이 틀린 곳이 있을 수 있습니다. C 출력은 고치지 않았고 원본 ARM 명령과 실행 결과를 결론의 기준으로 삼았습니다.</li>
 <li><strong>하지 않은 것</strong> — 실제 저장 매체, 카메라, 펌웨어 빌드, 플래시 기록은 다루지 않았습니다.</li>
 </ul>
 </section>

@@ -81,7 +81,7 @@
 <section id="usb">
 <h2>USB의 셸 진입 경로는 미확인</h2>
 <p class="takeaway">바이너리에 Linux 셸 명령 처리기 이름이 있지만 조사한 범위에서 USB 입력이 RTOS 셸에 도달한다는 근거는 찾지 못했습니다.</p>
-<p>Ricoh가 공개한 USB 기능은 MTP·CD-ROM 데이터 전송과 테더 촬영입니다. 바이너리에는 <code>UsbServer</code>와 <code>HostInterfaceCommand::DeviceCommandProcessor::ExecuteLinuxShellCommand</code>라는 이름이 있지만 조사한 초기화와 호출 범위에서는 USB 요청이 RTOS 셸 <code>0x530ff66c</code>에 도달한다는 근거가 없었습니다. 이름만으로 USB 입력이나 <code>SHELLCMD</code> 실행을 입증할 수 없습니다. 외부 연구에서도 방향은 같지만 그 보고만으로 이 버전의 전체 실행 조건이 확인되지는 않습니다. <a href="https://www.ricoh-imaging.co.jp/english/support/qa/k-3-3/">Ricoh USB 기능 안내</a></p>
+<p>Ricoh가 공개한 USB 기능은 MTP·CD-ROM 데이터 전송과 테더 촬영입니다. 바이너리에는 <code>UsbServer</code>와 <code>HostInterfaceCommand::DeviceCommandProcessor::ExecuteLinuxShellCommand</code>라는 이름이 있습니다. 하지만 조사한 초기화와 호출 범위에서는 USB 요청이 RTOS 셸 <code>0x530ff66c</code>에 도달한다는 근거가 없었습니다. 이름만으로 USB 입력이나 <code>SHELLCMD</code> 실행을 입증할 수 없습니다. 외부 연구에서도 방향은 같지만 그 보고만으로 이 버전의 전체 실행 조건이 확인되지는 않습니다. <a href="https://www.ricoh-imaging.co.jp/english/support/qa/k-3-3/">Ricoh USB 기능 안내</a></p>
 </section>
 
 <section id="adjust">
@@ -114,7 +114,7 @@
 <ul class="dg-legend"><li><i class="static"></i>확인한 경로</li><li><i class="key"></i>내부 eMMC에 쓰는 경로</li></ul>
 </figure>
 <p><code>inf_adj</code>의 <code>backup</code> 분기(<code>0x52564f1c</code>)는 수집 함수 <code>0x52eacfc0</code>을 부릅니다. 이 함수는 <code>BOOT</code>·<code>CPTR</code>·<code>IMAG</code>·<code>MDBL</code> 네 그룹을 모읍니다. 버퍼 구성에 성공하면 생성자가 준비한 파일명 <code>C:\KB%ld.ADJ</code>로 SD에 씁니다.</p>
-<p>수집 중 그룹 작업 데이터 검사가 실패하면 재구성 경로에 들어갑니다. 여기서는 상태에 따라 이전 레코드를 먼저 무효화할 수 있고 새 본문을 내부 eMMC에 쓴 뒤 성공하면 파티션 표를 다시 기록합니다. 이는 최종 SD 파일 쓰기 전에 일어나는 내부 기록입니다. <code>MDBL</code>을 재구성할 때는 보존 함수도 거칩니다. 무선 LAN 조정 객체는 일반 경로 <code>E:\WifiInfo.bin</code>과 별도로 보존 경로 <code>B:\WifiInfo.bin</code>을 두며 <code>B:</code>는 내부 eMMC와 같은 제공자에 연결됩니다.</p>
+<p>수집 중 그룹 작업 데이터 검사가 실패하면 재구성 경로에 들어갑니다. 여기서는 상태에 따라 이전 레코드를 먼저 무효화할 수 있습니다. 새 본문은 내부 eMMC에 쓰고 성공하면 파티션 표를 다시 기록합니다. 이는 최종 SD 파일 쓰기 전에 일어나는 내부 기록입니다. <code>MDBL</code>을 재구성할 때는 보존 함수도 거칩니다. 무선 LAN 조정 객체는 일반 경로 <code>E:\WifiInfo.bin</code>과 별도로 보존 경로 <code>B:\WifiInfo.bin</code>을 둡니다. <code>B:</code>는 내부 eMMC와 같은 제공자에 연결됩니다.</p>
 <div class="callout warn"><strong class="label">주의</strong>
 <p>이 버전의 <code>inf_adj backup</code>은 내부에 흔적을 남기지 않는 백업으로 쓸 수 없습니다. 조정 데이터가 유효하면 SD 파일만 쓰지만 재구성 분기에 들어가면 내부 eMMC에도 쓰기를 요청합니다.</p></div>
 </section>
