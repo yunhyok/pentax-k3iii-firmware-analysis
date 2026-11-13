@@ -56,6 +56,8 @@ jobs:
       - if: steps.existing.outputs.exists == 'false'
         run: python -m unittest discover -s tests -v
       - if: steps.existing.outputs.exists == 'false'
+        run: python analysis/allocator-replay/test_replay.py --work-dir "${{ runner.temp }}" --output "${{ runner.temp }}/allocator-tests.json"
+      - if: steps.existing.outputs.exists == 'false'
         run: python tools/check_research_program.py
       - if: steps.existing.outputs.exists == 'false'
         run: python tools/check_site.py

@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>K-3 III 메모리 할당 경로 — 설정에서 첫 task stack까지</title>
+<link rel="stylesheet" href="../../assets/site.css">
+<style>
+.allocator-replay .allocator-flow {
+  list-style:none;
+  margin:1rem 0 1rem .4rem;
+  padding:0 0 0 1.2rem;
+  border-left:2px solid var(--brand);
+}
+.allocator-replay .allocator-flow li {position:relative;margin:0 0 1.15rem;min-width:0}
+.allocator-replay .allocator-flow li::before {
+  content:"";position:absolute;left:-1.55rem;top:.55rem;
+  width:.55rem;height:.55rem;border-radius:50%;background:var(--brand);
+}
+.allocator-replay .allocator-flow strong {display:block}
+.allocator-replay .entry {
+  display:block;margin-top:.45rem;padding-top:.4rem;
+  border-top:2px dashed var(--line-strong);color:var(--muted);font-size:.9rem;
+}
+.allocator-replay .boundary {color:var(--open);font-weight:600}
+.allocator-replay .legend {font-size:.92rem}
+.allocator-replay .solid,.allocator-replay .dashed {
+  display:inline-block;width:1.75rem;vertical-align:middle;
+}
+.allocator-replay .solid {border-top:2px solid var(--brand)}
+.allocator-replay .dashed {border-top:2px dashed var(--line-strong)}
+.allocator-replay .table-wrap {max-width:100%;overflow-x:auto;overscroll-behavior-x:contain}
+.allocator-replay .table-wrap:focus-visible {outline:3px solid var(--brand);outline-offset:2px}
+.allocator-replay .table-wrap > .cases {min-width:40.625rem}
+.allocator-replay .table-wrap > .history {min-width:37.5rem}
+.allocator-replay .table-wrap > .proofs {min-width:30rem}
+.allocator-replay pre,.allocator-replay pre code {white-space:pre-wrap;overflow-wrap:anywhere}
+.allocator-replay .hash {overflow-wrap:anywhere}
+.allocator-replay .report-links {margin-top:1.4rem}
+@media print {
+  .allocator-replay .table-wrap > table {min-width:0}
+}
+</style>
+</head>
+<body data-camera="k3iii">
+<!-- chrome:top -->
+<a class="skip" href="#main">본문 바로가기</a>
+<div class="topbar"><div class="topbar-in"><a class="brand" href="../../index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="../../index.html" aria-current="true">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="https://yunhyok.github.io/pentax-q7-firmware-analysis/">Q7</a></div><nav class="topnav" aria-label="주제"><a href="../../index.html">개요</a><a href="../guide-boot.html">부팅·저장소</a><a href="../guide-update.html">업데이트</a><a href="../guide-rebuild.html" aria-current="true">재구축</a><a href="../guide-rtos.html">명령·셸</a><a href="../guide-color.html">색 처리</a><a href="../lightroom-bridge.html">Lightroom</a><a href="../af-foundations.html">AF</a><a href="../ui-port-contract.html">UI</a></nav></div></div>
+<nav class="crumbs" aria-label="현재 위치"><ol><li><a href="../../index.html">PENTAX K-3 Mark III</a></li><li><a href="../guide-rebuild.html">펌웨어 재구축</a></li><li aria-current="page">설정에서 첫 task stack까지</li></ol></nav>
+<!-- /chrome:top -->
+<header class="page-head">
+<p class="eyebrow">PENTAX K-3 Mark III 2.20 · 2026-11-13</p>
+<h1>설정에서 첫 task의 stack까지, 원본 할당 경로를 다시 실행했습니다</h1>
+<p class="lead">제공된 decoded 이미지의 원본 명령으로 task 테이블을 만들었습니다. 네 대조 조건에서는 첫 task의 stack 버퍼도 확보했고, lock helper가 processor ID를 읽기 직전인 <code>0x525b7a24</code>에서 멈췄습니다. task 생성 완료나 카메라 부팅 성공을 뜻하지 않습니다.</p>
+<p>실행 조건 7개와 고정 경로 비트벡터 검증 5개를 재현합니다. 입력 펌웨어는 사용자가 직접 제공해야 합니다. 원본 바이트·ROM 배열·전체 디컴파일은 배포하지 않습니다. <a href="verified.json">검증 결과</a> · <a href="source-ranges.json">주소와 구간 해시</a></p>
+</header>
+<div class="layout">
+<!-- chrome:toc -->
+<nav class="toc" aria-label="이 문서의 목차"><h2 data-toc="no">이 문서에서</h2><ol><li><a href="#flow">1. 같은 RAM을 유지하되 진입점은 구분했습니다</a></li><li><a href="#cases">2. 세 경계 조건과 네 대조군</a></li><li><a href="#proof">3. 표본 네 개와 별도로 검증한 RMW 조건</a></li><li><a href="#history">4. 이전 분석에서 이어진 질문과 중요한 정정</a></li><li><a href="#reproduce">5. 이동 가능한 재현 패키지</a></li><li><a href="#limits">6. 확인 범위와 미확정 사항</a></li></ol></nav>
+<!-- /chrome:toc -->
+<main id="main" class="doc allocator-replay">
+<section id="flow"><h2>1. 같은 RAM을 유지하되 진입점은 구분했습니다</h2>
+<p>호스트가 합성 호출 스택과 원본 <code>.data</code> 복사본을 준비하고 reset 시 BSS를 0으로 보는 모형을 사용합니다. 이후 설정·페이지·arena·task 초기화 명령이 만든 상태를 같은 emulator RAM에 보존합니다. 함수에 독립 진입하는 구간이 있으므로 전체 부팅을 연속 실행한 결과는 아닙니다.</p>
+<p class="legend"><span class="solid" aria-hidden="true"></span> 실선: 같은 실행 조건 안에서 유지한 RAM 상태 &nbsp; <span class="dashed" aria-hidden="true"></span> 점선: 호스트가 선택한 별도 진입점. 선은 카메라의 정상 호출 순서를 보증하지 않습니다.</p>
+<ol class="allocator-flow" role="list" aria-label="같은 RAM과 별도 진입 경계를 표시한 관측 흐름">
+<li><strong>원본 설정 생산자</strong><code>0x525d6eb4</code>가 설정 포인터를 만들고 반환합니다.<span class="entry">다음 구간은 호스트의 독립 진입입니다.</span></li>
+<li><strong>core prologue → processor 읽기 전 중단</strong><code>0x525b5a50 → 0x525b5a54</code>. MPIDR은 실행하지 않습니다.<span class="entry">같은 native frame을 유지한 채 조건부 core0 분기 <code>0x525b5a6c</code>에 별도 진입합니다. 실제 core ID를 확인하거나 대체한 것이 아닙니다.</span></li>
+<li><strong>stack 예약량과 논리 RAM 범위</strong>원본 분기가 예약량 <code>0x40000</code>을 만들고, 별도 platform 진입 <code>0x525d9e94</code>를 통해 범위 <code>[0x56492c80, 0x57c52c80)</code>를 얻습니다.<span class="entry">페이지 초기화 <code>0x525d8a34</code>와 arena 초기화 <code>0x525d9a64</code>는 각각 독립 진입합니다.</span></li>
+<li><strong>원본 페이지·arena 상태</strong>페이지 크기는 <code>0x800</code>, 시작 페이지 수는 <code>0x2f50</code>입니다. 원시 메모리의 RMW 조건은 아래 다섯 고정 경로 검증과 연결합니다.<span class="entry">pool 테이블을 먼저 할당하지 않고 task 초기화 <code>0x525b8830</code>에 독립 진입합니다.</span></li>
+<li><strong>task 테이블: 같은 frame에서 요청·할당·초기화</strong>설정값 <code>300 / 0x4000 / 3</code> → 요청 <code>0x5dc00</code> → arena <code>0x54582f80</code> → 포인터 <code>0x564aa808</code>. 300개 레코드에서 지정된 일곱 필드를 검사하고 per-core word 12개에 대한 원본 쓰기를 확인합니다.<span class="entry">같은 RAM을 유지하고 ROM descriptor 주소 <code>0x533e33f8</code>를 인수로 creator <code>0x525bb150</code>에 별도 진입합니다.</span></li>
+<li><strong>첫 task stack: 같은 creator frame에서 계속</strong>요청 <code>0x6000</code>, 명시적 flags 0 → arena <code>0x54582f48</code> → 원본 반환 포인터 <code>0x56508808</code>. <code>0x525bb2c0</code>이 creator frame <code>+0xc</code>에 저장합니다.<p class="boundary">lock helper <code>0x525b7a24</code>의 MPIDR 읽기 직전에 중단합니다. creator 본문의 <code>0x525bb310</code>보다 먼저 만나는 경계입니다.</p></li>
+</ol>
+<p>최종 중단 시 R0의 <code>0x54c3fd04</code>는 lock 주소입니다. task ID나 creator 반환값이 아닙니다. task 테이블의 전체 할당 범위와 free queue는 creator 진입 전후에 동일했고 해당 영역·테이블 포인터·lock/counter 범위에 겹치는 creator 쓰기도 없었습니다. <a href="helpers/native.py.inc">검사 구현</a></p>
+</section>
+
+<section id="cases"><h2>2. 세 경계 조건과 네 대조군</h2>
+<p>각 행은 새 emulator에서 시작합니다. 초기 task-table 준비 단계에는 원시 대조 바이트 48개를 사용했습니다. 마지막 네 행에만 stack RMW용 24바이트를 더해 총 72바이트를 사용합니다. 이 값들은 호스트가 준 대조 조건이며 실제 RAM의 초기 내용으로 주장하지 않습니다.</p>
+<div class="table-wrap" tabindex="0" role="region" aria-labelledby="allocator-cases-caption"><table class="cases"><caption id="allocator-cases-caption">원본 기록과 공개 요약의 대응</caption><thead><tr><th scope="col">조건 / 패턴</th><th scope="col">원시 대조 바이트</th><th scope="col">마지막 경계</th><th scope="col">동적 읽기 / 원시값 포함 사건</th><th scope="col">선별 쓰기 기록</th></tr></thead><tbody>
+<tr><th scope="row">stack_request / 00</th><td>48</td><td><code>0x525bb2b8</code>, 호출 전</td><td>63 / 24</td><td>3,907</td></tr>
+<tr><th scope="row">stack_route / 00</th><td>48</td><td><code>0x525d95a8</code>, allocator 본문 전</td><td>63 / 24</td><td>3,907</td></tr>
+<tr><th scope="row">stack_new_read / 00</th><td>48</td><td><code>0x525d8774</code>, 미생산 byte 읽기 전</td><td>79 / 24</td><td>3,918</td></tr>
+<tr><th scope="row">hardware_boundary / 00</th><td>72</td><td><code>0x525b7a24</code>, MPIDR 전</td><td>110 / 36</td><td>3,965</td></tr>
+<tr><th scope="row">hardware_boundary / ff</th><td>72</td><td><code>0x525b7a24</code>, MPIDR 전</td><td>110 / 36</td><td>3,965</td></tr>
+<tr><th scope="row">hardware_boundary / a5</th><td>72</td><td><code>0x525b7a24</code>, MPIDR 전</td><td>110 / 36</td><td>3,965</td></tr>
+<tr><th scope="row">hardware_boundary / 5a</th><td>72</td><td><code>0x525b7a24</code>, MPIDR 전</td><td>110 / 36</td><td>3,965</td></tr>
+</tbody></table></div>
+<p>읽기는 동적 RAM 범위의 사건 수입니다. 쓰기 목록은 호스트 호출 스택의 일반 쓰기를 제외하고 <code>0x525bb2c0</code>의 stack 포인터 저장만 예외로 포함합니다. 따라서 전체 명령 수나 모든 guest 쓰기 수로 읽으면 안 됩니다. 코드 훅에는 ARM 조건이 거짓인 명령도 들어갑니다.</p>
+<p>세 번째 조건은 주소 <code>0x564932c8</code>에 원본 쓰기나 호스트 대조값이 없음을 확인하고 읽기 전에 멈춥니다. 마지막 네 조건은 node <code>0xc9 / 0xca / 0xcb</code>에 추가 대조값을 둡니다. 원본이 선택한 free index는 <code>0xbd</code>, 요청은 <code>0xd</code>페이지입니다. 최종 메타데이터·접근 주소·코드 훅·stack 포인터는 네 조건에서 같습니다. 중간 쓰기 값과 그 해시는 서로 다릅니다.</p>
+<p><a href="comparison.json">원본 전체 기록과 요약의 비교표(JSON)</a>에는 생략한 목록마다 기록 수와 SHA-256을 남겼습니다. <code>task_nodes</code> 300개는 일곱 필드 검사 기록입니다. 레코드 전체 필드가 초기화됐다는 뜻은 아닙니다.</p>
+</section>
+
+<section id="proof"><h2>3. 표본 네 개와 별도로 검증한 RMW 조건</h2>
+<p>원본 마스크와 필드 쓰기를 검토해 32비트 식으로 옮겼습니다. 임의 초기값에 따라 최종 필드가 달라지는 반례를 Z3에 질의했습니다. 아래 다섯 고정 경로에서 모두 <code>unsat</code>을 얻었습니다. 원본 실행은 각 free-list 진입의 인수와 0 sentinel을 별도로 확인합니다.</p>
+<div class="table-wrap" tabindex="0" role="region" aria-labelledby="allocator-proofs-caption"><table class="proofs"><caption id="allocator-proofs-caption">다섯 고정 경로의 비트벡터 검증</caption><thead><tr><th scope="col">고정 인수</th><th scope="col">임의 입력 비트</th><th scope="col">반례</th></tr></thead><tbody>
+<tr><th scope="row">free-list index 1, count <code>0x2f50</code></th><td>192</td><td>unsat</td></tr>
+<tr><th scope="row">free-list index <code>0xbd</code>, count <code>0x2e94</code></th><td>192</td><td>unsat</td></tr>
+<tr><th scope="row">free-list index <code>0xca</code>, count <code>0x2e87</code></th><td>192</td><td>unsat</td></tr>
+<tr><th scope="row">할당 끝 node <code>0xbc</code>, page count <code>0xbc</code></th><td>64</td><td>unsat</td></tr>
+<tr><th scope="row">할당 끝 node <code>0xc9</code>, page count <code>0xd</code></th><td>64</td><td>unsat</td></tr>
+</tbody></table></div>
+<p>이는 검토한 고정 경로의 최종 필드에 대한 증명입니다. 바이너리 전체의 자동 형식 검증이나 동시 실행·인터럽트 관찰의 독립성 증명이 아닙니다. 중간 byte store에는 초기값의 일부가 잠시 남습니다. <a href="helpers/proof.py.inc">비트벡터 식과 범위</a> · <a href="verified.json">실제 solver 결과</a></p>
+</section>
+
+<section id="history"><h2>4. 이전 분석에서 이어진 질문과 중요한 정정</h2>
+<p>아래는 22–27번 분석의 맥락입니다. 이 패키지가 그 단위들의 모든 개별 실험을 다시 실행하는 것은 아닙니다. 실행 대상은 27번의 일곱 조건과 다섯 증명입니다. 준비 과정에서 설정·페이지·arena·task-table 생산을 재현합니다. <a href="history.json">이전 체크포인트 해시와 요약</a></p>
+<div class="table-wrap" tabindex="0" role="region" aria-labelledby="allocator-history-caption"><table class="history"><caption id="allocator-history-caption">이전 분석의 의존성과 정정</caption><thead><tr><th scope="col">단위</th><th scope="col">확인한 연결</th><th scope="col">남은 경계·정정</th></tr></thead><tbody>
+<tr><th scope="row">22 · writer</th><td>PFFactory 생성·ready의 원본 singleton/manager 경로와 allocator ID2 의존성.</td><td>초기 BSS의 null allocator는 불완전한 초기화의 대조 조건입니다. 실제 카메라 장애나 비제로 bank 생산자를 증명하지 않습니다.</td></tr>
+<tr><th scope="row">23 · OS pool 요청</th><td>selector <code>0x80450100</code> → slot <code>0x525d7774</code> → handler <code>0x525ca9bc</code>. 원본 설정에서 30개, 요청 <code>0x5a0</code>.</td><td>vector와 handler의 processor 경계는 각각 <code>0x525d7864 / 0x525ca9f0</code>. 양의 handle·ID2 등록은 관찰하지 않았습니다.</td></tr>
+<tr><th scope="row">24 · arena 준비</th><td>원본 페이지 범위와 arena header 생산자를 연결했습니다.</td><td><code>0x525d9350 → 0x525d9cd0</code>는 TEV_FFLock/SLog 설정입니다. 실제 arena header 초기화는 <code>0x525d9a64</code>입니다. core0은 별도 진입입니다.</td></tr>
+<tr><th scope="row">25 · pool-table 단독 할당</th><td>원시 대조 바이트 32개와 고정 경로 증명 두 개로 테이블 할당을 관찰했습니다.</td><td>reset routing 0의 arena <code>0x54582f48</code>과 단독 할당 순서입니다. 정상 startup의 주소·순서 또는 OS pool handle로 일반화할 수 없습니다.</td></tr>
+<tr><th scope="row">26 · task-table 선행</th><td>새 상태에서 task 설정을 먼저 읽으면 <code>TSVCLimit=3</code>, 요청 <code>0x5dc00</code>, arena <code>0x54582f80</code>입니다.</td><td>300개 free 레코드와 12개 0 word는 task 생성·실행 증거가 아닙니다. 25번의 pool 할당 상태를 이어 쓰지 않았습니다.</td></tr>
+<tr><th scope="row">27 · 첫 stack</th><td>명시적 flags 0이 stack arena <code>0x54582f48</code>을 선택합니다. 전역 <code>TSVCLimit</code>는 3으로 유지됩니다.</td><td>lock helper의 <code>0x525b7a24</code>가 creator 본문의 <code>0x525bb310</code>보다 먼저 만나는 MPIDR 경계입니다.</td></tr>
+</tbody></table></div>
+</section>
+
+<section id="reproduce"><h2>5. 이동 가능한 재현 패키지</h2>
+<p>폴더 전체를 함께 옮긴 뒤 아래처럼 실행합니다. 입력은 정확히 78,683,892바이트인 decoded 이미지입니다. 원본 업데이트 파일을 그대로 넘기는 인터페이스는 아닙니다. CLI는 다운로드하거나 이미지 내용을 수정하지 않습니다. 출력 파일은 새 경로여야 하고 상위 폴더가 있어야 합니다.</p>
+<pre><code>python replay.py "path/to/decoded.bin" --output "new-result.json"
+python test_replay.py --work-dir "." --output "new-tests.json" --decoded "path/to/decoded.bin"</code></pre>
+<p><code>--decoded</code>를 생략한 테스트는 펌웨어 없이 입력·helper·출력 경계만 검사합니다. 양성 재현 테스트에는 이 패키지의 <code>verified.json</code>도 필요합니다. 임시 fixture는 지정한 작업 폴더 안에서 만들고 정리합니다.</p>
+<p>검증한 환경은 Windows의 Python 3, Unicorn <code>2.1.4</code>, Capstone <code>5.0.9</code>, <code>z3-solver 5.3.1.0</code>(solver 문자열 <code>5.3.1</code>)입니다. <a href="requirements.txt">정확한 의존성 버전</a>을 기록했으며 이번 작업에서는 새로 설치하지 않았습니다. 다른 OS에서는 아직 실행을 확인하지 않았습니다.</p>
+<p>전체 witness에는 도구 버전 문자열도 들어갑니다. 원본 이미지가 맞더라도 버전·출력 차이가 있으면 전체 해시 검사가 실패하며 JSON을 만들지 않습니다. 이 오류만으로 펌웨어가 잘못됐다고 판단하면 안 됩니다. <code>.gitattributes</code>는 Windows checkout에서도 helper의 LF 바이트를 보존하도록 포함했습니다.</p>
+<h3>입력부터 공개 요약까지</h3>
+<ol><li>출력 alias와 기존 경로를 거부하고 두 helper의 바이트를 모두 읽어 고정 SHA-256과 대조합니다.</li><li>decoded 크기·전체 해시, RTOS/BOOT/M0 해시, 명시한 코드·데이터 구간 해시를 확인합니다. BOOT/M0는 출처 확인용이며 실행 대상은 RTOS입니다.</li><li>검사한 helper 바이트 자체를 compile/exec합니다. 파일을 다시 열어 다른 내용을 실행하지 않습니다. Python 의존성은 설치된 신뢰 환경에서 일반 import합니다.</li><li>원본 조건 7개와 증명 5개를 실행합니다. 전체 JSON을 기존 방식으로 메모리에서 직렬화해 수용된 witness의 크기·SHA-256과 대조합니다.</li><li>일치할 때만 공개 요약을 새 파일로 기록합니다. 원본 입력의 변경 여부도 재확인합니다.</li></ol>
+<details><summary>비교 기준 전체 SHA-256</summary>
+<p>decoded <code class="hash">7ff301d585ef7adcd620a15575faa39b4227cc5a27eaa8d754efe50f667a30f9</code></p>
+<p>native witness · 9,463,180바이트<br><code class="hash">9c950214e40cd5d8c527884db9d9bf2c4f39a1cc9cc47761f70c62c13074624d</code></p>
+<p>proof witness · 3,577바이트<br><code class="hash">5e11102009550884e0bd128fd08c865d072fc432a61a8e31b96da8d313ec7f0f</code></p>
+<p>전체 witness 직렬화는 <code>json.dumps(indent=2)</code>의 기본 ASCII 처리와 마지막 LF 한 개를 사용합니다. 생략 목록의 해시는 별도로 키 정렬·공백 없는 JSON 직렬화를 사용합니다. 두 해시 규칙을 혼용하지 않습니다.</p></details>
+<p>공백이 있는 다른 폴더로 옮겨 두 번 실행한 결과가 배포 후보 요약과 일치했습니다. 입력 크기·동일 크기의 잘못된 해시, <code>-O</code>, 두 helper의 실행 sentinel 변조, 직접 입력 alias, 기존 출력과 그 hardlink, dangling symlink를 포함해 14개 검사를 통과했습니다. <a href="test-results.json">검사 결과</a> · <a href="test_replay.py">검사 코드</a></p>
+</section>
+
+<section id="limits"><h2>6. 확인 범위와 미확정 사항</h2>
+<ul><li>호스트 호출 스택 <code>[0x10000000, 0x10010000)</code>, 원본 <code>.data</code>의 host 복사, reset BSS <code>[0x54565b00, 0x54c52c14)</code>의 0 모형을 사용합니다. 실제 부팅 완료 상태와 같다고 볼 수 없습니다.</li>
+<li>동적 영역에서 읽는 byte는 앞선 원본 쓰기 또는 명시한 RMW 대조 범위에 속해야 합니다. 나머지 미생산 byte를 읽는 순간은 통과시키지 않습니다.</li>
+<li>최종 RAM 해시 범위 <code>[0x56492c80, 0x57c52c80)</code>에는 원본 allocator가 확보한 stack 버퍼가 포함됩니다. 호스트 호출 스택·초기 데이터·BSS·페이지 정렬 여백은 제외합니다.</li>
+<li>메타데이터와 주소는 소프트웨어 관측입니다. 물리 DRAM 매핑·MMU·하드웨어 SRAM remap을 입증하지 않습니다.</li>
+<li>MPIDR·CP15·SVC는 실행하거나 값을 대체하지 않았습니다. 성공 handle·task 포인터·할당된 stack 포인터를 공급하지 않았습니다.</li>
+<li>lock 획득, task 레코드 소비, creator 반환, runnable scheduler 상태, OS pool의 양의 handle·ID2 등록은 미확정입니다. 비제로 bank 생산자와 리소스 레코드 <code>+4</code> 정책도 해결하지 못했습니다.</li>
+<li>이번 범위는 공개 재현 패키지 준비입니다. 하드웨어 경계를 넘는 새 분석, 빌드·플래시·기기 접근은 수행하지 않았습니다.</li></ul>
+<p class="callout plain">독립 기술 검토는 공개 데이터 범위, 두 helper의 검증·실행 순서, 전체 witness 동등성, 출력 보호를 확인했습니다. 별도 문서 기록에는 독립형 초안의 정적 검사와 화면 폭 계산을 남겼습니다. 공통 탐색을 적용한 이 판에서는 문서 구조와 링크를 정적으로 확인했습니다. 브라우저 렌더링과 실제 키보드 스크롤은 미검증입니다. <a href="document-qa.json">독립형 초안의 정적 검사 기록</a></p>
+</section>
+<div class="report-links"><p><a href="replay.py">CLI</a> · <a href="verified.json">공개 검증 JSON</a> · <a href="comparison.json">전체 기록과 비교</a> · <a href="source-ranges.json">원본 구간 해시</a> · <a href="history.json">이전 분석 근거</a></p><p>이 패키지는 원본 명령을 제한된 조건에서 실행하는 분석·재현 자료입니다.</p></div>
+</main>
+</div>
+<!-- chrome:bottom -->
+<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">펌웨어 재구축 — 이 주제의 문서</h2><ol><li><a href="../guide-rebuild.html">재구축 안내</a></li><li><a href="../recompiled-kernels.html">수치 함수 C 재구현<span>SAD·SSD와 Q13 행렬 곱</span></a></li><li><a href="../recompiled-integration.html">재컴파일 함수 배치·재패키징</a></li><li><a href="../selective-repack.html">압축 블록을 보존한 재패키징</a></li><li><a href="report.html" aria-current="page">설정에서 첫 task stack까지<span>원본 할당 경로 7조건과 RMW 5검증</span></a></li></ol></nav>
+<nav class="pager" aria-label="이전·다음 문서"><a class="prev" href="../selective-repack.html"><small>← 이전</small>압축 블록을 보존한 재패키징</a><a class="next" href="../guide-rtos.html"><small>다음 →</small>RTOS 명령 안내</a></nav>
+<footer class="sitefoot"><div class="sitefoot-in"><nav aria-label="사이트"><a href="../../index.html#map">문서 지도</a><a href="../../index.html#levels">검증 수준 읽는 법</a><a href="../../glossary.html">용어집</a><a href="../research-program.html">세 기종 연구 본부</a><a href="https://github.com/yunhyok/pentax-k3iii-firmware-analysis">GitHub 저장소</a></nav><p>PENTAX 펌웨어 연구. PC에서 수행한 정적 분석과 에뮬레이션 결과이며, 카메라 실기에서 검증한 내용이 아닙니다. 원본 펌웨어와 추출한 독점 코드는 포함하지 않습니다.</p></div></footer>
+<!-- /chrome:bottom -->
+</body>
+</html>

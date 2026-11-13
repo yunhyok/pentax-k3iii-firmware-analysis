@@ -1,0 +1,120 @@
+{
+  "schema": 1,
+  "all_supported_tests_passed": true,
+  "tests": [
+    {
+      "test": "wrong_size",
+      "passed": true,
+      "returncode": 1,
+      "expected_error": "decoded input size mismatch",
+      "existing_output_preserved": false
+    },
+    {
+      "test": "truncated",
+      "passed": true,
+      "returncode": 1,
+      "expected_error": "decoded input size mismatch",
+      "existing_output_preserved": false
+    },
+    {
+      "test": "oversized",
+      "passed": true,
+      "returncode": 1,
+      "expected_error": "decoded input size mismatch",
+      "existing_output_preserved": false
+    },
+    {
+      "test": "wrong_hash",
+      "passed": true,
+      "returncode": 1,
+      "expected_error": "decoded input hash mismatch",
+      "existing_output_preserved": false
+    },
+    {
+      "test": "optimized_before_imports",
+      "passed": true,
+      "returncode": 1,
+      "expected_error": "Assertions required",
+      "existing_output_preserved": false
+    },
+    {
+      "test": "existing_output",
+      "passed": true,
+      "returncode": 1,
+      "expected_error": "output already exists",
+      "existing_output_preserved": true
+    },
+    {
+      "test": "input_alias",
+      "passed": true,
+      "returncode": 1,
+      "expected_error": "output aliases",
+      "existing_output_preserved": true
+    },
+    {
+      "test": "normalized_input_alias",
+      "passed": true,
+      "returncode": 1,
+      "expected_error": "output aliases",
+      "existing_output_preserved": true
+    },
+    {
+      "test": "helper_output_alias",
+      "passed": true,
+      "returncode": 1,
+      "expected_error": "output aliases",
+      "existing_output_preserved": true
+    },
+    {
+      "test": "hardlink_existing_output",
+      "passed": true,
+      "returncode": 1,
+      "expected_error": "output already exists",
+      "existing_output_preserved": true
+    },
+    {
+      "test": "dangling_symlink",
+      "passed": true,
+      "returncode": 1,
+      "expected_error": "output already exists",
+      "existing_output_preserved": false
+    },
+    {
+      "test": "tampered_native.py.inc",
+      "passed": true,
+      "returncode": 1,
+      "expected_error": "helper hash mismatch: native.py.inc",
+      "existing_output_preserved": false
+    },
+    {
+      "test": "tampered_proof.py.inc",
+      "passed": true,
+      "returncode": 1,
+      "expected_error": "helper hash mismatch: proof.py.inc",
+      "existing_output_preserved": false
+    },
+    {
+      "test": "two_relocated_replays_match_published_projection",
+      "passed": true,
+      "output_sha256": "596313cc83740b5e1ccb73c8ce11801cdf867e517b9b9987ec944622fdc0ed7a",
+      "input_preserved": true,
+      "cases": 7,
+      "proof_cases": 5,
+      "canonical_witnesses": {
+        "native": {
+          "sha256": "9c950214e40cd5d8c527884db9d9bf2c4f39a1cc9cc47761f70c62c13074624d",
+          "bytes": 9463180,
+          "byte_identical_to_accepted_27": true
+        },
+        "proof": {
+          "sha256": "5e11102009550884e0bd128fd08c865d072fc432a61a8e31b96da8d313ec7f0f",
+          "bytes": 3577,
+          "byte_identical_to_accepted_27": true
+        }
+      }
+    }
+  ],
+  "positive_replay_tested": true,
+  "test_script_sha256": "0d8d5d4db185ca0f3148e4cb6928ede59152e2667e35831d27748cff82def050",
+  "cli_sha256": "fde6e825675b889dac412cb7262732a05ef73f06d0caf421a78e606345ff1ea5"
+}
