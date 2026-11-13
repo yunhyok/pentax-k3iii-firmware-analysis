@@ -11,7 +11,7 @@
       "name": "K-3 Mark III",
       "firmware_version": "2.20",
       "firmware_sha256": "3c9d466b8160689867af2f58ff2cf0bf3363bc3b42daff43685a33171b91eb1a",
-      "commit": "ee71e5edd1fc5be69c06ace4656d56e6da355545",
+      "commit": "c2c7ccaf2cffffc40b54436e2188db0f13e29228",
       "digest_source": "iii-input",
       "digest_field": "input_sha256",
       "report_source": "iii-integration"
@@ -21,7 +21,7 @@
       "name": "K-3 II",
       "firmware_version": "1.12",
       "firmware_sha256": "a33485f351019960192891ef69ddc5d4904ef9e298671d9d9955679e4c901a9a",
-      "commit": "d9f4ddbbd8bb65cba52ab449fb0b3c89840161ff",
+      "commit": "6760976d11ae455055592e104f2f3a7248151afc",
       "digest_source": "ii-input",
       "digest_field": "firmware_sha256",
       "report_source": "ii-rebuild"
@@ -31,7 +31,7 @@
       "name": "Q7",
       "firmware_version": "1.01",
       "firmware_sha256": "8a928b574623c28624127501526d8496a98a42eac3d843def6d3b5ceb074ff3b",
-      "commit": "9613b7f2e41f11a05bbbb88cf8b295972f4a23f4",
+      "commit": "8484421dfccc3d447ebe0b757f3c838acc783f0c",
       "digest_source": "q-input",
       "digest_field": "input_sha256",
       "report_source": "q-implementation"
@@ -832,6 +832,46 @@
       "camera": "k3iii",
       "path": "analysis/ui-viewport-producers.json",
       "label": "전체 정적 기록과 추가 복사 조건"
+    },
+    "iii-af-adaptive": {
+      "camera": "k3iii",
+      "path": "analysis/af-adaptive-input.html",
+      "label": "AF 적응형 문턱의 시간 입력"
+    },
+    "iii-af-adaptive-data": {
+      "camera": "k3iii",
+      "path": "analysis/af-adaptive-input-checks.json",
+      "label": "AF 시간 입력 정적 대조"
+    },
+    "iii-ui-surface": {
+      "camera": "k3iii",
+      "path": "analysis/ui-surface-producers.html",
+      "label": "Canvas에서 StringView로 표면 전달"
+    },
+    "iii-ui-surface-data": {
+      "camera": "k3iii",
+      "path": "analysis/ui-surface-producers.json",
+      "label": "표면 생산자 원본 검증"
+    },
+    "ii-tone-selectors": {
+      "camera": "k3ii",
+      "path": "analysis/tone-selectors.html",
+      "label": "톤 selector 5·6 값 생산자"
+    },
+    "ii-tone-selectors-data": {
+      "camera": "k3ii",
+      "path": "analysis/tone-selectors.json",
+      "label": "selector 원본 구간 5사례"
+    },
+    "q-dcp-interpolation": {
+      "camera": "q7",
+      "path": "reports/q7-dcp-interpolation.html",
+      "label": "DCP 보간과 클리핑"
+    },
+    "q-dcp-interpolation-data": {
+      "camera": "q7",
+      "path": "analysis/q7-dcp-interpolation.json",
+      "label": "DCP 희소 표본 15건"
     }
   },
   "tracks": [
@@ -983,8 +1023,8 @@
         },
         "k3ii": {
           "state": "톤 허용값 · 48바이트 설정 갱신의 정적 근거",
-          "finding": "차트 #1376에서 정한 톤을 독립 장면 #1363에 재학습 없이 적용했습니다. 합성 톤 DCP는 오프라인 목표 대비 24개 영역별 픽셀 ΔE00 중앙값의 평균을 3.037→0.160, 4.448→0.129로 줄였지만, 차트 주황 패치의 0.892는 허용값 0.75를 넘었습니다. Lightroom 16.0의 두 패치에서 파란 채널 순서가 뒤집혔고, Adobe RGB 출력을 ProPhoto 좌표로 되돌려도 역전이 남았습니다. 펌웨어 1.12의 별도 원본 재생은 톤 문맥·공유 포인터·정수 계산과 곡선 생산을 대조했습니다. recipe+0x9C의 0이 최종 분모에 전달된 소비자 시험은 Thumb 처리기 첫 명령 전에 멈췄습니다. 후속 정적 분석은 직접 호출자 두 곳의 읽기·setter·갱신과 48바이트 내부 설정 레코드 복사를 확인했습니다. 두 setter에서 selector 5·6의 값을 직접 쓰지 않았으며, 48바이트는 픽셀 데이터가 아닙니다.",
-          "next": "selector 5·6의 선행 값 생산과 실제 촬영에서의 버퍼 재사용을 추적합니다. 색 검증은 채널 관계를 반영한 후보를 고정해 펌웨어 1.12의 복수 조명·룩별 독립 촬영에서 반복합니다. 공통 단조 곡선 모델에는 반례가 있으며, Lightroom 내부 좌표와 순서는 아직 식별하지 못했습니다.",
+          "finding": "차트 #1376에서 정한 톤을 독립 장면 #1363에 재학습 없이 적용했습니다. 합성 톤 DCP는 오프라인 목표 대비 24개 영역별 픽셀 ΔE00 중앙값의 평균을 3.037→0.160, 4.448→0.129로 줄였지만, 차트 주황 패치의 0.892는 허용값 0.75를 넘었습니다. Lightroom 16.0의 두 패치에서 파란 채널 순서가 뒤집혔고, Adobe RGB 출력을 ProPhoto 좌표로 되돌려도 역전이 남았습니다. 펌웨어 1.12의 별도 원본 재생은 톤 문맥·공유 포인터·정수 계산과 곡선 생산을 대조했습니다. recipe+0x9C의 0이 최종 분모에 전달된 소비자 시험은 Thumb 처리기 첫 명령 전에 멈췄습니다. 후속 정적 분석은 직접 호출자 두 곳의 읽기·setter·갱신과 48바이트 내부 설정 레코드 복사를 확인했습니다. 두 setter에서 selector 5·6의 값을 직접 쓰지 않았으며, 48바이트는 픽셀 데이터가 아닙니다. selector 5·6이 source+0x24/+0x26의 u16을 읽어 내부 설정+0x15/+0x16에 하위 8비트로 저장하는 경로를 원본 5사례로 재현했습니다. selector 6 기본값 0x20, 상위 비트 절삭과 owner 주소 변경도 대조했습니다. 서비스와 전체 메뉴 진입은 실행하지 않았습니다.",
+          "next": "selector 5의 저장값 복원 호출과 실제 메뉴 이벤트·촬영 순서를 연결하고, manager에서 job으로 이어지는 복사와 버퍼 재사용을 추적합니다. 값의 물리적 의미는 미확정이며 색 후보는 복수 조명·독립 장면 검증이 필요합니다.",
           "sources": [
             "iii-color-test",
             "iii-raw",
@@ -1010,13 +1050,15 @@
             "ii-tone-upstream",
             "ii-tone-upstream-data",
             "ii-tone-manager",
-            "ii-tone-manager-data"
+            "ii-tone-manager-data",
+            "ii-tone-selectors",
+            "ii-tone-selectors-data"
           ]
         },
         "q7": {
           "state": "공통 국소 색차 · 두 DCP의 저장 구조",
-          "finding": "펌웨어의 색 행렬 전달과 HDR 경로를 조사했고, 시험 DCP를 적용한 Lightroom 출력을 얻었습니다. 펌웨어 1.00의 스튜디오 DNG는 전역 정합 기준을 통과하지 못했습니다. Adobe 렌즈 보정을 켠 공통 국소 39영역·56,927픽셀에서 Bright JPEG 대비 ΔE00 중앙값/90백분위수는 행렬 후보 2.211/4.787, Adobe Standard 2.803/5.955였습니다. 그때 As Shot은 5100 K/−17에서 4900 K/−7로 달라졌고, 같은 중립값에 적용한 SDK 수식의 차이는 −199.657 K/+10.096 tint였습니다. 별도 파일 검사에서 Adobe Standard는 태그 16개, HueSatMap 두 개(각 2,700노드)와 LookTable 4,608노드였고, matrix-test는 태그 6개로 ForwardMatrix와 두 종류의 표가 없었습니다. 두 파일에 저장 ToneCurve가 없지만 렌더러의 기본 곡선은 알 수 없습니다. 파일 검사에서 기존 As Shot을 다시 측정하지 않았습니다.",
-          "next": "펌웨어 1.01의 독립 촬영에서 정지화상과 HDR을 나눠 평가합니다. As Shot과 고정 WB를 따로 대조하고, 같은 마스크에서 밝기·색차와 Adobe 및 카메라 렌즈 보정의 영향을 확인합니다.",
+          "finding": "펌웨어의 색 행렬 전달과 HDR 경로를 조사했고, 시험 DCP를 적용한 Lightroom 출력을 얻었습니다. 펌웨어 1.00의 스튜디오 DNG는 전역 정합 기준을 통과하지 못했습니다. Adobe 렌즈 보정을 켠 공통 국소 39영역·56,927픽셀에서 Bright JPEG 대비 ΔE00 중앙값/90백분위수는 행렬 후보 2.211/4.787, Adobe Standard 2.803/5.955였습니다. 그때 As Shot은 5100 K/−17에서 4900 K/−7로 달라졌고, 같은 중립값에 적용한 SDK 수식의 차이는 −199.657 K/+10.096 tint였습니다. 별도 파일 검사에서 Adobe Standard는 태그 16개, HueSatMap 두 개(각 2,700노드)와 LookTable 4,608노드였고, matrix-test는 태그 6개로 ForwardMatrix와 두 종류의 표가 없었습니다. 두 파일에 저장 ToneCurve가 없지만 렌더러의 기본 곡선은 알 수 없습니다. 파일 검사에서 기존 As Shot을 다시 측정하지 않았습니다. 고정 Adobe DCP의 두 HueSat 표와 Look 표에서 15개 합성 HSV를 보간했습니다. binary64와 50자리 Decimal의 최대 차이는 약 1.95×10⁻¹⁴였습니다. 선형 인코딩 기본값과 항등 표를 구분하며 값 축이 하나여도 valueScale이 적용됩니다. 전체 RAW 렌더나 Lightroom의 현재 출력은 실행하지 않았습니다.",
+          "next": "두 illuminant의 백색점 혼합과 SDK real32 LUT 계산을 독립 대조한 뒤 같은 RAW·고정 WB의 Lightroom 렌더를 비교합니다. 펌웨어 1.01의 여러 조명·정지화상·HDR 평가와 렌즈 보정 영향 확인은 남아 있습니다.",
           "sources": [
             "q-route",
             "q-color",
@@ -1029,7 +1071,9 @@
             "iii-studio-reference-data",
             "iii-as-shot",
             "q-dcp-structure",
-            "q-dcp-structure-data"
+            "q-dcp-structure-data",
+            "q-dcp-interpolation",
+            "q-dcp-interpolation-data"
           ]
         }
       },
@@ -1062,9 +1106,9 @@
       "dependency": "현재는 향후 변경에 필요한 알고리즘과 렌즈 제어를 오프라인에서 연구합니다. 특정 렌즈용 패치와 실기 구동 시험은 후속 단계입니다.",
       "cards": {
         "k3iii": {
-          "state": "PWM 정수 패킹 · 상태 바이트 직접 쓰기 22곳",
-          "finding": "Joint 모드 선택, ReloadTimer·Udc 연결, PafPulse 요청·피드백 쓰기와 Motor 보정 필드를 원본 ARM에서 구간별로 대조했습니다. Driver+0x2c/+0x30과 두 PWM 서비스의 정적 연결, 생성자 접두 구간 및 호스트가 공급한 이벤트를 구분했습니다. 후속 93조건은 두 호출자의 분기와 한 개·두 개의 12바이트 입력 레코드 패킹을 재현했습니다. 각 정수에 signed32(843×x)를 계산하고 1000으로 0 방향 절삭한 뒤 1을 빼 16비트로 자릅니다. 두 값의 합이 65535를 넘으면 둘째 값을 줄입니다. 적응형 함수 호출 직전과 PWM 적용 직전에서 멈췄으며, 두 12바이트 입력과 하위 16바이트 스택 레코드는 별개입니다. 별도 정적 분석에서 PafMotor+0x43에 직접 쓰는 22곳을 확인했습니다. 두 상태 선택 함수와 Joint 요청 분기에서 0–5를 쓰며, 첫 함수는 Motor+0x34가 0·5가 아닐 때만 문턱을 비교합니다. r1=0의 피드백은 조건부 D1 결합과 하위 16비트 반환 경로이고, 적응형 함수의 별도 서비스 반환과 구분됩니다. 래퍼가 보관한 상태와 적응형 함수가 다시 읽는 상태의 동일성은 미확인입니다.",
-          "next": "적응형 함수의 별도 반환값 0x53106370과 Motor+0x80의 생산자를 추적하고, 값의 단위와 상태 변화의 관계를 확인합니다. +0x56/+0x68의 비영 값, 스크루·렌즈 내 모터의 대응과 실제 광학적 초점은 미확인입니다.",
+          "state": "상태 22개 저장 · 적응형 시간 입력의 정적 대조",
+          "finding": "Joint 모드 선택, ReloadTimer·Udc 연결, PafPulse 요청·피드백 쓰기와 Motor 보정 필드를 원본 ARM에서 구간별로 대조했습니다. Driver+0x2c/+0x30과 두 PWM 서비스의 정적 연결, 생성자 접두 구간 및 호스트가 공급한 이벤트를 구분했습니다. 후속 93조건은 두 호출자의 분기와 한 개·두 개의 12바이트 입력 레코드 패킹을 재현했습니다. 각 정수에 signed32(843×x)를 계산하고 1000으로 0 방향 절삭한 뒤 1을 빼 16비트로 자릅니다. 두 값의 합이 65535를 넘으면 둘째 값을 줄입니다. 적응형 함수 호출 직전과 PWM 적용 직전에서 멈췄으며, 두 12바이트 입력과 하위 16바이트 스택 레코드는 별개입니다. 별도 정적 분석에서 PafMotor+0x43에 직접 쓰는 22곳을 확인했습니다. 두 상태 선택 함수와 Joint 요청 분기에서 0–5를 쓰며, 첫 함수는 Motor+0x34가 0·5가 아닐 때만 문턱을 비교합니다. r1=0의 피드백은 조건부 D1 결합과 하위 16비트 반환 경로이고, 적응형 함수의 별도 서비스 반환과 구분됩니다. 래퍼가 보관한 상태와 적응형 함수가 다시 읽는 상태의 동일성은 미확인입니다. 후속 정적 추적으로 Motor+0x80 표본과 ElapsedTimer의 별도 서비스 반환값을 확인했습니다. 두 RSB는 old−now를 계산하고 old≤now일 때 bound를 더합니다. 모드별 정수 환산과 엄격한 unsigned 문턱을 대조했으며, 같은 표본에서 차이가 0이라는 일반적인 경과 시간 공식을 가정하지 않습니다. 생성자의 영 초기화, 별도 서비스 결합과 런타임 호출 순서는 구분합니다.",
+          "next": "서비스 키 0xd9의 실제 클록 단위·계수·wrap 조건과 초기화 호출 순서를 추적합니다. 모터 구동 종류, 센서 피드백과 광학 초점은 별도 검증이 필요하며 AF 변경은 향후 과제로 유지합니다.",
           "sources": [
             "iii-af",
             "iii-kernels",
@@ -1086,7 +1130,9 @@
             "iii-af-pwm",
             "iii-af-pwm-data",
             "iii-af-state",
-            "iii-af-state-data"
+            "iii-af-state-data",
+            "iii-af-adaptive",
+            "iii-af-adaptive-data"
           ]
         },
         "k3ii": {
@@ -1140,9 +1186,9 @@
       "dependency": "첫 이식 단위는 세 기종에 공통인 촬영 색공간 선택 화면입니다. PC 화면 모형과 대상 기종의 렌더링·입력 연결은 단계별로 검증합니다.",
       "cards": {
         "k3iii": {
-          "state": "글자 전송 일곱 좌표 · viewport 생산자 추적",
-          "finding": "색공간 선택·확정·취소와 포커스, 행의 아이콘·체크를 원본 ARM으로 대조했습니다. 256×144 RAM 표면에 그린 76×40 sRGB 마스크를 일곱 좌표에서 시험해 소스 읽기 순서, 32비트 대상 쓰기와 전체 프레임이 독립 계산과 일치했습니다. 기준 좌표는 StringView가 만들었고 나머지 여섯 좌표는 호출자 스택의 복사본에서 공급했습니다. 사례당 준비에 모델 호출 72개가 있었고 최종 전송에는 없었습니다. 부분 혼합에는 첫 대상 워드 하나를 배경으로 쓰며, 경계가 닿아 높이가 0인 사례도 그 워드를 읽었습니다. Q7은 다른 마스크와 8비트 인덱스를 사용합니다. 별도 타이머 실험에서는 합성 상태의 설정·삽입·만료·지연 콜백을 대조했습니다. 후속 정적 대조에서 V+0x50의 부모·자식 클립이 config+0x14로 직접 복사되는 경로를 찾았습니다. 설정 63바이트 저장 뒤 선택된 그리기 분기에서 64바이트를 스택으로 옮기며, 표면 타입 5·회전값 0일 때 앞서 재현한 전송 함수로 향합니다. 예제 viewport 폭 80은 부모 폭 180과 자식 X 100에서 나오며, 호스트 RAM 폭 256과는 별개입니다.",
-          "next": "최상위 부모 클립과 표면 포인터·행 간격의 실제 생산자를 추적하고, 대상 기종의 좌표·팔레트·입력 계약으로 색공간 한 행을 PC에서 대조합니다. 실제 IRQ·입력, LCD와 재부팅 뒤 설정 유지는 미검증입니다.",
+          "state": "viewport · 조건부 표면 전달 경로",
+          "finding": "색공간 선택·확정·취소와 포커스, 행의 아이콘·체크를 원본 ARM으로 대조했습니다. 256×144 RAM 표면에 그린 76×40 sRGB 마스크를 일곱 좌표에서 시험해 소스 읽기 순서, 32비트 대상 쓰기와 전체 프레임이 독립 계산과 일치했습니다. 기준 좌표는 StringView가 만들었고 나머지 여섯 좌표는 호출자 스택의 복사본에서 공급했습니다. 사례당 준비에 모델 호출 72개가 있었고 최종 전송에는 없었습니다. 부분 혼합에는 첫 대상 워드 하나를 배경으로 쓰며, 경계가 닿아 높이가 0인 사례도 그 워드를 읽었습니다. Q7은 다른 마스크와 8비트 인덱스를 사용합니다. 별도 타이머 실험에서는 합성 상태의 설정·삽입·만료·지연 콜백을 대조했습니다. 후속 정적 대조에서 V+0x50의 부모·자식 클립이 config+0x14로 직접 복사되는 경로를 찾았습니다. 설정 63바이트 저장 뒤 선택된 그리기 분기에서 64바이트를 스택으로 옮기며, 표면 타입 5·회전값 0일 때 앞서 재현한 전송 함수로 향합니다. 예제 viewport 폭 80은 부모 폭 180과 자식 X 100에서 나오며, 호스트 RAM 폭 256과는 별개입니다. 등록 슬롯의 표면은 Canvas+0x1e0에서 스냅샷+0x1d8을 거쳐 중첩 그리기에 전달됩니다. 실제 receiver가 StringView 내부 객체이고 필요한 플래그가 성립할 때 텍스트 설정에 저장됩니다. 성공한 기술자 조회의 필드 복사와 타입 5의 32비트 워드 pitch를 정적으로 대조했습니다. 실제 메뉴 연결과 기술자 값은 관측하지 못했습니다.",
+          "next": "ScreenInputBuffer 기술자 D+8과 D+0x19·0x1c 필드의 생산자 및 실제 메뉴 연결을 추적합니다. 최상위 부모 클립과 대상 기종의 입력·팔레트 계약을 확인한 뒤 색공간 한 행을 PC에서 비교합니다. LCD·재부팅 뒤 설정 유지는 미검증입니다.",
           "sources": [
             "iii-icon",
             "iii-ui",
@@ -1163,7 +1209,9 @@
             "iii-clip",
             "iii-clip-data",
             "iii-viewport",
-            "iii-viewport-data"
+            "iii-viewport-data",
+            "iii-ui-surface",
+            "iii-ui-surface-data"
           ]
         },
         "k3ii": {

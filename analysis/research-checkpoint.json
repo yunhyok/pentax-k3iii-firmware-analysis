@@ -1,0 +1,86 @@
+{
+  "schema": 1,
+  "date": "2026-11-13",
+  "title": "세 기종 펌웨어 연구 인계",
+  "scope": "독립 검토를 마친 로컬 연구 네 건의 요약입니다. 원본 검사기와 실행 기록은 로컬에 보관합니다. 이 JSON은 근거의 식별값과 범위를 담으며, 단독으로 결과를 재현할 수 없습니다. 네 연구 목표는 진행 중입니다. 이번 인계에 실기 플래시·부팅이나 새 Lightroom 내보내기는 없습니다.",
+  "observations": [
+    {
+      "id": "k3iii-rmw-word",
+      "title": "K-3 III 할당기의 두 번째 RMW 워드",
+      "finding": "일반 little-endian RAM의 고정 주소 [0x56493264, 0x56493268)에서 중간의 외부 쓰기나 예외 없이 여섯 A32 명령이 순차 완료되면 마지막 값은 초기 워드와 관계없이 0입니다. 독립 바이트 배열 모델에서도 비영 최종값과 초기값 의존 반례를 찾는 질의는 모두 unsat였습니다.",
+      "limits": "중간 바이트는 초기값에 의존합니다. 기존 분류 48바이트 중 조건부로 증명한 범위는 8바이트이고 40바이트가 남았습니다. 기존 56바이트 허용 범위를 유지했습니다. 새 CPU 실행이나 물리 초기값 생산자 검증은 없었습니다.",
+      "evidence_sha256": "b100dbd73558b284d35c2ce203ed7a2a47dc22ce86fc7b8d7e89dfe1ae42eb19",
+      "review_sha256": "9f30d53a6bcd4805a9232ecc3494750e5294a57866b5d25962a9aa970ff309e2",
+      "prerequisite": [
+        "기존 48바이트 분류와 첫 워드 증명",
+        "rmw-scope/report.html"
+      ],
+      "evidence_kind": "local complete observation JSON",
+      "review_kind": "local independent review document"
+    },
+    {
+      "id": "q7-native-lut",
+      "title": "Q7 DCP의 세 LUT를 원본 SDK 함수에서 실행",
+      "finding": "고정 입력에서 원본 Adobe DNG SDK 참조 함수의 Q7 표본 42개와 항등 대조 28개를 검토했습니다. 독립 재실행 로그가 일치했습니다. 원본과 binary64 모델의 RGB 채널 최대 차이는 3.301793185528368e−7, 모델 HSV를 반올림해 SDK로 변환한 RGB와의 최대 차이는 4.76837158203125e−7입니다.",
+      "limits": "선택한 합성 입력의 관측 최댓값입니다. 세 표는 독립 적용했고, 조명 혼합과 RAW 렌더는 실행하지 않았습니다.",
+      "evidence_sha256": "e6cb65ec44bc4b2ed0a8a4b2065dbf698aaf8fa2a01f23efe339029a3043970e",
+      "review_sha256": "3b531e08084c678cf10047435370561af85354250c6228a2ca7a3782baaff93a",
+      "prerequisite": [
+        "Q7 DCP 저장 구조",
+        "https://yunhyok.github.io/pentax-q7-firmware-analysis/reports/q7-dcp-structure.html"
+      ],
+      "evidence_kind": "local complete observation JSON",
+      "review_kind": "local independent review document"
+    },
+    {
+      "id": "q7-white-mix",
+      "title": "Q7의 조명별 HueSatMap 혼합",
+      "finding": "고정 DCP의 두 조명 표에서 역온도 보간과 끝값 처리를 원본 SDK에 근거해 계산했습니다. 독립 계산에서 15건의 계수 관측을 대조했습니다. 한 합성 입력에서는 계수 혼합 뒤 V를 제한하는 값과, 각 표의 결과를 먼저 제한해 혼합하는 값의 차이가 0.0380834였습니다.",
+      "limits": "정규화 HSV의 V에 대한 수치 모형입니다. native real32 혼합, 휘도, Lightroom 출력이나 카메라 렌더와의 일치는 미확인입니다.",
+      "evidence_sha256": "e04f7e76f94a550d6a41e6eaed06b3438a5ab4bd26af7c17690f01b54d64f5ab",
+      "review_sha256": "2a713e9de5141d84b9223b265036e093edb5e4765622e9bf0271dc0cfe965ddd",
+      "prerequisite": [
+        "Q7 As Shot과 프로파일별 백색점",
+        "lightroom-as-shot.html"
+      ],
+      "evidence_kind": "local complete observation JSON",
+      "review_kind": "local independent review document"
+    },
+    {
+      "id": "k3ii-tone-event",
+      "title": "K-3 II 톤 필드의 저장과 복원",
+      "finding": "원본의 분리된 저장·복원 명령을 대조했습니다. 저장과 복원 사이에 owner 슬롯을 바꾼 조건을 독립 재현하자 기존 객체에는 0xAAAA가 남았고 새 객체에 0x1254가 기록됐습니다.",
+      "limits": "두 구간 사이의 원본 흐름, 실제 메뉴·촬영과 동일한 owner 수명은 미확인입니다. 별도 selector 5 경로와는 필드 형태를 비교했으며 같은 객체 인스턴스라는 근거는 없습니다.",
+      "evidence_sha256": "4b369154bc4aca336207228967ba66534ef52932f4c4a7f8b872c89ac2ff8baa",
+      "review_sha256": "14a22ea1db31d52de57651cb9fd742bf1648127f7e030c71ca1fdc73ae441cfa",
+      "prerequisite": [
+        "K-3 II 톤 설정 관리자",
+        "https://yunhyok.github.io/pentax-k3ii-firmware-analysis/analysis/tone-manager.html"
+      ],
+      "evidence_kind": "local complete observation JSON",
+      "review_kind": "local independent review document"
+    }
+  ],
+  "next": [
+    [
+      "수정 펌웨어 재구축",
+      "K-3 III의 남은 40바이트 중 한 워드에서 첫 기록자와 주소 도달 전제를 추적합니다. K-3 II는 실제 owner 생산자 한 곳을 연결합니다. 수정 이미지 수용·부팅과 독립 복구는 별도로 남아 있습니다.",
+      "rmw-scope/report.html"
+    ],
+    [
+      "Lightroom RAW 색 프로파일",
+      "Q7의 내부 백색점 세 조건에서 원본 SDK real32 혼합의 가중치와 셀 선택을 대조합니다. 실제 독립 RAW+JPEG 색 일치는 별도 검증입니다.",
+      "lightroom-sdk-stage3.html"
+    ],
+    [
+      "AF 알고리즘과 렌즈 구동",
+      "ElapsedTimer가 사용하는 D9 객체 슬롯 0x54784f6c의 생산자와 가상 함수 +0x6c의 원본 구현을 추적합니다. 실제 카운터 단위와 모터 동작은 미확인입니다.",
+      "af-adaptive-input.html"
+    ],
+    [
+      "K-3 III UI 이식",
+      "ScreenInputBuffer 기술자 D+8·D+0x19·D+0x1c의 생산자와 실제 메뉴 연결을 추적하고, 대상 기종의 좌표·팔레트·입력 계약에 대조합니다. 최상위 클립·LCD·실기 입력·이식 동작은 별도 검증입니다.",
+      "ui-surface-producers.html"
+    ]
+  ]
+}
