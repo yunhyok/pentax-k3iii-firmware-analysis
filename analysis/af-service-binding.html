@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>K-3 III Joint 모드 1의 ReloadTimer·Udc 바인딩</title>
+<link rel="stylesheet" href="../assets/site.css">
+<style>
+.binding-flow{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem}
+.binding-flow svg{min-width:0;max-width:264px;margin-inline:auto}
+.source-sha{overflow-wrap:anywhere}
+.address{white-space:nowrap}
+@media(max-width:760px){.binding-flow{grid-template-columns:1fr}}
+@media(max-width:400px){.diagram.binding-diagram{padding-inline:.35rem}.binding-flow .s{font-size:14px}}
+</style>
+</head>
+<body data-camera="k3iii">
+<!-- chrome:top -->
+<a class="skip" href="#main">본문 바로가기</a>
+<div class="topbar"><div class="topbar-in"><a class="brand" href="../index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="../index.html" aria-current="true">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="https://yunhyok.github.io/pentax-q7-firmware-analysis/">Q7</a></div><nav class="topnav" aria-label="주제"><a href="../index.html">개요</a><a href="guide-boot.html">부팅·저장소</a><a href="guide-update.html">업데이트</a><a href="guide-rebuild.html">재구축</a><a href="guide-rtos.html">명령·셸</a><a href="guide-color.html">색 처리</a><a href="lightroom-bridge.html">Lightroom</a><a href="af-foundations.html" aria-current="true">AF</a><a href="ui-port-contract.html">UI</a></nav></div></div>
+<nav class="crumbs" aria-label="현재 위치"><ol><li><a href="../index.html">PENTAX K-3 Mark III</a></li><li><a href="af-foundations.html">AF와 렌즈 제어</a></li><li aria-current="page">AF 서비스 객체와 레지스터 경계</li></ol></nav>
+<!-- /chrome:top -->
+<header class="page-head">
+<h1>Joint 모드 1의 ReloadTimer·Udc 바인딩</h1>
+<p class="lead">K-3 III 펌웨어 2.20에서 PafMotor의 리셋 호출이 어떤 객체를 사용하는지 원본 생성자와 레지스트리부터 추적했습니다. 채널 0은 ReloadTimer, 채널 1은 Udc에 연결됐습니다. 두 재생은 각각 첫 MMIO 접근 직전에 멈췄습니다.</p>
+</header>
+<div class="layout">
+<!-- chrome:toc -->
+<nav class="toc" aria-label="이 문서의 목차"><h2 data-toc="no">이 문서에서</h2><ol><li><a href="#binding">두 채널의 객체 연결</a></li><li><a href="#controls">레지스트리와 채널 대조</a></li><li><a href="#reproduce">재현 조건과 실행 범위</a></li></ol></nav>
+<!-- /chrome:toc -->
+<main class="doc" id="main">
+<section id="binding">
+<h2>두 채널의 객체 연결</h2>
+<figure class="diagram binding-diagram">
+<figcaption>PafMotor의 두 리셋 호출</figcaption>
+<div class="binding-flow">
+<svg class="dg" viewBox="0 0 264 254" role="img" aria-labelledby="timer-title timer-desc">
+<title id="timer-title">채널 0의 ReloadTimer 호출</title>
+<desc id="timer-desc">기본 키 0xd1의 ReloadTimer 포인터가 서비스 오프셋 0x38에 저장됩니다. 어댑터는 ROM vtable 슬롯 0x40으로 분기합니다. 주소 0x1e000020의 첫 읽기 직전에 재생을 멈췄습니다.</desc>
+<defs><marker id="timer-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path class="ah" d="M0 0L10 5L0 10z"/></marker></defs>
+<text class="t" x="6" y="19">채널 0 · ReloadTimer</text>
+<rect class="b ok" x="6" y="33" width="252" height="53" rx="7"/><text class="t" x="18" y="55">기본 장치 키 0xd1</text><text class="s" x="18" y="74">생성자가 레지스트리에 등록</text>
+<path class="e" d="M132 86V108" marker-end="url(#timer-arrow)"/>
+<rect class="b ok" x="6" y="111" width="252" height="53" rx="7"/><text class="t" x="18" y="133">서비스 +0x38 → vtable +0x40</text><text class="s mono" x="18" y="152">BX → 0x5326d4ec</text>
+<path class="e" d="M132 164V186" marker-end="url(#timer-arrow)"/>
+<rect class="b open" x="6" y="189" width="252" height="57" rx="7"/><text class="t" x="18" y="212">첫 읽기 직전 정지</text><text class="s mono" x="18" y="232">0x5326d4f0 · [0x1e000020]</text>
+</svg>
+<svg class="dg" viewBox="0 0 264 254" role="img" aria-labelledby="udc-title udc-desc">
+<title id="udc-title">채널 1의 Udc 호출</title>
+<desc id="udc-desc">채널 1 호출 지점부터 별도로 재생합니다. 기본 키 0x123의 객체를 Driver에서 Udc로 캐스트해 서비스 오프셋 0x3c에 씁니다. 객체의 채널 바이트가 결정한 주소의 첫 읽기 직전에 멈췄습니다.</desc>
+<defs><marker id="udc-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path class="ah" d="M0 0L10 5L0 10z"/></marker></defs>
+<text class="t" x="6" y="19">채널 1 · Udc · 별도 진입</text>
+<rect class="b ok" x="6" y="33" width="252" height="53" rx="7"/><text class="t" x="18" y="55">기본 장치 키 0x123</text><text class="s" x="18" y="74">생성자가 레지스트리에 등록</text>
+<path class="e" d="M132 86V108" marker-end="url(#udc-arrow)"/>
+<rect class="b ok" x="6" y="111" width="252" height="53" rx="7"/><text class="t" x="18" y="133">RTTI 캐스트 → 서비스 +0x3c</text><text class="s mono" x="18" y="152">LDRB [Udc+0x38]</text>
+<path class="e" d="M132 164V186" marker-end="url(#udc-arrow)"/>
+<rect class="b open" x="6" y="189" width="252" height="57" rx="7"/><text class="t" x="18" y="212">첫 읽기 직전 정지</text><text class="s mono" x="18" y="232">0x5334a3fc · 채널별 주소</text>
+</svg>
+</div>
+</figure>
+<p><a href="af-joint-control.html">Joint 이벤트 재생</a>에서 모드 1의 가상 호출 직전까지 확인했습니다. 이번 채널 0 대조는 원본 이벤트 처리기 <code class="address">0x52f0853c</code>부터 들어가 호출을 따라갑니다. 채널 1 대조는 리셋의 두 번째 호출 지점 <code class="address">0x52f0bb00</code>에 따로 진입합니다. 채널 0의 MMIO 반환은 합성하지 않았습니다.</p>
+<ol class="steps">
+<li><strong>ReloadTimer 등록과 가상 호출</strong>ReloadTimerFactory의 ROM 슬롯은 생성 함수 <code class="address">0x5326e230</code>을 가리킵니다. D1 생성 블록은 생성자 <code class="address">0x5326dd7c</code>에 기본 키 <code>0xd1</code>과 IRQ 키 <code>0x58</code>을 넘깁니다. 생성자는 vptr <code class="address">0x53ca9a00</code>과 MMIO 포인터 <code class="address">0x1e000020</code>을 설정합니다. 서비스 바인더는 <code class="address">0x53177be0</code>에서 D1 조회 결과를 <code>+0x38</code>에 저장합니다. <code class="address">0x531784b8</code>부터 그 포인터와 ROM 슬롯 <code class="address">0x53ca9a40</code>을 읽어 <code class="address">0x5326d4ec</code>으로 분기합니다.</li>
+<li><strong>Udc 등록과 타입 확인</strong>UdcFactory의 ROM 슬롯은 생성 함수 <code class="address">0x53272ec4</code>를 가리킵니다. 생성자 <code class="address">0x53272540</code>는 vptr <code class="address">0x53ca9c08</code>을 설정하고 기본 키 <code>0x123</code>과 IRQ 키 <code>0x67</code>에 등록합니다. 서비스 바인더는 <code class="address">0x53177c1c</code>의 원본 C++ RTTI 캐스트에서 <code>Driver → Udc</code>를 확인하고 결과를 <code>+0x3c</code>에 씁니다. <code class="address">0x531784b4</code>에서 분기한 <code class="address">0x532726e8</code>은 Udc <code>+0x38</code>의 하위 1바이트를 읽습니다.</li>
+</ol>
+<p>두 재생에서 AfDeviceFactory와 PafMotor 바인더가 같은 서비스 객체를 연결했습니다. 레지스트리 기본 키와 IRQ 키는 각각 <code class="address">0x54784538</code>, <code class="address">0x54785994</code>의 별도 테이블에서 사용합니다.</p>
+</section>
+<section id="controls">
+<h2>레지스트리와 채널 대조</h2>
+<div class="table-wrap" tabindex="0" aria-label="채널 0 대조 표"><table>
+<caption>채널 0 · ReloadTimer</caption>
+<thead><tr><th scope="col">등록 조건</th><th scope="col">관찰한 결과</th></tr></thead>
+<tbody>
+<tr><th scope="row">D1만 등록</th><td>서비스가 D1 객체를 받아 <code class="address">0x5326d4f0</code>에서 <code class="address">0x1e000020</code>의 32비트 읽기 직전에 멈췄습니다.</td></tr>
+<tr><th scope="row">D2만 등록</th><td>D2는 같은 vptr과 별도 MMIO 주소 <code class="address">0x1e000030</code>을 갖습니다. 서비스 <code>+0x38</code>은 0이었고 <code class="address">0x531784bc</code>의 널 역참조 직전에 멈췄습니다.</td></tr>
+<tr><th scope="row">D2 뒤에 D1 등록</th><td>D2를 먼저 등록한 대조에서도 키 D1의 객체가 선택됐습니다.</td></tr>
+<tr><th scope="row">D1 중복 등록</th><td>공장 슬롯은 새 객체를 받았지만 기본 D1과 IRQ <code>0x58</code>은 첫 객체를 유지했습니다. 서비스도 첫 객체를 받았습니다.</td></tr>
+</tbody></table></div>
+<div class="table-wrap" tabindex="0" aria-label="채널 1 대조 표"><table>
+<caption>채널 1 · Udc</caption>
+<thead><tr><th scope="col">등록·카운터 조건</th><th scope="col">관찰한 결과</th></tr></thead>
+<tbody>
+<tr><th scope="row">키 <code>0x123</code>, 카운터 1 또는 5</th><td>원본 할당 함수가 객체 <code>+0x38</code>에 32비트 채널 번호를 쓰고 전역 카운터를 1 높였습니다. 첫 32비트 읽기 주소는 <code>0x1e00200c + (channel &lt;&lt; 5)</code>에 따라 각각 <code class="address">0x1e00202c</code>, <code class="address">0x1e0020ac</code>이었습니다.</td></tr>
+<tr><th scope="row">인접 키만 등록 또는 Udc 미등록</th><td>키 <code>0x124</code>의 Udc만 등록한 경우와 등록 객체가 없는 경우 모두 서비스 <code>+0x3c</code>가 0이었습니다. 두 경우 모두 <code class="address">0x532726e8</code>의 널 역참조 직전에 멈췄습니다.</td></tr>
+<tr><th scope="row">키 <code>0x123</code>에 ReloadTimer</th><td>대조용으로 다른 타입의 원본 생성 객체를 같은 키에 등록했습니다. 원본 RTTI 캐스트 결과가 0이었고 같은 널 역참조 직전에 멈췄습니다.</td></tr>
+<tr><th scope="row">초기 카운터 0</th><td>채널 1 리셋에 앞서 Udc 초기화 함수로 들어갔습니다. <code class="address">0x5334a26c</code>에서 <code class="address">0x1e002014</code>에 <code>0x8008</code>을 32비트로 쓰기 직전에 멈췄습니다.</td></tr>
+<tr><th scope="row">카운터 6</th><td>할당 함수가 객체에 6, 전역에 7을 기록하고 거짓 조건을 assertion 서비스 <code class="address">0x530fdfc4</code>로 넘기는 지점에서 멈췄습니다. 리셋 호출과 assertion 본문은 실행 범위 밖입니다.</td></tr>
+</tbody></table></div>
+<p>정적 명령을 보면 ReloadTimer 리셋은 첫 읽기 뒤 <code>BIC #6</code>과 되쓰기, <code>DMB SY</code>로 이어집니다. Udc 리셋은 <code>ORR #0x1c</code>와 bit 7 지우기, 되쓰기, <code>DSB SY</code>로 이어집니다. 이 명령들은 두 재생의 정지 지점 뒤에 있습니다.</p>
+</section>
+<section id="reproduce">
+<h2>재현 조건과 실행 범위</h2>
+<p>원본 생성·등록·바인딩 구간을 같은 RAM에서 단계별로 실행했습니다. 할당 주소, 단계별 스택과 레지스터, 일부 플랫폼 및 공장 상태는 하네스가 공급했습니다. Udc의 warm 카운터 1·5와 Joint 상태도 합성 입력입니다. 가드, 할당, 종료 콜백 등록, 진단·assertion, mutex 생성은 대체 호출을 사용했습니다. MMIO 페이지는 매핑하지 않았습니다. 실제 부팅에서의 객체 수명, 물리 단위, SDM·바디 모터의 대응과 동작은 확인되지 않았습니다.</p>
+<p>Unicorn 2.1.4에서 채널 0 네 건, 채널 1 일곱 건을 실행했습니다. Cortex-A7 기본 실행과 <code>r1–r3/r12</code>·NZCV를 덮은 Cortex-A7·A15 대조의 기록이 각각 일치했습니다. RTOS 직접 입력과 decoded 입력에서 같은 JSON을 얻었고, 실행 전후의 전체 원본 매핑 해시도 확인했습니다.</p>
+<pre><code>python verify_af_service_binding.py /path/to/original-rtos.bin --output new-reloadtimer-checks.json
+python verify_af_udc_binding.py /path/to/original-decoded.bin --output new-udc-checks.json</code></pre>
+<p>두 재현기 모두 아래 SHA-256에 해당하는 RTOS 또는 decoded 파일을 읽습니다. decoded 내부 RTOS 시작 오프셋은 <code>0x1c19c</code>입니다. 새 출력 경로를 사용하고 Python 최적화 모드는 끕니다.</p>
+<dl>
+<dt>RTOS · 25,483,200바이트</dt><dd><code class="source-sha">342d2f35405e8daf1797dfe431d2e4aa70f4b52a2c242a29df48206672f1dfb4</code></dd>
+<dt>Decoded · 78,683,892바이트</dt><dd><code class="source-sha">7ff301d585ef7adcd620a15575faa39b4227cc5a27eaa8d754efe50f667a30f9</code></dd>
+</dl>
+<ul>
+<li>채널 0 · <a href="af-service-binding-checks.json">원본 범위와 실행 결과</a> · <a href="../verify_af_service_binding.py">재현기</a></li>
+<li>채널 1 · <a href="af-udc-binding-checks.json">원본 범위와 실행 결과</a> · <a href="../verify_af_udc_binding.py">재현기</a></li>
+</ul>
+</section>
+</main>
+</div>
+<!-- chrome:bottom -->
+<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">AF와 렌즈 제어 — 이 주제의 문서</h2><ol><li><a href="af-foundations.html">AF와 렌즈 제어 안내<span>세 기종 비교</span></a></li><li><a href="af-drive-architecture.html">렌즈 구동 선택·명령·응답<span>렌즈 능력에 따른 구동 선택과 명령</span></a></li><li><a href="af-joint-control.html">Joint 요청과 하위 제어<span>이벤트 0x80에서 첫 서비스·레지스터 경계까지</span></a></li><li><a href="af-service-binding.html" aria-current="page">AF 서비스 객체와 레지스터 경계<span>ReloadTimer·Udc의 두 별도 실행</span></a></li><li><a href="af-request-consumer.html">AF 요청 큐와 완료 통지<span>요청 슬롯, 처리 task, 완료 통지</span></a></li></ol></nav>
+<nav class="pager" aria-label="이전·다음 문서"><a class="prev" href="af-joint-control.html"><small>← 이전</small>Joint 요청과 하위 제어</a><a class="next" href="af-request-consumer.html"><small>다음 →</small>AF 요청 큐와 완료 통지</a></nav>
+<footer class="sitefoot"><div class="sitefoot-in"><nav aria-label="사이트"><a href="../index.html#map">문서 지도</a><a href="../index.html#levels">검증 수준 읽는 법</a><a href="../glossary.html">용어집</a><a href="research-program.html">세 기종 연구 본부</a><a href="https://github.com/yunhyok/pentax-k3iii-firmware-analysis">GitHub 저장소</a></nav><p>PENTAX 펌웨어 연구. PC에서 수행한 정적 분석과 에뮬레이션 결과이며, 카메라 실기에서 검증한 내용이 아닙니다. 원본 펌웨어와 추출한 독점 코드는 포함하지 않습니다.</p></div></footer>
+<!-- /chrome:bottom -->
+</body>
+</html>
