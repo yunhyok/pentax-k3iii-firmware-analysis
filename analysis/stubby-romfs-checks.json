@@ -1,0 +1,729 @@
+{
+  "passed": true,
+  "input_sha256": "fcb11ce850f22420ddd6a29d63ef9074ad6322bc021d0ba101e1354d1277b9c2",
+  "linux_sha256": "fcb11ce850f22420ddd6a29d63ef9074ad6322bc021d0ba101e1354d1277b9c2",
+  "case_count": 6,
+  "engine": {
+    "name": "Unicorn",
+    "version": "2.1.4",
+    "cpu": "Cortex-A7",
+    "mode": "ARM Thumb little endian"
+  },
+  "synthetic": {
+    "base": "0x41000000",
+    "stack": "0x7000f000",
+    "return_sentinel": "0x70000f00",
+    "maps": [
+      {
+        "base": "0x41000000",
+        "size": 3211264
+      },
+      {
+        "base": "0x40004000",
+        "size": 4096
+      },
+      {
+        "base": "0x40007000",
+        "size": 8192
+      },
+      {
+        "base": "0x427ff000",
+        "size": 69632
+      },
+      {
+        "base": "0x70000000",
+        "size": 65536
+      }
+    ]
+  },
+  "instruction_limit_per_call": 400000,
+  "original_mapping_permissions": "read+execute",
+  "source_ranges": [
+    {
+      "name": "wrapper",
+      "start": "0x9fc",
+      "end": "0xa52",
+      "sha256": "4d53bb01ff17b65beb27ec8ad03c917e00df92cb318548869626c55c499a9833"
+    },
+    {
+      "name": "mount",
+      "start": "0xedc",
+      "end": "0xf1e",
+      "sha256": "0badb2b3dc276715c774150e14d7ce8c718d9140ab79961b69e9c99e916e2ff2"
+    },
+    {
+      "name": "pic_dereference",
+      "start": "0x1080",
+      "end": "0x1098",
+      "sha256": "bcfd9bf5283cbbf9c36a73dbee49c4bc63bd3a994fcbf8ca8395d0ff47fbbaf1"
+    },
+    {
+      "name": "get_address",
+      "start": "0xea4",
+      "end": "0xed4",
+      "sha256": "e52cd97db37f46f1c5946c95e5406bf3d6e41f4fd206e52d6365adfdf5a2f78b"
+    },
+    {
+      "name": "lookup",
+      "start": "0xd30",
+      "end": "0xe52",
+      "sha256": "08a34d703f3e2cbe5f0f49114ee81dd03874e4bf5363041b2ca746afd5ae02f3"
+    },
+    {
+      "name": "read_bigendian",
+      "start": "0xd04",
+      "end": "0xd1a",
+      "sha256": "a1565b2a1f1bf2f6b1f9b7a0f119e18a7cbb0b65774c610c92d825a45945af39"
+    },
+    {
+      "name": "pad_name",
+      "start": "0xd1a",
+      "end": "0xd30",
+      "sha256": "7fdc41564e6519496c10e585a668108b9d3fbbf95743e4ff0e3bdb26433ef8d3"
+    },
+    {
+      "name": "read",
+      "start": "0xe5c",
+      "end": "0xe9c",
+      "sha256": "8fa42ad5be0f8963f5e18b1aba5dde6f7a4b13abec438e8261b8814eb7a338e8"
+    },
+    {
+      "name": "copy_bytes",
+      "start": "0x122e",
+      "end": "0x1244",
+      "sha256": "42b747a73d135264005691f2d3906e30649f57450a499a463b7e5c82daa5db17"
+    }
+  ],
+  "explicit_stubs": [],
+  "cases": [
+    {
+      "label": "missing_bootloader",
+      "calls": [
+        {
+          "phase": "mount",
+          "entry_offset": "0xedc",
+          "arguments": [
+            "0x41008000"
+          ],
+          "result": 0,
+          "instruction_count": 39,
+          "executed_ranges": {
+            "mount": 28,
+            "pic_dereference": 11
+          },
+          "stop_pc": "0x70000f00",
+          "sp_and_r4_r11_preserved": true
+        },
+        {
+          "phase": "operation",
+          "entry_offset": "0x9fc",
+          "arguments": [
+            "0x0",
+            "0x41002b43",
+            "0x40008000",
+            "0x100000"
+          ],
+          "result": 4294967295,
+          "instruction_count": 375,
+          "executed_ranges": {
+            "wrapper": 14,
+            "get_address": 12,
+            "lookup": 221,
+            "pad_name": 56,
+            "read_bigendian": 72
+          },
+          "stop_pc": "0x70000f00",
+          "sp_and_r4_r11_preserved": true
+        }
+      ],
+      "critical_trace": [
+        {
+          "phase": "mount",
+          "offset": "0xedc"
+        },
+        {
+          "phase": "operation",
+          "offset": "0x9fc"
+        },
+        {
+          "phase": "operation",
+          "offset": "0xa08"
+        },
+        {
+          "phase": "operation",
+          "offset": "0xa0e"
+        },
+        {
+          "phase": "operation",
+          "offset": "0xea4"
+        }
+      ],
+      "destination_write_events": 0,
+      "passed": true,
+      "result": 4294967295,
+      "source_argument": 0,
+      "maxsize": 1048576,
+      "kernel_pointer": "0x40008000",
+      "dtb_pointer": "0x42800000",
+      "initrd_pointer": "0x43000000",
+      "mount_pointer": "0x41008000",
+      "read_callback": "0x41000e5d",
+      "destination": "0x40008000",
+      "destination_bytes_checked": 4096,
+      "destination_sha256": "f600eca824e84a43f0691b267bd620e462c50da165c5b80e17aecb7a924f1fa8",
+      "copied_bytes": 0,
+      "copied_bytes_equal_original": true,
+      "copied_bytes_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_copy_offset": null,
+      "ordered_one_byte_stores_verified": true,
+      "copy_store_offset": null,
+      "head_canary_bytes": 16,
+      "head_canary_preserved": true,
+      "tail_canary_bytes": 4096,
+      "tail_canary_preserved": true,
+      "other_destination_preserved": true,
+      "mapped_image_sha256": "fcb11ce850f22420ddd6a29d63ef9074ad6322bc021d0ba101e1354d1277b9c2",
+      "original_payload_bytes_checked": 3062784,
+      "entire_original_payload_unchanged": true
+    },
+    {
+      "label": "kernel_xip",
+      "calls": [
+        {
+          "phase": "mount",
+          "entry_offset": "0xedc",
+          "arguments": [
+            "0x41008000"
+          ],
+          "result": 0,
+          "instruction_count": 39,
+          "executed_ranges": {
+            "mount": 28,
+            "pic_dereference": 11
+          },
+          "stop_pc": "0x70000f00",
+          "sp_and_r4_r11_preserved": true
+        },
+        {
+          "phase": "operation",
+          "entry_offset": "0x9fc",
+          "arguments": [
+            "0x0",
+            "0x41002b53",
+            "0x40008000",
+            "0x27f8000"
+          ],
+          "result": 2993056,
+          "instruction_count": 517,
+          "executed_ranges": {
+            "wrapper": 31,
+            "get_address": 19,
+            "lookup": 292,
+            "pad_name": 112,
+            "read_bigendian": 63
+          },
+          "stop_pc": "0x70000f00",
+          "sp_and_r4_r11_preserved": true
+        }
+      ],
+      "critical_trace": [
+        {
+          "phase": "mount",
+          "offset": "0xedc"
+        },
+        {
+          "phase": "operation",
+          "offset": "0x9fc"
+        },
+        {
+          "phase": "operation",
+          "offset": "0xa08"
+        },
+        {
+          "phase": "operation",
+          "offset": "0xa0e"
+        },
+        {
+          "phase": "operation",
+          "offset": "0xea4"
+        },
+        {
+          "phase": "operation",
+          "offset": "0xec2"
+        },
+        {
+          "phase": "operation",
+          "offset": "0xa20"
+        },
+        {
+          "phase": "operation",
+          "offset": "0xa28"
+        },
+        {
+          "phase": "operation",
+          "offset": "0xa36"
+        }
+      ],
+      "destination_write_events": 0,
+      "passed": true,
+      "result": 2993056,
+      "source_argument": 0,
+      "maxsize": 41910272,
+      "kernel_pointer": "0x41009000",
+      "dtb_pointer": "0x42800000",
+      "initrd_pointer": "0x43000000",
+      "mount_pointer": "0x41008000",
+      "read_callback": "0x41000e5d",
+      "destination": "0x40008000",
+      "destination_bytes_checked": 4096,
+      "destination_sha256": "f600eca824e84a43f0691b267bd620e462c50da165c5b80e17aecb7a924f1fa8",
+      "copied_bytes": 0,
+      "copied_bytes_equal_original": true,
+      "copied_bytes_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_copy_offset": null,
+      "ordered_one_byte_stores_verified": true,
+      "copy_store_offset": null,
+      "head_canary_bytes": 16,
+      "head_canary_preserved": true,
+      "tail_canary_bytes": 4096,
+      "tail_canary_preserved": true,
+      "other_destination_preserved": true,
+      "mapped_image_sha256": "fcb11ce850f22420ddd6a29d63ef9074ad6322bc021d0ba101e1354d1277b9c2",
+      "original_payload_bytes_checked": 3062784,
+      "entire_original_payload_unchanged": true
+    },
+    {
+      "label": "dtb_copy",
+      "calls": [
+        {
+          "phase": "mount",
+          "entry_offset": "0xedc",
+          "arguments": [
+            "0x41008000"
+          ],
+          "result": 0,
+          "instruction_count": 39,
+          "executed_ranges": {
+            "mount": 28,
+            "pic_dereference": 11
+          },
+          "stop_pc": "0x70000f00",
+          "sp_and_r4_r11_preserved": true
+        },
+        {
+          "phase": "operation",
+          "entry_offset": "0x9fc",
+          "arguments": [
+            "0x0",
+            "0x41002b76",
+            "0x42800000",
+            "0xc800"
+          ],
+          "result": 32694,
+          "instruction_count": 164558,
+          "executed_ranges": {
+            "wrapper": 31,
+            "get_address": 19,
+            "lookup": 636,
+            "pad_name": 208,
+            "read_bigendian": 162,
+            "read": 26,
+            "copy_bytes": 163476
+          },
+          "stop_pc": "0x70000f00",
+          "sp_and_r4_r11_preserved": true
+        }
+      ],
+      "critical_trace": [
+        {
+          "phase": "mount",
+          "offset": "0xedc"
+        },
+        {
+          "phase": "operation",
+          "offset": "0x9fc"
+        },
+        {
+          "phase": "operation",
+          "offset": "0xa08"
+        },
+        {
+          "phase": "operation",
+          "offset": "0xa0e"
+        },
+        {
+          "phase": "operation",
+          "offset": "0xea4"
+        },
+        {
+          "phase": "operation",
+          "offset": "0xec2"
+        },
+        {
+          "phase": "operation",
+          "offset": "0xa28"
+        },
+        {
+          "phase": "operation",
+          "offset": "0xa3a"
+        },
+        {
+          "phase": "operation",
+          "offset": "0xa46"
+        },
+        {
+          "phase": "operation",
+          "offset": "0xe5c"
+        },
+        {
+          "phase": "operation",
+          "offset": "0xe7c"
+        },
+        {
+          "phase": "operation",
+          "offset": "0xe84"
+        },
+        {
+          "phase": "operation",
+          "offset": "0xe92"
+        }
+      ],
+      "destination_write_events": 32694,
+      "passed": true,
+      "result": 32694,
+      "source_argument": 0,
+      "maxsize": 51200,
+      "kernel_pointer": "0x40008000",
+      "dtb_pointer": "0x42800000",
+      "initrd_pointer": "0x43000000",
+      "mount_pointer": "0x41008000",
+      "read_callback": "0x41000e5d",
+      "destination": "0x42800000",
+      "destination_bytes_checked": 36864,
+      "destination_sha256": "b8c284013c048367e76acad200cd3d74e24f707cdd7c514e2aab7f441e81cb79",
+      "copied_bytes": 32694,
+      "copied_bytes_equal_original": true,
+      "copied_bytes_sha256": "b7968478e48fd492678512ef0efaee63f0fb298ad5d3781bc9975994c0d3b70b",
+      "original_copy_offset": "0x2e3be0",
+      "ordered_one_byte_stores_verified": true,
+      "copy_store_offset": "0x123c",
+      "head_canary_bytes": 16,
+      "head_canary_preserved": true,
+      "tail_canary_bytes": 4170,
+      "tail_canary_preserved": true,
+      "other_destination_preserved": true,
+      "mapped_image_sha256": "fcb11ce850f22420ddd6a29d63ef9074ad6322bc021d0ba101e1354d1277b9c2",
+      "original_payload_bytes_checked": 3062784,
+      "entire_original_payload_unchanged": true
+    },
+    {
+      "label": "bounded_direct_copy",
+      "calls": [
+        {
+          "phase": "mount",
+          "entry_offset": "0xedc",
+          "arguments": [
+            "0x41008000"
+          ],
+          "result": 0,
+          "instruction_count": 39,
+          "executed_ranges": {
+            "mount": 28,
+            "pic_dereference": 11
+          },
+          "stop_pc": "0x70000f00",
+          "sp_and_r4_r11_preserved": true
+        },
+        {
+          "phase": "operation",
+          "entry_offset": "0xe5c",
+          "arguments": [
+            "0x41002b76",
+            "0x42800000",
+            "0x11"
+          ],
+          "result": 17,
+          "instruction_count": 619,
+          "executed_ranges": {
+            "read": 25,
+            "lookup": 318,
+            "pad_name": 104,
+            "read_bigendian": 81,
+            "copy_bytes": 91
+          },
+          "stop_pc": "0x70000f00",
+          "sp_and_r4_r11_preserved": true
+        }
+      ],
+      "critical_trace": [
+        {
+          "phase": "mount",
+          "offset": "0xedc"
+        },
+        {
+          "phase": "operation",
+          "offset": "0xe5c"
+        },
+        {
+          "phase": "operation",
+          "offset": "0xe7c"
+        },
+        {
+          "phase": "operation",
+          "offset": "0xe92"
+        }
+      ],
+      "destination_write_events": 17,
+      "passed": true,
+      "result": 17,
+      "source_argument": null,
+      "maxsize": 17,
+      "kernel_pointer": "0x40008000",
+      "dtb_pointer": "0x42800000",
+      "initrd_pointer": "0x43000000",
+      "mount_pointer": "0x41008000",
+      "read_callback": "0x41000e5d",
+      "destination": "0x42800000",
+      "destination_bytes_checked": 36864,
+      "destination_sha256": "cfc5ebf6c95e21b987f7c6388e42c43df351b70bb369c80c0a4a2d60630cdbaa",
+      "copied_bytes": 17,
+      "copied_bytes_equal_original": true,
+      "copied_bytes_sha256": "aa8709b2a27f463edc245551fc40fc5a02f5fa87b788f41b437a29ca9dd936d5",
+      "original_copy_offset": "0x2e3be0",
+      "ordered_one_byte_stores_verified": true,
+      "copy_store_offset": "0x123c",
+      "head_canary_bytes": 16,
+      "head_canary_preserved": true,
+      "tail_canary_bytes": 36847,
+      "tail_canary_preserved": true,
+      "other_destination_preserved": true,
+      "mapped_image_sha256": "fcb11ce850f22420ddd6a29d63ef9074ad6322bc021d0ba101e1354d1277b9c2",
+      "original_payload_bytes_checked": 3062784,
+      "entire_original_payload_unchanged": true
+    },
+    {
+      "label": "kernel_maxsize17_xip",
+      "calls": [
+        {
+          "phase": "mount",
+          "entry_offset": "0xedc",
+          "arguments": [
+            "0x41008000"
+          ],
+          "result": 0,
+          "instruction_count": 39,
+          "executed_ranges": {
+            "mount": 28,
+            "pic_dereference": 11
+          },
+          "stop_pc": "0x70000f00",
+          "sp_and_r4_r11_preserved": true
+        },
+        {
+          "phase": "operation",
+          "entry_offset": "0x9fc",
+          "arguments": [
+            "0x0",
+            "0x41002b53",
+            "0x40008000",
+            "0x11"
+          ],
+          "result": 2993056,
+          "instruction_count": 517,
+          "executed_ranges": {
+            "wrapper": 31,
+            "get_address": 19,
+            "lookup": 292,
+            "pad_name": 112,
+            "read_bigendian": 63
+          },
+          "stop_pc": "0x70000f00",
+          "sp_and_r4_r11_preserved": true
+        }
+      ],
+      "critical_trace": [
+        {
+          "phase": "mount",
+          "offset": "0xedc"
+        },
+        {
+          "phase": "operation",
+          "offset": "0x9fc"
+        },
+        {
+          "phase": "operation",
+          "offset": "0xa08"
+        },
+        {
+          "phase": "operation",
+          "offset": "0xa0e"
+        },
+        {
+          "phase": "operation",
+          "offset": "0xea4"
+        },
+        {
+          "phase": "operation",
+          "offset": "0xec2"
+        },
+        {
+          "phase": "operation",
+          "offset": "0xa20"
+        },
+        {
+          "phase": "operation",
+          "offset": "0xa28"
+        },
+        {
+          "phase": "operation",
+          "offset": "0xa36"
+        }
+      ],
+      "destination_write_events": 0,
+      "passed": true,
+      "result": 2993056,
+      "source_argument": 0,
+      "maxsize": 17,
+      "kernel_pointer": "0x41009000",
+      "dtb_pointer": "0x42800000",
+      "initrd_pointer": "0x43000000",
+      "mount_pointer": "0x41008000",
+      "read_callback": "0x41000e5d",
+      "destination": "0x40008000",
+      "destination_bytes_checked": 4096,
+      "destination_sha256": "f600eca824e84a43f0691b267bd620e462c50da165c5b80e17aecb7a924f1fa8",
+      "copied_bytes": 0,
+      "copied_bytes_equal_original": true,
+      "copied_bytes_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_copy_offset": null,
+      "ordered_one_byte_stores_verified": true,
+      "copy_store_offset": null,
+      "head_canary_bytes": 16,
+      "head_canary_preserved": true,
+      "tail_canary_bytes": 4096,
+      "tail_canary_preserved": true,
+      "other_destination_preserved": true,
+      "mapped_image_sha256": "fcb11ce850f22420ddd6a29d63ef9074ad6322bc021d0ba101e1354d1277b9c2",
+      "original_payload_bytes_checked": 3062784,
+      "entire_original_payload_unchanged": true
+    },
+    {
+      "label": "kernel_maxsize17_copy",
+      "calls": [
+        {
+          "phase": "mount",
+          "entry_offset": "0xedc",
+          "arguments": [
+            "0x41008000"
+          ],
+          "result": 0,
+          "instruction_count": 39,
+          "executed_ranges": {
+            "mount": 28,
+            "pic_dereference": 11
+          },
+          "stop_pc": "0x70000f00",
+          "sp_and_r4_r11_preserved": true
+        },
+        {
+          "phase": "operation",
+          "entry_offset": "0x9fc",
+          "arguments": [
+            "0x1",
+            "0x41002b53",
+            "0x40008000",
+            "0x11"
+          ],
+          "result": 17,
+          "instruction_count": 600,
+          "executed_ranges": {
+            "wrapper": 17,
+            "read": 25,
+            "lookup": 292,
+            "pad_name": 112,
+            "read_bigendian": 63,
+            "copy_bytes": 91
+          },
+          "stop_pc": "0x70000f00",
+          "sp_and_r4_r11_preserved": true
+        }
+      ],
+      "critical_trace": [
+        {
+          "phase": "mount",
+          "offset": "0xedc"
+        },
+        {
+          "phase": "operation",
+          "offset": "0x9fc"
+        },
+        {
+          "phase": "operation",
+          "offset": "0xa08"
+        },
+        {
+          "phase": "operation",
+          "offset": "0xa3a"
+        },
+        {
+          "phase": "operation",
+          "offset": "0xa46"
+        },
+        {
+          "phase": "operation",
+          "offset": "0xe5c"
+        },
+        {
+          "phase": "operation",
+          "offset": "0xe7c"
+        },
+        {
+          "phase": "operation",
+          "offset": "0xe92"
+        }
+      ],
+      "destination_write_events": 17,
+      "passed": true,
+      "result": 17,
+      "source_argument": 1,
+      "maxsize": 17,
+      "kernel_pointer": "0x40008000",
+      "dtb_pointer": "0x42800000",
+      "initrd_pointer": "0x43000000",
+      "mount_pointer": "0x41008000",
+      "read_callback": "0x41000e5d",
+      "destination": "0x40008000",
+      "destination_bytes_checked": 4096,
+      "destination_sha256": "373fdbe7ca7123aab62a6415d560e0fa04f4323e96de2f57d5f0cb722dc27eb0",
+      "copied_bytes": 17,
+      "copied_bytes_equal_original": true,
+      "copied_bytes_sha256": "c80fe044c18fc5953a99290bfa3cb0f2c4c97602010aa3dd84a74c45ec14a40b",
+      "original_copy_offset": "0x9000",
+      "ordered_one_byte_stores_verified": true,
+      "copy_store_offset": "0x123c",
+      "head_canary_bytes": 16,
+      "head_canary_preserved": true,
+      "tail_canary_bytes": 4079,
+      "tail_canary_preserved": true,
+      "other_destination_preserved": true,
+      "mapped_image_sha256": "fcb11ce850f22420ddd6a29d63ef9074ad6322bc021d0ba101e1354d1277b9c2",
+      "original_payload_bytes_checked": 3062784,
+      "entire_original_payload_unchanged": true
+    }
+  ],
+  "hooks": [
+    "Code: count executed instructions, enforce nine original ranges, record selected offsets.",
+    "Write: destination buffer only; assert ordered one-byte stores at offset0x123c. Globals and head canaries are checked after return.",
+    "Invalid/protection access: stop with an error. No hook supplies return values or patches instructions."
+  ],
+  "scope": [
+    "User-supplied original LINUX code and ROMFS; full guest image bytes checked after each case. No ROMFS mutation.",
+    "Base0x41000000, stack, destination, globals and call arguments are synthetic, not measured physical placement.",
+    "source1 is a synthetic wrapper input; selected loader984 uses source0. Source1 caller reachability remains unverified.",
+    "Each native mount and operation returns to a synthetic sentinel; no selected kernel/image entry executes.",
+    "No ROMFS checksum, complete loader, Boot ROM authentication, modified-image acceptance or camera-device behavior is proven.",
+    "Earlier all-address write-observer attempts failed at a2c. Observer scope and RX protection changed together before success; cause remains unisolated."
+  ],
+  "disk_input_sha256_after": "fcb11ce850f22420ddd6a29d63ef9074ad6322bc021d0ba101e1354d1277b9c2",
+  "disk_input_unchanged": true
+}

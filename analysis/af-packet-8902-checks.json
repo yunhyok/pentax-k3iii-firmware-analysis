@@ -1,0 +1,1766 @@
+{
+  "rtos_sha256": "342d2f35405e8daf1797dfe431d2e4aa70f4b52a2c242a29df48206672f1dfb4",
+  "accepted_decoded_sha256": "7ff301d585ef7adcd620a15575faa39b4227cc5a27eaa8d754efe50f667a30f9",
+  "input_bytes": {
+    "rtos": 25483200,
+    "decoded": 78683892
+  },
+  "decoded_rtos_offset": "0x1c19c",
+  "cpu": "Unicorn 2.1.4, A32 little-endian",
+  "replay_controls": {
+    "case_records_equal": true,
+    "mapped_original_sha256_after": {
+      "Cortex-A15": "342d2f35405e8daf1797dfe431d2e4aa70f4b52a2c242a29df48206672f1dfb4",
+      "Cortex-A15-volatile-clobber": "342d2f35405e8daf1797dfe431d2e4aa70f4b52a2c242a29df48206672f1dfb4",
+      "Cortex-A7-volatile-clobber": "342d2f35405e8daf1797dfe431d2e4aa70f4b52a2c242a29df48206672f1dfb4"
+    },
+    "clobber": "Overwrite r1-r3 and r12 with sentinels and invert NZCV at each stub return"
+  },
+  "source_ranges": {
+    "multiply-caller": {
+      "start": "0x52cbddd8",
+      "end_exclusive": "0x52cbde70",
+      "sha256": "06d794ca5d94d0bfaebf28d931abbf778120ed9347b02c54ee04551e428f0757"
+    },
+    "multiply-factor": {
+      "start": "0x52cbdd88",
+      "end_exclusive": "0x52cbddd8",
+      "sha256": "b0a3802a17d2879c929da03b4cfcd93a0a076f60b6351bd2a07f36bb1508dd87"
+    },
+    "reciprocal-caller": {
+      "start": "0x52f05680",
+      "end_exclusive": "0x52f057fc",
+      "sha256": "0d49d3f36a7476de9e49afb7a0c5f893b351d9f8a25a73d16b5914e51de5bc8f"
+    },
+    "reciprocal-value": {
+      "start": "0x52f01010",
+      "end_exclusive": "0x52f0103c",
+      "sha256": "74e5ccd9435b3db48f6b3d14d540afc52d796f27846f3e34a5b2339a9d1c47d6"
+    },
+    "signed-divide": {
+      "start": "0x526a8364",
+      "end_exclusive": "0x526a8374",
+      "sha256": "1be7464d9da20674e82ef805517ae16bfab577b4e2583bef9d5054a556c1e0a7"
+    },
+    "packet-8902": {
+      "start": "0x52efc858",
+      "end_exclusive": "0x52efc918",
+      "sha256": "5ca53294aa0d38f122b14d6ae45e0f05548c2f680ec4614e2afa780c9e152a6c"
+    },
+    "packet-8900": {
+      "start": "0x52efc7a0",
+      "end_exclusive": "0x52efc858",
+      "sha256": "7a8922a21c048750010ea62eb93db7bbc022994120b74bb5283bf390da5e9002"
+    },
+    "option-to-opcode": {
+      "start": "0x52eff608",
+      "end_exclusive": "0x52eff618",
+      "sha256": "cd7590ed32dc8cbde0ef5b26b325053aef0674667bc9994ddeafd925915770a4"
+    },
+    "bit6-wrapper": {
+      "start": "0x52eff628",
+      "end_exclusive": "0x52eff640",
+      "sha256": "292e07c136b1ca3cbca0e7f0e13218b2b30d229c954d590524e64f6f5d9547e7"
+    },
+    "bit6-reader": {
+      "start": "0x52efda40",
+      "end_exclusive": "0x52efda54",
+      "sha256": "728e29c45f738944d670b19bf9210557a83c0ab94f00147c98713094c291dc0a"
+    },
+    "separate-byte-bit2": {
+      "start": "0x52efda70",
+      "end_exclusive": "0x52efda84",
+      "sha256": "4911f7078bbc7767203a5e183f822c827a1f18b97c7edc6d6ec1d30bf1ba3a10"
+    },
+    "factor-gate-reader": {
+      "start": "0x52efdb78",
+      "end_exclusive": "0x52efdb88",
+      "sha256": "b387e4d24b190540a0f2b9a09386308c7373cb6934bcc0661d12be9de9102966"
+    },
+    "factor-reader": {
+      "start": "0x52efdc10",
+      "end_exclusive": "0x52efdc20",
+      "sha256": "7288eafff80de452cfd5310f411cf56b4c376b8be43fd061e7db35c72c66b813"
+    },
+    "queue-wrapper": {
+      "start": "0x52eff524",
+      "end_exclusive": "0x52eff5e0",
+      "sha256": "7a31c5ada488848d7812549fa1fc4227f2be5d099b7dabb9f0f98b65d773391f"
+    },
+    "slot-copy": {
+      "start": "0x52efeec0",
+      "end_exclusive": "0x52eff17c",
+      "sha256": "40b9936df34a444f171a3e84f91cd71a530f4013189e83ae3cce27e30b48c66c"
+    },
+    "event-bit-select": {
+      "start": "0x52efea88",
+      "end_exclusive": "0x52efeaf4",
+      "sha256": "4a5b10dce17c27d11229e0b89c09accc1a30ecb2c677489be0a197d86e8e3220"
+    },
+    "queue-submit": {
+      "start": "0x52f148fc",
+      "end_exclusive": "0x52f14a08",
+      "sha256": "da066905368e2d588c7b3b9fb919fa22811b08b41eb8ce737ccd68843e3d889a"
+    },
+    "option-wait": {
+      "start": "0x52eff444",
+      "end_exclusive": "0x52eff524",
+      "sha256": "a140d71ff3f8901ed92177f7f8b3767f63470bb0bc103444c3f040c19cde680f"
+    },
+    "slot-release": {
+      "start": "0x52eff17c",
+      "end_exclusive": "0x52eff2c8",
+      "sha256": "955e0b1705849ff34caa19ca18d7af04ea94573b29cea3823472b214718e09c1"
+    },
+    "command-metadata": {
+      "start": "0x5315a8a0",
+      "end_exclusive": "0x5315ba7c",
+      "sha256": "9601eafcf0fc98030084c1ec6114cddf44511010d61d4b0ccda6ef7403555c2a"
+    },
+    "stack-canary": {
+      "start": "0x53cbb4c0",
+      "end_exclusive": "0x53cbb4c4",
+      "sha256": "d9e0d4c3850aa130f909e1bcafebea98a16700e02171c1df5a2fe31789d94b0f"
+    },
+    "mutex-argument": {
+      "start": "0x53a6b110",
+      "end_exclusive": "0x53a6b114",
+      "sha256": "ad95131bc0b799c0b1af477fb14fcf26a6a9f76079e48bf090acb7e8367bfd0e"
+    }
+  },
+  "static_direct_a32_branch_encodings": {
+    "0x52cbddd8": [
+      {
+        "site": "0x52cbf000",
+        "word": "eafffb74",
+        "link": false
+      },
+      {
+        "site": "0x52cc0d60",
+        "word": "ebfff41c",
+        "link": true
+      },
+      {
+        "site": "0x52cc0f78",
+        "word": "ebfff396",
+        "link": true
+      },
+      {
+        "site": "0x52cc1244",
+        "word": "eafff2e3",
+        "link": false
+      }
+    ],
+    "0x52efc7a0": [
+      {
+        "site": "0x52ef94a4",
+        "word": "eb000cbd",
+        "link": true
+      },
+      {
+        "site": "0x52f0573c",
+        "word": "ebffdc17",
+        "link": true
+      }
+    ],
+    "0x52efc858": [
+      {
+        "site": "0x52cbde64",
+        "word": "eb08fa7b",
+        "link": true
+      },
+      {
+        "site": "0x52f05704",
+        "word": "ebffdc53",
+        "link": true
+      }
+    ],
+    "0x52f05680": [
+      {
+        "site": "0x52f0589c",
+        "word": "ebffff77",
+        "link": true
+      }
+    ]
+  },
+  "branch_search_scope": "Aligned A32 direct B/BL encodings only; excludes Thumb, BLX and indirect transfers. The two 0x8902 callsites also ran in replay.",
+  "stub_boundaries": {
+    "0x530f1a68": "mutex lock returns 0",
+    "0x530f1bbc": "mutex unlock returns 0",
+    "0x530edc60": "OS queue push captures request and returns 1",
+    "0x530ed03c": "event set records arguments and returns 0",
+    "0x530ed1ac": "event wait writes selected event bits and returns 1",
+    "0x530ed0f4": "event clear records arguments and returns 0",
+    "0x530fced4": "diagnostic returns 0 for all slots busy"
+  },
+  "scope": "Unicorn CPU models, read-only original RTOS mapping, synthetic objects/queue/events. Direct and multiply cases return to sentinel, reciprocal caller stops before post-request logic or alternate builder; metadata runs separately. No scheduler, actual queue drain, completion callback, packet exchange, lens bus or physical test.",
+  "passed": true,
+  "case_counts": {
+    "direct": 9,
+    "multiply-caller": 10,
+    "reciprocal-caller-prefix": 8,
+    "separate-metadata-lookup": 2
+  },
+  "cases": [
+    {
+      "group": "direct",
+      "input": [
+        0,
+        4660,
+        1,
+        0
+      ],
+      "stop": "0x20000000",
+      "r0_at_stop": 255,
+      "builders": [
+        {
+          "entry": "0x52efc858",
+          "value": 4660,
+          "flag": 1,
+          "option": 0
+        }
+      ],
+      "stack_descriptors": [],
+      "queue_pushes": [],
+      "stub_counts": {},
+      "reached_source_ranges": [
+        "packet-8902"
+      ],
+      "builder_after": {
+        "byte17": 165,
+        "halfword8e": 48879
+      }
+    },
+    {
+      "group": "direct",
+      "input": [
+        191,
+        4660,
+        1,
+        0
+      ],
+      "stop": "0x20000000",
+      "r0_at_stop": 255,
+      "builders": [
+        {
+          "entry": "0x52efc858",
+          "value": 4660,
+          "flag": 1,
+          "option": 0
+        }
+      ],
+      "stack_descriptors": [],
+      "queue_pushes": [],
+      "stub_counts": {},
+      "reached_source_ranges": [
+        "packet-8902"
+      ],
+      "builder_after": {
+        "byte17": 165,
+        "halfword8e": 48879
+      }
+    },
+    {
+      "group": "direct",
+      "input": [
+        64,
+        0,
+        0,
+        0
+      ],
+      "stop": "0x20000000",
+      "r0_at_stop": 0,
+      "builders": [
+        {
+          "entry": "0x52efc858",
+          "value": 0,
+          "flag": 0,
+          "option": 0
+        }
+      ],
+      "stack_descriptors": [
+        {
+          "command": "0x8902",
+          "payload": "0000"
+        }
+      ],
+      "queue_pushes": [
+        {
+          "slot": 0,
+          "opcode": "0x1b",
+          "command": "0x8902",
+          "token": "89020000",
+          "payload": "0000",
+          "event_bit": 0
+        }
+      ],
+      "stub_counts": {
+        "0x530f1a68": 1,
+        "0x530f1bbc": 1,
+        "0x530edc60": 1,
+        "0x530ed03c": 1
+      },
+      "reached_source_ranges": [
+        "packet-8902",
+        "option-to-opcode",
+        "queue-wrapper",
+        "slot-copy",
+        "queue-submit"
+      ],
+      "builder_after": {
+        "byte17": 0,
+        "halfword8e": 0
+      }
+    },
+    {
+      "group": "direct",
+      "input": [
+        64,
+        16383,
+        0,
+        0
+      ],
+      "stop": "0x20000000",
+      "r0_at_stop": 0,
+      "builders": [
+        {
+          "entry": "0x52efc858",
+          "value": 16383,
+          "flag": 0,
+          "option": 0
+        }
+      ],
+      "stack_descriptors": [
+        {
+          "command": "0x8902",
+          "payload": "3fff"
+        }
+      ],
+      "queue_pushes": [
+        {
+          "slot": 0,
+          "opcode": "0x1b",
+          "command": "0x8902",
+          "token": "89020000",
+          "payload": "3fff",
+          "event_bit": 0
+        }
+      ],
+      "stub_counts": {
+        "0x530f1a68": 1,
+        "0x530f1bbc": 1,
+        "0x530edc60": 1,
+        "0x530ed03c": 1
+      },
+      "reached_source_ranges": [
+        "packet-8902",
+        "option-to-opcode",
+        "queue-wrapper",
+        "slot-copy",
+        "queue-submit"
+      ],
+      "builder_after": {
+        "byte17": 0,
+        "halfword8e": 16383
+      }
+    },
+    {
+      "group": "direct",
+      "input": [
+        64,
+        16384,
+        0,
+        1
+      ],
+      "stop": "0x20000000",
+      "r0_at_stop": 1,
+      "builders": [
+        {
+          "entry": "0x52efc858",
+          "value": 16384,
+          "flag": 0,
+          "option": 0
+        }
+      ],
+      "stack_descriptors": [
+        {
+          "command": "0x8902",
+          "payload": "0000"
+        }
+      ],
+      "queue_pushes": [
+        {
+          "slot": 1,
+          "opcode": "0x1b",
+          "command": "0x8902",
+          "token": "89020001",
+          "payload": "0000",
+          "event_bit": 0
+        }
+      ],
+      "stub_counts": {
+        "0x530f1a68": 1,
+        "0x530f1bbc": 1,
+        "0x530edc60": 1,
+        "0x530ed03c": 1
+      },
+      "reached_source_ranges": [
+        "packet-8902",
+        "option-to-opcode",
+        "queue-wrapper",
+        "slot-copy",
+        "queue-submit"
+      ],
+      "builder_after": {
+        "byte17": 0,
+        "halfword8e": 0
+      }
+    },
+    {
+      "group": "direct",
+      "input": [
+        64,
+        305419896,
+        1,
+        31
+      ],
+      "stop": "0x20000000",
+      "r0_at_stop": 31,
+      "builders": [
+        {
+          "entry": "0x52efc858",
+          "value": 305419896,
+          "flag": 1,
+          "option": 0
+        }
+      ],
+      "stack_descriptors": [
+        {
+          "command": "0x8902",
+          "payload": "9678"
+        }
+      ],
+      "queue_pushes": [
+        {
+          "slot": 31,
+          "opcode": "0x1b",
+          "command": "0x8902",
+          "token": "8902001f",
+          "payload": "9678",
+          "event_bit": 0
+        }
+      ],
+      "stub_counts": {
+        "0x530f1a68": 1,
+        "0x530f1bbc": 1,
+        "0x530edc60": 1,
+        "0x530ed03c": 1
+      },
+      "reached_source_ranges": [
+        "packet-8902",
+        "option-to-opcode",
+        "queue-wrapper",
+        "slot-copy",
+        "queue-submit"
+      ],
+      "builder_after": {
+        "byte17": 1,
+        "halfword8e": 5752
+      }
+    },
+    {
+      "group": "direct",
+      "input": [
+        255,
+        65535,
+        256,
+        0
+      ],
+      "stop": "0x20000000",
+      "r0_at_stop": 0,
+      "builders": [
+        {
+          "entry": "0x52efc858",
+          "value": 65535,
+          "flag": 256,
+          "option": 0
+        }
+      ],
+      "stack_descriptors": [
+        {
+          "command": "0x8902",
+          "payload": "bfff"
+        }
+      ],
+      "queue_pushes": [
+        {
+          "slot": 0,
+          "opcode": "0x1b",
+          "command": "0x8902",
+          "token": "89020000",
+          "payload": "bfff",
+          "event_bit": 0
+        }
+      ],
+      "stub_counts": {
+        "0x530f1a68": 1,
+        "0x530f1bbc": 1,
+        "0x530edc60": 1,
+        "0x530ed03c": 1
+      },
+      "reached_source_ranges": [
+        "packet-8902",
+        "option-to-opcode",
+        "queue-wrapper",
+        "slot-copy",
+        "queue-submit"
+      ],
+      "builder_after": {
+        "byte17": 0,
+        "halfword8e": 16383
+      }
+    },
+    {
+      "group": "direct",
+      "input": [
+        64,
+        4660,
+        4294967295,
+        0
+      ],
+      "stop": "0x20000000",
+      "r0_at_stop": 0,
+      "builders": [
+        {
+          "entry": "0x52efc858",
+          "value": 4660,
+          "flag": 4294967295,
+          "option": 0
+        }
+      ],
+      "stack_descriptors": [
+        {
+          "command": "0x8902",
+          "payload": "9234"
+        }
+      ],
+      "queue_pushes": [
+        {
+          "slot": 0,
+          "opcode": "0x1b",
+          "command": "0x8902",
+          "token": "89020000",
+          "payload": "9234",
+          "event_bit": 0
+        }
+      ],
+      "stub_counts": {
+        "0x530f1a68": 1,
+        "0x530f1bbc": 1,
+        "0x530edc60": 1,
+        "0x530ed03c": 1
+      },
+      "reached_source_ranges": [
+        "packet-8902",
+        "option-to-opcode",
+        "queue-wrapper",
+        "slot-copy",
+        "queue-submit"
+      ],
+      "builder_after": {
+        "byte17": 255,
+        "halfword8e": 4660
+      }
+    },
+    {
+      "group": "direct",
+      "input": [
+        64,
+        4660,
+        0,
+        32
+      ],
+      "stop": "0x20000000",
+      "r0_at_stop": 255,
+      "builders": [
+        {
+          "entry": "0x52efc858",
+          "value": 4660,
+          "flag": 0,
+          "option": 0
+        }
+      ],
+      "stack_descriptors": [
+        {
+          "command": "0x8902",
+          "payload": "1234"
+        }
+      ],
+      "queue_pushes": [],
+      "stub_counts": {
+        "0x530f1a68": 1,
+        "0x530fced4": 1,
+        "0x530f1bbc": 1
+      },
+      "reached_source_ranges": [
+        "packet-8902",
+        "option-to-opcode",
+        "queue-wrapper",
+        "slot-copy"
+      ],
+      "builder_after": {
+        "byte17": 0,
+        "halfword8e": 4660
+      },
+      "all_busy_lens_state_changes": [
+        "builder+0x17",
+        "builder+0x8e"
+      ]
+    },
+    {
+      "group": "multiply-caller",
+      "input": [
+        0,
+        2,
+        19,
+        47
+      ],
+      "stop": "0x20000000",
+      "r0_at_stop": 0,
+      "builders": [],
+      "stack_descriptors": [],
+      "queue_pushes": [],
+      "stub_counts": {},
+      "reached_source_ranges": [
+        "multiply-caller",
+        "bit6-wrapper",
+        "bit6-reader"
+      ],
+      "builder_after": {
+        "byte17": 165,
+        "halfword8e": 48879
+      }
+    },
+    {
+      "group": "multiply-caller",
+      "input": [
+        191,
+        2,
+        19,
+        47
+      ],
+      "stop": "0x20000000",
+      "r0_at_stop": 0,
+      "builders": [],
+      "stack_descriptors": [],
+      "queue_pushes": [],
+      "stub_counts": {},
+      "reached_source_ranges": [
+        "multiply-caller",
+        "bit6-wrapper",
+        "bit6-reader"
+      ],
+      "builder_after": {
+        "byte17": 165,
+        "halfword8e": 48879
+      }
+    },
+    {
+      "group": "multiply-caller",
+      "input": [
+        64,
+        0,
+        19,
+        47
+      ],
+      "stop": "0x20000000",
+      "r0_at_stop": 0,
+      "builders": [
+        {
+          "entry": "0x52efc858",
+          "value": 188,
+          "flag": 0,
+          "option": 1
+        }
+      ],
+      "stack_descriptors": [
+        {
+          "command": "0x8902",
+          "payload": "00bc"
+        }
+      ],
+      "queue_pushes": [
+        {
+          "slot": 0,
+          "opcode": "0x1b",
+          "command": "0x8902",
+          "token": "89020000",
+          "payload": "00bc",
+          "event_bit": 1
+        }
+      ],
+      "stub_counts": {
+        "0x530f1a68": 2,
+        "0x530f1bbc": 2,
+        "0x530edc60": 1,
+        "0x530ed03c": 1,
+        "0x530ed1ac": 1,
+        "0x530ed0f4": 1
+      },
+      "reached_source_ranges": [
+        "multiply-caller",
+        "multiply-factor",
+        "packet-8902",
+        "option-to-opcode",
+        "bit6-wrapper",
+        "bit6-reader",
+        "factor-gate-reader",
+        "queue-wrapper",
+        "slot-copy",
+        "event-bit-select",
+        "queue-submit",
+        "option-wait",
+        "slot-release"
+      ],
+      "builder_after": {
+        "byte17": 0,
+        "halfword8e": 188
+      }
+    },
+    {
+      "group": "multiply-caller",
+      "input": [
+        64,
+        2,
+        19,
+        47
+      ],
+      "stop": "0x20000000",
+      "r0_at_stop": 0,
+      "builders": [
+        {
+          "entry": "0x52efc858",
+          "value": 893,
+          "flag": 0,
+          "option": 1
+        }
+      ],
+      "stack_descriptors": [
+        {
+          "command": "0x8902",
+          "payload": "037d"
+        }
+      ],
+      "queue_pushes": [
+        {
+          "slot": 0,
+          "opcode": "0x1b",
+          "command": "0x8902",
+          "token": "89020000",
+          "payload": "037d",
+          "event_bit": 1
+        }
+      ],
+      "stub_counts": {
+        "0x530f1a68": 2,
+        "0x530f1bbc": 2,
+        "0x530edc60": 1,
+        "0x530ed03c": 1,
+        "0x530ed1ac": 1,
+        "0x530ed0f4": 1
+      },
+      "reached_source_ranges": [
+        "multiply-caller",
+        "multiply-factor",
+        "packet-8902",
+        "option-to-opcode",
+        "bit6-wrapper",
+        "bit6-reader",
+        "factor-gate-reader",
+        "factor-reader",
+        "queue-wrapper",
+        "slot-copy",
+        "event-bit-select",
+        "queue-submit",
+        "option-wait",
+        "slot-release"
+      ],
+      "builder_after": {
+        "byte17": 0,
+        "halfword8e": 893
+      }
+    },
+    {
+      "group": "multiply-caller",
+      "input": [
+        64,
+        2,
+        0,
+        47
+      ],
+      "stop": "0x20000000",
+      "r0_at_stop": 0,
+      "builders": [
+        {
+          "entry": "0x52efc858",
+          "value": 0,
+          "flag": 0,
+          "option": 1
+        }
+      ],
+      "stack_descriptors": [
+        {
+          "command": "0x8902",
+          "payload": "0000"
+        }
+      ],
+      "queue_pushes": [
+        {
+          "slot": 0,
+          "opcode": "0x1b",
+          "command": "0x8902",
+          "token": "89020000",
+          "payload": "0000",
+          "event_bit": 1
+        }
+      ],
+      "stub_counts": {
+        "0x530f1a68": 2,
+        "0x530f1bbc": 2,
+        "0x530edc60": 1,
+        "0x530ed03c": 1,
+        "0x530ed1ac": 1,
+        "0x530ed0f4": 1
+      },
+      "reached_source_ranges": [
+        "multiply-caller",
+        "multiply-factor",
+        "packet-8902",
+        "option-to-opcode",
+        "bit6-wrapper",
+        "bit6-reader",
+        "factor-gate-reader",
+        "factor-reader",
+        "queue-wrapper",
+        "slot-copy",
+        "event-bit-select",
+        "queue-submit",
+        "option-wait",
+        "slot-release"
+      ],
+      "builder_after": {
+        "byte17": 0,
+        "halfword8e": 0
+      }
+    },
+    {
+      "group": "multiply-caller",
+      "input": [
+        64,
+        2,
+        255,
+        65
+      ],
+      "stop": "0x20000000",
+      "r0_at_stop": 0,
+      "builders": [
+        {
+          "entry": "0x52efc858",
+          "value": 16383,
+          "flag": 0,
+          "option": 1
+        }
+      ],
+      "stack_descriptors": [
+        {
+          "command": "0x8902",
+          "payload": "3fff"
+        }
+      ],
+      "queue_pushes": [
+        {
+          "slot": 0,
+          "opcode": "0x1b",
+          "command": "0x8902",
+          "token": "89020000",
+          "payload": "3fff",
+          "event_bit": 1
+        }
+      ],
+      "stub_counts": {
+        "0x530f1a68": 2,
+        "0x530f1bbc": 2,
+        "0x530edc60": 1,
+        "0x530ed03c": 1,
+        "0x530ed1ac": 1,
+        "0x530ed0f4": 1
+      },
+      "reached_source_ranges": [
+        "multiply-caller",
+        "multiply-factor",
+        "packet-8902",
+        "option-to-opcode",
+        "bit6-wrapper",
+        "bit6-reader",
+        "factor-gate-reader",
+        "factor-reader",
+        "queue-wrapper",
+        "slot-copy",
+        "event-bit-select",
+        "queue-submit",
+        "option-wait",
+        "slot-release"
+      ],
+      "builder_after": {
+        "byte17": 0,
+        "halfword8e": 16383
+      }
+    },
+    {
+      "group": "multiply-caller",
+      "input": [
+        64,
+        2,
+        255,
+        64
+      ],
+      "stop": "0x20000000",
+      "r0_at_stop": 0,
+      "builders": [
+        {
+          "entry": "0x52efc858",
+          "value": 16320,
+          "flag": 0,
+          "option": 1
+        }
+      ],
+      "stack_descriptors": [
+        {
+          "command": "0x8902",
+          "payload": "3fc0"
+        }
+      ],
+      "queue_pushes": [
+        {
+          "slot": 0,
+          "opcode": "0x1b",
+          "command": "0x8902",
+          "token": "89020000",
+          "payload": "3fc0",
+          "event_bit": 1
+        }
+      ],
+      "stub_counts": {
+        "0x530f1a68": 2,
+        "0x530f1bbc": 2,
+        "0x530edc60": 1,
+        "0x530ed03c": 1,
+        "0x530ed1ac": 1,
+        "0x530ed0f4": 1
+      },
+      "reached_source_ranges": [
+        "multiply-caller",
+        "multiply-factor",
+        "packet-8902",
+        "option-to-opcode",
+        "bit6-wrapper",
+        "bit6-reader",
+        "factor-gate-reader",
+        "factor-reader",
+        "queue-wrapper",
+        "slot-copy",
+        "event-bit-select",
+        "queue-submit",
+        "option-wait",
+        "slot-release"
+      ],
+      "builder_after": {
+        "byte17": 0,
+        "halfword8e": 16320
+      }
+    },
+    {
+      "group": "multiply-caller",
+      "input": [
+        64,
+        2,
+        128,
+        33554433
+      ],
+      "stop": "0x20000000",
+      "r0_at_stop": 0,
+      "builders": [
+        {
+          "entry": "0x52efc858",
+          "value": 128,
+          "flag": 0,
+          "option": 1
+        }
+      ],
+      "stack_descriptors": [
+        {
+          "command": "0x8902",
+          "payload": "0080"
+        }
+      ],
+      "queue_pushes": [
+        {
+          "slot": 0,
+          "opcode": "0x1b",
+          "command": "0x8902",
+          "token": "89020000",
+          "payload": "0080",
+          "event_bit": 1
+        }
+      ],
+      "stub_counts": {
+        "0x530f1a68": 2,
+        "0x530f1bbc": 2,
+        "0x530edc60": 1,
+        "0x530ed03c": 1,
+        "0x530ed1ac": 1,
+        "0x530ed0f4": 1
+      },
+      "reached_source_ranges": [
+        "multiply-caller",
+        "multiply-factor",
+        "packet-8902",
+        "option-to-opcode",
+        "bit6-wrapper",
+        "bit6-reader",
+        "factor-gate-reader",
+        "factor-reader",
+        "queue-wrapper",
+        "slot-copy",
+        "event-bit-select",
+        "queue-submit",
+        "option-wait",
+        "slot-release"
+      ],
+      "builder_after": {
+        "byte17": 0,
+        "halfword8e": 128
+      }
+    },
+    {
+      "group": "multiply-caller",
+      "input": [
+        64,
+        2,
+        255,
+        4294967295
+      ],
+      "stop": "0x20000000",
+      "r0_at_stop": 0,
+      "builders": [
+        {
+          "entry": "0x52efc858",
+          "value": 16383,
+          "flag": 0,
+          "option": 1
+        }
+      ],
+      "stack_descriptors": [
+        {
+          "command": "0x8902",
+          "payload": "3fff"
+        }
+      ],
+      "queue_pushes": [
+        {
+          "slot": 0,
+          "opcode": "0x1b",
+          "command": "0x8902",
+          "token": "89020000",
+          "payload": "3fff",
+          "event_bit": 1
+        }
+      ],
+      "stub_counts": {
+        "0x530f1a68": 2,
+        "0x530f1bbc": 2,
+        "0x530edc60": 1,
+        "0x530ed03c": 1,
+        "0x530ed1ac": 1,
+        "0x530ed0f4": 1
+      },
+      "reached_source_ranges": [
+        "multiply-caller",
+        "multiply-factor",
+        "packet-8902",
+        "option-to-opcode",
+        "bit6-wrapper",
+        "bit6-reader",
+        "factor-gate-reader",
+        "factor-reader",
+        "queue-wrapper",
+        "slot-copy",
+        "event-bit-select",
+        "queue-submit",
+        "option-wait",
+        "slot-release"
+      ],
+      "builder_after": {
+        "byte17": 0,
+        "halfword8e": 16383
+      }
+    },
+    {
+      "group": "multiply-caller",
+      "input": [
+        255,
+        65535,
+        1,
+        16383
+      ],
+      "stop": "0x20000000",
+      "r0_at_stop": 0,
+      "builders": [
+        {
+          "entry": "0x52efc858",
+          "value": 16383,
+          "flag": 0,
+          "option": 1
+        }
+      ],
+      "stack_descriptors": [
+        {
+          "command": "0x8902",
+          "payload": "3fff"
+        }
+      ],
+      "queue_pushes": [
+        {
+          "slot": 0,
+          "opcode": "0x1b",
+          "command": "0x8902",
+          "token": "89020000",
+          "payload": "3fff",
+          "event_bit": 1
+        }
+      ],
+      "stub_counts": {
+        "0x530f1a68": 2,
+        "0x530f1bbc": 2,
+        "0x530edc60": 1,
+        "0x530ed03c": 1,
+        "0x530ed1ac": 1,
+        "0x530ed0f4": 1
+      },
+      "reached_source_ranges": [
+        "multiply-caller",
+        "multiply-factor",
+        "packet-8902",
+        "option-to-opcode",
+        "bit6-wrapper",
+        "bit6-reader",
+        "factor-gate-reader",
+        "factor-reader",
+        "queue-wrapper",
+        "slot-copy",
+        "event-bit-select",
+        "queue-submit",
+        "option-wait",
+        "slot-release"
+      ],
+      "builder_after": {
+        "byte17": 0,
+        "halfword8e": 16383
+      }
+    },
+    {
+      "group": "reciprocal-caller-prefix",
+      "input": [
+        0,
+        250,
+        4660,
+        1,
+        0,
+        0
+      ],
+      "stop": "0x52f05740",
+      "r0_at_stop": 255,
+      "builders": [
+        {
+          "entry": "0x52efc858",
+          "value": 4000,
+          "flag": 0,
+          "option": 1
+        },
+        {
+          "entry": "0x52efc7a0",
+          "value": 4660,
+          "flag": 1,
+          "option": 1
+        }
+      ],
+      "stack_descriptors": [],
+      "queue_pushes": [],
+      "stub_counts": {},
+      "reached_source_ranges": [
+        "reciprocal-caller",
+        "reciprocal-value",
+        "signed-divide",
+        "packet-8902",
+        "packet-8900"
+      ],
+      "builder_after": {
+        "byte17": 165,
+        "halfword8e": 48879
+      }
+    },
+    {
+      "group": "reciprocal-caller-prefix",
+      "input": [
+        64,
+        0,
+        4660,
+        1,
+        0,
+        0
+      ],
+      "stop": "0x52f05740",
+      "r0_at_stop": 0,
+      "builders": [
+        {
+          "entry": "0x52efc858",
+          "value": 0,
+          "flag": 0,
+          "option": 1
+        },
+        {
+          "entry": "0x52efc7a0",
+          "value": 4660,
+          "flag": 1,
+          "option": 1
+        }
+      ],
+      "stack_descriptors": [
+        {
+          "command": "0x8902",
+          "payload": "0000"
+        },
+        {
+          "command": "0x8900",
+          "payload": "9234"
+        }
+      ],
+      "queue_pushes": [
+        {
+          "slot": 0,
+          "opcode": "0x1b",
+          "command": "0x8902",
+          "token": "89020000",
+          "payload": "0000",
+          "event_bit": 1
+        },
+        {
+          "slot": 0,
+          "opcode": "0x1b",
+          "command": "0x8900",
+          "token": "89000000",
+          "payload": "9234",
+          "event_bit": 1
+        }
+      ],
+      "stub_counts": {
+        "0x530f1a68": 4,
+        "0x530f1bbc": 4,
+        "0x530edc60": 2,
+        "0x530ed03c": 2,
+        "0x530ed1ac": 2,
+        "0x530ed0f4": 2
+      },
+      "reached_source_ranges": [
+        "reciprocal-caller",
+        "reciprocal-value",
+        "packet-8902",
+        "packet-8900",
+        "option-to-opcode",
+        "queue-wrapper",
+        "slot-copy",
+        "event-bit-select",
+        "queue-submit",
+        "option-wait",
+        "slot-release"
+      ],
+      "builder_after": {
+        "byte17": 0,
+        "halfword8e": 0
+      }
+    },
+    {
+      "group": "reciprocal-caller-prefix",
+      "input": [
+        64,
+        1,
+        65535,
+        0,
+        0,
+        0
+      ],
+      "stop": "0x52f05740",
+      "r0_at_stop": 0,
+      "builders": [
+        {
+          "entry": "0x52efc858",
+          "value": 16960,
+          "flag": 0,
+          "option": 1
+        },
+        {
+          "entry": "0x52efc7a0",
+          "value": 65535,
+          "flag": 0,
+          "option": 1
+        }
+      ],
+      "stack_descriptors": [
+        {
+          "command": "0x8902",
+          "payload": "0240"
+        },
+        {
+          "command": "0x8900",
+          "payload": "3fff"
+        }
+      ],
+      "queue_pushes": [
+        {
+          "slot": 0,
+          "opcode": "0x1b",
+          "command": "0x8902",
+          "token": "89020000",
+          "payload": "0240",
+          "event_bit": 1
+        },
+        {
+          "slot": 0,
+          "opcode": "0x1b",
+          "command": "0x8900",
+          "token": "89000000",
+          "payload": "3fff",
+          "event_bit": 1
+        }
+      ],
+      "stub_counts": {
+        "0x530f1a68": 4,
+        "0x530f1bbc": 4,
+        "0x530edc60": 2,
+        "0x530ed03c": 2,
+        "0x530ed1ac": 2,
+        "0x530ed0f4": 2
+      },
+      "reached_source_ranges": [
+        "reciprocal-caller",
+        "reciprocal-value",
+        "signed-divide",
+        "packet-8902",
+        "packet-8900",
+        "option-to-opcode",
+        "queue-wrapper",
+        "slot-copy",
+        "event-bit-select",
+        "queue-submit",
+        "option-wait",
+        "slot-release"
+      ],
+      "builder_after": {
+        "byte17": 0,
+        "halfword8e": 576
+      }
+    },
+    {
+      "group": "reciprocal-caller-prefix",
+      "input": [
+        64,
+        2,
+        16384,
+        1,
+        0,
+        0
+      ],
+      "stop": "0x52f05740",
+      "r0_at_stop": 0,
+      "builders": [
+        {
+          "entry": "0x52efc858",
+          "value": 41248,
+          "flag": 0,
+          "option": 1
+        },
+        {
+          "entry": "0x52efc7a0",
+          "value": 16384,
+          "flag": 1,
+          "option": 1
+        }
+      ],
+      "stack_descriptors": [
+        {
+          "command": "0x8902",
+          "payload": "2120"
+        },
+        {
+          "command": "0x8900",
+          "payload": "8000"
+        }
+      ],
+      "queue_pushes": [
+        {
+          "slot": 0,
+          "opcode": "0x1b",
+          "command": "0x8902",
+          "token": "89020000",
+          "payload": "2120",
+          "event_bit": 1
+        },
+        {
+          "slot": 0,
+          "opcode": "0x1b",
+          "command": "0x8900",
+          "token": "89000000",
+          "payload": "8000",
+          "event_bit": 1
+        }
+      ],
+      "stub_counts": {
+        "0x530f1a68": 4,
+        "0x530f1bbc": 4,
+        "0x530edc60": 2,
+        "0x530ed03c": 2,
+        "0x530ed1ac": 2,
+        "0x530ed0f4": 2
+      },
+      "reached_source_ranges": [
+        "reciprocal-caller",
+        "reciprocal-value",
+        "signed-divide",
+        "packet-8902",
+        "packet-8900",
+        "option-to-opcode",
+        "queue-wrapper",
+        "slot-copy",
+        "event-bit-select",
+        "queue-submit",
+        "option-wait",
+        "slot-release"
+      ],
+      "builder_after": {
+        "byte17": 0,
+        "halfword8e": 8480
+      }
+    },
+    {
+      "group": "reciprocal-caller-prefix",
+      "input": [
+        64,
+        250,
+        4660,
+        128,
+        0,
+        0
+      ],
+      "stop": "0x52f05740",
+      "r0_at_stop": 0,
+      "builders": [
+        {
+          "entry": "0x52efc858",
+          "value": 4000,
+          "flag": 0,
+          "option": 1
+        },
+        {
+          "entry": "0x52efc7a0",
+          "value": 4660,
+          "flag": 128,
+          "option": 1
+        }
+      ],
+      "stack_descriptors": [
+        {
+          "command": "0x8902",
+          "payload": "0fa0"
+        },
+        {
+          "command": "0x8900",
+          "payload": "9234"
+        }
+      ],
+      "queue_pushes": [
+        {
+          "slot": 0,
+          "opcode": "0x1b",
+          "command": "0x8902",
+          "token": "89020000",
+          "payload": "0fa0",
+          "event_bit": 1
+        },
+        {
+          "slot": 0,
+          "opcode": "0x1b",
+          "command": "0x8900",
+          "token": "89000000",
+          "payload": "9234",
+          "event_bit": 1
+        }
+      ],
+      "stub_counts": {
+        "0x530f1a68": 4,
+        "0x530f1bbc": 4,
+        "0x530edc60": 2,
+        "0x530ed03c": 2,
+        "0x530ed1ac": 2,
+        "0x530ed0f4": 2
+      },
+      "reached_source_ranges": [
+        "reciprocal-caller",
+        "reciprocal-value",
+        "signed-divide",
+        "packet-8902",
+        "packet-8900",
+        "option-to-opcode",
+        "queue-wrapper",
+        "slot-copy",
+        "event-bit-select",
+        "queue-submit",
+        "option-wait",
+        "slot-release"
+      ],
+      "builder_after": {
+        "byte17": 0,
+        "halfword8e": 4000
+      }
+    },
+    {
+      "group": "reciprocal-caller-prefix",
+      "input": [
+        255,
+        65535,
+        32767,
+        0,
+        1,
+        0
+      ],
+      "stop": "0x52f05740",
+      "r0_at_stop": 0,
+      "builders": [
+        {
+          "entry": "0x52efc858",
+          "value": 15,
+          "flag": 0,
+          "option": 1
+        },
+        {
+          "entry": "0x52efc7a0",
+          "value": 32767,
+          "flag": 0,
+          "option": 1
+        }
+      ],
+      "stack_descriptors": [
+        {
+          "command": "0x8902",
+          "payload": "000f"
+        },
+        {
+          "command": "0x8900",
+          "payload": "3fff"
+        }
+      ],
+      "queue_pushes": [
+        {
+          "slot": 0,
+          "opcode": "0x1b",
+          "command": "0x8902",
+          "token": "89020000",
+          "payload": "000f",
+          "event_bit": 1
+        },
+        {
+          "slot": 0,
+          "opcode": "0x1b",
+          "command": "0x8900",
+          "token": "89000000",
+          "payload": "3fff",
+          "event_bit": 1
+        }
+      ],
+      "stub_counts": {
+        "0x530f1a68": 4,
+        "0x530f1bbc": 4,
+        "0x530edc60": 2,
+        "0x530ed03c": 2,
+        "0x530ed1ac": 2,
+        "0x530ed0f4": 2
+      },
+      "reached_source_ranges": [
+        "reciprocal-caller",
+        "reciprocal-value",
+        "signed-divide",
+        "packet-8902",
+        "packet-8900",
+        "option-to-opcode",
+        "separate-byte-bit2",
+        "queue-wrapper",
+        "slot-copy",
+        "event-bit-select",
+        "queue-submit",
+        "option-wait",
+        "slot-release"
+      ],
+      "builder_after": {
+        "byte17": 0,
+        "halfword8e": 15
+      }
+    },
+    {
+      "group": "reciprocal-caller-prefix",
+      "input": [
+        64,
+        250,
+        4660,
+        1,
+        1,
+        4
+      ],
+      "stop": "0x52efd3fc",
+      "r0_at_stop": 268435536,
+      "builders": [
+        {
+          "entry": "0x52efc858",
+          "value": 4000,
+          "flag": 0,
+          "option": 1
+        }
+      ],
+      "stack_descriptors": [
+        {
+          "command": "0x8902",
+          "payload": "0fa0"
+        }
+      ],
+      "queue_pushes": [
+        {
+          "slot": 0,
+          "opcode": "0x1b",
+          "command": "0x8902",
+          "token": "89020000",
+          "payload": "0fa0",
+          "event_bit": 1
+        }
+      ],
+      "stub_counts": {
+        "0x530f1a68": 2,
+        "0x530f1bbc": 2,
+        "0x530edc60": 1,
+        "0x530ed03c": 1,
+        "0x530ed1ac": 1,
+        "0x530ed0f4": 1
+      },
+      "reached_source_ranges": [
+        "reciprocal-caller",
+        "reciprocal-value",
+        "signed-divide",
+        "packet-8902",
+        "option-to-opcode",
+        "separate-byte-bit2",
+        "queue-wrapper",
+        "slot-copy",
+        "event-bit-select",
+        "queue-submit",
+        "option-wait",
+        "slot-release"
+      ],
+      "builder_after": {
+        "byte17": 0,
+        "halfword8e": 4000
+      }
+    },
+    {
+      "group": "reciprocal-caller-prefix",
+      "input": [
+        0,
+        250,
+        4660,
+        1,
+        1,
+        4
+      ],
+      "stop": "0x52efd3fc",
+      "r0_at_stop": 268435536,
+      "builders": [
+        {
+          "entry": "0x52efc858",
+          "value": 4000,
+          "flag": 0,
+          "option": 1
+        }
+      ],
+      "stack_descriptors": [],
+      "queue_pushes": [],
+      "stub_counts": {},
+      "reached_source_ranges": [
+        "reciprocal-caller",
+        "reciprocal-value",
+        "signed-divide",
+        "packet-8902",
+        "separate-byte-bit2"
+      ],
+      "builder_after": {
+        "byte17": 165,
+        "halfword8e": 48879
+      }
+    },
+    {
+      "group": "separate-metadata-lookup",
+      "input": [
+        35074
+      ],
+      "metadata": {
+        "index": 74,
+        "type": 3,
+        "additional_byte": 2,
+        "required_mask": 0
+      },
+      "stop": "0x20000000",
+      "r0_at_stop": 1,
+      "builders": [],
+      "stack_descriptors": [],
+      "queue_pushes": [],
+      "stub_counts": {},
+      "reached_source_ranges": [
+        "command-metadata"
+      ],
+      "builder_after": {
+        "byte17": 165,
+        "halfword8e": 48879
+      }
+    },
+    {
+      "group": "separate-metadata-lookup",
+      "input": [
+        35072
+      ],
+      "metadata": {
+        "index": 73,
+        "type": 3,
+        "additional_byte": 2,
+        "required_mask": 0
+      },
+      "stop": "0x20000000",
+      "r0_at_stop": 1,
+      "builders": [],
+      "stack_descriptors": [],
+      "queue_pushes": [],
+      "stub_counts": {},
+      "reached_source_ranges": [
+        "command-metadata"
+      ],
+      "builder_after": {
+        "byte17": 165,
+        "halfword8e": 48879
+      }
+    }
+  ]
+}

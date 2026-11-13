@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Stubby ROMFS: 포인터 선택과 실제 복사 — PENTAX K-3 Mark III 펌웨어 연구</title>
+<meta name="description" content="원본 Stubby의 ROMFS mount·lookup·주소 선택·복사를 Cortex-A7에서 6사례로 재현했습니다. 합성 입력, 길이 제한의 차이, 원본 보존과 실제 부팅을 검증하지 않은 범위를 구분합니다.">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-camera="k3iii">
+<!-- chrome:top -->
+<a class="skip" href="#main">본문 바로가기</a>
+<div class="topbar"><div class="topbar-in"><a class="brand" href="../index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="../index.html" aria-current="true">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="https://yunhyok.github.io/pentax-q7-firmware-analysis/">Q7</a></div><nav class="topnav" aria-label="주제"><a href="../index.html">개요</a><a href="guide-boot.html" aria-current="true">부팅·저장소</a><a href="guide-update.html">업데이트</a><a href="guide-rebuild.html">재구축</a><a href="guide-rtos.html">명령·셸</a><a href="guide-color.html">색 처리</a><a href="lightroom-bridge.html">Lightroom</a><a href="af-foundations.html">AF</a><a href="ui-port-contract.html">UI</a></nav></div></div>
+<nav class="crumbs" aria-label="현재 위치"><ol><li><a href="../index.html">PENTAX K-3 Mark III</a></li><li><a href="guide-boot.html">부팅과 저장소</a></li><li aria-current="page">Stubby ROMFS 선택과 복사</li></ol></nav>
+<!-- /chrome:top -->
+<header class="page-head">
+<p class="eyebrow">부팅과 저장소 · 원본 ROMFS 함수 재현</p>
+<h1>Stubby ROMFS: 포인터 선택과 실제 복사</h1>
+<p class="lead">부트로더가 파일을 선택했다고 해서 항상 바이트를 복사하는 것은 아닙니다. 원본 ROMFS에 있는 kernel과 장치 트리를 이용해, 주소를 돌려주는 경로와 실제 복사 경로를 나눠 확인했습니다.</p>
+</header>
+<div class="layout">
+<!-- chrome:toc -->
+<nav class="toc" aria-label="이 문서의 목차"><h2 data-toc="no">이 문서에서</h2><ol><li><a href="#boundary">이전 시험에서 더 내려간 경계</a></li><li><a href="#path">mount 이후 주소 선택과 복사로 나뉩니다</a></li><li><a href="#cases">Cortex-A7에서 재현한 여섯 사례</a></li><li><a href="#maxsize">maxsize는 모든 경로의 반환 길이 상한이 아닙니다</a></li><li><a href="#checks">원본 보존, 관측 hook과 종료 조건</a></li><li><a href="#limits">이전 계측 실패와 남은 과제</a></li><li><a href="#reproduce">재현 방법</a></li><li><a href="#refs">근거 파일</a></li></ol></nav>
+<!-- /chrome:toc -->
+<main class="doc" id="main">
+
+<section class="summary">
+<h2 data-toc="no">핵심 요약</h2>
+<ul>
+<li>원본 mount·파일 조회·wrapper·복사 함수를 <strong>대체 함수 없이</strong> 실행했습니다. Unicorn 2.1.4의 Cortex-A7 모델에서 여섯 사례가 통과했습니다.</li>
+<li>같은 kernel 파일에 <code>maxsize=17</code>을 주어도 포인터 선택 경로는 전체 길이 <strong>2,993,056</strong>을 반환했습니다. 복사 경로는 <strong>17바이트</strong>만 기록했습니다.</li>
+<li>각 사례 뒤 메모리의 원본 payload 전체와 복사 바이트·목적지 앞뒤 검사 영역을 확인했습니다. 디스크 입력은 여섯 사례가 모두 끝난 뒤 재읽어 보존 여부를 검사했습니다.</li>
+<li>실행 주소와 호출 인자는 합성 조건입니다. <strong>실제 SRAM 매핑, kernel 실행, 전체 부팅 또는 ROM 인증을 확인한 결과는 아닙니다.</strong></li>
+</ul>
+</section>
+
+<div class="scope">
+<div class="ok"><h3><span class="badge ok">확인</span> 원본 코드로 재현</h3><ul><li>ROMFS mount와 파일 조회</li><li>kernel 포인터 선택과 DTB 복사</li><li>길이 상한 17에서 선택·복사의 차이</li><li>원본 전체와 검사 영역 보존</li></ul></div>
+<div class="model"><h3><span class="badge model">모델</span> 재현기에 넣은 조건</h3><ul><li>base <code>0x41000000</code>, 스택과 전역값</li><li>목적지와 호출 인자, 반환 지점</li><li>Unicorn Cortex-A7 CPU 모델</li></ul></div>
+<div class="open"><h3><span class="badge open">미확인</span> 남은 경계</h3><ul><li><code>source=1</code>의 실제 호출자 도달</li><li>상위 적재 함수와의 전체 연결</li><li>ROMFS 무결성·ROM 인증·수정 이미지 수락</li><li>실제 주소 배치와 카메라 동작</li></ul></div>
+</div>
+
+<section id="boundary">
+<h2>이전 시험에서 더 내려간 경계</h2>
+<p><a href="stubby-load-auth.html#verification">기존 Stubby 시험의 여섯 사례</a>는 상위 적재 함수의 성공·실패와 진입 주소 전달을 확인했습니다. 그때는 파일 wrapper <code>0x9fc</code> 전체를 대체해 읽기 결과를 양수·0·음수로 넣었습니다.</p>
+<p>이번에는 원본 LINUX 레코드 안의 ROMFS를 그대로 읽게 했습니다. mount <code>0xedc</code>가 읽기 callback을 설정합니다. wrapper의 주소 조회는 <code>0xea4</code>를 직접 호출하고, wrapper의 복사는 이 callback을 거칩니다. 상위 적재 함수와 DTB 보조 함수는 이번 시험에서 호출하지 않습니다. 두 시험은 범위가 달라 기존 여섯 사례를 대체하지 않습니다.</p>
+<div class="callout"><strong class="label">주소와 “원본”의 의미</strong><p>작은 주소는 LINUX 레코드 시작에서 잰 offset입니다. <code>0x41000000</code>은 CPU 재현에 주입한 base이며 물리 주소의 증거가 아닙니다. 명령과 ROMFS 바이트는 제공된 원본을 사용하지만, RAM 배치·초기 전역값·호출 인자는 재현기가 정합니다.</p></div>
+</section>
+
+<section id="path">
+<h2>mount 이후 주소 선택과 복사로 나뉩니다</h2>
+<figure class="diagram">
+<figcaption>재현기의 호출 순서와 원본 하위 경로</figcaption>
+<div class="dg-scroll"><svg class="dg" viewBox="0 0 800 304" role="img" aria-labelledby="romfs-path-title romfs-path-desc">
+<title id="romfs-path-title">ROMFS mount에서 포인터 선택과 복사까지</title>
+<desc id="romfs-path-desc">합성 호출자가 원본 mount 0xedc와 wrapper 0x9fc를 차례로 호출합니다. get_address 0xea4는 lookup 0xd30을 거쳐 파일 포인터를 반환하고 출력 인자에 파일 길이를 기록합니다. wrapper가 이 길이를 읽어 반환합니다. 복사 경로는 원본 callback 0xe5c에서 lookup과 길이 비교 후 copy_bytes 0x122e를 호출합니다. 각 호출은 합성 반환 지점에서 끝나고 kernel에는 진입하지 않습니다.</desc>
+<defs><marker id="romfs-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0 0L10 5L0 10z"/></marker></defs>
+<rect class="b model" x="10" y="15" width="170" height="70" rx="8"/><text class="t" x="22" y="42">합성 호출자</text><text class="s" x="22" y="65">mount 뒤 파일 연산 호출</text>
+<rect class="b ok" x="220" y="15" width="240" height="70" rx="8"/><text class="t" x="232" y="42">mount · PIC callback 설정</text><text class="s mono" x="232" y="65">0xedc → 0x1080</text>
+<rect class="b ok" x="510" y="15" width="275" height="70" rx="8"/><text class="t" x="522" y="42">파일 wrapper</text><text class="s mono" x="522" y="65">0x9fc</text>
+<path class="e" d="M180 50H220" marker-end="url(#romfs-arrow)"/><path class="e" d="M460 50H510" marker-end="url(#romfs-arrow)"/>
+<rect class="b ok" x="10" y="130" width="350" height="80" rx="8"/><text class="t" x="22" y="156">파일 포인터 조회 · 길이 기록</text><text class="s mono" x="22" y="179">0xea4 → lookup 0xd30</text><text class="s" x="22" y="198">wrapper가 길이 반환 · 이번 복사 0바이트</text>
+<rect class="b ok" x="420" y="130" width="365" height="80" rx="8"/><text class="t" x="432" y="156">복사 · unsigned 길이 비교</text><text class="s mono" x="432" y="179">0xe5c → lookup → 0x122e</text><text class="s" x="432" y="198">min(파일 크기, maxsize)만큼 복사</text>
+<path class="e" d="M600 85V106H185V130" marker-end="url(#romfs-arrow)"/><path class="e" d="M680 85V130" marker-end="url(#romfs-arrow)"/>
+<rect class="b model" x="170" y="250" width="460" height="44" rx="8"/><text class="s" x="184" y="278">합성 반환 지점 0x70000f00에서 종료 · kernel 진입 없음</text>
+<path class="e" d="M185 210V250" marker-end="url(#romfs-arrow)"/><path class="e" d="M600 210V250" marker-end="url(#romfs-arrow)"/>
+</svg></div>
+</figure>
+<p>mount 후 ROMFS 전역 포인터는 <code>0x41008000</code>, 파일 읽기 callback은 Thumb 주소 <code>0x41000e5d</code>가 됩니다. wrapper는 source와 목적지 조건에 따라 주소 조회 <code>0xea4</code> 또는 이 callback으로 연결됩니다. 주소 조회와 읽기는 같은 lookup <code>0xd30</code>을 사용합니다.</p>
+<p>코드 구간은 9개입니다. wrapper <code>0x9fc–0xa52</code>, mount <code>0xedc–0xf1e</code>, PIC 참조 <code>0x1080–0x1098</code>, 주소 조회 <code>0xea4–0xed4</code>, lookup <code>0xd30–0xe52</code>, big endian 읽기 <code>0xd04–0xd1a</code>, 이름 정렬 <code>0xd1a–0xd30</code>, 파일 읽기 <code>0xe5c–0xe9c</code>, 바이트 복사 <code>0x122e–0x1244</code>입니다. 끝 offset은 제외하며 각 구간의 SHA-256은 <a href="stubby-romfs-checks.json">검증 JSON</a>에 있습니다.</p>
+</section>
+
+<section id="cases">
+<h2>Cortex-A7에서 재현한 여섯 사례</h2>
+<p>여섯 사례는 각각 새로운 CPU 인스턴스에서 원본 mount를 호출한 뒤 파일 연산을 실행합니다. 표의 명령 수에는 mount의 39개 명령이 포함됩니다. 원본 파일이나 파일 시스템을 수정해 오류를 주입하지 않았습니다.</p>
+<div class="table-wrap"><table>
+<caption>원본 코드의 반환값, 목적지 쓰기와 명령 수</caption>
+<thead><tr><th>사례</th><th class="n">반환값</th><th class="n">목적지 쓰기</th><th class="n">명령 수</th><th>핵심 확인</th></tr></thead>
+<tbody>
+<tr><th scope="row">bootloader 없음</th><td><code>0xffffffff</code></td><td class="n">0</td><td class="n">414</td><td>kernel 포인터 초기값 유지</td></tr>
+<tr><th scope="row">kernel XIP 선택</th><td class="n">2,993,056</td><td class="n">0</td><td class="n">556</td><td>kernel 포인터 <code>0x41009000</code></td></tr>
+<tr><th scope="row">DTB 복사</th><td class="n">32,694</td><td class="n">32,694</td><td class="n">164,597</td><td>원본 DTB 전체와 바이트·해시 일치</td></tr>
+<tr><th scope="row">직접 복사, 상한 17</th><td class="n">17</td><td class="n">17</td><td class="n">658</td><td>DTB 앞 17바이트 일치</td></tr>
+<tr><th scope="row">kernel 선택, 상한 17</th><td class="n">2,993,056</td><td class="n">0</td><td class="n">556</td><td>source 0, 전체 길이 반환</td></tr>
+<tr><th scope="row">kernel 복사, 상한 17</th><td class="n">17</td><td class="n">17</td><td class="n">639</td><td>source 1, kernel 앞 17바이트 일치</td></tr>
+</tbody></table></div>
+<p>복사한 경우 목적지 쓰기는 <code>0x123c</code>에서 1바이트씩 순서대로 발생했습니다. DTB 전체의 SHA-256은 <code>b7968478e48fd492678512ef0efaee63f0fb298ad5d3781bc9975994c0d3b70b</code>이고, kernel 앞 17바이트의 SHA-256은 <code>c80fe044c18fc5953a99290bfa3cb0f2c4c97602010aa3dd84a74c45ec14a40b</code>입니다. 반환값은 raw r0 비트 패턴이며 <code>0xffffffff</code>는 부호 있게 읽으면 −1입니다.</p>
+</section>
+
+<section id="maxsize">
+<h2>maxsize는 모든 경로의 반환 길이 상한이 아닙니다</h2>
+<p>마지막 두 사례는 같은 kernel 이름, 같은 목적지 <code>0x40008000</code>, 같은 <code>maxsize=17</code>을 사용합니다. wrapper의 첫 인자만 0과 1로 바꿨습니다.</p>
+<p>source 0의 주소 조회 경로는 <code>0xec2</code>에서 파일 전체 길이를 저장합니다. wrapper는 kernel 포인터를 갱신하고 <code>0xa36</code>에서 그 길이를 반환합니다. 이 경로에는 maxsize 비교가 없습니다. source 1의 복사 경로는 <code>0xa46</code>에서 원본 callback을 호출하고, <code>0xe7c–0xe84</code>의 unsigned 비교로 파일 크기와 maxsize 중 작은 값을 선택합니다.</p>
+<p>따라서 “wrapper가 성공하면 반환값은 항상 maxsize 이하”라는 가정은 이 입력에서 성립하지 않습니다. 포인터 선택 경로는 목적지에 쓰지 않았으므로, 이 관측을 곧바로 버퍼 초과 쓰기로 해석할 수는 없습니다.</p>
+<div class="callout model"><strong class="label">source 1은 합성 호출 인자입니다</strong><p>확인한 상위 loader <code>0x984</code>는 source 0을 전달합니다. 이번 비교는 wrapper가 받은 인자에 따른 동작을 확인한 것이며, 실제 loader에서 source 1 경로에 도달함을 증명하지 않습니다. DTB 목적지 비교도 복사 경로를 선택하는 조건이므로 source 값만으로 모든 호출을 분류해서도 안 됩니다.</p></div>
+</section>
+
+<section id="checks">
+<h2>원본 보존, 관측 hook과 종료 조건</h2>
+<p>명령과 ROMFS가 들어 있는 원본 매핑 전체를 read+execute로 설정해 쓰기를 금지했습니다. 각 사례 뒤 원본 3,062,784바이트를 다시 비교하고, 여섯 사례가 끝난 뒤 디스크 입력을 재읽어 SHA-256과 내용을 검사했습니다.</p>
+<ul>
+<li><strong>명령 hook:</strong> 원본 9개 구간만 실행하도록 검사하고 명령 수·분기 offset을 기록합니다.</li>
+<li><strong>쓰기 hook:</strong> 해당 목적지 버퍼만 관찰합니다. 복사 횟수와 순서, 1바이트 크기, 기록 명령 <code>0x123c</code>를 검사합니다. 전역값과 앞쪽 검사 영역은 실행 후 확인합니다.</li>
+<li><strong>잘못된 접근:</strong> 매핑되지 않았거나 보호된 메모리에 접근하면 실패합니다. 어떤 hook도 원본 함수의 반환값을 대신 제공하지 않습니다.</li>
+<li><strong>종료:</strong> 호출마다 400,000개 명령 이내에 합성 반환 지점 <code>0x70000f00</code>에 도달해야 하며 SP와 r4–r11이 보존돼야 합니다. 선택된 이미지의 첫 명령은 실행하지 않습니다.</li>
+</ul>
+<p>목적지 앞 16바이트와 복사 구간 뒤의 나머지 버퍼를 검사했습니다. kernel 버퍼는 4,096바이트, DTB 버퍼는 36,864바이트입니다. 예를 들어 DTB 전체 복사 뒤에는 4,170바이트, kernel 17바이트 복사 뒤에는 4,079바이트가 초기값을 유지해야 합니다. 다른 목적지 버퍼와 mount·callback·DTB·initrd 전역값도 검사합니다. JSON은 복사 바이트 일치와 전체 목적지 해시를 함께 기록합니다.</p>
+</section>
+
+<section id="limits">
+<h2>이전 계측 실패와 남은 과제</h2>
+<p>앞선 재현에서 모든 주소의 쓰기를 관찰한 구성은 <code>0xa2c</code>에서 매핑되지 않은 <code>0x83800000</code>을 읽으려다 멈췄습니다. callback의 PC 읽기와 레지스터 관측을 제거한 시도도 실패했습니다. 이후 쓰기 hook을 목적지로 한정하고 원본 매핑을 read+execute로 설정한 구성에서 통과했습니다. 두 설정을 함께 바꿨으므로 어느 변경이 원인이었는지는 분리하지 못했습니다. 펌웨어나 에뮬레이터 결함으로 단정하지 않습니다.</p>
+<p>이번 도구는 원본 ROMFS의 선택된 파일을 읽는 하위 경계를 확인합니다. ROMFS checksum 검사, 상위 적재 함수와 DTB 보조 함수를 모두 연결한 실행, kernel 진입, M0·BOOT·Boot ROM의 인증, 수정 이미지 수락 여부는 확인하지 않았습니다. 실제 SRAM remap과 bank 선택 문제도 이 시험의 범위 밖입니다.</p>
+<p>다음 단계는 상위 정상 적재 경로에 원본 wrapper를 연결하고, 남은 DTB helper 경계를 분리해 검증하는 일입니다. 기존 상위 여섯 사례의 합성 오류 반환 시험은 그대로 보존합니다. 펌웨어 빌드·플래시·실기 장치 접근은 하지 않았습니다.</p>
+</section>
+
+<section id="reproduce">
+<h2>재현 방법</h2>
+<p>사용자가 보유한 <code>linux.bin</code> 또는 압축을 푼 전체 <code>decoded.bin</code>을 입력합니다. 기존 <a href="../verify_stubby_load_auth.py">Stubby 도구</a>의 크기·전체 SHA 검증 로더를 재사용하고, 새 도구가 실행 구간 9개의 해시도 확인합니다. 원본 바이너리는 저장소에 포함하지 않습니다.</p>
+<pre><code>python -m pip install unicorn==2.1.4
+python verify_stubby_romfs.py linux.bin --output romfs-linux.json
+python verify_stubby_romfs.py decoded.bin --output romfs-decoded.json</code></pre>
+<p>기존 출력, 입력 파일 자체, 입력의 hardlink, dangling symlink는 덮어쓰지 않습니다. 출력은 배타적으로 새로 생성하며 검증이 실패하면 비제로 종료합니다. assert 검사를 생략하는 <code>python -O</code> 실행은 시작 단계에서 거부합니다.</p>
+<p>검증한 LINUX SHA-256: <code>fcb11ce850f22420ddd6a29d63ef9074ad6322bc021d0ba101e1354d1277b9c2</code>. 전체 decoded 스트림 SHA-256: <code>7ff301d585ef7adcd620a15575faa39b4227cc5a27eaa8d754efe50f667a30f9</code>. 추출 절차는 <a href="firmware-structure.html#reproduce">펌웨어 구조 보고서</a>에 있습니다.</p>
+</section>
+
+<section id="refs">
+<h2>근거 파일</h2>
+<ul class="refs">
+<li><a href="stubby-romfs-checks.json">stubby-romfs-checks.json</a> — Cortex-A7 6사례, 원본·구간 해시, 관측 범위, 복사·검사 영역 결과</li>
+<li><a href="../verify_stubby_romfs.py">verify_stubby_romfs.py</a> — 원본 ROMFS 함수 재현기</li>
+<li><a href="../tests/test_stubby_romfs.py">test_stubby_romfs.py</a> — 입력 SHA 거부, 출력·별칭 보호, 최적화 실행 거부 시험</li>
+<li><a href="stubby-load-auth.html">Stubby 적재와 인증 경계</a> — 상위 호출자 6개 stub 시험과 공개 소스 비교</li>
+<li><a href="stubby-load-auth-evidence.json">기존 정적 근거</a> — wrapper와 상위 함수의 명령·포인터·출처</li>
+</ul>
+</section>
+</main>
+</div>
+<!-- chrome:bottom -->
+<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">부팅과 저장소 — 이 주제의 문서</h2><ol><li><a href="guide-boot.html">부팅과 저장소 안내</a></li><li><a href="startup-storage.html">부팅 단계와 저장소 구조<span>M0·BOOT 순서, 파티션 표, bank</span></a></li><li><a href="m0-board-config.html">M0 보드 설정<span>상수 기록과 SRAM remap의 경계</span></a></li><li><a href="m0-diagnostic-serial.html">M0 진단 직렬 출력<span>분주식과 문자 출력</span></a></li><li><a href="stubby-load-auth.html">Stubby 적재와 인증 경계<span>Linux 부트로더의 파일 조건</span></a></li><li><a href="stubby-romfs.html" aria-current="page">Stubby ROMFS 선택과 복사<span>원본 함수 6사례와 길이 상한</span></a></li><li><a href="header-alias-consumer.html">부트 헤더와 파티션 표<span>+4 저장 후보의 실제 대상</span></a></li></ol></nav>
+<nav class="pager" aria-label="이전·다음 문서"><a class="prev" href="stubby-load-auth.html"><small>← 이전</small>Stubby 적재와 인증 경계</a><a class="next" href="header-alias-consumer.html"><small>다음 →</small>부트 헤더와 파티션 표</a></nav>
+<footer class="sitefoot"><div class="sitefoot-in"><nav aria-label="사이트"><a href="../index.html#map">문서 지도</a><a href="../index.html#levels">검증 수준 읽는 법</a><a href="../glossary.html">용어집</a><a href="research-program.html">세 기종 연구 본부</a><a href="https://github.com/yunhyok/pentax-k3iii-firmware-analysis">GitHub 저장소</a></nav><p>PENTAX K-3 Mark III 펌웨어 2.20 분석 문서. PC에서 수행한 정적 분석과 에뮬레이션 결과이며, 카메라 실기에서 검증한 내용이 아닙니다. 원본 펌웨어와 추출한 독점 코드는 포함하지 않습니다.</p></div></footer>
+<!-- /chrome:bottom -->
+</body>
+</html>
