@@ -4,6 +4,7 @@ The page uses the shared stylesheet and navigation of the site (assets/site.css,
 """
 
 import json
+import re
 from html import escape as esc
 from pathlib import Path
 
@@ -67,6 +68,14 @@ def overview(data):
             f'<thead><tr><th scope="col">목표</th>{head}</tr></thead><tbody>{"".join(rows)}</tbody></table></div>')
 
 
+def findings(text):
+    """A long finding is easier to scan as a list: one sentence per item."""
+    sentences = [part for part in re.split(r"(?<=[다요]\.)\s+", text.strip()) if part]
+    if len(sentences) <= 3:
+        return esc(text)
+    return "<ul>" + "".join(f"<li>{esc(sentence)}</li>" for sentence in sentences) + "</ul>"
+
+
 def track_section(data, track, number):
     cards = []
     for camera in data["cameras"]:
@@ -74,16 +83,16 @@ def track_section(data, track, number):
         links = " · ".join(source_link(data, key) for key in card["sources"])
         cards.append(f'''<li class="card goal"><span class="tag">{esc(camera["name"])}</span>
 <p class="state">{esc(card["state"])}</p>
-<dl><dt>알아낸 것</dt><dd>{esc(card["finding"])}</dd>
-<dt>다음에 확인할 것</dt><dd>{esc(card["next"])}</dd>
-<dt>근거 문서</dt><dd>{links}</dd></dl></li>''')
+<dl><dt>알아낸 것</dt><dd>{findings(card["finding"])}</dd>
+<dt>다음에 확인할 것</dt><dd>{esc(card["next"])}</dd></dl>
+<details><summary>근거 문서 {len(card["sources"])}개</summary><p>{links}</p></details></li>''')
     routes = ""
     if "routes" in track:
         routes = f'<h3>펌웨어를 다시 만드는 세 가지 길</h3>{panels(track["routes"])}'
     return f'''<section id="{esc(track["id"])}">
 <h2>목표 {number}. {esc(track["title"])}</h2>
 <p class="takeaway">{esc(track["dependency"])}</p>
-<ul class="cards">{"".join(cards)}</ul>
+<ul class="cards one">{"".join(cards)}</ul>
 {routes}
 <h3>검증 순서와 통과 기준</h3>
 {pairs(track["gates"])}

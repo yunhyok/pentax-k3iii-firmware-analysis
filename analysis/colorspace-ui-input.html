@@ -10,8 +10,8 @@
 <body data-camera="k3iii">
 <!-- chrome:top -->
 <a class="skip" href="#main">본문 바로가기</a>
-<div class="topbar"><div class="topbar-in"><a class="brand" href="../index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="../index.html" aria-current="true">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="https://yunhyok.github.io/pentax-q7-firmware-analysis/">Q7</a></div><nav class="topnav" aria-label="주제"><a href="../index.html">개요</a><a href="guide-boot.html">부팅·저장소</a><a href="guide-update.html">업데이트</a><a href="guide-rebuild.html">재구축</a><a href="guide-rtos.html">명령·셸</a><a href="guide-color.html">색 처리</a><a href="lightroom-bridge.html">Lightroom</a><a href="af-foundations.html">AF</a><a href="ui-port-contract.html" aria-current="true">UI</a></nav></div></div>
-<nav class="crumbs" aria-label="현재 위치"><ol><li><a href="../index.html">PENTAX K-3 Mark III</a></li><li><a href="ui-port-contract.html">UI와 화면 자원</a></li><li aria-current="page">색공간 화면: 방향 입력·포커스</li></ol></nav>
+<div class="topbar"><div class="topbar-in"><a class="brand" href="../index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="../index.html" aria-current="true">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="https://yunhyok.github.io/pentax-q7-firmware-analysis/">Q7</a></div><nav class="topnav" aria-label="주제"><a href="../index.html">개요</a><a href="guide-boot.html">부팅·저장소</a><a href="guide-update.html">업데이트</a><a href="guide-rebuild.html">재구축</a><a href="guide-rtos.html">명령·셸</a><a href="guide-color.html">색 처리</a><a href="guide-lightroom.html">Lightroom</a><a href="guide-af.html">AF</a><a href="guide-ui.html" aria-current="true">UI</a></nav></div></div>
+<nav class="crumbs" aria-label="현재 위치"><ol><li><a href="../index.html">PENTAX K-3 Mark III</a></li><li><a href="guide-ui.html">UI와 화면 자원</a></li><li aria-current="page">색공간 화면: 방향 입력·포커스</li></ol></nav>
 <!-- /chrome:top -->
 <header class="page-head">
 <p class="eyebrow">UI와 화면 자원 · 색공간 화면 2</p>
@@ -28,7 +28,7 @@
 <h2 data-toc="no">핵심 요약</h2>
 <ul>
 <li>방향 이벤트는 네 가지입니다. 두 가지는 목록 끝에서 <strong>반대쪽 끝으로 돌아가고</strong>, 나머지 두 가지는 끝에서 <strong>멈춥니다</strong>. 어떤 버튼이나 다이얼이 이 이벤트를 만드는지는 확인하지 않았습니다.</li>
-<li>포커스 이동은 목록 객체의 <strong>포커스 번호 하나</strong>를 바꾸는 일입니다. 설정값은 건드리지 않습니다. 옮겨 갈 수 있는 행인지는 행마다 있는 자격 바이트가 정하며, 표시 여부나 확정 차단과는 다른 바이트입니다.</li>
+<li>포커스 이동은 목록 객체의 <strong>포커스 번호 하나</strong>를 바꾸는 일입니다. 설정값은 건드리지 않습니다. 옮겨 갈 수 있는 행인지는 행마다 있는 자격 바이트가 정하며 표시 여부나 확정 차단과는 다른 바이트입니다.</li>
 <li>포커스가 바뀌면 이전 행 알림 → 번호 기록 → 새 행 알림 → 메뉴 콜백 순서로 호출됩니다. 메뉴 콜백은 표시를 갱신하는 함수의 입구까지 이어집니다.</li>
 <li>전환 애니메이션을 예약하는 경우에도 포커스 번호는 예약보다 먼저 바뀝니다.</li>
 <li>원본 ARM 코드를 PC 에뮬레이터에서 <strong>50가지 합성 상황</strong>으로 실행했습니다. 그리기, 스케줄러, 시계는 호출만 기록하는 대체 함수였고 화면이 실제로 그려지는 과정은 실행하지 않았습니다.</li>
@@ -66,8 +66,8 @@
 
 <section id="background">
 <h2>배경: 포커스 이동은 확정과 별개의 단계입니다</h2>
-<p>색공간 선택 화면에는 sRGB와 AdobeRGB 두 행이 있습니다. <a href="colorspace-ui.html">앞 문서</a>에서 본 것처럼 화면에서 고르는 중인 값은 목록 객체의 포커스 번호(<code>list+0x1ce</code>)이고, 확정 이벤트가 와야 그 번호가 설정 함수로 넘어갑니다. 앞 문서의 시험은 이 번호를 직접 써 넣었습니다. 이 문서는 그 빈칸, 곧 <strong>방향 이벤트가 실제로 이 번호를 바꾸는 과정</strong>을 원본 코드로 실행한 기록입니다.</p>
-<p>아래에서 M은 메뉴 controller 객체, L은 M의 <code>+0x1c8</code>이 가리키는 목록 객체입니다. 색공간 화면은 descriptor 72번(10진수, 주소 <code>0x536453c0</code>)을 씁니다. 그 밖의 주소와 offset은 모두 16진수입니다. 이벤트 번호는 펌웨어 안의 숫자일 뿐이며, 물리 버튼이나 다이얼의 이름을 붙이지 않았습니다.</p>
+<p>색공간 선택 화면에는 sRGB와 AdobeRGB 두 행이 있습니다. <a href="colorspace-ui.html">앞 문서</a>에서 본 것처럼 화면에서 고르는 중인 값은 목록 객체의 포커스 번호(<code>list+0x1ce</code>)이고 확정 이벤트가 와야 그 번호가 설정 함수로 넘어갑니다. 앞 문서의 시험은 이 번호를 직접 써 넣었습니다. 이 문서는 그 빈칸, 곧 <strong>방향 이벤트가 실제로 이 번호를 바꾸는 과정</strong>을 원본 코드로 실행한 기록입니다.</p>
+<p>아래에서 M은 메뉴 controller 객체, L은 M의 <code>+0x1c8</code>이 가리키는 목록 객체입니다. 색공간 화면은 descriptor 72번(10진수, 주소 <code>0x536453c0</code>)을 씁니다. 그 밖의 주소와 offset은 모두 16진수입니다. 이벤트 번호는 펌웨어 안의 숫자일 뿐이며 물리 버튼이나 다이얼의 이름을 붙이지 않았습니다.</p>
 
 <figure class="diagram">
 <figcaption>방향 이벤트 하나가 처리되는 순서</figcaption>
@@ -150,7 +150,7 @@
 
 <section id="direction">
 <h2>방향 이벤트 네 가지와 목록 끝에서의 동작</h2>
-<p class="takeaway">이벤트 <code>0xdf</code>와 <code>0xe0</code>은 끝에서 반대쪽으로 돌아가고, <code>0xe3</code>과 <code>0xe4</code>는 끝에서 멈춥니다. 색공간 화면처럼 행이 둘이면 앞의 둘은 항상 다른 행으로 넘어갑니다.</p>
+<p class="takeaway">이벤트 <code>0xdf</code>와 <code>0xe0</code>은 끝에서 반대쪽으로 돌아가고 <code>0xe3</code>과 <code>0xe4</code>는 끝에서 멈춥니다. 색공간 화면처럼 행이 둘이면 앞의 둘은 항상 다른 행으로 넘어갑니다.</p>
 
 <figure class="diagram">
 <figcaption>행이 두 개인 색공간 화면에서 이벤트별 포커스 이동 (8개 사례)</figcaption>
@@ -206,10 +206,10 @@
 </svg>
 </div>
 <ul class="dg-legend"><li><i></i>행</li><li><i class="key"></i>굵은 선: 끝을 넘어 반대쪽으로 순환</li><li>가로 막대와 ‘멈춤’: 끝에서 움직이지 않음</li></ul>
-<p>여덟 사례 모두 원본 이벤트 처리 함수부터 실행했습니다. 멈춘 두 사례에서는 포커스 번호를 쓰는 일이 한 번도 없었고, 목록 이동 함수에 들어가지도 않았습니다.</p>
+<p>여덟 사례 모두 원본 이벤트 처리 함수부터 실행했습니다. 멈춘 두 사례에서는 포커스 번호를 쓰는 일이 한 번도 없었고 목록 이동 함수에 들어가지도 않았습니다.</p>
 </figure>
 
-<p>이벤트 처리 함수는 이벤트 번호에 따라 방향 wrapper 둘 중 하나를 부르고, 두 번째 인수로 ‘끝에서 멈출지’를 넘깁니다.</p>
+<p>이벤트 처리 함수는 이벤트 번호에 따라 방향 wrapper 둘 중 하나를 부르고 두 번째 인수로 ‘끝에서 멈출지’를 넘깁니다.</p>
 <div class="table-wrap"><table>
 <caption>이벤트별 호출과 끝에서의 판단</caption>
 <thead><tr><th>이벤트</th><th>부르는 함수</th><th>끝이 아닐 때</th><th>끝에 있을 때</th></tr></thead>
@@ -302,7 +302,7 @@
 <p>이 목록과 자격 값은 검색 코드를 시험하려고 만든 합성 입력입니다. 색공간 화면의 실제 행은 두 개입니다. 여섯 조건은 전환 요청이 있을 때와 없을 때 모두 같은 행에 도착했습니다. 제자리에 머문 두 조건에서 전환을 요청하면, 포커스 번호는 쓰지 않은 채 전환 상태 값 2만 기록됐습니다.</p>
 </figure>
 
-<p>목록 이동 함수(<code>0x52c0e948</code>)는 현재 번호의 앞이나 뒤를 차례로 살피고, 필요하면 반대쪽 끝으로 넘어가면서 자격 있는 행을 찾습니다. 포커스 설정 함수(<code>0x52c0e25c</code>)도 대상 행의 같은 바이트를 한 번 더 검사합니다. 대상에 자격이 없으면 번호를 쓰기 전에 돌아가고, 대상이 지금과 다를 때만 <code>0x52c0e2cc</code>의 16비트 저장으로 <code>L+0x1ce</code>를 바꿉니다.</p>
+<p>목록 이동 함수(<code>0x52c0e948</code>)는 현재 번호의 앞이나 뒤를 차례로 살피고 필요하면 반대쪽 끝으로 넘어가면서 자격 있는 행을 찾습니다. 포커스 설정 함수(<code>0x52c0e25c</code>)도 대상 행의 같은 바이트를 한 번 더 검사합니다. 대상에 자격이 없으면 번호를 쓰기 전에 돌아가고 대상이 지금과 다를 때만 <code>0x52c0e2cc</code>의 16비트 저장으로 <code>L+0x1ce</code>를 바꿉니다.</p>
 
 <div class="table-wrap"><table>
 <caption>행 객체의 세 가지 상태 바이트</caption>
@@ -312,7 +312,7 @@
 <tr><th scope="row"><code>+0x8a</code><br>표시 여부</th><td>공용 표시 여부 getter·setter</td><td>이 값만 0으로 바꾸고 행을 목록에 그대로 둔 시험에서 이동은 계속됐습니다.</td><td>실제로 행을 숨길 때 목록과 배치가 어떻게 다시 짜이는지</td></tr>
 <tr><th scope="row"><code>+0x17a</code><br>확정 차단</th><td>색공간 확정 경로(<code>0x5278db58</code>–<code>0x5278db60</code>)</td><td>기본 생성자는 0으로 초기화합니다. 이 값이 1이어도 <code>+0x178</code>이 1이면 이동 대상이 됐습니다.</td><td>이 값을 1로 만드는 실제 조건</td></tr>
 </tbody></table></div>
-<p>따라서 ‘포커스를 둘 수 있다’와 ‘확정할 수 있다’는 서로 다른 상태입니다. 다만 이 시험은 바이트를 직접 바꿔 본 것이어서, 실제 UI가 숨긴 행이나 비활성 행을 어떤 조건으로 만드는지를 입증하지는 않습니다.</p>
+<p>따라서 ‘포커스를 둘 수 있다’와 ‘확정할 수 있다’는 서로 다른 상태입니다. 다만 이 시험은 바이트를 직접 바꿔 본 것이어서 실제 UI가 숨긴 행이나 비활성 행을 어떤 조건으로 만드는지를 입증하지는 않습니다.</p>
 
 <details class="evidence"><summary>포커스 설정 함수 단독 실행 5개 사례</summary>
 <div class="table-wrap"><table class="compact">
@@ -322,7 +322,7 @@
 <tr><th scope="row">같은 대상</th><td>행 0 → 행 0</td><td>번호 기록 없음, 알림 없음</td></tr>
 <tr><th scope="row">새 행 알림 끔</th><td><code>L+0x1d0</code> = 0</td><td>포커스 1, 이전 행 알림만 호출</td></tr>
 <tr><th scope="row">새 행 알림 + 메뉴 콜백</th><td><code>L+0x1d0</code> = 1, <code>L+0x224</code> = 1</td><td>이전 행 알림, 새 행 알림, 메뉴 콜백 모두 호출</td></tr>
-<tr><th scope="row">기본 가상 함수 표</th><td>행이 기본 표(<code>0x53872b08</code>)를 씀</td><td>포커스는 바뀌고, 기본 알림 함수는 호출을 생략</td></tr>
+<tr><th scope="row">기본 가상 함수 표</th><td>행이 기본 표(<code>0x53872b08</code>)를 씀</td><td>포커스는 바뀌고 기본 알림 함수는 호출을 생략</td></tr>
 </tbody></table></div>
 <p class="small">행의 기본 생성자(<code>0x52c0f7f8</code>–<code>0x52c0f844</code>)는 <code>+0x178</code> = 1, <code>+0x179</code> = 1, <code>+0x17a</code> = 0을 넣습니다. <code>+0x179</code>의 쓰임은 조사하지 않았습니다.</p>
 </details>
@@ -330,7 +330,7 @@
 
 <section id="callback">
 <h2>포커스가 바뀐 사실은 콜백으로 메뉴에 전달됩니다</h2>
-<p class="takeaway">포커스 설정 함수는 이전 행에 알리고, 번호를 기록하고, 새 행에 알린 다음, 메뉴가 등록해 둔 콜백을 부릅니다. 색공간 화면에서 이 콜백은 표시 갱신 함수의 입구로 이어집니다.</p>
+<p class="takeaway">포커스 설정 함수는 이전 행에 알리고 번호를 기록하고 새 행에 알린 다음, 메뉴가 등록해 둔 콜백을 부릅니다. 색공간 화면에서 이 콜백은 표시 갱신 함수의 입구로 이어집니다.</p>
 
 <ol class="steps">
 <li><strong>이전 행에 알림</strong> 이전 행의 가상 함수 표 <code>+0x70</code> 칸을 부릅니다. 그 칸이 기본 함수(<code>0x52c0d6c4</code>)이면 생략합니다.</li>
@@ -352,10 +352,10 @@
 <tr><th scope="row"><code>L+0x220</code></th><td>호출 함수 <code>0x5278ecd0</code></td></tr>
 <tr><th scope="row"><code>L+0x224</code></th><td>1 (콜백 사용)</td></tr>
 </tbody></table></div>
-<p>그 뒤 포커스가 바뀌면 <code>0x5278ecd0</code> → <code>0x5278ec04</code>가 불립니다. 색공간 descriptor의 <code>+0x38</code>과 <code>+0x3c</code>가 모두 0이라 행별 hook은 건너뛰고, 바이트 0의 값이 1이라 <code>0x5278ecc4</code>에서 표시 갱신 함수 <code>0x5278e4ac</code>로 들어갑니다.</p>
+<p>그 뒤 포커스가 바뀌면 <code>0x5278ecd0</code> → <code>0x5278ec04</code>가 불립니다. 색공간 descriptor의 <code>+0x38</code>과 <code>+0x3c</code>가 모두 0이라 행별 hook은 건너뛰고 바이트 0의 값이 1이라 <code>0x5278ecc4</code>에서 표시 갱신 함수 <code>0x5278e4ac</code>로 들어갑니다.</p>
 <p>사례 두 개에서 이 전체를 이어서 실행했습니다. 원본 등록 구간과 원본 클로저 관리 함수·설치 함수를 실행한 다음, 방향 이벤트를 넣어 원본 메뉴 콜백이 정확히 한 번 불리는 것을 확인했습니다. 이때 시험이 넣어 준 기록용 콜백은 불리지 않았습니다.</p>
 <div class="callout warn"><strong class="label">주의</strong>
-<p>표시 갱신 함수 <code>0x5278e4ac</code>는 이 시험에서 ‘지금 포커스 번호만 기록하는’ 대체 함수입니다. 명령을 읽어 보면 이 함수는 머리글 함수(<code>0x52776a08</code>)와 표시 여부 설정으로 이어지지만, 그 아래의 실제 그리기를 실행했다고 말할 수 없습니다. 등록 구간도 첫 번째 것만 실행했습니다. 같은 함수 안의 나머지 두 등록은 실행하지 않았습니다.</p></div>
+<p>표시 갱신 함수 <code>0x5278e4ac</code>는 이 시험에서 ‘지금 포커스 번호만 기록하는’ 대체 함수입니다. 명령을 읽어 보면 이 함수는 머리글 함수(<code>0x52776a08</code>)와 표시 여부 설정으로 이어지지만 그 아래의 실제 그리기를 실행했다고 말할 수 없습니다. 등록 구간도 첫 번째 것만 실행했습니다. 같은 함수 안의 나머지 두 등록은 실행하지 않았습니다.</p></div>
 </section>
 
 <section id="transition">
@@ -367,7 +367,7 @@
 <thead><tr><th>상황</th><th>처리</th><th>관측한 값</th></tr></thead>
 <tbody>
 <tr><th scope="row">끝을 넘어 순환</th><td><code>0x52c0eac0</code>에서 전환 요청 인수를 0으로 바꿉니다. 포커스 설정 함수와 스크롤 설정 함수를 바로 부릅니다.</td><td>전환 상태 0, 스케줄러 등록 없음</td></tr>
-<tr><th scope="row">끝을 넘지 않는 이동, 전환 요청 1</th><td>전환 준비 함수 <code>0x52c0e838</code>로 갑니다. 전환 상태 바이트 <code>L+0x1dc</code>에 2를 쓰고 전환용 위치 값을 기록합니다. <code>0x52c0e900</code>에서 포커스 설정 함수를 먼저 부르고, 그 뒤 <code>0x52c0e920</code> → <code>0x528f8228</code>로 스케줄러 등록을 요청합니다.</td><td>전환 상태 2, 스케줄러 등록 요청 1회</td></tr>
+<tr><th scope="row">끝을 넘지 않는 이동, 전환 요청 1</th><td>전환 준비 함수 <code>0x52c0e838</code>로 갑니다. 전환 상태 바이트 <code>L+0x1dc</code>에 2를 쓰고 전환용 위치 값을 기록합니다. <code>0x52c0e900</code>에서 포커스 설정 함수를 먼저 부르고 그 뒤 <code>0x52c0e920</code> → <code>0x528f8228</code>로 스케줄러 등록을 요청합니다.</td><td>전환 상태 2, 스케줄러 등록 요청 1회</td></tr>
 <tr><th scope="row">전환 요청 0</th><td>포커스 설정 함수와 스크롤 설정 함수를 바로 부릅니다.</td><td>전환 상태 0</td></tr>
 </tbody></table></div>
 <p>화면 애니메이션이 끝난 뒤에야 포커스가 바뀌는 구조가 아닙니다. 스케줄러에 등록을 요청하는 시점에 <code>L+0x1ce</code>에는 이미 새 번호가 들어 있습니다.</p>
@@ -381,7 +381,7 @@
 <tr><th scope="row"><code>0xe0</code> → <code>0xe4</code> (행 0에서)</th><td>0 → 1 → 1</td><td>2 → 2</td><td>등록만</td><td>두 번째 이벤트는 <code>0x5278daa0</code>에서 복귀해 목록 이동 함수에 들어가지 않습니다.</td></tr>
 <tr><th scope="row"><code>0xdf</code> → <code>0xe3</code> (행 1에서)</th><td>1 → 0 → 0</td><td>2 → 2</td><td>등록만</td><td>두 번째 이벤트는 <code>0x5278d9dc</code>에서 복귀합니다.</td></tr>
 </tbody></table></div>
-<p>정리 함수(<code>0x52c0e528</code>)는 스케줄러에 해제를 요청하고, 저장해 둔 스크롤 목표를 적용하고, 현재 포커스를 포커스 설정 함수에 다시 넘긴 뒤 전환 상태를 0으로 바꿉니다. 끝에서 멈추는 이벤트는 이 정리 함수에 이르지 못하므로 전환 상태 2가 그대로 남았습니다.</p>
+<p>정리 함수(<code>0x52c0e528</code>)는 스케줄러에 해제를 요청하고 저장해 둔 스크롤 목표를 적용하고 현재 포커스를 포커스 설정 함수에 다시 넘긴 뒤 전환 상태를 0으로 바꿉니다. 끝에서 멈추는 이벤트는 이 정리 함수에 이르지 못하므로 전환 상태 2가 그대로 남았습니다.</p>
 <div class="callout model"><strong class="label">시험 조건</strong>
 <p>스케줄러 등록·해제와 시계는 호출만 기록했습니다. 시간이 흘러 애니메이션이 한 단계씩 진행되는 호출은 한 번도 넣지 않았습니다. 시간 곡선, 실제 화면 프레임, 전환 상태 1은 이 시험의 범위 밖입니다.</p></div>
 </section>
@@ -451,7 +451,7 @@
 </details>
 
 <details><summary>조사 경과: 사례 수가 48개에서 50개가 된 이유</summary>
-<p>근거 JSON의 <code>validation</code> 항목은 처음 비공개로 점검한 48개 사례를 기록합니다. 그 뒤 ‘끝에서 멈춘 이벤트가 남은 전환을 건드리지 않는다’는 사례 두 개를 더했고, 공개 검증기와 결과 파일은 50개 기준입니다(<code>public_replay</code> 항목). 조정자가 독립적으로 다시 실행해 같은 결과를 얻었습니다.</p>
+<p>근거 JSON의 <code>validation</code> 항목은 처음 비공개로 점검한 48개 사례를 기록합니다. 그 뒤 ‘끝에서 멈춘 이벤트가 남은 전환을 건드리지 않는다’는 사례 두 개를 더했고 공개 검증기와 결과 파일은 50개 기준입니다(<code>public_replay</code> 항목). 조정자가 독립적으로 다시 실행해 같은 결과를 얻었습니다.</p>
 </details>
 </section>
 
@@ -496,7 +496,7 @@
 </main>
 </div>
 <!-- chrome:bottom -->
-<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">UI와 화면 자원 — 이 주제의 문서</h2><ol><li><a href="ui-port-contract.html">UI 이식 설계·안내<span>세 기종 비교</span></a></li><li><a href="colorspace-ui.html">색공간 화면: 선택·확정·취소<span>16사례</span></a></li><li><a href="colorspace-ui-input.html" aria-current="page">색공간 화면: 방향 입력·포커스<span>50사례</span></a></li><li><a href="colorspace-render.html">색공간 행의 아이콘과 글자 측정<span>원본 행·ICONBIN 복사, Latin 글꼴 준비와 sRGB 측정</span></a></li><li><a href="colorspace-text.html">색공간 sRGB 글자의 래스터와 픽셀 전송<span>원본 텍스트 비트맵·합성 표면 전송</span></a></li><li><a href="colorspace-clip.html">sRGB 글자 전송의 화면 경계<span>일곱 좌표에서 32비트 전송과 Q7 행 검사 비교</span></a></li><li><a href="ui-viewport-producers.html">K-3 III 텍스트 viewport의 생산 경로<span>부모 클립과 텍스트 설정의 전달</span></a></li><li><a href="ui-surface-producers.html">K-3 III StringView의 그리기 표면<span>Canvas와 표면 기술자</span></a></li><li><a href="ui-render-chain.html">Q7 갱신에서 원본 픽셀까지<span>마커·두 텍스트·버퍼 교체의 합성 실행</span></a></li><li><a href="cross-ui-text.html">K-3 III와 Q7의 sRGB 글자 그리기 비교<span>32비트 커버리지 전송과 Q7 팔레트 번호·Q16 축소</span></a></li><li><a href="icon-resources.html">ICONBIN 아이콘 자원<span>저장 형식, 복사 규칙, 후보 아이콘</span></a></li></ol></nav>
+<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">UI와 화면 자원 — 이 주제의 문서</h2><ol><li><a href="guide-ui.html">UI와 화면 자원 안내</a></li><li><a href="ui-port-contract.html">UI 이식 설계<span>세 기종 비교</span></a></li><li><a href="colorspace-ui.html">색공간 화면: 선택·확정·취소<span>16사례</span></a></li><li><a href="colorspace-ui-input.html" aria-current="page">색공간 화면: 방향 입력·포커스<span>50사례</span></a></li><li><a href="colorspace-render.html">색공간 행의 아이콘과 글자 측정<span>원본 행·ICONBIN 복사, Latin 글꼴 준비와 sRGB 측정</span></a></li><li><a href="colorspace-text.html">색공간 sRGB 글자의 래스터와 픽셀 전송<span>원본 텍스트 비트맵·합성 표면 전송</span></a></li><li><a href="colorspace-clip.html">sRGB 글자 전송의 화면 경계<span>일곱 좌표에서 32비트 전송과 Q7 행 검사 비교</span></a></li><li><a href="ui-viewport-producers.html">K-3 III 텍스트 viewport의 생산 경로<span>부모 클립과 텍스트 설정의 전달</span></a></li><li><a href="ui-surface-producers.html">K-3 III StringView의 그리기 표면<span>Canvas와 표면 기술자</span></a></li><li><a href="ui-render-chain.html">Q7 갱신에서 원본 픽셀까지<span>마커·두 텍스트·버퍼 교체의 합성 실행</span></a></li><li><a href="cross-ui-text.html">K-3 III와 Q7의 sRGB 글자 그리기 비교<span>32비트 커버리지 전송과 Q7 팔레트 번호·Q16 축소</span></a></li><li><a href="icon-resources.html">ICONBIN 아이콘 자원<span>저장 형식, 복사 규칙, 후보 아이콘</span></a></li></ol></nav>
 <nav class="pager" aria-label="이전·다음 문서"><a class="prev" href="colorspace-ui.html"><small>← 이전</small>색공간 화면: 선택·확정·취소</a><a class="next" href="colorspace-render.html"><small>다음 →</small>색공간 행의 아이콘과 글자 측정</a></nav>
 <footer class="sitefoot"><div class="sitefoot-in"><nav aria-label="사이트"><a href="../index.html#map">문서 지도</a><a href="../index.html#levels">검증 수준 읽는 법</a><a href="../glossary.html">용어집</a><a href="research-program.html">세 기종 연구 본부</a><a href="https://github.com/yunhyok/pentax-k3iii-firmware-analysis">GitHub 저장소</a></nav><p>PENTAX 펌웨어 연구. PC에서 수행한 정적 분석과 에뮬레이션 결과이며, 카메라 실기에서 검증한 내용이 아닙니다. 원본 펌웨어와 추출한 독점 코드는 포함하지 않습니다.</p></div></footer>
 <!-- /chrome:bottom -->

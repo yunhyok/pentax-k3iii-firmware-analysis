@@ -10,8 +10,8 @@
 <body data-camera="k3iii">
 <!-- chrome:top -->
 <a class="skip" href="#main">본문 바로가기</a>
-<div class="topbar"><div class="topbar-in"><a class="brand" href="../index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="../index.html" aria-current="true">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="https://yunhyok.github.io/pentax-q7-firmware-analysis/">Q7</a></div><nav class="topnav" aria-label="주제"><a href="../index.html">개요</a><a href="guide-boot.html">부팅·저장소</a><a href="guide-update.html">업데이트</a><a href="guide-rebuild.html">재구축</a><a href="guide-rtos.html">명령·셸</a><a href="guide-color.html">색 처리</a><a href="lightroom-bridge.html" aria-current="true">Lightroom</a><a href="af-foundations.html">AF</a><a href="ui-port-contract.html">UI</a></nav></div></div>
-<nav class="crumbs" aria-label="현재 위치"><ol><li><a href="../index.html">PENTAX K-3 Mark III</a></li><li><a href="lightroom-bridge.html">Lightroom 색 프로파일</a></li><li aria-current="page">톤 곡선 비교</li></ol></nav>
+<div class="topbar"><div class="topbar-in"><a class="brand" href="../index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="../index.html" aria-current="true">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="https://yunhyok.github.io/pentax-q7-firmware-analysis/">Q7</a></div><nav class="topnav" aria-label="주제"><a href="../index.html">개요</a><a href="guide-boot.html">부팅·저장소</a><a href="guide-update.html">업데이트</a><a href="guide-rebuild.html">재구축</a><a href="guide-rtos.html">명령·셸</a><a href="guide-color.html">색 처리</a><a href="guide-lightroom.html" aria-current="true">Lightroom</a><a href="guide-af.html">AF</a><a href="guide-ui.html">UI</a></nav></div></div>
+<nav class="crumbs" aria-label="현재 위치"><ol><li><a href="../index.html">PENTAX K-3 Mark III</a></li><li><a href="guide-lightroom.html">Lightroom 색 프로파일</a></li><li aria-current="page">톤 곡선 비교</li></ol></nav>
 <!-- /chrome:top -->
 <header class="page-head">
 <p class="eyebrow">Lightroom 색 프로파일 · 톤 곡선 대조 실험</p>
@@ -31,7 +31,7 @@
 <li>같은 프로파일로 다시 내보낸 TIFF는 <strong>24,064,000개 픽셀이 모두 같았습니다</strong>.</li>
 <li>항등 곡선을 적은 출력은 태그를 생략한 출력보다 크게 어두웠습니다(24패치 평균 ΔE00 12.90). Lift 곡선은 24패치 모두의 밝기를 올렸습니다. 프로파일에 적은 곡선이 출력에 반영됩니다.</li>
 <li>ACR3 표를 적은 출력은 생략한 출력과 거의 같았습니다. 픽셀의 40.48%에서 코드값이 조금 달랐지만 24패치의 색차는 최대 0.0024였습니다.</li>
-<li>RAW 한 장, 현상 설정 하나에서 얻은 결과입니다. Lightroom 내부의 기본 곡선이나 처리 순서를 확정하지 않으며, 카메라 JPEG의 톤을 맞추는 작업도 포함하지 않습니다.</li>
+<li>RAW 한 장, 현상 설정 하나에서 얻은 결과입니다. Lightroom 내부의 기본 곡선이나 처리 순서를 확정하지 않으며 카메라 JPEG의 톤을 맞추는 작업도 포함하지 않습니다.</li>
 </ul>
 </section>
 
@@ -45,7 +45,7 @@
 <div class="static"><h3><span class="badge static">정적 분석</span> SDK 소스를 읽은 것</h3>
 <ul>
 <li>ACR3 표 1,025점의 위치와 값</li>
-<li>SDK 예제 렌더러는 기본 표를 선형 보간하고, 프로파일 곡선은 자연 스플라인으로 처리함</li>
+<li>SDK 예제 렌더러는 기본 표를 선형 보간하고 프로파일 곡선은 자연 스플라인으로 처리함</li>
 </ul></div>
 <div class="model"><h3><span class="badge model">모델</span> 실험 조건으로 정한 것</h3>
 <ul>
@@ -69,8 +69,8 @@
 <caption>이 문서에 나오는 용어</caption>
 <thead><tr><th>용어</th><th>뜻</th></tr></thead>
 <tbody>
-<tr><th scope="row"><code>ProfileToneCurve</code></th><td>DCP의 기본 톤 곡선 태그(번호 50940)입니다. 입력과 출력이 0~1인 점 (x, y)의 목록이며, <a href="https://helpx.adobe.com/content/dam/help/en/camera-raw/digital-negative/jcr_content/root/content/flex/items/position/position-par/download_section_733958301/download-1/DNG_Spec_1_7_1_0.pdf#page=51">DNG 규격</a>은 점 사이를 3차 스플라인으로 잇도록 권합니다. 일반 프로파일에서는 첫 점이 (0, 0), 끝 점이 (1, 1)이어야 합니다.</td></tr>
-<tr><th scope="row">생략</th><td>DCP에 이 태그를 넣지 않은 상태입니다. 규격은 기본값을 “없음”이라고만 적고, 태그가 없을 때 현상 프로그램이 어떤 곡선을 쓸지는 정하지 않습니다.</td></tr>
+<tr><th scope="row"><code>ProfileToneCurve</code></th><td>DCP의 기본 톤 곡선 태그(번호 50940)입니다. 입력과 출력이 0~1인 점 (x, y)의 목록이며 <a href="https://helpx.adobe.com/content/dam/help/en/camera-raw/digital-negative/jcr_content/root/content/flex/items/position/position-par/download_section_733958301/download-1/DNG_Spec_1_7_1_0.pdf#page=51">DNG 규격</a>은 점 사이를 3차 스플라인으로 잇도록 권합니다. 일반 프로파일에서는 첫 점이 (0, 0), 끝 점이 (1, 1)이어야 합니다.</td></tr>
+<tr><th scope="row">생략</th><td>DCP에 이 태그를 넣지 않은 상태입니다. 규격은 기본값을 “없음”이라고만 적고 태그가 없을 때 현상 프로그램이 어떤 곡선을 쓸지는 정하지 않습니다.</td></tr>
 <tr><th scope="row">항등 곡선</th><td>입력을 그대로 출력하는 직선입니다. 점 (0, 0)과 (1, 1) 두 개로 적습니다.</td></tr>
 <tr><th scope="row">ACR3 곡선</th><td>Adobe가 공개한 DNG SDK 소스에 들어 있는 내장 톤 곡선입니다. SDK의 예제 렌더러는 프로파일에 유효한 곡선이 없으면 이 곡선을 씁니다. SDK 주석은 “Default ACR3 tone curve”라고 설명합니다.</td></tr>
 <tr><th scope="row">패치</th><td>RAW에 찍힌 ColorChecker 색상표의 칸 24개입니다. 19~24번은 흰색에서 검정까지의 무채색(중립) 칸입니다. 위치는 <a href="color-comparison-protocol.html">ColorChecker 비교 절차</a>에서 정했습니다.</td></tr>
@@ -84,7 +84,7 @@
 <thead><tr><th>질문</th><th>비교한 TIFF</th><th>답</th></tr></thead>
 <tbody>
 <tr><th scope="row">같은 프로파일로 다시 내보내면 같은 픽셀이 나오는가</th><td>생략 → 생략 재출력</td><td>전체 픽셀 일치</td></tr>
-<tr><th scope="row">적어 넣은 곡선이 출력에 반영되는가</th><td>생략 → 항등 → Lift</td><td>항등에서 크게 어두워지고, Lift에서 24패치 L*가 모두 상승</td></tr>
+<tr><th scope="row">적어 넣은 곡선이 출력에 반영되는가</th><td>생략 → 항등 → Lift</td><td>항등에서 크게 어두워지고 Lift에서 24패치 L*가 모두 상승</td></tr>
 <tr><th scope="row">SDK의 ACR3 표를 적으면 생략한 것과 같아지는가</th><td>생략 재출력 → 명시 ACR3</td><td>24패치 ΔE00 최대 0.002411</td></tr>
 </tbody></table></div>
 <div class="callout plain"><strong class="label">쉽게 말하면</strong>
@@ -93,7 +93,7 @@
 
 <section id="results">
 <h2>결과: 생략과 ACR3는 거의 같고 항등은 크게 다릅니다</h2>
-<p class="takeaway">같은 프로파일은 같은 픽셀을 냈고, 적어 넣은 곡선은 출력에 반영됐으며, ACR3 표를 적은 출력은 생략한 출력과 24패치 색차 0.0024 이내로 같았습니다.</p>
+<p class="takeaway">같은 프로파일은 같은 픽셀을 냈고 적어 넣은 곡선은 출력에 반영됐으며 ACR3 표를 적은 출력은 생략한 출력과 24패치 색차 0.0024 이내로 같았습니다.</p>
 
 <figure class="diagram">
 <figcaption>TIFF 다섯 개와 비교 다섯 건</figcaption>
@@ -145,7 +145,7 @@
 </svg>
 </div>
 <ul class="dg-legend"><li><i class="ok"></i>Lightroom이 내보낸 TIFF (아래 줄은 프로파일 이름)</li></ul>
-<p>회색 바탕은 같은 프로파일로 내보낸 TIFF의 묶음입니다. 화살표는 비교 방향(앞 → 뒤)이고, 그 아래 숫자는 전체 픽셀 가운데 달라진 비율과 24패치 ΔE00입니다.</p>
+<p>회색 바탕은 같은 프로파일로 내보낸 TIFF의 묶음입니다. 화살표는 비교 방향(앞 → 뒤)이고 그 아래 숫자는 전체 픽셀 가운데 달라진 비율과 24패치 ΔE00입니다.</p>
 </figure>
 
 <figure class="diagram">
@@ -261,7 +261,7 @@
 
 <section id="neutrals">
 <h2>무채색 칸 여섯 개로 본 밝기 변화</h2>
-<p class="takeaway">항등 곡선은 밝은 회색을 크게 낮추고 검정 칸만 조금 올렸습니다. Lift는 여섯 칸을 모두 올렸고, ACR3와 생략의 차이는 측정이 구분할 수 있는 가장 작은 단위 수준이었습니다.</p>
+<p class="takeaway">항등 곡선은 밝은 회색을 크게 낮추고 검정 칸만 조금 올렸습니다. Lift는 여섯 칸을 모두 올렸고 ACR3와 생략의 차이는 측정이 구분할 수 있는 가장 작은 단위 수준이었습니다.</p>
 
 <figure class="diagram">
 <figcaption>무채색 칸 19~24번의 L* 중앙값</figcaption>
@@ -322,7 +322,7 @@
 
 <section id="controls">
 <h2>실험 조건: 톤 곡선 태그만 바꾸고 나머지는 고정했습니다</h2>
-<p class="takeaway">네 프로파일은 이름과 톤 곡선 태그만 다르고, 다섯 TIFF의 현상 설정은 프로파일 이름과 지문을 빼면 모두 같습니다.</p>
+<p class="takeaway">네 프로파일은 이름과 톤 곡선 태그만 다르고 다섯 TIFF의 현상 설정은 프로파일 이름과 지문을 빼면 모두 같습니다.</p>
 
 <h3>시험 프로파일 네 개</h3>
 <div class="table-wrap"><table>
@@ -345,7 +345,7 @@
 <dt>출력</dt><dd>ProPhoto RGB, 비압축 RGB 16비트 TIFF, 6016×4000</dd>
 <dt>기록일</dt><dd>2026-11-08</dd>
 </dl>
-<p>TIFF의 XMP에 기록된 현상 속성 114개를 비교했습니다. 프로파일을 바꾼 TIFF에서는 프로파일 이름(<code>CameraProfile</code>)과 프로파일 지문(<code>CameraProfileDigest</code>)만 달랐고, 중첩 요소 6개는 같았습니다. 내보낼 때마다 바뀌는 파일 날짜와 문서 ID 같은 기록은 따로 비교했습니다. 생략 TIFF 두 개는 그런 기록 때문에 파일 해시가 서로 다르지만, 디코딩한 픽셀 배열의 해시는 같습니다. 프로파일 지문이 무엇인지는 <a href="lightroom-profile-fingerprints.html">프로파일 지문 재현</a>에서 다룹니다.</p>
+<p>TIFF의 XMP에 기록된 현상 속성 114개를 비교했습니다. 프로파일을 바꾼 TIFF에서는 프로파일 이름(<code>CameraProfile</code>)과 프로파일 지문(<code>CameraProfileDigest</code>)만 달랐고 중첩 요소 6개는 같았습니다. 내보낼 때마다 바뀌는 파일 날짜와 문서 ID 같은 기록은 따로 비교했습니다. 생략 TIFF 두 개는 그런 기록 때문에 파일 해시가 서로 다르지만 디코딩한 픽셀 배열의 해시는 같습니다. 프로파일 지문이 무엇인지는 <a href="lightroom-profile-fingerprints.html">프로파일 지문 재현</a>에서 다룹니다.</p>
 
 <h3>색차를 잰 방법</h3>
 <ul>
@@ -415,7 +415,7 @@
 <li><strong>Lightroom 내부</strong> — 출력이 가깝다는 사실만으로 Lightroom이 내부에서 SDK와 같은 표, 같은 순서로 처리한다고 말할 수 없습니다. 남은 작은 차이의 원인도 정하지 못했습니다.</li>
 <li><strong>카메라 JPEG과의 관계</strong> — 이 실험은 카메라 JPEG의 톤을 추정하거나 색을 맞추는 보정을 포함하지 않습니다. 시험 프로파일은 대조용이며 카메라 색을 맞춘 최종 프로파일이 아닙니다.</li>
 <li><strong>측정 단위</strong> — 색차는 패치 중앙값으로 계산했습니다. 패치 안 픽셀 단위의 차이나 차트 밖 영역의 차이는 전체 픽셀 비교의 통계로만 다뤘습니다.</li>
-<li><strong>따로 통제하지 않은 태그</strong> — 시험 DCP에는 검정 기준 처리를 지정하는 <code>DefaultBlackRender</code> 태그가 없습니다. DNG 규격의 기본값은 0(Auto)이고, 이때 현상 프로그램은 영상에 따라 검정 기준을 자동으로 뺄 수 있습니다. 이 동작이 결과에 미친 영향은 재지 않았습니다.</li>
+<li><strong>따로 통제하지 않은 태그</strong> — 시험 DCP에는 검정 기준 처리를 지정하는 <code>DefaultBlackRender</code> 태그가 없습니다. DNG 규격의 기본값은 0(Auto)이고 이때 현상 프로그램은 영상에 따라 검정 기준을 자동으로 뺄 수 있습니다. 이 동작이 결과에 미친 영향은 재지 않았습니다.</li>
 </ul>
 <p>같은 방식으로 색 보정 표 태그를 시험한 결과는 <a href="lightroom-look-controls.html">LookTable 대조 실험</a>에 있습니다.</p>
 </section>
@@ -423,12 +423,12 @@
 <section id="replay">
 <h2>재현 방법</h2>
 <h3>시험 DCP 세 개 다시 만들기</h3>
-<p><a href="lightroom-matrix-1376.json">기준 레시피 JSON</a>은 CC0 RAW #1376의 모델 이름·색 행렬·광원으로 작성한 것입니다. 첫 명령으로 생략 DCP를 만들고, 둘째 명령에 Adobe DNG SDK 1.7.1 ZIP을 주면 항등·Lift·ACR3 DCP가 만들어집니다. 세 결과는 실험에 쓴 파일과 바이트 단위로 같습니다. 생성기는 기준 JSON, 생략 DCP, SDK ZIP, 결과 파일의 해시를 모두 검사하며 이미 있는 폴더에는 쓰지 않습니다. SDK ZIP은 <a href="https://helpx.adobe.com/camera-raw/desktop/dng-and-file-formats/digital-negative.html">Adobe 배포처</a>에서 따로 받아야 합니다.</p>
+<p><a href="lightroom-matrix-1376.json">기준 레시피 JSON</a>은 CC0 RAW #1376의 모델 이름·색 행렬·광원으로 작성한 것입니다. 첫 명령으로 생략 DCP를 만들고 둘째 명령에 Adobe DNG SDK 1.7.1 ZIP을 주면 항등·Lift·ACR3 DCP가 만들어집니다. 세 결과는 실험에 쓴 파일과 바이트 단위로 같습니다. 생성기는 기준 JSON, 생략 DCP, SDK ZIP, 결과 파일의 해시를 모두 검사하며 이미 있는 폴더에는 쓰지 않습니다. SDK ZIP은 <a href="https://helpx.adobe.com/camera-raw/desktop/dng-and-file-formats/digital-negative.html">Adobe 배포처</a>에서 따로 받아야 합니다.</p>
 <pre><code>python -B tools/profile_bridge.py analysis/lightroom-matrix-1376.json baseline-1376.dcp
 python -B tools/build_lightroom_tone_controls.py \
   --baseline-json analysis/lightroom-matrix-1376.json --baseline-dcp baseline-1376.dcp \
   --sdk-zip dng-sdk.zip --output-dir tone-controls</code></pre>
-<p>이 단계는 Python 3.11 이상의 표준 라이브러리만 씁니다. Lightroom에 설치하고, 프로파일을 고르고, 내보내는 일은 이 도구가 하지 않습니다.</p>
+<p>이 단계는 Python 3.11 이상의 표준 라이브러리만 씁니다. Lightroom에 설치하고 프로파일을 고르고 내보내는 일은 이 도구가 하지 않습니다.</p>
 
 <h3>기록한 TIFF 측정값 다시 확인하기</h3>
 <p>Python 환경에 NumPy, OpenCV, Pillow, scikit-image, tifffile을 설치하고 Little CMS의 <code>tificc</code>를 PATH에 둡니다. 다른 위치에 있으면 <code>--tificc</code>로 지정합니다. 기록할 때 쓴 도구 버전은 JSON에 있습니다(OpenCV 4.13.0, NumPy 1.26.4, scikit-image 0.24.0, tifffile 2023.4.12, tificc 6.3, Little CMS 2.12).</p>
@@ -440,7 +440,7 @@ python -B tools/build_lightroom_tone_controls.py \
 <pre><code>python -B tools/check_lightroom_tone.py --raw tone-fixtures/pentax-k3ii-1376.dng \
   --exports tone-fixtures/exports --profiles tone-fixtures/profiles \
   --scratch tone-fixtures/scratch --output tone-fixtures/tone-replay.json</code></pre>
-<p>스크립트는 파일 해시가 기록과 같은 입력만 받고, 다시 잰 값이 공개 JSON과 다르면 실패합니다. 만들어진 <code>tone-replay.json</code>의 SHA-256을 <code>analysis/lightroom-tone-comparison.json</code>과 비교해도 됩니다.</p>
+<p>스크립트는 파일 해시가 기록과 같은 입력만 받고 다시 잰 값이 공개 JSON과 다르면 실패합니다. 만들어진 <code>tone-replay.json</code>의 SHA-256을 <code>analysis/lightroom-tone-comparison.json</code>과 비교해도 됩니다.</p>
 <div class="callout"><strong class="label">공개 자료에 없는 것</strong>
 <p>원본 TIFF, DCP 파일, SDK의 표 값은 저장소에 포함되어 있지 않습니다. 이 명령은 이미 가진 파일의 해시와 측정값을 검증하는 용도입니다. Lightroom에서 새로 내보낸 TIFF는 픽셀이 같아도 날짜와 ID 때문에 파일 해시가 달라집니다.</p></div>
 </section>
@@ -460,7 +460,7 @@ python -B tools/build_lightroom_tone_controls.py \
 </main>
 </div>
 <!-- chrome:bottom -->
-<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">Lightroom 색 프로파일 — 이 주제의 문서</h2><ol><li><a href="lightroom-bridge.html">Lightroom 프로파일 안내<span>DCP 생성·검증의 전체 흐름</span></a></li><li><a href="raw-test-inputs.html">시험용 RAW 준비</a></li><li><a href="color-comparison-protocol.html">ColorChecker 비교 절차</a></li><li><a href="lightroom-render-comparison.html">실제 TIFF 6개 비교</a></li><li><a href="lightroom-tone-comparison.html" aria-current="page">톤 곡선 비교</a></li><li><a href="lightroom-model-exports.html">K-3 III·Q7 DCP 내보내기</a></li><li><a href="lightroom-profile-fingerprints.html">프로파일 지문 재현</a></li><li><a href="lightroom-look-controls.html">LookTable 대조 실험</a></li><li><a href="color-tone-residual.html">톤 보정 뒤 남는 색차</a></li><li><a href="color-scene-transfer.html">고정 톤의 독립 장면 비교<span>K-3 II #1363과 Lightroom 버전 대조</span></a></li><li><a href="lightroom-composed-tone.html">합성 톤 DCP의 실제 Lightroom 출력<span>두 장면·최대 색차 기준 미충족</span></a></li><li><a href="lightroom-tone-coordinates.html">Lightroom 톤과 RGB 좌표<span>같은 엔진·두 출력 색공간 대조</span></a></li><li><a href="lightroom-studio-baseline.html">K-3 III·Q7 Bright 스튜디오 비교<span>정합 통과 영역의 JPEG 대비 색차</span></a></li><li><a href="lightroom-studio-reference.html">K-3 III·Q7 참조 프로파일 비교<span>같은 장면의 공통 마스크·As Shot 대조</span></a></li><li><a href="lightroom-as-shot.html">As Shot과 프로파일별 백색점<span>같은 Q7 RAW의 SDK 수식 재현</span></a></li><li><a href="lightroom-pef-neutral.html">K-3 III PEF의 As Shot 중립값<span>두 DNG 변환과 세 프로파일 수식 재현</span></a></li><li><a href="lightroom-cfa-preservation.html">K-3 III PEF·DNG의 CFA 샘플 비교<span>변환 전후 전체 26,628,096개 샘플 대조</span></a></li><li><a href="lightroom-cfa-range.html">K-3 III DNG의 CFA 범위와 기본 크롭<span>활성 영역과 크롭의 WhiteLevel 대조</span></a></li><li><a href="lightroom-sdk-stage2.html">K-3 III DNG의 Adobe SDK Stage 2 실행<span>원본 SDK에서 활성 영역 25,891,840개 전수 대조</span></a></li><li><a href="lightroom-sdk-stage3.html">K-3 III DNG의 Adobe SDK Stage 3<span>카메라 채널 77,675,520개 보간 대조</span></a></li></ol></nav>
+<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">Lightroom 색 프로파일 — 이 주제의 문서</h2><ol><li><a href="guide-lightroom.html">Lightroom 색 프로파일 안내</a></li><li><a href="lightroom-bridge.html">DCP 구조와 생성 도구<span>세 기종 공통</span></a></li><li><a href="raw-test-inputs.html">시험용 RAW 준비</a></li><li><a href="color-comparison-protocol.html">ColorChecker 비교 절차</a></li><li><a href="lightroom-render-comparison.html">실제 TIFF 6개 비교</a></li><li><a href="lightroom-tone-comparison.html" aria-current="page">톤 곡선 비교</a></li><li><a href="lightroom-model-exports.html">K-3 III·Q7 DCP 내보내기</a></li><li><a href="lightroom-profile-fingerprints.html">프로파일 지문 재현</a></li><li><a href="lightroom-look-controls.html">LookTable 대조 실험</a></li><li><a href="color-tone-residual.html">톤 보정 뒤 남는 색차</a></li><li><a href="color-scene-transfer.html">고정 톤의 독립 장면 비교<span>K-3 II #1363과 Lightroom 버전 대조</span></a></li><li><a href="lightroom-composed-tone.html">합성 톤 DCP의 실제 Lightroom 출력<span>두 장면·최대 색차 기준 미충족</span></a></li><li><a href="lightroom-tone-coordinates.html">Lightroom 톤과 RGB 좌표<span>같은 엔진·두 출력 색공간 대조</span></a></li><li><a href="lightroom-studio-baseline.html">K-3 III·Q7 Bright 스튜디오 비교<span>정합 통과 영역의 JPEG 대비 색차</span></a></li><li><a href="lightroom-studio-reference.html">K-3 III·Q7 참조 프로파일 비교<span>같은 장면의 공통 마스크·As Shot 대조</span></a></li><li><a href="lightroom-as-shot.html">As Shot과 프로파일별 백색점<span>같은 Q7 RAW의 SDK 수식 재현</span></a></li><li><a href="lightroom-pef-neutral.html">K-3 III PEF의 As Shot 중립값<span>두 DNG 변환과 세 프로파일 수식 재현</span></a></li><li><a href="lightroom-cfa-preservation.html">K-3 III PEF·DNG의 CFA 샘플 비교<span>변환 전후 전체 26,628,096개 샘플 대조</span></a></li><li><a href="lightroom-cfa-range.html">K-3 III DNG의 CFA 범위와 기본 크롭<span>활성 영역과 크롭의 WhiteLevel 대조</span></a></li><li><a href="lightroom-sdk-stage2.html">K-3 III DNG의 Adobe SDK Stage 2 실행<span>원본 SDK에서 활성 영역 25,891,840개 전수 대조</span></a></li><li><a href="lightroom-sdk-stage3.html">K-3 III DNG의 Adobe SDK Stage 3<span>카메라 채널 77,675,520개 보간 대조</span></a></li></ol></nav>
 <nav class="pager" aria-label="이전·다음 문서"><a class="prev" href="lightroom-render-comparison.html"><small>← 이전</small>실제 TIFF 6개 비교</a><a class="next" href="lightroom-model-exports.html"><small>다음 →</small>K-3 III·Q7 DCP 내보내기</a></nav>
 <footer class="sitefoot"><div class="sitefoot-in"><nav aria-label="사이트"><a href="../index.html#map">문서 지도</a><a href="../index.html#levels">검증 수준 읽는 법</a><a href="../glossary.html">용어집</a><a href="research-program.html">세 기종 연구 본부</a><a href="https://github.com/yunhyok/pentax-k3iii-firmware-analysis">GitHub 저장소</a></nav><p>PENTAX 펌웨어 연구. PC에서 수행한 정적 분석과 에뮬레이션 결과이며, 카메라 실기에서 검증한 내용이 아닙니다. 원본 펌웨어와 추출한 독점 코드는 포함하지 않습니다.</p></div></footer>
 <!-- /chrome:bottom -->

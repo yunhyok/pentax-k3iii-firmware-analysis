@@ -10,7 +10,7 @@
 <body data-camera="k3iii">
 <!-- chrome:top -->
 <a class="skip" href="#main">본문 바로가기</a>
-<div class="topbar"><div class="topbar-in"><a class="brand" href="../index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="../index.html" aria-current="true">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="https://yunhyok.github.io/pentax-q7-firmware-analysis/">Q7</a></div><nav class="topnav" aria-label="주제"><a href="../index.html">개요</a><a href="guide-boot.html">부팅·저장소</a><a href="guide-update.html" aria-current="true">업데이트</a><a href="guide-rebuild.html">재구축</a><a href="guide-rtos.html">명령·셸</a><a href="guide-color.html">색 처리</a><a href="lightroom-bridge.html">Lightroom</a><a href="af-foundations.html">AF</a><a href="ui-port-contract.html">UI</a></nav></div></div>
+<div class="topbar"><div class="topbar-in"><a class="brand" href="../index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="../index.html" aria-current="true">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="https://yunhyok.github.io/pentax-q7-firmware-analysis/">Q7</a></div><nav class="topnav" aria-label="주제"><a href="../index.html">개요</a><a href="guide-boot.html">부팅·저장소</a><a href="guide-update.html" aria-current="true">업데이트</a><a href="guide-rebuild.html">재구축</a><a href="guide-rtos.html">명령·셸</a><a href="guide-color.html">색 처리</a><a href="guide-lightroom.html">Lightroom</a><a href="guide-af.html">AF</a><a href="guide-ui.html">UI</a></nav></div></div>
 <nav class="crumbs" aria-label="현재 위치"><ol><li><a href="../index.html">PENTAX K-3 Mark III</a></li><li><a href="guide-update.html">펌웨어 업데이트 과정</a></li><li aria-current="page">파일 인터페이스와 버퍼 수명</li></ol></nav>
 <!-- /chrome:top -->
 <header class="page-head">
@@ -30,7 +30,7 @@
 <li>로더가 쓰는 파일 객체는 <strong><code>FileSystem</code> 클래스의 객체</strong>입니다. 열기·닫기·읽기·정보 조회 요청은 경로의 첫 글자로 고른 volume에 따라 FAT, exFAT, Virtual 세 처리기 중 하나로 전달됩니다.</li>
 <li>처리기는 volume마다 붙은 설명 객체의 두 숫자로 고릅니다. 한 바이트가 4이면 Virtual, 아니면 32비트 값이 <code>0x0403ffff</code>보다 클 때 exFAT, 그 이하일 때 FAT입니다.</li>
 <li>압축된 입력 버퍼는 변환이 끝날 때까지 해제되지 않습니다. 그래서 <strong>입력과 출력이 같은 메모리 풀에 함께 잡혀 있는 구간</strong>이 있습니다. 원본 파일이면 그 시점의 요청 합계는 113,790,848바이트입니다.</li>
-<li>실패하는 위치에 따라 출력 버퍼의 처리가 다릅니다. 변환 실패나 길이 불일치는 출력 버퍼의 해제를 요청합니다. 안쪽 체크섬 실패는 출력 주소를 기록한 뒤에 일어나며, 그 함수 안에서는 해제하지 않습니다.</li>
+<li>실패하는 위치에 따라 출력 버퍼의 처리가 다릅니다. 변환 실패나 길이 불일치는 출력 버퍼의 해제를 요청합니다. 안쪽 체크섬 실패는 출력 주소를 기록한 뒤에 일어나며 그 함수 안에서는 해제하지 않습니다.</li>
 <li>파일 인터페이스 49건과 버퍼 수명 33건, 합계 82건을 원본 ARM 코드로 실행했습니다. 실제 파일·저장 장치·운영체제·변환 장치는 실행하지 않았습니다.</li>
 </ul>
 </section>
@@ -68,7 +68,7 @@
 
 <section id="background">
 <h2>배경: 파일 요청이 내려가는 계층</h2>
-<p><a href="update-memory.html">입력 로더와 메모리 할당</a>에서 로더는 “자원 관리 객체의 <code>+0x38</code>에 있는 객체”의 가상 함수를 불러 파일을 열고 읽었습니다. 그때는 이 객체의 정체를 몰랐습니다. 이 문서는 그 객체를 만든 코드를 찾아 클래스를 확인하고, 요청이 아래 계층으로 전달되는 조건을 따라갑니다.</p>
+<p><a href="update-memory.html">입력 로더와 메모리 할당</a>에서 로더는 “자원 관리 객체의 <code>+0x38</code>에 있는 객체”의 가상 함수를 불러 파일을 열고 읽었습니다. 그때는 이 객체의 정체를 몰랐습니다. 이 문서는 그 객체를 만든 코드를 찾아 클래스를 확인하고 요청이 아래 계층으로 전달되는 조건을 따라갑니다.</p>
 
 <figure class="diagram">
 <figcaption>업데이트 로더에서 저장 장치까지의 계층과 확인 범위</figcaption>
@@ -121,10 +121,10 @@
 
 <section id="interface">
 <h2>파일 객체의 정체와 처리기 선택</h2>
-<p class="takeaway">로더가 부르는 객체는 공장 객체가 만들어 연결한 <code>FileSystem</code>이고, 네 가지 요청은 volume마다 정해진 처리기로 전달됩니다.</p>
+<p class="takeaway">로더가 부르는 객체는 공장 객체가 만들어 연결한 <code>FileSystem</code>이고 네 가지 요청은 volume마다 정해진 처리기로 전달됩니다.</p>
 
 <h3>객체가 만들어져 로더에 연결되는 과정</h3>
-<p>파일 시스템을 만드는 공장 객체(<code>FileSystemFactory</code>, 주소 <code>0x54787088</code>)의 초기화 함수가 <code>0x30</code>바이트짜리 객체를 할당해 <code>FileSystem</code> 생성자를 부르고, 그 주소를 공장 객체의 <code>+0x14</code>에 저장합니다. 자원 관리 객체는 이 값을 가져가 <code>+0x38</code>에 둡니다. 로더가 쓰던 바로 그 칸입니다.</p>
+<p>파일 시스템을 만드는 공장 객체(<code>FileSystemFactory</code>, 주소 <code>0x54787088</code>)의 초기화 함수가 <code>0x30</code>바이트짜리 객체를 할당해 <code>FileSystem</code> 생성자를 부르고 그 주소를 공장 객체의 <code>+0x14</code>에 저장합니다. 자원 관리 객체는 이 값을 가져가 <code>+0x38</code>에 둡니다. 로더가 쓰던 바로 그 칸입니다.</p>
 <div class="table-wrap"><table>
 <caption>초기화 함수가 저장하는 연결</caption>
 <thead><tr><th>저장 위치</th><th>저장하는 값</th><th>저장 명령</th></tr></thead>
@@ -148,7 +148,7 @@
 <tr><th scope="row">읽기</th><td><code>0x52ff6e54</code></td><td><code>+0x28</code> (<code>0x53901330</code>) → <code>0x52f4e7b4</code></td><td><code>+0x10</code>, 호출 <code>0x52f4e84c</code></td></tr>
 <tr><th scope="row">정보 조회</th><td><code>0x52ff7c8c</code></td><td><code>+0x54</code> (<code>0x5390135c</code>) → <code>0x52f4f068</code></td><td><code>+0x48</code>, 호출 <code>0x52f4f0f8</code></td></tr>
 </tbody></table></div>
-<p>이 연결은 공장 초기화가 끝나고 가상 함수 표가 바뀌지 않았다는 조건에서 성립합니다. 처리기를 담는 배열은 <code>FileSystem</code>의 <code>+0x18</code>에 있고, 초기화 함수 <code>0x52f4e14c</code>가 할당해 0으로 채웁니다. mount 함수 <code>0x52f50144</code>가 처리기 선택 함수를 불러 칸을 채우며, mount가 실패하면 그 칸을 다시 0으로 지울 수 있습니다. 지금 카메라에서 어느 volume이 mount되어 있는지는 확인하지 않았습니다.</p>
+<p>이 연결은 공장 초기화가 끝나고 가상 함수 표가 바뀌지 않았다는 조건에서 성립합니다. 처리기를 담는 배열은 <code>FileSystem</code>의 <code>+0x18</code>에 있고 초기화 함수 <code>0x52f4e14c</code>가 할당해 0으로 채웁니다. mount 함수 <code>0x52f50144</code>가 처리기 선택 함수를 불러 칸을 채우며 mount가 실패하면 그 칸을 다시 0으로 지울 수 있습니다. 지금 카메라에서 어느 volume이 mount되어 있는지는 확인하지 않았습니다.</p>
 
 <h3>처리기를 고르는 조건</h3>
 <ol class="flow">
@@ -173,7 +173,7 @@
 
 <h3>핸들과 반환값이 전달되는 방식</h3>
 <ul>
-<li><strong>열기</strong> — 처리기가 성공을 돌려주면 8바이트짜리 포장 구조체를 할당해 처리기의 핸들과 volume 번호를 적고, 그 구조체의 주소를 호출자에게 줍니다. 포장 구조체 할당이 실패하는 경우는 시험에서 실행하지 않았습니다.</li>
+<li><strong>열기</strong> — 처리기가 성공을 돌려주면 8바이트짜리 포장 구조체를 할당해 처리기의 핸들과 volume 번호를 적고 그 구조체의 주소를 호출자에게 줍니다. 포장 구조체 할당이 실패하는 경우는 시험에서 실행하지 않았습니다.</li>
 <li><strong>읽기·닫기</strong> — 포장 구조체의 <code>+4</code>(volume 번호)로 처리기를 고르고 <code>+0</code>(처리기의 핸들)을 넘깁니다. 읽기는 버퍼와 크기를 그대로 전달합니다.</li>
 <li><strong>잘못된 입력</strong> — 핸들이 없거나, 번호가 음수이거나, 처리기가 없으면 아래로 내려가지 않고 반환값 0과 오류 번호 12를 냅니다. 정보 조회에서 경로가 맞지 않으면 반환값 0과 오류 번호 2입니다.</li>
 <li><strong>닫기의 정리</strong> — 처리기가 실패를 돌려줘도 포장 구조체를 해제하는 함수는 호출합니다.</li>
@@ -188,8 +188,8 @@
 <tr><th scope="row">2</th><td>1</td><td>2</td></tr>
 <tr><th scope="row"><code>0xffffffff</code></th><td>1</td><td><code>0xffffffff</code></td></tr>
 </tbody></table></div>
-<p>열기와 닫기는 0이 아닌 값을 모두 1로 바꾸고, 읽기와 정보 조회는 32비트 값을 그대로 돌려줍니다. 이 차이는 합성 반환값 네 가지로 확인한 것이며, 처리기가 실제로 어떤 값을 돌려주는지는 실행하지 않았습니다. 정보 조회에서 합성 콜백이 파일 정보 구조체(<code>FileInfo</code>)의 <code>+0x18</code>에 쓴 크기는 호출자가 읽을 때까지 유지됐습니다.</p>
-<p>이 계층의 읽기와 정보 조회는 안쪽 잠금 함수의 반환값을 분기 조건으로 쓰지 않습니다. 잠금 함수가 0을 돌려준 시험에서도 처리기 호출과 잠금 해제가 일어났습니다. 로더 쪽의 잠금 검사는 별개이며, 이 관찰을 실제 동시성 오류나 잠금 정책이 없다는 뜻으로 넓히지 않습니다.</p>
+<p>열기와 닫기는 0이 아닌 값을 모두 1로 바꾸고 읽기와 정보 조회는 32비트 값을 그대로 돌려줍니다. 이 차이는 합성 반환값 네 가지로 확인한 것이며 처리기가 실제로 어떤 값을 돌려주는지는 실행하지 않았습니다. 정보 조회에서 합성 콜백이 파일 정보 구조체(<code>FileInfo</code>)의 <code>+0x18</code>에 쓴 크기는 호출자가 읽을 때까지 유지됐습니다.</p>
+<p>이 계층의 읽기와 정보 조회는 안쪽 잠금 함수의 반환값을 분기 조건으로 쓰지 않습니다. 잠금 함수가 0을 돌려준 시험에서도 처리기 호출과 잠금 해제가 일어났습니다. 로더 쪽의 잠금 검사는 별개이며 이 관찰을 실제 동시성 오류나 잠금 정책이 없다는 뜻으로 넓히지 않습니다.</p>
 
 <h3>세 처리기의 하위 함수</h3>
 <div class="table-wrap"><table>
@@ -203,7 +203,7 @@
 <p>화살표 왼쪽은 객체 주소에서 4를 빼 원래 객체를 되찾은 뒤 분기하는 짧은 중계 코드(thunk)입니다. 여기에 더해 Fat 읽기의 <code>0x52f4a510</code> → <code>0x533681c4</code>, ExFat 읽기의 <code>0x52f45a84</code> → <code>0x5337f554</code> 직접 호출까지 확인했습니다. 그 아래의 라이브러리 내부, 작업 간 통신, 장치 드라이버는 추적하거나 실행하지 않았습니다. 두 호출은 소프트웨어에서 확인할 수 있는 경계이고 실제 입출력의 증거가 아닙니다.</p>
 
 <div class="callout model"><strong class="label">시험 조건</strong>
-<p>파일 인터페이스 49건은 객체 연결 4건, 첫 글자 검색 10건, 처리기 분기 8건, 열기 반환값 4건과 잘못된 경로 1건, 읽기 7건과 잘못된 입력 3건, 정보 조회 7건과 잘못된 경로 1건, 닫기 4건입니다. 공장 초기화는 함수 전체가 아니라 <code>0x52f51644</code>–<code>0x52f516d8</code> 조각을 합성 레지스터와 스택으로 실행했습니다. 대체한 것은 처리기 콜백, 할당, 잠금, assert, 핸들 기록과 해제, 문자열 길이 함수, <code>FileSystem</code> 초기화 경계입니다. 수천만 바이트를 실제로 할당하거나 읽지 않았고, CPU는 Unicorn의 Cortex-A15 모델입니다.</p></div>
+<p>파일 인터페이스 49건은 객체 연결 4건, 첫 글자 검색 10건, 처리기 분기 8건, 열기 반환값 4건과 잘못된 경로 1건, 읽기 7건과 잘못된 입력 3건, 정보 조회 7건과 잘못된 경로 1건, 닫기 4건입니다. 공장 초기화는 함수 전체가 아니라 <code>0x52f51644</code>–<code>0x52f516d8</code> 조각을 합성 레지스터와 스택으로 실행했습니다. 대체한 것은 처리기 콜백, 할당, 잠금, assert, 핸들 기록과 해제, 문자열 길이 함수, <code>FileSystem</code> 초기화 경계입니다. 수천만 바이트를 실제로 할당하거나 읽지 않았고 CPU는 Unicorn의 Cortex-A15 모델입니다.</p></div>
 
 <details class="evidence"><summary>클래스 이름, 가상 함수 표, 함수 구간</summary>
 <div class="table-wrap"><table class="compact">
@@ -219,7 +219,7 @@
 <p class="small">모든 이름은 ASCII이며 NUL로 끝나는 것을 확인했습니다.</p>
 <ul>
 <li>공장 객체를 돌려주는 함수는 <code>0x52f50f6c</code>입니다. 처음 만들 때 <code>0x52f50fc8</code>에서 <code>+0x14</code>를 0으로 둡니다. 공장 객체의 가상 함수 표는 <code>0x539014c0</code>이고 <code>+8</code> 칸이 초기화 함수 <code>0x52f510e8</code>입니다. 초기화 함수 안에서 <code>0x52f51644</code>–<code>0x52f5165c</code>가 할당, 생성자 <code>0x52f4e66c</code> 호출, 저장을 수행합니다.</li>
-<li>처리기 선택 함수 안에서 조건과 저장은 <code>0x52f4fdd0</code>–<code>0x52f4fe0c</code>에 있습니다. mount 함수는 <code>0x52f50264</code>에서 선택 함수를 부르고, 실패 경로의 <code>0x52f502b8</code>에서 칸을 지웁니다. 설명 객체는 <code>0x52f52630</code>이 기록의 첫 칸에서 얻습니다. volume 관리 객체는 기록표를 <code>+0x14</code>, 기록표의 칸 수를 <code>+0x20</code>에 둡니다. 이 값이 등록된 개수가 아니라 용량이라는 점은 <a href="update-volume-finalization.html#volume">다음 문서</a>에서 확인했습니다.</li>
+<li>처리기 선택 함수 안에서 조건과 저장은 <code>0x52f4fdd0</code>–<code>0x52f4fe0c</code>에 있습니다. mount 함수는 <code>0x52f50264</code>에서 선택 함수를 부르고 실패 경로의 <code>0x52f502b8</code>에서 칸을 지웁니다. 설명 객체는 <code>0x52f52630</code>이 기록의 첫 칸에서 얻습니다. volume 관리 객체는 기록표를 <code>+0x14</code>, 기록표의 칸 수를 <code>+0x20</code>에 둡니다. 이 값이 등록된 개수가 아니라 용량이라는 점은 <a href="update-volume-finalization.html#volume">다음 문서</a>에서 확인했습니다.</li>
 <li>열기 함수는 <code>0x52f50498</code>에서 포장 구조체를 할당하고 <code>0x52f504d4</code>에 처리기의 핸들, <code>0x52f504e0</code>에 volume 번호를 적은 뒤 <code>0x52f504e4</code>에서 호출자에게 넘깁니다.</li>
 </ul>
 <div class="table-wrap"><table class="compact">
@@ -239,7 +239,7 @@
 
 <section id="lifetime">
 <h2>압축된 입력과 풀린 출력이 함께 있는 구간</h2>
-<p class="takeaway">입력 버퍼는 검증과 변환이 진행되는 동안 계속 잡혀 있고, 그 사이에 출력 버퍼가 따로 할당됩니다. 두 버퍼는 같은 IMAGE1 풀에 함께 존재합니다.</p>
+<p class="takeaway">입력 버퍼는 검증과 변환이 진행되는 동안 계속 잡혀 있고 그 사이에 출력 버퍼가 따로 할당됩니다. 두 버퍼는 같은 IMAGE1 풀에 함께 존재합니다.</p>
 
 <figure class="diagram">
 <figcaption>종류 2 검증에서 두 버퍼가 잡혀 있는 기간</figcaption>
@@ -279,7 +279,7 @@
 <p>가로 길이는 시간에 비례하지 않습니다. 단계의 순서만 나타냅니다. 입력 정리가 실제로 해제를 요청하는 조건은 <a href="#cleanup">아래 절</a>에 있습니다.</p>
 </figure>
 
-<p>종류 2의 검증 진입 함수 <code>0x52fefb84</code>는 상태 객체에 있던 입력 주소와 길이를 패키지 문맥으로 넘기고, 그 값은 다시 검증 객체로 전달됩니다. 검증 객체는 헤더·종류·바깥 체크섬을 확인한 뒤 변환 함수 <code>0x52ff4f88</code>에서 출력 버퍼를 따로 할당하고, 입력의 <code>+0x80</code> 주소(압축된 본문의 시작)를 변환 장치에 넘깁니다. 이 구간에는 입력 버퍼를 해제하는 호출이 없습니다.</p>
+<p>종류 2의 검증 진입 함수 <code>0x52fefb84</code>는 상태 객체에 있던 입력 주소와 길이를 패키지 문맥으로 넘기고 그 값은 다시 검증 객체로 전달됩니다. 검증 객체는 헤더·종류·바깥 체크섬을 확인한 뒤 변환 함수 <code>0x52ff4f88</code>에서 출력 버퍼를 따로 할당하고 입력의 <code>+0x80</code> 주소(압축된 본문의 시작)를 변환 장치에 넘깁니다. 이 구간에는 입력 버퍼를 해제하는 호출이 없습니다.</p>
 <ol class="flow">
 <li class="ok"><strong>입력 유지</strong><span>상태 <code>+0x48</code> → 패키지 문맥 <code>+0x1c</code> → 검증 객체 <code>+8</code></span></li>
 <li class="ok"><strong>출력 할당</strong><span>같은 IMAGE1 풀, footer <code>+0x10</code>의 길이</span></li>
@@ -314,7 +314,7 @@
 <tr><th scope="row">검증 성공</th><td>이 함수에서는 호출하지 않음</td><td>새 출력 주소·길이가 남음</td><td>조회 함수 <code>0x52ff4c44</code>로 상위 문맥에 인계</td></tr>
 </tbody></table></div>
 <p>실패했을 때 기존 값이 유지되는지는 필드에 표식 값을 넣어 두고 원본 코드를 실행해 확인했습니다. 안쪽 체크섬 실패는 출력 주소를 기록한 다음에 일어납니다. 그 뒤 전체 상태 전환이나 재부팅에서 회수되는지, 검증이 실제로 반복 호출될 수 있는지는 확인하지 못했습니다. 그래서 이것을 메모리 누수로 단정하지 않습니다.</p>
-<p>성공 경로에서는 풀린 출력이 패키지 문맥과 CPU 문맥으로 전달됩니다. 그다음 하위 구획 7을 찾지 못하면 상위 함수는 0을 돌려주지만 이미 전달한 주소는 그대로 남습니다. 하위 구획을 검증하는 함수 두 개는 합성 반환값으로 대체했으며, 딸린 펌웨어나 장치의 실제 검증은 수행하지 않았습니다.</p>
+<p>성공 경로에서는 풀린 출력이 패키지 문맥과 CPU 문맥으로 전달됩니다. 그다음 하위 구획 7을 찾지 못하면 상위 함수는 0을 돌려주지만 이미 전달한 주소는 그대로 남습니다. 하위 구획을 검증하는 함수 두 개는 합성 반환값으로 대체했으며 딸린 펌웨어나 장치의 실제 검증은 수행하지 않았습니다.</p>
 <p class="small muted">이 절의 13건은 변환 분기 7건(정상, 변환 실패, 길이 부족, 길이 초과, 체크섬 실패, 생략 표식 0과 <code>0xffffffff</code>), 할당 실패 1건, 종류 2 연결 5건(정상, 프로젝트 값 불일치, footer 종류 불일치, 구획 7 없음, 안쪽 체크섬 실패)입니다.</p>
 </section>
 
@@ -329,21 +329,21 @@
 <tbody>
 <tr><th scope="row">없음</th><td>무관</td><td>해제 요청을 생략하고 뒤따르는 초기화로 넘어갑니다.</td></tr>
 <tr><th scope="row">있음</th><td>0</td><td>주소 칸을 지우지만 풀에 돌려주지는 않습니다.</td></tr>
-<tr><th scope="row">있음</th><td>0이 아님</td><td>해제 요청 함수 <code>0x52ff622c</code>를 부릅니다. 반환값이 0이면 주소·종류·경로·길이를 초기화하기 전에 끝냅니다. 0이 아니면 먼저 상태 <code>+0x48</code>을 0으로 지우고, 각 구성 요소의 입력 설정 함수를 부른 뒤, 종류를 8로, 경로와 길이를 0으로 적습니다.</td></tr>
+<tr><th scope="row">있음</th><td>0이 아님</td><td>해제 요청 함수 <code>0x52ff622c</code>를 부릅니다. 반환값이 0이면 주소·종류·경로·길이를 초기화하기 전에 끝냅니다. 0이 아니면 먼저 상태 <code>+0x48</code>을 0으로 지우고 각 구성 요소의 입력 설정 함수를 부른 뒤, 종류를 8로, 경로와 길이를 0으로 적습니다.</td></tr>
 </tbody></table></div>
 <p>flag가 0인 호출 위치 <code>0x533164c0</code>도 실제로 있습니다. flag가 버퍼의 소유권을 뜻하는지는 다른 진입 경로 전체로 넓혀 해석하지 않았습니다. 구성 요소 가운데 5번의 설정 함수 <code>0x52ff31c4</code>는 이 시험에서 호출 인수만 기록하는 경계로 두었습니다. 그 함수가 <code>(0, 0)</code>을 받으면 기존 값을 그대로 둔다는 점은 <a href="update-volume-finalization.html#component5">파일 경로·volume·종료 처리</a>에서 확인했습니다.</p>
 
 <h3>해제 요청 함수 <code>0x52ff622c</code></h3>
 <ol class="steps">
 <li><strong>잠금</strong> 잠금을 얻고 그 결과를 따로 보관합니다.</li>
-<li><strong>소속 확인</strong> 주소가 큰 풀(자원 관리 객체 <code>+0x30</code>)에 속하는지 풀의 가상 함수 <code>+0x18</code>로 묻고, 아니면 작은 쪽 풀(<code>+0x34</code>)에 묻습니다.</li>
+<li><strong>소속 확인</strong> 주소가 큰 풀(자원 관리 객체 <code>+0x30</code>)에 속하는지 풀의 가상 함수 <code>+0x18</code>로 묻고 아니면 작은 쪽 풀(<code>+0x34</code>)에 묻습니다.</li>
 <li><strong>해제 호출</strong> 맞는 풀의 가상 함수 <code>+0xc</code>를 부릅니다. 어느 풀에도 속하지 않으면 assert에 거짓을 전달합니다.</li>
 <li><strong>반환</strong> 돌려주는 값은 1단계에서 보관한 잠금 결과입니다. 풀의 해제 함수가 성공했는지는 이 값에 들어가지 않습니다.</li>
 </ol>
 
 <h3>IMAGE1 풀의 소속 검사와 해제</h3>
 <p>소속 검사 함수 <code>0x530efb60</code>은 부호 없는 수로 <code>기준 ≤ 주소 &lt; 기준 + 크기</code>인지 봅니다. IMAGE1의 기준 <code>0x6e500000</code>과 크기 <code>0x31affff0</code>을 넣으면 끝 경계는 <code>0x9ffffff0</code>이고 그 주소 자체는 포함되지 않습니다. 풀 설정 영역의 끝 <code>0xa0000000</code>과는 다른 값입니다. 마지막 16바이트는 이 소프트웨어 검사의 범위 밖에 있습니다. 이 사실은 물리 DRAM의 배치나 실제 여유 공간을 알려 주지 않습니다.</p>
-<p>해제 함수 <code>0x530efee8</code>은 정렬된 주소의 8바이트 앞에 적어 둔 값을 읽고, 그 값이 풀에 속하는지 확인한 뒤 그 칸을 0으로 지웁니다. 읽은 값에서 <code>0x18</code>을 빼 운영체제가 처음 준 주소를 되찾고, 운영체제의 해제 호출 <code>0x525b75e0</code>에 풀 번호와 함께 넘깁니다. 운영체제가 0을 돌려주면 해제 함수는 1을 돌려줍니다. 시험에서는 운영체제 호출을 대체 함수로 바꿨으므로 실제로 메모리가 반환됐다는 증명은 아닙니다.</p>
+<p>해제 함수 <code>0x530efee8</code>은 정렬된 주소의 8바이트 앞에 적어 둔 값을 읽고 그 값이 풀에 속하는지 확인한 뒤 그 칸을 0으로 지웁니다. 읽은 값에서 <code>0x18</code>을 빼 운영체제가 처음 준 주소를 되찾고 운영체제의 해제 호출 <code>0x525b75e0</code>에 풀 번호와 함께 넘깁니다. 운영체제가 0을 돌려주면 해제 함수는 1을 돌려줍니다. 시험에서는 운영체제 호출을 대체 함수로 바꿨으므로 실제로 메모리가 반환됐다는 증명은 아닙니다.</p>
 <p>지금까지 확인한 설정 함수와 정리 구간은 검증 객체의 출력 칸과 상위 문맥의 출력 칸을 지우지 않습니다. 풀린 출력 버퍼가 최종으로 회수되는 시점은 업데이트 종료 과정 전체를 따라가야 정할 수 있습니다.</p>
 <div class="callout model"><strong class="label">시험 조건</strong>
 <p>입력 정리 10건은 flag 0과 1, 주소 없음, 잠금 실패, 작은 쪽 풀의 주소, 운영체제 해제 실패, 어느 풀에도 없는 주소를 넣었습니다. 풀 소속 검사 10건은 작은 합성 풀과 IMAGE1 설정값 각각에서 경계 앞뒤 주소를 넣었습니다. 실패 2건에서는 assert 함수가 돌아온다고 가정하고 그 뒤 흐름을 보았습니다. 실제 카메라가 그렇게 동작하는지는 재현하지 않았습니다.</p></div>
@@ -384,7 +384,7 @@
 
 <section id="reproduce">
 <h2>재현 방법</h2>
-<p>두 도구는 입력의 SHA-256을 확인하고, 이미 있는 결과 파일을 덮어쓰지 않으며, Python의 assert를 끈 상태로는 실행을 거부합니다. 입력으로 RTOS 단독 이미지나 통합 이미지 <code>decoded.bin</code>을 줄 수 있습니다.</p>
+<p>두 도구는 입력의 SHA-256을 확인하고 이미 있는 결과 파일을 덮어쓰지 않으며 Python의 assert를 끈 상태로는 실행을 거부합니다. 입력으로 RTOS 단독 이미지나 통합 이미지 <code>decoded.bin</code>을 줄 수 있습니다.</p>
 <pre><code>python verify_update_file_interface.py rtos.bin --output interface-checks.json
 python verify_update_buffer_lifetime.py rtos.bin --output lifetime-checks.json</code></pre>
 <dl class="kv">

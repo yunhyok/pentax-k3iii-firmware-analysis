@@ -3,113 +3,305 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>무채색으로 톤을 맞춘 뒤에도 남는 색차 — PENTAX 펌웨어 연구</title>
-<meta name="description" content="K-3 II RAW 한 장의 무채색 6패치로 톤을 맞추고, 같은 장면의 유채색 18패치에서 Lightroom TIFF와 카메라 Natural JPEG의 색차를 대조했습니다.">
+<title>무채색으로 톤을 맞춘 뒤에도 남는 색차 — PENTAX K-3 Mark III 펌웨어 연구</title>
+<meta name="description" content="K-3 II RAW 한 장의 무채색 6패치로 밝기 곡선(톤)을 맞추고, 곡선 계산에 쓰지 않은 유채색 18패치에서 Lightroom TIFF와 카메라 Natural JPEG의 색차가 얼마나 남는지 쟀습니다. 평균은 3.264에서 2.165로 줄었지만 7번 주황 패치는 오히려 커졌습니다.">
 <link rel="stylesheet" href="../assets/site.css">
 </head>
 <body data-camera="k3iii">
 <!-- chrome:top -->
 <a class="skip" href="#main">본문 바로가기</a>
-<div class="topbar"><div class="topbar-in"><a class="brand" href="../index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="../index.html" aria-current="true">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="https://yunhyok.github.io/pentax-q7-firmware-analysis/">Q7</a></div><nav class="topnav" aria-label="주제"><a href="../index.html">개요</a><a href="guide-boot.html">부팅·저장소</a><a href="guide-update.html">업데이트</a><a href="guide-rebuild.html">재구축</a><a href="guide-rtos.html">명령·셸</a><a href="guide-color.html">색 처리</a><a href="lightroom-bridge.html" aria-current="true">Lightroom</a><a href="af-foundations.html">AF</a><a href="ui-port-contract.html">UI</a></nav></div></div>
-<nav class="crumbs" aria-label="현재 위치"><ol><li><a href="../index.html">PENTAX K-3 Mark III</a></li><li><a href="lightroom-bridge.html">Lightroom 색 프로파일</a></li><li aria-current="page">톤 보정 뒤 남는 색차</li></ol></nav>
+<div class="topbar"><div class="topbar-in"><a class="brand" href="../index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="../index.html" aria-current="true">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="https://yunhyok.github.io/pentax-q7-firmware-analysis/">Q7</a></div><nav class="topnav" aria-label="주제"><a href="../index.html">개요</a><a href="guide-boot.html">부팅·저장소</a><a href="guide-update.html">업데이트</a><a href="guide-rebuild.html">재구축</a><a href="guide-rtos.html">명령·셸</a><a href="guide-color.html">색 처리</a><a href="guide-lightroom.html" aria-current="true">Lightroom</a><a href="guide-af.html">AF</a><a href="guide-ui.html">UI</a></nav></div></div>
+<nav class="crumbs" aria-label="현재 위치"><ol><li><a href="../index.html">PENTAX K-3 Mark III</a></li><li><a href="guide-lightroom.html">Lightroom 색 프로파일</a></li><li aria-current="page">톤 보정 뒤 남는 색차</li></ol></nav>
 <!-- /chrome:top -->
 <header class="page-head">
-<p class="eyebrow">Lightroom 색 프로파일 · K-3 II #1376</p>
+<p class="eyebrow">Lightroom 색 프로파일 · 톤과 색의 분리</p>
 <h1>무채색으로 톤을 맞춘 뒤에도 남는 색차</h1>
-<p class="lead">카메라 Natural JPEG와 Lightroom TIFF에서 같은 차트의 무채색 여섯 칸을 골라 밝기 관계를 구했습니다. 이 관계를 유채색 열여덟 칸에 적용해 톤으로 줄일 수 있는 차이를 쟀습니다.</p>
+<p class="lead">Lightroom 출력과 카메라 JPEG의 차이 가운데 밝기 곡선(톤)만 고쳐서 없앨 수 있는 몫이 얼마인지 쟀습니다. 톤으로 줄지 않고 남는 차이가 다음에 손볼 색 보정의 크기입니다.</p>
 </header>
 <div class="layout">
 <!-- chrome:toc -->
-<nav class="toc" aria-label="이 문서의 목차"><h2 data-toc="no">이 문서에서</h2><ol><li><a href="#method">무채색 6개에서 톤을 구하고 유채색 18개에서 평가</a></li><li><a href="#results">톤 대조군은 맞았고 카메라 JPEG에는 차이가 남았습니다</a></li><li><a href="#limits">한 장에서 구분할 수 있는 범위</a></li><li><a href="#replay">재현 방법</a></li><li><a href="#refs">근거와 참고 자료</a></li></ol></nav>
+<nav class="toc" aria-label="이 문서의 목차"><h2 data-toc="no">이 문서에서</h2><ol><li><a href="#background">배경: 톤과 색을 나눠 보는 이유</a></li><li><a href="#method">곡선을 정하고 적용한 방법</a></li><li><a href="#results">톤 대조군은 맞았고 카메라 JPEG에는 차이가 남았습니다</a></li><li><a href="#limits">한 장에서 구분할 수 있는 범위</a></li><li><a href="#replay">재현 방법</a></li><li><a href="#refs">근거 파일과 참고 자료</a></li></ol></nav>
 <!-- /chrome:toc -->
 <main class="doc" id="main">
 
 <section class="summary">
 <h2 data-toc="no">핵심 요약</h2>
 <ul>
-<li>행렬 프로파일과 카메라 Natural JPEG 사이에서 유채색 18개 평균 ΔE00는 <strong>3.264에서 2.165</strong>로 줄었습니다. 가장 큰 패치 오차는 5.021에서 5.740으로 늘었고, 보정 후에는 7번 주황 패치의 차이가 가장 컸습니다.</li>
-<li>같은 방법을 Lightroom 대조군에 적용하니 톤만 바꾼 출력의 평균 ΔE00는 1.520에서 0.006으로 줄었습니다. 채도 표를 바꾼 출력에는 5.926이 남았습니다.</li>
-<li>유채색은 톤 곡선 계산에서 제외했습니다. 모든 패치는 같은 RAW에서 왔으므로 결과의 범위는 이 장면과 촬영 설정에 한정됩니다.</li>
+<li>K-3 II 공개 RAW 한 장(#1376, 색상표 장면)에서 <strong>무채색 6칸만으로 톤 곡선</strong>을 정했습니다. 곡선 계산에 쓰지 않은 유채색 18칸에서 카메라 Natural 내장 JPEG와의 색차를 쟀습니다. Lightroom을 새로 실행하지 않고 기존 TIFF에 PC에서 곡선을 적용해 계산했습니다.</li>
+<li>행렬만 넣은 시험 DCP의 TIFF는 유채색 평균 ΔE<sub>00</sub>이 <strong>3.264에서 2.165로</strong> 줄었습니다. 가장 큰 패치 오차는 5.021에서 5.740으로 오히려 늘었습니다. 보정 후 최대는 7번 주황 패치입니다.</li>
+<li>방법 자체는 대조군으로 확인했습니다. 톤 곡선만 다른 두 Lightroom 출력의 차이는 1.520에서 0.006으로 거의 사라졌습니다. 채도 표만 다른 두 출력은 5.985에서 5.926으로 거의 그대로였습니다.</li>
+<li>RAW 한 장, 조명 하나, 노출 하나에서 얻은 결과입니다. 완성된 출력끼리 비교했으므로 남은 오차가 화이트밸런스·색 행렬·보정 표·JPEG 처리 중 어디서 왔는지는 가릴 수 없습니다.</li>
 </ul>
 </section>
 
 <div class="scope">
 <div class="ok"><h3><span class="badge ok">확인</span> 기존 출력에서 다시 잰 값</h3>
-<ul><li>카메라 Natural 내장 JPEG와 Lightroom ProPhoto RGB 16비트 TIFF의 등록 패치</li><li>톤·채도 대조군의 24패치 색차와 유채색 18패치의 보정 후 오차</li></ul></div>
-<div class="model"><h3><span class="badge model">모델</span> 오프라인 계산</h3>
-<ul><li>무채색으로 정한 단조 곡선과 선형 ProPhoto RGB의 색상각을 보존하는 톤 적용식</li><li>ICC 상대 색도 변환과 패치 안쪽 픽셀의 Lab 중앙값</li></ul></div>
-<div class="open"><h3><span class="badge open">미확인</span> 남은 범위</h3>
-<ul><li>카메라와 Lightroom 내부 처리 단계별 원인, 다른 장면과 조명의 재현성</li><li>차트 참값과의 절대 색 정확도, 이 곡선을 DCP로 넣었을 때의 출력</li></ul></div>
+<ul>
+<li>카메라 Natural 내장 JPEG와 Lightroom ProPhoto RGB 16비트 TIFF 9개의 위치 맞춤과 패치별 Lab</li>
+<li>TIFF 9개와 JPEG의 SHA-256, TIFF 8개의 ICC·프로파일 이름·지문·현상 설정</li>
+<li>톤·채도 대조군과 유채색 18칸의 보정 전후 색차</li>
+</ul></div>
+<div class="model"><h3><span class="badge model">모델</span> PC에서 한 오프라인 계산</h3>
+<ul>
+<li>무채색 6점으로 정한 단조 곡선과 색상각을 보존하는 적용식</li>
+<li>ICC가 없는 내장 JPEG를 DNG 태그에 따라 sRGB로 해석</li>
+<li>ICC 상대 색도 변환과 패치 안쪽 200×200픽셀의 Lab 중앙값</li>
+</ul></div>
+<div class="open"><h3><span class="badge open">미확인</span> 이 계산으로 알 수 없는 것</h3>
+<ul>
+<li>카메라와 Lightroom 안에서 남은 차이를 만든 단계</li>
+<li>다른 장면·조명에서도 같은지, 차트 실물과의 절대 색 정확도</li>
+<li>이 곡선을 DCP에 넣었을 때의 실제 Lightroom 출력(<a href="lightroom-composed-tone.html">합성 톤 DCP</a>에서 따로 시험)</li>
+</ul></div>
 </div>
 
+<section id="background">
+<h2>배경: 톤과 색을 나눠 보는 이유</h2>
+<p>RAW 현상기는 센서 값을 색으로 바꾼 뒤 <dfn title="입력 밝기를 출력 밝기로 바꾸는 한 줄짜리 곡선. 대비와 명암 분포를 정합니다">톤 곡선</dfn>으로 밝기 분포를 다듬습니다. Lightroom TIFF와 카메라 JPEG가 다르게 보일 때 그 차이에는 톤 곡선의 몫과 색 자체의 몫이 섞여 있습니다. 이 문서는 톤의 몫을 먼저 걷어 내고 남는 색의 몫을 잽니다.</p>
+<p>무채색(회색) 칸은 색이 없으므로 두 출력의 차이가 밝기 관계에만 담깁니다. 그래서 차트 아래 줄의 무채색 6칸(19~24번)으로 곡선을 정합니다. 위 세 줄의 유채색 18칸(1~18번)은 곡선 계산에 넣지 않고 평가에만 씁니다. 맞춘 데이터로 평가하면 결과가 좋게 나오기 마련이라, 평가용 칸을 따로 떼어 둔 것입니다.</p>
+
+<figure class="diagram">
+<figcaption>무채색으로 곡선을 정하고 유채색으로 평가합니다</figcaption>
+<div class="dg-scroll">
+<svg class="dg" viewBox="0 0 800 236" role="img" aria-labelledby="dg-meth-title dg-meth-desc">
+<title id="dg-meth-title">톤 곡선을 정하는 칸과 평가하는 칸을 나눈 실험 구성</title>
+<desc id="dg-meth-desc">왼쪽은 24칸 색상표입니다. 위 세 줄 18칸은 유채색, 아래 한 줄 6칸은 무채색입니다. 무채색 6칸에서 Lightroom TIFF와 카메라 JPEG의 밝기 짝을 얻어 단조 곡선을 정합니다. 이 곡선을 유채색 18칸에 적용하고, 같은 RAW에 들어 있는 카메라 Natural 내장 JPEG와 비교해 ΔE00을 계산합니다.</desc>
+<defs><marker id="dg-meth-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0 0L10 5L0 10z"/></marker></defs>
+<text class="h" x="20" y="40">#1376 색상표 24칸</text>
+<rect class="b" x="20" y="56" width="26" height="26" rx="3"/><rect class="b" x="50" y="56" width="26" height="26" rx="3"/><rect class="b" x="80" y="56" width="26" height="26" rx="3"/><rect class="b" x="110" y="56" width="26" height="26" rx="3"/><rect class="b" x="140" y="56" width="26" height="26" rx="3"/><rect class="b" x="170" y="56" width="26" height="26" rx="3"/>
+<rect class="b" x="20" y="86" width="26" height="26" rx="3"/><rect class="b" x="50" y="86" width="26" height="26" rx="3"/><rect class="b" x="80" y="86" width="26" height="26" rx="3"/><rect class="b" x="110" y="86" width="26" height="26" rx="3"/><rect class="b" x="140" y="86" width="26" height="26" rx="3"/><rect class="b" x="170" y="86" width="26" height="26" rx="3"/>
+<rect class="b" x="20" y="116" width="26" height="26" rx="3"/><rect class="b" x="50" y="116" width="26" height="26" rx="3"/><rect class="b" x="80" y="116" width="26" height="26" rx="3"/><rect class="b" x="110" y="116" width="26" height="26" rx="3"/><rect class="b" x="140" y="116" width="26" height="26" rx="3"/><rect class="b" x="170" y="116" width="26" height="26" rx="3"/>
+<rect class="b key" x="20" y="152" width="26" height="26" rx="3"/><rect class="b key" x="50" y="152" width="26" height="26" rx="3"/><rect class="b key" x="80" y="152" width="26" height="26" rx="3"/><rect class="b key" x="110" y="152" width="26" height="26" rx="3"/><rect class="b key" x="140" y="152" width="26" height="26" rx="3"/><rect class="b key" x="170" y="152" width="26" height="26" rx="3"/>
+<text class="n" x="20" y="200">1~18 유채색 · 19~24 무채색</text>
+<rect class="b model" x="262" y="132" width="230" height="72" rx="8"/>
+<text class="t" x="276" y="160">① 무채색으로 톤 결정</text>
+<text class="s" x="276" y="182">TIFF·JPEG 밝기 짝 6개 → 단조 곡선</text>
+<rect class="b model" x="262" y="22" width="230" height="72" rx="8"/>
+<text class="t" x="276" y="50">② 유채색에 곡선 적용</text>
+<text class="s" x="276" y="72">곡선 계산에 쓰지 않은 18칸</text>
+<rect class="b ok" x="548" y="22" width="236" height="72" rx="8"/>
+<text class="t" x="562" y="50">③ 카메라 JPEG와 비교</text>
+<text class="s" x="562" y="72">유채색 18칸의 ΔE00</text>
+<rect class="b mute" x="548" y="132" width="236" height="72" rx="8"/>
+<text class="t" x="562" y="160">기준: 카메라 Natural JPEG</text>
+<text class="s" x="562" y="182">같은 RAW에 든 내장 JPEG</text>
+<path class="e" d="M200 165H260" marker-end="url(#dg-meth-ah)"/>
+<path class="e" d="M200 70H260" marker-end="url(#dg-meth-ah)"/>
+<path class="e key" d="M377 130V96" marker-end="url(#dg-meth-ah)"/>
+<text class="n" x="384" y="118">곡선</text>
+<path class="e" d="M492 58H546" marker-end="url(#dg-meth-ah)"/>
+<path class="e" d="M666 130V96" marker-end="url(#dg-meth-ah)"/>
+<path class="e" d="M546 168H494" marker-end="url(#dg-meth-ah)"/>
+</svg>
+</div>
+<ul class="dg-legend"><li><i class="key"></i>곡선을 정하는 무채색 6칸</li><li><i class="model"></i>PC에서 한 오프라인 계산</li><li><i class="ok"></i>측정값 비교</li><li><i class="mute"></i>카메라가 만든 기준 출력</li></ul>
+</figure>
+
+<div class="callout plain"><strong class="label">색차 ΔE<sub>00</sub> 읽는 법</strong>
+<p><a href="../glossary.html#delta-e">ΔE<sub>00</sub></a>(CIEDE2000)은 두 색이 사람 눈에 얼마나 다르게 보이는지를 숫자 하나로 나타내는 표준 식입니다. 0이면 같은 색이고 클수록 다릅니다. 이 문서의 값은 패치 안쪽 픽셀의 Lab 중앙값끼리 계산했습니다.</p></div>
+</section>
+
 <section id="method">
-<h2>무채색 6개에서 톤을 구하고 유채색 18개에서 평가</h2>
-<ol class="flow">
-<li class="ok"><strong>등록된 픽셀</strong><span>RAW #1376에서 카메라 내장 JPEG를 추출하고 같은 장면의 TIFF와 맞춥니다.</span></li>
-<li class="model"><strong>무채색 19–24번</strong><span>패치별 Lab 중앙값에서 상대 휘도 Y를 구하고, 양 끝점을 고정한 단조 곡선을 맞춥니다.</span></li>
-<li class="model"><strong>유채색 1–18번</strong><span>선형 ProPhoto RGB에 곡선을 적용한 뒤 Lab 색차를 잽니다.</span></li>
+<h2>곡선을 정하고 적용한 방법</h2>
+<p class="takeaway">무채색 6점에 양 끝점을 더해 단조 곡선을 맞췄습니다. 이 곡선을 색상각이 바뀌지 않는 방식으로 유채색 픽셀에 적용했습니다.</p>
+<ol class="steps">
+<li><strong>위치 맞춤</strong> RAW #1376에서 꺼낸 카메라 내장 JPEG와 같은 장면의 TIFF를 픽셀 단위로 맞춥니다. 위치 맞춤에 쓰지 않은 15개 격자 교차점에서 확인한 최대 잔차는 2.707픽셀이었습니다.</li>
+<li><strong>Lab 변환</strong> 패치 안쪽 200×200픽셀을 씁니다. TIFF는 내장 ICC로, 카메라 JPEG는 DNG 메타데이터가 가리키는 sRGB로 D50 Lab에 옮깁니다.</li>
+<li><strong>곡선 맞춤</strong> 무채색 19~24번의 Lab 중앙값에서 상대 휘도 Y를 구합니다. 이 6점에 (0, 0)과 (1, 1)을 더해 구간별 선형 보간과 <dfn title="Piecewise Cubic Hermite Interpolating Polynomial. 점 사이를 3차식으로 잇되 데이터가 단조이면 곡선도 단조로 유지하고 넘침(overshoot)이 없습니다">PCHIP</dfn>(단조 3차 보간) 두 가지를 만듭니다.</li>
+<li><strong>유채색에 적용</strong> 선형 ProPhoto RGB에서 픽셀의 가장 낮은 채널과 가장 높은 채널에 곡선을 적용합니다. 중간 채널은 두 끝값 사이의 원래 상대 위치를 유지합니다. 이렇게 하면 HSV 색상각이 그대로 남습니다.</li>
 </ol>
-<p>패치 안쪽 200×200 픽셀을 사용했습니다. TIFF에는 내장 ICC를, 카메라 JPEG에는 DNG 메타데이터가 가리키는 sRGB를 적용해 D50 Lab으로 바꿨습니다. JPEG와 행렬 TIFF를 맞춘 뒤, 위치 맞춤에 쓰지 않은 15개 격자 교차점에서 확인한 최대 잔차는 2.707픽셀이었습니다. <a href="color-comparison-protocol.html">패치 좌표와 변환 절차</a></p>
-<p>무채색 여섯 점에 (0, 0)과 (1, 1)을 더해 구간별 선형 보간과 단조 3차 보간(PCHIP)을 비교했습니다. 픽셀의 가장 낮은 채널과 높은 채널에 같은 곡선을 적용하고, 중간 채널은 두 끝값 사이의 원래 상대 위치를 유지했습니다. 이 방식은 선형 ProPhoto RGB의 HSV 색상각을 보존합니다. 식은 Adobe 공개 DNG SDK 예제 렌더러의 <code>RefBaselineRGBTone</code>을 참고했고, 곡선은 이미 현상된 TIFF에 적용했습니다. <a href="https://helpx.adobe.com/camera-raw/desktop/dng-and-file-formats/digital-negative.html">Adobe DNG SDK</a></p>
+<p>적용식은 Adobe 공개 DNG SDK 예제 렌더러의 <code>RefBaselineRGBTone</code>을 참고했습니다. 이 문서에서는 이미 현상된 TIFF에 PC에서 적용했을 뿐입니다. Lightroom 내부 연산을 재현하는 단계는 없습니다. 패치 좌표와 변환 절차는 <a href="color-comparison-protocol.html">ColorChecker 비교 절차</a>에 있습니다. SDK 배포처는 <a href="https://helpx.adobe.com/camera-raw/desktop/dng-and-file-formats/digital-negative.html">Adobe DNG SDK</a> 페이지입니다.</p>
 </section>
 
 <section id="results">
 <h2>톤 대조군은 맞았고 카메라 JPEG에는 차이가 남았습니다</h2>
+<p class="takeaway">곡선을 적용하자 행렬 TIFF의 평균 색차는 3분의 1가량 줄었지만 여섯 칸은 오히려 커졌습니다.</p>
+
 <div class="table-wrap"><table>
-<caption>학습에서 제외한 유채색 18개 평균 ΔE00 · 200×200 픽셀</caption>
-<thead><tr><th scope="col">비교</th><th scope="col" class="n">보정 전</th><th scope="col" class="n">선형 보간</th><th scope="col" class="n">PCHIP</th></tr></thead>
+<caption>곡선 계산에서 뺀 유채색 18칸의 평균 ΔE<sub>00</sub> · 200×200픽셀</caption>
+<thead><tr><th scope="col">비교</th><th scope="col">무엇을 보는가</th><th scope="col" class="n">보정 전</th><th scope="col" class="n">선형 보간</th><th scope="col" class="n">PCHIP</th></tr></thead>
 <tbody>
-<tr><th scope="row">행렬 프로파일 → 카메라 Natural JPEG</th><td class="n">3.264</td><td class="n">2.143</td><td class="n">2.165</td></tr>
-<tr><th scope="row">Camera Natural → 카메라 Natural JPEG</th><td class="n">1.438</td><td class="n">1.193</td><td class="n">1.258</td></tr>
-<tr><th scope="row">Adobe Standard → 카메라 Natural JPEG</th><td class="n">3.987</td><td class="n">3.214</td><td class="n">3.153</td></tr>
-<tr><th scope="row">항등 톤 → Lift 톤</th><td class="n">1.520</td><td class="n">0.025</td><td class="n">0.006</td></tr>
-<tr><th scope="row">항등 LookTable → 채도 0.8</th><td class="n">5.985</td><td class="n">5.930</td><td class="n">5.926</td></tr>
+<tr><th scope="row">행렬 프로파일 → 카메라 Natural JPEG</th><td>이 문서의 본 질문</td><td class="n">3.264</td><td class="n">2.143</td><td class="n">2.165</td></tr>
+<tr><th scope="row">Camera Natural → 카메라 Natural JPEG</th><td>Adobe 프로파일 비교</td><td class="n">1.438</td><td class="n">1.193</td><td class="n">1.258</td></tr>
+<tr><th scope="row">Adobe Standard → 카메라 Natural JPEG</th><td>Adobe 프로파일 비교</td><td class="n">3.987</td><td class="n">3.214</td><td class="n">3.153</td></tr>
+<tr><th scope="row">항등 톤 → Lift 톤</th><td>톤만 다른 대조군</td><td class="n">1.520</td><td class="n">0.025</td><td class="n">0.006</td></tr>
+<tr><th scope="row">항등 LookTable → 채도 0.8</th><td>채도만 다른 대조군</td><td class="n">5.985</td><td class="n">5.930</td><td class="n">5.926</td></tr>
 </tbody></table></div>
-<p>카메라 JPEG를 기준으로 행렬 계열의 항등·Lift·ACR3 TIFF에도 각각 톤을 맞추면 평균 ΔE00는 2.165–2.169였습니다(PCHIP). 톤 대조군은 같은 행렬의 곡선 태그만 바꾼 출력이고, 채도 대조군은 LookTable의 채도 배율만 바꾼 출력입니다. <a href="lightroom-tone-comparison.html">톤 곡선 대조</a> · <a href="lightroom-look-controls.html">LookTable 대조</a></p>
-<figure>
-<figcaption>행렬 프로파일 → 카메라 Natural JPEG · 회색은 보정 전, 파란색은 PCHIP 보정 후</figcaption>
-<div class="dg-scroll"><img src="color-tone-residual-patches.svg" width="700" height="372" alt="유채색 18패치의 보정 전후 ΔE00를 나타낸 막대 그래프. 보정 후 7번 주황 패치가 5.740으로 가장 큽니다."></div>
+<p>톤 대조군은 같은 행렬에 곡선 태그만 바꾼 출력입니다. 채도 대조군은 <a href="../glossary.html#looktable">LookTable</a>의 채도 배율만 바꾼 출력입니다. 톤 차이는 거의 다 지워지고 채도 차이는 거의 남았으므로, 이 방법이 톤의 몫만 걷어 낸다고 볼 수 있습니다. 대조군의 출처는 <a href="lightroom-tone-comparison.html">톤 곡선 대조</a>와 <a href="lightroom-look-controls.html">LookTable 대조</a>입니다.</p>
+<p>행렬 계열의 항등·Lift·ACR3 TIFF에도 카메라 JPEG 기준으로 각각 곡선을 맞추면 평균 ΔE<sub>00</sub>은 2.165~2.169(PCHIP)로 거의 같았습니다.</p>
+
+<figure class="diagram">
+<figcaption>행렬 프로파일 → 카메라 Natural JPEG · 패치별 보정 전후</figcaption>
+<div class="dg-scroll">
+<svg class="dg" viewBox="0 0 800 484" role="img" aria-labelledby="dg-bars-title dg-bars-desc">
+<title id="dg-bars-title">유채색 18패치의 톤 보정 전후 ΔE00 막대 그래프</title>
+<desc id="dg-bars-desc">패치마다 위 막대는 보정 전, 아래 막대는 무채색으로 맞춘 PCHIP 곡선을 적용한 뒤의 ΔE00입니다. 눈금은 0부터 6까지입니다. 1 dark skin 4.081에서 1.292. 2 light skin 1.969에서 1.350. 3 blue sky 3.426에서 2.257. 4 foliage 4.036에서 1.145. 5 blue flower 2.049에서 0.784. 6 bluish green 1.147에서 1.595. 7 orange 5.021에서 5.740. 8 purplish blue 4.764에서 2.120. 9 moderate red 3.383에서 3.399. 10 purple 3.988에서 1.047. 11 yellow green 1.909에서 2.188. 12 orange yellow 4.608에서 4.798. 13 blue 4.849에서 0.449. 14 green 2.224에서 1.106. 15 red 2.045에서 2.049. 16 yellow 2.832에서 2.660. 17 magenta 3.001에서 2.090. 18 cyan 3.425에서 2.909. 13번 blue처럼 크게 줄어든 패치가 많지만 7번 orange는 5.021에서 5.740으로 늘어 보정 후 가장 큽니다.</desc>
+<path class="g" d="M200 18V444"/><text class="n mid" x="200" y="460">0</text>
+<path class="g" d="M282 18V444"/><text class="n mid" x="282" y="460">1</text>
+<path class="g" d="M364 18V444"/><text class="n mid" x="364" y="460">2</text>
+<path class="g" d="M446 18V444"/><text class="n mid" x="446" y="460">3</text>
+<path class="g" d="M528 18V444"/><text class="n mid" x="528" y="460">4</text>
+<path class="g" d="M610 18V444"/><text class="n mid" x="610" y="460">5</text>
+<path class="g" d="M692 18V444"/><text class="n mid" x="692" y="460">6</text>
+<text class="s end" x="190" y="43">1 dark skin</text>
+<rect class="b" x="200" y="31" width="334.6" height="8" rx="2"><title>1 dark skin 보정 전 4.081</title></rect>
+<rect class="b key" x="200" y="40" width="106.0" height="8" rx="2"><title>1 dark skin 보정 후 1.292</title></rect>
+<text class="mono" x="542.6" y="45">4.08 → 1.29</text>
+<text class="s end" x="190" y="66">2 light skin</text>
+<rect class="b" x="200" y="54" width="161.4" height="8" rx="2"><title>2 light skin 보정 전 1.969</title></rect>
+<rect class="b key" x="200" y="63" width="110.7" height="8" rx="2"><title>2 light skin 보정 후 1.350</title></rect>
+<text class="mono" x="369.4" y="68">1.97 → 1.35</text>
+<text class="s end" x="190" y="89">3 blue sky</text>
+<rect class="b" x="200" y="77" width="280.9" height="8" rx="2"><title>3 blue sky 보정 전 3.426</title></rect>
+<rect class="b key" x="200" y="86" width="185.0" height="8" rx="2"><title>3 blue sky 보정 후 2.257</title></rect>
+<text class="mono" x="488.9" y="91">3.43 → 2.26</text>
+<text class="s end" x="190" y="112">4 foliage</text>
+<rect class="b" x="200" y="100" width="330.9" height="8" rx="2"><title>4 foliage 보정 전 4.036</title></rect>
+<rect class="b key" x="200" y="109" width="93.9" height="8" rx="2"><title>4 foliage 보정 후 1.145</title></rect>
+<text class="mono" x="538.9" y="114">4.04 → 1.14</text>
+<text class="s end" x="190" y="135">5 blue flower</text>
+<rect class="b" x="200" y="123" width="168.0" height="8" rx="2"><title>5 blue flower 보정 전 2.049</title></rect>
+<rect class="b key" x="200" y="132" width="64.3" height="8" rx="2"><title>5 blue flower 보정 후 0.784</title></rect>
+<text class="mono" x="376.0" y="137">2.05 → 0.78</text>
+<text class="s end" x="190" y="158">6 bluish green</text>
+<rect class="b" x="200" y="146" width="94.1" height="8" rx="2"><title>6 bluish green 보정 전 1.147</title></rect>
+<rect class="b key" x="200" y="155" width="130.8" height="8" rx="2"><title>6 bluish green 보정 후 1.595</title></rect>
+<text class="mono" x="338.8" y="160">1.15 → 1.60</text>
+<text class="s end" x="190" y="181">7 orange</text>
+<rect class="b" x="200" y="169" width="411.7" height="8" rx="2"><title>7 orange 보정 전 5.021</title></rect>
+<rect class="b key" x="200" y="178" width="470.7" height="8" rx="2"><title>7 orange 보정 후 5.740</title></rect>
+<text class="mono tk" x="678.7" y="183">5.02 → 5.74</text>
+<text class="s end" x="190" y="204">8 purplish blue</text>
+<rect class="b" x="200" y="192" width="390.6" height="8" rx="2"><title>8 purplish blue 보정 전 4.764</title></rect>
+<rect class="b key" x="200" y="201" width="173.8" height="8" rx="2"><title>8 purplish blue 보정 후 2.120</title></rect>
+<text class="mono" x="598.6" y="206">4.76 → 2.12</text>
+<text class="s end" x="190" y="227">9 moderate red</text>
+<rect class="b" x="200" y="215" width="277.4" height="8" rx="2"><title>9 moderate red 보정 전 3.383</title></rect>
+<rect class="b key" x="200" y="224" width="278.7" height="8" rx="2"><title>9 moderate red 보정 후 3.399</title></rect>
+<text class="mono" x="486.7" y="229">3.38 → 3.40</text>
+<text class="s end" x="190" y="250">10 purple</text>
+<rect class="b" x="200" y="238" width="327.0" height="8" rx="2"><title>10 purple 보정 전 3.988</title></rect>
+<rect class="b key" x="200" y="247" width="85.9" height="8" rx="2"><title>10 purple 보정 후 1.047</title></rect>
+<text class="mono" x="535.0" y="252">3.99 → 1.05</text>
+<text class="s end" x="190" y="273">11 yellow green</text>
+<rect class="b" x="200" y="261" width="156.5" height="8" rx="2"><title>11 yellow green 보정 전 1.909</title></rect>
+<rect class="b key" x="200" y="270" width="179.4" height="8" rx="2"><title>11 yellow green 보정 후 2.188</title></rect>
+<text class="mono" x="387.4" y="275">1.91 → 2.19</text>
+<text class="s end" x="190" y="296">12 orange yellow</text>
+<rect class="b" x="200" y="284" width="377.9" height="8" rx="2"><title>12 orange yellow 보정 전 4.608</title></rect>
+<rect class="b key" x="200" y="293" width="393.5" height="8" rx="2"><title>12 orange yellow 보정 후 4.798</title></rect>
+<text class="mono" x="601.5" y="298">4.61 → 4.80</text>
+<text class="s end" x="190" y="319">13 blue</text>
+<rect class="b" x="200" y="307" width="397.7" height="8" rx="2"><title>13 blue 보정 전 4.849</title></rect>
+<rect class="b key" x="200" y="316" width="36.8" height="8" rx="2"><title>13 blue 보정 후 0.449</title></rect>
+<text class="mono" x="605.7" y="321">4.85 → 0.45</text>
+<text class="s end" x="190" y="342">14 green</text>
+<rect class="b" x="200" y="330" width="182.4" height="8" rx="2"><title>14 green 보정 전 2.224</title></rect>
+<rect class="b key" x="200" y="339" width="90.7" height="8" rx="2"><title>14 green 보정 후 1.106</title></rect>
+<text class="mono" x="390.4" y="344">2.22 → 1.11</text>
+<text class="s end" x="190" y="365">15 red</text>
+<rect class="b" x="200" y="353" width="167.7" height="8" rx="2"><title>15 red 보정 전 2.045</title></rect>
+<rect class="b key" x="200" y="362" width="168.0" height="8" rx="2"><title>15 red 보정 후 2.049</title></rect>
+<text class="mono" x="376.0" y="367">2.04 → 2.05</text>
+<text class="s end" x="190" y="388">16 yellow</text>
+<rect class="b" x="200" y="376" width="232.2" height="8" rx="2"><title>16 yellow 보정 전 2.832</title></rect>
+<rect class="b key" x="200" y="385" width="218.1" height="8" rx="2"><title>16 yellow 보정 후 2.660</title></rect>
+<text class="mono" x="440.2" y="390">2.83 → 2.66</text>
+<text class="s end" x="190" y="411">17 magenta</text>
+<rect class="b" x="200" y="399" width="246.1" height="8" rx="2"><title>17 magenta 보정 전 3.001</title></rect>
+<rect class="b key" x="200" y="408" width="171.4" height="8" rx="2"><title>17 magenta 보정 후 2.090</title></rect>
+<text class="mono" x="454.1" y="413">3.00 → 2.09</text>
+<text class="s end" x="190" y="434">18 cyan</text>
+<rect class="b" x="200" y="422" width="280.9" height="8" rx="2"><title>18 cyan 보정 전 3.425</title></rect>
+<rect class="b key" x="200" y="431" width="238.5" height="8" rx="2"><title>18 cyan 보정 후 2.909</title></rect>
+<text class="mono" x="488.9" y="436">3.43 → 2.91</text>
+<text class="n mid" x="446" y="478">ΔE00 (카메라 Natural 내장 JPEG 기준, 작을수록 가까움)</text>
+</svg>
+</div>
+<ul class="dg-legend"><li><i></i>보정 전</li><li><i class="key"></i>무채색 PCHIP 곡선 적용 후</li></ul>
 </figure>
-<p>행렬 TIFF와 JPEG의 패치별 픽셀 색상각 중앙값은 절댓값 기준 중앙 2.446°, 최대 5.743° 차이가 났습니다. 톤 대조군의 같은 최대치는 0.00171°, 채도 대조군은 0.00257°였습니다. 채도만 바꾸는 표도 색상각을 유지할 수 있으므로 색상각과 ΔE00를 함께 봤습니다. 이 각도는 선형 RGB에서 얻은 진단값입니다.</p>
-<p>행렬 TIFF의 보정 후 평균 ΔE00는 중심 100×100 픽셀에서 2.184, JPEG에 별도의 sRGB ICC를 지정한 비교에서는 2.162였습니다. Lightroom sRGB 출력에서 채널 끝값이 검출된 패치 네 개를 제외해도 평균 2.011이 남았습니다. 이 조건에서는 색상각을 보존하는 톤만으로 카메라 JPEG의 출력을 설명하기 어렵습니다. <a href="color-tone-residual.json">패치별 측정값과 검증 수치</a></p>
+<p>13번 blue(4.849 → 0.449)처럼 크게 줄어든 칸이 많습니다. 반면 6·7·9·11·12·15번 여섯 칸은 곡선을 적용한 뒤 오히려 커졌습니다. 9번과 15번의 증가는 0.02 미만입니다. 7번 orange는 0.719 늘어 보정 후 가장 큰 칸이 됐습니다. 같은 막대 그림을 <a href="color-tone-residual-patches.svg">별도 SVG 파일</a>로도 제공합니다.</p>
+
+<div class="table-wrap"><table class="fit">
+<caption>남은 차이가 측정 조건 탓인지 확인한 값 · 행렬 → 카메라 JPEG, PCHIP</caption>
+<thead><tr><th scope="col">조건</th><th scope="col" class="n">유채색 평균 ΔE<sub>00</sub></th></tr></thead>
+<tbody>
+<tr><th scope="row">기본(200×200픽셀)</th><td class="n">2.165</td></tr>
+<tr><th scope="row">패치 중심 100×100픽셀</th><td class="n">2.184</td></tr>
+<tr><th scope="row">JPEG에 별도 sRGB ICC를 지정</th><td class="n">2.162</td></tr>
+<tr><th scope="row">sRGB 출력에서 채널 끝값이 나온 12·13·16·18번 제외</th><td class="n">2.011</td></tr>
+</tbody></table></div>
+
+<p>채도만 바꾸는 표도 색상각을 유지할 수 있으므로 색상각은 ΔE<sub>00</sub>과 함께 봤습니다. 행렬 TIFF와 JPEG 사이에는 패치별 픽셀 색상각 중앙값이 절댓값 기준 중앙 2.446°, 최대 5.743° 어긋났습니다. 같은 최대치가 톤 대조군은 0.00171°, 채도 대조군은 0.00257°였습니다. 이 각도는 선형 RGB에서 얻은 진단값입니다.</p>
+<p>이 조건에서는 색상각을 보존하는 톤만으로 카메라 JPEG의 출력을 설명하기 어렵습니다. 패치별 값과 검증 수치 전체는 <a href="color-tone-residual.json">결과 JSON</a>에 있습니다.</p>
 </section>
 
 <section id="limits">
 <h2>한 장에서 구분할 수 있는 범위</h2>
-<p>무채색을 하나씩 제외해 다시 맞췄을 때 행렬→JPEG의 무채색 예측 평균 ΔE00는 1.019였습니다(PCHIP). 유채색 패치의 중앙 RGB는 모두 무채색 매듭의 입력 범위 안에 있었습니다. 모든 패치는 한 센서, 한 조명, 한 노출에서 얻었습니다.</p>
-<p>Lightroom XMP는 모두 As Shot을 기록했습니다. 온도와 색조 표기는 행렬 계열이 5200 K/+2, Camera Natural과 Adobe Standard가 5300 K/−2입니다. 카메라는 5000 K와 노출 보정 −0.7 EV를 기록했습니다. 비교는 완성된 출력을 대상으로 하므로 남은 오차를 WB, 색 행렬, 보정 표, 색역 처리나 JPEG 처리 중 하나로 배정할 수 없습니다.</p>
-<p>모드별 효과를 비교하려면 같은 K-3 II RAW에서 Natural과 다른 내장 룩으로 카메라가 현상한 JPEG 한 쌍이 필요합니다. WB, 노출, 그림자 보정, 출력 색공간을 고정하고 다른 장면이나 조명에서 얻은 모드 쌍을 검증용으로 남기면, 모드 차이가 반복되는지 확인할 수 있습니다.</p>
+<p class="takeaway">곡선 자체는 안정적이었지만 남은 오차의 원인은 이 자료만으로 정할 수 없습니다.</p>
+<p>무채색을 한 칸씩 빼고 다시 맞췄을 때, 뺀 칸을 예측한 평균 ΔE<sub>00</sub>은 1.019였습니다(행렬 → JPEG, PCHIP). 유채색 18칸의 중앙 RGB는 모두 무채색 점들이 덮는 입력 범위 안에 있어 곡선을 범위 밖으로 늘려 쓴 칸은 없습니다. 모든 칸은 한 센서, 한 조명, 한 노출에서 얻었습니다.</p>
+<div class="table-wrap"><table class="fit">
+<caption>화이트밸런스와 노출 기록</caption>
+<thead><tr><th scope="col">출력</th><th scope="col">기록</th></tr></thead>
+<tbody>
+<tr><th scope="row">카메라(촬영 당시)</th><td>5000 K, 노출 보정 −0.7 EV</td></tr>
+<tr><th scope="row">Lightroom 행렬 계열</th><td>As Shot, 5200 K / +2</td></tr>
+<tr><th scope="row">Lightroom Camera Natural · Adobe Standard</th><td>As Shot, 5300 K / −2</td></tr>
+</tbody></table></div>
+<p>완성된 출력끼리 비교했으므로 남은 오차를 화이트밸런스, 색 행렬, 보정 표, 색역 처리, JPEG 처리 중 하나로 배정할 수 없습니다.</p>
+<div class="callout"><strong class="label">다음에 필요한 자료</strong>
+<p>모드별 효과를 비교하려면 같은 K-3 II RAW에서 Natural과 다른 내장 룩으로 카메라가 현상한 JPEG 한 쌍이 필요합니다. WB, 노출, 그림자 보정, 출력 색공간은 고정해야 합니다. 다른 장면이나 조명에서 얻은 모드 쌍을 검증용으로 남겨 두면 모드 차이가 반복되는지도 볼 수 있습니다. 같은 곡선을 다른 장면에 적용한 결과는 <a href="color-scene-transfer.html">고정 톤의 독립 장면 비교</a>에 있습니다.</p></div>
 </section>
 
 <section id="replay">
 <h2>재현 방법</h2>
-<p>Python 3.11 이상, NumPy, SciPy, OpenCV, Pillow, scikit-image, tifffile, ExifTool, LittleCMS의 <code>tificc</code>가 필요합니다. <code>--scratch</code>는 이미 만들어 둔 작업 폴더이고 <code>--output</code>은 새 JSON 경로입니다. 실행할 때 <code>-O</code>를 사용하지 않습니다.</p>
+<p>Python 3.11 이상, NumPy, SciPy, OpenCV, Pillow, scikit-image, tifffile, ExifTool, LittleCMS의 <code>tificc</code>가 필요합니다. <code>--scratch</code>는 이미 만들어 둔 작업 폴더이고 <code>--output</code>은 새 JSON 경로입니다. 실행할 때 <code>-O</code>를 쓰지 않습니다.</p>
 <div class="table-wrap"><table>
 <caption>재현 입력 · TIFF 파일 이름은 모두 pentax-k3ii-1376.tif</caption>
 <thead><tr><th scope="col">경로 인수</th><th scope="col">파일 또는 하위 폴더</th><th scope="col">출처</th></tr></thead>
 <tbody>
-<tr><th scope="row"><code>--samples</code></th><td><code>pentax-k3ii-1376.dng</code>, <code>pentax-k3ii-1376-preview.jpg</code></td><td>raw.pixls.us #1376, CC0. DNG의 <code>SubIFD1:PreviewImage</code>에서 JPEG를 추출합니다. <a href="raw-test-inputs.html">RAW 출처와 추출 안내</a></td></tr>
+<tr><th scope="row"><code>--samples</code></th><td><code>pentax-k3ii-1376.dng</code>, <code>pentax-k3ii-1376-preview.jpg</code></td><td>raw.pixls.us #1376, CC0. DNG의 <code>SubIFD1:PreviewImage</code>에서 JPEG를 꺼냅니다. <a href="raw-test-inputs.html">RAW 출처와 추출 안내</a></td></tr>
 <tr><th scope="row"><code>--exports</code></th><td><code>matrix-test-prophoto/</code>, <code>camera-natural-prophoto/</code>, <code>adobe-standard-prophoto/</code>, <code>matrix-test/</code></td><td><a href="lightroom-render-comparison.html#replay">기존 RGB16 TIFF</a>. <code>matrix-test/</code>는 JPEG에 적용할 별도 sRGB ICC를 제공하는 입력입니다.</td></tr>
 <tr><th scope="row"><code>--exports</code></th><td><code>tone-identity-prophoto/</code>, <code>tone-lift-prophoto/</code>, <code>tone-acr3-prophoto/</code></td><td><a href="lightroom-tone-comparison.html#replay">톤 대조 TIFF</a></td></tr>
 <tr><th scope="row"><code>--exports</code></th><td><code>look-identity-prophoto/</code>, <code>look-sat80-prophoto/</code></td><td><a href="lightroom-look-controls.html#replay">LookTable 대조 TIFF</a></td></tr>
 </tbody></table></div>
 <pre><code>python tools/check_color_tone_residual.py --samples samples --exports exports --scratch scratch --output tone-residual-replay.json</code></pre>
-<p>검증기는 RAW에서 추출한 JPEG와 제공한 JPEG가 모두 기록된 SHA-256을 갖는지 확인합니다. TIFF 9개도 SHA-256을 대조합니다. ProPhoto TIFF 8개의 ICC, XMP 프로파일 이름·지문, 현상 설정을 읽어 비교합니다. JSON의 DCP 해시는 기존 프로파일 출처 기록에서 가져옵니다. <a href="../tools/check_color_tone_residual.py">재현 스크립트</a> · <a href="color-tone-residual.json">기준 결과 JSON</a></p>
+<p>검증기가 확인하는 것은 다음과 같습니다.</p>
+<ul>
+<li>RAW에서 꺼낸 JPEG와 제공한 JPEG가 모두 기록된 SHA-256과 같은지</li>
+<li>TIFF 9개의 SHA-256</li>
+<li>ProPhoto TIFF 8개의 ICC, XMP 프로파일 이름·지문, 현상 설정</li>
+</ul>
+<p>JSON에 적힌 DCP 해시는 기존 프로파일 출처 기록에서 가져온 값입니다.</p>
+<details class="evidence"><summary>입력 파일 해시와 분석 환경</summary>
+<dl class="kv">
+<dt>RAW #1376 SHA-256</dt><dd><code class="wrap">992c969286dc06b1690128a7b14ea74c5b5a46209b0fbf21e83df00807b050b9</code></dd>
+<dt>내장 JPEG SHA-256</dt><dd><code class="wrap">04609f9896a82b2277637a20999f2e3716b389ef9de1717af0e97fd41b427831</code></dd>
+<dt>행렬 TIFF SHA-256</dt><dd><code class="wrap">5a65e3b4349d97df77964b2871fb07934b0d1e444753fe8ff8ac5a08de103bef</code></dd>
+<dt>참고한 SDK</dt><dd>Adobe DNG SDK 1.7.1 Build 2768, <code>dng_reference.cpp</code> 1871–1906행</dd>
+<dt>Lab 변환</dt><dd>LittleCMS 2.12 <code>tificc</code></dd>
+<dt>Python 환경</dt><dd>Python 3.12.3, NumPy 1.26.4, SciPy 1.13.1, OpenCV 4.13.0, scikit-image 0.24.0, tifffile 2023.4.12</dd>
+</dl>
+</details>
 </section>
 
 <section id="refs">
-<h2>근거와 참고 자료</h2>
-<ul>
-<li><a href="lightroom-render-comparison.json">기존 렌더 비교</a> · <a href="lightroom-tone-comparison.json">톤 대조 측정</a> · <a href="lightroom-look-controls.json">LookTable 대조 측정</a></li>
-<li><a href="https://helpx.adobe.com/camera-raw/desktop/dng-and-file-formats/digital-negative.html">Adobe DNG SDK</a> · 분석에 사용한 Build 2768의 아카이브와 소스 해시는 결과 JSON에 있습니다.</li>
-<li><a href="https://cie.co.at/publications/colorimetry-part-6-ciede2000-colour-difference-formula-1">ISO/CIE 11664-6:2022 CIEDE2000</a></li>
+<h2>근거 파일과 참고 자료</h2>
+<ul class="refs">
+<li><a href="color-tone-residual.json">color-tone-residual.json</a> — 패치별 측정값, 대조군, 민감도, 입력 해시</li>
+<li><a href="../tools/check_color_tone_residual.py">tools/check_color_tone_residual.py</a> — 재현 스크립트</li>
+<li><a href="color-tone-residual-patches.svg">color-tone-residual-patches.svg</a> — 패치별 보정 전후 막대 그림(별도 파일)</li>
+<li><a href="lightroom-render-comparison.json">기존 렌더 비교</a> · <a href="lightroom-tone-comparison.json">톤 대조 측정</a> · <a href="lightroom-look-controls.json">LookTable 대조 측정</a> — 입력 TIFF의 출처 기록</li>
+<li><a href="https://helpx.adobe.com/camera-raw/desktop/dng-and-file-formats/digital-negative.html">Adobe DNG SDK</a> — 분석에 쓴 Build 2768의 아카이브와 소스 해시는 결과 JSON에 있습니다</li>
+<li><a href="https://cie.co.at/publications/colorimetry-part-6-ciede2000-colour-difference-formula-1">ISO/CIE 11664-6:2022 CIEDE2000</a> — 색차 식 표준</li>
+<li><a href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.PchipInterpolator.html">SciPy PchipInterpolator</a> — 단조성을 유지하는 3차 보간</li>
 </ul>
 </section>
 
 </main>
 </div>
 <!-- chrome:bottom -->
-<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">Lightroom 색 프로파일 — 이 주제의 문서</h2><ol><li><a href="lightroom-bridge.html">Lightroom 프로파일 안내<span>DCP 생성·검증의 전체 흐름</span></a></li><li><a href="raw-test-inputs.html">시험용 RAW 준비</a></li><li><a href="color-comparison-protocol.html">ColorChecker 비교 절차</a></li><li><a href="lightroom-render-comparison.html">실제 TIFF 6개 비교</a></li><li><a href="lightroom-tone-comparison.html">톤 곡선 비교</a></li><li><a href="lightroom-model-exports.html">K-3 III·Q7 DCP 내보내기</a></li><li><a href="lightroom-profile-fingerprints.html">프로파일 지문 재현</a></li><li><a href="lightroom-look-controls.html">LookTable 대조 실험</a></li><li><a href="color-tone-residual.html" aria-current="page">톤 보정 뒤 남는 색차</a></li><li><a href="color-scene-transfer.html">고정 톤의 독립 장면 비교<span>K-3 II #1363과 Lightroom 버전 대조</span></a></li><li><a href="lightroom-composed-tone.html">합성 톤 DCP의 실제 Lightroom 출력<span>두 장면·최대 색차 기준 미충족</span></a></li><li><a href="lightroom-tone-coordinates.html">Lightroom 톤과 RGB 좌표<span>같은 엔진·두 출력 색공간 대조</span></a></li><li><a href="lightroom-studio-baseline.html">K-3 III·Q7 Bright 스튜디오 비교<span>정합 통과 영역의 JPEG 대비 색차</span></a></li><li><a href="lightroom-studio-reference.html">K-3 III·Q7 참조 프로파일 비교<span>같은 장면의 공통 마스크·As Shot 대조</span></a></li><li><a href="lightroom-as-shot.html">As Shot과 프로파일별 백색점<span>같은 Q7 RAW의 SDK 수식 재현</span></a></li><li><a href="lightroom-pef-neutral.html">K-3 III PEF의 As Shot 중립값<span>두 DNG 변환과 세 프로파일 수식 재현</span></a></li><li><a href="lightroom-cfa-preservation.html">K-3 III PEF·DNG의 CFA 샘플 비교<span>변환 전후 전체 26,628,096개 샘플 대조</span></a></li><li><a href="lightroom-cfa-range.html">K-3 III DNG의 CFA 범위와 기본 크롭<span>활성 영역과 크롭의 WhiteLevel 대조</span></a></li><li><a href="lightroom-sdk-stage2.html">K-3 III DNG의 Adobe SDK Stage 2 실행<span>원본 SDK에서 활성 영역 25,891,840개 전수 대조</span></a></li><li><a href="lightroom-sdk-stage3.html">K-3 III DNG의 Adobe SDK Stage 3<span>카메라 채널 77,675,520개 보간 대조</span></a></li></ol></nav>
+<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">Lightroom 색 프로파일 — 이 주제의 문서</h2><ol><li><a href="guide-lightroom.html">Lightroom 색 프로파일 안내</a></li><li><a href="lightroom-bridge.html">DCP 구조와 생성 도구<span>세 기종 공통</span></a></li><li><a href="raw-test-inputs.html">시험용 RAW 준비</a></li><li><a href="color-comparison-protocol.html">ColorChecker 비교 절차</a></li><li><a href="lightroom-render-comparison.html">실제 TIFF 6개 비교</a></li><li><a href="lightroom-tone-comparison.html">톤 곡선 비교</a></li><li><a href="lightroom-model-exports.html">K-3 III·Q7 DCP 내보내기</a></li><li><a href="lightroom-profile-fingerprints.html">프로파일 지문 재현</a></li><li><a href="lightroom-look-controls.html">LookTable 대조 실험</a></li><li><a href="color-tone-residual.html" aria-current="page">톤 보정 뒤 남는 색차</a></li><li><a href="color-scene-transfer.html">고정 톤의 독립 장면 비교<span>K-3 II #1363과 Lightroom 버전 대조</span></a></li><li><a href="lightroom-composed-tone.html">합성 톤 DCP의 실제 Lightroom 출력<span>두 장면·최대 색차 기준 미충족</span></a></li><li><a href="lightroom-tone-coordinates.html">Lightroom 톤과 RGB 좌표<span>같은 엔진·두 출력 색공간 대조</span></a></li><li><a href="lightroom-studio-baseline.html">K-3 III·Q7 Bright 스튜디오 비교<span>정합 통과 영역의 JPEG 대비 색차</span></a></li><li><a href="lightroom-studio-reference.html">K-3 III·Q7 참조 프로파일 비교<span>같은 장면의 공통 마스크·As Shot 대조</span></a></li><li><a href="lightroom-as-shot.html">As Shot과 프로파일별 백색점<span>같은 Q7 RAW의 SDK 수식 재현</span></a></li><li><a href="lightroom-pef-neutral.html">K-3 III PEF의 As Shot 중립값<span>두 DNG 변환과 세 프로파일 수식 재현</span></a></li><li><a href="lightroom-cfa-preservation.html">K-3 III PEF·DNG의 CFA 샘플 비교<span>변환 전후 전체 26,628,096개 샘플 대조</span></a></li><li><a href="lightroom-cfa-range.html">K-3 III DNG의 CFA 범위와 기본 크롭<span>활성 영역과 크롭의 WhiteLevel 대조</span></a></li><li><a href="lightroom-sdk-stage2.html">K-3 III DNG의 Adobe SDK Stage 2 실행<span>원본 SDK에서 활성 영역 25,891,840개 전수 대조</span></a></li><li><a href="lightroom-sdk-stage3.html">K-3 III DNG의 Adobe SDK Stage 3<span>카메라 채널 77,675,520개 보간 대조</span></a></li></ol></nav>
 <nav class="pager" aria-label="이전·다음 문서"><a class="prev" href="lightroom-look-controls.html"><small>← 이전</small>LookTable 대조 실험</a><a class="next" href="color-scene-transfer.html"><small>다음 →</small>고정 톤의 독립 장면 비교</a></nav>
 <footer class="sitefoot"><div class="sitefoot-in"><nav aria-label="사이트"><a href="../index.html#map">문서 지도</a><a href="../index.html#levels">검증 수준 읽는 법</a><a href="../glossary.html">용어집</a><a href="research-program.html">세 기종 연구 본부</a><a href="https://github.com/yunhyok/pentax-k3iii-firmware-analysis">GitHub 저장소</a></nav><p>PENTAX 펌웨어 연구. PC에서 수행한 정적 분석과 에뮬레이션 결과이며, 카메라 실기에서 검증한 내용이 아닙니다. 원본 펌웨어와 추출한 독점 코드는 포함하지 않습니다.</p></div></footer>
 <!-- /chrome:bottom -->

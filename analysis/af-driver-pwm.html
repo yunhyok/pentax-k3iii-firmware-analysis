@@ -2,123 +2,327 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>K-3 III AF 드라이버와 PWM 연결</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AF 모터 드라이버와 PWM 객체의 연결 — PENTAX K-3 Mark III 펌웨어 연구</title>
+<meta name="description" content="K-3 Mark III 펌웨어 2.20에서 PafMotor의 리셋 요청이 AfMotorDriver를 거쳐 PWM 객체 두 개로 가는 연결과, 드라이버가 이벤트를 받아 플래그를 쓰거나 Joint로 넘기는 동작을 원본 ARM 코드로 확인한 기록입니다. 실제 PWM 출력과 모터 동작은 실행하지 않았습니다.">
 <link rel="stylesheet" href="../assets/site.css">
-<style>
-main.doc .pwm-flow svg{display:block;width:100%;max-width:28rem;height:auto;margin-inline:auto}
-main.doc .pwm-flow .node{fill:var(--soft);stroke:var(--line-strong)}
-main.doc .pwm-flow .edge{fill:none;stroke:var(--edge);stroke-width:1.5}
-main.doc .pwm-flow .event{fill:var(--brand-soft);stroke:var(--line-strong)}
-main.doc .pwm-flow text{fill:var(--ink);font-family:inherit}
-@media (max-width:520px){main.doc .pwm-flow{padding-inline:.45rem}}
-main.doc .pwm-flow .sub{fill:var(--muted)}
-main.doc .address{white-space:nowrap}
-main.doc .hash{overflow-wrap:anywhere}
-main.doc .table-wrap:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
-</style>
 </head>
 <body data-camera="k3iii">
 <!-- chrome:top -->
 <a class="skip" href="#main">본문 바로가기</a>
-<div class="topbar"><div class="topbar-in"><a class="brand" href="../index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="../index.html" aria-current="true">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="https://yunhyok.github.io/pentax-q7-firmware-analysis/">Q7</a></div><nav class="topnav" aria-label="주제"><a href="../index.html">개요</a><a href="guide-boot.html">부팅·저장소</a><a href="guide-update.html">업데이트</a><a href="guide-rebuild.html">재구축</a><a href="guide-rtos.html">명령·셸</a><a href="guide-color.html">색 처리</a><a href="lightroom-bridge.html">Lightroom</a><a href="af-foundations.html" aria-current="true">AF</a><a href="ui-port-contract.html">UI</a></nav></div></div>
-<nav class="crumbs" aria-label="현재 위치"><ol><li><a href="../index.html">PENTAX K-3 Mark III</a></li><li><a href="af-foundations.html">AF와 렌즈 제어</a></li><li aria-current="page">AF 드라이버와 PWM 연결</li></ol></nav>
+<div class="topbar"><div class="topbar-in"><a class="brand" href="../index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="../index.html" aria-current="true">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="https://yunhyok.github.io/pentax-q7-firmware-analysis/">Q7</a></div><nav class="topnav" aria-label="주제"><a href="../index.html">개요</a><a href="guide-boot.html">부팅·저장소</a><a href="guide-update.html">업데이트</a><a href="guide-rebuild.html">재구축</a><a href="guide-rtos.html">명령·셸</a><a href="guide-color.html">색 처리</a><a href="guide-lightroom.html">Lightroom</a><a href="guide-af.html" aria-current="true">AF</a><a href="guide-ui.html">UI</a></nav></div></div>
+<nav class="crumbs" aria-label="현재 위치"><ol><li><a href="../index.html">PENTAX K-3 Mark III</a></li><li><a href="guide-af.html">AF와 렌즈 제어</a></li><li aria-current="page">AF 드라이버와 PWM 연결</li></ol></nav>
 <!-- /chrome:top -->
 <header class="page-head">
-<h1>AF 드라이버와 PWM 연결</h1>
-<p class="lead">K-3 III 펌웨어 2.20에서 PafMotor의 리셋 요청은 AfMotorDriver를 거쳐 두 PWM 객체로 전달됩니다. 원본 코드에서 객체 등록을 추적하고, 드라이버가 이벤트를 받아 플래그를 쓰거나 다시 전달하는 동작을 따로 재생했습니다.</p>
+<p class="eyebrow">AF와 렌즈 제어 · 드라이버와 PWM 단계</p>
+<h1>AF 모터 드라이버와 PWM 객체의 연결</h1>
+<p class="lead">AF 쪽 제어 객체가 만든 요청은 결국 하드웨어를 다루는 드라이버 객체에 닿습니다. 그 드라이버가 어떤 PWM 객체를 붙잡고 있는지, PWM 쪽에서 돌아오는 이벤트를 어떻게 처리하는지 원본 코드에서 확인했습니다.</p>
 </header>
 <div class="layout">
 <!-- chrome:toc -->
-<nav class="toc" aria-label="이 문서의 목차"><h2 data-toc="no">이 문서에서</h2><ol><li><a href="#objects">리셋 요청과 이벤트의 객체 경로</a></li><li><a href="#aliases">같은 PafMotor를 가리키는 별칭</a></li><li><a href="#reset">리셋이 PWM에 넘기는 레코드</a></li><li><a href="#callbacks">드라이버 콜백 재생 7건</a></li><li><a href="#replay">원본 재현</a></li></ol></nav>
+<nav class="toc" aria-label="이 문서의 목차"><h2 data-toc="no">이 문서에서</h2><ol><li><a href="#background">배경: PWM과 드라이버 객체</a></li><li><a href="#objects">드라이버는 PWM 객체 두 개를 붙잡습니다</a></li><li><a href="#aliases">여러 객체가 같은 PafMotor를 가리킵니다</a></li><li><a href="#reset">리셋 요청은 PWM 설정 레코드를 부분 갱신합니다</a></li><li><a href="#callbacks">드라이버 콜백은 이벤트에 따라 플래그를 쓰거나 Joint로 넘깁니다</a></li><li><a href="#limits">한계와 남은 과제</a></li><li><a href="#replay">재현 방법</a></li><li><a href="#refs">근거 파일과 참고 자료</a></li></ol></nav>
 <!-- /chrome:toc -->
 <main class="doc" id="main">
-<section id="objects">
-<h2>리셋 요청과 이벤트의 객체 경로</h2>
-<figure class="diagram pwm-flow" aria-labelledby="flow-caption">
-<figcaption id="flow-caption">요청을 보내는 포인터와 이벤트를 돌려받는 포인터</figcaption>
-<svg viewBox="0 0 320 294" role="img" aria-labelledby="flow-title flow-desc">
-<title id="flow-title">PafMotor, AfMotorDriver, PWM의 객체 연결</title>
-<desc id="flow-desc">PafMotor +8은 AfMotorDriver를 가리킵니다. 드라이버 +2c와 +30은 각각 레지스트리 키 e0과 e1의 Pwm 객체를 가리킵니다. Pwm 이벤트 12f와 130은 드라이버 +4 리스너에 들어와 플래그 +44와 +45를 각각 씁니다. 드라이버가 별도로 받은 3d, 58, 5f, 67만 등록된 Joint 리스너로 전달하는 분기로 갑니다.</desc>
-<defs><marker id="pwm-arrow" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M0 0 L7 3.5 L0 7 Z" fill="var(--edge)"/></marker></defs>
-<rect class="node" x="15" y="9" width="290" height="38" rx="7"/>
-<text x="160" y="33" text-anchor="middle" font-size="17">PafMotor +0x08</text>
-<path class="edge" d="M160 47 V62" marker-end="url(#pwm-arrow)"/>
-<rect class="node" x="15" y="64" width="290" height="41" rx="7"/>
-<text x="160" y="81" text-anchor="middle" font-size="17">AfMotorDriver</text>
-<text class="sub" x="160" y="97" text-anchor="middle" font-size="15">+0x2c / +0x30</text>
-<path class="edge" d="M160 105 V114 H84 V127" marker-end="url(#pwm-arrow)"/>
-<path class="edge" d="M160 114 H236 V127" marker-end="url(#pwm-arrow)"/>
-<rect class="node" x="15" y="129" width="138" height="39" rx="7"/>
-<rect class="node" x="167" y="129" width="138" height="39" rx="7"/>
-<text x="84" y="153" text-anchor="middle" font-size="16">Pwm · 키 0xe0</text>
-<text x="236" y="153" text-anchor="middle" font-size="16">Pwm · 키 0xe1</text>
-<path class="edge" d="M84 168 V182" marker-end="url(#pwm-arrow)"/>
-<path class="edge" d="M236 168 V182" marker-end="url(#pwm-arrow)"/>
-<rect class="event" x="15" y="184" width="138" height="42" rx="7"/>
-<rect class="event" x="167" y="184" width="138" height="42" rx="7"/>
-<text x="84" y="201" text-anchor="middle" font-size="16">이벤트 0x12f</text>
-<text class="sub" x="84" y="218" text-anchor="middle" font-size="15">Driver +0x44 ← 1</text>
-<text x="236" y="201" text-anchor="middle" font-size="16">이벤트 0x130</text>
-<text class="sub" x="236" y="218" text-anchor="middle" font-size="15">Driver +0x45 ← 1</text>
-<rect class="event" x="15" y="244" width="290" height="43" rx="7"/>
-<text x="160" y="261" text-anchor="middle" font-size="16">별도 이벤트 0x3d / 0x58 / 0x5f / 0x67</text>
-<text class="sub" x="160" y="279" text-anchor="middle" font-size="15">Driver 리스너 → Joint +0xc0</text>
-</svg>
-<p>위쪽은 리셋에 쓰는 객체 포인터입니다. 아래쪽은 두 PWM 이벤트의 수신과 별도 이벤트의 전달 경로입니다. 객체 등록과 전달 이후의 Joint 경로는 정적으로 확인했습니다.</p>
-</figure>
+
+<section class="summary">
+<h2 data-toc="no">핵심 요약</h2>
 <ul>
-<li><code class="address">0x5317757c</code>는 가드 <code class="address">0x547bc23c</code>를 확인하고 AfDeviceFactory <code class="address">0x547bc240</code>을 반환합니다. factory vtable <code>+8</code>의 원본 대상 <code class="address">0x531777a4</code>는 별도 AfMotorDriver singleton <code class="address">0x547bc258</code>을 가져와 <code class="address">0x531777f8</code>에서 factory <code>+4</code>에 둡니다. <code class="address">0x52f0b3f4</code>와 <code class="address">0x52f07b68</code>은 그 포인터를 각각 PafMotor <code>+8</code>과 Joint <code>+0xd4</code>에 저장합니다.</li>
-<li>PwmFactory는 <code class="address">0x5326ce64</code>와 <code class="address">0x5326cedc</code>에서 0x38바이트 객체를 각각 할당합니다. 공통 생성자 <code class="address">0x5326c03c</code>는 레지스트리 등록 경로와 이벤트 번호를 설정합니다. 레지스트리 키는 <code>0xe0/0xe1</code>, 이벤트는 <code>0x12f/0x130</code>입니다. PWM의 런타임 번호 <code>+0x24</code>는 별도 전역 카운터에서 가져옵니다.</li>
-<li>AfMotorDriver vtable <code>+8</code>의 <code class="address">0x531779b0</code> 경로는 두 레지스트리 키를 조회하고 원본 RTTI의 <code>Pwm</code> 형으로 변환합니다. 반환 포인터는 <code class="address">0x53177b9c</code>와 <code class="address">0x53177bd0</code>에서 드라이버 <code>+0x2c/+0x30</code>에 저장됩니다. 조회 결과가 0이면 해당 슬롯에 0을 기록합니다. 객체 이름과 vtable은 원본 RTTI와 ROM 구간으로 확인했습니다.</li>
+<li><code>PafMotor</code>는 <code>AfMotorDriver</code>라는 드라이버 객체 하나를 가리킵니다. 드라이버는 레지스트리에서 찾은 <strong>PWM 객체 두 개</strong>를 붙잡습니다. 이 연결은 원본 코드와 RTTI 이름을 읽어 확인했습니다.</li>
+<li>드라이버의 이벤트 콜백을 원본 그대로 실행했습니다. PWM 이벤트 두 가지는 드라이버의 플래그 바이트를 1로 만듭니다. 다른 네 가지는 Joint 쪽 리스너로 넘기는 호출 직전까지 갔습니다. 이벤트 값은 시험에서 직접 넣었습니다.</li>
+<li>Joint와 디버그·렌즈 정보 객체 등 여러 곳이 같은 <code>PafMotor</code>를 가리킵니다. Joint가 그 포인터로 Motor의 값을 읽어 오는 두 사례를 실행해 확인했습니다.</li>
+<li>리셋 요청이 PWM 설정 레코드를 거쳐 레지스터 읽기에 닿는 경로는 코드를 읽어 따라간 결과입니다. 실제 PWM 출력, 인터럽트, 모터 동작은 실행하지 않았고 두 PWM 채널의 물리적 역할도 모릅니다.</li>
 </ul>
-<p><a href="af-driver-pwm-checks.json">원본 주소·구간 해시와 실행 기록</a></p>
 </section>
-<section id="aliases">
-<h2>같은 PafMotor를 가리키는 별칭</h2>
-<p>AfMotorFactory의 <code>+0xc</code>는 PafMotor를, <code>+0x10</code>은 별도 PafPulse를 가리킵니다. factory의 첫 확인 호출은 각 객체의 vtable <code>+8</code>을, 별도 바인더 호출은 vtable <code>+0xc</code>를 읽습니다. PafMotor 포인터는 Joint <code>+0xdc</code>, Debug <code>+0x1c</code>, LensInfo <code>+0x18</code>, PafMovableObject <code>+0x14</code>, Pulse <code>+0x10</code>에서도 확인됩니다.</p>
-<p>원본 ARM에서 Motor의 vtable <code>+8</code> 호출은 <code>r0=1</code>로 돌아왔습니다. 별도 바인더 호출은 같은 객체를 <code>r6</code>에 두고 <code class="address">0x52f0b394</code> 서비스 호출 직전에 멈췄습니다. Joint의 주소 계산과 <code>+0xdc</code> 저장을 별도 구간에서 재생한 뒤, 그 포인터로 Motor <code>+0x44</code>를 Joint <code>+0x90</code>에 복사하고 Motor <code>+0x3c == 3</code>의 결과를 Joint <code>+0x94</code>에 기록하는 두 대조를 확인했습니다. factory 슬롯과 상태값은 시험에서 준비했고, 두 경우 모두 Motor 0xec바이트가 그대로였습니다.</p>
-<p>Motor 코드 <code class="address">0x52f0b354</code>–<code class="address">0x52f0ddb4</code>의 10,848바이트에서 STR·STRB·STRH 328개를 폭과 변위로 검사했습니다. <code>+0x56/+0x68</code>의 반워드와 겹친 고정 변위 저장 두 개는 생성자의 0 초기화입니다. 인덱스를 사용하는 두 저장은 Pulse <code>+0xa6a</code>를, 주소를 함께 갱신하는 한 저장은 스택을 가리킵니다. 이 검색은 외부 호출, 간접 포인터 쓰기와 Thumb까지 닫는 전수 분석이 아닙니다. 두 필드에 0이 아닌 값을 넣는 경로는 미확인입니다.</p>
-<p><a href="af-motor-fields.html">Motor·Pulse의 앞선 필드 조사</a> · <a href="af-feedback-producers.html#binding">factory와 Pulse의 포인터 연결</a></p>
-</section>
-<section id="reset">
-<h2>리셋이 PWM에 넘기는 레코드</h2>
-<p>Joint의 리셋 호출 <code class="address">0x52f08214</code>는 PafMotor를 거쳐 <code class="address">0x52f0b9a4</code>에서 <code>r1=0</code>으로 드라이버 <code class="address">0x5317817c</code>에 진입합니다. 드라이버는 12바이트 입력을 만들고 바이트 <code>+8</code>에 0을 지정한 뒤 두 PWM 객체에 전달합니다. <code class="address">0x5326ca24</code>는 각 PWM 객체 <code>+0x2c</code>의 12바이트 레코드를 복사하고, 입력에서 유지값으로 지정한 필드를 제외한 값을 병합합니다. 두 반워드는 0, 대부분의 바이트는 <code>0xff</code>에서 기존 값을 유지합니다.</p>
-<p><code class="address">0x5326c7c4</code>는 이 12바이트 병합값에서 별도의 16바이트 스택 레코드를 구성합니다. <code class="address">0x5326c7f8</code>부터 네 워드를 지우고 변환한 필드와 테이블 워드를 기록한 다음, <code class="address">0x5326c8f4</code>에서 PWM 번호와 스택 레코드 포인터를 하위 함수에 넘깁니다. 하위 코드는 RAM을 갱신한 뒤 <code class="address">0x53349644</code>에서 <code class="address">0x1e000000</code> 기반 주소를 읽습니다. 드라이버에 <code>r1≠0</code>으로 들어오면 앞선 정지 경로의 첫 레지스터 읽기는 <code class="address">0x53349b9c</code>입니다. 두 레지스터 접근은 정적으로 확인했습니다.</p>
-<p>드라이버의 두 적용 호출 사이에는 반환값으로 분기하는 코드가 없습니다. 적용 내부의 하위 호출은 <code class="address">0x5326c8f8</code>와 <code class="address">0x5326c96c</code>에서 각각 반환값을 검사합니다. 여기서는 주변장치의 응답이나 리셋 성공을 재생하지 않았습니다.</p>
-</section>
-<section id="callbacks">
-<h2>드라이버 콜백 재생 7건</h2>
-<p>드라이버는 PWM 리스너에 <code>AfMotorDriver+4</code>를 이벤트 <code>0x12f/0x130</code>의 수신자로 등록합니다. 콜백 <code class="address">0x53177928</code>은 수신자 주소에서 4를 빼 원래 드라이버를 찾습니다. Joint는 같은 드라이버의 리스너에 자기 <code>+0xc0</code>을 별도 ID 네 개로 등록합니다. 이 전달 경로의 원본 Joint 콜백은 <code class="address">0x52f07de4</code>에서 <code>0xc0</code>을 빼며, 그중 <code>0x3d</code>의 일부 분기는 Joint <code>+0xdc</code>를 통해 PafMotor에 접근합니다.</p>
-<p>원본 드라이버 생성자의 후반부에서 두 vptr과 플래그를 초기화한 뒤, ROM 슬롯이 가리키는 콜백을 개별 호출했습니다. 일곱 이벤트 값은 하네스가 직접 공급했습니다. 플래그는 각 사례 직전에 0으로 두었고, 반환은 하네스가 둔 <code class="address">0x20000000</code>에서 확인했습니다. 실제 리스너 목록과 등록 성공 상태는 공급하지 않았습니다.</p>
-<div class="table-wrap" tabindex="0" role="region" aria-label="드라이버 콜백 실행 결과">
-<table>
-<thead><tr><th scope="col">이벤트</th><th scope="col">원본 명령</th><th scope="col">관측한 결과</th></tr></thead>
-<tbody>
-<tr><th scope="row"><code>0x12f</code></th><td>21</td><td>드라이버 <code>+0x44</code>에 1을 기록하고 반환</td></tr>
-<tr><th scope="row"><code>0x130</code></th><td>24</td><td>드라이버 <code>+0x45</code>에 1을 기록하고 반환</td></tr>
-<tr><th scope="row"><code>0x131</code></th><td>24</td><td>드라이버 쓰기 없이 반환</td></tr>
-<tr><th scope="row"><code>0x3d/0x58/0x5f/0x67</code></th><td>12/14/16/18</td><td>객체 쓰기 없이 <code class="address">0x5317791c</code>의 리스너 가상 호출 직전에 정지</td></tr>
-</tbody>
-</table>
+
+<div class="scope">
+<div class="ok"><h3><span class="badge ok">확인</span> 원본 코드 실행으로 확인</h3>
+<ul>
+<li>드라이버 생성자 후반부의 필드 초기화</li>
+<li>이벤트 콜백 7가지의 쓰기와 정지 지점</li>
+<li>factory 확인 호출, 바인더 호출, Joint의 Motor 포인터 저장과 값 복사</li>
+</ul></div>
+<div class="static"><h3><span class="badge static">정적 분석</span> 코드를 읽어 판단</h3>
+<ul>
+<li>드라이버 singleton과 PWM 객체 두 개의 등록·조회 경로</li>
+<li>리셋 요청의 12바이트 레코드 병합과 16바이트 레코드 구성, 레지스터 읽기 위치</li>
+<li>Motor 코드 구간의 저장 명령 328개 검사</li>
+</ul></div>
+<div class="model"><h3><span class="badge model">모델</span> 시험 조건으로 정한 것</h3>
+<ul>
+<li>콜백에 넣은 이벤트 값 7가지, 플래그의 초기값 0</li>
+<li>factory 슬롯과 Motor 상태 값(<code>+0x3c</code>, <code>+0x44</code>)</li>
+<li>CPU는 Unicorn의 Cortex-A7·A15 모델</li>
+</ul></div>
+<div class="open"><h3><span class="badge open">미확인</span> 확인하지 않은 것</h3>
+<ul>
+<li>실제 초기화 순서, 리스너 목록과 등록 성공 여부</li>
+<li>PWM 인터럽트의 발생, 레지스터 응답, 리셋 성공</li>
+<li>두 PWM 채널이 각각 무엇을 움직이는지, 숫자의 물리 단위</li>
+</ul></div>
 </div>
-<p>Cortex-A7 기본 조건, Cortex-A7과 A15에서 초기 일반 레지스터·NZCV를 바꾼 조건에서 일곱 사례씩, 총 21건의 로컬 실행 결과가 일치했습니다. 서비스 반환과 MMIO를 대체하는 훅은 사용하지 않았습니다. 실제 초기화 순서, PWM 인터럽트의 생성, 전달 이후의 리스너 실행, 두 채널의 물리적 역할은 검증 범위 밖입니다.</p>
+
+<section id="background">
+<h2>배경: PWM과 드라이버 객체</h2>
+<p><dfn title="Pulse Width Modulation. 신호를 빠르게 켜고 끄면서 켜져 있는 시간의 비율로 평균 출력을 조절하는 방식">PWM</dfn>은 전원을 아주 빠르게 켜고 끄면서 켜져 있는 시간의 비율(duty cycle)로 평균 출력을 정하는 방식입니다. 모터 구동 칩은 이 비율을 바꿔 모터에 걸리는 평균 전압을 조절합니다. TI의 모터 드라이버 <a href="https://www.ti.com/document-viewer/DRV8235/datasheet/GUID-BACAD2AF-608E-49AA-AA39-D2C6CAA7C02E">DRV8235 데이터시트</a>는 평균 출력 전압이 목표보다 낮으면 브리지의 duty cycle을 높이고 높으면 낮춘다고 설명합니다.</p>
+<div class="callout plain"><strong class="label">쉽게 말하면</strong>
+<p>전등 스위치를 1초에 수천 번 켰다 껐다 하는 것과 비슷합니다. 켜 둔 시간이 길수록 평균적으로 더 밝아집니다. 카메라 바디 안의 작은 모터도 이런 방식으로 세기와 속도를 조절할 수 있습니다.</p></div>
+<p>K-3 Mark III는 바디 안에 AF 모터를 두고 마운트의 <a href="../glossary.html#af-coupler">AF 커플러</a>로 렌즈를 돌립니다. <a href="https://www.ricoh-imaging.co.jp/english/products/lens/common/annotation-focus-k.html">리코이미징의 구동 방식 정의</a>에서는 이것을 “Body AF”라고 부릅니다. 펌웨어에 <code>Pwm</code>이라는 클래스가 있고 AF 드라이버가 그것을 붙잡는다는 사실은 바디 쪽 구동 하드웨어를 짐작하게 합니다. 그러나 이 문서가 확인한 것은 객체 연결과 레코드 처리까지입니다. 두 PWM 채널이 바디 AF 모터에 연결된다는 증거는 아직 없습니다.</p>
+<div class="table-wrap"><table>
+<caption>이 문서에 나오는 객체</caption>
+<thead><tr><th>이름</th><th>이 문서에서 확인한 역할</th></tr></thead>
+<tbody>
+<tr><th scope="row"><code>PafMotor</code></th><td>Joint 쪽 하위 제어 객체. <code>+0x08</code>에 드라이버 포인터를 둡니다.</td></tr>
+<tr><th scope="row"><code>AfMotorDriver</code></th><td>PWM 객체 두 개와 리스너 목록을 가진 드라이버. 하나만 만들어지는 singleton입니다.</td></tr>
+<tr><th scope="row"><code>Pwm</code></th><td>레지스트리 키 <code>0xe0</code>·<code>0xe1</code>로 등록되는 객체 두 개. 각자 설정 레코드와 이벤트 번호를 갖습니다.</td></tr>
+<tr><th scope="row"><code>AfJointLensControl</code> (Joint)</th><td>능력 바이트의 bit 6이 0일 때 선택되는 제어 객체. 드라이버의 리스너에 자기 <code>+0xc0</code>을 등록합니다.</td></tr>
+<tr><th scope="row"><code>AfDeviceFactory</code>, <code>PwmFactory</code></th><td>드라이버와 PWM 객체를 만들어 두는 객체</td></tr>
+</tbody></table></div>
+<p class="small muted">기준 RTOS의 적재 주소는 <code>0x52500000</code>이고 오프셋은 모두 16진수입니다. Joint와 PafMotor가 어떻게 선택되는지는 <a href="af-drive-architecture.html">렌즈 구동 선택·명령·응답</a>과 <a href="af-joint-control.html">Joint 요청과 하위 제어</a>에 있습니다.</p>
 </section>
+
+<section id="objects">
+<h2>드라이버는 PWM 객체 두 개를 붙잡습니다</h2>
+<p class="takeaway">요청은 PafMotor → 드라이버 → PWM 두 개로 내려갑니다. PWM 이벤트는 드라이버의 리스너로 올라옵니다. 드라이버는 그중 일부를 Joint로 넘깁니다.</p>
+<figure class="diagram">
+<figcaption>요청이 내려가는 포인터와 이벤트가 올라오는 경로</figcaption>
+<div class="dg-scroll">
+<svg class="dg" viewBox="0 0 800 330" role="img" aria-labelledby="dg-drv-title dg-drv-desc">
+<title id="dg-drv-title">PafMotor, AfMotorDriver, PWM 두 개, Joint의 연결</title>
+<desc id="dg-drv-desc">왼쪽 위 PafMotor의 +0x08이 가운데 AfMotorDriver를 가리킵니다. 드라이버의 +0x2c와 +0x30은 오른쪽의 PWM 객체 두 개(레지스트리 키 0xe0, 0xe1)를 가리키며 리셋 레코드가 이쪽으로 내려갑니다. PWM 이벤트 0x12f와 0x130은 드라이버 리스너로 올라와 플래그 +0x44와 +0x45를 각각 1로 씁니다. 왼쪽 아래 Joint는 드라이버 리스너에 자기 +0xc0을 등록하고, 드라이버는 이벤트 0x3d, 0x58, 0x5f, 0x67을 Joint 쪽으로 넘깁니다. 이 전달 호출은 직전에서 멈췄습니다.</desc>
+<defs>
+<marker id="dg-drv-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0 0L10 5L0 10z"/></marker>
+<marker id="dg-drv-ah-model" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah model" d="M0 0L10 5L0 10z"/></marker>
+<marker id="dg-drv-ah-open" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah open" d="M0 0L10 5L0 10z"/></marker>
+</defs>
+<rect class="b static" x="8" y="30" width="176" height="64" rx="8"/>
+<text class="t" x="20" y="56">PafMotor</text>
+<text class="s" x="20" y="78">+0x08 → 드라이버</text>
+
+<rect class="b key" x="272" y="30" width="226" height="262" rx="8"/>
+<text class="t" x="284" y="56">AfMotorDriver</text>
+<text class="s mono" x="284" y="78">singleton 0x547bc258</text>
+<text class="s" x="284" y="120">+0x2c · +0x30 → PWM 두 개</text>
+<text class="s" x="284" y="170">+0x44 · +0x45 → 플래그</text>
+<text class="s" x="284" y="236">+4 → 리스너 목록</text>
+<text class="n" x="284" y="276">콜백 0x53177928은 원본 실행</text>
+
+<rect class="b static" x="604" y="30" width="188" height="64" rx="8"/>
+<text class="t" x="616" y="56">Pwm · 키 0xe0</text>
+<text class="s" x="616" y="78">이벤트 0x12f</text>
+<rect class="b static" x="604" y="128" width="188" height="64" rx="8"/>
+<text class="t" x="616" y="154">Pwm · 키 0xe1</text>
+<text class="s" x="616" y="176">이벤트 0x130</text>
+
+<rect class="b static" x="8" y="214" width="176" height="64" rx="8"/>
+<text class="t" x="20" y="240">Joint</text>
+<text class="s" x="20" y="262">+0xc0 리스너</text>
+
+<path class="e" d="M184 62H270" marker-end="url(#dg-drv-ah)"/>
+<path class="e" d="M498 48H602" marker-end="url(#dg-drv-ah)"/>
+<text class="n mid" x="550" y="42">리셋 레코드</text>
+<path class="e model" d="M602 80H500" marker-end="url(#dg-drv-ah-model)"/>
+<text class="n mid" x="550" y="98">이벤트</text>
+<path class="e" d="M498 146H602" marker-end="url(#dg-drv-ah)"/>
+<text class="n mid" x="550" y="140">리셋 레코드</text>
+<path class="e model" d="M602 178H500" marker-end="url(#dg-drv-ah-model)"/>
+<text class="n mid" x="550" y="196">이벤트</text>
+
+<path class="e" d="M184 232H270" marker-end="url(#dg-drv-ah)"/>
+<text class="n mid" x="228" y="226">등록 4회</text>
+<path class="e open" d="M270 262H186" marker-end="url(#dg-drv-ah-open)"/>
+<text class="n mid" x="228" y="284">0x3d 등 4개</text>
+<text class="n" x="8" y="318">실선은 코드를 읽어 확인한 포인터, 파선은 시험에서 넣은 이벤트, 점선은 실행하지 않은 전달입니다.</text>
+</svg>
+</div>
+<ul class="dg-legend"><li><i class="key"></i>이 문서의 중심 객체</li><li><i class="static"></i>정적 분석으로 확인한 연결</li><li><i class="model"></i>시험용으로 넣은 이벤트</li><li><i class="open"></i>실행하지 않은 전달</li></ul>
+</figure>
+
+<div class="table-wrap"><table>
+<caption>연결을 만드는 코드 (모두 정적 분석)</caption>
+<thead><tr><th>연결</th><th>하는 일</th><th>주소</th></tr></thead>
+<tbody>
+<tr><th scope="row">드라이버 찾기</th><td>가드 <code>0x547bc23c</code>를 확인하고 <code>AfDeviceFactory</code>(<code>0x547bc240</code>)를 돌려줍니다. factory vtable <code>+8</code>의 대상이 드라이버 singleton을 가져와 factory <code>+4</code>에 둡니다.</td><td><code>0x5317757c</code>, <code>0x531777a4</code>, <code>0x531777f8</code></td></tr>
+<tr><th scope="row">드라이버 포인터 저장</th><td>같은 포인터를 PafMotor <code>+8</code>과 Joint <code>+0xd4</code>에 씁니다.</td><td><code>0x52f0b3f4</code>, <code>0x52f07b68</code></td></tr>
+<tr><th scope="row">PWM 객체 생성</th><td><code>PwmFactory</code>가 0x38바이트 객체 두 개를 할당합니다. 공통 생성자가 레지스트리 키 <code>0xe0</code>·<code>0xe1</code>과 이벤트 <code>0x12f</code>·<code>0x130</code>을 설정합니다. 런타임 번호 <code>+0x24</code>는 별도 전역 카운터에서 받습니다.</td><td><code>0x5326ce64</code>, <code>0x5326cedc</code>, 생성자 <code>0x5326c03c</code></td></tr>
+<tr><th scope="row">PWM 붙잡기</th><td>드라이버 vtable <code>+8</code> 경로가 두 키를 조회하고 원본 RTTI로 <code>Pwm</code> 형 변환을 한 뒤 <code>+0x2c</code>·<code>+0x30</code>에 저장합니다. 조회 결과가 0이면 그 칸에 0을 씁니다.</td><td><code>0x531779b0</code>, <code>0x53177b9c</code>, <code>0x53177bd0</code></td></tr>
+</tbody></table></div>
+<p>객체 이름과 vtable은 원본 <a href="../glossary.html#rtti">RTTI</a> 문자열과 ROM 구간으로 확인했습니다. 드라이버 생성자의 후반부는 실제로 실행했습니다. 두 vptr(<code>0x53c71140</code>, <code>0x53c71160</code>)을 쓰고 <code>+0x14</code>부터 <code>+0x40</code>까지와 플래그 두 바이트를 0으로 만들었습니다.</p>
+
+<details class="evidence"><summary>드라이버·PWM 경로의 구간과 직접 호출 위치</summary>
+<div class="table-wrap"><table class="compact">
+<thead><tr><th>역할</th><th>구간</th></tr></thead>
+<tbody>
+<tr><th scope="row">device factory getter</th><td><code>0x5317757c</code>–<code>0x53177608</code></td></tr>
+<tr><th scope="row">factory 슬롯 <code>+8</code> 대상</th><td><code>0x531777a4</code>–<code>0x531778b4</code></td></tr>
+<tr><th scope="row">드라이버 getter / 생성자</th><td><code>0x53177d94</code>–<code>0x53177df4</code> / <code>0x53177d14</code>–<code>0x53177d90</code> (실행 구간 <code>0x53177d34</code>–<code>0x53177d8c</code>, 22명령)</td></tr>
+<tr><th scope="row">PWM 칸 저장</th><td><code>0x53177b6c</code>–<code>0x53177bd4</code></td></tr>
+<tr><th scope="row">PWM factory getter / 초기화</th><td><code>0x5326d424</code>–<code>0x5326d49c</code> / <code>0x5327ecd0</code>–<code>0x5327ece4</code></td></tr>
+<tr><th scope="row">키 <code>0xe0</code>·<code>0xe1</code> 생성</th><td><code>0x5326ce14</code>–<code>0x5326cf04</code></td></tr>
+<tr><th scope="row">PWM 생성자 / 슬롯 <code>+0x1c</code></th><td><code>0x5326c03c</code>–<code>0x5326c0f0</code> / <code>0x5326bfa8</code>–<code>0x5326c010</code></td></tr>
+<tr><th scope="row">레지스트리 등록 래퍼 / 등록 / 조회</th><td><code>0x52f13774</code>–<code>0x52f137bc</code> / <code>0x52f13864</code>–<code>0x52f1390c</code> / <code>0x52f1390c</code>–<code>0x52f139a4</code></td></tr>
+<tr><th scope="row">리스너 등록 / 선택·전달</th><td><code>0x52f13b24</code>–<code>0x52f13c68</code> / <code>0x52f13a18</code>–<code>0x52f13aac</code></td></tr>
+<tr><th scope="row">PWM 콜백 등록 / 해제</th><td><code>0x53177f9c</code>–<code>0x53177fcc</code> / <code>0x53177c34</code>–<code>0x53177c70</code></td></tr>
+<tr><th scope="row">드라이버 이벤트 처리</th><td><code>0x531778b4</code>–<code>0x53177930</code></td></tr>
+<tr><th scope="row">Joint의 이벤트 등록 / 이벤트 처리</th><td><code>0x52f07c24</code>–<code>0x52f07c94</code> / <code>0x52f07cc8</code>–<code>0x52f07dec</code></td></tr>
+</tbody></table></div>
+<div class="table-wrap"><table class="compact">
+<caption>정렬된 A32 직접 분기 검색에서 찾은 호출 위치 수</caption>
+<thead><tr><th>대상 함수</th><th class="n">호출 위치</th></tr></thead>
+<tbody>
+<tr><td><code>0x5317757c</code> (device factory getter)</td><td class="n">12</td></tr>
+<tr><td><code>0x53177d94</code> (드라이버 getter)</td><td class="n">5</td></tr>
+<tr><td><code>0x5317817c</code> (드라이버 리셋)</td><td class="n">4</td></tr>
+<tr><td><code>0x5326d424</code> (PWM factory getter)</td><td class="n">3</td></tr>
+<tr><td><code>0x5326c03c</code> (PWM 공통 생성자)</td><td class="n">16</td></tr>
+<tr><td><code>0x5326ca24</code> (PWM 레코드 병합)</td><td class="n">9</td></tr>
+</tbody></table></div>
+<p class="small">ROM 표 대조: 드라이버 리스너 vtable <code>0x53c71160</code>의 <code>+8</code>은 <code>0x53177928</code>, <code>+0xc</code>는 <code>0x52f13b24</code>, <code>+0x18</code>은 <code>0x52f13a18</code>입니다. Joint 쪽 표 <code>0x538f24f4</code>의 <code>+8</code>은 <code>0x52f07de4</code>입니다. 구간별 SHA-256은 <a href="af-driver-pwm-checks.json">af-driver-pwm-checks.json</a>에 있습니다.</p>
+</details>
+</section>
+
+<section id="aliases">
+<h2>여러 객체가 같은 PafMotor를 가리킵니다</h2>
+<p class="takeaway">Joint, 디버그 객체, 렌즈 정보 객체 등이 PafMotor 포인터를 따로 보관합니다. Joint가 이 포인터로 Motor의 값을 읽어 오는 동작을 실행해 확인했습니다.</p>
+<p><code>AfMotorFactory</code>의 <code>+0xc</code>는 PafMotor를, <code>+0x10</code>은 PafPulse를 가리킵니다. factory의 첫 확인 호출은 각 객체의 vtable <code>+8</code>을 읽습니다. 별도 바인더 호출은 vtable <code>+0xc</code>를 읽습니다. PafMotor 포인터를 따로 보관하는 곳은 아래 다섯 군데입니다.</p>
+<div class="table-wrap"><table class="fit">
+<caption>PafMotor 포인터를 보관하는 필드</caption>
+<thead><tr><th>객체</th><th>필드</th><th class="n">그 필드를 읽는 명령 (검색 범위 안)</th></tr></thead>
+<tbody>
+<tr><th scope="row">Joint</th><td><code>+0xdc</code></td><td class="n">29</td></tr>
+<tr><th scope="row">PafControlDebug</th><td><code>+0x1c</code></td><td class="n">5</td></tr>
+<tr><th scope="row">PafLensInfo</th><td><code>+0x18</code></td><td class="n">2</td></tr>
+<tr><th scope="row">PafMovableObject</th><td><code>+0x14</code></td><td class="n">0</td></tr>
+<tr><th scope="row">PafPulse</th><td><code>+0x10</code></td><td class="n">—</td></tr>
+</tbody></table></div>
+<div class="table-wrap"><table>
+<caption>원본 코드 실행 결과 (Cortex-A7 기본, A7·A15 레지스터 변경 조건에서 같음)</caption>
+<thead><tr><th>실행 구간</th><th>넣은 값</th><th>관측한 결과</th></tr></thead>
+<tbody>
+<tr><th scope="row">factory 확인 호출 (7명령)</th><td>factory 슬롯</td><td>Motor vtable <code>+8</code> 호출이 <code>r0=1</code>로 돌아옴. 쓰기 없음</td></tr>
+<tr><th scope="row">바인더 호출 (10명령)</th><td>factory 슬롯</td><td>같은 Motor를 <code>r6</code>에 두고 서비스 호출 <code>0x52f0b394</code> 직전에서 정지. 쓰기 없음</td></tr>
+<tr><th scope="row">Joint 포인터 저장 (9명령)</th><td>Motor 주소</td><td>Joint <code>+0xdc</code>에 Motor 주소를 씀</td></tr>
+<tr><th scope="row">Joint 값 복사 1</th><td>Motor <code>+0x3c</code> = 3, <code>+0x44</code> = 166</td><td>Joint <code>+0x90</code> = 166, <code>+0x94</code> = 1</td></tr>
+<tr><th scope="row">Joint 값 복사 2</th><td>Motor <code>+0x3c</code> = 4, <code>+0x44</code> = 83</td><td>Joint <code>+0x90</code> = 83, <code>+0x94</code> = 0</td></tr>
+</tbody></table></div>
+<p>값 복사에서 Joint <code>+0x94</code>는 Motor <code>+0x3c</code>가 3인지 여부를 담습니다. 다섯 실행 모두 Motor 객체 0xec바이트가 그대로였고 미리 넣어 둔 <code>+0x56</code>·<code>+0x68</code>의 시험값(<code>0xc345</code>, <code>0x8137</code>)도 남았습니다. factory 슬롯과 상태 값은 시험에서 준비한 것입니다.</p>
+<div class="callout warn"><strong class="label">저장 명령 검사의 범위</strong>
+<p>Motor 코드 구간(10,848바이트)의 STR·STRB·STRH 328개를 폭과 변위로 검사했습니다. <code>+0x56</code>·<code>+0x68</code>과 겹치는 고정 변위 저장 두 개는 생성자의 0 초기화였습니다. 인덱스를 쓰는 저장 두 개는 Pulse <code>+0xa6a</code>를, 주소를 함께 갱신하는 저장 하나는 스택을 가리킵니다. 외부 호출, 간접 포인터 쓰기, Thumb 코드까지 닫은 전수 분석은 아닙니다. 두 필드에 0이 아닌 값을 넣는 경로는 미확인입니다.</p></div>
+<details class="evidence"><summary>별칭 검사의 주소와 구간</summary>
+<div class="table-wrap"><table class="compact">
+<thead><tr><th>항목</th><th>주소</th></tr></thead>
+<tbody>
+<tr><th scope="row">Motor 코드 구간</th><td><code>0x52f0b354</code>–<code>0x52f0ddb4</code></td></tr>
+<tr><th scope="row">겹치는 고정 변위 저장</th><td><code>0x52f0b57c</code>, <code>0x52f0b5a0</code></td></tr>
+<tr><th scope="row">인덱스 저장 / 주소 갱신 저장</th><td><code>0x52f0ca9c</code>, <code>0x52f0d0f0</code> / <code>0x52f0d36c</code></td></tr>
+<tr><th scope="row">factory 확인 호출</th><td><code>0x52f08d04</code> → 정지 <code>0x52f08d18</code></td></tr>
+<tr><th scope="row">바인더 호출</th><td><code>0x52f08aa8</code> → 정지 <code>0x52f0b394</code></td></tr>
+<tr><th scope="row">Joint 하위 객체 주소 / 포인터 저장</th><td><code>0x52f07b7c</code> (Joint+0xc0 계산) / <code>0x52f07bac</code>–<code>0x52f07bd0</code>, 저장 <code>0x52f07bbc</code></td></tr>
+<tr><th scope="row">Joint 값 복사</th><td><code>0x52f07f3c</code>. 읽기 <code>0x52f07f48</code>(Joint+0xdc), <code>0x52f07f50</code>(Motor+0x44), <code>0x52f0b914</code>(Motor+0x3c). 쓰기 <code>0x52f07f54</code>, <code>0x52f07f5c</code></td></tr>
+<tr><th scope="row">Motor / Pulse vtable</th><td><code>0x538f25c8</code>–<code>0x538f25e0</code> / <code>0x538f26b8</code>–<code>0x538f26d0</code></td></tr>
+<tr><th scope="row">별칭 저장 위치</th><td>Debug <code>0x52cb45fc</code>–<code>0x52cb4624</code>, LensInfo <code>0x52f06180</code>–<code>0x52f061a8</code>, Movable <code>0x52cbe580</code>–<code>0x52cbe598</code>, Joint <code>0x52f07bac</code>–<code>0x52f07bd4</code>, Pulse 역링크 <code>0x52f0de94</code>–<code>0x52f0deb8</code></td></tr>
+</tbody></table></div>
+<p class="small">getter 직접 호출 후보 27개, 외부에서 Motor 함수로 가는 직접 분기 후보 40개, Motor 코드 주소를 담은 정렬 워드 7개를 기록했습니다. 목록 전체와 구간 해시는 <a href="af-driver-pwm-checks.json">af-driver-pwm-checks.json</a>의 <code>motor_alias</code>에 있습니다. 앞서 조사한 필드 경로는 <a href="af-motor-fields.html">PafMotor와 PafPulse의 입력값 경로</a>, factory와 Pulse의 연결은 <a href="af-feedback-producers.html#binding">PafPulse 기준값의 쓰기 경로</a>에 있습니다.</p>
+</details>
+</section>
+
+<section id="reset">
+<h2>리셋 요청은 PWM 설정 레코드를 부분 갱신합니다</h2>
+<p class="takeaway">Joint의 리셋 호출은 드라이버를 거쳐 PWM 객체 두 개에 12바이트 입력을 넘깁니다. 이 입력은 기존 설정 가운데 일부만 바꿉니다. 그 결과는 16바이트 레코드로 바뀌어 레지스터 쪽 코드로 갑니다. 이 절은 모두 정적 분석입니다.</p>
+<ol class="flow">
+<li class="static"><strong>Joint 리셋 호출</strong><span><code>0x52f08214</code><br>→ PafMotor</span></li>
+<li class="static"><strong>드라이버 리셋</strong><span><code>0x52f0b9a4</code>에서 <code>r1=0</code>으로<br><code>0x5317817c</code> 진입</span></li>
+<li class="static"><strong>12바이트 병합</strong><span><code>0x5326ca24</code><br>PWM 두 개에 각각</span></li>
+<li class="static"><strong>16바이트 레코드</strong><span><code>0x5326c7c4</code><br>스택에 구성</span></li>
+<li class="open"><strong>레지스터 읽기</strong><span><code>0x53349644</code><br><code>0x1e000000</code> 기반 주소</span></li>
+</ol>
+<ul>
+<li>드라이버는 12바이트 입력을 만들고 바이트 <code>+8</code>에 0을 지정한 뒤 두 PWM 객체에 차례로 넘깁니다.</li>
+<li>병합 함수는 각 PWM 객체 <code>+0x2c</code>의 12바이트 레코드를 복사합니다. 입력에서 “유지”로 표시한 필드는 남기고 나머지만 바꿉니다. 두 반워드는 0, 대부분의 바이트는 <code>0xff</code>가 유지 표시입니다.</li>
+<li>레코드 구성 함수는 <code>0x5326c7f8</code>부터 네 워드를 지우고 변환한 필드와 표의 워드를 씁니다. 그다음 <code>0x5326c8f4</code>에서 PWM 번호와 레코드 포인터를 하위 함수에 넘깁니다. 하위 코드는 RAM을 갱신한 뒤 <code>0x53349644</code>에서 레지스터를 읽습니다.</li>
+<li>드라이버에 <code>r1≠0</code>으로 들어오는 경우에는 정지 경로의 첫 레지스터 읽기가 <code>0x53349b9c</code>입니다.</li>
+</ul>
+<p>드라이버는 두 적용 호출 사이에서 반환값을 보고 분기하지 않습니다. 적용 함수 안의 하위 호출은 <code>0x5326c8f8</code>과 <code>0x5326c96c</code>에서 각각 반환값을 검사합니다. 주변장치의 응답이나 리셋 성공은 재현하지 않았습니다. 리셋이 아닌 일반 요청이 어떤 12바이트를 만드는지는 <a href="af-pwm-parameters.html">AF PWM 요청과 정수 변환</a>에서 원본 코드를 실행해 확인했습니다.</p>
+<details class="evidence"><summary>리셋 경로의 구간</summary>
+<div class="table-wrap"><table class="compact">
+<thead><tr><th>역할</th><th>구간</th></tr></thead>
+<tbody>
+<tr><th scope="row">Joint 리셋 호출 위치</th><td><code>0x52f08210</code>–<code>0x52f08218</code></td></tr>
+<tr><th scope="row">PafMotor 리셋 / 서비스 연결</th><td><code>0x52f0ba34</code>–<code>0x52f0ba7c</code> / <code>0x52f0b988</code>–<code>0x52f0b9a8</code></td></tr>
+<tr><th scope="row">리셋 뒤 다음 호출</th><td><code>0x52f0b674</code>–<code>0x52f0b6c4</code></td></tr>
+<tr><th scope="row">드라이버 리셋</th><td><code>0x5317817c</code>–<code>0x5317821c</code> (호출 위치 <code>0x52f0b940</code>, <code>0x52f0b9a4</code>, <code>0x52f0bc60</code>, <code>0x52f0be04</code>)</td></tr>
+<tr><th scope="row">레코드 초기화 / 병합 / 적용</th><td><code>0x5326c0f4</code>–<code>0x5326c128</code> / <code>0x5326ca24</code>–<code>0x5326cb14</code> / <code>0x5326c7c4</code>–<code>0x5326ca24</code></td></tr>
+<tr><th scope="row">첫 레지스터 접근 코드</th><td><code>0x533495c8</code>–<code>0x53349648</code>, 다른 주소 계산 <code>0x533497f4</code>–<code>0x5334980c</code></td></tr>
+<tr><th scope="row">초기 정지 / 그 레지스터 접근</th><td><code>0x5326c190</code>–<code>0x5326c1b0</code> / <code>0x53349b7c</code>–<code>0x53349ba0</code></td></tr>
+</tbody></table></div>
+</details>
+</section>
+
+<section id="callbacks">
+<h2>드라이버 콜백은 이벤트에 따라 플래그를 쓰거나 Joint로 넘깁니다</h2>
+<p class="takeaway">PWM 이벤트 두 가지는 드라이버 플래그를 1로 만듭니다. 다른 이벤트 하나는 아무것도 바꾸지 않습니다. 나머지 네 가지는 리스너 전달 호출 직전까지 갑니다.</p>
+<p>드라이버는 PWM 리스너에 자기 <code>+4</code>를 이벤트 <code>0x12f</code>·<code>0x130</code>의 수신자로 등록합니다. 콜백 <code>0x53177928</code>은 받은 주소에서 4를 빼 원래 드라이버를 찾습니다. Joint는 같은 드라이버의 리스너에 자기 <code>+0xc0</code>을 ID 네 개로 등록합니다. 이 경로의 Joint 콜백 <code>0x52f07de4</code>는 받은 주소에서 <code>0xc0</code>을 뺍니다. 그중 <code>0x3d</code>의 일부 분기는 Joint <code>+0xdc</code>로 PafMotor에 접근합니다(정적 분석).</p>
+<div class="table-wrap"><table>
+<caption>콜백 실행 7건 (CPU 조건 세 가지에서 같은 결과, 총 21회)</caption>
+<thead><tr><th>넣은 이벤트</th><th class="n">실행한 명령 수</th><th>관측한 결과</th></tr></thead>
+<tbody>
+<tr><th scope="row"><code>0x12f</code></th><td class="n">21</td><td>드라이버 <code>+0x44</code>에 1을 쓰고 반환</td></tr>
+<tr><th scope="row"><code>0x130</code></th><td class="n">24</td><td>드라이버 <code>+0x45</code>에 1을 쓰고 반환</td></tr>
+<tr><th scope="row"><code>0x131</code></th><td class="n">24</td><td>쓰기 없이 반환</td></tr>
+<tr><th scope="row"><code>0x3d</code> / <code>0x58</code> / <code>0x5f</code> / <code>0x67</code></th><td class="n">12 / 14 / 16 / 18</td><td>쓰기 없이 <code>0x5317791c</code>의 리스너 가상 호출 직전에서 정지</td></tr>
+</tbody></table></div>
+<div class="callout model"><strong class="label">시험 조건</strong>
+<p>드라이버 생성자의 후반부를 실행해 vptr 두 개와 플래그를 초기화한 뒤 ROM 슬롯이 가리키는 콜백을 사례마다 호출했습니다. 이벤트 값은 하네스가 직접 넣었고 플래그는 사례마다 0으로 되돌렸습니다. 반환은 하네스가 둔 주소 <code>0x20000000</code>에서 확인했습니다. 실제 리스너 목록과 등록 성공 상태는 넣지 않았습니다. 서비스 반환이나 레지스터 응답을 대신하는 훅도 쓰지 않았습니다.</p></div>
+<p>세 CPU 조건은 Cortex-A7 기본, 초기 일반 레지스터와 NZCV를 바꾼 Cortex-A7과 Cortex-A15입니다. 전달이 멈춘 네 사례에서 레지스터는 <code>r0</code> = <code>0x547bc25c</code>(드라이버 <code>+4</code>), <code>r1</code> = 이벤트 번호, <code>r2</code> = 0, <code>r3</code> = 전달 함수 <code>0x52f13a18</code>이었습니다. 실제 초기화 순서, PWM 인터럽트의 발생, 전달 뒤의 리스너 실행, 두 채널의 물리적 역할은 검증 범위 밖입니다.</p>
+</section>
+
+<section id="limits">
+<h2>한계와 남은 과제</h2>
+<ul>
+<li><strong>하드웨어</strong>: PWM 레지스터 접근, 인터럽트, 주변장치 응답은 실행하지 않았습니다. 레지스터 접근 위치는 코드를 읽어 찾았습니다.</li>
+<li><strong>채널의 역할</strong>: 키 <code>0xe0</code>·<code>0xe1</code>의 두 PWM이 바디 AF 모터의 어느 신호에 해당하는지, 애초에 AF 모터를 움직이는지는 모릅니다.</li>
+<li><strong>이벤트 출처</strong>: 이벤트 값은 시험에서 넣었습니다. 실제로 어떤 순간에 <code>0x12f</code>·<code>0x130</code>이 오는지, 플래그 <code>+0x44</code>·<code>+0x45</code>를 누가 읽는지는 추적하지 않았습니다.</li>
+<li><strong>숫자의 뜻</strong>: 일반 요청의 정수 두 개(<code>0x52f0bcf0</code>, <code>0x52f0bea8</code>에서 오는 값)가 <code>0x531780b8</code>에서 PWM 반워드로 바뀌는 과정은 다음 문서에서 다룹니다. 그 물리 단위는 확인하지 못했습니다.</li>
+<li><strong>실행하지 않은 것</strong>: 카메라, 렌즈, 모터, RTOS 스케줄러를 실행하지 않았고 펌웨어를 수정하지 않았습니다.</li>
+</ul>
+</section>
+
 <section id="replay">
-<h2>원본 재현</h2>
-<p>저장소 루트에서 Python, Unicorn 2.1.4와 Capstone 5.0.7로 실행합니다. 원본 decoded 또는 RTOS 파일을 지정하고 출력은 새 경로에 둡니다. 입력 길이와 SHA-256, 보조 코드 두 개의 SHA-256을 검사합니다. 두 전체 관측 기록의 SHA-256을 확인한 뒤 공개 JSON을 만들며, 이 JSON에는 원본 바이트나 전체 디스어셈블리 대신 주소·범위 해시와 재생 결과를 남깁니다.</p>
+<h2>재현 방법</h2>
+<p>저장소 루트에서 Python, Unicorn 2.1.4, Capstone 5.0.7로 실행합니다. 원본 <code>decoded.bin</code> 또는 잘라 낸 RTOS 파일을 넣고 출력은 아직 없는 새 경로로 지정합니다. 재현기는 입력의 길이와 SHA-256, 보조 코드 두 개의 SHA-256을 먼저 확인합니다. 두 전체 관측 기록의 SHA-256이 맞아야 공개 JSON을 씁니다. 이 JSON에는 원본 바이트나 전체 디스어셈블리 대신 주소·구간 해시와 실행 결과만 남깁니다.</p>
 <pre><code>python -B verify_af_driver_pwm.py decoded.bin --output af-driver-decoded.json --compare analysis/af-driver-pwm-checks.json
 python -B verify_af_driver_pwm.py rtos.bin --output af-driver-rtos.json --compare analysis/af-driver-pwm-checks.json
 python -B -m unittest discover -s tests -p test_af_driver_pwm.py</code></pre>
-<p class="hash">공개 JSON SHA-256 <code>9cfd6bc585a5f2f7a230ffe32e05ba0c649c9f8a7e02d154ba3fa573ab6919b1</code></p>
-<p><a href="../verify_af_driver_pwm.py">재현기</a> · <a href="../tests/test_af_driver_pwm.py">입력과 출력 경계 시험</a> · <a href="af-driver-pwm-checks.json">공개 결과</a></p>
-<p>다음 확인 지점은 <code class="address">0x52f0bcf0</code>와 <code class="address">0x52f0bea8</code>의 두 정수 입력이 <code class="address">0x531780b8</code>의 PWM 반워드로 바뀌는 경로입니다. 이 변환에 쓰이는 물리 단위는 아직 확인하지 못했습니다.</p>
+<dl class="kv">
+<dt>RTOS SHA-256</dt><dd><code class="wrap">342d2f35405e8daf1797dfe431d2e4aa70f4b52a2c242a29df48206672f1dfb4</code> (25,483,200바이트)</dd>
+<dt><code>decoded.bin</code> SHA-256</dt><dd><code class="wrap">7ff301d585ef7adcd620a15575faa39b4227cc5a27eaa8d754efe50f667a30f9</code> (RTOS 시작 오프셋 <code>0x1c19c</code>)</dd>
+<dt>공개 JSON SHA-256</dt><dd><code class="wrap">9cfd6bc585a5f2f7a230ffe32e05ba0c649c9f8a7e02d154ba3fa573ab6919b1</code></dd>
+</dl>
+<details class="evidence"><summary>보조 코드와 전체 관측 기록의 해시</summary>
+<dl class="kv">
+<dt><code>verify_af_packet_8902.py</code> (LF)</dt><dd><code class="wrap">6796dc7821f84b13ddf2545c569568928eec24a130e27d519d70f75326e0ba12</code></dd>
+<dt><code>verify_af_motor_fields.py</code> (LF)</dt><dd><code class="wrap">d5fd3ffdb3dcf4f90a8bd5c49a7d6478c679253f7e00854046cd6117d1ac1cf8</code></dd>
+<dt>Motor 별칭 전체 기록</dt><dd><code class="wrap">fabd4354eb29fa5e5e38b933dfe99d63296e2790ae8b57c6e0fcfc324a246918</code></dd>
+<dt>드라이버·PWM 전체 기록</dt><dd><code class="wrap">ea296258aa16282ef210406ad553c6849d0827af2f30d692a3280e382a3d963d</code></dd>
+</dl>
+</details>
 </section>
-<p>후속 <a href="af-pwm-parameters.html">PWM 요청과 정수 변환</a>은 두 호출자의 분기와 한 개·두 개의 12바이트 레코드 패킹을 원본 명령으로 대조합니다.</p>
+
+<section id="refs">
+<h2>근거 파일과 참고 자료</h2>
+<ul class="refs">
+<li><a href="af-driver-pwm-checks.json">af-driver-pwm-checks.json</a> — 원본 주소·구간 해시, 정적 검색 목록, 실행 기록</li>
+<li><a href="../verify_af_driver_pwm.py">verify_af_driver_pwm.py</a> — 재현기</li>
+<li><a href="../tests/test_af_driver_pwm.py">tests/test_af_driver_pwm.py</a> — 입력과 출력 경계 시험</li>
+<li>관련 문서: <a href="af-motor-fields.html">PafMotor와 PafPulse의 입력값 경로</a> · <a href="af-feedback-producers.html#binding">factory와 Pulse의 포인터 연결</a> · <a href="af-pwm-parameters.html">AF PWM 요청과 정수 변환</a> (두 호출자의 분기와 레코드 패킹)</li>
+<li>외부 자료: <a href="https://www.ti.com/document-viewer/DRV8235/datasheet/GUID-BACAD2AF-608E-49AA-AA39-D2C6CAA7C02E">TI DRV8235 데이터시트 7.3.6.1</a> (duty cycle로 평균 출력 전압을 맞추는 모터 드라이버) · <a href="https://www.ricoh-imaging.co.jp/english/products/lens/common/annotation-focus-k.html">리코이미징 초점 구동 방식 표기</a></li>
+<li>도구: <a href="https://github.com/unicorn-engine/unicorn">Unicorn CPU 에뮬레이터</a></li>
+</ul>
+</section>
+
 </main>
 </div>
 <!-- chrome:bottom -->
-<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">AF와 렌즈 제어 — 이 주제의 문서</h2><ol><li><a href="af-foundations.html">AF와 렌즈 제어 안내<span>세 기종 비교</span></a></li><li><a href="af-drive-architecture.html">렌즈 구동 선택·명령·응답<span>렌즈 능력에 따른 구동 선택과 명령</span></a></li><li><a href="af-joint-control.html">Joint 요청과 하위 제어<span>이벤트 0x80에서 첫 서비스·레지스터 경계까지</span></a></li><li><a href="af-service-binding.html">AF 서비스 객체와 레지스터 경계<span>ReloadTimer·Udc의 두 별도 실행</span></a></li><li><a href="af-mode1-control.html">Joint 모드 1의 요청과 피드백 계산<span>리셋 후속 호출, 요청 분기와 피드백 숫자 대조</span></a></li><li><a href="af-feedback-producers.html">PafPulse 기준값의 쓰기 경로<span>원본 객체 연결, 기준값 갱신과 별도 소비자 진입</span></a></li><li><a href="af-motor-fields.html">PafMotor와 PafPulse의 입력값 경로<span>디버그 요청, 설정 레코드 복사, 별도 LensInfo 계산</span></a></li><li><a href="af-driver-pwm.html" aria-current="page">AF 드라이버와 PWM 연결<span>Motor 별칭, PWM 등록·리셋과 콜백 재생</span></a></li><li><a href="af-pwm-parameters.html">AF PWM 요청과 정수 변환<span>두 호출점, 16비트 레코드 패킹과 서비스 호출 전 경계</span></a></li><li><a href="af-state-producers.html">PafMotor 상태 바이트의 쓰기 경로<span>22개 직접 저장과 두 피드백·서비스 경계</span></a></li><li><a href="af-adaptive-input.html">AF 적응형 문턱의 입력<span>ElapsedTimer 표본과 unsigned 차이의 정수 환산</span></a></li><li><a href="af-request-consumer.html">AF 요청 큐와 완료 통지<span>요청 슬롯, 처리 task, 완료 통지</span></a></li></ol></nav>
+<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">AF와 렌즈 제어 — 이 주제의 문서</h2><ol><li><a href="guide-af.html">AF와 렌즈 제어 안내</a></li><li><a href="af-foundations.html">세 기종 AF 기초 비교</a></li><li><a href="af-drive-architecture.html">렌즈 구동 선택·명령·응답<span>렌즈 능력에 따른 구동 선택과 명령</span></a></li><li><a href="af-joint-control.html">Joint 요청과 하위 제어<span>이벤트 0x80에서 첫 서비스·레지스터 경계까지</span></a></li><li><a href="af-service-binding.html">AF 서비스 객체와 레지스터 경계<span>ReloadTimer·Udc의 두 별도 실행</span></a></li><li><a href="af-mode1-control.html">Joint 모드 1의 요청과 피드백 계산<span>리셋 후속 호출, 요청 분기와 피드백 숫자 대조</span></a></li><li><a href="af-feedback-producers.html">PafPulse 기준값의 쓰기 경로<span>원본 객체 연결, 기준값 갱신과 별도 소비자 진입</span></a></li><li><a href="af-motor-fields.html">PafMotor와 PafPulse의 입력값 경로<span>디버그 요청, 설정 레코드 복사, 별도 LensInfo 계산</span></a></li><li><a href="af-driver-pwm.html" aria-current="page">AF 드라이버와 PWM 연결<span>Motor 별칭, PWM 등록·리셋과 콜백 재생</span></a></li><li><a href="af-pwm-parameters.html">AF PWM 요청과 정수 변환<span>두 호출점, 16비트 레코드 패킹과 서비스 호출 전 경계</span></a></li><li><a href="af-state-producers.html">PafMotor 상태 바이트의 쓰기 경로<span>22개 직접 저장과 두 피드백·서비스 경계</span></a></li><li><a href="af-adaptive-input.html">AF 적응형 문턱의 입력<span>ElapsedTimer 표본과 unsigned 차이의 정수 환산</span></a></li><li><a href="af-request-consumer.html">AF 요청 큐와 완료 통지<span>요청 슬롯, 처리 task, 완료 통지</span></a></li></ol></nav>
 <nav class="pager" aria-label="이전·다음 문서"><a class="prev" href="af-motor-fields.html"><small>← 이전</small>PafMotor와 PafPulse의 입력값 경로</a><a class="next" href="af-pwm-parameters.html"><small>다음 →</small>AF PWM 요청과 정수 변환</a></nav>
 <footer class="sitefoot"><div class="sitefoot-in"><nav aria-label="사이트"><a href="../index.html#map">문서 지도</a><a href="../index.html#levels">검증 수준 읽는 법</a><a href="../glossary.html">용어집</a><a href="research-program.html">세 기종 연구 본부</a><a href="https://github.com/yunhyok/pentax-k3iii-firmware-analysis">GitHub 저장소</a></nav><p>PENTAX 펌웨어 연구. PC에서 수행한 정적 분석과 에뮬레이션 결과이며, 카메라 실기에서 검증한 내용이 아닙니다. 원본 펌웨어와 추출한 독점 코드는 포함하지 않습니다.</p></div></footer>
 <!-- /chrome:bottom -->

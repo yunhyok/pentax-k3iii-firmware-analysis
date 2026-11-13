@@ -10,7 +10,7 @@
 <body data-camera="k3iii">
 <!-- chrome:top -->
 <a class="skip" href="#main">본문 바로가기</a>
-<div class="topbar"><div class="topbar-in"><a class="brand" href="../index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="../index.html" aria-current="true">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="https://yunhyok.github.io/pentax-q7-firmware-analysis/">Q7</a></div><nav class="topnav" aria-label="주제"><a href="../index.html">개요</a><a href="guide-boot.html">부팅·저장소</a><a href="guide-update.html">업데이트</a><a href="guide-rebuild.html">재구축</a><a href="guide-rtos.html">명령·셸</a><a href="guide-color.html" aria-current="true">색 처리</a><a href="lightroom-bridge.html">Lightroom</a><a href="af-foundations.html">AF</a><a href="ui-port-contract.html">UI</a></nav></div></div>
+<div class="topbar"><div class="topbar-in"><a class="brand" href="../index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="../index.html" aria-current="true">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="https://yunhyok.github.io/pentax-q7-firmware-analysis/">Q7</a></div><nav class="topnav" aria-label="주제"><a href="../index.html">개요</a><a href="guide-boot.html">부팅·저장소</a><a href="guide-update.html">업데이트</a><a href="guide-rebuild.html">재구축</a><a href="guide-rtos.html">명령·셸</a><a href="guide-color.html" aria-current="true">색 처리</a><a href="guide-lightroom.html">Lightroom</a><a href="guide-af.html">AF</a><a href="guide-ui.html">UI</a></nav></div></div>
 <nav class="crumbs" aria-label="현재 위치"><ol><li><a href="../index.html">PENTAX K-3 Mark III</a></li><li><a href="guide-color.html">카메라 내부 색 처리</a></li><li aria-current="page">색 모드별 행렬·감마 조건</li></ol></nav>
 <!-- /chrome:top -->
 <header class="page-head">
@@ -27,9 +27,9 @@
 <section class="summary">
 <h2 data-toc="no">핵심 요약</h2>
 <ul>
-<li>Natural, Portrait, Bright, Reversal Film 네 모드에서 채도 두 값과 대비 두 값을 조합한 <strong>16조건</strong>으로 원본 함수 두 개를 실행했습니다. 하나는 색 행렬을 준비하는 함수이고, 다른 하나는 감마 곡선을 고르고 만드는 함수입니다.</li>
+<li>Natural, Portrait, Bright, Reversal Film 네 모드에서 채도 두 값과 대비 두 값을 조합한 <strong>16조건</strong>으로 원본 함수 두 개를 실행했습니다. 하나는 색 행렬을 준비하는 함수이고 다른 하나는 감마 곡선을 고르고 만드는 함수입니다.</li>
 <li><strong>채도를 바꾸면 행렬만</strong> 달라졌고 감마 곡선은 그대로였습니다. <strong>대비를 바꾸면 일반 감마 곡선만</strong> 달라졌고 행렬은 그대로였습니다.</li>
-<li>같은 제어값에서 Natural, Portrait, Bright는 <strong>감마 곡선이 같고 행렬이 달랐습니다</strong>. Reversal Film은 별도 생성기를 써서 곡선도 달랐고, 대비를 바꿔도 곡선이 변하지 않았습니다.</li>
+<li>같은 제어값에서 Natural, Portrait, Bright는 <strong>감마 곡선이 같고 행렬이 달랐습니다</strong>. Reversal Film은 별도 생성기를 써서 곡선도 달랐고 대비를 바꿔도 곡선이 변하지 않았습니다.</li>
 <li>비교한 것은 설정 계수와 곡선입니다. 이 차이가 실제 사진의 픽셀에 어떻게 나타나는지, 카메라 메뉴가 같은 값을 만드는지는 확인하지 않았습니다.</li>
 </ul>
 </section>
@@ -57,7 +57,7 @@
 
 <section id="background">
 <h2>배경: 손잡이 세 개와 설정값 두 가지</h2>
-<p>카메라의 Custom Image(이 문서에서는 컬러모드)는 모드를 고른 뒤 채도, 대비 같은 값을 더 조절할 수 있습니다. 펌웨어는 이 설정으로 여러 설정값을 계산하는데, 그 가운데 색을 정하는 것이 <strong>색 행렬</strong>이고 밝기 분포를 정하는 것이 <strong>감마 곡선</strong>입니다. 두 계산의 식은 <a href="color-algorithms.html">색 행렬·감마·톤 설정값을 만드는 계산식</a>에 있습니다.</p>
+<p>카메라의 Custom Image(이 문서에서는 컬러모드)는 모드를 고른 뒤 채도, 대비 같은 값을 더 조절할 수 있습니다. 펌웨어는 이 설정으로 여러 설정값을 계산하는데 그 가운데 색을 정하는 것이 <strong>색 행렬</strong>이고 밝기 분포를 정하는 것이 <strong>감마 곡선</strong>입니다. 두 계산의 식은 <a href="color-algorithms.html">색 행렬·감마·톤 설정값을 만드는 계산식</a>에 있습니다.</p>
 <p>식을 아는 것과 별개로, 손잡이 하나가 두 설정값 가운데 어느 쪽을 움직이는지는 직접 돌려 봐야 분명해집니다. 그래서 다른 값을 고정하고 한 번에 한 값만 바꿔 출력을 비교했습니다. 이 구분은 Lightroom 프로파일을 만들 때 쓸모가 있습니다. Adobe의 프로파일도 색 변환(행렬과 표)과 톤 곡선을 따로 담기 때문입니다.</p>
 <div class="callout plain"><strong class="label">쉽게 말하면</strong>
 <p>손잡이 세 개(모드, 채도, 대비)와 계기 두 개(행렬, 감마)가 있는 기계에서, 손잡이를 하나씩 돌려 어느 계기의 바늘이 움직이는지 적은 표입니다. 다만 기계 전체를 켠 것이 아니라 계기 두 개를 떼어 따로 시험했습니다.</p></div>
@@ -107,14 +107,14 @@
 <ul class="dg-legend"><li><i class="model"></i>시험용으로 만든 입력</li><li><i class="ok"></i>실행한 원본 코드</li><li><i></i>기록한 출력</li></ul>
 </figure>
 
-<p>바꾼 값은 세 가지입니다. 모드는 Natural, Portrait, Bright, Reversal Film, 채도 인덱스는 4와 5, 대비 칸의 값은 4와 6입니다. 값을 하나만 바꾼 비교에서는 다른 값을 4에 두었고, 모드끼리 비교할 때는 채도와 대비를 모두 4로 고정했습니다.</p>
+<p>바꾼 값은 세 가지입니다. 모드는 Natural, Portrait, Bright, Reversal Film, 채도 인덱스는 4와 5, 대비 칸의 값은 4와 6입니다. 값을 하나만 바꾼 비교에서는 다른 값을 4에 두었고 모드끼리 비교할 때는 채도와 대비를 모두 4로 고정했습니다.</p>
 <ul>
 <li>네 모드는 공통 행렬과 채도 행렬 표를 함께 씁니다. Natural의 모드 행렬은 <dfn title="소수부가 13비트인 고정소수점 표기. 정수 8192가 실수 1.0에 해당합니다.">Q13</dfn> 단위행렬입니다.</li>
 <li>실행하기 전에 원본 바이트에서 모드 번호의 대응과 자원 포인터 표 세 행의 디스크립터 포인터를 확인했습니다.</li>
 <li>대비 칸의 값 4는 가운데 값입니다. 이 값으로 만든 Natural 곡선이, 생성기를 제어값 0으로 직접 실행한 앞선 검증 결과와 같았습니다.</li>
 </ul>
 <div class="callout model"><strong class="label">시험 조건</strong>
-<p>두 함수는 이어진 처리 흐름이 아니라 <strong>따로</strong> 실행했습니다. 모드에 따라 감마 분기 플래그를 직접 설정했고, 아래 값은 모든 조건에서 고정했습니다.</p>
+<p>두 함수는 이어진 처리 흐름이 아니라 <strong>따로</strong> 실행했습니다. 모드에 따라 감마 분기 플래그를 직접 설정했고 아래 값은 모든 조건에서 고정했습니다.</p>
 <dl class="kv">
 <dt>색공간 파라미터</dt><dd>1</dd>
 <dt>행렬 gain과 키</dt><dd>256, 8</dd>
@@ -126,7 +126,7 @@
 
 <section id="results">
 <h2>결과: 채도는 행렬을, 대비는 일반 감마를 바꿉니다</h2>
-<p class="takeaway">채도와 대비는 서로 다른 설정값을 움직였습니다. 모드를 바꾸면 행렬이 항상 달라졌고, 감마는 Reversal Film으로 바꿀 때만 달라졌습니다.</p>
+<p class="takeaway">채도와 대비는 서로 다른 설정값을 움직였습니다. 모드를 바꾸면 행렬이 항상 달라졌고 감마는 Reversal Film으로 바꿀 때만 달라졌습니다.</p>
 
 <figure class="diagram">
 <figcaption>바꾼 값과 달라진 출력 (선이 없는 조합은 달라진 항이 0개)</figcaption>
@@ -185,13 +185,13 @@
 <tr><th scope="row">Natural → Bright</th><td>9/9항</td><td class="n">67</td><td>0/256항</td><td class="n">0</td></tr>
 <tr><th scope="row">Natural → Reversal Film</th><td>9/9항</td><td class="n">46</td><td>250/256항</td><td class="n">1138</td></tr>
 </tbody></table></div>
-<p class="small muted">가장 큰 차는 각 출력의 정수 눈금 그대로입니다. 행렬 계수는 −2048~2047 범위의 12비트 값이고, 감마 곡선은 상한이 16384인 값입니다.</p>
+<p class="small muted">가장 큰 차는 각 출력의 정수 눈금 그대로입니다. 행렬 계수는 −2048~2047 범위의 12비트 값이고 감마 곡선은 상한이 16384인 값입니다.</p>
 
 <ul>
 <li><strong>채도</strong> — 채도 인덱스가 바뀌면 채도 행렬이 바뀌므로 합성된 색 행렬이 달라집니다. 감마 함수는 같은 곡선을 냈습니다.</li>
 <li><strong>대비</strong> — 대비는 일반 감마 생성기의 제어값으로 들어가 곡선을 바꿉니다. 행렬 준비 함수의 출력은 대비와 무관했습니다.</li>
-<li><strong>모드</strong> — Natural, Portrait, Bright는 모드 행렬이 달라 행렬 계수가 모두 달랐지만, 같은 일반 생성기와 같은 제어값을 써서 곡선이 같았습니다.</li>
-<li><strong>Reversal Film</strong> — 별도 감마 생성기를 불렀습니다. 그래서 Natural과 곡선이 달랐고, 이번 대비 변경에는 곡선이 변하지 않았습니다. 분기 선택 함수가 Reversal 분기에서 가운데 기준 제어값 네 개를 0으로 놓는다는 코드 분석(<a href="color-algorithms.html#gamma">감마 곡선 절</a>)과 맞는 결과입니다.</li>
+<li><strong>모드</strong> — Natural, Portrait, Bright는 모드 행렬이 달라 행렬 계수가 모두 달랐지만 같은 일반 생성기와 같은 제어값을 써서 곡선이 같았습니다.</li>
+<li><strong>Reversal Film</strong> — 별도 감마 생성기를 불렀습니다. 그래서 Natural과 곡선이 달랐고 이번 대비 변경에는 곡선이 변하지 않았습니다. 분기 선택 함수가 Reversal 분기에서 가운데 기준 제어값 네 개를 0으로 놓는다는 코드 분석(<a href="color-algorithms.html#gamma">감마 곡선 절</a>)과 맞는 결과입니다.</li>
 </ul>
 <div class="callout warn"><strong class="label">주의</strong>
 <p>이 비교의 출력은 <strong>설정 계수와 곡선</strong>입니다. 실기에서 톤이 어떻게 적용되는지, 픽셀이 어떤 순서로 처리되는지, JPEG의 색이 어떻게 달라지는지는 따로 확인해야 합니다.</p></div>
@@ -215,7 +215,7 @@
 
 <section id="verified">
 <h2>원본 코드에서 확인한 범위</h2>
-<p class="takeaway">두 함수는 대역 없이 원본 코드만으로 끝까지 실행됐고, 결과는 앞선 수치 검증과 맞았습니다.</p>
+<p class="takeaway">두 함수는 대역 없이 원본 코드만으로 끝까지 실행됐고 결과는 앞선 수치 검증과 맞았습니다.</p>
 <div class="table-wrap"><table>
 <caption>실행 횟수와 대조 결과</caption>
 <thead><tr><th>대상</th><th>관측</th><th>상태</th></tr></thead>
@@ -241,13 +241,13 @@
 <tr><th scope="row">부호 있는 나눗셈</th><td><code>0x526a8364</code>–<code>0x526a8374</code></td><td><code class="wrap">1be7464d9da20674e82ef805517ae16bfab577b4e2583bef9d5054a556c1e0a7</code></td></tr>
 <tr><th scope="row">짧은 복사 함수</th><td><code>0x526aac80</code>–<code>0x526aacf4</code></td><td><code class="wrap">f094891f1a7cfe00a944958a7a70d976d028f76df729cae1582b40718db669d2</code></td></tr>
 </tbody></table></div>
-<p class="small">행렬 준비 함수의 진입점은 <code>0x5312ce30</code>, 감마 분기 선택 함수의 진입점은 <code>0x53136728</code>입니다. 초기화 함수(singleton) 대역의 주소는 <code>0x5313eb50</code>입니다. 모드 번호의 대응은 색인 표 <code>0x53a767d8</code>에서, 디스크립터는 자원 포인터 표 <code>0x54562694</code>의 세 행에서 확인했습니다. 앞선 검증은 <a href="color-math-checks.json">color-math-checks.json</a>(행렬)과 <a href="gamma-tone-checks.json">gamma-tone-checks.json</a>(감마)이고, 호출 수와 코드 해시는 <a href="color-mode-boundaries.json">color-mode-boundaries.json</a>에 있습니다.</p>
+<p class="small">행렬 준비 함수의 진입점은 <code>0x5312ce30</code>, 감마 분기 선택 함수의 진입점은 <code>0x53136728</code>입니다. 초기화 함수(singleton) 대역의 주소는 <code>0x5313eb50</code>입니다. 모드 번호의 대응은 색인 표 <code>0x53a767d8</code>에서, 디스크립터는 자원 포인터 표 <code>0x54562694</code>의 세 행에서 확인했습니다. 앞선 검증은 <a href="color-math-checks.json">color-math-checks.json</a>(행렬)과 <a href="gamma-tone-checks.json">gamma-tone-checks.json</a>(감마)이고 호출 수와 코드 해시는 <a href="color-mode-boundaries.json">color-mode-boundaries.json</a>에 있습니다.</p>
 </details>
 </section>
 
 <section id="profiles">
 <h2>Adobe 프로파일의 구조와 닮은 점, 그리고 세 기종의 다음 시험</h2>
-<p class="takeaway">Adobe의 Camera Natural과 Camera Portrait 프로파일도 톤 곡선은 같고 행렬 하나가 다릅니다. 펌웨어의 관측과 모양은 닮았지만, 두 행렬이 같은 변환이라는 증거는 아닙니다.</p>
+<p class="takeaway">Adobe의 Camera Natural과 Camera Portrait 프로파일도 톤 곡선은 같고 행렬 하나가 다릅니다. 펌웨어의 관측과 모양은 닮았지만 두 행렬이 같은 변환이라는 증거는 아닙니다.</p>
 <div class="table-wrap"><table>
 <caption>Natural과 Portrait를 두 곳에서 비교</caption>
 <thead><tr><th>비교 대상</th><th>같은 것</th><th>다른 것</th><th>상태</th></tr></thead>
@@ -255,15 +255,15 @@
 <tr><th scope="row">펌웨어의 설정 출력</th><td>감마 곡선(같은 대비에서)</td><td>준비된 색 행렬</td><td><span class="badge ok">확인</span> 합성 설정으로 실행</td></tr>
 <tr><th scope="row">Adobe DCP 파일</th><td>ColorMatrix1·2, LookTable, 톤 곡선</td><td>ForwardMatrix1·2</td><td><span class="badge ok">확인</span> 설치 파일의 태그 대조</td></tr>
 </tbody></table></div>
-<p>DNG 규격에서 <code>ColorMatrix</code>는 XYZ를 기준 카메라 색공간으로 보내는 행렬이고, <code>ForwardMatrix</code>는 화이트밸런스를 적용한 카메라 색을 XYZ D50으로 보내는 행렬입니다. 이번에 비교한 펌웨어 행렬이 어떤 원색과 전달함수의 색을 받는지는 확인하지 못했습니다. 그래서 펌웨어 행렬을 이 두 태그 가운데 어느 것과도 곧바로 대응시킬 수 없습니다. Adobe 태그의 대조는 <a href="lightroom-bridge.html">DCP 생성·검증 개요</a>와 <a href="color-lightroom.html#adobe">컬러모드 자원과 Lightroom</a>에 있습니다.</p>
+<p>DNG 규격에서 <code>ColorMatrix</code>는 XYZ를 기준 카메라 색공간으로 보내는 행렬이고 <code>ForwardMatrix</code>는 화이트밸런스를 적용한 카메라 색을 XYZ D50으로 보내는 행렬입니다. 이번에 비교한 펌웨어 행렬이 어떤 원색과 전달함수의 색을 받는지는 확인하지 못했습니다. 그래서 펌웨어 행렬을 이 두 태그 가운데 어느 것과도 곧바로 대응시킬 수 없습니다. Adobe 태그의 대조는 <a href="lightroom-bridge.html">DCP 생성·검증 개요</a>와 <a href="color-lightroom.html#adobe">컬러모드 자원과 Lightroom</a>에 있습니다.</p>
 
 <h3>기종별로 프로파일 시험에 쓸 수 있는 근거</h3>
 <div class="table-wrap"><table>
 <thead><tr><th>기종</th><th>프로파일 시험에 쓸 근거</th></tr></thead>
 <tbody>
 <tr><th scope="row" class="nowrap">K-3 Mark III</th><td>같은 합성 대비에서 Natural과 Portrait는 감마 곡선이 같았고 행렬은 달랐습니다. 같은 RAW를 카메라에서 모드별로 현상하면 실제 출력의 차이를 확인할 수 있습니다. (<a href="color-mode-boundaries.json">설정 출력 비교</a>)</td></tr>
-<tr><th scope="row" class="nowrap">K-3 II</th><td>이 기종에서는 Reversal Film이 selector 6에서 별도 톤 생성기를 씁니다. Natural로 찍은 표본 #1376은 기존 A·D65 보정을 고정하고 톤 후보를 비교하는 첫 자료이고, 이 표본으로 한 Lightroom 비교가 <a href="lightroom-render-comparison.html">실제 TIFF 6개 비교</a>와 <a href="lightroom-tone-comparison.html">톤 곡선 비교</a>에 있습니다. (<a href="https://github.com/yunhyok/pentax-k3ii-firmware-analysis/blob/89403125b108aea9070f0b91d5c4aca6b1ae0a39/analysis/pipeline-analysis.html#selector">K-3 II의 톤 경로</a> · <a href="color-comparison-protocol.html">#1376 색차 절차</a>)</td></tr>
-<tr><th scope="row" class="nowrap">Q7</th><td>색 행렬 설정과 Cross Process의 채널별 감마 합성을 확인한 근거가 있습니다. 따로 추적한 77워드 LUT는 센서 통계용이고, JPEG에 적용되는 곡선은 확정하지 못했습니다. (<a href="https://github.com/yunhyok/pentax-q7-firmware-analysis/blob/2f850e7f1ef5bd4a4024574f66b035c359bc133d/deep-report.html#color">Q7의 색 연산</a> · <a href="https://github.com/yunhyok/pentax-q7-firmware-analysis/blob/2f850e7f1ef5bd4a4024574f66b035c359bc133d/routing-report.html#gamma">Q7의 감마 경계</a>)</td></tr>
+<tr><th scope="row" class="nowrap">K-3 II</th><td>이 기종에서는 Reversal Film이 selector 6에서 별도 톤 생성기를 씁니다. Natural로 찍은 표본 #1376은 기존 A·D65 보정을 고정하고 톤 후보를 비교하는 첫 자료이고 이 표본으로 한 Lightroom 비교가 <a href="lightroom-render-comparison.html">실제 TIFF 6개 비교</a>와 <a href="lightroom-tone-comparison.html">톤 곡선 비교</a>에 있습니다. (<a href="https://github.com/yunhyok/pentax-k3ii-firmware-analysis/blob/89403125b108aea9070f0b91d5c4aca6b1ae0a39/analysis/pipeline-analysis.html#selector">K-3 II의 톤 경로</a> · <a href="color-comparison-protocol.html">#1376 색차 절차</a>)</td></tr>
+<tr><th scope="row" class="nowrap">Q7</th><td>색 행렬 설정과 Cross Process의 채널별 감마 합성을 확인한 근거가 있습니다. 따로 추적한 77워드 LUT는 센서 통계용이고 JPEG에 적용되는 곡선은 확정하지 못했습니다. (<a href="https://github.com/yunhyok/pentax-q7-firmware-analysis/blob/2f850e7f1ef5bd4a4024574f66b035c359bc133d/deep-report.html#color">Q7의 색 연산</a> · <a href="https://github.com/yunhyok/pentax-q7-firmware-analysis/blob/2f850e7f1ef5bd4a4024574f66b035c359bc133d/routing-report.html#gamma">Q7의 감마 경계</a>)</td></tr>
 </tbody></table></div>
 <p class="small muted">K-3 II와 Q7의 링크는 이 비교를 쓴 시점의 커밋에 고정되어 있습니다.</p>
 <p>모드에 따라 카메라가 DNG에 기록하는 보정값이 달라지는지는 이 실험에서 시험하지 않았습니다. 설정의 차이가 픽셀에 어떻게 나타나는지 보려면, 같은 RAW에서 화이트밸런스·노출·출력 색공간을 고정하고 채도와 대비를 하나씩 바꾼 카메라 출력이 필요합니다. 기종별 DNG 보정과 내장 JPEG 표본은 <a href="raw-test-inputs.html">시험용 RAW 준비</a>에 있습니다.</p>
@@ -272,7 +272,7 @@
 <section id="limits">
 <h2>한계와 남은 과제</h2>
 <ul>
-<li><span class="badge model">모델</span> <strong>입력</strong> — 파라미터 블록은 직접 만든 것입니다. 모드 번호와 자원 디스크립터는 원본 바이트로 확인했지만, 메뉴에서 이 블록을 만드는 상위 코드는 실행하지 않았습니다.</li>
+<li><span class="badge model">모델</span> <strong>입력</strong> — 파라미터 블록은 직접 만든 것입니다. 모드 번호와 자원 디스크립터는 원본 바이트로 확인했지만 메뉴에서 이 블록을 만드는 상위 코드는 실행하지 않았습니다.</li>
 <li><span class="badge model">모델</span> <strong>따로 실행</strong> — 두 함수를 이어진 영상 처리 흐름 안에서 실행한 것이 아닙니다. 외부 콜백도 실행하지 않았습니다.</li>
 <li><span class="badge open">미확인</span> <strong>값의 범위</strong> — 채도는 4와 5, 대비는 4와 6만 시험했습니다. 다른 값과 다른 모드에서도 같은 구분이 성립하는지는 모릅니다.</li>
 <li><span class="badge open">미확인</span> <strong>픽셀과 사진</strong> — 픽셀 처리, 카메라 하드웨어, Lightroom은 실행하지 않았습니다. RAW나 DCP도 읽지 않았습니다. K-3 Mark III에서 Lightroom 출력과 카메라 JPEG의 색차는 아직 재지 않았습니다.</li>

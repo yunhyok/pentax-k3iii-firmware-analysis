@@ -10,7 +10,7 @@
 <body data-camera="k3iii">
 <!-- chrome:top -->
 <a class="skip" href="#main">본문 바로가기</a>
-<div class="topbar"><div class="topbar-in"><a class="brand" href="../index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="../index.html" aria-current="true">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="https://yunhyok.github.io/pentax-q7-firmware-analysis/">Q7</a></div><nav class="topnav" aria-label="주제"><a href="../index.html">개요</a><a href="guide-boot.html">부팅·저장소</a><a href="guide-update.html">업데이트</a><a href="guide-rebuild.html">재구축</a><a href="guide-rtos.html" aria-current="true">명령·셸</a><a href="guide-color.html">색 처리</a><a href="lightroom-bridge.html">Lightroom</a><a href="af-foundations.html">AF</a><a href="ui-port-contract.html">UI</a></nav></div></div>
+<div class="topbar"><div class="topbar-in"><a class="brand" href="../index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="../index.html" aria-current="true">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="https://yunhyok.github.io/pentax-q7-firmware-analysis/">Q7</a></div><nav class="topnav" aria-label="주제"><a href="../index.html">개요</a><a href="guide-boot.html">부팅·저장소</a><a href="guide-update.html">업데이트</a><a href="guide-rebuild.html">재구축</a><a href="guide-rtos.html" aria-current="true">명령·셸</a><a href="guide-color.html">색 처리</a><a href="guide-lightroom.html">Lightroom</a><a href="guide-af.html">AF</a><a href="guide-ui.html">UI</a></nav></div></div>
 <nav class="crumbs" aria-label="현재 위치"><ol><li><a href="../index.html">PENTAX K-3 Mark III</a></li><li><a href="guide-rtos.html">RTOS 명령과 셸</a></li><li aria-current="page">SD 셸 입력과 보정 백업</li></ol></nav>
 <!-- /chrome:top -->
 <header class="page-head">
@@ -28,7 +28,7 @@
 <h2 data-toc="no">핵심 요약</h2>
 <ul>
 <li>SD 카드의 <dfn title="Tera Term 매크로 스크립트 파일. 한 줄씩 명령을 보내는 간단한 언어입니다.">TTL 스크립트</dfn>가 <code>sendln</code>을 거쳐 RTOS 셸 명령을 실행하는 경로를 원본 명령에서 확인했습니다. 이 경로는 카메라 초기화가 진행된 뒤에 쓰입니다.</li>
-<li>USB로 같은 셸에 들어가는 경로는 <strong>확인하지 못했습니다.</strong> 바이너리에 관련 이름은 있지만, 조사한 범위에서 USB 입력이 RTOS 셸에 도달한다는 근거는 없었습니다.</li>
+<li>USB로 같은 셸에 들어가는 경로는 <strong>확인하지 못했습니다.</strong> 바이너리에 관련 이름은 있지만 조사한 범위에서 USB 입력이 RTOS 셸에 도달한다는 근거는 없었습니다.</li>
 <li>보정 데이터 백업 명령(<code>inf_adj backup</code>)은 조건에 따라 <strong>내부 eMMC에도 씁니다.</strong> 따라서 이 버전의 백업 명령을 내부에 흔적을 남기지 않는 백업으로 쓸 수 없습니다.</li>
 </ul>
 </section>
@@ -54,15 +54,15 @@
 
 <section id="background">
 <h2>배경: SD 스크립트와 내부 셸</h2>
-<p>카메라 내부에는 점검·개발용 <dfn title="문자열 명령 이름과 처리 함수를 짝지어 둔 목록. 이름을 입력하면 해당 함수를 부릅니다.">셸</dfn>이 있습니다. 평소에는 바깥에서 쓸 일이 없지만, 특정 파일이 SD 카드에 있으면 그 내용이 셸 명령으로 실행될 수 있습니다. 이 파일은 TTL 스크립트 형식입니다.</p>
+<p>카메라 내부에는 점검·개발용 <dfn title="문자열 명령 이름과 처리 함수를 짝지어 둔 목록. 이름을 입력하면 해당 함수를 부릅니다.">셸</dfn>이 있습니다. 평소에는 바깥에서 쓸 일이 없지만 특정 파일이 SD 카드에 있으면 그 내용이 셸 명령으로 실행될 수 있습니다. 이 파일은 TTL 스크립트 형식입니다.</p>
 <div class="callout plain"><strong class="label">쉽게 말하면</strong>
 <p>TTL은 터미널 프로그램 Tera Term이 쓰는 매크로 언어입니다. <code>sendln</code>은 “이 문자열을 한 줄 보내라”는 명령으로, 사람이 키보드로 명령을 입력하는 것을 대신합니다. 카메라는 SD의 스크립트에서 이 줄을 받아 내부 셸 명령으로 실행합니다. <a href="https://teratermproject.github.io/manual/4/en/macro/command/sendln.html">Tera Term 매뉴얼의 sendln</a></p></div>
-<p>저장장치 용어도 구분이 필요합니다. <dfn title="카드 슬롯에 꽂았다 빼는 외장 저장장치">SD 카드</dfn>는 꺼낼 수 있는 외장 저장장치이고, <dfn title="기판에 납땜된 내장 플래시 저장장치. 부트 영역과 사용자 영역이 하드웨어로 나뉩니다.">eMMC</dfn>는 본체에 붙박인 내장 저장장치입니다. eMMC는 부트 영역과 일반 영역이 하드웨어로 나뉘어 있어, 부트 영역을 골랐다가 일반 영역으로 되돌아오는 동작을 코드에서 구분할 수 있습니다. <a href="https://www.jedec.org/standards-documents/docs/jesd84-b51">eMMC 규격(JEDEC JESD84)</a></p>
+<p>저장장치 용어도 구분이 필요합니다. <dfn title="카드 슬롯에 꽂았다 빼는 외장 저장장치">SD 카드</dfn>는 꺼낼 수 있는 외장 저장장치이고 <dfn title="기판에 납땜된 내장 플래시 저장장치. 부트 영역과 사용자 영역이 하드웨어로 나뉩니다.">eMMC</dfn>는 본체에 붙박인 내장 저장장치입니다. eMMC는 부트 영역과 일반 영역이 하드웨어로 나뉘어 있어, 부트 영역을 골랐다가 일반 영역으로 되돌아오는 동작을 코드에서 구분할 수 있습니다. <a href="https://www.jedec.org/standards-documents/docs/jesd84-b51">eMMC 규격(JEDEC JESD84)</a></p>
 </section>
 
 <section id="sd">
 <h2>SD 파일에서 셸 명령 실행까지</h2>
-<p class="takeaway">초기화 중 보낸 시스템 메시지가 <code>C:\script\</code>의 TTL 파일을 확인하고, 스크립트의 <code>sendln</code> 줄을 콜백에 넘겨 셸 명령 처리기를 부릅니다.</p>
+<p class="takeaway">초기화 중 보낸 시스템 메시지가 <code>C:\script\</code>의 TTL 파일을 확인하고 스크립트의 <code>sendln</code> 줄을 콜백에 넘겨 셸 명령 처리기를 부릅니다.</p>
 <figure class="diagram">
 <ol class="flow" aria-label="SD 파일에서 내부 셸 명령 실행까지의 순서">
 <li class="static"><strong>시스템 메시지</strong><span>메시지 <code>0xA2C08101</code> · 인수 0</span></li>
@@ -72,21 +72,21 @@
 </ol>
 <p>이 순서는 v2.20 원본 명령에서 확인했습니다. 실제 카드 마운트와 스크립트 실행, 출력 파일 생성은 실기에서 확인할 항목입니다.</p>
 </figure>
-<p>초기화 경로가 시스템 처리기 <code>0x53318764</code>에 인수 0으로 메시지를 보냅니다. 처리기는 <code>dbgparam.ttl</code>의 크기를 검사해 내용이 있으면 실행을 요청하고, 이어 <code>startup.ttl</code>에도 같은 검사를 합니다. 인수가 0이 아닌 쪽은 <code>shutdown.ttl</code>을 확인합니다. 세 파일은 모두 <code>C:\script\</code> 아래에 있고, <code>C:</code>는 SD 드라이버로 연결됩니다. 스크립트 처리기는 <code>sendln</code>을 토큰 <code>0x4e</code>로 바꿔 문자열을 콜백에 넘기고, 셸은 명령 이름을 찾아 간접 호출로 해당 함수를 실행합니다. 콘솔 초기화 쪽은 리소스 슬롯 4를 읽어 명령을 등록하며, 초기 레코드 이름은 <code>ShellCmdList</code>입니다.</p>
-<p>읽기 계열 명령 중 <code>emmc_fread</code>는 일반 영역을 읽어 지정한 파일에 쓰고, <code>sys_fwdump</code>는 정해진 범위를 읽어 <code>C:\fwdump.bin</code>으로 내보냅니다. 이 두 처리 함수에서 eMMC에 데이터를 기록하는 호출은 찾지 못했습니다. 반면 <code>emmc_freadb</code>는 eMMC 부트 파티션을 골랐다가 일반 영역으로 되돌아오므로, 같은 범주의 읽기 시험에서 분리합니다.</p>
+<p>초기화 경로가 시스템 처리기 <code>0x53318764</code>에 인수 0으로 메시지를 보냅니다. 처리기는 <code>dbgparam.ttl</code>의 크기를 검사해 내용이 있으면 실행을 요청하고 이어 <code>startup.ttl</code>에도 같은 검사를 합니다. 인수가 0이 아닌 쪽은 <code>shutdown.ttl</code>을 확인합니다. 세 파일은 모두 <code>C:\script\</code> 아래에 있고 <code>C:</code>는 SD 드라이버로 연결됩니다. 스크립트 처리기는 <code>sendln</code>을 토큰 <code>0x4e</code>로 바꿔 문자열을 콜백에 넘기고 셸은 명령 이름을 찾아 간접 호출로 해당 함수를 실행합니다. 콘솔 초기화 쪽은 리소스 슬롯 4를 읽어 명령을 등록하며 초기 레코드 이름은 <code>ShellCmdList</code>입니다.</p>
+<p>읽기 계열 명령 중 <code>emmc_fread</code>는 일반 영역을 읽어 지정한 파일에 쓰고 <code>sys_fwdump</code>는 정해진 범위를 읽어 <code>C:\fwdump.bin</code>으로 내보냅니다. 이 두 처리 함수에서 eMMC에 데이터를 기록하는 호출은 찾지 못했습니다. 반면 <code>emmc_freadb</code>는 eMMC 부트 파티션을 골랐다가 일반 영역으로 되돌아오므로, 같은 범주의 읽기 시험에서 분리합니다.</p>
 <div class="callout warn"><strong class="label">주의</strong>
 <p>출력 파일이 SD에 생겨도, 정상 초기화 도중 내부 로그나 설정을 함께 기록하는지는 별도로 확인해야 합니다. 이 스크립트는 RTOS가 실행된 뒤에 읽습니다. 부팅이 멈춘 바디의 Boot ROM 복구 기능은 아직 확인되지 않았습니다.</p></div>
 </section>
 
 <section id="usb">
 <h2>USB의 셸 진입 경로는 미확인</h2>
-<p class="takeaway">바이너리에 Linux 셸 명령 처리기 이름이 있지만, 조사한 범위에서 USB 입력이 RTOS 셸에 도달한다는 근거는 찾지 못했습니다.</p>
-<p>Ricoh가 공개한 USB 기능은 MTP·CD-ROM 데이터 전송과 테더 촬영입니다. 바이너리에는 <code>UsbServer</code>와 <code>HostInterfaceCommand::DeviceCommandProcessor::ExecuteLinuxShellCommand</code>라는 이름이 있지만, 조사한 초기화와 호출 범위에서는 USB 요청이 RTOS 셸 <code>0x530ff66c</code>에 도달한다는 근거가 없었습니다. 이름만으로 USB 입력이나 <code>SHELLCMD</code> 실행을 입증할 수 없습니다. 외부 연구에서도 방향은 같지만, 그 보고만으로 이 버전의 전체 실행 조건이 확인되지는 않습니다. <a href="https://www.ricoh-imaging.co.jp/english/support/qa/k-3-3/">Ricoh USB 기능 안내</a></p>
+<p class="takeaway">바이너리에 Linux 셸 명령 처리기 이름이 있지만 조사한 범위에서 USB 입력이 RTOS 셸에 도달한다는 근거는 찾지 못했습니다.</p>
+<p>Ricoh가 공개한 USB 기능은 MTP·CD-ROM 데이터 전송과 테더 촬영입니다. 바이너리에는 <code>UsbServer</code>와 <code>HostInterfaceCommand::DeviceCommandProcessor::ExecuteLinuxShellCommand</code>라는 이름이 있지만 조사한 초기화와 호출 범위에서는 USB 요청이 RTOS 셸 <code>0x530ff66c</code>에 도달한다는 근거가 없었습니다. 이름만으로 USB 입력이나 <code>SHELLCMD</code> 실행을 입증할 수 없습니다. 외부 연구에서도 방향은 같지만 그 보고만으로 이 버전의 전체 실행 조건이 확인되지는 않습니다. <a href="https://www.ricoh-imaging.co.jp/english/support/qa/k-3-3/">Ricoh USB 기능 안내</a></p>
 </section>
 
 <section id="adjust">
 <h2>보정 백업이 쓰는 세 경로</h2>
-<p class="takeaway">보정 백업은 조건에 따라 SD 파일뿐 아니라 내부 eMMC에도 씁니다. 세 경로가 항상 함께 실행되는 것은 아니며, 내부 쓰기는 데이터 검사 결과에 따라 갈립니다.</p>
+<p class="takeaway">보정 백업은 조건에 따라 SD 파일뿐 아니라 내부 eMMC에도 씁니다. 세 경로가 항상 함께 실행되는 것은 아니며 내부 쓰기는 데이터 검사 결과에 따라 갈립니다.</p>
 <figure class="diagram">
 <figcaption>보정 백업이 쓰는 세 경로</figcaption>
 <div class="dg-scroll">
@@ -114,9 +114,9 @@
 <ul class="dg-legend"><li><i class="static"></i>확인한 경로</li><li><i class="key"></i>내부 eMMC에 쓰는 경로</li></ul>
 </figure>
 <p><code>inf_adj</code>의 <code>backup</code> 분기(<code>0x52564f1c</code>)는 수집 함수 <code>0x52eacfc0</code>을 부릅니다. 이 함수는 <code>BOOT</code>·<code>CPTR</code>·<code>IMAG</code>·<code>MDBL</code> 네 그룹을 모읍니다. 버퍼 구성에 성공하면 생성자가 준비한 파일명 <code>C:\KB%ld.ADJ</code>로 SD에 씁니다.</p>
-<p>수집 중 그룹 작업 데이터 검사가 실패하면 재구성 경로에 들어갑니다. 여기서는 상태에 따라 이전 레코드를 먼저 무효화할 수 있고, 새 본문을 내부 eMMC에 쓴 뒤 성공하면 파티션 표를 다시 기록합니다. 이는 최종 SD 파일 쓰기 전에 일어나는 내부 기록입니다. <code>MDBL</code>을 재구성할 때는 보존 함수도 거칩니다. 무선 LAN 조정 객체는 일반 경로 <code>E:\WifiInfo.bin</code>과 별도로 보존 경로 <code>B:\WifiInfo.bin</code>을 두며, <code>B:</code>는 내부 eMMC와 같은 제공자에 연결됩니다.</p>
+<p>수집 중 그룹 작업 데이터 검사가 실패하면 재구성 경로에 들어갑니다. 여기서는 상태에 따라 이전 레코드를 먼저 무효화할 수 있고 새 본문을 내부 eMMC에 쓴 뒤 성공하면 파티션 표를 다시 기록합니다. 이는 최종 SD 파일 쓰기 전에 일어나는 내부 기록입니다. <code>MDBL</code>을 재구성할 때는 보존 함수도 거칩니다. 무선 LAN 조정 객체는 일반 경로 <code>E:\WifiInfo.bin</code>과 별도로 보존 경로 <code>B:\WifiInfo.bin</code>을 두며 <code>B:</code>는 내부 eMMC와 같은 제공자에 연결됩니다.</p>
 <div class="callout warn"><strong class="label">주의</strong>
-<p>이 버전의 <code>inf_adj backup</code>은 내부에 흔적을 남기지 않는 백업으로 쓸 수 없습니다. 조정 데이터가 유효하면 SD 파일만 쓰지만, 재구성 분기에 들어가면 내부 eMMC에도 쓰기를 요청합니다.</p></div>
+<p>이 버전의 <code>inf_adj backup</code>은 내부에 흔적을 남기지 않는 백업으로 쓸 수 없습니다. 조정 데이터가 유효하면 SD 파일만 쓰지만 재구성 분기에 들어가면 내부 eMMC에도 쓰기를 요청합니다.</p></div>
 </section>
 
 <section id="evidence">

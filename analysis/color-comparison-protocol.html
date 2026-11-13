@@ -10,8 +10,8 @@
 <body data-camera="k3iii">
 <!-- chrome:top -->
 <a class="skip" href="#main">본문 바로가기</a>
-<div class="topbar"><div class="topbar-in"><a class="brand" href="../index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="../index.html" aria-current="true">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="https://yunhyok.github.io/pentax-q7-firmware-analysis/">Q7</a></div><nav class="topnav" aria-label="주제"><a href="../index.html">개요</a><a href="guide-boot.html">부팅·저장소</a><a href="guide-update.html">업데이트</a><a href="guide-rebuild.html">재구축</a><a href="guide-rtos.html">명령·셸</a><a href="guide-color.html">색 처리</a><a href="lightroom-bridge.html" aria-current="true">Lightroom</a><a href="af-foundations.html">AF</a><a href="ui-port-contract.html">UI</a></nav></div></div>
-<nav class="crumbs" aria-label="현재 위치"><ol><li><a href="../index.html">PENTAX K-3 Mark III</a></li><li><a href="lightroom-bridge.html">Lightroom 색 프로파일</a></li><li aria-current="page">ColorChecker 비교 절차</li></ol></nav>
+<div class="topbar"><div class="topbar-in"><a class="brand" href="../index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="../index.html" aria-current="true">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="https://yunhyok.github.io/pentax-q7-firmware-analysis/">Q7</a></div><nav class="topnav" aria-label="주제"><a href="../index.html">개요</a><a href="guide-boot.html">부팅·저장소</a><a href="guide-update.html">업데이트</a><a href="guide-rebuild.html">재구축</a><a href="guide-rtos.html">명령·셸</a><a href="guide-color.html">색 처리</a><a href="guide-lightroom.html" aria-current="true">Lightroom</a><a href="guide-af.html">AF</a><a href="guide-ui.html">UI</a></nav></div></div>
+<nav class="crumbs" aria-label="현재 위치"><ol><li><a href="../index.html">PENTAX K-3 Mark III</a></li><li><a href="guide-lightroom.html">Lightroom 색 프로파일</a></li><li aria-current="page">ColorChecker 비교 절차</li></ol></nav>
 <!-- /chrome:top -->
 <header class="page-head">
 <p class="eyebrow">Lightroom 색 프로파일 · 측정 방법</p>
@@ -26,7 +26,7 @@
 <section class="summary">
 <h2 data-toc="no">핵심 요약</h2>
 <ul>
-<li>K-3 II의 공개 RAW #1376에는 색상표(ColorChecker)가 찍혀 있습니다. 파일에 들어 있는 카메라 JPEG에서 <strong>패치 24개의 위치를 정하고, 패치마다 한가운데 200×200픽셀</strong>을 측정 영역으로 삼았습니다.</li>
+<li>K-3 II의 공개 RAW #1376에는 색상표(ColorChecker)가 찍혀 있습니다. 파일에 들어 있는 카메라 JPEG에서 <strong>패치 24개의 위치를 정하고 패치마다 한가운데 200×200픽셀</strong>을 측정 영역으로 삼았습니다.</li>
 <li>측정 영역 960,000픽셀에서 카메라 JPEG에도 RAW 센서 값에도 <strong>완전히 검거나 포화된 값이 없었습니다</strong>. 색을 비교하기에 무리가 없는 표본입니다.</li>
 <li>흰색에서 검정까지의 중립 패치 여섯 개는 RAW 녹색 값과 JPEG 밝기가 <strong>같은 순서로 낮아졌습니다</strong>.</li>
 <li>색 차이는 두 영상을 같은 방식으로 CIELAB 색 좌표로 바꾼 뒤 패치별 ΔE<sub>00</sub>으로 계산합니다. 변환 도구와 계산식 구현의 정밀도도 따로 확인했습니다.</li>
@@ -65,7 +65,7 @@
 <caption>이 문서를 읽는 데 필요한 개념</caption>
 <thead><tr><th>용어</th><th>뜻</th></tr></thead>
 <tbody>
-<tr><th scope="row">ColorChecker Classic</th><td>1976년에 발표된 색 재현 시험용 색상표입니다. 가로 6칸 × 세로 4칸, 모두 24개 패치로 이루어집니다. 1~18번은 피부·하늘·잎 같은 자연물의 색과 원색이고, 19~24번은 흰색에서 검정까지 여섯 단계의 중립(무채색) 패치입니다. 실물 사진은 <a href="https://commons.wikimedia.org/wiki/File:ColorChecker100423.jpg">Wikimedia Commons의 공개 사진</a>에서 볼 수 있습니다.</td></tr>
+<tr><th scope="row">ColorChecker Classic</th><td>1976년에 발표된 색 재현 시험용 색상표입니다. 가로 6칸 × 세로 4칸, 모두 24개 패치로 이루어집니다. 1~18번은 피부·하늘·잎 같은 자연물의 색과 원색이고 19~24번은 흰색에서 검정까지 여섯 단계의 중립(무채색) 패치입니다. 실물 사진은 <a href="https://commons.wikimedia.org/wiki/File:ColorChecker100423.jpg">Wikimedia Commons의 공개 사진</a>에서 볼 수 있습니다.</td></tr>
 <tr><th scope="row">내장 JPEG</th><td>DNG 파일 안에 카메라가 함께 넣어 둔 현상 완료 영상입니다. 이 표본에서는 촬영 설정 Natural로 만들어졌습니다. 같은 노출·같은 조명의 카메라 색이므로 비교 기준으로 씁니다.</td></tr>
 <tr><th scope="row"><dfn title="CIE가 1976년에 정한 색 좌표. L*는 밝기, a*와 b*는 색 방향을 나타냅니다.">CIELAB</dfn> (D50)</th><td>사람 눈의 지각에 가깝게 만든 색 좌표입니다. L*는 밝기, a*와 b*는 색 방향입니다. ICC 색 관리가 프로파일을 연결할 때 쓰는 기준 공간이 D50 조명 기준이므로 두 영상을 모두 이 좌표로 옮깁니다.</td></tr>
 <tr><th scope="row">ΔE<sub>00</sub> (CIEDE2000)</th><td>CIELAB 좌표 두 개 사이의 색 차이를 하나의 숫자로 내는 표준 계산식입니다(ISO/CIE 11664-6). 0이면 같은 색이고 클수록 다릅니다.</td></tr>
@@ -157,10 +157,10 @@
 <p>정사각형의 위치와 크기는 <a href="color-comparison-protocol.json">color-comparison-protocol.json</a>의 좌표를 그대로 줄여 그린 것입니다. 사진의 내용은 그리지 않았습니다.</p>
 </figure>
 
-<p>#1376은 ColorChecker Passport를 찍은 사진입니다. Passport에는 표준 24패치 Classic 표적과 다른 용도의 표적이 함께 들어 있는데, 이 절차는 사진 오른쪽의 Classic 표적만 씁니다. 사진 속 Classic 표적은 제조사 배치를 반시계 방향으로 90도 돌린 모습입니다. 사진 파일 자체는 회전되어 있지 않습니다. 그래서 검정(24번)이 오른쪽 위, 흰색(19번)이 오른쪽 아래, 어두운 피부색(1번)이 왼쪽 아래에 옵니다.</p>
+<p>#1376은 ColorChecker Passport를 찍은 사진입니다. Passport에는 표준 24패치 Classic 표적과 다른 용도의 표적이 함께 들어 있는데 이 절차는 사진 오른쪽의 Classic 표적만 씁니다. 사진 속 Classic 표적은 제조사 배치를 반시계 방향으로 90도 돌린 모습입니다. 사진 파일 자체는 회전되어 있지 않습니다. 그래서 검정(24번)이 오른쪽 위, 흰색(19번)이 오른쪽 아래, 어두운 피부색(1번)이 왼쪽 아래에 옵니다.</p>
 <ul>
 <li><strong>좌표 표기</strong> — 원점은 JPEG 왼쪽 위이고 x는 오른쪽, y는 아래로 커집니다. 영역은 <code>[x0, y0, x1, y1)</code>로 적으며 시작 좌표는 포함하고 끝 좌표는 제외합니다. 예를 들어 흰색 19번은 <code>[5019, 3006, 5219, 3206)</code>, 검정 24번은 <code>[5050, 666, 5250, 866)</code>입니다.</li>
-<li><strong>영역을 정한 방법</strong> — 1924×1280으로 줄인 화면에서 패치 중심을 눈으로 고른 뒤 원본 크기로 환산하고, 그 중심에서 200×200픽셀을 잡았습니다.</li>
+<li><strong>영역을 정한 방법</strong> — 1924×1280으로 줄인 화면에서 패치 중심을 눈으로 고른 뒤 원본 크기로 환산하고 그 중심에서 200×200픽셀을 잡았습니다.</li>
 <li><strong>차트 전체를 볼 때</strong> — <code>[3480, 540, 5400, 3350)</code> 범위를 잘라 보면 차트 전체가 한 화면에 들어옵니다.</li>
 </ul>
 
@@ -217,7 +217,7 @@
 <ul>
 <li><strong>끝값 없음</strong> — 선택한 960,000픽셀에서 R·G·B 어느 채널도 0이나 255에 닿지 않았습니다. 전체 최솟값은 [21, 32, 16], 최댓값은 [250, 252, 251]입니다.</li>
 <li><strong>가장 밝은 패치</strong> — 흰색 19번의 중앙값은 8비트 RGB [247, 249, 248]이고 채널별 최댓값은 [250, 252, 251]입니다.</li>
-<li><strong>패치 안의 고른 정도</strong> — 각 영역을 네 사분면으로 나눠 사분면별 밝기 중앙값을 구하고, 그 최대·최소 차이를 영역 전체의 중앙값으로 나눴습니다. 가장 큰 값은 검정 패치의 3.00%였고 나머지는 최대 1.46%였습니다. 검정 패치는 분모가 작아서 같은 절대 편차도 비율로는 크게 나옵니다.</li>
+<li><strong>패치 안의 고른 정도</strong> — 각 영역을 네 사분면으로 나눠 사분면별 밝기 중앙값을 구하고 그 최대·최소 차이를 영역 전체의 중앙값으로 나눴습니다. 가장 큰 값은 검정 패치의 3.00%였고 나머지는 최대 1.46%였습니다. 검정 패치는 분모가 작아서 같은 절대 편차도 비율로는 크게 나옵니다.</li>
 </ul>
 <div class="table-wrap"><table class="fit compact">
 <caption>영역 안 밝기 편차가 큰 패치 네 개</caption>
@@ -248,7 +248,7 @@
 <tr><td>(3525, 3260)</td><td class="n">-8</td><td class="n">-20</td><td class="n">0.920</td></tr>
 <tr><td>(5333, 3290)</td><td class="n">-30</td><td class="n">-18</td><td class="n">0.926</td></tr>
 </tbody></table></div>
-<p class="small">방법: 절반 크기로 줄인 JPEG의 녹색 채널과, RAW의 두 녹색 위상을 평균한 영상에서 Sobel 윤곽을 구해 모서리 조각을 맞췄습니다. 네 점으로 사영 변환을 구한 뒤 200×200 영역의 중심만 옮겼고 CFA 값을 다시 보간하지 않았습니다. 활성 영역은 (위 4, 왼쪽 10, 아래 4028, 오른쪽 6038)이고, 기본 크롭 시작점은 활성 영역 기준 (6, 12)입니다.</p>
+<p class="small">방법: 절반 크기로 줄인 JPEG의 녹색 채널과, RAW의 두 녹색 위상을 평균한 영상에서 Sobel 윤곽을 구해 모서리 조각을 맞췄습니다. 네 점으로 사영 변환을 구한 뒤 200×200 영역의 중심만 옮겼고 CFA 값을 다시 보간하지 않았습니다. 활성 영역은 (위 4, 왼쪽 10, 아래 4028, 오른쪽 6038)이고 기본 크롭 시작점은 활성 영역 기준 (6, 12)입니다.</p>
 <p class="small">이렇게 옮긴 RAW 쪽 영역은, <a href="lightroom-render-comparison.html#method">Lightroom TIFF와 JPEG를 따로 맞춰 구한 영역</a>과 24개 패치 모두에서 1픽셀 이내로 일치합니다. Lightroom TIFF의 화면 배치가 RAW 기본 크롭과 같다는 뜻입니다.</p>
 </details>
 </section>
@@ -309,7 +309,7 @@
 </svg>
 </div>
 <ul class="dg-legend"><li><i></i>RAW G: 센서의 녹색 값(현상 전, 선형)</li><li><i class="key"></i>JPEG Y: 내장 JPEG의 선형 휘도(카메라 현상 후)</li></ul>
-<p>두 값은 물리량이 다릅니다. RAW G는 센서 지표이고 JPEG Y는 카메라가 톤 처리를 마친 뒤의 밝기입니다. 같은 축에 그린 것은 순서를 비교하기 위해서이며, 막대 길이의 차이를 톤 곡선으로 해석해서는 안 됩니다.</p>
+<p>두 값은 물리량이 다릅니다. RAW G는 센서 지표이고 JPEG Y는 카메라가 톤 처리를 마친 뒤의 밝기입니다. 같은 축에 그린 것은 순서를 비교하기 위해서이며 막대 길이의 차이를 톤 곡선으로 해석해서는 안 됩니다.</p>
 </figure>
 
 <div class="table-wrap"><table class="compact">
@@ -324,7 +324,7 @@
 <tr><th scope="row" class="nowrap">24 black</th><td class="n">184 / 426 / 430 / 306</td><td class="n">0.026171</td><td class="n">0.021704</td><td class="n">−0.937%</td><td class="n">0.4286</td><td class="n">0.7143</td></tr>
 </tbody></table></div>
 <ul>
-<li><strong>계산 방법</strong> — 위치를 맞춘 200×200 영역에서 R·G1·G2·B 위상마다 표본 10,000개의 중앙값을 구했습니다. CFA를 다시 표본화하지 않았고, 값은 <code>(DN−1)/(16317−1)</code>로 정규화했습니다. RAW G는 두 녹색 위상의 평균입니다. JPEG Y는 내장 JPEG의 선형 sRGB 휘도 중앙값입니다.</li>
+<li><strong>계산 방법</strong> — 위치를 맞춘 200×200 영역에서 R·G1·G2·B 위상마다 표본 10,000개의 중앙값을 구했습니다. CFA를 다시 표본화하지 않았고 값은 <code>(DN−1)/(16317−1)</code>로 정규화했습니다. RAW G는 두 녹색 위상의 평균입니다. JPEG Y는 내장 JPEG의 선형 sRGB 휘도 중앙값입니다.</li>
 <li><strong>두 녹색 위상의 차이</strong> — G1과 G2의 상대 차이는 검정 패치에서 절댓값 0.937%로 가장 컸습니다.</li>
 <li><strong>색 비율의 안정성</strong> — 여섯 패치에서 R/G의 최댓값과 최솟값 차이를 중앙값으로 나누면 3.00%, B/G는 4.12%입니다.</li>
 </ul>
@@ -334,7 +334,7 @@
 
 <section id="procedure">
 <h2>Lightroom 출력의 색차를 계산하는 순서</h2>
-<p class="takeaway">두 영상을 같은 색 관리 규칙으로 D50 CIELAB에 옮기고, 패치별 중앙값끼리 ΔE<sub>00</sub>을 구합니다.</p>
+<p class="takeaway">두 영상을 같은 색 관리 규칙으로 D50 CIELAB에 옮기고 패치별 중앙값끼리 ΔE<sub>00</sub>을 구합니다.</p>
 <ol class="flow">
 <li><strong>현상과 내보내기</strong><span>같은 RAW를 프로파일만 바꿔 16비트 TIFF로</span></li>
 <li><strong>위치 확인</strong><span>차트 모서리와 안쪽 경계를 대조해 영역을 옮김</span></li>
@@ -413,7 +413,7 @@ python -B tools/check_neutral_rois.py sample-1376.dng sample-1376-preview.jpg --
 </main>
 </div>
 <!-- chrome:bottom -->
-<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">Lightroom 색 프로파일 — 이 주제의 문서</h2><ol><li><a href="lightroom-bridge.html">Lightroom 프로파일 안내<span>DCP 생성·검증의 전체 흐름</span></a></li><li><a href="raw-test-inputs.html">시험용 RAW 준비</a></li><li><a href="color-comparison-protocol.html" aria-current="page">ColorChecker 비교 절차</a></li><li><a href="lightroom-render-comparison.html">실제 TIFF 6개 비교</a></li><li><a href="lightroom-tone-comparison.html">톤 곡선 비교</a></li><li><a href="lightroom-model-exports.html">K-3 III·Q7 DCP 내보내기</a></li><li><a href="lightroom-profile-fingerprints.html">프로파일 지문 재현</a></li><li><a href="lightroom-look-controls.html">LookTable 대조 실험</a></li><li><a href="color-tone-residual.html">톤 보정 뒤 남는 색차</a></li><li><a href="color-scene-transfer.html">고정 톤의 독립 장면 비교<span>K-3 II #1363과 Lightroom 버전 대조</span></a></li><li><a href="lightroom-composed-tone.html">합성 톤 DCP의 실제 Lightroom 출력<span>두 장면·최대 색차 기준 미충족</span></a></li><li><a href="lightroom-tone-coordinates.html">Lightroom 톤과 RGB 좌표<span>같은 엔진·두 출력 색공간 대조</span></a></li><li><a href="lightroom-studio-baseline.html">K-3 III·Q7 Bright 스튜디오 비교<span>정합 통과 영역의 JPEG 대비 색차</span></a></li><li><a href="lightroom-studio-reference.html">K-3 III·Q7 참조 프로파일 비교<span>같은 장면의 공통 마스크·As Shot 대조</span></a></li><li><a href="lightroom-as-shot.html">As Shot과 프로파일별 백색점<span>같은 Q7 RAW의 SDK 수식 재현</span></a></li><li><a href="lightroom-pef-neutral.html">K-3 III PEF의 As Shot 중립값<span>두 DNG 변환과 세 프로파일 수식 재현</span></a></li><li><a href="lightroom-cfa-preservation.html">K-3 III PEF·DNG의 CFA 샘플 비교<span>변환 전후 전체 26,628,096개 샘플 대조</span></a></li><li><a href="lightroom-cfa-range.html">K-3 III DNG의 CFA 범위와 기본 크롭<span>활성 영역과 크롭의 WhiteLevel 대조</span></a></li><li><a href="lightroom-sdk-stage2.html">K-3 III DNG의 Adobe SDK Stage 2 실행<span>원본 SDK에서 활성 영역 25,891,840개 전수 대조</span></a></li><li><a href="lightroom-sdk-stage3.html">K-3 III DNG의 Adobe SDK Stage 3<span>카메라 채널 77,675,520개 보간 대조</span></a></li></ol></nav>
+<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">Lightroom 색 프로파일 — 이 주제의 문서</h2><ol><li><a href="guide-lightroom.html">Lightroom 색 프로파일 안내</a></li><li><a href="lightroom-bridge.html">DCP 구조와 생성 도구<span>세 기종 공통</span></a></li><li><a href="raw-test-inputs.html">시험용 RAW 준비</a></li><li><a href="color-comparison-protocol.html" aria-current="page">ColorChecker 비교 절차</a></li><li><a href="lightroom-render-comparison.html">실제 TIFF 6개 비교</a></li><li><a href="lightroom-tone-comparison.html">톤 곡선 비교</a></li><li><a href="lightroom-model-exports.html">K-3 III·Q7 DCP 내보내기</a></li><li><a href="lightroom-profile-fingerprints.html">프로파일 지문 재현</a></li><li><a href="lightroom-look-controls.html">LookTable 대조 실험</a></li><li><a href="color-tone-residual.html">톤 보정 뒤 남는 색차</a></li><li><a href="color-scene-transfer.html">고정 톤의 독립 장면 비교<span>K-3 II #1363과 Lightroom 버전 대조</span></a></li><li><a href="lightroom-composed-tone.html">합성 톤 DCP의 실제 Lightroom 출력<span>두 장면·최대 색차 기준 미충족</span></a></li><li><a href="lightroom-tone-coordinates.html">Lightroom 톤과 RGB 좌표<span>같은 엔진·두 출력 색공간 대조</span></a></li><li><a href="lightroom-studio-baseline.html">K-3 III·Q7 Bright 스튜디오 비교<span>정합 통과 영역의 JPEG 대비 색차</span></a></li><li><a href="lightroom-studio-reference.html">K-3 III·Q7 참조 프로파일 비교<span>같은 장면의 공통 마스크·As Shot 대조</span></a></li><li><a href="lightroom-as-shot.html">As Shot과 프로파일별 백색점<span>같은 Q7 RAW의 SDK 수식 재현</span></a></li><li><a href="lightroom-pef-neutral.html">K-3 III PEF의 As Shot 중립값<span>두 DNG 변환과 세 프로파일 수식 재현</span></a></li><li><a href="lightroom-cfa-preservation.html">K-3 III PEF·DNG의 CFA 샘플 비교<span>변환 전후 전체 26,628,096개 샘플 대조</span></a></li><li><a href="lightroom-cfa-range.html">K-3 III DNG의 CFA 범위와 기본 크롭<span>활성 영역과 크롭의 WhiteLevel 대조</span></a></li><li><a href="lightroom-sdk-stage2.html">K-3 III DNG의 Adobe SDK Stage 2 실행<span>원본 SDK에서 활성 영역 25,891,840개 전수 대조</span></a></li><li><a href="lightroom-sdk-stage3.html">K-3 III DNG의 Adobe SDK Stage 3<span>카메라 채널 77,675,520개 보간 대조</span></a></li></ol></nav>
 <nav class="pager" aria-label="이전·다음 문서"><a class="prev" href="raw-test-inputs.html"><small>← 이전</small>시험용 RAW 준비</a><a class="next" href="lightroom-render-comparison.html"><small>다음 →</small>실제 TIFF 6개 비교</a></nav>
 <footer class="sitefoot"><div class="sitefoot-in"><nav aria-label="사이트"><a href="../index.html#map">문서 지도</a><a href="../index.html#levels">검증 수준 읽는 법</a><a href="../glossary.html">용어집</a><a href="research-program.html">세 기종 연구 본부</a><a href="https://github.com/yunhyok/pentax-k3iii-firmware-analysis">GitHub 저장소</a></nav><p>PENTAX 펌웨어 연구. PC에서 수행한 정적 분석과 에뮬레이션 결과이며, 카메라 실기에서 검증한 내용이 아닙니다. 원본 펌웨어와 추출한 독점 코드는 포함하지 않습니다.</p></div></footer>
 <!-- /chrome:bottom -->

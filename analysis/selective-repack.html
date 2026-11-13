@@ -10,7 +10,7 @@
 <body data-camera="k3iii">
 <!-- chrome:top -->
 <a class="skip" href="#main">본문 바로가기</a>
-<div class="topbar"><div class="topbar-in"><a class="brand" href="../index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="../index.html" aria-current="true">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="https://yunhyok.github.io/pentax-q7-firmware-analysis/">Q7</a></div><nav class="topnav" aria-label="주제"><a href="../index.html">개요</a><a href="guide-boot.html">부팅·저장소</a><a href="guide-update.html">업데이트</a><a href="guide-rebuild.html" aria-current="true">재구축</a><a href="guide-rtos.html">명령·셸</a><a href="guide-color.html">색 처리</a><a href="lightroom-bridge.html">Lightroom</a><a href="af-foundations.html">AF</a><a href="ui-port-contract.html">UI</a></nav></div></div>
+<div class="topbar"><div class="topbar-in"><a class="brand" href="../index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="../index.html" aria-current="true">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="https://yunhyok.github.io/pentax-q7-firmware-analysis/">Q7</a></div><nav class="topnav" aria-label="주제"><a href="../index.html">개요</a><a href="guide-boot.html">부팅·저장소</a><a href="guide-update.html">업데이트</a><a href="guide-rebuild.html" aria-current="true">재구축</a><a href="guide-rtos.html">명령·셸</a><a href="guide-color.html">색 처리</a><a href="guide-lightroom.html">Lightroom</a><a href="guide-af.html">AF</a><a href="guide-ui.html">UI</a></nav></div></div>
 <nav class="crumbs" aria-label="현재 위치"><ol><li><a href="../index.html">PENTAX K-3 Mark III</a></li><li><a href="guide-rebuild.html">펌웨어 재구축</a></li><li aria-current="page">압축 블록을 보존한 재패키징</li></ol></nav>
 <!-- /chrome:top -->
 <header class="page-head">
@@ -27,8 +27,8 @@
 <section class="summary">
 <h2 data-toc="no">핵심 요약</h2>
 <ul>
-<li>함수 하나만 바꾼 펌웨어 후보를 <strong>35,136,788바이트</strong>로 다시 만들었습니다. 원본보다 30,072바이트 클 뿐이고, 압축을 전부 푼 앞 단계 후보(약 7,900만 바이트)보다 4,355만 바이트 작습니다.</li>
-<li>원본 압축 스트림의 블록 3,202개 중 <strong>3,198개는 원본 인코딩 바이트를 그대로 재사용</strong>하고, 바뀐 내용에 영향을 받는 4개만 다시 저장했습니다. 압축을 푼 결과는 앞 단계의 후보와 바이트까지 같았습니다.</li>
+<li>함수 하나만 바꾼 펌웨어 후보를 <strong>35,136,788바이트</strong>로 다시 만들었습니다. 원본보다 30,072바이트 클 뿐이고 압축을 전부 푼 앞 단계 후보(약 7,900만 바이트)보다 4,355만 바이트 작습니다.</li>
+<li>원본 압축 스트림의 블록 3,202개 중 <strong>3,198개는 원본 인코딩 바이트를 그대로 재사용</strong>하고 바뀐 내용에 영향을 받는 4개만 다시 저장했습니다. 압축을 푼 결과는 앞 단계의 후보와 바이트까지 같았습니다.</li>
 <li>독립 디코더로 다시 풀어 같은 결과가 나오는지, 원본 펌웨어의 헤더·체크섬 검사를 통과하는지 확인했습니다. <strong>카메라의 RAM·하드웨어 디코더·업데이트·부팅은 확인하지 않았습니다.</strong></li>
 </ul>
 </section>
@@ -58,7 +58,7 @@
 <section id="background">
 <h2>배경: 왜 압축 블록을 그대로 두는가</h2>
 <p><a href="recompiled-integration.html">앞 단계</a>에서는 바꾼 내용을 넣은 뒤 펌웨어를 전부 압축 없이 저장했습니다. 검증에는 충분했지만 파일이 두 배 넘게 커졌습니다. 카메라가 받아들일 수 있는 크기에 가깝게 하려면, 바뀐 부분만 새로 넣고 손대지 않은 부분은 원본이 쓰던 압축 그대로 재사용하는 편이 낫습니다.</p>
-<p class="takeaway">원본 압축기를 복원하지는 못합니다. 대신 바뀐 바이트의 영향을 받지 않는 블록은 원본 인코딩을 그대로 복사하고, 영향을 받는 블록만 압축 없이 다시 저장합니다.</p>
+<p class="takeaway">원본 압축기를 복원하지는 못합니다. 대신 바뀐 바이트의 영향을 받지 않는 블록은 원본 인코딩을 그대로 복사하고 영향을 받는 블록만 압축 없이 다시 저장합니다.</p>
 
 <figure class="diagram">
 <figcaption>세 패키지의 크기 비교</figcaption>
@@ -128,12 +128,12 @@
 <tr><th scope="row">873</th><td class="n">0</td><td>길이 맞춤용. 출력·직전 범위는 원본과 같음</td><td class="n">24,233 → 24,578바이트</td></tr>
 <tr><th scope="row">3201</th><td class="n">4</td><td>압축을 푼 끝의 내부 체크섬 갱신</td><td class="n">44 → 7,926바이트</td></tr>
 </tbody></table></div>
-<p class="small muted">압축을 푼 78,683,892바이트 중 원본과 다른 것은 RTOS 코드 79바이트와 내부 체크섬 4바이트, 모두 83바이트뿐입니다(교체 구간 112바이트 중 값이 달라진 것은 79개입니다). 재패키징 도구는 최종 스트림 길이와 바깥 체크섬을 다시 계산하고, 후보를 다시 열어 목표와 비교합니다.</p>
+<p class="small muted">압축을 푼 78,683,892바이트 중 원본과 다른 것은 RTOS 코드 79바이트와 내부 체크섬 4바이트, 모두 83바이트뿐입니다(교체 구간 112바이트 중 값이 달라진 것은 79개입니다). 재패키징 도구는 최종 스트림 길이와 바깥 체크섬을 다시 계산하고 후보를 다시 열어 목표와 비교합니다.</p>
 </section>
 
 <section id="verify">
 <h2>검증 결과와 적용 범위</h2>
-<p class="takeaway">공개 도구가 만든 후보가 선행 후보와 바이트까지 같고, 두 가지 독립 방법으로 다시 풀어도 목표 내용과 일치했습니다.</p>
+<p class="takeaway">공개 도구가 만든 후보가 선행 후보와 바이트까지 같고 두 가지 독립 방법으로 다시 풀어도 목표 내용과 일치했습니다.</p>
 <ul>
 <li><strong>자체 재현</strong> — 공개 도구로 다시 만든 후보가 선행 실험의 선택 후보와 바이트 단위로 같았습니다. 교체하지 않은 3,198개 블록도 원본 인코딩과 각각 대조했습니다.</li>
 <li><strong>독립 디코더</strong> — 다른 사람이 만든 디코더(Trimz/Ricoh3x, 특정 커밋으로 고정)로 후보를 풀었을 때 결과가 전부 저장 후보와 같았습니다. 같은 압축 형식을 쓰는 리코 GR 계열 도구를 K-3 III 바이트로 교차 확인한 것입니다.</li>
@@ -160,7 +160,7 @@
 <section id="limits">
 <h2>한계와 남은 과제</h2>
 <ul>
-<li>이 방법은 원본 압축기를 복원한 것이 아닙니다. 바뀌지 않은 블록의 원본 바이트를 그대로 복사하고, 영향받는 블록만 압축 없이 저장하는 보수적 방식입니다.</li>
+<li>이 방법은 원본 압축기를 복원한 것이 아닙니다. 바뀌지 않은 블록의 원본 바이트를 그대로 복사하고 영향받는 블록만 압축 없이 저장하는 보수적 방식입니다.</li>
 <li>레코드 크기 변경, 추가·삭제, 소스 컴파일, 링커 재구성, 서명 생성은 지원하지 않습니다.</li>
 <li>카메라가 이 후보를 실제로 받아 동작하는지는 미확인입니다. 통합 전 확인 항목은 <a href="research-roadmap.html">수정·이식 선행 연구</a>에 있습니다.</li>
 </ul>

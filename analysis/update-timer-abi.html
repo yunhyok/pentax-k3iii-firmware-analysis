@@ -10,7 +10,7 @@
 <body data-camera="k3iii">
 <!-- chrome:top -->
 <a class="skip" href="#main">본문 바로가기</a>
-<div class="topbar"><div class="topbar-in"><a class="brand" href="../index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="../index.html" aria-current="true">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="https://yunhyok.github.io/pentax-q7-firmware-analysis/">Q7</a></div><nav class="topnav" aria-label="주제"><a href="../index.html">개요</a><a href="guide-boot.html">부팅·저장소</a><a href="guide-update.html" aria-current="true">업데이트</a><a href="guide-rebuild.html">재구축</a><a href="guide-rtos.html">명령·셸</a><a href="guide-color.html">색 처리</a><a href="lightroom-bridge.html">Lightroom</a><a href="af-foundations.html">AF</a><a href="ui-port-contract.html">UI</a></nav></div></div>
+<div class="topbar"><div class="topbar-in"><a class="brand" href="../index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="../index.html" aria-current="true">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="https://yunhyok.github.io/pentax-q7-firmware-analysis/">Q7</a></div><nav class="topnav" aria-label="주제"><a href="../index.html">개요</a><a href="guide-boot.html">부팅·저장소</a><a href="guide-update.html" aria-current="true">업데이트</a><a href="guide-rebuild.html">재구축</a><a href="guide-rtos.html">명령·셸</a><a href="guide-color.html">색 처리</a><a href="guide-lightroom.html">Lightroom</a><a href="guide-af.html">AF</a><a href="guide-ui.html">UI</a></nav></div></div>
 <nav class="crumbs" aria-label="현재 위치"><ol><li><a href="../index.html">PENTAX K-3 Mark III</a></li><li><a href="guide-update.html">펌웨어 업데이트 과정</a></li><li aria-current="page">커널 호출과 예약 시각</li></ol></nav>
 <!-- /chrome:top -->
 <header class="page-head">
@@ -28,8 +28,8 @@
 <h2 data-toc="no">핵심 요약</h2>
 <ul>
 <li>알람 시작, 정지, 상태 조회 호출의 함수 번호를 <strong>펌웨어 안의 디스패치 표</strong>에서 직접 찾아 커널 함수 세 개에 연결했습니다. 외부 문서의 번호표에 기대지 않았습니다.</li>
-<li>시작 경로는 <strong>예약 시각 = 현재 카운터 + 요청 지연 + 주기 값</strong>을 64비트로 계산합니다. 상태 조회는 예약 시각에서 현재 카운터와 주기 값을 빼고, 음수면 0으로 바꿔 하위 32비트를 돌려줍니다.</li>
-<li>이 계산과 표 조회를 원본 기계어로 <strong>17개 사례</strong> 실행했고, 결과는 모두 식과 같았습니다.</li>
+<li>시작 경로는 <strong>예약 시각 = 현재 카운터 + 요청 지연 + 주기 값</strong>을 64비트로 계산합니다. 상태 조회는 예약 시각에서 현재 카운터와 주기 값을 빼고 음수면 0으로 바꿔 하위 32비트를 돌려줍니다.</li>
+<li>이 계산과 표 조회를 원본 기계어로 <strong>17개 사례</strong> 실행했고 결과는 모두 식과 같았습니다.</li>
 <li>펌웨어의 식별 문자열은 SMP T-Kernel 1.00.01을 가리킵니다. 공개된 T-Kernel 2.0 소스와 계산 구조는 닮았지만 함수 번호가 다릅니다. 그래서 공개 소스의 시간 단위 정의를 그대로 옮기지 않았습니다.</li>
 </ul>
 </section>
@@ -63,8 +63,8 @@
 
 <section id="background">
 <h2>배경: UI 코드는 커널 함수를 번호로 부릅니다</h2>
-<p><a href="update-ui-timer.html">UI 타이머</a>는 시간을 직접 재지 않습니다. 커널의 알람 기능에 “얼마 뒤에 알려 달라”고 맡기고, 필요하면 멈추거나 상태를 묻습니다. 이 세 가지 요청은 <dfn title="응용 코드가 커널에 일을 맡기는 정해진 통로. ARM에서는 SVC 명령으로 예외를 일으켜 커널로 들어갑니다.">시스템 호출</dfn>입니다.</p>
-<p>ARM에서 시스템 호출은 <code>svc</code> 명령으로 시작합니다. 이 명령은 예외를 일으켜 CPU를 커널 쪽 코드로 보냅니다. 어떤 기능을 원하는지는 <strong>함수 번호</strong>로 알리고, 커널은 번호로 <strong>디스패치 표</strong>를 찾아 해당 함수로 갑니다. 이 문서는 그 표를 따라가 커널 함수 세 개를 찾고, 그 가운데 시작과 상태 조회의 시각 계산을 확인합니다.</p>
+<p><a href="update-ui-timer.html">UI 타이머</a>는 시간을 직접 재지 않습니다. 커널의 알람 기능에 “얼마 뒤에 알려 달라”고 맡기고 필요하면 멈추거나 상태를 묻습니다. 이 세 가지 요청은 <dfn title="응용 코드가 커널에 일을 맡기는 정해진 통로. ARM에서는 SVC 명령으로 예외를 일으켜 커널로 들어갑니다.">시스템 호출</dfn>입니다.</p>
+<p>ARM에서 시스템 호출은 <code>svc</code> 명령으로 시작합니다. 이 명령은 예외를 일으켜 CPU를 커널 쪽 코드로 보냅니다. 어떤 기능을 원하는지는 <strong>함수 번호</strong>로 알리고 커널은 번호로 <strong>디스패치 표</strong>를 찾아 해당 함수로 갑니다. 이 문서는 그 표를 따라가 커널 함수 세 개를 찾고 그 가운데 시작과 상태 조회의 시각 계산을 확인합니다.</p>
 
 <figure class="diagram">
 <figcaption>타이머 사슬 일곱 문서와 이 문서의 위치</figcaption>
@@ -130,7 +130,7 @@
 
 <section id="dispatch">
 <h2>세 호출은 펌웨어 안의 표를 거쳐 커널 함수 세 개에 닿습니다</h2>
-<p class="takeaway">함수 번호의 상위 16비트를 부호 있는 수로 읽어 표의 위치를 정합니다. 세 번호는 표에서 이웃한 세 칸을 가리키고, 그 칸에 커널 함수의 주소가 들어 있습니다.</p>
+<p class="takeaway">함수 번호의 상위 16비트를 부호 있는 수로 읽어 표의 위치를 정합니다. 세 번호는 표에서 이웃한 세 칸을 가리키고 그 칸에 커널 함수의 주소가 들어 있습니다.</p>
 
 <figure class="diagram">
 <figcaption>함수 번호에서 커널 함수까지</figcaption>
@@ -200,8 +200,8 @@
 <tr><th scope="row">알람 정지</th><td><code>0x805b0100</code></td><td class="n">−32,677</td><td><code>0x525d77cc</code></td><td><code>0x525d0980</code></td></tr>
 <tr><th scope="row">알람 상태 조회</th><td><code>0x805c0200</code></td><td class="n">−32,676</td><td><code>0x525d77d0</code></td><td><code>0x525d0ae4</code></td></tr>
 </tbody></table></div>
-<p>인덱스는 함수 번호의 상위 16비트에서 65,536을 뺀 값입니다. 표 항목의 위치는 기준 주소에 인덱스의 네 배를 더해 얻습니다. 세 사례 모두 계산한 위치에 든 값이 분기 대상과 같았고, 넘겨준 인수 두 개는 바뀌지 않았습니다.</p>
-<p>ARM의 예외 벡터 표에서 세 번째 칸(오프셋 8)은 SVC 예외의 자리입니다. 이 펌웨어의 그 칸은 SVC 분배 코드로 가는 분기이고, SVC 6은 디스패치 코드로 이어집니다. 여기까지는 코드를 읽어 확인했습니다. 실행 시험은 권한 검사와 예외 진입을 건너뛰고 디스패치 코드의 뒷부분부터 시작했습니다.</p>
+<p>인덱스는 함수 번호의 상위 16비트에서 65,536을 뺀 값입니다. 표 항목의 위치는 기준 주소에 인덱스의 네 배를 더해 얻습니다. 세 사례 모두 계산한 위치에 든 값이 분기 대상과 같았고 넘겨준 인수 두 개는 바뀌지 않았습니다.</p>
+<p>ARM의 예외 벡터 표에서 세 번째 칸(오프셋 8)은 SVC 예외의 자리입니다. 이 펌웨어의 그 칸은 SVC 분배 코드로 가는 분기이고 SVC 6은 디스패치 코드로 이어집니다. 여기까지는 코드를 읽어 확인했습니다. 실행 시험은 권한 검사와 예외 진입을 건너뛰고 디스패치 코드의 뒷부분부터 시작했습니다.</p>
 
 <details class="evidence"><summary>벡터, 표, 핵심 명령</summary>
 <div class="table-wrap"><table class="compact">
@@ -214,7 +214,7 @@
 <tr><td><code>0x525d7900</code></td><td><code>ldr pc, [ip, sl, lsl #2]</code> — 기준 + 인덱스×4의 값으로 분기</td></tr>
 <tr><td><code>0x525b7864</code>, <code>0x525b78d0</code>, <code>0x525b73e4</code></td><td>호출 직전 함수 세 개가 읽는 함수 번호 상수</td></tr>
 </tbody></table></div>
-<p class="small">호출 직전 함수는 <code>0x525b7844</code>(시작), <code>0x525b78b0</code>(정지), <code>0x525b73c4</code>(상태 조회)이고, 모두 <code>svc #6</code>을 실행합니다. 커널 함수 구간은 알람 시작 <code>0x525d0590</code>–<code>0x525d0980</code>, 알람 상태 조회 <code>0x525d0ae4</code>–<code>0x525d0c70</code>입니다.</p>
+<p class="small">호출 직전 함수는 <code>0x525b7844</code>(시작), <code>0x525b78b0</code>(정지), <code>0x525b73c4</code>(상태 조회)이고 모두 <code>svc #6</code>을 실행합니다. 커널 함수 구간은 알람 시작 <code>0x525d0590</code>–<code>0x525d0980</code>, 알람 상태 조회 <code>0x525d0ae4</code>–<code>0x525d0c70</code>입니다.</p>
 </details>
 </section>
 
@@ -255,7 +255,7 @@
 </figure>
 
 <h3>예약 시각</h3>
-<p>알람 시작 함수 안의 한 구간은 현재 카운터(64비트)에 요청 지연(32비트)을 더하고, 다시 주기 값(32비트)을 더합니다. 결과가 64비트를 넘으면 넘친 부분은 버려집니다. 이어서 기록 함수가 알람 객체 안의 타이머 노드에 예약 시각, 만료 때 부를 함수, 그 인수를 적고 큐 삽입 함수로 넘어갑니다.</p>
+<p>알람 시작 함수 안의 한 구간은 현재 카운터(64비트)에 요청 지연(32비트)을 더하고 다시 주기 값(32비트)을 더합니다. 결과가 64비트를 넘으면 넘친 부분은 버려집니다. 이어서 기록 함수가 알람 객체 안의 타이머 노드에 예약 시각, 만료 때 부를 함수, 그 인수를 적고 큐 삽입 함수로 넘어갑니다.</p>
 <div class="table-wrap"><table>
 <caption>예약 시각 사례 5개</caption>
 <thead><tr><th class="n">현재 카운터</th><th class="n">요청 지연</th><th class="n">주기 값</th><th class="n">예약 시각</th><th>보려던 것</th></tr></thead>
@@ -321,7 +321,7 @@
 <section id="tkernel">
 <h2>공개 T-Kernel과 번호는 다르고 구조는 닮았습니다</h2>
 <p class="takeaway">함수 번호 세 개는 공개 T-Kernel 2.0의 알람 호출 번호와 다릅니다. 반면 계산 방식과 출력 구조체의 순서는 공개 소스의 알람 코드와 같은 모양입니다.</p>
-<p>펌웨어 안의 식별 문자열은 SMP T-Kernel 1.00.01을 가리킵니다. T-Kernel은 TRON Forum이 규격과 소스를 공개한 실시간 운영체제입니다. 공개된 것은 단일 프로세서용 2.0 소스이고, 이 펌웨어가 쓰는 SMP 판의 소스는 확인하지 못했습니다. SMP 판 규격 PDF는 서버 오류로 받지 못해 근거로 쓰지 않았습니다.</p>
+<p>펌웨어 안의 식별 문자열은 SMP T-Kernel 1.00.01을 가리킵니다. T-Kernel은 TRON Forum이 규격과 소스를 공개한 실시간 운영체제입니다. 공개된 것은 단일 프로세서용 2.0 소스이고 이 펌웨어가 쓰는 SMP 판의 소스는 확인하지 못했습니다. SMP 판 규격 PDF는 서버 오류로 받지 못해 근거로 쓰지 않았습니다.</p>
 <div class="table-wrap"><table>
 <caption>알람 호출 함수 번호 비교</caption>
 <thead><tr><th>요청</th><th>이 펌웨어</th><th>공개 T-Kernel 2.0</th><th>차이</th></tr></thead>
@@ -341,7 +341,7 @@
 </tbody></table></div>
 <p>공개 소스의 주석은 주기를 더하는 까닭을 “지정한 시간보다 짧게 기다리는 일이 없게 하려는 것”이라고 설명합니다. 예약한 순간이 틱과 틱 사이 어디쯤인지 모르므로 한 틱을 더 얹는다는 뜻으로 읽힙니다.</p>
 <div class="callout warn"><strong class="label">주의</strong>
-<p>닮았다는 것은 이 문서에서 두 코드를 견주어 본 결과이고, 같은 소스에서 나왔다고 확인한 것은 아닙니다. 공개 T-Kernel 2.0은 지연 값의 자료형 <code>RELTIM</code>을 밀리초로 정의합니다. 하지만 함수 번호가 다른 이 펌웨어에 그 정의를 그대로 적용하지 않았습니다. 시간 단위는 미확인으로 둡니다.</p></div>
+<p>닮았다는 것은 이 문서에서 두 코드를 견주어 본 결과이고 같은 소스에서 나왔다고 확인한 것은 아닙니다. 공개 T-Kernel 2.0은 지연 값의 자료형 <code>RELTIM</code>을 밀리초로 정의합니다. 하지만 함수 번호가 다른 이 펌웨어에 그 정의를 그대로 적용하지 않았습니다. 시간 단위는 미확인으로 둡니다.</p></div>
 </section>
 
 <section id="cases">
@@ -355,7 +355,7 @@
 <tr><th scope="row">상태 조회</th><td class="n">9</td><td><code>0x525d0bfc</code>–<code>0x525d0c54</code></td><td>음수 처리, 하위 32비트, 상태 값의 비트</td></tr>
 </tbody></table></div>
 <p>따로 잘라 낸 RTOS 파일과 통합 decoded 파일에서 결과가 같았습니다. 각 실행은 표에 적은 명령 구간 안에서만 진행하도록 제한했습니다. 상태 조회 사례에서는 알람 객체가 바뀌지 않았는지, 출력 구조체 앞뒤의 메모리가 그대로인지도 확인했습니다.</p>
-<p class="small muted">공개하지 않고 보관한 자료는 디컴파일 C 2개, 보조 구간 7개, ARM 명령 453 words입니다. 상태 조회의 디컴파일 결과에는 잘못 복원된 자기 반복 <code>goto</code>가 있어서, 판정은 원본 ARM 명령과 실행 결과로 했습니다.</p>
+<p class="small muted">공개하지 않고 보관한 자료는 디컴파일 C 2개, 보조 구간 7개, ARM 명령 453 words입니다. 상태 조회의 디컴파일 결과에는 잘못 복원된 자기 반복 <code>goto</code>가 있어서 판정은 원본 ARM 명령과 실행 결과로 했습니다.</p>
 </section>
 
 <section id="limits">

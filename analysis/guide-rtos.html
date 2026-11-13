@@ -10,7 +10,7 @@
 <body data-camera="k3iii">
 <!-- chrome:top -->
 <a class="skip" href="#main">본문 바로가기</a>
-<div class="topbar"><div class="topbar-in"><a class="brand" href="../index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="../index.html" aria-current="true">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="https://yunhyok.github.io/pentax-q7-firmware-analysis/">Q7</a></div><nav class="topnav" aria-label="주제"><a href="../index.html">개요</a><a href="guide-boot.html">부팅·저장소</a><a href="guide-update.html">업데이트</a><a href="guide-rebuild.html">재구축</a><a href="guide-rtos.html" aria-current="true">명령·셸</a><a href="guide-color.html">색 처리</a><a href="lightroom-bridge.html">Lightroom</a><a href="af-foundations.html">AF</a><a href="ui-port-contract.html">UI</a></nav></div></div>
+<div class="topbar"><div class="topbar-in"><a class="brand" href="../index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="../index.html" aria-current="true">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="https://yunhyok.github.io/pentax-q7-firmware-analysis/">Q7</a></div><nav class="topnav" aria-label="주제"><a href="../index.html">개요</a><a href="guide-boot.html">부팅·저장소</a><a href="guide-update.html">업데이트</a><a href="guide-rebuild.html">재구축</a><a href="guide-rtos.html" aria-current="true">명령·셸</a><a href="guide-color.html">색 처리</a><a href="guide-lightroom.html">Lightroom</a><a href="guide-af.html">AF</a><a href="guide-ui.html">UI</a></nav></div></div>
 <nav class="crumbs" aria-label="현재 위치"><ol><li><a href="../index.html">PENTAX K-3 Mark III</a></li><li aria-current="page">RTOS 명령 안내</li></ol></nav>
 <!-- /chrome:top -->
 <header class="page-head">
@@ -28,7 +28,7 @@
 <h2 data-toc="no">핵심 요약</h2>
 <ul>
 <li>이 주제는 “명령이 무엇을 담당하는가(분류) → 요청이 어디로 가서 무엇을 움직이는가(디스패처·셔터·AF) → 바깥에서 셸에 입력할 수 있는가(SD 스크립트)”로 이어집니다.</li>
-<li>명령 분류와 호출표, SAD·SSD 상관 함수는 바이트 대조로 확인했고, 요청 처리 경로는 원본 명령을 읽어 추적했습니다.</li>
+<li>명령 분류와 호출표, SAD·SSD 상관 함수는 바이트 대조로 확인했고 요청 처리 경로는 원본 명령을 읽어 추적했습니다.</li>
 <li>이벤트에서 실제 셔터·AF 동작으로 가는 런타임 상태 전이와, USB로 셸에 들어가는 경로는 아직 확인하지 못했습니다. <strong>카메라에서 실행한 것은 없습니다.</strong></li>
 </ul>
 </section>
@@ -72,12 +72,12 @@
 <section id="background">
 <h2>배경 지식</h2>
 <dl class="kv">
-<dt>RTOS</dt><dd>실시간 운영체제입니다. 정해진 시간 안에 동작해야 하는 카메라 제어를 맡으며, 이 카메라에서는 Linux와 함께 돕니다.</dd>
+<dt>RTOS</dt><dd>실시간 운영체제입니다. 정해진 시간 안에 동작해야 하는 카메라 제어를 맡으며 이 카메라에서는 Linux와 함께 돕니다.</dd>
 <dt>셸 명령</dt><dd>문자열 이름과 처리 함수를 짝지어 둔 점검·개발용 목록입니다. 이름을 입력하면 해당 함수를 부릅니다. 펌웨어의 <code>SHELLCMD</code> 레코드에 957개가 있습니다.</dd>
 <dt>디스패처</dt><dd>요청 메시지를 받아 담당 작업으로 나눠 보내는 부분입니다. 촬영·AF 요청이 공통 메시지로 여기 모였다가 각 이벤트로 갈라집니다.</dd>
 <dt>이벤트 큐</dt><dd>처리할 일을 순서대로 담아 두는 대기열입니다. 요청이 이벤트로 바뀌어 큐에 들어가면, 소비 함수가 꺼내 제어 객체로 넘깁니다.</dd>
-<dt>SAD·SSD</dt><dd>두 신호의 차이를 재는 기본 연산(차이의 절댓값 합·제곱 합)입니다. <a href="https://developer.arm.com/Architectures/Neon">NEON</a> 명령으로 빠르게 계산하며, 위상차 AF의 상관에 쓰입니다.</dd>
-<dt>TTL 스크립트와 sendln</dt><dd>TTL은 터미널 프로그램 Tera Term의 매크로 언어이고, <code>sendln</code>은 한 줄을 보내는 명령입니다. SD의 스크립트가 이를 통해 셸 명령을 넣습니다. <a href="https://teratermproject.github.io/manual/4/en/macro/command/sendln.html">sendln 매뉴얼</a></dd>
+<dt>SAD·SSD</dt><dd>두 신호의 차이를 재는 기본 연산(차이의 절댓값 합·제곱 합)입니다. <a href="https://developer.arm.com/Architectures/Neon">NEON</a> 명령으로 빠르게 계산하며 위상차 AF의 상관에 쓰입니다.</dd>
+<dt>TTL 스크립트와 sendln</dt><dd>TTL은 터미널 프로그램 Tera Term의 매크로 언어이고 <code>sendln</code>은 한 줄을 보내는 명령입니다. SD의 스크립트가 이를 통해 셸 명령을 넣습니다. <a href="https://teratermproject.github.io/manual/4/en/macro/command/sendln.html">sendln 매뉴얼</a></dd>
 <dt>eMMC</dt><dd>본체에 붙박인 내장 플래시 저장장치입니다. 꺼낼 수 있는 SD 카드와 달리 부트 영역과 일반 영역이 하드웨어로 나뉩니다.</dd>
 </dl>
 </section>
@@ -105,9 +105,9 @@
 <h2>읽는 순서</h2>
 <p>명령 전체를 먼저 보고, 촬영·AF 처리로, 마지막으로 셸 입력과 백업으로 좁혀 갑니다.</p>
 <ul class="cards">
-<li class="card"><span class="tag">1</span><h3><a href="index.html">분류와 호출 관계</a></h3><p class="q">셸 명령 957개는 무엇을 담당하는가?</p><p>17개 기능군으로 나누고, 촬영·AF·영상처리 명령의 호출 경로를 기계어와 대조했습니다.</p></li>
-<li class="card"><span class="tag">2</span><h3><a href="dispatch-af.html">디스패처·셔터·AF</a></h3><p class="q">촬영·AF 요청이 어디로 가서 무엇을 움직이는가?</p><p>공통 메시지가 이벤트로 갈라지고, 셔터가 GPIO에 쓰는 지점과 AF 상관 연산을 추적했습니다.</p></li>
-<li class="card"><span class="tag">3</span><h3><a href="shell-backup-path.html">SD 셸 입력·백업</a></h3><p class="q">바깥에서 셸에 입력할 수 있는가? 백업은 어디에 쓰는가?</p><p>SD 스크립트가 셸 명령을 실행하는 경로를 확인했고, 보정 백업이 내부 eMMC에도 쓴다는 것을 밝혔습니다.</p></li>
+<li class="card"><span class="tag">1</span><h3><a href="index.html">분류와 호출 관계</a></h3><p class="q">셸 명령 957개는 무엇을 담당하는가?</p><p>17개 기능군으로 나누고 촬영·AF·영상처리 명령의 호출 경로를 기계어와 대조했습니다.</p></li>
+<li class="card"><span class="tag">2</span><h3><a href="dispatch-af.html">디스패처·셔터·AF</a></h3><p class="q">촬영·AF 요청이 어디로 가서 무엇을 움직이는가?</p><p>공통 메시지가 이벤트로 갈라지고 셔터가 GPIO에 쓰는 지점과 AF 상관 연산을 추적했습니다.</p></li>
+<li class="card"><span class="tag">3</span><h3><a href="shell-backup-path.html">SD 셸 입력·백업</a></h3><p class="q">바깥에서 셸에 입력할 수 있는가? 백업은 어디에 쓰는가?</p><p>SD 스크립트가 셸 명령을 실행하는 경로를 확인했고 보정 백업이 내부 eMMC에도 쓴다는 것을 밝혔습니다.</p></li>
 </ul>
 </section>
 

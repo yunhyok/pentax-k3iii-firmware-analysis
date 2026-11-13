@@ -10,7 +10,7 @@
 <body data-camera="k3iii">
 <!-- chrome:top -->
 <a class="skip" href="#main">본문 바로가기</a>
-<div class="topbar"><div class="topbar-in"><a class="brand" href="../index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="../index.html" aria-current="true">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="https://yunhyok.github.io/pentax-q7-firmware-analysis/">Q7</a></div><nav class="topnav" aria-label="주제"><a href="../index.html">개요</a><a href="guide-boot.html">부팅·저장소</a><a href="guide-update.html" aria-current="true">업데이트</a><a href="guide-rebuild.html">재구축</a><a href="guide-rtos.html">명령·셸</a><a href="guide-color.html">색 처리</a><a href="lightroom-bridge.html">Lightroom</a><a href="af-foundations.html">AF</a><a href="ui-port-contract.html">UI</a></nav></div></div>
+<div class="topbar"><div class="topbar-in"><a class="brand" href="../index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="../index.html" aria-current="true">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="https://yunhyok.github.io/pentax-q7-firmware-analysis/">Q7</a></div><nav class="topnav" aria-label="주제"><a href="../index.html">개요</a><a href="guide-boot.html">부팅·저장소</a><a href="guide-update.html" aria-current="true">업데이트</a><a href="guide-rebuild.html">재구축</a><a href="guide-rtos.html">명령·셸</a><a href="guide-color.html">색 처리</a><a href="guide-lightroom.html">Lightroom</a><a href="guide-af.html">AF</a><a href="guide-ui.html">UI</a></nav></div></div>
 <nav class="crumbs" aria-label="현재 위치"><ol><li><a href="../index.html">PENTAX K-3 Mark III</a></li><li><a href="guide-update.html">펌웨어 업데이트 과정</a></li><li aria-current="page">시각 조회 함수</li></ol></nav>
 <!-- /chrome:top -->
 <header class="page-head">
@@ -30,7 +30,7 @@
 <li>두 함수는 출력이 둘입니다. <strong>주 시각</strong>(64비트, 워드 두 개)과 <strong>하위 시간</strong>(32비트 정수)을 서로 다른 포인터에 저장합니다.</li>
 <li>주 시각은 <strong>상위 32비트를 앞에, 하위 32비트를 뒤에</strong> 둡니다. 이 8바이트를 흔한 little-endian 64비트 정수로 읽으면 두 워드가 뒤바뀝니다.</li>
 <li>한 함수는 카운터에 64비트 보정값을 더한 값을, 다른 함수는 카운터만 내놓습니다. 하위 시간은 둘 다 <a href="update-subtick-arithmetic.html">하위 시간 변환</a>의 결과입니다.</li>
-<li>값을 쓰기 전에 실행 문맥을 검사하고, 조건이 맞지 않으면 아무것도 쓰지 않고 다른 코드로 넘어갑니다.</li>
+<li>값을 쓰기 전에 실행 문맥을 검사하고 조건이 맞지 않으면 아무것도 쓰지 않고 다른 코드로 넘어갑니다.</li>
 <li>함수마다 6개씩 <strong>12개 사례</strong>를 원본 기계어로 실행했습니다. 이 함수들을 실제로 부르는 쪽과 시간 단위는 찾지 못했습니다.</li>
 </ul>
 </section>
@@ -64,7 +64,7 @@
 
 <section id="background">
 <h2>배경: 시각은 굵은 값과 잔 값으로 나뉩니다</h2>
-<p>커널의 시계는 두 층입니다. 굵은 층은 틱마다 오르는 <a href="update-timer-clock.html">64비트 카운터</a>이고, 잔 층은 틱과 틱 사이를 하드웨어 타이머에서 읽어 환산한 <a href="update-subtick-arithmetic.html">하위 시간</a>입니다. 이 문서의 두 함수는 두 층을 한 번에 읽어 호출자에게 건넵니다.</p>
+<p>커널의 시계는 두 층입니다. 굵은 층은 틱마다 오르는 <a href="update-timer-clock.html">64비트 카운터</a>이고 잔 층은 틱과 틱 사이를 하드웨어 타이머에서 읽어 환산한 <a href="update-subtick-arithmetic.html">하위 시간</a>입니다. 이 문서의 두 함수는 두 층을 한 번에 읽어 호출자에게 건넵니다.</p>
 <p>하위 시간 변환 함수를 부르는 곳을 찾다가 이 두 함수에 닿았습니다. 그래서 타이머 사슬에서는 곁가지에 해당합니다. 예약과 콜백의 본줄기는 <a href="update-timer-abi.html">커널 호출</a>, <a href="update-timer-insertion.html">기한 큐 삽입</a>, <a href="update-timer-irq.html">지연 콜백</a>으로 이어집니다.</p>
 
 <figure class="diagram">
@@ -131,7 +131,7 @@
 
 <section id="layout">
 <h2>주 시각은 상위 32비트를 앞에 놓습니다</h2>
-<p class="takeaway">두 함수 모두 첫째 인수가 가리키는 곳의 +0에 상위 워드, +4에 하위 워드를 쓰고, 둘째 인수가 가리키는 곳에 하위 시간을 씁니다.</p>
+<p class="takeaway">두 함수 모두 첫째 인수가 가리키는 곳의 +0에 상위 워드, +4에 하위 워드를 쓰고 둘째 인수가 가리키는 곳에 하위 시간을 씁니다.</p>
 
 <figure class="diagram">
 <figcaption>두 함수의 입력과 출력</figcaption>
@@ -196,12 +196,12 @@
 <tr><td><code>0x525ce390</code></td><td>NOW64 + OFFSET64<br>mod 2<sup>64</sup></td><td>상위 32비트</td><td>하위 32비트</td><td>하위 시간 → +0 → +4</td></tr>
 <tr><td><code>0x525ce45c</code></td><td>NOW64</td><td>상위 32비트</td><td>하위 32비트</td><td>하위 시간 → +4 → +0</td></tr>
 </tbody></table></div>
-<p>두 함수는 들어올 때 받은 첫째 인수(r0)를 주 시각 출력 포인터로, 둘째 인수(r1)를 하위 시간 출력 포인터로 보관합니다. 먼저 하위 시간 변환 함수를 불러 그 반환값을 둘째 포인터에 저장하고, 그다음 주 시각의 두 워드를 씁니다. 정상 경로의 반환값은 0입니다.</p>
+<p>두 함수는 들어올 때 받은 첫째 인수(r0)를 주 시각 출력 포인터로, 둘째 인수(r1)를 하위 시간 출력 포인터로 보관합니다. 먼저 하위 시간 변환 함수를 불러 그 반환값을 둘째 포인터에 저장하고 그다음 주 시각의 두 워드를 씁니다. 정상 경로의 반환값은 0입니다.</p>
 <div class="callout plain"><strong class="label">쉽게 말하면</strong>
 <p>카운터가 4,294,967,295일 때 카운터만 읽는 함수는 +0에 0, +4에 4,294,967,295를 씁니다. little-endian 방식에서는 64비트 정수의 하위 워드가 앞에 오므로, 이 8바이트를 그런 정수로 읽으면 전혀 다른 큰 수가 됩니다. 출력은 “워드 두 개짜리 구조체”로 다뤄야 합니다.</p></div>
-<p>NOW64는 틱마다 오르는 카운터이고, OFFSET64는 타이머 초기화가 카운터와 함께 0으로 만드는 또 하나의 64비트 변수입니다. 이 값을 0이 아닌 값으로 바꾸는 코드는 이 문서에서 다루지 않았습니다.</p>
+<p>NOW64는 틱마다 오르는 카운터이고 OFFSET64는 타이머 초기화가 카운터와 함께 0으로 만드는 또 하나의 64비트 변수입니다. 이 값을 0이 아닌 값으로 바꾸는 코드는 이 문서에서 다루지 않았습니다.</p>
 <div class="callout"><strong class="label">참고: 공개 T-Kernel 소스와 견주면</strong>
-<p>공개 T-Kernel 2.0의 시스템 시각 구조체 <code>SYSTIM</code>은 상위 32비트 <code>hi</code>가 앞, 하위 32비트 <code>lo</code>가 뒤입니다. 그 소스에는 시각 구조체와 나노초 단위의 잔 값을 함께 돌려주는 <code>td_get_tim</code>과 <code>td_get_otm</code>이 있습니다. 앞의 것은 동작 시간에 보정값을 더한 시각을, 뒤의 것은 동작 시간만 돌려줍니다. 이 문서의 두 함수와 같은 모양이지만, 이름과 단위를 이 펌웨어에서 확인한 것은 아닙니다.</p></div>
+<p>공개 T-Kernel 2.0의 시스템 시각 구조체 <code>SYSTIM</code>은 상위 32비트 <code>hi</code>가 앞, 하위 32비트 <code>lo</code>가 뒤입니다. 그 소스에는 시각 구조체와 나노초 단위의 잔 값을 함께 돌려주는 <code>td_get_tim</code>과 <code>td_get_otm</code>이 있습니다. 앞의 것은 동작 시간에 보정값을 더한 시각을, 뒤의 것은 동작 시간만 돌려줍니다. 이 문서의 두 함수와 같은 모양이지만 이름과 단위를 이 펌웨어에서 확인한 것은 아닙니다.</p></div>
 
 <details class="evidence"><summary>함수 구간과 핵심 명령</summary>
 <div class="table-wrap"><table class="compact">
@@ -267,9 +267,9 @@
 <ul class="dg-legend"><li><i></i>원본 코드의 검사</li><li><i class="ok"></i>실행으로 확인한 정상 경로</li><li><i class="open"></i>그 뒤를 확인하지 않은 경로</li></ul>
 </figure>
 
-<p>세 갈래 모두 사례로 실행했습니다. task가 없는 경우, task의 바이트에 다른 비트가 켜진 경우, CPU별 값이 1인 경우는 출력까지 진행했습니다. task가 있고 바이트 검사 값이 0이며 CPU별 값이 0인 경우는 출력 전에 다른 코드로 넘어갔고, 그때 출력 버퍼는 그대로였습니다.</p>
+<p>세 갈래 모두 사례로 실행했습니다. task가 없는 경우, task의 바이트에 다른 비트가 켜진 경우, CPU별 값이 1인 경우는 출력까지 진행했습니다. task가 있고 바이트 검사 값이 0이며 CPU별 값이 0인 경우는 출력 전에 다른 코드로 넘어갔고 그때 출력 버퍼는 그대로였습니다.</p>
 <div class="callout warn"><strong class="label">주의</strong>
-<p>넘어간 뒤의 코드가 되돌아오는지, 멈추는지, 잡아 둔 lock과 인터럽트 상태를 어떻게 처리하는지는 이 결과로 판단하지 않습니다. 시험은 그 주소에서 멈췄습니다. 디컴파일된 C에는 이 조건 분기가 빠져 있어서, 분석은 원본 ARM 명령을 기준으로 했습니다.</p></div>
+<p>넘어간 뒤의 코드가 되돌아오는지, 멈추는지, 잡아 둔 lock과 인터럽트 상태를 어떻게 처리하는지는 이 결과로 판단하지 않습니다. 시험은 그 주소에서 멈췄습니다. 디컴파일된 C에는 이 조건 분기가 빠져 있어서 분석은 원본 ARM 명령을 기준으로 했습니다.</p></div>
 </section>
 
 <section id="dispatch">
@@ -307,8 +307,8 @@
 <li>타이머 레지스터 영역과 커널 변수 영역이 바뀌지 않는지</li>
 </ul>
 <div class="callout model"><strong class="label">시험 조건</strong>
-<p>따로 잘라 낸 RTOS 파일과 통합 decoded 파일에서 결과가 같았습니다. Unicorn이 돌려준 MPIDR 값이 CPU 0을 고르는 조건이었고, 다른 CPU 번호는 시험하지 않았습니다. 두 출력 버퍼는 서로 겹치지 않게 두었습니다. 버퍼가 겹칠 때나 여러 곳에서 동시에 읽을 때의 일관성은 확인하지 않았습니다. lock과 인터럽트 차단·복원은 대체 함수여서 실제 효력은 재현하지 않았습니다.</p></div>
-<p class="small muted">새로 보관한 디컴파일 C는 2개입니다. 이 문서의 ARM 명령 113 words는 하위 시간 문서에서 이미 보관한 범위와 겹칩니다. 새로 한 것은 두 조회 함수의 선택 경로 실행이고, 원본 명령 113개를 더 찾았다는 뜻이 아닙니다.</p>
+<p>따로 잘라 낸 RTOS 파일과 통합 decoded 파일에서 결과가 같았습니다. Unicorn이 돌려준 MPIDR 값이 CPU 0을 고르는 조건이었고 다른 CPU 번호는 시험하지 않았습니다. 두 출력 버퍼는 서로 겹치지 않게 두었습니다. 버퍼가 겹칠 때나 여러 곳에서 동시에 읽을 때의 일관성은 확인하지 않았습니다. lock과 인터럽트 차단·복원은 대체 함수여서 실제 효력은 재현하지 않았습니다.</p></div>
+<p class="small muted">새로 보관한 디컴파일 C는 2개입니다. 이 문서의 ARM 명령 113 words는 하위 시간 문서에서 이미 보관한 범위와 겹칩니다. 새로 한 것은 두 조회 함수의 선택 경로 실행이고 원본 명령 113개를 더 찾았다는 뜻이 아닙니다.</p>
 </section>
 
 <section id="limits">

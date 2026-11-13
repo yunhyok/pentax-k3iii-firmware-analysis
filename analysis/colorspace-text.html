@@ -3,77 +3,242 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>K-3 III 색공간 sRGB 글자의 래스터와 픽셀 전송</title>
+<title>sRGB 글자를 비트맵으로 만들어 표면에 옮기는 과정 — PENTAX K-3 Mark III 펌웨어 연구</title>
+<meta name="description" content="K-3 Mark III 펌웨어 2.20의 원본 ARM 코드가 색공간 첫 행의 sRGB 글자를 76×40 커버리지 비트맵으로 만들고, float32 가중치로 섞은 색 705개를 256×144 합성 RAM 표면에 쓴 과정을 독립 계산과 대조한 기록입니다.">
 <link rel="stylesheet" href="../assets/site.css">
-<style>
-main.doc .text-flow{display:grid;grid-template-columns:minmax(0,1fr);gap:.65rem;padding:0;list-style:none}
-main.doc .text-flow>li{min-width:0;margin:0;padding:.7rem;border:1px solid var(--line);border-radius:.45rem;overflow-wrap:anywhere}
-main.doc .text-flow strong{display:block;margin-bottom:.2rem}
-main.doc .text-flow small{display:block;margin-top:.25rem;color:var(--muted)}
-main.doc .text-flow .arrow{padding:0;border:0;text-align:center}
-main.doc .sha{overflow-wrap:anywhere}
-</style>
 </head>
 <body data-camera="k3iii">
 <!-- chrome:top -->
 <a class="skip" href="#main">본문 바로가기</a>
-<div class="topbar"><div class="topbar-in"><a class="brand" href="../index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="../index.html" aria-current="true">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="https://yunhyok.github.io/pentax-q7-firmware-analysis/">Q7</a></div><nav class="topnav" aria-label="주제"><a href="../index.html">개요</a><a href="guide-boot.html">부팅·저장소</a><a href="guide-update.html">업데이트</a><a href="guide-rebuild.html">재구축</a><a href="guide-rtos.html">명령·셸</a><a href="guide-color.html">색 처리</a><a href="lightroom-bridge.html">Lightroom</a><a href="af-foundations.html">AF</a><a href="ui-port-contract.html" aria-current="true">UI</a></nav></div></div>
-<nav class="crumbs" aria-label="현재 위치"><ol><li><a href="../index.html">PENTAX K-3 Mark III</a></li><li><a href="ui-port-contract.html">UI와 화면 자원</a></li><li aria-current="page">색공간 sRGB 글자의 래스터와 픽셀 전송</li></ol></nav>
+<div class="topbar"><div class="topbar-in"><a class="brand" href="../index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="../index.html" aria-current="true">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="https://yunhyok.github.io/pentax-q7-firmware-analysis/">Q7</a></div><nav class="topnav" aria-label="주제"><a href="../index.html">개요</a><a href="guide-boot.html">부팅·저장소</a><a href="guide-update.html">업데이트</a><a href="guide-rebuild.html">재구축</a><a href="guide-rtos.html">명령·셸</a><a href="guide-color.html">색 처리</a><a href="guide-lightroom.html">Lightroom</a><a href="guide-af.html">AF</a><a href="guide-ui.html" aria-current="true">UI</a></nav></div></div>
+<nav class="crumbs" aria-label="현재 위치"><ol><li><a href="../index.html">PENTAX K-3 Mark III</a></li><li><a href="guide-ui.html">UI와 화면 자원</a></li><li aria-current="page">색공간 sRGB 글자의 래스터와 픽셀 전송</li></ol></nav>
 <!-- /chrome:top -->
 <header class="page-head">
-<h1>K-3 III 색공간 sRGB 글자의 래스터와 픽셀 전송</h1>
-<p class="lead">펌웨어 2.20의 원본 ARM 코드가 색공간 첫 행의 sRGB 글자를 76×40 비트맵으로 만들고, 256×144 합성 RAM 표면에 픽셀 705개를 썼습니다. 각 쓰기의 위치·값·순서와 최종 표면 전체가 독립 계산과 일치했습니다.</p>
+<p class="eyebrow">UI와 화면 자원 · 색공간 화면 4</p>
+<h1>sRGB 글자를 비트맵으로 만들어 표면에 옮기는 과정</h1>
+<p class="lead">글자의 크기를 잰 다음 단계에서 펌웨어가 글자 픽셀을 어떻게 만들고 화면 버퍼에 어떻게 섞어 넣는지 알아봤습니다. 다른 기종으로 화면을 옮기려면 이 픽셀 규칙을 정확히 알아야 합니다.</p>
 </header>
 <div class="layout">
 <!-- chrome:toc -->
-<nav class="toc" aria-label="이 문서의 목차"><h2 data-toc="no">이 문서에서</h2><ol><li><a href="#path">원본 실행 순서와 공급한 상태</a></li><li><a href="#palette">팔레트가 멈춘 곳과 캐시가 채워진 경로</a></li><li><a href="#oracle">픽셀 전송을 독립 계산으로 대조</a></li><li><a href="#reproduce">재현 조건과 검증 범위</a></li></ol></nav>
+<nav class="toc" aria-label="이 문서의 목차"><h2 data-toc="no">이 문서에서</h2><ol><li><a href="#background">배경: 글자는 덮인 정도를 담은 비트맵으로 그립니다</a></li><li><a href="#path">원본 코드는 세 구간으로 나눠 실행했습니다</a></li><li><a href="#palette">팔레트는 기본 항목까지만 만들어졌습니다</a></li><li><a href="#oracle">705개 픽셀 쓰기를 독립 계산과 대조했습니다</a></li><li><a href="#limits">한계와 남은 과제</a></li><li><a href="#reproduce">재현 방법</a></li><li><a href="#refs">근거 파일과 참고 자료</a></li></ol></nav>
 <!-- /chrome:toc -->
 <main class="doc" id="main">
-<section id="path">
-<h2>원본 실행 순서와 공급한 상태</h2>
+
+<section class="summary">
+<h2 data-toc="no">핵심 요약</h2>
+<ul>
+<li>원본 코드가 sRGB 글자를 76×40 크기의 <strong>커버리지 비트맵</strong>으로 만들었습니다. 3,040칸 가운데 705칸이 글자 획에 걸린 칸입니다.</li>
+<li>획에 걸린 칸마다 전경색과 배경색을 float32 가중치로 섞은 4바이트 색을 계산해 표면에 썼습니다. 705개 쓰기의 위치·값·순서와 최종 표면 전체가 독립 계산과 같았습니다.</li>
+<li>배경색은 픽셀마다 다시 읽지 않습니다. 전송을 시작할 때 교차 영역 왼쪽 위의 표면 워드 하나를 읽어 모든 칸에 씁니다.</li>
+<li>표면은 256×144 합성 RAM이고 팔레트는 기본 항목만 채운 상태였습니다. 실제 LCD의 픽셀 해석, 시작 때의 팔레트 초기화, 메뉴 이벤트는 확인하지 않았습니다.</li>
+</ul>
+</section>
+
+<div class="scope">
+<div class="ok"><h3><span class="badge ok">확인</span> 원본 코드 실행으로 확인</h3>
+<ul>
+<li>텍스트 자식의 좌표와 클립 계산</li>
+<li>글꼴로 76×40 비트맵을 만드는 그리기</li>
+<li>혼합 캐시 생성과 705개 픽셀 전송</li>
+<li>전송 구간의 성공 단언 경로(별도 재생)</li>
+</ul></div>
+<div class="model"><h3><span class="badge model">모델</span> 시험 조건으로 정한 것</h3>
+<ul>
+<li>256×144 표면, 현재 선택 0, 언어 0, 프로필 바이트 0</li>
+<li>팔레트·옵저버 준비 플래그 두 개</li>
+<li>글꼴 파일 읽기와 메모리 할당</li>
+<li>앞 단계의 성공 단언 일부</li>
+</ul></div>
+<div class="open"><h3><span class="badge open">미확인</span> 확인하지 않은 것</h3>
+<ul>
+<li>확장 팔레트와 팔레트 생성자의 반환</li>
+<li>값 255(완전히 덮인 칸)를 쓰는 분기</li>
+<li>LCD의 채널 배치와 실제 색</li>
+<li>메뉴 이벤트, 설정 저장, 다른 기종 이식</li>
+</ul></div>
+</div>
+
+<section id="background">
+<h2>배경: 글자는 덮인 정도를 담은 비트맵으로 그립니다</h2>
+<p>화면 글자는 글꼴의 윤곽선을 픽셀 격자에 맞춰 칠해서 만듭니다. 이 결과물을 <a href="../glossary.html#glyph">글리프</a> 비트맵이라고 합니다. K-3 III의 비트맵은 칸마다 1바이트이며 그 칸이 글자 획에 얼마나 덮였는지를 담습니다. 0은 빈칸이고 값이 클수록 많이 덮인 칸입니다. 이런 값을 커버리지라고 부릅니다.</p>
+<p>덮인 정도가 중간인 칸은 글자색과 바탕색을 섞어 칠합니다. 이 방식을 알파 혼합이라고 하며 일반적인 계산은 <code>결과 = 전경 × a + 배경 × (1 − a)</code>입니다(<a href="https://graphics.pixar.com/library/Compositing/paper.pdf">Porter·Duff, 1984</a>). 펌웨어는 커버리지 값마다 전경 가중치와 배경 가중치를 ROM 표에 따로 적어 둡니다. 그 표로 색 16개를 미리 계산해 캐시에 담고 픽셀을 쓸 때는 캐시에서 고릅니다.</p>
+
 <figure class="diagram">
-<figcaption>같은 시험 메모리에서 별도로 진입한 팔레트 생성과 글자 그리기</figcaption>
-<ol class="text-flow">
-<li><strong>팔레트 기본 항목 · 별도 진입</strong><code>0x52a6c900</code>이 기본 42개 항목을 채웁니다. <code>0x529191b0</code>에서 <code>UserData+0x6dd</code>를 읽기 전에 멈춥니다.<small>팔레트 생성자를 다시 실행하지 않습니다.</small></li>
-<li><strong>텍스트 자식의 좌표와 그리기 설정 · 별도 진입</strong><code>0x52c003f0</code>과 <code>0x52c02538</code>이 자식 좌표와 그리기 클립을 계산합니다. 같은 StringView의 <code>0x52bedb40</code>이 원본 글꼴과 문자열로 비트맵을 만듭니다.</li>
-<li class="arrow" aria-hidden="true">↓</li>
-<li><strong>겹치는 영역의 픽셀 전송 · 이어서 실행</strong><code>0x528c2560</code>에서 잠시 멈춰 예상 결과를 계산한 뒤 원본 스택과 레지스터를 보존한 채 실행을 잇습니다. 원본 그리기 함수는 호출자 복귀 지점까지 실행됩니다.</li>
-</ol>
+<figcaption>커버리지 값 하나가 표면의 4바이트 색이 되는 과정 (값 1의 계산 예)</figcaption>
+<div class="dg-scroll">
+<svg class="dg" viewBox="0 0 800 352" role="img" aria-labelledby="dg-blend-title dg-blend-desc">
+<title id="dg-blend-title">커버리지, 가중치, 전경과 배경 워드로 혼합 색을 만드는 흐름</title>
+<desc id="dg-blend-desc">왼쪽 위의 비트맵 칸 값이 0이면 쓰기를 건너뜁니다. 값이 1에서 15 사이이면 혼합 캐시에서 색을 고릅니다. 혼합 캐시는 세 입력으로 만듭니다. 팔레트 26번의 전경 워드 0xffffffff, 전송 시작 때 교차 영역 왼쪽 위에서 한 번 읽은 배경 워드 0x31425364, ROM의 float32 가중치 표입니다. 바이트마다 전경 곱하기 전경 가중치와 배경 곱하기 배경 가중치를 float32로 더한 뒤 정수로 자릅니다. 값 1의 가중치는 0.4와 0.6이고, 결과 워드는 0x838d97a2입니다. 결과 워드를 표면의 해당 위치에 씁니다. 값 255이면 팔레트 28번 워드를 그대로 쓰는 분기가 있지만 이 시험의 비트맵에는 그런 칸이 없었습니다.</desc>
+<defs><marker id="dg-blend-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0 0L10 5L0 10z"/></marker><marker id="dg-blend-aho" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah open" d="M0 0L10 5L0 10z"/></marker></defs>
+<rect class="b ok" x="8" y="20" width="176" height="72" rx="8"/>
+<text class="t" x="20" y="45">비트맵 칸 값 k</text>
+<text class="s" x="20" y="64">76×40, 1바이트</text>
+<text class="s" x="20" y="82">0 · 1~15 · 255</text>
+<rect class="b mute" x="8" y="132" width="176" height="56" rx="8"/>
+<text class="t" x="20" y="156">k = 0</text>
+<text class="s" x="20" y="175">쓰기 건너뜀 (2,335칸)</text>
+<rect class="b open" x="8" y="232" width="176" height="56" rx="8"/>
+<text class="t" x="20" y="256">k = 255</text>
+<text class="s" x="20" y="275">팔레트 28번 그대로</text>
+<text class="n" x="20" y="306">이 비트맵에는 0칸</text>
+<rect class="b ok" x="236" y="14" width="200" height="66" rx="8"/>
+<text class="t" x="248" y="36">전경: 팔레트 26번</text>
+<text class="s mono" x="248" y="54">0xffffffff</text>
+<text class="s" x="248" y="71">프로필 0의 ROM 값</text>
+<rect class="b ok" x="236" y="96" width="200" height="72" rx="8"/>
+<text class="t" x="248" y="120">배경: 표면 워드 1개</text>
+<text class="s mono" x="248" y="139">0x31425364</text>
+<text class="s" x="248" y="157">교차 영역 왼쪽 위에서</text>
+<rect class="b ok" x="236" y="188" width="200" height="56" rx="8"/>
+<text class="t" x="248" y="211">ROM 가중치 표</text>
+<text class="s" x="248" y="231">float32 32개 (전경·배경)</text>
+<rect class="b key" x="488" y="20" width="304" height="140" rx="8"/>
+<text class="t" x="500" y="45">혼합 캐시 (색 16개)</text>
+<text class="s" x="500" y="66">바이트마다: int(f32(전경×wf[k])</text>
+<text class="s" x="580" y="84">+ f32(배경×wb[k]))</text>
+<text class="s" x="500" y="108">k = 1: wf 0.4, wb 0.6</text>
+<text class="s mono" x="500" y="128">64 53 42 31 → a2 97 8d 83</text>
+<text class="s mono" x="500" y="148">= 0x838d97a2</text>
+<rect class="b ok" x="488" y="216" width="304" height="72" rx="8"/>
+<text class="t" x="500" y="241">표면에 4바이트 쓰기</text>
+<text class="s" x="500" y="260">k = 1~15인 칸: 705개</text>
+<text class="s" x="500" y="278">위치·값·순서 모두 독립 계산과 일치</text>
+<path class="e" d="M96 92V130" marker-end="url(#dg-blend-ah)"/>
+<path class="e open" d="M96 188V230" marker-end="url(#dg-blend-aho)"/>
+<path class="e" d="M184 56H210V320H640V290" marker-end="url(#dg-blend-ah)"/>
+<text class="n" x="214" y="314">k = 1~15이면 캐시의 k번째 색을 고름</text>
+<path class="e" d="M436 48H486" marker-end="url(#dg-blend-ah)"/>
+<path class="e" d="M436 132H462V100H486" marker-end="url(#dg-blend-ah)"/>
+<path class="e" d="M436 216H470V140H486" marker-end="url(#dg-blend-ah)"/>
+<path class="e" d="M640 160V214" marker-end="url(#dg-blend-ah)"/>
+</svg>
+</div>
+<ul class="dg-legend"><li><i class="ok"></i>원본 코드 실행으로 확인</li><li><i class="key"></i>이 문서의 중심 계산</li><li><i class="open"></i>이 시험에서 실행되지 않은 분기</li></ul>
+<p>바이트 순서는 리틀엔디언이어서 <code>0x31425364</code>의 바이트는 <code>64 53 42 31</code>입니다. 예를 들어 첫 바이트는 255×0.4 + 100×0.6 = 162(<code>0xa2</code>)입니다. 각 바이트가 LCD에서 어떤 색 채널인지는 확인하지 않았습니다.</p>
 </figure>
-<p>하네스는 현재 선택 0, 언어 0, 프로필 바이트 0, 부모 사각형 <code>[10,12,180,60]</code>과 타입 5 표면을 공급했습니다. 표면은 한 줄이 256워드인 256×144 합성 RAM입니다. 아이콘과 체크 표시는 앞선 원본 실행으로 1,532개 픽셀을 썼으며, 글자 전송은 이 표면을 이어 씁니다. 두 Latin 글꼴은 원본 decoded에서 읽어 파일 모델이 요청된 버퍼에 전달했습니다. 문자열은 원본 descriptor <code>0x536f0224</code>과 UTF-16 <code>0x536e6608</code>에서 왔습니다. <a href="colorspace-render.html">선행 행·글꼴·측정 검증</a></p>
-<p>원본 좌표 계산은 텍스트 영역 <code>[110,22,76,40]</code>과 뷰 클립 <code>[110,22,80,40]</code>을 만들었습니다. 교차 영역은 76×40 비트맵 전체를 덮습니다. 측정 뒤 StringView 설정의 63바이트 해시와 그리기 함수가 <code>0x52bedba8..0x52bedbc4</code>에서 스택에 복사한 64바이트 해시는 별도로 확인했습니다. <a href="colorspace-text.json">주소·클립·설정 해시</a></p>
 </section>
-<section id="palette">
-<h2>팔레트가 멈춘 곳과 캐시가 채워진 경로</h2>
-<p>원본 생성자 <code>0x52a618bc</code>가 옵저버 관리자를 만든 뒤 하네스가 준비 플래그 <code>0x545a1980</code>을 설정합니다. 원본 <code>0x52a6c900</code>은 관리자를 통해 팔레트를 등록하고, <code>0x52a6c700</code>에서 프로필 0의 ROM과 일치하는 RGB 항목과 32비트 색상 항목 42개를 채웁니다. 확장 팔레트에 필요한 현재 UserData는 확보하지 못했습니다. 그리기 호출에는 준비 플래그 <code>0x545a6c28</code>을 공급했고, 아직 반환하지 않은 팔레트 생성 구간에서 만들어진 값 중 인덱스 26·28만 읽도록 검사했습니다. 두 항목은 프로필 0 생성자의 후속 로컬 쓰기 대상에 포함되지 않습니다. 후속 알림과 생성자 반환은 실행 범위 밖입니다.</p>
-<p>원본 <code>0x528c12f8 → 0x528c1f74</code>는 할당된 1,448바이트를 0으로 채웁니다. 그리기 중 <code>0x528c2384</code>는 클립 좌상단의 기존 표면 워드 <code>0x31425364</code>와 팔레트 인덱스 26의 <code>0xffffffff</code>를 받아 빈 캐시에서 새 항목을 만듭니다. 원본 <code>0x528c21f8</code>은 ROM의 float32 가중치를 사용하고, 항목을 복사한 뒤 삽입 인덱스를 0에서 1로 올립니다. 인덱스 28의 <code>0xff000000</code>도 읽지만 실제 비트맵에 이를 직접 쓰는 <code>0xff</code> 샘플은 없었습니다. <a href="colorspace-text.json">팔레트·캐시 관측값</a></p>
-</section>
-<section id="oracle">
-<h2>픽셀 전송을 독립 계산으로 대조</h2>
-<p>원본 글리프 임시 버퍼에서 관찰한 바이트를 Python으로 OR 합성해 3,040바이트 비트맵을 대조했습니다. 전송 계산은 이 비트맵, 원본 가중치, 두 팔레트 워드와 기존 시험 표면에서 시작합니다. 네 바이트 채널별로 float32 곱셈·덧셈 뒤 정수로 잘라 16워드 캐시를 재구성했습니다. 0인 샘플은 기존 픽셀을 보존하고 부분 커버리지는 계산된 캐시 워드를 고릅니다. 이 대조는 원본 글꼴 윤곽선을 별도로 해석하는 실험과 구분됩니다.</p>
-<div class="table-wrap" tabindex="0" role="region" aria-label="원본 텍스트 전송 관측값"><table>
-<thead><tr><th scope="col">원본 전송에서 관찰한 항목</th><th scope="col">결과</th></tr></thead>
+
+<section id="path">
+<h2>원본 코드는 세 구간으로 나눠 실행했습니다</h2>
+<p class="takeaway">팔레트 생성과 좌표 계산은 따로 진입했고 글자 그리기에서 픽셀 전송까지는 한 번에 이어서 실행했습니다.</p>
+<ol class="flow">
+<li class="ok"><strong>팔레트 기본 항목</strong><span>기본 42개 항목을 채우고 UserData를 읽기 직전에 멈춥니다. 따로 진입했습니다.</span></li>
+<li class="ok"><strong>좌표와 비트맵</strong><span>텍스트 자식의 좌표와 클립을 계산하고 같은 StringView가 원본 글꼴로 비트맵을 만듭니다.</span></li>
+<li class="ok"><strong>픽셀 전송</strong><span>예상 결과를 계산하려고 잠시 멈춘 뒤 스택과 레지스터를 그대로 두고 이어서 실행했습니다.</span></li>
+</ol>
+<p>하네스는 현재 선택 0, 언어 0, 프로필 바이트 0, 부모 사각형 <code>[10,12,180,60]</code>과 타입 5 표면을 공급했습니다. 표면은 한 줄이 256워드인 256×144 합성 RAM입니다. 이 표면에는 <a href="colorspace-render.html">앞 문서</a>의 원본 실행이 아이콘과 체크 표시로 이미 1,532개 픽셀을 써 두었고 글자 전송은 그 위에 이어서 씁니다. 두 Latin 글꼴은 decoded 파일에서 읽어 파일 모형이 요청된 버퍼에 넣었습니다.</p>
+<p>원본 좌표 계산이 만든 텍스트 영역은 <code>[110,22,76,40]</code>, 뷰 클립은 <code>[110,22,80,40]</code>입니다. 둘의 교차 영역은 76×40 비트맵 전체를 덮습니다.</p>
+
+<details class="evidence"><summary>진입 주소, 문자열 위치, 설정 해시</summary>
+<div class="table-wrap"><table class="compact">
+<thead><tr><th>항목</th><th>값</th></tr></thead>
 <tbody>
-<tr><th scope="row">0인 샘플</th><td>2,335개 · 표면 쓰기 없음</td></tr>
-<tr><th scope="row">부분 커버리지</th><td>705개 · <code>0x528c26c8</code>에서 순서대로 쓴 705워드가 전부 일치</td></tr>
-<tr><th scope="row"><code>0xff</code> 샘플</th><td>0개 · 이 분기의 원본 직접 쓰기는 실행 범위 밖</td></tr>
-<tr><th scope="row">최종 147,456바이트</th><td>표면 전체와 경계 가드가 예상값과 일치</td></tr>
+<tr><th scope="row">팔레트 기본 항목</th><td><code>0x52a6c900</code> 진입, <code>0x529191b0</code>에서 <code>UserData+0x6dd</code> 읽기 전 정지. 팔레트 생성자는 다시 실행하지 않음</td></tr>
+<tr><th scope="row">자식 좌표·클립</th><td><code>0x52c003f0</code>, <code>0x52c02538</code></td></tr>
+<tr><th scope="row">글자 그리기 슬롯</th><td><code>0x52bedb40</code> (같은 StringView)</td></tr>
+<tr><th scope="row">전송 재개 지점</th><td><code>0x528c2560</code>. 원본 그리기 함수는 호출자 복귀 지점까지 실행</td></tr>
+<tr><th scope="row">문자열</th><td>descriptor <code>0x536f0224</code>, UTF-16 <code>0x536e6608</code></td></tr>
+<tr><th scope="row">측정 뒤 설정 63바이트</th><td>StringView 설정의 해시를 따로 확인</td></tr>
+<tr><th scope="row">스택 복사 64바이트</th><td><code>0x52bedba8..0x52bedbc4</code>에서 복사, SHA-256 <code class="wrap">690bbe905d1326c095ab2c601d4a31791950de3608b1bf5a7d7b66cf57a3296f</code></td></tr>
 </tbody></table></div>
-<p>최종 표면 SHA-256은 <code class="sha">9567ae794794bf3c9b287bab7a6ff3101a3dd65a965b532e79d4beac8bc31f98</code>입니다. A5·5A 대조에서는 팔레트와 할당 영역의 초기 채움값을 바꿨습니다. 전송 구간의 성공 단언 한 건을 모델로 처리한 두 결과는 채움값만 정규화하면 일치했습니다. 별도의 A5 재생에서는 <code>0x530fdfc4</code>의 성공 경로도 원본으로 실행했습니다. 이때 22,550개 원본 명령이 전송 재개부터 복귀까지 실행됐고, 이 구간에서 모델 호출은 0건이었습니다. 기존 A5 결과와 픽셀 쓰기, 캐시, 팔레트 읽기, 최종 표면이 같았습니다. <a href="colorspace-text.json">세 실행의 원본·모델 기록과 해시</a></p>
+<p class="small">주소·클립·설정 해시는 <a href="colorspace-text.json">colorspace-text.json</a>의 <code>cases</code> 항목에 있습니다.</p>
+</details>
 </section>
+
+<section id="palette">
+<h2>팔레트는 기본 항목까지만 만들어졌습니다</h2>
+<p class="takeaway">팔레트 생성은 확장 항목을 만들기 전에 멈췄습니다. 글자 그리기는 이미 채워진 26번과 28번 항목만 읽었습니다.</p>
+<p>원본 생성자가 옵저버 관리자를 만든 뒤 하네스가 준비 플래그를 켰습니다. 원본 팔레트 코드는 관리자를 통해 팔레트를 등록하고 프로필 0의 ROM 값과 같은 RGB 항목과 32비트 색 항목 42개를 채웠습니다. 확장 팔레트에 필요한 현재 UserData는 확보하지 못했습니다.</p>
+<p>그리기 호출에는 팔레트 준비 플래그를 공급했습니다. 반환하지 않은 팔레트 생성 구간이 만든 값 가운데 26번과 28번만 읽도록 검사했고 두 항목은 프로필 0 생성자가 나중에 쓰는 로컬 쓰기 대상에 들어 있지 않습니다. 이후의 알림과 생성자 반환은 실행 범위 밖입니다.</p>
+<div class="table-wrap"><table class="fit">
+<caption>전송이 읽은 팔레트 항목</caption>
+<thead><tr><th>항목</th><th>값</th><th>쓰임</th></tr></thead>
+<tbody>
+<tr><th scope="row">26번</th><td><code>0xffffffff</code></td><td>부분 커버리지의 전경색. 혼합 캐시의 입력</td></tr>
+<tr><th scope="row">28번</th><td><code>0xff000000</code></td><td>값 255인 칸의 색. 읽었지만 해당 칸이 없어 쓰이지 않음</td></tr>
+</tbody></table></div>
+<p>혼합 캐시는 1,448바이트 할당을 0으로 채운 상태에서 시작합니다. 그리기 중에 클립 왼쪽 위의 표면 워드 <code>0x31425364</code>와 26번 항목을 받아 빈 캐시에 새 항목을 만들었습니다. ROM의 float32 가중치를 썼고 항목을 복사한 뒤 삽입 위치를 0에서 1로 올렸습니다.</p>
+
+<details class="evidence"><summary>팔레트와 캐시 관련 주소</summary>
+<div class="table-wrap"><table class="compact">
+<thead><tr><th>역할</th><th>주소</th></tr></thead>
+<tbody>
+<tr><th scope="row">옵저버 관리자 생성자</th><td><code>0x52a618bc</code>, 준비 플래그 <code>0x545a1980</code></td></tr>
+<tr><th scope="row">팔레트 등록·기본 항목</th><td><code>0x52a6c900</code> → <code>0x52a6c700</code></td></tr>
+<tr><th scope="row">그리기용 팔레트 준비 플래그</th><td><code>0x545a6c28</code></td></tr>
+<tr><th scope="row">캐시 할당과 0 채움</th><td><code>0x528c12f8 → 0x528c1f74</code>, 1,448바이트</td></tr>
+<tr><th scope="row">캐시 항목 생성</th><td><code>0x528c2384</code>에서 표면 워드와 26번 항목을 받음</td></tr>
+<tr><th scope="row">혼합 표 계산</th><td><code>0x528c21f8</code>, 가중치 <code>0x533d2ee4</code>–<code>0x533d2f64</code></td></tr>
+</tbody></table></div>
+<p class="small">팔레트·캐시 관측값과 캐시 표 SHA-256은 <a href="colorspace-text.json">colorspace-text.json</a>의 <code>palette_prefix</code>, <code>transfer</code> 항목에 있습니다.</p>
+</details>
+</section>
+
+<section id="oracle">
+<h2>705개 픽셀 쓰기를 독립 계산과 대조했습니다</h2>
+<p class="takeaway">원본 전송이 쓴 705워드와 최종 표면 147,456바이트가 Python으로 따로 계산한 값과 모두 같았습니다.</p>
+<p>독립 계산은 원본 글리프 임시 버퍼에서 관찰한 바이트를 OR로 합쳐 3,040바이트 비트맵을 만드는 데서 시작합니다. 여기에 원본 가중치, 두 팔레트 워드, 기존 시험 표면을 넣습니다. 네 바이트마다 float32 곱셈과 덧셈을 한 뒤 정수로 잘라 16워드 캐시를 다시 만듭니다. 값 0인 칸은 기존 픽셀을 그대로 두고 부분 커버리지 칸은 캐시의 워드를 고릅니다. 이 대조는 글꼴 윤곽선을 따로 해석하는 실험과는 별개입니다.</p>
+<div class="table-wrap"><table>
+<caption>원본 전송에서 관찰한 결과</caption>
+<thead><tr><th scope="col">항목</th><th scope="col" class="n">칸 수</th><th scope="col">결과</th></tr></thead>
+<tbody>
+<tr><th scope="row">값 0인 칸</th><td class="n">2,335</td><td>표면 쓰기 없음</td></tr>
+<tr><th scope="row">부분 커버리지 칸</th><td class="n">705</td><td><code>0x528c26c8</code>에서 차례로 쓴 705워드가 모두 일치</td></tr>
+<tr><th scope="row">값 255인 칸</th><td class="n">0</td><td>이 분기의 원본 직접 쓰기는 실행 범위 밖</td></tr>
+<tr><th scope="row">최종 표면 147,456바이트</th><td class="n">—</td><td>표면 전체와 경계 가드가 예상값과 일치</td></tr>
+</tbody></table></div>
+
+<p>초기 메모리 값에 기대지 않는지도 확인했습니다. 결과는 세 번의 실행으로 나뉩니다.</p>
+<div class="table-wrap"><table>
+<caption>세 실행의 조건과 결과</caption>
+<thead><tr><th scope="col">실행</th><th scope="col">조건</th><th scope="col">결과</th></tr></thead>
+<tbody>
+<tr><th scope="row">A5</th><td>팔레트·할당 영역을 <code>A5</code>로 채움. 전송 구간의 성공 단언 한 건은 모형</td><td rowspan="2">채움값만 정규화하면 두 결과가 같음</td></tr>
+<tr><th scope="row">5A</th><td>같은 영역을 <code>5A</code>로 채움</td></tr>
+<tr><th scope="row">A5 + 원본 단언</th><td><code>0x530fdfc4</code>의 성공 경로도 원본으로 실행</td><td>전송 재개부터 복귀까지 원본 명령 22,550개, 모형 호출 0건. 픽셀 쓰기·캐시·팔레트 읽기·최종 표면이 A5와 같음</td></tr>
+</tbody></table></div>
+<dl class="kv">
+<dt>최종 표면 SHA-256</dt><dd><code class="wrap">9567ae794794bf3c9b287bab7a6ff3101a3dd65a965b532e79d4beac8bc31f98</code></dd>
+<dt>원본 실행·모형 기록</dt><dd><a href="colorspace-text.json">세 실행의 원본·모델 기록과 해시</a></dd>
+</dl>
+</section>
+
+<section id="limits">
+<h2>한계와 남은 과제</h2>
+<ul>
+<li>이 재현은 준비된 첫 행의 글자와 합성 RAM 전송까지입니다. 실제 LCD의 픽셀 해석과 색은 확인하지 않았습니다.</li>
+<li>팔레트는 기본 42개 항목까지만 원본으로 만들었습니다. 시작 때의 팔레트 초기화와 확장 팔레트는 따로 검증해야 합니다.</li>
+<li>값 255인 칸이 없어 단색 직접 쓰기 분기는 실행되지 않았습니다. 화면 가장자리에서 일어나는 일은 <a href="colorspace-clip.html">화면 경계에서의 sRGB 전송</a>에서 다룹니다.</li>
+<li>메뉴 이벤트와 설정 저장, 다른 기종의 UI 이식은 별도 검증이 필요합니다(<a href="ui-port-contract.html">세 기종 이식 검증 조건</a>).</li>
+</ul>
+<div class="callout fix"><strong class="label">정정</strong>
+<p>처음 공개한 JSON은 사례별 표면 높이를 글자 비트맵 높이인 40으로 잘못 적었습니다. 하네스 변수를 분리해 256×144로 고쳤습니다. 정정 전 기록에서 이 높이만 바꾼 해시와 원본 코드 재실행 결과를 대조했고 원본 명령·메모리 쓰기·최종 표면 해시는 그대로였습니다.</p>
+</div>
+</section>
+
 <section id="reproduce">
-<h2>재현 조건과 검증 범위</h2>
-<p>기록 정정: 최초 공개 JSON의 사례별 표면 높이에 글자 비트맵 높이 40이 잘못 기록됐습니다. 하네스의 변수를 분리해 256×144로 고쳤습니다. 정정 전 전체 관측 기록에서 이 높이만 바꾼 해시와 원본 코드 재실행 결과를 대조했습니다. 원본 명령·메모리 쓰기·최종 표면 해시는 변하지 않았습니다.</p>
-<p>Python 3.12와 Unicorn 2.1.4에서 K-3 III 2.20의 78,683,892바이트 decoded 파일을 읽었습니다. 검증기는 도우미 소스를 전부 캡처해 SHA-256을 확인한 뒤 실행하고, 같은 decoded 바이트에서 RTOS·ICONBIN과 글꼴 범위를 읽습니다. 전체 관측 기록의 정규 JSON 해시 세 개를 검증한 다음 공개 JSON을 씁니다. 파일·메모리 할당·앞 단계의 성공 단언 모델은 단계별로 기록돼 있습니다.</p>
+<h2>재현 방법</h2>
+<p>Python 3.12와 Unicorn 2.1.4에서 K-3 III 2.20의 decoded 파일(78,683,892바이트)을 읽습니다. 검증기는 도우미 소스를 모두 캡처해 SHA-256을 확인한 뒤 실행합니다. 같은 decoded 바이트에서 RTOS, ICONBIN, 글꼴 범위를 읽고 전체 관측 기록의 정규 JSON 해시 세 개를 검증한 다음 공개 JSON을 씁니다. 파일·메모리 할당·앞 단계 성공 단언의 모형은 단계별로 기록돼 있습니다.</p>
 <pre><code>python -B tools/verify_colorspace_text.py decoded.bin --output colorspace-text-replay.json
 python -B -m unittest discover -s tests -p test_verify_colorspace_text.py</code></pre>
-<p>이 재현은 준비된 첫 행의 글자와 합성 RAM 전송을 검증합니다. 실제 LCD의 픽셀 해석, 시작 시 팔레트 초기화, 메뉴 이벤트와 설정 저장, 다른 기종의 UI 이식은 별도 검증이 필요합니다. <a href="../tools/verify_colorspace_text.py">재현 CLI</a> · <a href="../tools/_colorspace_text_replay.py">텍스트 실행과 독립 계산</a> · <a href="../tests/test_verify_colorspace_text.py">입력·출력 보호 검사</a> · <a href="ui-port-contract.html">세 기종 이식 검증 조건</a></p>
 </section>
-<p><a href="colorspace-clip.html">화면 경계에서의 sRGB 전송</a></p>
+
+<section id="refs">
+<h2>근거 파일과 참고 자료</h2>
+<ul class="refs">
+<li><a href="colorspace-text.json">colorspace-text.json</a> — 세 실행의 좌표, 팔레트, 비트맵, 전송 관측값과 코드 구간 31곳의 해시</li>
+<li><a href="../tools/verify_colorspace_text.py">재현 CLI</a> · <a href="../tools/_colorspace_text_replay.py">텍스트 실행과 독립 계산</a> · <a href="../tests/test_verify_colorspace_text.py">입력·출력 보호 검사</a></li>
+<li><a href="colorspace-render.html">선행 행·글꼴·측정 검증</a> — 아이콘·체크 표시와 76×40 측정</li>
+<li><a href="colorspace-clip.html">화면 경계에서의 sRGB 전송</a> — 같은 전송을 일곱 위치에서 실행한 결과</li>
+<li><a href="ui-port-contract.html">세 기종 이식 검증 조건</a> · <a href="guide-ui.html">UI와 화면 자원 안내</a></li>
+<li>외부 자료: <a href="https://graphics.pixar.com/library/Compositing/paper.pdf">Porter &amp; Duff, “Compositing Digital Images”, SIGGRAPH 1984</a> — 알파 혼합의 기본 식</li>
+</ul>
+</section>
+
 </main>
 </div>
 <!-- chrome:bottom -->
-<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">UI와 화면 자원 — 이 주제의 문서</h2><ol><li><a href="ui-port-contract.html">UI 이식 설계·안내<span>세 기종 비교</span></a></li><li><a href="colorspace-ui.html">색공간 화면: 선택·확정·취소<span>16사례</span></a></li><li><a href="colorspace-ui-input.html">색공간 화면: 방향 입력·포커스<span>50사례</span></a></li><li><a href="colorspace-render.html">색공간 행의 아이콘과 글자 측정<span>원본 행·ICONBIN 복사, Latin 글꼴 준비와 sRGB 측정</span></a></li><li><a href="colorspace-text.html" aria-current="page">색공간 sRGB 글자의 래스터와 픽셀 전송<span>원본 텍스트 비트맵·합성 표면 전송</span></a></li><li><a href="colorspace-clip.html">sRGB 글자 전송의 화면 경계<span>일곱 좌표에서 32비트 전송과 Q7 행 검사 비교</span></a></li><li><a href="ui-viewport-producers.html">K-3 III 텍스트 viewport의 생산 경로<span>부모 클립과 텍스트 설정의 전달</span></a></li><li><a href="ui-surface-producers.html">K-3 III StringView의 그리기 표면<span>Canvas와 표면 기술자</span></a></li><li><a href="ui-render-chain.html">Q7 갱신에서 원본 픽셀까지<span>마커·두 텍스트·버퍼 교체의 합성 실행</span></a></li><li><a href="cross-ui-text.html">K-3 III와 Q7의 sRGB 글자 그리기 비교<span>32비트 커버리지 전송과 Q7 팔레트 번호·Q16 축소</span></a></li><li><a href="icon-resources.html">ICONBIN 아이콘 자원<span>저장 형식, 복사 규칙, 후보 아이콘</span></a></li></ol></nav>
+<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">UI와 화면 자원 — 이 주제의 문서</h2><ol><li><a href="guide-ui.html">UI와 화면 자원 안내</a></li><li><a href="ui-port-contract.html">UI 이식 설계<span>세 기종 비교</span></a></li><li><a href="colorspace-ui.html">색공간 화면: 선택·확정·취소<span>16사례</span></a></li><li><a href="colorspace-ui-input.html">색공간 화면: 방향 입력·포커스<span>50사례</span></a></li><li><a href="colorspace-render.html">색공간 행의 아이콘과 글자 측정<span>원본 행·ICONBIN 복사, Latin 글꼴 준비와 sRGB 측정</span></a></li><li><a href="colorspace-text.html" aria-current="page">색공간 sRGB 글자의 래스터와 픽셀 전송<span>원본 텍스트 비트맵·합성 표면 전송</span></a></li><li><a href="colorspace-clip.html">sRGB 글자 전송의 화면 경계<span>일곱 좌표에서 32비트 전송과 Q7 행 검사 비교</span></a></li><li><a href="ui-viewport-producers.html">K-3 III 텍스트 viewport의 생산 경로<span>부모 클립과 텍스트 설정의 전달</span></a></li><li><a href="ui-surface-producers.html">K-3 III StringView의 그리기 표면<span>Canvas와 표면 기술자</span></a></li><li><a href="ui-render-chain.html">Q7 갱신에서 원본 픽셀까지<span>마커·두 텍스트·버퍼 교체의 합성 실행</span></a></li><li><a href="cross-ui-text.html">K-3 III와 Q7의 sRGB 글자 그리기 비교<span>32비트 커버리지 전송과 Q7 팔레트 번호·Q16 축소</span></a></li><li><a href="icon-resources.html">ICONBIN 아이콘 자원<span>저장 형식, 복사 규칙, 후보 아이콘</span></a></li></ol></nav>
 <nav class="pager" aria-label="이전·다음 문서"><a class="prev" href="colorspace-render.html"><small>← 이전</small>색공간 행의 아이콘과 글자 측정</a><a class="next" href="colorspace-clip.html"><small>다음 →</small>sRGB 글자 전송의 화면 경계</a></nav>
 <footer class="sitefoot"><div class="sitefoot-in"><nav aria-label="사이트"><a href="../index.html#map">문서 지도</a><a href="../index.html#levels">검증 수준 읽는 법</a><a href="../glossary.html">용어집</a><a href="research-program.html">세 기종 연구 본부</a><a href="https://github.com/yunhyok/pentax-k3iii-firmware-analysis">GitHub 저장소</a></nav><p>PENTAX 펌웨어 연구. PC에서 수행한 정적 분석과 에뮬레이션 결과이며, 카메라 실기에서 검증한 내용이 아닙니다. 원본 펌웨어와 추출한 독점 코드는 포함하지 않습니다.</p></div></footer>
 <!-- /chrome:bottom -->

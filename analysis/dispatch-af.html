@@ -10,7 +10,7 @@
 <body data-camera="k3iii">
 <!-- chrome:top -->
 <a class="skip" href="#main">본문 바로가기</a>
-<div class="topbar"><div class="topbar-in"><a class="brand" href="../index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="../index.html" aria-current="true">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="https://yunhyok.github.io/pentax-q7-firmware-analysis/">Q7</a></div><nav class="topnav" aria-label="주제"><a href="../index.html">개요</a><a href="guide-boot.html">부팅·저장소</a><a href="guide-update.html">업데이트</a><a href="guide-rebuild.html">재구축</a><a href="guide-rtos.html" aria-current="true">명령·셸</a><a href="guide-color.html">색 처리</a><a href="lightroom-bridge.html">Lightroom</a><a href="af-foundations.html">AF</a><a href="ui-port-contract.html">UI</a></nav></div></div>
+<div class="topbar"><div class="topbar-in"><a class="brand" href="../index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="../index.html" aria-current="true">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="https://yunhyok.github.io/pentax-q7-firmware-analysis/">Q7</a></div><nav class="topnav" aria-label="주제"><a href="../index.html">개요</a><a href="guide-boot.html">부팅·저장소</a><a href="guide-update.html">업데이트</a><a href="guide-rebuild.html">재구축</a><a href="guide-rtos.html" aria-current="true">명령·셸</a><a href="guide-color.html">색 처리</a><a href="guide-lightroom.html">Lightroom</a><a href="guide-af.html">AF</a><a href="guide-ui.html">UI</a></nav></div></div>
 <nav class="crumbs" aria-label="현재 위치"><ol><li><a href="../index.html">PENTAX K-3 Mark III</a></li><li><a href="guide-rtos.html">RTOS 명령과 셸</a></li><li aria-current="page">디스패처·셔터·AF 상관 연산</li></ol></nav>
 <!-- /chrome:top -->
 <header class="page-head">
@@ -60,12 +60,12 @@
 <section id="background">
 <h2>배경: 요청이 디스패처로 가는 구조</h2>
 <p>촬영 버튼이나 AF 요청 같은 사용자 동작은 셸 명령으로 들어와, 하나의 공통 제출 함수를 거쳐 <dfn title="요청 메시지를 받아 담당 작업으로 나눠 보내는 부분">디스패처</dfn>로 전달됩니다. 이 공통 통로는 <a href="index.html#shared">명령 전체 지도</a>에서 다뤘습니다. 이 문서는 요청이 디스패처에 도달한 다음을 추적합니다.</p>
-<p class="takeaway">요청은 공통 메시지로 수신기에 도달해 촬영·AF 이벤트로 갈라지고, 이벤트 큐를 거쳐 현재 제어 객체의 가상 함수로 넘어갑니다.</p>
+<p class="takeaway">요청은 공통 메시지로 수신기에 도달해 촬영·AF 이벤트로 갈라지고 이벤트 큐를 거쳐 현재 제어 객체의 가상 함수로 넘어갑니다.</p>
 </section>
 
 <section id="dispatch">
 <h2>공통 메시지에서 촬영·AF 이벤트로</h2>
-<p>공통 제출 경로는 메시지 <code>0x46020102</code>를 만들어 보냅니다. 수신기는 이 메시지를 받아 요청 ID 3을 고르고, 첫 인수 값에 따라 촬영(1)과 AF(2)로 갈라집니다. 촬영 시작은 이벤트 <code>0x49</code>, AF 시작은 이벤트 <code>0x11</code>을 큐에 넣습니다.</p>
+<p>공통 제출 경로는 메시지 <code>0x46020102</code>를 만들어 보냅니다. 수신기는 이 메시지를 받아 요청 ID 3을 고르고 첫 인수 값에 따라 촬영(1)과 AF(2)로 갈라집니다. 촬영 시작은 이벤트 <code>0x49</code>, AF 시작은 이벤트 <code>0x11</code>을 큐에 넣습니다.</p>
 
 <figure class="diagram">
 <figcaption>요청이 이벤트 큐를 거쳐 제어 객체로 가는 경로</figcaption>
@@ -103,7 +103,7 @@
 <ul class="dg-legend"><li><i class="static"></i>디스어셈블로 확인한 분기</li><li><i class="open"></i>미해결 연결</li></ul>
 </figure>
 
-<p>이벤트 큐는 하나의 공용 객체를 씁니다. 소비 함수는 현재 제어 객체를 얻어 가상 함수 슬롯 <code>+0x24</code>를 부릅니다. 기본 제어 객체의 이 슬롯 값은 확인했지만, 실행 시 선택되는 파생 객체와 그다음 동작은 상태에 따라 달라집니다. 촬영·AF 이벤트에서 아래의 셔터·상관 연산으로 이어지는 전체 연결에는 이 상태 전이 구간이 남아 있습니다.</p>
+<p>이벤트 큐는 하나의 공용 객체를 씁니다. 소비 함수는 현재 제어 객체를 얻어 가상 함수 슬롯 <code>+0x24</code>를 부릅니다. 기본 제어 객체의 이 슬롯 값은 확인했지만 실행 시 선택되는 파생 객체와 그다음 동작은 상태에 따라 달라집니다. 촬영·AF 이벤트에서 아래의 셔터·상관 연산으로 이어지는 전체 연결에는 이 상태 전이 구간이 남아 있습니다.</p>
 
 <details class="evidence"><summary>수신·이벤트 경로 주소</summary>
 <div class="table-wrap"><table class="compact">
@@ -158,7 +158,7 @@
 
 <section id="af">
 <h2>AF 객체 생성과 실제 수치 연산</h2>
-<p class="takeaway">AF 팩토리가 만든 세 객체 중 Predictor가 상관 결과를 받아 보정하고, 그 값을 디포커스로 변환해 저장합니다. 상관 단계의 핵심 함수(SAD·SSD)는 에뮬레이터에서 실제로 실행해 확인했습니다.</p>
+<p class="takeaway">AF 팩토리가 만든 세 객체 중 Predictor가 상관 결과를 받아 보정하고 그 값을 디포커스로 변환해 저장합니다. 상관 단계의 핵심 함수(SAD·SSD)는 에뮬레이터에서 실제로 실행해 확인했습니다.</p>
 
 <figure class="diagram">
 <figcaption>AF 예측기의 호출·데이터 경로</figcaption>
@@ -191,12 +191,12 @@
 <ul class="dg-legend"><li><i class="ok"></i>원본 실행으로 확인</li><li><i class="static"></i>디스어셈블로 확인</li></ul>
 </figure>
 
-<p>예측기는 상관 결과 후보를 꺼내 16비트로 보정하고, 디포커스 변환을 부릅니다. 변환은 설정·렌즈 값으로 곱셈과 스케일 조정을 한 뒤, 크기 값을 <code>0xffff</code>로 제한해 객체 <code>+0x0e</code>에 16비트로, 부호 있는 결과를 <code>+0x10</code>에 32비트로 저장합니다. 광학 단위, 렌즈 보정 계수 전체, 최종 렌즈 구동 명령은 추가 분석 대상입니다.</p>
+<p>예측기는 상관 결과 후보를 꺼내 16비트로 보정하고 디포커스 변환을 부릅니다. 변환은 설정·렌즈 값으로 곱셈과 스케일 조정을 한 뒤, 크기 값을 <code>0xffff</code>로 제한해 객체 <code>+0x0e</code>에 16비트로, 부호 있는 결과를 <code>+0x10</code>에 32비트로 저장합니다. 광학 단위, 렌즈 보정 계수 전체, 최종 렌즈 구동 명령은 추가 분석 대상입니다.</p>
 
 <h3 id="sadssd">SAD·SSD 상관 함수</h3>
 <p>상관에 쓰이는 <code>0x52c73190</code> 함수는 부호 없는 16비트 배열 두 개에 대해 <dfn title="두 신호의 차이의 절댓값 합. 두 패턴이 얼마나 닮았는지 재는 기본 측도입니다.">SAD</dfn>와 <dfn title="두 신호의 차이의 제곱 합.">SSD</dfn>를 계산합니다. <a href="https://developer.arm.com/Architectures/Neon">NEON</a> 명령으로 여러 값을 한 번에 처리하므로, 마지막 벡터를 읽을 때 배열 끝을 조금 넘겨 읽을 수 있어 패딩 메모리가 필요합니다.</p>
 <div class="callout plain"><strong class="label">쉽게 말하면</strong>
-<p>위상차 AF는 센서가 받은 두 상(像)을 조금씩 밀어 가며 가장 잘 겹치는 위치를 찾습니다. 두 상의 차이를 재는 것이 SAD·SSD이고, 차이가 가장 작은 밀림량이 초점이 얼마나 어긋났는지를 알려 줍니다.</p></div>
+<p>위상차 AF는 센서가 받은 두 상(像)을 조금씩 밀어 가며 가장 잘 겹치는 위치를 찾습니다. 두 상의 차이를 재는 것이 SAD·SSD이고 차이가 가장 작은 밀림량이 초점이 얼마나 어긋났는지를 알려 줍니다.</p></div>
 <p>원본 커널 바이트를 Unicorn의 Cortex-A7 모델에서 독립 실행했습니다. 양수 길이 1~129 중 18가지에 같은 값·최대 차이·교대 값·난수를 조합한 72개 사례에서 기준식과 일치했습니다. 8개 단위 경계의 앞뒤, 0이 아닌 패딩, 32비트 넘침을 포함합니다. 0·음수 길이의 의미는 이 범위에서 검증하지 않았습니다.</p>
 <div class="callout"><strong class="label">참고</strong>
 <p>이 함수를 C로 다시 만들어 원본과 더 넓게 대조한 결과는 <a href="recompiled-kernels.html">수치 함수 C 재구현</a>에 있습니다. angr의 VEX 실행은 특정 NEON 명령(<code>Iop_PwAddL16Ux8</code>)을 지원하지 않아 실패해, 수치 검증에는 Unicorn을 사용했습니다.</p></div>

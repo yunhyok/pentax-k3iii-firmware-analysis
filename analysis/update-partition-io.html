@@ -10,7 +10,7 @@
 <body data-camera="k3iii">
 <!-- chrome:top -->
 <a class="skip" href="#main">본문 바로가기</a>
-<div class="topbar"><div class="topbar-in"><a class="brand" href="../index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="../index.html" aria-current="true">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="https://yunhyok.github.io/pentax-q7-firmware-analysis/">Q7</a></div><nav class="topnav" aria-label="주제"><a href="../index.html">개요</a><a href="guide-boot.html">부팅·저장소</a><a href="guide-update.html" aria-current="true">업데이트</a><a href="guide-rebuild.html">재구축</a><a href="guide-rtos.html">명령·셸</a><a href="guide-color.html">색 처리</a><a href="lightroom-bridge.html">Lightroom</a><a href="af-foundations.html">AF</a><a href="ui-port-contract.html">UI</a></nav></div></div>
+<div class="topbar"><div class="topbar-in"><a class="brand" href="../index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="../index.html" aria-current="true">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="https://yunhyok.github.io/pentax-q7-firmware-analysis/">Q7</a></div><nav class="topnav" aria-label="주제"><a href="../index.html">개요</a><a href="guide-boot.html">부팅·저장소</a><a href="guide-update.html" aria-current="true">업데이트</a><a href="guide-rebuild.html">재구축</a><a href="guide-rtos.html">명령·셸</a><a href="guide-color.html">색 처리</a><a href="guide-lightroom.html">Lightroom</a><a href="guide-af.html">AF</a><a href="guide-ui.html">UI</a></nav></div></div>
 <nav class="crumbs" aria-label="현재 위치"><ol><li><a href="../index.html">PENTAX K-3 Mark III</a></li><li><a href="guide-update.html">펌웨어 업데이트 과정</a></li><li aria-current="page">R 파티션과 sector I/O</li></ol></nav>
 <!-- /chrome:top -->
 <header class="page-head">
@@ -30,7 +30,7 @@
 <li>R 볼륨의 두 상수는 <strong>시작 sector 오프셋</strong>과 <strong>총 sector 수</strong>입니다. 두 값을 쓰는 파일시스템 연결 함수와 <code>Emmc</code> 읽기·쓰기 함수를 따라가 확인했습니다.</li>
 <li>파일시스템이 볼륨 안의 상대 sector 번호로 요청하면, 연결 함수가 시작 오프셋을 더해 <code>Emmc</code> 드라이버에 넘깁니다. 이 경로에서 1 sector는 512바이트입니다.</li>
 <li>읽기와 쓰기는 버퍼 정렬 조건이 다릅니다. 읽기는 64바이트, 쓰기는 4바이트 단위로 정렬되지 않은 버퍼를 중간 버퍼로 나눠 처리합니다.</li>
-<li>따라간 경로 안에는 요청이 볼륨 끝을 넘는지 확인하는 비교가 없었습니다. 이 경로에서 본 사실이며, 시스템 전체에 범위 검사가 없다는 뜻은 아닙니다.</li>
+<li>따라간 경로 안에는 요청이 볼륨 끝을 넘는지 확인하는 비교가 없었습니다. 이 경로에서 본 사실이며 시스템 전체에 범위 검사가 없다는 뜻은 아닙니다.</li>
 <li>모든 시험은 합성 버퍼로 했습니다. 실제 저장 장치 입출력, mount, 카메라는 실행하지 않았습니다.</li>
 </ul>
 </section>
@@ -76,12 +76,12 @@
 <li><strong>FAT 연결 함수</strong> — 파일시스템 라이브러리와 매체 객체 사이에 있는 펌웨어 쪽 함수입니다. 분석 기록에서는 FAT adapter, callback이라고 불렀습니다.</li>
 </ul>
 <div class="callout"><strong class="label">참고</strong>
-<p>여기서 다루는 volume record는 파일시스템 볼륨의 항목입니다. <code>FwPartition</code>의 bank record와 다른 구조이며, 이 문서의 값으로 RTOS의 bank 선택을 설명할 수는 없습니다. bank는 <a href="update-bank-selection.html">쓰기 bank와 BOOT 선택</a>에서 다룹니다.</p></div>
+<p>여기서 다루는 volume record는 파일시스템 볼륨의 항목입니다. <code>FwPartition</code>의 bank record와 다른 구조이며 이 문서의 값으로 RTOS의 bank 선택을 설명할 수는 없습니다. bank는 <a href="update-bank-selection.html">쓰기 bank와 BOOT 선택</a>에서 다룹니다.</p></div>
 </section>
 
 <section id="mapping">
 <h2>두 값은 시작 sector 오프셋과 총 sector 수입니다</h2>
-<p class="takeaway">+0x0c의 값은 요청한 상대 sector 번호에 더해지고, +0x10의 값은 “총 sector 수” 조회에 쓰입니다.</p>
+<p class="takeaway">+0x0c의 값은 요청한 상대 sector 번호에 더해지고 +0x10의 값은 “총 sector 수” 조회에 쓰입니다.</p>
 
 <figure class="diagram">
 <figcaption>R 볼륨이 차지하는 sector 범위 (소프트웨어 설정값)</figcaption>
@@ -137,12 +137,12 @@
 <caption>필드와 연결별 근거 <span class="badge ok">확인</span></caption>
 <thead><tr><th>필드·연결</th><th>원본 명령에서 본 것</th><th>정한 뜻</th></tr></thead>
 <tbody>
-<tr><th scope="row">record +0x0c</th><td>getter가 이 값을 돌려주고, 쓰기 연결 함수와 읽기 연결 함수가 각각 요청 번호에 더합니다.</td><td>요청한 상대 sector에 더하는 시작 오프셋</td></tr>
-<tr><th scope="row">record +0x10</th><td>getter가 이 필드의 주소를 돌려주고, 조회 함수가 그 값을 읽습니다. 진단 문자열은 이 함수를 <code>GetTotalSectors</code>라고 부릅니다.</td><td>총 sector 수</td></tr>
+<tr><th scope="row">record +0x0c</th><td>getter가 이 값을 돌려주고 쓰기 연결 함수와 읽기 연결 함수가 각각 요청 번호에 더합니다.</td><td>요청한 상대 sector에 더하는 시작 오프셋</td></tr>
+<tr><th scope="row">record +0x10</th><td>getter가 이 필드의 주소를 돌려주고 조회 함수가 그 값을 읽습니다. 진단 문자열은 이 함수를 <code>GetTotalSectors</code>라고 부릅니다.</td><td>총 sector 수</td></tr>
 <tr><th scope="row">geometry 명령 5</th><td>조회 함수를 불러 결과를 지역 geometry 구조의 +0x10에 넣고 출력 보조 함수에 넘깁니다.</td><td>위 총량을 라이브러리에 알려 주는 경로</td></tr>
 <tr><th scope="row">callback 등록</th><td>등록 함수가 입출력 callback과 geometry callback의 주소를 라이브러리 항목의 +0x400과 +0x404에 저장합니다.</td><td>라이브러리가 부를 두 함수의 등록</td></tr>
 </tbody></table></div>
-<p>연결 함수는 전역 변수에 저장된 volume manager로 R의 record를 찾습니다. 이 전역 변수는 파일시스템 객체의 초기화 함수가 채웁니다. 이 초기화 경로는 코드를 읽어 확인했고, 시험에서는 전역 변수에 직접 값을 넣었습니다. callback 등록의 저장 명령은 원본 코드로 실행했습니다. 그러나 라이브러리가 callback을 언제 부르는지와 mount가 성공하는지는 실행하지 않았습니다. geometry 출력 보조 함수의 100바이트 복사도 대체 함수입니다.</p>
+<p>연결 함수는 전역 변수에 저장된 volume manager로 R의 record를 찾습니다. 이 전역 변수는 파일시스템 객체의 초기화 함수가 채웁니다. 이 초기화 경로는 코드를 읽어 확인했고 시험에서는 전역 변수에 직접 값을 넣었습니다. callback 등록의 저장 명령은 원본 코드로 실행했습니다. 그러나 라이브러리가 callback을 언제 부르는지와 mount가 성공하는지는 실행하지 않았습니다. geometry 출력 보조 함수의 100바이트 복사도 대체 함수입니다.</p>
 
 <details class="evidence"><summary>getter·연결 함수·등록 함수의 주소</summary>
 <div class="table-wrap"><table class="compact">
@@ -205,7 +205,7 @@
 <p class="small muted">읽기와 쓰기에서 호출 횟수와 복사량이 같았습니다. 정렬 안 된 버퍼는 주소를 1바이트 어긋나게 만든 것입니다.</p>
 
 <h3 id="retry">검사와 재시도</h3>
-<p>하위 함수는 저장 장치 쪽 호출의 반환값 0을 성공으로 보고 상위에는 1을 돌려줍니다. 0이 아니면 다시 시도하며, 모두 세 번까지 합니다.</p>
+<p>하위 함수는 저장 장치 쪽 호출의 반환값 0을 성공으로 보고 상위에는 1을 돌려줍니다. 0이 아니면 다시 시도하며 모두 세 번까지 합니다.</p>
 <div class="table-wrap"><table class="fit">
 <caption>검사와 재시도 8사례 (읽기 4, 쓰기 4) <span class="badge ok">확인</span> (반환값은 <span class="badge model">모델</span>)</caption>
 <thead><tr><th>넣어 준 조건</th><th class="n">하위 호출 횟수</th><th class="n">상위 반환값</th></tr></thead>
@@ -281,7 +281,7 @@
 
 <h3 id="limits">한계와 남은 과제</h3>
 <ul>
-<li><strong>시험 조건</strong> — 직접 만든 R record와 기본 <code>Emmc</code> vptr를 썼습니다. 저장 장치 입출력, OS lock, cache, 라이브러리 조회, 등록 준비, 메모리 복사는 모두 명시적인 대체 함수입니다. 읽기는 합성 바이트를 채워 주고, 쓰기는 버퍼의 해시만 기록합니다.</li>
+<li><strong>시험 조건</strong> — 직접 만든 R record와 기본 <code>Emmc</code> vptr를 썼습니다. 저장 장치 입출력, OS lock, cache, 라이브러리 조회, 등록 준비, 메모리 복사는 모두 명시적인 대체 함수입니다. 읽기는 합성 바이트를 채워 주고 쓰기는 버퍼의 해시만 기록합니다.</li>
 <li><strong>실행하지 않은 것</strong> — 초기화, mount, 실제 파일 접근, 다른 mode와 재정의된 callback, 카메라, 펌웨어 빌드, 플래시 기록.</li>
 <li><strong>CPU 모델</strong> — Unicorn의 Cortex-A15 모델로 산술과 메모리 흐름을 본 것입니다. 카메라의 CPU나 주변 장치를 재현한 것이 아닙니다.</li>
 <li><strong>남은 과제</strong> — R 볼륨의 실제 포맷과 mount 때 고르는 파일시스템, 물리 주소와의 대응, 상위 라이브러리와 하위 드라이버의 범위 검사.</li>

@@ -10,8 +10,8 @@
 <body data-camera="k3iii">
 <!-- chrome:top -->
 <a class="skip" href="#main">본문 바로가기</a>
-<div class="topbar"><div class="topbar-in"><a class="brand" href="../index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="../index.html" aria-current="true">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="https://yunhyok.github.io/pentax-q7-firmware-analysis/">Q7</a></div><nav class="topnav" aria-label="주제"><a href="../index.html">개요</a><a href="guide-boot.html">부팅·저장소</a><a href="guide-update.html">업데이트</a><a href="guide-rebuild.html">재구축</a><a href="guide-rtos.html">명령·셸</a><a href="guide-color.html">색 처리</a><a href="lightroom-bridge.html" aria-current="true">Lightroom</a><a href="af-foundations.html">AF</a><a href="ui-port-contract.html">UI</a></nav></div></div>
-<nav class="crumbs" aria-label="현재 위치"><ol><li><a href="../index.html">PENTAX K-3 Mark III</a></li><li><a href="lightroom-bridge.html">Lightroom 색 프로파일</a></li><li aria-current="page">실제 TIFF 6개 비교</li></ol></nav>
+<div class="topbar"><div class="topbar-in"><a class="brand" href="../index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="../index.html" aria-current="true">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="https://yunhyok.github.io/pentax-q7-firmware-analysis/">Q7</a></div><nav class="topnav" aria-label="주제"><a href="../index.html">개요</a><a href="guide-boot.html">부팅·저장소</a><a href="guide-update.html">업데이트</a><a href="guide-rebuild.html">재구축</a><a href="guide-rtos.html">명령·셸</a><a href="guide-color.html">색 처리</a><a href="guide-lightroom.html" aria-current="true">Lightroom</a><a href="guide-af.html">AF</a><a href="guide-ui.html">UI</a></nav></div></div>
+<nav class="crumbs" aria-label="현재 위치"><ol><li><a href="../index.html">PENTAX K-3 Mark III</a></li><li><a href="guide-lightroom.html">Lightroom 색 프로파일</a></li><li aria-current="page">실제 TIFF 6개 비교</li></ol></nav>
 <!-- /chrome:top -->
 <header class="page-head">
 <p class="eyebrow">Lightroom 색 프로파일 · 실제 측정 결과</p>
@@ -28,8 +28,8 @@
 <ul>
 <li>K-3 II로 찍은 공개 RAW 한 장(색상표가 찍힌 장면)을 <strong>실제 Lightroom Classic 15.6</strong>에서 세 가지 프로파일로 현상했습니다. 프로파일마다 sRGB와 ProPhoto RGB로 내보내 16비트 TIFF 6개를 얻었습니다.</li>
 <li>같은 RAW 파일에 들어 있는 카메라 Natural JPEG와 색 패치 24개를 비교했습니다. 두 출력 색공간 모두 <strong>Camera Natural이 가장 가까웠습니다</strong>. sRGB 기준 평균 색차(ΔE<sub>00</sub>)는 Camera Natural 1.615, 시험 DCP 3.073, Adobe Standard 3.476입니다.</li>
-<li>sRGB TIFF에서 채도가 높은 패치의 채널 값이 0에 붙는 현상은 대부분 <strong>sRGB로 옮기는 변환</strong>에서 생깁니다. ProPhoto RGB TIFF에는 이런 값이 없고, 이를 sRGB로 다시 변환하면 같은 위치에서 재현됩니다.</li>
-<li>장면 한 장에서 잰 값입니다. 프로파일이 Lightroom 출력에 반영되는지 확인한 것이며, <strong>카메라의 색 모드를 재현했다는 뜻이 아닙니다</strong>.</li>
+<li>sRGB TIFF에서 채도가 높은 패치의 채널 값이 0에 붙는 현상은 대부분 <strong>sRGB로 옮기는 변환</strong>에서 생깁니다. ProPhoto RGB TIFF에는 이런 값이 없고 이를 sRGB로 다시 변환하면 같은 위치에서 재현됩니다.</li>
+<li>장면 한 장에서 잰 값입니다. 프로파일이 Lightroom 출력에 반영되는지 확인한 것이며 <strong>카메라의 색 모드를 재현했다는 뜻이 아닙니다</strong>.</li>
 </ul>
 </section>
 
@@ -190,7 +190,7 @@
 <p class="small muted">값은 <a href="lightroom-render-comparison.json">lightroom-render-comparison.json</a>의 패치별 색차에서 다시 계산했습니다. 90백분위는 선형 보간 방식입니다.</p>
 
 <h3>시험 DCP와 Adobe Standard의 차이</h3>
-<p>시험 DCP는 Lightroom 화면에서 직접 선택했고, 내보낸 TIFF의 <code>CameraProfile</code>과 <code>CameraProfileDigest</code>에서도 이 프로파일이 쓰였음을 확인했습니다. 이 표본의 sRGB 출력에서 시험 DCP의 평균(3.073)과 90백분위(4.741)는 Adobe Standard(3.476, 5.130)보다 낮았습니다. 중앙값은 0.053 높았습니다.</p>
+<p>시험 DCP는 Lightroom 화면에서 직접 선택했고 내보낸 TIFF의 <code>CameraProfile</code>과 <code>CameraProfileDigest</code>에서도 이 프로파일이 쓰였음을 확인했습니다. 이 표본의 sRGB 출력에서 시험 DCP의 평균(3.073)과 90백분위(4.741)는 Adobe Standard(3.476, 5.130)보다 낮았습니다. 중앙값은 0.053 높았습니다.</p>
 <div class="callout warn"><strong class="label">주의</strong>
 <p>이 차이는 직접 만든 프로파일을 불러와 출력한 파일에서 잰 값입니다. 시험 DCP가 Adobe Standard보다 “더 정확하다”는 뜻이 아닙니다. 시험 DCP에는 카메라 색 모드에 맞춘 보정이 들어 있지 않습니다. 프로파일을 바꾸면 출력이 달라진다는 사실, 다시 말해 조작이 결과에 반영된다는 사실까지 확인한 것입니다.</p></div>
 </section>
@@ -343,7 +343,7 @@
 
 <ul>
 <li><strong>Camera Natural이 가장 가깝지 않은 패치는 네 개</strong>입니다. 6번 bluish green과 20번·21번 중립 패치는 시험 DCP가, 19번 흰색은 Adobe Standard가 더 가까웠습니다. ProPhoto RGB 출력에서도 같습니다.</li>
-<li><strong>Camera Natural의 가장 큰 차이는 19번 흰색</strong>입니다. ΔE<sub>00</sub>은 3.295이고, Lightroom 출력의 밝기 L*가 내장 JPEG보다 5.376 낮았습니다.</li>
+<li><strong>Camera Natural의 가장 큰 차이는 19번 흰색</strong>입니다. ΔE<sub>00</sub>은 3.295이고 Lightroom 출력의 밝기 L*가 내장 JPEG보다 5.376 낮았습니다.</li>
 <li><strong>중립 패치 여섯 개는 세 프로파일 모두에서 Lightroom 쪽이 더 어둡습니다</strong>(ΔL*가 모두 음수). 색을 맞추더라도 밝기 곡선의 차이가 따로 남는다는 뜻입니다.</li>
 </ul>
 
@@ -413,7 +413,7 @@
 <p class="takeaway">sRGB TIFF에서 일부 패치의 R 또는 B 값이 0에 붙어 있었습니다. 같은 현상을 ProPhoto RGB TIFF에서 sRGB로 다시 변환해 재현했으므로, 원인은 대부분 좁은 색공간으로 옮기는 변환입니다.</p>
 
 <div class="callout plain"><strong class="label">쉽게 말하면</strong>
-<p><dfn title="IEC 61966-2-1이 정한 표준 RGB 색공간. 백색점은 D65입니다.">sRGB</dfn>는 담을 수 있는 색의 범위가 좁습니다. 채도가 아주 높은 색을 sRGB로 옮기려면 한 채널이 0보다 작아져야 하는데, 파일에는 0 미만을 쓸 수 없어 0으로 잘립니다. <dfn title="ISO 22028-2가 ROMM RGB라는 이름으로 정한 넓은 RGB 색공간. 백색점은 D50입니다.">ProPhoto RGB</dfn>는 범위가 훨씬 넓어 같은 색을 잘리지 않게 담습니다. 그래서 같은 현상 결과를 두 색공간으로 내보내 비교하면, 잘림이 현상 단계에서 생겼는지 출력 변환에서 생겼는지 가려낼 수 있습니다.</p></div>
+<p><dfn title="IEC 61966-2-1이 정한 표준 RGB 색공간. 백색점은 D65입니다.">sRGB</dfn>는 담을 수 있는 색의 범위가 좁습니다. 채도가 아주 높은 색을 sRGB로 옮기려면 한 채널이 0보다 작아져야 하는데 파일에는 0 미만을 쓸 수 없어 0으로 잘립니다. <dfn title="ISO 22028-2가 ROMM RGB라는 이름으로 정한 넓은 RGB 색공간. 백색점은 D50입니다.">ProPhoto RGB</dfn>는 범위가 훨씬 넓어 같은 색을 잘리지 않게 담습니다. 그래서 같은 현상 결과를 두 색공간으로 내보내 비교하면, 잘림이 현상 단계에서 생겼는지 출력 변환에서 생겼는지 가려낼 수 있습니다.</p></div>
 
 <p>먼저 세 ProPhoto RGB TIFF의 패치 영역에는 코드 0이나 65535가 하나도 없었습니다. 다음으로 그 TIFF를 원래 sRGB TIFF에 들어 있던 ICC 프로파일로 다시 변환했습니다. 아래 표처럼 0이 된 픽셀 대부분이 원래 sRGB TIFF와 같은 위치에 나타났습니다. 집계 대상은 TIFF마다 패치 24개의 측정 영역 960,000픽셀입니다.</p>
 
@@ -427,8 +427,8 @@
 </tbody></table></div>
 
 <ul>
-<li><strong>끝값은 프로파일마다 네 개 이하의 패치에 몰려 있습니다.</strong> Adobe Standard에서는 18번 cyan의 측정 영역 40,000픽셀 전체와 13번 blue의 38,061픽셀에서 R이 0이었고, 16번 yellow의 39,964픽셀에서 B가 0이었습니다.</li>
-<li><strong>밝은 쪽 끝값은 Adobe Standard에만 있습니다.</strong> 7번 orange에서 R=65535인 픽셀이 41개였고, 그중 37개가 재변환에서 같은 위치에 나타났습니다.</li>
+<li><strong>끝값은 프로파일마다 네 개 이하의 패치에 몰려 있습니다.</strong> Adobe Standard에서는 18번 cyan의 측정 영역 40,000픽셀 전체와 13번 blue의 38,061픽셀에서 R이 0이었고 16번 yellow의 39,964픽셀에서 B가 0이었습니다.</li>
+<li><strong>밝은 쪽 끝값은 Adobe Standard에만 있습니다.</strong> 7번 orange에서 R=65535인 픽셀이 41개였고 그중 37개가 재변환에서 같은 위치에 나타났습니다.</li>
 <li><strong>Camera Natural에는 끝값이 거의 없습니다.</strong> R=0이 9개, B=0이 6개뿐입니다.</li>
 <li><strong>끝값은 색차 숫자에도 영향을 줍니다.</strong> Adobe Standard의 18번 cyan은 sRGB TIFF에서 ΔE<sub>00</sub> 3.020이지만 ProPhoto RGB TIFF에서는 6.216입니다. sRGB 값은 채널이 0으로 잘린 뒤의 색으로 잰 것입니다.</li>
 </ul>
@@ -461,7 +461,7 @@
 <tr><th scope="row">Camera Natural</th><td class="n">9 / 6</td><td class="n">9 / 7</td><td class="n">0 / 2</td><td class="n">9 / 7</td><td class="n">9 / 6</td></tr>
 <tr><th scope="row">시험 DCP</th><td class="n">48,663 / 38,648</td><td class="n">48,871 / 38,938</td><td class="n">4,242 / 13,170</td><td class="n">48,812 / 38,923</td><td class="n">48,604 / 38,648</td></tr>
 </tbody></table></div>
-<p class="small">LittleCMS의 변환 도구 <code>tificc</code>는 기본값(<code>-c1</code>)에서 변환표를 미리 계산해 보간합니다. 이 방식에서는 0이 되는 픽셀이 훨씬 적게 나와 원래 TIFF와 맞지 않았습니다. 그래서 사전 계산을 끈 <code>-c0</code> 결과를 주된 비교에 썼습니다. 오른쪽 두 열은 변환 도구를 쓰지 않고 선형 sRGB 값을 직접 계산한 독립 확인입니다. Adobe Standard의 R=65535는 선형 값이 1을 넘는 픽셀 37개와 대응했고, 모두 원래 TIFF의 41개 안에 있었습니다.</p>
+<p class="small">LittleCMS의 변환 도구 <code>tificc</code>는 기본값(<code>-c1</code>)에서 변환표를 미리 계산해 보간합니다. 이 방식에서는 0이 되는 픽셀이 훨씬 적게 나와 원래 TIFF와 맞지 않았습니다. 그래서 사전 계산을 끈 <code>-c0</code> 결과를 주된 비교에 썼습니다. 오른쪽 두 열은 변환 도구를 쓰지 않고 선형 sRGB 값을 직접 계산한 독립 확인입니다. Adobe Standard의 R=65535는 선형 값이 1을 넘는 픽셀 37개와 대응했고 모두 원래 TIFF의 41개 안에 있었습니다.</p>
 <div class="table-wrap"><table class="compact">
 <caption>재변환한 sRGB와 원래 sRGB TIFF의 16비트 코드 차이(R / G / B)와 두 TIFF 사이 위치 차이</caption>
 <thead><tr><th>프로파일</th><th class="n">중앙값</th><th class="n">90백분위</th><th class="n">99백분위</th><th class="n">최댓값</th><th class="n">최대 위치 차이(픽셀)</th></tr></thead>
@@ -553,11 +553,11 @@
 <h3>JPEG와 TIFF의 위치 맞춤</h3>
 <figure class="photo">
 <img src="lightroom-registration.png" width="1100" height="770" alt="ColorChecker Classic 차트를 나란히 놓은 두 그림. 왼쪽은 카메라 Natural 내장 JPEG, 오른쪽은 Lightroom Adobe Standard 16비트 TIFF입니다. 차트는 세로로 긴 4열 6행으로 찍혀 있고, 왼쪽 위가 6번, 오른쪽 위가 24번 검정, 왼쪽 아래가 1번, 오른쪽 아래가 19번 흰색입니다. 두 그림 모두 패치 24개의 한가운데에 번호가 붙은 청록색 정사각형이 그려져 있습니다.">
-<figcaption>위치 맞춤에 쓴 차트 부분과 측정 영역입니다. 청록색 정사각형은 양쪽 원본 픽셀에서 값을 뽑은 200×200픽셀 영역이고, 숫자는 패치 번호입니다. 두 그림의 색이 조금 다른 것이 이 문서가 재려는 차이입니다. 오른쪽 그림은 화면 표시를 위해 8비트로 줄였고, 계산에는 원본 RGB16 값을 썼습니다. <span class="credit">원본 사진: <a href="https://raw.pixls.us/getfile.php/1376/nice/Pentax%20-%20K-3%20II%20-%2014bit%20%283:2%29.dng">raw.pixls.us #1376</a>, <a href="https://creativecommons.org/publicdomain/zero/1.0/">CC0 1.0</a>. 영역 표시는 이 연구에서 그렸습니다.</span></figcaption>
+<figcaption>위치 맞춤에 쓴 차트 부분과 측정 영역입니다. 청록색 정사각형은 양쪽 원본 픽셀에서 값을 뽑은 200×200픽셀 영역이고 숫자는 패치 번호입니다. 두 그림의 색이 조금 다른 것이 이 문서가 재려는 차이입니다. 오른쪽 그림은 화면 표시를 위해 8비트로 줄였고 계산에는 원본 RGB16 값을 썼습니다. <span class="credit">원본 사진: <a href="https://raw.pixls.us/getfile.php/1376/nice/Pentax%20-%20K-3%20II%20-%2014bit%20%283:2%29.dng">raw.pixls.us #1376</a>, <a href="https://creativecommons.org/publicdomain/zero/1.0/">CC0 1.0</a>. 영역 표시는 이 연구에서 그렸습니다.</span></figcaption>
 </figure>
 <p>내장 JPEG와 Lightroom TIFF는 크기가 6016×4000으로 같지만 차트의 위치는 몇십 픽셀 어긋나 있습니다. 그래서 좌표를 그대로 쓰지 않고 다음 순서로 맞췄습니다.</p>
 <ol class="steps">
-<li><strong>모서리 4곳으로 변환 구하기</strong> 녹색 채널의 윤곽 세기(가우시안 σ 1.4, Sobel)를 구하고, 차트 모서리 표식 4곳에서 140픽셀 크기의 조각을 서로 맞춰 사영 변환을 구했습니다.</li>
+<li><strong>모서리 4곳으로 변환 구하기</strong> 녹색 채널의 윤곽 세기(가우시안 σ 1.4, Sobel)를 구하고 차트 모서리 표식 4곳에서 140픽셀 크기의 조각을 서로 맞춰 사영 변환을 구했습니다.</li>
 <li><strong>따로 둔 15곳으로 검사하기</strong> 변환을 구할 때 쓰지 않은 패치 사이 교차점 15곳에서 실제 어긋남과 변환이 예측한 어긋남을 비교했습니다. 가장 큰 차이는 2.712픽셀이었습니다.</li>
 <li><strong>측정 영역 옮기기</strong> 각 패치의 200×200 영역을 중심의 이동량만큼 정수 픽셀로 옮겼습니다. 픽셀을 다시 보간하지 않았습니다. 옮긴 상자의 모서리와 변환이 예측한 모서리의 차이는 최대 2.96픽셀입니다.</li>
 <li><strong>TIFF끼리 확인하기</strong> 나머지 TIFF는 첫 TIFF와 같은 위치 19곳(모서리 4곳과 교차점 15곳)을 대조했습니다. 프로파일과 출력 색공간을 바꾼 모든 비교에서 가장 큰 이동은 0.167픽셀이었습니다.</li>
@@ -661,7 +661,7 @@
 <section id="reproduce">
 <h2 id="replay">재현 방법</h2>
 <p>공개 JSON에는 좌표, 패치별 색차, 여섯 TIFF의 해시, 프로파일 식별값, ICC 해시가 들어 있습니다. 원본 TIFF와 DCP는 공개하지 않습니다. 아래 명령은 해시가 같은 TIFF 여섯 개를 가진 사람이 같은 수치를 다시 얻는 절차입니다. Lightroom에서 새로 내보낸 TIFF는 메타데이터가 달라 해시가 맞지 않으므로 별도의 증거로 다뤄야 합니다.</p>
-<p>필요한 것은 Python 3.11 이상과 NumPy, OpenCV, Pillow, tifffile, scikit-image, 그리고 <code>exiftool</code>과 <code>tificc</code>입니다. 두 실행 파일은 PATH에 두거나 <code>--exiftool</code>, <code>--tificc</code>로 경로를 지정합니다. DNG는 <a href="https://raw.pixls.us/getfile.php/1376/nice/Pentax%20-%20K-3%20II%20-%2014bit%20%283:2%29.dng">CC0 원본</a>을 받고, CIEDE2000 검증 자료는 <a href="https://hajim.rochester.edu/ece/sites/gsharma/ciede2000/dataNprograms/ciede2000testdata.txt">저자 배포 파일</a>을 받습니다.</p>
+<p>필요한 것은 Python 3.11 이상과 NumPy, OpenCV, Pillow, tifffile, scikit-image, 그리고 <code>exiftool</code>과 <code>tificc</code>입니다. 두 실행 파일은 PATH에 두거나 <code>--exiftool</code>, <code>--tificc</code>로 경로를 지정합니다. DNG는 <a href="https://raw.pixls.us/getfile.php/1376/nice/Pentax%20-%20K-3%20II%20-%2014bit%20%283:2%29.dng">CC0 원본</a>을 받고 CIEDE2000 검증 자료는 <a href="https://hajim.rochester.edu/ece/sites/gsharma/ciede2000/dataNprograms/ciede2000testdata.txt">저자 배포 파일</a>을 받습니다.</p>
 <p>입력 파일은 아래처럼 배치합니다. <code>fixtures/work</code>는 미리 만들어 둔 비공개 작업 폴더입니다.</p>
 <pre><code>fixtures/
   pentax-k3ii-1376.dng
@@ -733,7 +733,7 @@ python -B tools/check_lightroom_gamut.py \
 </main>
 </div>
 <!-- chrome:bottom -->
-<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">Lightroom 색 프로파일 — 이 주제의 문서</h2><ol><li><a href="lightroom-bridge.html">Lightroom 프로파일 안내<span>DCP 생성·검증의 전체 흐름</span></a></li><li><a href="raw-test-inputs.html">시험용 RAW 준비</a></li><li><a href="color-comparison-protocol.html">ColorChecker 비교 절차</a></li><li><a href="lightroom-render-comparison.html" aria-current="page">실제 TIFF 6개 비교</a></li><li><a href="lightroom-tone-comparison.html">톤 곡선 비교</a></li><li><a href="lightroom-model-exports.html">K-3 III·Q7 DCP 내보내기</a></li><li><a href="lightroom-profile-fingerprints.html">프로파일 지문 재현</a></li><li><a href="lightroom-look-controls.html">LookTable 대조 실험</a></li><li><a href="color-tone-residual.html">톤 보정 뒤 남는 색차</a></li><li><a href="color-scene-transfer.html">고정 톤의 독립 장면 비교<span>K-3 II #1363과 Lightroom 버전 대조</span></a></li><li><a href="lightroom-composed-tone.html">합성 톤 DCP의 실제 Lightroom 출력<span>두 장면·최대 색차 기준 미충족</span></a></li><li><a href="lightroom-tone-coordinates.html">Lightroom 톤과 RGB 좌표<span>같은 엔진·두 출력 색공간 대조</span></a></li><li><a href="lightroom-studio-baseline.html">K-3 III·Q7 Bright 스튜디오 비교<span>정합 통과 영역의 JPEG 대비 색차</span></a></li><li><a href="lightroom-studio-reference.html">K-3 III·Q7 참조 프로파일 비교<span>같은 장면의 공통 마스크·As Shot 대조</span></a></li><li><a href="lightroom-as-shot.html">As Shot과 프로파일별 백색점<span>같은 Q7 RAW의 SDK 수식 재현</span></a></li><li><a href="lightroom-pef-neutral.html">K-3 III PEF의 As Shot 중립값<span>두 DNG 변환과 세 프로파일 수식 재현</span></a></li><li><a href="lightroom-cfa-preservation.html">K-3 III PEF·DNG의 CFA 샘플 비교<span>변환 전후 전체 26,628,096개 샘플 대조</span></a></li><li><a href="lightroom-cfa-range.html">K-3 III DNG의 CFA 범위와 기본 크롭<span>활성 영역과 크롭의 WhiteLevel 대조</span></a></li><li><a href="lightroom-sdk-stage2.html">K-3 III DNG의 Adobe SDK Stage 2 실행<span>원본 SDK에서 활성 영역 25,891,840개 전수 대조</span></a></li><li><a href="lightroom-sdk-stage3.html">K-3 III DNG의 Adobe SDK Stage 3<span>카메라 채널 77,675,520개 보간 대조</span></a></li></ol></nav>
+<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">Lightroom 색 프로파일 — 이 주제의 문서</h2><ol><li><a href="guide-lightroom.html">Lightroom 색 프로파일 안내</a></li><li><a href="lightroom-bridge.html">DCP 구조와 생성 도구<span>세 기종 공통</span></a></li><li><a href="raw-test-inputs.html">시험용 RAW 준비</a></li><li><a href="color-comparison-protocol.html">ColorChecker 비교 절차</a></li><li><a href="lightroom-render-comparison.html" aria-current="page">실제 TIFF 6개 비교</a></li><li><a href="lightroom-tone-comparison.html">톤 곡선 비교</a></li><li><a href="lightroom-model-exports.html">K-3 III·Q7 DCP 내보내기</a></li><li><a href="lightroom-profile-fingerprints.html">프로파일 지문 재현</a></li><li><a href="lightroom-look-controls.html">LookTable 대조 실험</a></li><li><a href="color-tone-residual.html">톤 보정 뒤 남는 색차</a></li><li><a href="color-scene-transfer.html">고정 톤의 독립 장면 비교<span>K-3 II #1363과 Lightroom 버전 대조</span></a></li><li><a href="lightroom-composed-tone.html">합성 톤 DCP의 실제 Lightroom 출력<span>두 장면·최대 색차 기준 미충족</span></a></li><li><a href="lightroom-tone-coordinates.html">Lightroom 톤과 RGB 좌표<span>같은 엔진·두 출력 색공간 대조</span></a></li><li><a href="lightroom-studio-baseline.html">K-3 III·Q7 Bright 스튜디오 비교<span>정합 통과 영역의 JPEG 대비 색차</span></a></li><li><a href="lightroom-studio-reference.html">K-3 III·Q7 참조 프로파일 비교<span>같은 장면의 공통 마스크·As Shot 대조</span></a></li><li><a href="lightroom-as-shot.html">As Shot과 프로파일별 백색점<span>같은 Q7 RAW의 SDK 수식 재현</span></a></li><li><a href="lightroom-pef-neutral.html">K-3 III PEF의 As Shot 중립값<span>두 DNG 변환과 세 프로파일 수식 재현</span></a></li><li><a href="lightroom-cfa-preservation.html">K-3 III PEF·DNG의 CFA 샘플 비교<span>변환 전후 전체 26,628,096개 샘플 대조</span></a></li><li><a href="lightroom-cfa-range.html">K-3 III DNG의 CFA 범위와 기본 크롭<span>활성 영역과 크롭의 WhiteLevel 대조</span></a></li><li><a href="lightroom-sdk-stage2.html">K-3 III DNG의 Adobe SDK Stage 2 실행<span>원본 SDK에서 활성 영역 25,891,840개 전수 대조</span></a></li><li><a href="lightroom-sdk-stage3.html">K-3 III DNG의 Adobe SDK Stage 3<span>카메라 채널 77,675,520개 보간 대조</span></a></li></ol></nav>
 <nav class="pager" aria-label="이전·다음 문서"><a class="prev" href="color-comparison-protocol.html"><small>← 이전</small>ColorChecker 비교 절차</a><a class="next" href="lightroom-tone-comparison.html"><small>다음 →</small>톤 곡선 비교</a></nav>
 <footer class="sitefoot"><div class="sitefoot-in"><nav aria-label="사이트"><a href="../index.html#map">문서 지도</a><a href="../index.html#levels">검증 수준 읽는 법</a><a href="../glossary.html">용어집</a><a href="research-program.html">세 기종 연구 본부</a><a href="https://github.com/yunhyok/pentax-k3iii-firmware-analysis">GitHub 저장소</a></nav><p>PENTAX 펌웨어 연구. PC에서 수행한 정적 분석과 에뮬레이션 결과이며, 카메라 실기에서 검증한 내용이 아닙니다. 원본 펌웨어와 추출한 독점 코드는 포함하지 않습니다.</p></div></footer>
 <!-- /chrome:bottom -->

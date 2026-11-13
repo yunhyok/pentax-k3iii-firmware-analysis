@@ -10,7 +10,7 @@
 <body data-camera="k3iii">
 <!-- chrome:top -->
 <a class="skip" href="#main">본문 바로가기</a>
-<div class="topbar"><div class="topbar-in"><a class="brand" href="../index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="../index.html" aria-current="true">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="https://yunhyok.github.io/pentax-q7-firmware-analysis/">Q7</a></div><nav class="topnav" aria-label="주제"><a href="../index.html">개요</a><a href="guide-boot.html">부팅·저장소</a><a href="guide-update.html" aria-current="true">업데이트</a><a href="guide-rebuild.html">재구축</a><a href="guide-rtos.html">명령·셸</a><a href="guide-color.html">색 처리</a><a href="lightroom-bridge.html">Lightroom</a><a href="af-foundations.html">AF</a><a href="ui-port-contract.html">UI</a></nav></div></div>
+<div class="topbar"><div class="topbar-in"><a class="brand" href="../index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="../index.html" aria-current="true">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="https://yunhyok.github.io/pentax-q7-firmware-analysis/">Q7</a></div><nav class="topnav" aria-label="주제"><a href="../index.html">개요</a><a href="guide-boot.html">부팅·저장소</a><a href="guide-update.html" aria-current="true">업데이트</a><a href="guide-rebuild.html">재구축</a><a href="guide-rtos.html">명령·셸</a><a href="guide-color.html">색 처리</a><a href="guide-lightroom.html">Lightroom</a><a href="guide-af.html">AF</a><a href="guide-ui.html">UI</a></nav></div></div>
 <nav class="crumbs" aria-label="현재 위치"><ol><li><a href="../index.html">PENTAX K-3 Mark III</a></li><li><a href="guide-update.html">펌웨어 업데이트 과정</a></li><li aria-current="page">타이머 설정과 64비트 카운터</li></ol></nav>
 <!-- /chrome:top -->
 <header class="page-head">
@@ -27,8 +27,8 @@
 <section class="summary">
 <h2 data-toc="no">핵심 요약</h2>
 <ul>
-<li>주기 값은 펌웨어에 내장된 설정의 <strong><code>TTimPeriod</code> 항목</strong>에서 옵니다. 내장 값은 1이고, 타이머 초기화는 1부터 50까지만 받아들입니다.</li>
-<li>같은 값이 세 곳에 쓰입니다. 틱마다 <strong>64비트 카운터에 더해지고</strong>, 예약 시각에 한 번 얹히고, 남은 시간에서 한 번 빠집니다.</li>
+<li>주기 값은 펌웨어에 내장된 설정의 <strong><code>TTimPeriod</code> 항목</strong>에서 옵니다. 내장 값은 1이고 타이머 초기화는 1부터 50까지만 받아들입니다.</li>
+<li>같은 값이 세 곳에 쓰입니다. 틱마다 <strong>64비트 카운터에 더해지고</strong>, 예약 시각에 한 번 얹히고 남은 시간에서 한 번 빠집니다.</li>
 <li>보드 초기화 함수는 타이머 채널의 레지스터에 값 다섯 개를 정해진 순서로 씁니다. 그 가운데 재적재 값은 6,749입니다.</li>
 <li>설정 읽기, 범위 검사, 64비트 덧셈, 레지스터 기록을 원본 기계어로 <strong>20개 사례</strong> 실행했습니다.</li>
 <li>카운터 한 눈금이 얼마의 시간인지, 타이머가 어떤 주파수로 도는지는 확정하지 못했습니다. 공개 자료와 맞추어 보면 1밀리초로 읽히지만 가설로 남겨 둡니다.</li>
@@ -67,7 +67,7 @@
 
 <section id="background">
 <h2>배경: 커널은 틱을 세어 시간을 잽니다</h2>
-<p>이 커널은 시간을 연속으로 재지 않습니다. 하드웨어 타이머가 일정한 간격으로 인터럽트를 걸면, 그때마다 카운터를 정해진 양만큼 올립니다. 이 한 번을 <dfn title="타이머 인터럽트 한 번. 커널 시계가 움직이는 최소 단위입니다.">틱</dfn>이라고 하고, 한 번에 올리는 양이 주기 값입니다. 예약한 알람은 카운터가 기한에 닿은 틱에서 처리됩니다.</p>
+<p>이 커널은 시간을 연속으로 재지 않습니다. 하드웨어 타이머가 일정한 간격으로 인터럽트를 걸면, 그때마다 카운터를 정해진 양만큼 올립니다. 이 한 번을 <dfn title="타이머 인터럽트 한 번. 커널 시계가 움직이는 최소 단위입니다.">틱</dfn>이라고 하고 한 번에 올리는 양이 주기 값입니다. 예약한 알람은 카운터가 기한에 닿은 틱에서 처리됩니다.</p>
 <p><a href="update-timer-abi.html">커널 호출과 예약 시각</a>에서는 예약 시각에 “현재 카운터”와 “주기 값”이 들어간다는 것까지 확인했습니다. 이 문서는 그 두 값을 만드는 쪽을 다룹니다. 하드웨어 카운터를 직접 읽는 부분은 <a href="update-subtick-arithmetic.html">하위 시간의 32비트 산술</a>로, 인터럽트 처리 함수의 등록은 <a href="update-timer-irq.html">타이머 등록과 지연 콜백</a>으로 이어집니다.</p>
 
 <figure class="diagram">
@@ -128,14 +128,14 @@
 <dl class="kv">
 <dt><code>TTimPeriod</code></dt><dd>펌웨어의 설정 표에 들어 있는 항목 이름. 공개 T-Kernel 소스에서는 같은 이름의 항목이 타이머 인터럽트 간격(밀리초)입니다.</dd>
 <dt>64비트 카운터</dt><dd>커널의 현재 시각 값. 이 문서와 근거 파일에서는 <code>NOW64</code>라고도 적습니다.</dd>
-<dt>재적재 타이머</dt><dd>값을 하나씩 줄여 가다가 0을 지나면 인터럽트를 걸고, 미리 정한 재적재 값부터 다시 세는 하드웨어 타이머.</dd>
+<dt>재적재 타이머</dt><dd>값을 하나씩 줄여 가다가 0을 지나면 인터럽트를 걸고 미리 정한 재적재 값부터 다시 세는 하드웨어 타이머.</dd>
 <dt>MMIO</dt><dd>메모리 주소에 값을 쓰는 방식으로 하드웨어 레지스터를 다루는 것.</dd>
 </dl>
 </section>
 
 <section id="config">
 <h2>주기 값은 내장 설정의 TTimPeriod에서 옵니다</h2>
-<p class="takeaway">타이머 초기화는 설정 표에서 <code>TTimPeriod</code>를 읽어 전역 변수에 넣고, 값이 1~50이 아니면 오류를 돌려줍니다. 내장 설정에 적힌 값은 1입니다.</p>
+<p class="takeaway">타이머 초기화는 설정 표에서 <code>TTimPeriod</code>를 읽어 전역 변수에 넣고 값이 1~50이 아니면 오류를 돌려줍니다. 내장 설정에 적힌 값은 1입니다.</p>
 
 <figure class="diagram">
 <figcaption>설정 한 줄이 주기 값이 되어 쓰이는 곳</figcaption>
@@ -215,7 +215,7 @@
 <li>값이 두 개인 설정(<code>TTimPeriod 1 50</code>)을 출력 칸 하나로 읽으면, 첫 값만 저장하고 반환 개수는 2입니다. 저장한 개수가 아니라 읽은 개수를 돌려준다는 뜻입니다.</li>
 </ul>
 <div class="callout"><strong class="label">참고: 공개 T-Kernel 소스와 견주면</strong>
-<p>공개 T-Kernel 2.0의 <code>timer_initialize</code>도 <code>TTimPeriod</code>를 읽고, 범위를 벗어나면 오류를 돌려주고, 시각 변수 두 개를 0으로 만든 뒤 타이머 큐를 초기화합니다. 그 소스의 오류 코드 표기로 <code>0xfffb0000</code>은 <code>E_SYS</code>(시스템 오류), <code>0xffd60000</code>은 <code>E_NOEXS</code>(대상 없음)와 같은 값입니다. 구조가 닮았다는 관찰이며, 이 펌웨어가 같은 소스를 쓴다고 확인한 것은 아닙니다.</p></div>
+<p>공개 T-Kernel 2.0의 <code>timer_initialize</code>도 <code>TTimPeriod</code>를 읽고 범위를 벗어나면 오류를 돌려주고 시각 변수 두 개를 0으로 만든 뒤 타이머 큐를 초기화합니다. 그 소스의 오류 코드 표기로 <code>0xfffb0000</code>은 <code>E_SYS</code>(시스템 오류), <code>0xffd60000</code>은 <code>E_NOEXS</code>(대상 없음)와 같은 값입니다. 구조가 닮았다는 관찰이며 이 펌웨어가 같은 소스를 쓴다고 확인한 것은 아닙니다.</p></div>
 
 <details class="evidence"><summary>함수 구간과 설정 문자열의 위치</summary>
 <div class="table-wrap"><table class="compact">
@@ -230,7 +230,7 @@
 <tr><th scope="row">숫자 변환</th><td><code>0x525dac64</code>–<code>0x525dade4</code></td><td>숫자 문자 표 <code>0x53cd43f8</code>(37바이트) 사용</td></tr>
 <tr><th scope="row">비교·길이 보조 함수</th><td><code>0x525da9ec</code>–<code>0x525daa1c</code>, <code>0x525daaa4</code>–<code>0x525daad0</code></td><td>memcmp, strlen에 해당</td></tr>
 </tbody></table></div>
-<p class="small">통과 경로에서 0이 되는 64비트 값은 카운터 <code>0x54c40e50</code>과 <code>0x54c3fd20</code>입니다. 뒤의 값은 <a href="update-clock-readers.html">시각 조회 함수</a>가 카운터에 더하는 보정값입니다. 기한 큐의 머리는 <code>0x5457ec00</code>이고, 초기화는 앞뒤 연결을 자기 자신으로 만듭니다.</p>
+<p class="small">통과 경로에서 0이 되는 64비트 값은 카운터 <code>0x54c40e50</code>과 <code>0x54c3fd20</code>입니다. 뒤의 값은 <a href="update-clock-readers.html">시각 조회 함수</a>가 카운터에 더하는 보정값입니다. 기한 큐의 머리는 <code>0x5457ec00</code>이고 초기화는 앞뒤 연결을 자기 자신으로 만듭니다.</p>
 </details>
 </section>
 
@@ -285,7 +285,7 @@
 <tr><td class="n">0</td><td class="n">4,294,967,295</td><td class="n">4,294,967,295</td><td>초기화가 거부하는 값을 직접 넣은 경계 시험</td></tr>
 </tbody></table></div>
 <p>마지막 사례의 주기 값은 실제 설정에서 나올 수 있다는 뜻이 아닙니다. 덧셈 명령이 32비트 값을 부호 없이 넓혀 더한다는 점을 보려고 넣은 값입니다.</p>
-<p>덧셈 명령은 타이머 처리 함수의 구간 안에 있습니다. 그 함수를 실제 인터럽트로 실행한 시험은 없고, 이 문서의 사례는 덧셈 명령 몇 개만 따로 실행했습니다. 처리 함수가 등록되는 과정과 기한 비교는 <a href="update-timer-irq.html">타이머 등록과 지연 콜백</a>에 있습니다.</p>
+<p>덧셈 명령은 타이머 처리 함수의 구간 안에 있습니다. 그 함수를 실제 인터럽트로 실행한 시험은 없고 이 문서의 사례는 덧셈 명령 몇 개만 따로 실행했습니다. 처리 함수가 등록되는 과정과 기한 비교는 <a href="update-timer-irq.html">타이머 등록과 지연 콜백</a>에 있습니다.</p>
 
 <details class="evidence"><summary>덧셈 명령의 위치</summary>
 <dl class="kv">
@@ -299,7 +299,7 @@
 
 <section id="hardware">
 <h2>보드 초기화는 타이머 레지스터에 값 다섯 개를 씁니다</h2>
-<p class="takeaway">초기화 함수는 제어 레지스터에 두 번 쓰고, 재적재 값 6,749와 0을 쓰고, 마지막으로 제어 레지스터에 다시 씁니다.</p>
+<p class="takeaway">초기화 함수는 제어 레지스터에 두 번 쓰고 재적재 값 6,749와 0을 쓰고 마지막으로 제어 레지스터에 다시 씁니다.</p>
 
 <figure class="diagram">
 <figcaption>타이머 채널 <code>0x1e0000d0</code>에 쓰는 순서</figcaption>
@@ -347,12 +347,12 @@
 <tr><td class="n">4</td><td><code>0x1e0000dc</code></td><td>0</td><td>둘째 재적재 레지스터</td></tr>
 <tr><td class="n">5</td><td><code>0x1e0000d0</code></td><td><code>0x41b</code></td><td>재적재, 인터럽트 허용(INTE), 카운트 허용, 시작(TRG), 클럭 선택 칸의 값 1</td></tr>
 </tbody></table></div>
-<p>제어 레지스터의 이전 값이 0일 때와 모든 비트가 1일 때 두 번 실행했고, 기록 다섯 번은 두 경우 모두 같았습니다. 이전 값을 읽어 섞지 않고 정해진 상수를 쓴다는 뜻입니다.</p>
-<p>오른쪽 열의 이름은 리코가 공개한 K-3 Mark III용 Linux 커널 소스의 Milbeaut 타이머 드라이버에서 가져왔습니다. 이 드라이버는 채널마다 제어, 카운터, 재적재 레지스터 두 개를 상대 위치 0, 4, 8, 12에 두고, 클럭 선택 칸을 비트 10부터로 정의합니다. 관측한 주소 배치와 맞습니다.</p>
+<p>제어 레지스터의 이전 값이 0일 때와 모든 비트가 1일 때 두 번 실행했고 기록 다섯 번은 두 경우 모두 같았습니다. 이전 값을 읽어 섞지 않고 정해진 상수를 쓴다는 뜻입니다.</p>
+<p>오른쪽 열의 이름은 리코가 공개한 K-3 Mark III용 Linux 커널 소스의 Milbeaut 타이머 드라이버에서 가져왔습니다. 이 드라이버는 채널마다 제어, 카운터, 재적재 레지스터 두 개를 상대 위치 0, 4, 8, 12에 두고 클럭 선택 칸을 비트 10부터로 정의합니다. 관측한 주소 배치와 맞습니다.</p>
 <div class="callout warn"><strong class="label">주의</strong>
-<p>이름 풀이는 보조 근거입니다. Linux 쪽 장치 트리가 쓰는 채널은 <code>0x1e000050</code>과 <code>0x1e000060</code>이고, RTOS가 쓰는 <code>0x1e0000d0</code> 채널은 거기에 없습니다. 타이머에 들어가는 클럭도 분주 설정을 거칩니다. 드라이버가 쓰는 클럭 선택 값은 0뿐이어서 값 1의 뜻은 이 자료에 없습니다. 그래서 이 자료만으로는 RTOS 타이머의 주파수나 시간 단위를 정할 수 없습니다.</p></div>
+<p>이름 풀이는 보조 근거입니다. Linux 쪽 장치 트리가 쓰는 채널은 <code>0x1e000050</code>과 <code>0x1e000060</code>이고 RTOS가 쓰는 <code>0x1e0000d0</code> 채널은 거기에 없습니다. 타이머에 들어가는 클럭도 분주 설정을 거칩니다. 드라이버가 쓰는 클럭 선택 값은 0뿐이어서 값 1의 뜻은 이 자료에 없습니다. 그래서 이 자료만으로는 RTOS 타이머의 주파수나 시간 단위를 정할 수 없습니다.</p></div>
 <div class="callout model"><strong class="label">시험 조건</strong>
-<p>초기화 함수를 따로 불러, 레지스터 주소를 에뮬레이터의 일반 메모리에 대응시킨 결과입니다. 실제 주변장치에서 값을 되읽을 때의 동작, 스스로 바뀌는 상태 비트, 카운터가 줄어드는 과정, 인터럽트는 재현하지 않았습니다. 이 함수의 주소가 보드 descriptor에 저장된다는 점은 코드를 읽어 확인했지만, 부팅 과정에서 그 descriptor가 선택되는 흐름은 실행하지 않았습니다.</p></div>
+<p>초기화 함수를 따로 불러, 레지스터 주소를 에뮬레이터의 일반 메모리에 대응시킨 결과입니다. 실제 주변장치에서 값을 되읽을 때의 동작, 스스로 바뀌는 상태 비트, 카운터가 줄어드는 과정, 인터럽트는 재현하지 않았습니다. 이 함수의 주소가 보드 descriptor에 저장된다는 점은 코드를 읽어 확인했지만 부팅 과정에서 그 descriptor가 선택되는 흐름은 실행하지 않았습니다.</p></div>
 
 <details class="evidence"><summary>보드 함수와 대조한 외부 파일</summary>
 <div class="table-wrap"><table class="compact">
@@ -382,7 +382,7 @@
 <tr><th scope="row">레지스터 기록 순서</th><td class="n">2</td><td>기록 5회의 주소, 값, 순서</td></tr>
 </tbody></table></div>
 <p>따로 잘라 낸 RTOS 파일과 통합 decoded 파일에서 결과가 같았습니다. 이 20개 사례는 <a href="update-ui-timer.html">UI 타이머</a>의 39개, <a href="update-timer-abi.html">커널 호출</a>의 17개와 별개입니다.</p>
-<p class="small muted">공개하지 않고 보관한 자료는 디컴파일 C 8개, 보조 구간 5개, ARM 명령 414 words입니다. 디컴파일된 C에는 잘못 복원된 변수와 분기가 있어서, 고치지 않고 원본 ARM 명령과 실행 결과로 판단했습니다. CPU는 Unicorn의 Cortex-A15 모델입니다.</p>
+<p class="small muted">공개하지 않고 보관한 자료는 디컴파일 C 8개, 보조 구간 5개, ARM 명령 414 words입니다. 디컴파일된 C에는 잘못 복원된 변수와 분기가 있어서 고치지 않고 원본 ARM 명령과 실행 결과로 판단했습니다. CPU는 Unicorn의 Cortex-A15 모델입니다.</p>
 </section>
 
 <section id="limits">
@@ -392,7 +392,7 @@
 <thead><tr><th>구분</th><th>내용</th><th>상태</th></tr></thead>
 <tbody>
 <tr><th scope="row">펌웨어에서 확인한 값</th><td>내장 <code>TTimPeriod</code>는 1, 허용 범위는 1~50, 타이머의 재적재 값은 6,749. <a href="update-subtick-arithmetic.html">하위 시간 변환</a>은 카운터 차이에 1,000,000을 곱하고 6,749로 나눈 몫을 냅니다. 재적재 한 주기를 1,000,000 눈금으로 보는 환산입니다.</td><td><span class="badge ok">확인</span></td></tr>
-<tr><th scope="row">공개 자료</th><td>공개 T-Kernel 2.0 소스에서 <code>TTimPeriod</code>는 밀리초 단위의 타이머 간격이고, 참조 보드 구현의 허용 주기는 최대 50밀리초입니다. 틱 사이의 시간을 돌려주는 함수는 나노초를 씁니다.</td><td><span class="badge ok">확인</span></td></tr>
+<tr><th scope="row">공개 자료</th><td>공개 T-Kernel 2.0 소스에서 <code>TTimPeriod</code>는 밀리초 단위의 타이머 간격이고 참조 보드 구현의 허용 주기는 최대 50밀리초입니다. 틱 사이의 시간을 돌려주는 함수는 나노초를 씁니다.</td><td><span class="badge ok">확인</span></td></tr>
 <tr><th scope="row">두 가지를 맞추어 본 해석</th><td>틱 하나가 1밀리초이고 하위 시간이 나노초라고 읽으면 위 값들이 서로 맞습니다. 이 경우 완료 화면이 넘긴 지연 1000은 1초 남짓입니다.</td><td><span class="badge open">미확인</span></td></tr>
 </tbody></table></div>
 <p>해석을 확정하지 못한 까닭은 세 가지입니다. RTOS가 쓰는 타이머 채널의 입력 주파수를 확인하지 못했습니다. 이 펌웨어의 함수 번호가 공개 T-Kernel 2.0과 달라, 같은 정의를 쓴다고 단정할 수 없습니다. 실제 카메라에서 시간을 잰 적이 없습니다.</p>
