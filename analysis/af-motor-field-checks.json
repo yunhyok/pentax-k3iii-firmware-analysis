@@ -1,0 +1,2136 @@
+{
+  "rtos_sha256": "342d2f35405e8daf1797dfe431d2e4aa70f4b52a2c242a29df48206672f1dfb4",
+  "decoded_sha256": "7ff301d585ef7adcd620a15575faa39b4227cc5a27eaa8d754efe50f667a30f9",
+  "rtos_offset_in_decoded": "0x1c19c",
+  "rtos_base": "0x52500000",
+  "verified_input_helper_lf_sha256": "6796dc7821f84b13ddf2545c569568928eec24a130e27d519d70f75326e0ba12",
+  "unicorn_version": "2.1.4",
+  "cpu_controls": [
+    "A7",
+    "A7 poisoned registers/NZCV",
+    "A15 poisoned registers/NZCV"
+  ],
+  "case_count": 10,
+  "service_stubs": 0,
+  "mapped_original_unchanged": true,
+  "motor_56_68_nonzero_writer_identified": false,
+  "scope": {
+    "carrier": "K-3 III 2.20, decoded RTOS, little-endian original A32",
+    "fixtures": "object allocations, factory slots, binder entry register/stack state, reset service pointer, request word, handle-free clear state, config source halfword and accessor pointer, parameter/lens memory, separate Pulse and LensInfo arithmetic entries",
+    "native": "four constructors, four binder prefixes, local reset, debug request set/clear prefix, staged config copy/accessor, selected Pulse store path and distinct LensInfo ratio",
+    "stops": "before the reset service call and debug handle creation; selected Pulse write ends before canary comparison; no earlier Pulse branch/service execution",
+    "unresolved": "PafMotor+0x56/+0x68 nonzero producer, persistence, physical interpretation"
+  },
+  "source_ranges": {
+    "motor_ctor": {
+      "start": "0x52f0b4b0",
+      "end_exclusive": "0x52f0b5f8",
+      "sha256": "26591b5f4c1b18ba80a72ee7b7a1a17b14663f6f9d4dd9bf77bedee1edfad5d0"
+    },
+    "pulse_ctor": {
+      "start": "0x52f0dec8",
+      "end_exclusive": "0x52f0e0e0",
+      "sha256": "57a96037e360a653829f3c11ae03c67bdb198d4a57bd200af68a035b290e06f1"
+    },
+    "debug_ctor": {
+      "start": "0x52cb4714",
+      "end_exclusive": "0x52cb4810",
+      "sha256": "28bf6c25daed84cd352d2d9c553d3cb36d1afea34d40814346210f981a493036"
+    },
+    "info_ctor": {
+      "start": "0x52f061e4",
+      "end_exclusive": "0x52f0625c",
+      "sha256": "6864ecf8a182dc461199ee1b73551a26ffb612c6aa812219276c84f7a2ac359c"
+    },
+    "motor_bind_pulse": {
+      "start": "0x52f0b45c",
+      "end_exclusive": "0x52f0b480",
+      "sha256": "8680a7cec9b32a423491f5a24194084b26da359a7ebfa255c200146dfcbc0a93"
+    },
+    "debug_bind_motor": {
+      "start": "0x52cb4600",
+      "end_exclusive": "0x52cb4624",
+      "sha256": "c88ccee309c6fb7f190a51320df2cb5dc372ea48d67b9b789ae85dad5a9cc0d5"
+    },
+    "info_bind_motor": {
+      "start": "0x52f06184",
+      "end_exclusive": "0x52f061a8",
+      "sha256": "cc4063dbb328fe15c001c3552e40c9378a915e6e1d70da92a1123c2507d100ef"
+    },
+    "info_bind_pulse": {
+      "start": "0x52f061b0",
+      "end_exclusive": "0x52f061d4",
+      "sha256": "2eb3b34321e8ef277fa4d1a55318e4370260837848b90463886417c15f291e07"
+    },
+    "reset_prefix": {
+      "start": "0x52f0b674",
+      "end_exclusive": "0x52f0b6c0",
+      "sha256": "64185d4090f33df689f4dff747e7dc5d1c4fae29b3492fd66c396c13f79c7c2f"
+    },
+    "debug_route": {
+      "start": "0x52cb4c28",
+      "end_exclusive": "0x52cb4cd8",
+      "sha256": "d2a547f8f17020ace1771e1997430011bdb613df67b5a7dd70735c26572e312a"
+    },
+    "debug_motor_parameters": {
+      "start": "0x52f0dc88",
+      "end_exclusive": "0x52f0dcb0",
+      "sha256": "363133c81300faf1589650f981c71522ddd6dbbac200a282f73530a75762571f"
+    },
+    "debug_motor_clear": {
+      "start": "0x52f0dcbc",
+      "end_exclusive": "0x52f0dcf4",
+      "sha256": "6a1cf195e421780ad0c110093e7c677667a324df5443b0cb065bc4a5563fb8e0"
+    },
+    "pulse_unsigned_min_store": {
+      "start": "0x52f0e3d0",
+      "end_exclusive": "0x52f0e408",
+      "sha256": "7da2d78b4dcd39cbbd0a95c7c96701c5d582fe1e497a4555b7d2bba0f0aacc34"
+    },
+    "pulse_lens_adjustment": {
+      "start": "0x52f0e2f4",
+      "end_exclusive": "0x52f0e34c",
+      "sha256": "372b0444ddf3212d301da1cc8afef082835daebb803745de75748237acd86029"
+    },
+    "masked_lens_word": {
+      "start": "0x52eff640",
+      "end_exclusive": "0x52eff65c",
+      "sha256": "9e4383d07d5cb6c8846dfd5cd5668a23ffb4009d4cb18ed6c468414afb71ac76"
+    },
+    "lens_parameter_byte": {
+      "start": "0x52f02ee4",
+      "end_exclusive": "0x52f02eec",
+      "sha256": "7c6b6fda28b4dbe38dbad29bb13550781eab4fb8dae8b0cbacb97553bf925dd0"
+    },
+    "lens_info_pulse_use": {
+      "start": "0x52f0671c",
+      "end_exclusive": "0x52f0675c",
+      "sha256": "6d51710d6fad8e1bf6e7eb1d6d0937cad7913f3fea03dabb51e1c338dbd02422"
+    },
+    "pulse_ratio": {
+      "start": "0x52f0e1c4",
+      "end_exclusive": "0x52f0e200",
+      "sha256": "5911dff6eaba342435b2a031bb6ecc62c8dc2a696d2e925a2ed076ef4829eed9"
+    },
+    "unsigned_division_nonzero": {
+      "start": "0x526a8330",
+      "end_exclusive": "0x526a8340",
+      "sha256": "c7d1d71906329593ec9d2ef2fb65b89c950fa0a162d8de5e82d55f31f97647fe"
+    },
+    "integral_config_copy_field": {
+      "start": "0x52ceac04",
+      "end_exclusive": "0x52ceac14",
+      "sha256": "2ebbfd31284706be032b20f6ef7b81a89c1f6a5491a6b497c6590a1e0b54c247"
+    },
+    "integral_config_read_field": {
+      "start": "0x52caad00",
+      "end_exclusive": "0x52caad0c",
+      "sha256": "3e8c5b6ee761ac44aca7ef0e2c7a098f794e3881e498b558430e791a01748ac3"
+    },
+    "motor_vptr_literal": {
+      "start": "0x52f0b5f8",
+      "end_exclusive": "0x52f0b5fc",
+      "sha256": "db794a9ff1e6ea8160745b9f60b093712e034af540349de7299b808c6d121151"
+    },
+    "pulse_vptr_literal": {
+      "start": "0x52f0e0e0",
+      "end_exclusive": "0x52f0e0e4",
+      "sha256": "fd561c5fc9e3461d60c95fec0f94c1548ae08a41e5f9b0f41f054150279f00a3"
+    },
+    "debug_vptr_literal": {
+      "start": "0x52cb4810",
+      "end_exclusive": "0x52cb4814",
+      "sha256": "ce636f3ad566d3dd78b3164adc3fb25878e5dc19d31b0bac5d333027425f896e"
+    },
+    "info_vptr_literal": {
+      "start": "0x52f0625c",
+      "end_exclusive": "0x52f06260",
+      "sha256": "c31c8882ef177786b5aa57881c35f43293bbf128ae6c970ec8a53fe3445128ed"
+    },
+    "stack_canary": {
+      "start": "0x53cbb4c0",
+      "end_exclusive": "0x53cbb4c4",
+      "sha256": "d9e0d4c3850aa130f909e1bcafebea98a16700e02171c1df5a2fe31789d94b0f"
+    },
+    "factory_allocates_and_stores_objects": {
+      "start": "0x52f08c74",
+      "end_exclusive": "0x52f08cd0",
+      "sha256": "897f707e055555b158aa9c8bcee2a4a2a713992dae71989ebbdf463dc342ec2b"
+    },
+    "factory_getter": {
+      "start": "0x52f08d80",
+      "end_exclusive": "0x52f08df4",
+      "sha256": "2c7513d114dc16113e84c1bdef623ba09d1fe791d0b88b03019ff89559657780"
+    },
+    "debug_factory_object": {
+      "start": "0x52ca4290",
+      "end_exclusive": "0x52ca42b4",
+      "sha256": "03e11a9bdd55148142689710f8e69e2b031847abf14b69c0b086c583d45648e7"
+    },
+    "debug_request_forwarder": {
+      "start": "0x52c7802c",
+      "end_exclusive": "0x52c78054",
+      "sha256": "1e995b4cd3af01ab10e43c7bd7dddeba6eef970c6f642291b0db545c0a1c6ee9"
+    },
+    "debug_bind_warm_getter": {
+      "start": "0x52cb45fc",
+      "end_exclusive": "0x52cb4600",
+      "sha256": "f994a98d96ea6dd6ede70ac7e1598ebbc35d4869bb8d374cde70d5e1a06cdfc9"
+    },
+    "debug_readback": {
+      "start": "0x52cb4814",
+      "end_exclusive": "0x52cb4840",
+      "sha256": "357c5301d4f0f3da9750568cf08baf04658f108c0da0691996b6a92c552e6e50"
+    },
+    "lens_info_factory_object": {
+      "start": "0x52f02898",
+      "end_exclusive": "0x52f028a8",
+      "sha256": "0a1d8d54b4bb9d98dcb17cc245c6a5914c231c0dcb2e84de020a6ca144ee3354"
+    },
+    "pulse_lens_and_parameter_binder": {
+      "start": "0x52f0ddfc",
+      "end_exclusive": "0x52f0de80",
+      "sha256": "20681ec54e8f10fc612c282c00fe0ff2099f7d18d0c1abd413e2115ed3ca770a"
+    },
+    "lens_info_binders": {
+      "start": "0x52f06180",
+      "end_exclusive": "0x52f061d8",
+      "sha256": "0f4d409677e98296be1c1a04a97cbd798c37755935329394a2b84eedce248d8a"
+    },
+    "lens_info_motor_call": {
+      "start": "0x52f06514",
+      "end_exclusive": "0x52f06564",
+      "sha256": "85195615f23e2b79903ff54316c72c31f5d16d73b87d7607a657112cd4cf6a02"
+    },
+    "motor_reset_preceding_service_and_tail": {
+      "start": "0x52f0ba34",
+      "end_exclusive": "0x52f0ba7c",
+      "sha256": "7f508a258687c817665969cc1a3d668509bf17be39e1817a41fb7d1672557282"
+    },
+    "motor_reset_first_unexecuted_call": {
+      "start": "0x52f0b6c0",
+      "end_exclusive": "0x52f0b6c4",
+      "sha256": "4989f280351b650d474c9b131127e0901bc3df4f6d17f73a9f53d515e1e64023"
+    },
+    "debug_first_unexecuted_call": {
+      "start": "0x52f0dcb0",
+      "end_exclusive": "0x52f0dcb4",
+      "sha256": "572139e87c811c9d15178716a87f8fa9e6003fa4622bd9249a665902bc1da6d5"
+    },
+    "pulse_gate_and_prior_calls": {
+      "start": "0x52f0e34c",
+      "end_exclusive": "0x52f0e3d0",
+      "sha256": "99d3dcacbc5aee3b7029ee1ab273d94229220e8ea8f265a4fe4232582fe129d2"
+    },
+    "pulse_alternate_path": {
+      "start": "0x52f0e408",
+      "end_exclusive": "0x52f0e430",
+      "sha256": "613f206a4a2d6c17214d4b60b80941e1bb2a675658c3f0a7584288e3584e5a4b"
+    },
+    "pulse_caller_a": {
+      "start": "0x52cb19c4",
+      "end_exclusive": "0x52cb19f8",
+      "sha256": "da210c895cced3a0d3497d13aef44826b7426239a740e492dea7046d5a514747"
+    },
+    "pulse_caller_b": {
+      "start": "0x52cb31f8",
+      "end_exclusive": "0x52cb3244",
+      "sha256": "4cc1e8ae8b5cce6c1d832fb945c6e7cf1549e786561c2db608fd9bafb488edb6"
+    },
+    "pulse_caller_config_read": {
+      "start": "0x52caad00",
+      "end_exclusive": "0x52caad0c",
+      "sha256": "3e8c5b6ee761ac44aca7ef0e2c7a098f794e3881e498b558430e791a01748ac3"
+    },
+    "control_pulse_binder": {
+      "start": "0x52cad930",
+      "end_exclusive": "0x52cad94c",
+      "sha256": "a7dc76e01cb4bfcb984dafa4344504802fd97cc02a71cbacea973ffffd3a60c2"
+    },
+    "control_config_binder": {
+      "start": "0x52cad8d8",
+      "end_exclusive": "0x52cad904",
+      "sha256": "d3e890ae098ae4ffc8890c102bdbff96d511d5fd1d44496ce11f049e3bd37325"
+    },
+    "control_config_factory_slot": {
+      "start": "0x52ca41e8",
+      "end_exclusive": "0x52ca420c",
+      "sha256": "58ccc548c2e856a7e5b843f2f34a6307a7df8a5222063786dadecc14a4afcfb3"
+    },
+    "sensor_accessor_constructor": {
+      "start": "0x52caa6a0",
+      "end_exclusive": "0x52caa748",
+      "sha256": "b040b1ea55ba605a4e984b75fd957d32d92366af0eb75c25b147181c5b81e30e"
+    },
+    "sensor_accessor_rtti": {
+      "start": "0x53889308",
+      "end_exclusive": "0x53889310",
+      "sha256": "196a02119581c1b3bd111fbf8de0596668c5a300107d9d7ab2c2457227f247fa"
+    },
+    "sensor_accessor_name": {
+      "start": "0x538892f4",
+      "end_exclusive": "0x53889308",
+      "sha256": "c20e9102c3e7f352236193f428b81f9626c1adf38d1eb076dfba1f2b066be0e9"
+    },
+    "sensor_accessor_typeinfo_pointer": {
+      "start": "0x5388932c",
+      "end_exclusive": "0x53889330",
+      "sha256": "8ba49711061e8567a5fb617fa88f5f0370e247aa4b8fd56eb26f84e37d150a6b"
+    },
+    "sensor_accessor_bind_integral_config": {
+      "start": "0x52caa280",
+      "end_exclusive": "0x52caa2e4",
+      "sha256": "a21c1e8a440ffdee9b6a96674b7e0d9b4e807503e2f74a960d36b02dbc694d31"
+    },
+    "integral_config_factory_array": {
+      "start": "0x52ca4524",
+      "end_exclusive": "0x52ca4588",
+      "sha256": "1c85381c9f23c627e0bfd73d9808cc57203e26c5cf21dbebb3350fd731a11422"
+    },
+    "integral_config_constructor": {
+      "start": "0x52cea838",
+      "end_exclusive": "0x52cea988",
+      "sha256": "6d82574705543c48dc0fb9782248400960ce803094185d42ee609fb84eb27ff8"
+    },
+    "integral_config_typeinfo_pointer": {
+      "start": "0x5389c454",
+      "end_exclusive": "0x5389c458",
+      "sha256": "3a4db8d1dc4de0b622e125e6fd9008cafe910702c5f051c89281e45a07cc038c"
+    },
+    "integral_config_rtti": {
+      "start": "0x5389c490",
+      "end_exclusive": "0x5389c498",
+      "sha256": "91e5a27419289bbd1cf89ac8e4c19b1ad314a972848b664761c045ca3b3fa648"
+    },
+    "integral_config_name": {
+      "start": "0x5389c47c",
+      "end_exclusive": "0x5389c490",
+      "sha256": "72de594feb7e3ae56ca0fe5553ec792d427d0b422e65f8c8d9fa590f16f6ca2f"
+    },
+    "integral_config_full_copy": {
+      "start": "0x52ceab3c",
+      "end_exclusive": "0x52ceac34",
+      "sha256": "49fdb5ff54b3ea8c358d7df299939024493e355a0e57f81ef90c94b78b2ffec5"
+    },
+    "integral_config_call_site": {
+      "start": "0x52cf1850",
+      "end_exclusive": "0x52cf1878",
+      "sha256": "3886eff0d321f9bd64b62d02b30b683d9982e85bd15dbb4e7fb2d184a660afde"
+    },
+    "possible_source_98_producer": {
+      "start": "0x52cf0248",
+      "end_exclusive": "0x52cf0258",
+      "sha256": "b2dbb91053bb8ee1d2751a9afd057b8d98641ffbf46118ec1dab3208bc732d8a"
+    },
+    "motor_request3_test": {
+      "start": "0x52f0c808",
+      "end_exclusive": "0x52f0c81c",
+      "sha256": "b6c3d334f8681ad806bce960dee60444c37e69efedcadb2c260b7fed297c6af1"
+    },
+    "motor_request3_read": {
+      "start": "0x52f0c988",
+      "end_exclusive": "0x52f0c9b0",
+      "sha256": "6c1b05876a84c324a00d6c6a70c8ebc3ac97cf77c209d03cf59607b2ce6fb23f"
+    },
+    "motor_vtable": {
+      "start": "0x538f25c4",
+      "end_exclusive": "0x538f25e0",
+      "sha256": "22056a557f9e8a65ebf4fde8a6cd02cb71260ec9c8c5ab1666e4c626d2ae97b7"
+    },
+    "motor_rtti_name": {
+      "start": "0x538f2668",
+      "end_exclusive": "0x538f2671",
+      "sha256": "e6f0cde41febe0c211ecdc1051085ad6b09c8a185bd3c36e7f5dd4c714d5d9ee"
+    },
+    "motor_rtti": {
+      "start": "0x538f2674",
+      "end_exclusive": "0x538f267c",
+      "sha256": "95c704d53ccc825ca586c958c13d4112b78efb8c1379103ac95f66453c13e032"
+    },
+    "pulse_vtable": {
+      "start": "0x538f26b4",
+      "end_exclusive": "0x538f26cc",
+      "sha256": "37a3bd834f27def7709801185eca523a0f13ac1ef6ae41186837ba299730fb75"
+    },
+    "pulse_rtti": {
+      "start": "0x538f26a4",
+      "end_exclusive": "0x538f26ac",
+      "sha256": "fc44dc85eed9da4da19a9c5cf210953fd621b7b6860def1e6c9c22697a891936"
+    },
+    "pulse_rtti_name": {
+      "start": "0x538f26d0",
+      "end_exclusive": "0x538f26d9",
+      "sha256": "56ca9ca236b8621c2354cccb9cc5f7045e06f99820d438b970b32983cd95f044"
+    },
+    "debug_vtable": {
+      "start": "0x5388b3ec",
+      "end_exclusive": "0x5388b404",
+      "sha256": "730303f49520feb15f4c67e2cc53b509f0665178c4c7f7851a1145bcc9057dd9"
+    },
+    "debug_rtti_name": {
+      "start": "0x5388b408",
+      "end_exclusive": "0x5388b41a",
+      "sha256": "fb0079ec752b7b87340a9814fc69caff96bc8077207fb74c2e6e855b69fb11e1"
+    },
+    "debug_rtti": {
+      "start": "0x5388b41c",
+      "end_exclusive": "0x5388b424",
+      "sha256": "c24962e95058c1afb5e64d550af1c7fbaa0a85ad04033755b27a826886dc368f"
+    },
+    "info_vtable": {
+      "start": "0x538f1fb4",
+      "end_exclusive": "0x538f1fcc",
+      "sha256": "a058b8ada9fc0f5fea6c8991eeae51be5a5d3e4ffdcaa43b9cab387bb4d80ae5"
+    },
+    "info_rtti_name": {
+      "start": "0x538f1f74",
+      "end_exclusive": "0x538f1f82",
+      "sha256": "5d437d195a9a7c7fdeaf5913d0c0817626016a42d258994699753aad6d412622"
+    },
+    "info_rtti": {
+      "start": "0x538f1f84",
+      "end_exclusive": "0x538f1f8c",
+      "sha256": "4e400ccb1923962162955545307ba2cb6b596fa329f06e7550fb6d15fd17ac4f"
+    }
+  },
+  "cases": [
+    {
+      "entry": "0x52f0b4b0",
+      "stop_before": "0x20000000",
+      "instructions": 82,
+      "pc_and_original_instruction_sha256": "36eccc5d4d600ff96dd1720b5f91991461f8ee0933102e1f039bf3ecbc1f6dbf",
+      "writes": [
+        [
+          "0x52f0b57c",
+          "motor",
+          "0x56",
+          2,
+          0
+        ],
+        [
+          "0x52f0b5a0",
+          "motor",
+          "0x68",
+          2,
+          0
+        ]
+      ],
+      "case": "constructor_dirty_allocation",
+      "fill_byte": 165,
+      "motor_56_68": [
+        0,
+        0
+      ]
+    },
+    {
+      "entry": "0x52f0b674",
+      "stop_before": "0x52f0b6c0",
+      "instructions": 19,
+      "pc_and_original_instruction_sha256": "59e148f6ebf4d8a82ba33c7ffcdd6311f45439ae3f22e58dcc0bd78a132bf776",
+      "writes": [
+        [
+          "0x52f0b68c",
+          "motor",
+          "0x34",
+          1,
+          0
+        ],
+        [
+          "0x52f0b694",
+          "motor",
+          "0x43",
+          1,
+          0
+        ],
+        [
+          "0x52f0b698",
+          "motor",
+          "0x19",
+          1,
+          0
+        ],
+        [
+          "0x52f0b69c",
+          "motor",
+          "0x1a",
+          1,
+          0
+        ],
+        [
+          "0x52f0b6a0",
+          "motor",
+          "0x26",
+          1,
+          0
+        ],
+        [
+          "0x52f0b6a4",
+          "motor",
+          "0x27",
+          1,
+          0
+        ],
+        [
+          "0x52f0b6b0",
+          "pulse",
+          "0x2e",
+          2,
+          0
+        ],
+        [
+          "0x52f0b6b4",
+          "motor",
+          "0x5e",
+          2,
+          0
+        ],
+        [
+          "0x52f0b6b8",
+          "motor",
+          "0x54",
+          2,
+          0
+        ],
+        [
+          "0x52f0b6bc",
+          "motor",
+          "0x94",
+          4,
+          0
+        ]
+      ],
+      "case": "reset_prefix",
+      "motor_56_68": [
+        49989,
+        33079
+      ],
+      "unexecuted_call_args": [
+        419430400,
+        1,
+        145
+      ]
+    },
+    {
+      "entry": "0x52cb4c28",
+      "stop_before": "0x52f0dcb0",
+      "instructions": 27,
+      "pc_and_original_instruction_sha256": "902f9351e5629479773dcc81030f2df67b03a82c70f61adf76b4c7dd77f5c99d",
+      "writes": [
+        [
+          "0x52cb4cc4",
+          "motor",
+          "0x33",
+          1,
+          1
+        ],
+        [
+          "0x52f0dc94",
+          "motor",
+          "0x78",
+          2,
+          39612
+        ],
+        [
+          "0x52f0dc9c",
+          "motor",
+          "0x7a",
+          2,
+          291
+        ],
+        [
+          "0x52f0dca4",
+          "motor",
+          "0x70",
+          2,
+          0
+        ],
+        [
+          "0x52f0dcac",
+          "motor",
+          "0x6e",
+          2,
+          0
+        ]
+      ],
+      "case": "debug_packed_set",
+      "input_request_word": 2596016690,
+      "initial_motor_active": false,
+      "motor_78_7a": [
+        39612,
+        291
+      ],
+      "motor_56_68": [
+        49989,
+        33079
+      ]
+    },
+    {
+      "entry": "0x52cb4c28",
+      "stop_before": "0x20000000",
+      "instructions": 18,
+      "pc_and_original_instruction_sha256": "a50c5ee8cce46dfc4a923585c570ef140252fa5b168b6859a5ae7be3148f96ff",
+      "writes": [],
+      "case": "debug_bit1_clear_inactive",
+      "input_request_word": 2596016688,
+      "initial_motor_active": false,
+      "motor_78_7a": [
+        4369,
+        8738
+      ],
+      "motor_56_68": [
+        49989,
+        33079
+      ]
+    },
+    {
+      "entry": "0x52cb4c28",
+      "stop_before": "0x20000000",
+      "instructions": 35,
+      "pc_and_original_instruction_sha256": "2c39d76c95812e5b1ca240c4d4352dcc4bba401b1b74bb55d0bc9a9cdc257345",
+      "writes": [
+        [
+          "0x52f0dce0",
+          "motor",
+          "0x70",
+          2,
+          0
+        ],
+        [
+          "0x52f0dce4",
+          "motor",
+          "0x6e",
+          2,
+          0
+        ],
+        [
+          "0x52f0dce8",
+          "motor",
+          "0x78",
+          2,
+          0
+        ],
+        [
+          "0x52f0dcec",
+          "motor",
+          "0x7a",
+          2,
+          0
+        ],
+        [
+          "0x52cb4ca0",
+          "motor",
+          "0x33",
+          1,
+          0
+        ]
+      ],
+      "case": "debug_bit1_clear_active_no_handle",
+      "input_request_word": 2596016688,
+      "initial_motor_active": true,
+      "motor_78_7a": [
+        0,
+        0
+      ],
+      "motor_56_68": [
+        49989,
+        33079
+      ]
+    },
+    {
+      "entry": "0x52f0e3d0",
+      "stop_before": "0x52f0e3f8",
+      "instructions": 31,
+      "pc_and_original_instruction_sha256": "c7868f4c7fd6b949cc60133fa9a383c5c836d50ae52d5ce05e1045d80b5ad3e3",
+      "writes": [
+        [
+          "0x52f0e3f4",
+          "pulse",
+          "0x56",
+          2,
+          320
+        ]
+      ],
+      "case": "pulse_caller_smaller",
+      "staged_caller_u16": 320,
+      "staged_parameter_limit_u16": 1024,
+      "staged_lens_word": 0,
+      "staged_lens_byte": 240,
+      "pulse_56": 320,
+      "motor_56_68": [
+        49989,
+        33079
+      ],
+      "separate_config_copy_and_read": {
+        "supplied_source_98": 320,
+        "native_copy_prefix": {
+          "entry": "0x52ceac04",
+          "stop_before": "0x52ceac14",
+          "instructions": 4,
+          "pc_and_original_instruction_sha256": "4d02f24612d87dc7b0e54033cd46bf67768e8ed898d5cebfc965d490ffb01b47",
+          "writes": [
+            [
+              "0x52ceac08",
+              "integral_config",
+              "0xf0",
+              4,
+              0
+            ],
+            [
+              "0x52ceac10",
+              "integral_config",
+              "0xec",
+              2,
+              320
+            ]
+          ]
+        },
+        "native_accessor": {
+          "entry": "0x52caad00",
+          "stop_before": "0x20000000",
+          "instructions": 3,
+          "pc_and_original_instruction_sha256": "590c684d7da93b5768e56ccd95c7ee13d0a7019db1437a32d3220487ffcf2ee4",
+          "writes": []
+        },
+        "transferred_argument": 320
+      },
+      "separate_lens_info_consumer": {
+        "entry": "0x52f0671c",
+        "stop_before": "0x52f0675c",
+        "instructions": 33,
+        "pc_and_original_instruction_sha256": "649244a19d492b8843608c776902f04bdc3774055267245a325b15496fd22f26",
+        "writes": [],
+        "staged_request": 400,
+        "staged_pulse_40": 600,
+        "motor_1a": 0,
+        "reads": [
+          [
+            "0x52f0671c",
+            "lens_info",
+            "0x18",
+            4
+          ],
+          [
+            "0x52f06724",
+            "lens_info",
+            "0x1c",
+            4
+          ],
+          [
+            "0x52f0672c",
+            "motor",
+            "0x1a",
+            1
+          ],
+          [
+            "0x52f06734",
+            "pulse",
+            "0x56",
+            2
+          ],
+          [
+            "0x52f06744",
+            "pulse",
+            "0x40",
+            2
+          ]
+        ],
+        "numerator_u16": 200,
+        "divisor": 320,
+        "ratio": 160
+      }
+    },
+    {
+      "entry": "0x52f0e3d0",
+      "stop_before": "0x52f0e3f8",
+      "instructions": 39,
+      "pc_and_original_instruction_sha256": "59a434ff1f614c2621f8fd53c30a7229b71823b2de4f0986681e3b22064468f9",
+      "writes": [
+        [
+          "0x52f0e3f4",
+          "pulse",
+          "0x56",
+          2,
+          320
+        ]
+      ],
+      "case": "pulse_limit_smaller_wrong_byte",
+      "staged_caller_u16": 1024,
+      "staged_parameter_limit_u16": 320,
+      "staged_lens_word": 896960,
+      "staged_lens_byte": 239,
+      "pulse_56": 320,
+      "motor_56_68": [
+        49989,
+        33079
+      ],
+      "separate_config_copy_and_read": {
+        "supplied_source_98": 1024,
+        "native_copy_prefix": {
+          "entry": "0x52ceac04",
+          "stop_before": "0x52ceac14",
+          "instructions": 4,
+          "pc_and_original_instruction_sha256": "4d02f24612d87dc7b0e54033cd46bf67768e8ed898d5cebfc965d490ffb01b47",
+          "writes": [
+            [
+              "0x52ceac08",
+              "integral_config",
+              "0xf0",
+              4,
+              0
+            ],
+            [
+              "0x52ceac10",
+              "integral_config",
+              "0xec",
+              2,
+              1024
+            ]
+          ]
+        },
+        "native_accessor": {
+          "entry": "0x52caad00",
+          "stop_before": "0x20000000",
+          "instructions": 3,
+          "pc_and_original_instruction_sha256": "590c684d7da93b5768e56ccd95c7ee13d0a7019db1437a32d3220487ffcf2ee4",
+          "writes": []
+        },
+        "transferred_argument": 1024
+      },
+      "separate_lens_info_consumer": {
+        "entry": "0x52f0671c",
+        "stop_before": "0x52f0675c",
+        "instructions": 33,
+        "pc_and_original_instruction_sha256": "649244a19d492b8843608c776902f04bdc3774055267245a325b15496fd22f26",
+        "writes": [],
+        "staged_request": 600,
+        "staged_pulse_40": 600,
+        "motor_1a": 1,
+        "reads": [
+          [
+            "0x52f0671c",
+            "lens_info",
+            "0x18",
+            4
+          ],
+          [
+            "0x52f06724",
+            "lens_info",
+            "0x1c",
+            4
+          ],
+          [
+            "0x52f0672c",
+            "motor",
+            "0x1a",
+            1
+          ],
+          [
+            "0x52f06734",
+            "pulse",
+            "0x56",
+            2
+          ],
+          [
+            "0x52f06748",
+            "pulse",
+            "0x40",
+            2
+          ]
+        ],
+        "numerator_u16": 0,
+        "divisor": 320,
+        "ratio": 0
+      }
+    },
+    {
+      "entry": "0x52f0e3d0",
+      "stop_before": "0x52f0e3f8",
+      "instructions": 39,
+      "pc_and_original_instruction_sha256": "59a434ff1f614c2621f8fd53c30a7229b71823b2de4f0986681e3b22064468f9",
+      "writes": [
+        [
+          "0x52f0e3f4",
+          "pulse",
+          "0x56",
+          2,
+          310
+        ]
+      ],
+      "case": "pulse_masked_match_and_f0",
+      "staged_caller_u16": 1024,
+      "staged_parameter_limit_u16": 320,
+      "staged_lens_word": 4291669994,
+      "staged_lens_byte": 240,
+      "pulse_56": 310,
+      "motor_56_68": [
+        49989,
+        33079
+      ],
+      "separate_config_copy_and_read": {
+        "supplied_source_98": 1024,
+        "native_copy_prefix": {
+          "entry": "0x52ceac04",
+          "stop_before": "0x52ceac14",
+          "instructions": 4,
+          "pc_and_original_instruction_sha256": "4d02f24612d87dc7b0e54033cd46bf67768e8ed898d5cebfc965d490ffb01b47",
+          "writes": [
+            [
+              "0x52ceac08",
+              "integral_config",
+              "0xf0",
+              4,
+              0
+            ],
+            [
+              "0x52ceac10",
+              "integral_config",
+              "0xec",
+              2,
+              1024
+            ]
+          ]
+        },
+        "native_accessor": {
+          "entry": "0x52caad00",
+          "stop_before": "0x20000000",
+          "instructions": 3,
+          "pc_and_original_instruction_sha256": "590c684d7da93b5768e56ccd95c7ee13d0a7019db1437a32d3220487ffcf2ee4",
+          "writes": []
+        },
+        "transferred_argument": 1024
+      },
+      "separate_lens_info_consumer": {
+        "entry": "0x52f0671c",
+        "stop_before": "0x52f0675c",
+        "instructions": 33,
+        "pc_and_original_instruction_sha256": "649244a19d492b8843608c776902f04bdc3774055267245a325b15496fd22f26",
+        "writes": [],
+        "staged_request": 1000,
+        "staged_pulse_40": 600,
+        "motor_1a": 1,
+        "reads": [
+          [
+            "0x52f0671c",
+            "lens_info",
+            "0x18",
+            4
+          ],
+          [
+            "0x52f06724",
+            "lens_info",
+            "0x1c",
+            4
+          ],
+          [
+            "0x52f0672c",
+            "motor",
+            "0x1a",
+            1
+          ],
+          [
+            "0x52f06734",
+            "pulse",
+            "0x56",
+            2
+          ],
+          [
+            "0x52f06748",
+            "pulse",
+            "0x40",
+            2
+          ]
+        ],
+        "numerator_u16": 65136,
+        "divisor": 310,
+        "ratio": 53789
+      }
+    },
+    {
+      "entry": "0x52f0e3d0",
+      "stop_before": "0x52f0e3f8",
+      "instructions": 39,
+      "pc_and_original_instruction_sha256": "59a434ff1f614c2621f8fd53c30a7229b71823b2de4f0986681e3b22064468f9",
+      "writes": [
+        [
+          "0x52f0e3f4",
+          "pulse",
+          "0x56",
+          2,
+          0
+        ]
+      ],
+      "case": "pulse_zero_limit",
+      "staged_caller_u16": 320,
+      "staged_parameter_limit_u16": 0,
+      "staged_lens_word": 896960,
+      "staged_lens_byte": 240,
+      "pulse_56": 0,
+      "motor_56_68": [
+        49989,
+        33079
+      ],
+      "separate_config_copy_and_read": {
+        "supplied_source_98": 320,
+        "native_copy_prefix": {
+          "entry": "0x52ceac04",
+          "stop_before": "0x52ceac14",
+          "instructions": 4,
+          "pc_and_original_instruction_sha256": "4d02f24612d87dc7b0e54033cd46bf67768e8ed898d5cebfc965d490ffb01b47",
+          "writes": [
+            [
+              "0x52ceac08",
+              "integral_config",
+              "0xf0",
+              4,
+              0
+            ],
+            [
+              "0x52ceac10",
+              "integral_config",
+              "0xec",
+              2,
+              320
+            ]
+          ]
+        },
+        "native_accessor": {
+          "entry": "0x52caad00",
+          "stop_before": "0x20000000",
+          "instructions": 3,
+          "pc_and_original_instruction_sha256": "590c684d7da93b5768e56ccd95c7ee13d0a7019db1437a32d3220487ffcf2ee4",
+          "writes": []
+        },
+        "transferred_argument": 320
+      },
+      "separate_lens_info_consumer": {
+        "entry": "0x52f0671c",
+        "stop_before": "0x52f0675c",
+        "instructions": 23,
+        "pc_and_original_instruction_sha256": "652e5a26764d973e25e52d02c4fe34c45e6440637b31ed533b966280f0d36d6d",
+        "writes": [],
+        "staged_request": 1000,
+        "staged_pulse_40": 600,
+        "motor_1a": 1,
+        "reads": [
+          [
+            "0x52f0671c",
+            "lens_info",
+            "0x18",
+            4
+          ],
+          [
+            "0x52f06724",
+            "lens_info",
+            "0x1c",
+            4
+          ],
+          [
+            "0x52f0672c",
+            "motor",
+            "0x1a",
+            1
+          ],
+          [
+            "0x52f06734",
+            "pulse",
+            "0x56",
+            2
+          ],
+          [
+            "0x52f06748",
+            "pulse",
+            "0x40",
+            2
+          ]
+        ],
+        "numerator_u16": 65136,
+        "divisor": 0,
+        "ratio": 0
+      }
+    },
+    {
+      "entry": "0x52f0e3d0",
+      "stop_before": "0x52f0e3f8",
+      "instructions": 31,
+      "pc_and_original_instruction_sha256": "c7868f4c7fd6b949cc60133fa9a383c5c836d50ae52d5ce05e1045d80b5ad3e3",
+      "writes": [
+        [
+          "0x52f0e3f4",
+          "pulse",
+          "0x56",
+          2,
+          1
+        ]
+      ],
+      "case": "pulse_ratio_saturates",
+      "staged_caller_u16": 2,
+      "staged_parameter_limit_u16": 1,
+      "staged_lens_word": 0,
+      "staged_lens_byte": 0,
+      "pulse_56": 1,
+      "motor_56_68": [
+        49989,
+        33079
+      ],
+      "separate_config_copy_and_read": {
+        "supplied_source_98": 2,
+        "native_copy_prefix": {
+          "entry": "0x52ceac04",
+          "stop_before": "0x52ceac14",
+          "instructions": 4,
+          "pc_and_original_instruction_sha256": "4d02f24612d87dc7b0e54033cd46bf67768e8ed898d5cebfc965d490ffb01b47",
+          "writes": [
+            [
+              "0x52ceac08",
+              "integral_config",
+              "0xf0",
+              4,
+              0
+            ],
+            [
+              "0x52ceac10",
+              "integral_config",
+              "0xec",
+              2,
+              2
+            ]
+          ]
+        },
+        "native_accessor": {
+          "entry": "0x52caad00",
+          "stop_before": "0x20000000",
+          "instructions": 3,
+          "pc_and_original_instruction_sha256": "590c684d7da93b5768e56ccd95c7ee13d0a7019db1437a32d3220487ffcf2ee4",
+          "writes": []
+        },
+        "transferred_argument": 2
+      },
+      "separate_lens_info_consumer": {
+        "entry": "0x52f0671c",
+        "stop_before": "0x52f0675c",
+        "instructions": 33,
+        "pc_and_original_instruction_sha256": "649244a19d492b8843608c776902f04bdc3774055267245a325b15496fd22f26",
+        "writes": [],
+        "staged_request": 1000,
+        "staged_pulse_40": 600,
+        "motor_1a": 0,
+        "reads": [
+          [
+            "0x52f0671c",
+            "lens_info",
+            "0x18",
+            4
+          ],
+          [
+            "0x52f06724",
+            "lens_info",
+            "0x1c",
+            4
+          ],
+          [
+            "0x52f0672c",
+            "motor",
+            "0x1a",
+            1
+          ],
+          [
+            "0x52f06734",
+            "pulse",
+            "0x56",
+            2
+          ],
+          [
+            "0x52f06744",
+            "pulse",
+            "0x40",
+            2
+          ]
+        ],
+        "numerator_u16": 65136,
+        "divisor": 1,
+        "ratio": 65535
+      }
+    }
+  ],
+  "native_witness_sha256": "7b338c7f1abd6314aae7b6324799f65105dec8fd4029e9c207b334de1491af24",
+  "lens_info_flag_witness_sha256": "5180258f9a0990f8e9bd168cb90890a6cf022170bcdab8c2a2b4beedd122091d",
+  "lens_info_flag_control": {
+    "frozen_replay_sha256": "7b338c7f1abd6314aae7b6324799f65105dec8fd4029e9c207b334de1491af24",
+    "checked_original_ranges": 74,
+    "separate_control": "Same request with Motor+0x1a 0/1 in original LensInfo consumer, no service calls or writes to object RAM",
+    "pairs": [
+      {
+        "cpu": 14,
+        "poison": false,
+        "request": 33059,
+        "pulse_40": 600,
+        "pulse_56": 1024,
+        "pair": [
+          {
+            "flag": 0,
+            "ratio": 8269,
+            "reads": [
+              [
+                "0x52f0671c",
+                "lens_info",
+                "0x18",
+                4
+              ],
+              [
+                "0x52f06724",
+                "lens_info",
+                "0x1c",
+                4
+              ],
+              [
+                "0x52f0672c",
+                "motor",
+                "0x1a",
+                1
+              ],
+              [
+                "0x52f06734",
+                "pulse",
+                "0x56",
+                2
+              ],
+              [
+                "0x52f06744",
+                "pulse",
+                "0x40",
+                2
+              ]
+            ]
+          },
+          {
+            "flag": 1,
+            "ratio": 8269,
+            "reads": [
+              [
+                "0x52f0671c",
+                "lens_info",
+                "0x18",
+                4
+              ],
+              [
+                "0x52f06724",
+                "lens_info",
+                "0x1c",
+                4
+              ],
+              [
+                "0x52f0672c",
+                "motor",
+                "0x1a",
+                1
+              ],
+              [
+                "0x52f06734",
+                "pulse",
+                "0x56",
+                2
+              ],
+              [
+                "0x52f06748",
+                "pulse",
+                "0x40",
+                2
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "cpu": 14,
+        "poison": false,
+        "request": 305430819,
+        "pulse_40": 600,
+        "pulse_56": 1024,
+        "pair": [
+          {
+            "flag": 0,
+            "ratio": 8269,
+            "reads": [
+              [
+                "0x52f0671c",
+                "lens_info",
+                "0x18",
+                4
+              ],
+              [
+                "0x52f06724",
+                "lens_info",
+                "0x1c",
+                4
+              ],
+              [
+                "0x52f0672c",
+                "motor",
+                "0x1a",
+                1
+              ],
+              [
+                "0x52f06734",
+                "pulse",
+                "0x56",
+                2
+              ],
+              [
+                "0x52f06744",
+                "pulse",
+                "0x40",
+                2
+              ]
+            ]
+          },
+          {
+            "flag": 1,
+            "ratio": 8269,
+            "reads": [
+              [
+                "0x52f0671c",
+                "lens_info",
+                "0x18",
+                4
+              ],
+              [
+                "0x52f06724",
+                "lens_info",
+                "0x1c",
+                4
+              ],
+              [
+                "0x52f0672c",
+                "motor",
+                "0x1a",
+                1
+              ],
+              [
+                "0x52f06734",
+                "pulse",
+                "0x56",
+                2
+              ],
+              [
+                "0x52f06748",
+                "pulse",
+                "0x40",
+                2
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "cpu": 14,
+        "poison": false,
+        "request": 65535,
+        "pulse_40": 600,
+        "pulse_56": 1024,
+        "pair": [
+          {
+            "flag": 0,
+            "ratio": 150,
+            "reads": [
+              [
+                "0x52f0671c",
+                "lens_info",
+                "0x18",
+                4
+              ],
+              [
+                "0x52f06724",
+                "lens_info",
+                "0x1c",
+                4
+              ],
+              [
+                "0x52f0672c",
+                "motor",
+                "0x1a",
+                1
+              ],
+              [
+                "0x52f06734",
+                "pulse",
+                "0x56",
+                2
+              ],
+              [
+                "0x52f06744",
+                "pulse",
+                "0x40",
+                2
+              ]
+            ]
+          },
+          {
+            "flag": 1,
+            "ratio": 150,
+            "reads": [
+              [
+                "0x52f0671c",
+                "lens_info",
+                "0x18",
+                4
+              ],
+              [
+                "0x52f06724",
+                "lens_info",
+                "0x1c",
+                4
+              ],
+              [
+                "0x52f0672c",
+                "motor",
+                "0x1a",
+                1
+              ],
+              [
+                "0x52f06734",
+                "pulse",
+                "0x56",
+                2
+              ],
+              [
+                "0x52f06748",
+                "pulse",
+                "0x40",
+                2
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "cpu": 14,
+        "poison": false,
+        "request": 305397761,
+        "pulse_40": 600,
+        "pulse_56": 1024,
+        "pair": [
+          {
+            "flag": 0,
+            "ratio": 149,
+            "reads": [
+              [
+                "0x52f0671c",
+                "lens_info",
+                "0x18",
+                4
+              ],
+              [
+                "0x52f06724",
+                "lens_info",
+                "0x1c",
+                4
+              ],
+              [
+                "0x52f0672c",
+                "motor",
+                "0x1a",
+                1
+              ],
+              [
+                "0x52f06734",
+                "pulse",
+                "0x56",
+                2
+              ],
+              [
+                "0x52f06744",
+                "pulse",
+                "0x40",
+                2
+              ]
+            ]
+          },
+          {
+            "flag": 1,
+            "ratio": 149,
+            "reads": [
+              [
+                "0x52f0671c",
+                "lens_info",
+                "0x18",
+                4
+              ],
+              [
+                "0x52f06724",
+                "lens_info",
+                "0x1c",
+                4
+              ],
+              [
+                "0x52f0672c",
+                "motor",
+                "0x1a",
+                1
+              ],
+              [
+                "0x52f06734",
+                "pulse",
+                "0x56",
+                2
+              ],
+              [
+                "0x52f06748",
+                "pulse",
+                "0x40",
+                2
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "cpu": 14,
+        "poison": true,
+        "request": 33059,
+        "pulse_40": 600,
+        "pulse_56": 1024,
+        "pair": [
+          {
+            "flag": 0,
+            "ratio": 8269,
+            "reads": [
+              [
+                "0x52f0671c",
+                "lens_info",
+                "0x18",
+                4
+              ],
+              [
+                "0x52f06724",
+                "lens_info",
+                "0x1c",
+                4
+              ],
+              [
+                "0x52f0672c",
+                "motor",
+                "0x1a",
+                1
+              ],
+              [
+                "0x52f06734",
+                "pulse",
+                "0x56",
+                2
+              ],
+              [
+                "0x52f06744",
+                "pulse",
+                "0x40",
+                2
+              ]
+            ]
+          },
+          {
+            "flag": 1,
+            "ratio": 8269,
+            "reads": [
+              [
+                "0x52f0671c",
+                "lens_info",
+                "0x18",
+                4
+              ],
+              [
+                "0x52f06724",
+                "lens_info",
+                "0x1c",
+                4
+              ],
+              [
+                "0x52f0672c",
+                "motor",
+                "0x1a",
+                1
+              ],
+              [
+                "0x52f06734",
+                "pulse",
+                "0x56",
+                2
+              ],
+              [
+                "0x52f06748",
+                "pulse",
+                "0x40",
+                2
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "cpu": 14,
+        "poison": true,
+        "request": 305430819,
+        "pulse_40": 600,
+        "pulse_56": 1024,
+        "pair": [
+          {
+            "flag": 0,
+            "ratio": 8269,
+            "reads": [
+              [
+                "0x52f0671c",
+                "lens_info",
+                "0x18",
+                4
+              ],
+              [
+                "0x52f06724",
+                "lens_info",
+                "0x1c",
+                4
+              ],
+              [
+                "0x52f0672c",
+                "motor",
+                "0x1a",
+                1
+              ],
+              [
+                "0x52f06734",
+                "pulse",
+                "0x56",
+                2
+              ],
+              [
+                "0x52f06744",
+                "pulse",
+                "0x40",
+                2
+              ]
+            ]
+          },
+          {
+            "flag": 1,
+            "ratio": 8269,
+            "reads": [
+              [
+                "0x52f0671c",
+                "lens_info",
+                "0x18",
+                4
+              ],
+              [
+                "0x52f06724",
+                "lens_info",
+                "0x1c",
+                4
+              ],
+              [
+                "0x52f0672c",
+                "motor",
+                "0x1a",
+                1
+              ],
+              [
+                "0x52f06734",
+                "pulse",
+                "0x56",
+                2
+              ],
+              [
+                "0x52f06748",
+                "pulse",
+                "0x40",
+                2
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "cpu": 14,
+        "poison": true,
+        "request": 65535,
+        "pulse_40": 600,
+        "pulse_56": 1024,
+        "pair": [
+          {
+            "flag": 0,
+            "ratio": 150,
+            "reads": [
+              [
+                "0x52f0671c",
+                "lens_info",
+                "0x18",
+                4
+              ],
+              [
+                "0x52f06724",
+                "lens_info",
+                "0x1c",
+                4
+              ],
+              [
+                "0x52f0672c",
+                "motor",
+                "0x1a",
+                1
+              ],
+              [
+                "0x52f06734",
+                "pulse",
+                "0x56",
+                2
+              ],
+              [
+                "0x52f06744",
+                "pulse",
+                "0x40",
+                2
+              ]
+            ]
+          },
+          {
+            "flag": 1,
+            "ratio": 150,
+            "reads": [
+              [
+                "0x52f0671c",
+                "lens_info",
+                "0x18",
+                4
+              ],
+              [
+                "0x52f06724",
+                "lens_info",
+                "0x1c",
+                4
+              ],
+              [
+                "0x52f0672c",
+                "motor",
+                "0x1a",
+                1
+              ],
+              [
+                "0x52f06734",
+                "pulse",
+                "0x56",
+                2
+              ],
+              [
+                "0x52f06748",
+                "pulse",
+                "0x40",
+                2
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "cpu": 14,
+        "poison": true,
+        "request": 305397761,
+        "pulse_40": 600,
+        "pulse_56": 1024,
+        "pair": [
+          {
+            "flag": 0,
+            "ratio": 149,
+            "reads": [
+              [
+                "0x52f0671c",
+                "lens_info",
+                "0x18",
+                4
+              ],
+              [
+                "0x52f06724",
+                "lens_info",
+                "0x1c",
+                4
+              ],
+              [
+                "0x52f0672c",
+                "motor",
+                "0x1a",
+                1
+              ],
+              [
+                "0x52f06734",
+                "pulse",
+                "0x56",
+                2
+              ],
+              [
+                "0x52f06744",
+                "pulse",
+                "0x40",
+                2
+              ]
+            ]
+          },
+          {
+            "flag": 1,
+            "ratio": 149,
+            "reads": [
+              [
+                "0x52f0671c",
+                "lens_info",
+                "0x18",
+                4
+              ],
+              [
+                "0x52f06724",
+                "lens_info",
+                "0x1c",
+                4
+              ],
+              [
+                "0x52f0672c",
+                "motor",
+                "0x1a",
+                1
+              ],
+              [
+                "0x52f06734",
+                "pulse",
+                "0x56",
+                2
+              ],
+              [
+                "0x52f06748",
+                "pulse",
+                "0x40",
+                2
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "cpu": 17,
+        "poison": true,
+        "request": 33059,
+        "pulse_40": 600,
+        "pulse_56": 1024,
+        "pair": [
+          {
+            "flag": 0,
+            "ratio": 8269,
+            "reads": [
+              [
+                "0x52f0671c",
+                "lens_info",
+                "0x18",
+                4
+              ],
+              [
+                "0x52f06724",
+                "lens_info",
+                "0x1c",
+                4
+              ],
+              [
+                "0x52f0672c",
+                "motor",
+                "0x1a",
+                1
+              ],
+              [
+                "0x52f06734",
+                "pulse",
+                "0x56",
+                2
+              ],
+              [
+                "0x52f06744",
+                "pulse",
+                "0x40",
+                2
+              ]
+            ]
+          },
+          {
+            "flag": 1,
+            "ratio": 8269,
+            "reads": [
+              [
+                "0x52f0671c",
+                "lens_info",
+                "0x18",
+                4
+              ],
+              [
+                "0x52f06724",
+                "lens_info",
+                "0x1c",
+                4
+              ],
+              [
+                "0x52f0672c",
+                "motor",
+                "0x1a",
+                1
+              ],
+              [
+                "0x52f06734",
+                "pulse",
+                "0x56",
+                2
+              ],
+              [
+                "0x52f06748",
+                "pulse",
+                "0x40",
+                2
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "cpu": 17,
+        "poison": true,
+        "request": 305430819,
+        "pulse_40": 600,
+        "pulse_56": 1024,
+        "pair": [
+          {
+            "flag": 0,
+            "ratio": 8269,
+            "reads": [
+              [
+                "0x52f0671c",
+                "lens_info",
+                "0x18",
+                4
+              ],
+              [
+                "0x52f06724",
+                "lens_info",
+                "0x1c",
+                4
+              ],
+              [
+                "0x52f0672c",
+                "motor",
+                "0x1a",
+                1
+              ],
+              [
+                "0x52f06734",
+                "pulse",
+                "0x56",
+                2
+              ],
+              [
+                "0x52f06744",
+                "pulse",
+                "0x40",
+                2
+              ]
+            ]
+          },
+          {
+            "flag": 1,
+            "ratio": 8269,
+            "reads": [
+              [
+                "0x52f0671c",
+                "lens_info",
+                "0x18",
+                4
+              ],
+              [
+                "0x52f06724",
+                "lens_info",
+                "0x1c",
+                4
+              ],
+              [
+                "0x52f0672c",
+                "motor",
+                "0x1a",
+                1
+              ],
+              [
+                "0x52f06734",
+                "pulse",
+                "0x56",
+                2
+              ],
+              [
+                "0x52f06748",
+                "pulse",
+                "0x40",
+                2
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "cpu": 17,
+        "poison": true,
+        "request": 65535,
+        "pulse_40": 600,
+        "pulse_56": 1024,
+        "pair": [
+          {
+            "flag": 0,
+            "ratio": 150,
+            "reads": [
+              [
+                "0x52f0671c",
+                "lens_info",
+                "0x18",
+                4
+              ],
+              [
+                "0x52f06724",
+                "lens_info",
+                "0x1c",
+                4
+              ],
+              [
+                "0x52f0672c",
+                "motor",
+                "0x1a",
+                1
+              ],
+              [
+                "0x52f06734",
+                "pulse",
+                "0x56",
+                2
+              ],
+              [
+                "0x52f06744",
+                "pulse",
+                "0x40",
+                2
+              ]
+            ]
+          },
+          {
+            "flag": 1,
+            "ratio": 150,
+            "reads": [
+              [
+                "0x52f0671c",
+                "lens_info",
+                "0x18",
+                4
+              ],
+              [
+                "0x52f06724",
+                "lens_info",
+                "0x1c",
+                4
+              ],
+              [
+                "0x52f0672c",
+                "motor",
+                "0x1a",
+                1
+              ],
+              [
+                "0x52f06734",
+                "pulse",
+                "0x56",
+                2
+              ],
+              [
+                "0x52f06748",
+                "pulse",
+                "0x40",
+                2
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "cpu": 17,
+        "poison": true,
+        "request": 305397761,
+        "pulse_40": 600,
+        "pulse_56": 1024,
+        "pair": [
+          {
+            "flag": 0,
+            "ratio": 149,
+            "reads": [
+              [
+                "0x52f0671c",
+                "lens_info",
+                "0x18",
+                4
+              ],
+              [
+                "0x52f06724",
+                "lens_info",
+                "0x1c",
+                4
+              ],
+              [
+                "0x52f0672c",
+                "motor",
+                "0x1a",
+                1
+              ],
+              [
+                "0x52f06734",
+                "pulse",
+                "0x56",
+                2
+              ],
+              [
+                "0x52f06744",
+                "pulse",
+                "0x40",
+                2
+              ]
+            ]
+          },
+          {
+            "flag": 1,
+            "ratio": 149,
+            "reads": [
+              [
+                "0x52f0671c",
+                "lens_info",
+                "0x18",
+                4
+              ],
+              [
+                "0x52f06724",
+                "lens_info",
+                "0x1c",
+                4
+              ],
+              [
+                "0x52f0672c",
+                "motor",
+                "0x1a",
+                1
+              ],
+              [
+                "0x52f06734",
+                "pulse",
+                "0x56",
+                2
+              ],
+              [
+                "0x52f06748",
+                "pulse",
+                "0x40",
+                2
+              ]
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
