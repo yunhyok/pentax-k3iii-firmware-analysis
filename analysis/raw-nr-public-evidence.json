@@ -1,0 +1,68 @@
+{
+  "checked_date": "2026-11-13",
+  "scope": "Published third-party measurements; not new camera captures or verified version-specific results.",
+  "source": {
+    "url": "https://www.photonstophotos.net/Charts/PDR.htm",
+    "author": "William J. Claff / Photons to Photos",
+    "bytes": 376190,
+    "sha256": "b6f16b7b3b0a3e4fd45ed23a4ff2d904293431dbef9df224386d2c431568d255"
+  },
+  "reading_method": [
+    "Download the original chart HTML without evaluating its JavaScript.",
+    "Locate exact series names Pentax K-3 II and Pentax K-3 III, excluding Monochrome.",
+    "Find the first point whose marker symbol is triangle-down (legend: noise reduction).",
+    "Convert x with ISO = round(3.125 * 2**x); use nominal ISO labels for intermediate rounded x values."
+  ],
+  "series": [
+    {
+      "name": "Pentax K-3 III",
+      "first_nr_marker_x": 6,
+      "first_nr_marker_iso": 200,
+      "preceding_unmarked_nominal_iso": [
+        100,
+        125,
+        160
+      ]
+    },
+    {
+      "name": "Pentax K-3 II",
+      "first_nr_marker_x": 9,
+      "first_nr_marker_iso": 1600,
+      "preceding_unmarked_nominal_iso": [
+        100,
+        125,
+        160,
+        200,
+        250,
+        320,
+        400,
+        500,
+        640,
+        800,
+        1000,
+        1250
+      ]
+    }
+  ],
+  "corroboration": [
+    {
+      "url": "https://www.photonstophotos.net/Charts/RN_ADU.htm",
+      "sha256": "f6c90ae1f80ab624635cf035150ba8d60077c33dc54871598e63ec438b831ff9",
+      "bytes": 277403,
+      "checked_by": "independent research worker"
+    },
+    {
+      "url": "https://www.photonstophotos.net/Charts/RN_e.htm",
+      "sha256": "89f0ef0effb00d365debf34436d25068e80f4bad6638852349b93701b152f255",
+      "bytes": 298094,
+      "checked_by": "independent research worker"
+    }
+  ],
+  "limits": [
+    "Markers report detected NR, not a specific algorithm, kernel, control bit or ISO-independent guarantee.",
+    "Unmarked points do not establish absence of all RAW preprocessing.",
+    "Exact contributor camera firmware and individual file menu states were not independently verified.",
+    "The coordinator re-fetched PDR and confirmed its byte hash and both first-marker boundaries.",
+    "The official multi-dimensional filtering claim does not identify its position relative to RAW file storage."
+  ]
+}

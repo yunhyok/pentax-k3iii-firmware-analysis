@@ -1,0 +1,52 @@
+{
+  "firmware_version": "2.20",
+  "decoded_sha256": "7ff301d585ef7adcd620a15575faa39b4227cc5a27eaa8d754efe50f667a30f9",
+  "scope": "Static anchor verification only; RAW path, pixel arithmetic and hardware unverified.",
+  "address_mapping": {
+    "decoded_file_offset": 115100,
+    "analysis_base": "0x52500000",
+    "size": 25483200
+  },
+  "strings": {
+    "NoiseReductionCoordinator": "0x53a76458",
+    "NR_ENABLE": "0x53cb31f4",
+    "DISABLE_PPU_NR_PARAM": "0x53931a00"
+  },
+  "instruction_and_literal_checks": 8,
+  "calls": [
+    {
+      "site": "0x5258e1b4",
+      "target": "0x530bc14c"
+    },
+    {
+      "site": "0x52e56830",
+      "target": "0x530bc14c"
+    },
+    {
+      "site": "0x530a3ffc",
+      "target": "0x530bc14c"
+    }
+  ],
+  "ranges": {
+    "nr_dispatch": {
+      "start": "0x530bc14c",
+      "end_exclusive": "0x530bc42c",
+      "sha256": "a926908bb840f1e8dfe56f5c6a18083e4dade05f13647861f7d0ecd65504dcef"
+    },
+    "caller_flag_transfer": {
+      "start": "0x52e567bc",
+      "end_exclusive": "0x52e56834",
+      "sha256": "8bfd860dbfb793b56769c18e2140bd63e37bbbe4a180340063474f6933b1ec68"
+    },
+    "workspace_query_call": {
+      "start": "0x530a3fb4",
+      "end_exclusive": "0x530a4000",
+      "sha256": "8321da682361fba8fae3915a79d1a4216b0bde21ddff9267f30457e1712600ef"
+    },
+    "coordinator_candidate": {
+      "start": "0x5313c4c8",
+      "end_exclusive": "0x5313c5ac",
+      "sha256": "ad1e75ea21f9b944c4bb99c84aaa5e496dd254d2bffddef85df3ad7950585547"
+    }
+  }
+}
