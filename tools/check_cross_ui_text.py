@@ -187,7 +187,7 @@ def project_q7(attrs,binding,chain,boundary):
                            "active_pointer_global":binding["contracts"]["active_draw_context"]},
         "sites":{"context_setter":"0x8024a59c","active_pointer_store":"0x8024a614","draw":"0x8024928c",
                  "width_factor":"0x8022c0d8","scaled_width":"0x8022c1e0","stretch":"0x80226748",
-                 "inverse_step":"0x802268a8","half_step":"0x80226938","byte_store":"0x80226c5c",
+                 "inverse_step":"0x8022684c","half_step":"0x80226938","byte_store":"0x80226c5c",
                  "frame_row_and_x_guards":["0x80226a5c","0x80226a90"]},
     }
 
@@ -208,6 +208,13 @@ def compare(records):
             "previous_revision":"d249dcb74cb3e16b070525b83d4a4c74e664bd6c","resolved_at":III_COMMIT,
             "previous_case_size":[256,40],"corrected_case_size":[256,144],
             "scope":"Recorded case surface height only; bitmap height 40, native pixels and full-frame digest retained"},
+        "source_address_correction":{
+            "previous_inverse_step":"0x802268a8","horizontal_divu":"0x8022684c",
+            "horizontal_mflo":"0x802268a4","vertical_divu":"0x802268a8",
+            "source_range":["0x8022684c","0x802268c0"],
+            "source_range_sha256":"576d34f4a01dc8cfa409fdc00125794159cb21caa791598fd01014d8022c570c",
+            "evidence":"https://github.com/yunhyok/pentax-q7-firmware-analysis/blob/2b867c1968b978252009406702ed182b063b4e8e/analysis/colorspace-clip.json",
+            "scope":"Source-address label correction from separate original-code review; arithmetic and pixel observations unchanged"},
         "k3_iii":iii,"q7":q7,
         "counterexamples":{
             "sample_one":{"iii_packed_word":iii["packed_sample_one"]["computed_word"],"q7_palette_index":q7["packed_source"]["index_map"][1]},
@@ -223,7 +230,7 @@ def compare(records):
                                 "Compare intended and observed attribute/text context after valid and missing registry slots",
                                 "Exercise clipped target writes and guards, then establish display palette separately"],
         },
-        "limits":["Fixed observed text paths only; Q7 partial clipping remains static evidence",
+        "limits":["Fixed observed text paths only; partial clipping is not replayed by this five-record comparator; see the separate Q7 clipping experiment",
                   "No original firmware, ROM data, font, bitmap or frame loaded by this CLI",
                   "No physical palette or LCD verification and no cross-camera UI port"],
     }

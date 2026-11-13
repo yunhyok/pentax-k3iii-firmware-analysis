@@ -29,6 +29,19 @@
     ],
     "scope": "Recorded case surface height only; bitmap height 40, native pixels and full-frame digest retained"
   },
+  "source_address_correction": {
+    "previous_inverse_step": "0x802268a8",
+    "horizontal_divu": "0x8022684c",
+    "horizontal_mflo": "0x802268a4",
+    "vertical_divu": "0x802268a8",
+    "source_range": [
+      "0x8022684c",
+      "0x802268c0"
+    ],
+    "source_range_sha256": "576d34f4a01dc8cfa409fdc00125794159cb21caa791598fd01014d8022c570c",
+    "evidence": "https://github.com/yunhyok/pentax-q7-firmware-analysis/blob/2b867c1968b978252009406702ed182b063b4e8e/analysis/colorspace-clip.json",
+    "scope": "Source-address label correction from separate original-code review; arithmetic and pixel observations unchanged"
+  },
   "k3_iii": {
     "mode": "unrotated packed-word transfer; recorded native assertion A5",
     "rtos_sha256": "342d2f35405e8daf1797dfe431d2e4aa70f4b52a2c242a29df48206672f1dfb4",
@@ -348,7 +361,7 @@
       "width_factor": "0x8022c0d8",
       "scaled_width": "0x8022c1e0",
       "stretch": "0x80226748",
-      "inverse_step": "0x802268a8",
+      "inverse_step": "0x8022684c",
       "half_step": "0x80226938",
       "byte_store": "0x80226c5c",
       "frame_row_and_x_guards": [
@@ -401,7 +414,7 @@
     ]
   },
   "limits": [
-    "Fixed observed text paths only; Q7 partial clipping remains static evidence",
+    "Fixed observed text paths only; partial clipping is not replayed by this five-record comparator; see the separate Q7 clipping experiment",
     "No original firmware, ROM data, font, bitmap or frame loaded by this CLI",
     "No physical palette or LCD verification and no cross-camera UI port"
   ]

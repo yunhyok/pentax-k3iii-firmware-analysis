@@ -45,7 +45,7 @@ main.doc .abi-sha{overflow-wrap:anywhere}
 <section id="arithmetic">
 <h2>샘플 값과 축소 수식의 차이</h2>
 <p>K-3 III의 <code>0x528c2664</code>는 교차 영역 좌상단의 기존 워드를 읽어 전송 전체의 배경으로 씁니다. <code>0x528c21f8</code>은 각 바이트 성분에 전경·배경 가중치를 적용하고 float32 연산 뒤 정수로 잘라 테이블을 만듭니다. 이 경로의 부분 커버리지 값은 1~15입니다. 아래 값 1의 대조는 프로필 0의 전경 <code>0xffffffff</code>, 시험 배경 <code>0x31425364</code>, 해당 ROM 가중치 <code>0.4</code>와 <code>0.6</code>의 float32 값을 사용합니다. 바이트 성분의 실제 LCD 색상 배치는 별도 확인이 필요합니다. <a href="colorspace-text.json">K-3 III 원본 관측값과 가중치 범위</a></p>
-<p>Q7은 가로 배율 <code>factor=(48&lt;&lt;16)//64</code>를 먼저 계산합니다. 각 글자의 출력 폭은 <code>(원본 폭×factor)&gt;&gt;16</code>입니다. <code>0x802268a8</code>의 역배율 나눗셈과 <code>0x80226938</code>의 절반 간격을 적용하면 출력 열 <code>j</code>는 다음 소스 열을 읽습니다. 2비트 코드는 각 소스 바이트의 높은 비트부터 꺼냅니다. <a href="https://github.com/yunhyok/pentax-q7-firmware-analysis/blob/77dfa9db8b9a93ed1e413a157ccba8595141fd24/tools/check_colorspace_attributes.py">Q7 축소 수식과 독립 프레임 계산</a></p>
+<p>Q7은 가로 배율 <code>factor=(48&lt;&lt;16)//64</code>를 먼저 계산합니다. 각 글자의 출력 폭은 <code>(원본 폭×factor)&gt;&gt;16</code>입니다. <code>0x8022684c</code>의 가로 역배율 나눗셈과 <code>0x80226938</code>의 절반 간격을 적용하면 출력 열 <code>j</code>는 다음 소스 열을 읽습니다. 2비트 코드는 각 소스 바이트의 높은 비트부터 꺼냅니다. <a href="https://github.com/yunhyok/pentax-q7-firmware-analysis/blob/77dfa9db8b9a93ed1e413a157ccba8595141fd24/tools/check_colorspace_attributes.py">Q7 축소 수식과 독립 프레임 계산</a></p>
 <pre><code>step = (원본 폭 &lt;&lt; 16) // 출력 폭
 소스 열 = (j * step + (step &gt;&gt; 1)) &gt;&gt; 16</code></pre>
 <div class="table-wrap" tabindex="0" role="region" aria-label="픽셀 표현과 축소 계산의 반례">
@@ -65,7 +65,8 @@ main.doc .abi-sha{overflow-wrap:anywhere}
 <h2>클립과 그리기 대상은 각 기종에서 확인</h2>
 <p>K-3 III의 그리기 슬롯 <code>0x52bedb40</code>은 같은 StringView와 하네스가 공급한 표면 포인터를 이어 씁니다. 프로필 0에서 원본이 채운 인덱스 26·28을 읽었고, 팔레트 생성자는 <code>0x529191b0</code>의 UserData 읽기 전에 멈췄습니다. A5 사례에서 전송 재개부터 원본 그리기 함수 복귀까지 모델 호출은 0건이었습니다. 앞 단계의 준비 플래그, 파일·할당 모델은 남아 있습니다. <a href="colorspace-text.json">K-3 III 사례별 실행·모델 기록</a></p>
 <p>Q7 속성 시험은 ID 0과 17이 같은 컨텍스트를 쓰도록 공급했습니다. 별도 등록표 시험에서 다음 슬롯이 비었을 때 그리기 ID는 18로 바뀌었지만 활성 포인터 <code>0x800eb4d8</code>는 이전 컨텍스트를 유지했습니다. 따라서 교대 뒤에는 ID와 함께 실제 속성·텍스트 호출이 받은 포인터를 확인해야 합니다. 이후 960×480 합성 실행은 등록표와 큐 전달 모델을 사용해 원본 갱신에서 두 텍스트 행과 마커까지 실행했습니다. 같은 sRGB 글리프 네 호출을 확인했고 바깥 소비자 복귀 전인 <code>0x80adf468</code>에서 멈췄습니다. <a href="https://github.com/yunhyok/pentax-q7-firmware-analysis/blob/77dfa9db8b9a93ed1e413a157ccba8595141fd24/analysis/context-binding.json">Q7 등록표·빈 슬롯 대조</a> · <a href="ui-render-chain.html">Q7 갱신에서 원본 픽셀까지</a></p>
-<p>Q7 축소 루프의 <code>0x80226a5c..0x80226a90</code>에는 프레임 행 포인터와 가로 좌표 검사가 있습니다. 이것은 정적 근거이며, 부분 잘림의 출력이나 K-3 III와 같은 상위 뷰 클립을 확인한 실행은 아직 없습니다. <a href="cross-ui-text.json">원본 주소와 좌표 조건</a></p>
+<p>Q7 축소 루프의 <code>0x80226a5c..0x80226a90</code>에는 프레임 행 포인터와 가로 좌표 검사가 있습니다. 이 비교기의 고정 입력은 부분 잘림의 원본 실행을 포함하지 않습니다. 별도 후속 시험에서는 일곱 배치를 원본 코드로 실행했고, (−9, −12)에서 행 주소 검사로 보이는 8픽셀이 생략됐습니다. <a href="https://yunhyok.github.io/pentax-q7-firmware-analysis/colorspace-clip-report.html">Q7 원본 글리프의 가장자리 처리</a></p>
+<p>원본 명령을 다시 대조해 가로 나눗셈 주소를 <code>0x8022684c</code>로 정정했습니다. 그 몫은 <code>0x802268a4</code>에서 읽고, 종전에 적은 <code>0x802268a8</code>은 세로 나눗셈입니다. Q16 열 번호와 픽셀 대조 결과는 같았습니다. <a href="cross-ui-text.json">정정 주소·원본 구간 해시</a></p>
 </section>
 <section id="port">
 <h2>이식에서 다음으로 검증할 조건</h2>
