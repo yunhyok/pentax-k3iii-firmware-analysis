@@ -62,6 +62,7 @@ mode 2: D // 216    mode 3: D // 27000</code></pre>
 <section id="boundary">
 <h2>남은 카운터 경계</h2>
 <p>키 <code>0xd9</code>의 객체를 읽는 실제 슬롯은 <code>0x54784f6c</code>입니다. 같은 키를 쓰는 공급자 등록 <code>0x531fc9f0</code>의 슬롯은 <code>0x54785cf8</code>입니다. 두 주소가 다르므로 공급자 등록만으로 결합 객체나 실제 getter를 지정할 수 없습니다. 객체 슬롯의 생산자와 <code>+0x6c</code> 구현, 카운터 클럭을 확인해야 물리 시간 단위를 판정할 수 있습니다.</p>
+<p>후속 정적 조사에서는 별도 객체 등록에 성공한 조건에서 D9 ReloadTimer의 읽기 주소를 확인했습니다. IRQ 키와 객체 키, 등록 실패 가능성은 구분합니다. <a href="research-checkpoint.html#k3iii-d9-object">후속 근거와 남은 시간 단위 검증</a></p>
 </section>
 <section id="verify">
 <h2>원본 정적 대조</h2>

@@ -16,7 +16,7 @@
 <header class="page-head">
 <p class="eyebrow">시작하기 · 선행 연구</p>
 <h1>수정 펌웨어와 UI 이식을 위한 선행 연구</h1>
-<p class="lead">최종 목표는 일부 정보를 바꾼 펌웨어를 만들어 카메라에서 정상 동작시키는 것이고, 부가 목표는 K-3 Mark III의 UI를 K-3 II나 Q7에 이식하는 것입니다. 지금은 두 목표의 선행 분석 단계이며, 빌드·플래시·이식은 아직 시작하지 않았습니다.</p>
+<p class="lead">목표는 내용을 수정·추가·삭제한 펌웨어를 카메라에서 정상 동작시키고, K-3 Mark III의 UI를 K-3 II나 Q7에 이식하는 것입니다. 일부 수치 함수의 C 재컴파일·원래 위치 배치·재패키징과 PC 비교를 마쳤습니다. 전체 소스 재구축, 카메라 적용·부팅·복구와 대상 기종 UI 이식은 미검증입니다. 색 프로파일과 AF를 포함한 네 목표의 최신 현황은 <a href="research-program.html">연구 본부</a>에 있습니다.</p>
 </header>
 <div class="layout">
 <!-- chrome:toc -->
@@ -27,9 +27,9 @@
 <section class="summary">
 <h2 data-toc="no">핵심 요약</h2>
 <ul>
-<li>이 문서는 결과 보고가 아니라 <strong>구현 착수 전 로드맵</strong>입니다. 지금까지 확인한 UI·업데이트 경로와, 수정 펌웨어를 만들기 전에 반드시 확인할 조건을 정리합니다.</li>
+<li>이 문서는 <strong>수정·이식의 검증 단계</strong>를 정리한 로드맵입니다. 제한된 구현의 PC 검증과, 실제 장치에서 확인해야 할 조건을 구분합니다.</li>
 <li>확보한 의사코드는 원래 소스 프로젝트가 아닙니다. 타입·이름·링커 배치·라이브러리·자원 생성 도구를 복원하지 않았으므로, 지금 코드를 컴파일한다고 원본과 동등한 펌웨어가 되지는 않습니다.</li>
-<li>분석 단계의 끝은 모든 함수를 해석하는 시점이 아니라, <strong>첫 변경 대상의 의존 범위·이미지 재구성 규칙·부팅과 복구 조건·검증 방법</strong>을 설명할 수 있는 시점입니다.</li>
+<li>전체 분석과 재구축은 장기 목표로 유지합니다. 각 변경의 검증에 들어가려면 <strong>대상의 의존 범위·이미지 재구성 규칙·부팅과 복구 조건·검증 방법</strong>을 먼저 설명할 수 있어야 합니다.</li>
 </ul>
 </section>
 
@@ -38,6 +38,7 @@
 <ul>
 <li>아이콘 자원 접근 함수 5개의 구간과 연결</li>
 <li>무변경 재포장의 바이트 일치(round trip)</li>
+<li><a href="recompiled-integration.html">수치 함수의 재컴파일·배치와 선택된 상위 호출의 PC 대조</a></li>
 </ul></div>
 <div class="static"><h3><span class="badge static">정적 분석</span> 코드·공개 자료를 읽어 판단</h3>
 <ul>
@@ -47,8 +48,8 @@
 <div class="open"><h3><span class="badge open">미확인</span> 확인하지 않은 것</h3>
 <ul>
 <li>실제 업데이트 수용·서명 정책·부팅·복구</li>
-<li>자원 포맷, 메뉴·입력 인터페이스</li>
-<li>다른 기종의 ISA·OS·GUI 일치 여부</li>
+<li>전체 자원·메뉴 연결과 실제 입력 인터페이스</li>
+<li>대상 기종의 이식 코드·LCD·입력·설정 유지</li>
 </ul></div>
 </div>
 
@@ -60,22 +61,22 @@
 <div class="dg-scroll">
 <svg class="dg" viewBox="0 0 800 150" role="img" aria-labelledby="dg-road-title dg-road-desc">
 <title id="dg-road-title">지금까지의 분석, 구현 전 선행 조사, 수정 펌웨어 빌드·이식의 세 단계</title>
-<desc id="dg-road-desc">첫 단계는 지금까지의 분석으로 명령·색·AF·업데이트 경로와 패키지 재구성을 확인했습니다. 둘째 단계는 구현 전 선행 조사로, 검증기와 부팅·복구, 자원 포맷, 메뉴·입력, 재빌드 도구를 확인합니다. 셋째 단계는 수정 펌웨어 빌드와 다른 기종 이식으로 아직 시작하지 않았습니다.</desc>
+<desc id="dg-road-desc">첫 단계는 원본의 명령·색·AF·업데이트 경로와 패키지 재구성 분석입니다. 둘째 단계에서는 일부 함수의 재컴파일과 원래 위치 배치, 합성 상태의 PC 대조를 마쳤으며 범위를 넓히고 있습니다. 셋째 단계인 수정 이미지의 실기 부팅·복구와 다른 기종 UI 이식은 미검증입니다.</desc>
 <defs><marker id="dg-road-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0 0L10 5L0 10z"/></marker><marker id="dg-road-ao" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah open" d="M0 0L10 5L0 10z"/></marker></defs>
 <rect class="b ok" x="12" y="44" width="236" height="62" rx="8"/>
 <text class="t" x="24" y="72">지금까지의 분석</text>
 <text class="s" x="24" y="92">명령·색·AF·업데이트·재포장</text>
 <rect class="b static" x="282" y="44" width="236" height="62" rx="8"/>
-<text class="t" x="294" y="72">구현 전 선행 조사</text>
-<text class="s" x="294" y="92">검증기·부팅·자원·입력·도구</text>
+<text class="t" x="294" y="72">부분 재컴파일·PC 검증</text>
+<text class="s" x="294" y="92">선택 함수·호출자·재패키징</text>
 <rect class="b open" x="552" y="44" width="236" height="62" rx="8"/>
-<text class="t" x="564" y="72">빌드·이식 (미시작)</text>
-<text class="s" x="564" y="92">수정 펌웨어 · 다른 기종 UI</text>
+<text class="t" x="564" y="72">실기·UI 이식 (미검증)</text>
+<text class="s" x="564" y="92">수정 이미지·부팅·복구·LCD</text>
 <path class="e" d="M248 75H280" marker-end="url(#dg-road-ah)"/>
 <path class="e open" d="M518 75H550" marker-end="url(#dg-road-ao)"/>
 </svg>
 </div>
-<ul class="dg-legend"><li><i class="ok"></i>확인한 단계</li><li><i class="static"></i>진행 중</li><li><i class="open"></i>미시작</li></ul>
+<ul class="dg-legend"><li><i class="ok"></i>확인한 범위</li><li><i class="static"></i>부분 검증·진행 중</li><li><i class="open"></i>미검증</li></ul>
 </figure>
 </section>
 
@@ -105,7 +106,7 @@
 
 <section id="update">
 <h2>업데이트와 공개 소스의 경계</h2>
-<p class="takeaway">업데이트 파일명을 만드는 함수는 확인했지만, 실제 업데이트 허용·버전·무결성·서명 검사에 연결하지는 못했습니다.</p>
+<p class="takeaway">파일명 생성자와 별도의 기종·버전·체크섬 판정 경로를 분석했습니다. 개별 검사와 최종 이미지 수용·부팅은 구분합니다. <a href="update-resources.html">업데이트 검사와 ICONBIN</a> · <a href="guide-update.html">후속 업데이트 경로</a></p>
 <p>파일명 생성자 <code>0x52ff32ac</code>는 런타임 값을 받아 <code>C:\FWDC%ldB.BIN</code>과 <code>R:\FWDC%ldB.BIN</code> 경로를 만듭니다. 숫자는 모델 값을 읽는 객체의 <code>+0x18</code>에서 옵니다. 이것은 파일명 생산자를 확인한 결과일 뿐, 업데이트 수용 판단과 이은 결과가 아닙니다.</p>
 <p>공식 OSS 패키지의 <dfn title="리코가 공개한 부트로더 관련 오픈소스">Stubby 1.60.1</dfn>도 확인했습니다. README 109~117행은 MLB01 보드의 RTOS-main 이미지 조합을 설명하며 별도 입력 <code>MILB_SDK.bin</code>을 요구합니다. 설정 파일 <code>config-sc2000-rtos.h</code>의 RTOS 주소는 <code>0x60000000</code>으로, 이번 분석의 RTOS 적재 주소 <code>0x52500000</code>과 다릅니다. 공개 보드 설정을 카메라의 실제 빌드 설정으로 취급하지 않습니다.</p>
 <div class="callout warn"><strong class="label">주의</strong>
@@ -123,7 +124,7 @@
 
 <section id="next">
 <h2>다음 조사 항목과 완료 기준</h2>
-<p>구현에 착수하기 전에 확인할 항목입니다. 우선순위 1이 먼저입니다.</p>
+<p>완료한 개별 실험의 범위를 넓히고 실기 단계로 넘어가기 위한 항목입니다. 원본 보존과 독립 복구는 실기 검증의 선행 조건으로 유지합니다.</p>
 <div class="table-wrap"><table class="compact">
 <caption>선행 조사 항목</caption>
 <thead><tr><th class="n">우선</th><th>조사 항목</th><th>완료 기준</th></tr></thead>
@@ -150,7 +151,7 @@
 <tr><th scope="row">K-3 II</th><td>3.2형</td><td class="n">103.7만</td><td>없음</td></tr>
 <tr><th scope="row">Q7</th><td>3.0형</td><td class="n">46만</td><td>없음</td></tr>
 </tbody></table></div>
-<p>다른 기종의 ISA·RTOS·GUI 인터페이스가 일치하는지는 아직 조사하지 않았습니다. 이 조건이 다르면, UI 바이너리를 그대로 옮기기보다 화면 구성과 동작을 대상 기종의 인터페이스에 맞게 다시 구현하는 방향을 검토해야 합니다. 화면 재현, 메뉴 동작 이식, 전체 UI 런타임 이식은 구분해 평가하며, 지금은 어느 방식의 성공도 보장하지 않습니다.</p>
+<p>후속 연구에서 원본 ARM·MIPS 실행과 기종별 텍스트 그리기·메뉴 상태를 비교했습니다. K-3 III의 32비트 표면과 Q7의 인덱스 팔레트는 서로 다른 계약을 사용합니다. 화면 구성·메뉴 상태·입력을 대상 인터페이스에 맞게 구현하고 각각 검증해야 합니다. 화면 한 부분의 PC 재현은 전체 UI 런타임 이식이나 LCD 동작을 입증하지 않습니다. <a href="cross-ui-text.html">기종 간 글자 전송 비교</a> · <a href="ui-port-contract.html">UI 이식 계약</a> · <a href="ui-surface-producers.html">K-3 III 표면 생산자</a></p>
 </section>
 
 <section id="refs">
