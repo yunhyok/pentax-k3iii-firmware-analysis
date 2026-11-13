@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>K-3 III·Q7 참조 프로파일 비교 — PENTAX 펌웨어 연구</title>
+<meta name="description" content="같은 RAW의 Lightroom 참조 프로파일과 매트릭스 출력을 내장 Bright JPEG에 맞춰 공통 영역에서 비교했습니다.">
+<link rel="stylesheet" href="../assets/site.css">
+<style>
+.ref-flow{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,12rem),1fr));gap:.6rem;margin:.7rem 0 0;padding:0;list-style:none}
+.ref-flow li{padding:.6rem .7rem;border:1px solid var(--line);border-radius:8px}
+.ref-flow b{display:block}
+.studio-reference .table-wrap:focus-visible{outline:2px solid var(--brand);outline-offset:3px}
+.studio-reference .replay-files{overflow-wrap:anywhere}
+</style>
+</head>
+<body data-camera="k3iii">
+<!-- chrome:top -->
+<a class="skip" href="#main">본문 바로가기</a>
+<div class="topbar"><div class="topbar-in"><a class="brand" href="../index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="../index.html" aria-current="true">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="https://yunhyok.github.io/pentax-q7-firmware-analysis/">Q7</a></div><nav class="topnav" aria-label="주제"><a href="../index.html">개요</a><a href="guide-boot.html">부팅·저장소</a><a href="guide-update.html">업데이트</a><a href="guide-rebuild.html">재구축</a><a href="guide-rtos.html">명령·셸</a><a href="guide-color.html">색 처리</a><a href="lightroom-bridge.html" aria-current="true">Lightroom</a><a href="af-foundations.html">AF</a><a href="ui-port-contract.html">UI</a></nav></div></div>
+<nav class="crumbs" aria-label="현재 위치"><ol><li><a href="../index.html">PENTAX K-3 Mark III</a></li><li><a href="lightroom-bridge.html">Lightroom 색 프로파일</a></li><li aria-current="page">K-3 III·Q7 참조 프로파일 비교</li></ol></nav>
+<!-- /chrome:top -->
+<header class="page-head">
+<p class="eyebrow">Lightroom 색 프로파일 · K-3 III / Q7</p>
+<h1>Lightroom 참조 프로파일과 카메라 Bright 비교</h1>
+<p class="lead">공통 영역의 JPEG 대비 ΔE₀₀ 중앙값은 K-3 III에서 매트릭스 2.028에서 Camera Bright 1.421로, Q7에서 매트릭스 2.211에서 Adobe Standard 2.803으로 바뀌었습니다. 프로파일을 고를 때 Lightroom의 As Shot 표시값도 바뀌었습니다.</p>
+</header>
+<div class="layout">
+<!-- chrome:toc -->
+<nav class="toc" aria-label="이 문서의 목차"><h2 data-toc="no">이 문서에서</h2><ol><li><a href="#controls">프로파일 선택 뒤 As Shot 표시값이 바뀌었습니다</a></li><li><a href="#geometry">장면마다 같은 JPEG 픽셀을 사용했습니다</a></li><li><a href="#k3iii">K-3 III 공통 영역</a></li><li><a href="#q7">Q7 Adobe 렌즈 보정의 국소 공통 영역</a></li><li><a href="#method">색차의 해석 범위</a></li><li><a href="#replay">원래 RAW·TIFF로 재현</a></li></ol></nav>
+<!-- /chrome:toc -->
+<main id="main" class="doc studio-reference">
+<section id="controls">
+<h2>프로파일 선택 뒤 As Shot 표시값이 바뀌었습니다</h2>
+<p>Lightroom Classic 16.0에서 기존 매트릭스 가상 사본을 복제하고 프로파일만 선택했습니다. 수동 화이트밸런스 조작 없이 K-3 III의 두 참조 출력 모두 5400 K/−7에서 5350 K/−6으로, Q7은 5100 K/−17에서 4900 K/−7로 바뀌었습니다. 세 TIFF 모두 사전 등록한 엄격한 프로파일 단독 조건을 통과하지 못해, 프로파일과 As Shot 해석을 함께 바꾼 결과로 비교했습니다. 같은 표시값이 내부 채널 이득까지 같음을 보증하지는 않습니다.</p>
+<p>TIFF는 원래 크기의 무압축 16-bit ProPhoto RGB입니다. 내장 ICC, Camera Raw 19.0, Process Version 15.4, 노출 0.00, 자르기, 렌즈 보정 설정과 중첩 현상 설정이 기준 TIFF와 일치했습니다. K-3 III는 렌즈 보정과 색수차 제거를 끄고, Q7은 Adobe PENTAX 01 STANDARD PRIME 보정과 색수차 제거를 켰습니다. Q7 왜곡량은 100, 비네팅은 0입니다. <a href="lightroom-studio-reference.json">TIFF·XMP와 프로파일 근거</a> · <a href="lightroom-studio-baseline.html">이전 매트릭스 기준 실험</a></p>
+<p>세 참조 DCP의 설치본 해시와 SDK 기반 지문을 내보내기 전에 고정했습니다. 실제 TIFF XMP에는 그 지문이 들어 있었습니다. Q7은 ForwardMatrix의 영값을 0/1로 직렬화하는 SDK Build 2768 예측값과 일치했습니다. K-3 III의 두 Adobe DCP는 ColorMatrix가 같지만 ForwardMatrix와 LookTable이 다르고, Camera Bright에는 명시적 톤 곡선과 +0.30 EV 프로파일 오프셋이 있습니다. 이 장면의 색차만으로 개별 구성 요소의 효과를 분리할 수 없습니다. <a href="https://helpx.adobe.com/camera-raw/desktop/dng-and-file-formats/digital-negative.html">Adobe DNG SDK</a></p>
+</section>
+<section id="geometry">
+<h2>장면마다 같은 JPEG 픽셀을 사용했습니다</h2>
+<figure class="diagram">
+<figcaption>정합과 공통 마스크를 확정한 뒤 색차를 계산했습니다</figcaption>
+<ol class="ref-flow">
+<li><b>같은 RAW</b>내장 Bright JPEG와 Lightroom TIFF</li>
+<li><b>고정 정합점</b>III 90점 · Q7 89점에서 각 TIFF를 검증</li>
+<li><b>공통 마스크</b>III 55영역 · Q7 39영역</li>
+<li><b>D50 Lab 비교</b>JPEG 잔차와 픽셀별 변화량</li>
+</ol>
+</figure>
+<p>K-3 III의 전역 affine 검증 잔차 최대치는 매트릭스 0.208, Adobe Standard 0.300, Camera Bright 0.233픽셀로 모두 1픽셀 이내였습니다. Q7의 두 출력은 5.821·5.829픽셀로 전역 기준을 넘었습니다. 두 Q7 출력 모두 독립적인 국소 이동 검증을 통과한 영역만 남겼습니다.</p>
+<p>JPEG와 모든 TIFF에서 동일한 JPEG 좌표가 정합, 낮은 기울기, 채널 끝값 제외 조건을 통과해야 합니다. 영역마다 공통 픽셀이 128개 이상 남아야 합니다. K-3 III는 55영역·80,662픽셀, Q7은 39영역·56,927픽셀입니다. 기준 매트릭스도 이 교집합에서 다시 계산했으므로 이전 실험의 59·40영역 수치와 달라집니다.</p>
+</section>
+<section id="k3iii">
+<h2>K-3 III 공통 영역</h2>
+<div class="table-wrap" tabindex="0" role="region" aria-label="K-3 III 색차 결과 표">
+<table><caption>내장 Bright JPEG 대비 픽셀 통계</caption><thead><tr><th scope="col">Lightroom 출력</th><th scope="col">ΔE₀₀ 중앙값</th><th scope="col">ΔE₀₀ p90</th><th scope="col">픽셀별 변화 중앙값</th><th scope="col">매트릭스보다 가까운 픽셀</th></tr></thead>
+<tbody><tr><th scope="row">매트릭스</th><td>2.028</td><td>4.922</td><td>—</td><td>—</td></tr>
+<tr><th scope="row">Adobe Standard</th><td>1.944</td><td>4.548</td><td>−0.105</td><td>47,243 / 80,662</td></tr>
+<tr><th scope="row">Camera Bright</th><td>1.421</td><td>2.636</td><td>−0.537</td><td>63,199 / 80,662</td></tr></tbody></table>
+</div>
+<p>Camera Bright 출력에서 JPEG 대비 ΔL* 중앙값은 매트릭스의 +1.465에서 −0.401로 바뀌었습니다. 픽셀별 ΔE₀₀ 변화의 p90은 +0.360이어서 일부 픽셀에서는 차이가 커졌습니다.</p>
+</section>
+<section id="q7">
+<h2>Q7 Adobe 렌즈 보정의 국소 공통 영역</h2>
+<div class="table-wrap" tabindex="0" role="region" aria-label="Q7 국소 색차 결과 표">
+<table><caption>내장 Bright JPEG 대비 픽셀 통계</caption><thead><tr><th scope="col">Lightroom 출력</th><th scope="col">ΔE₀₀ 중앙값</th><th scope="col">ΔE₀₀ p90</th><th scope="col">픽셀별 변화 중앙값</th><th scope="col">매트릭스보다 가까운 픽셀</th></tr></thead>
+<tbody><tr><th scope="row">매트릭스</th><td>2.211</td><td>4.787</td><td>—</td><td>—</td></tr>
+<tr><th scope="row">Adobe Standard</th><td>2.803</td><td>5.955</td><td>+0.115</td><td>23,682 / 56,927</td></tr></tbody></table>
+</div>
+<p>Adobe Standard에서 픽셀별 변화의 p90은 +2.551이었습니다. 전역 정합 실패로 이 비교는 표에 포함된 국소 영역에 한정됩니다.</p>
+</section>
+<section id="method">
+<h2>색차의 해석 범위</h2>
+<p>픽셀별 변화는 같은 JPEG 픽셀에서 참조 출력의 ΔE₀₀와 매트릭스 출력의 ΔE₀₀를 뺀 뒤 집계했습니다. 음수는 그 위치에서 JPEG에 더 가까움을 뜻합니다. 영역에 같은 비중을 준 통계는 영역마다 먼저 구한 중앙값이나 p90의 산술평균입니다.</p>
+<p>정수 위치의 JPEG RGB8과 쌍선형 보간한 TIFF RGB16을 LittleCMS 상대 색도 변환으로 D50 Lab에 옮겼습니다. JPEG는 sRGB로 해석하고 TIFF는 내장 ICC를 적용했으며, 흑점 보정은 껐습니다. Bright JPEG는 카메라가 현상한 참조입니다. 이 측정은 카메라별 한 장면과 공통 영역에 해당하며 절대 색 정확도, 기종 간 우열, 펌웨어 모드의 일반적인 재현 정도를 알려주지 않습니다. 촬영 펌웨어는 III 1.10, Q7 1.00입니다. 별도 정적 분석의 III 2.20, Q7 1.01과 구별합니다. <a href="lightroom-studio-baseline.html#method">정합·ICC 처리 설명</a> · <a href="https://hajim.rochester.edu/ece/sites/gsharma/ciede2000/">CIEDE2000 검증 예제</a></p>
+</section>
+<section id="replay" class="replay-files">
+<h2>원래 RAW·TIFF로 재현</h2>
+<p>아래 경로와 해시가 일치하는 RAW 두 개와 TIFF 다섯 개를 준비합니다. 재현 도구는 Adobe 참조 DCP의 사전 등록 SHA를 출처로 제시하고, 실제 TIFF에서 프로파일 이름과 지문을 확인합니다. Adobe 참조 DCP와 SDK ZIP은 재현 입력에 포함되지 않습니다. TIFF를 다시 내보내면 픽셀이 같아도 파일 해시가 바뀔 수 있습니다. <a href="lightroom-studio-reference.json">입력 해시와 측정 기록</a> · <a href="https://www.imaging-resource.com/cameras/pentax-k-3-iii-review/samples/K3IIIhSLI0000100NR0.PEF.HTM">K-3 III 표본</a> · <a href="https://www.imaging-resource.com/cameras/pentax-q7-review/samples/Q7hSLI00100NR1.DNG.HTM">Q7 표본</a> · <a href="https://www.imaging-resource.com/terms-of-use/">Imaging Resource 이용 조건</a></p>
+<ul>
+<li><code>raw/K3IIIhSLI0000100NR0.PEF</code>, <code>raw/Q7hSLI00100NR1.DNG</code></li>
+<li><code>exports/k3iii-off/K3IIIhSLI0000100NR0.tif</code>, <code>exports/q7-adobe-optics/Q7hSLI00100NR1.tif</code></li>
+<li><code>exports/k3iii-adobe-standard/K3IIIhSLI0000100NR0.tif</code>, <code>exports/k3iii-camera-bright/K3IIIhSLI0000100NR0.tif</code>, <code>exports/q7-adobe-standard/Q7hSLI00100NR1.tif</code></li>
+</ul>
+<pre><code>python -B tools/check_lightroom_studio_reference.py --inputs studio-inputs --exiftool ExifTool.exe --tificc tificc.exe --output reference-replay.json</code></pre>
+<p>기준 실험에서 고정한 ExifTool·LittleCMS 실행 파일과 Python 환경을 사용합니다. 검증기는 RAW에서 JPEG를 추출하고 모든 TIFF, 정합 및 마스크를 확인한 후 전체 픽셀·영역·구간 통계를 다시 계산해 사전 측정값의 해시와 대조합니다. <a href="../tools/check_lightroom_studio_reference.py">검증기</a> · <a href="lightroom-studio-baseline.html#replay">기준 실험 도구 버전</a></p>
+</section>
+</main>
+</div>
+<!-- chrome:bottom -->
+<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">Lightroom 색 프로파일 — 이 주제의 문서</h2><ol><li><a href="lightroom-bridge.html">Lightroom 프로파일 안내<span>DCP 생성·검증의 전체 흐름</span></a></li><li><a href="raw-test-inputs.html">시험용 RAW 준비</a></li><li><a href="color-comparison-protocol.html">ColorChecker 비교 절차</a></li><li><a href="lightroom-render-comparison.html">실제 TIFF 6개 비교</a></li><li><a href="lightroom-tone-comparison.html">톤 곡선 비교</a></li><li><a href="lightroom-model-exports.html">K-3 III·Q7 DCP 내보내기</a></li><li><a href="lightroom-profile-fingerprints.html">프로파일 지문 재현</a></li><li><a href="lightroom-look-controls.html">LookTable 대조 실험</a></li><li><a href="color-tone-residual.html">톤 보정 뒤 남는 색차</a></li><li><a href="color-scene-transfer.html">고정 톤의 독립 장면 비교<span>K-3 II #1363과 Lightroom 버전 대조</span></a></li><li><a href="lightroom-composed-tone.html">합성 톤 DCP의 실제 Lightroom 출력<span>두 장면·최대 색차 기준 미충족</span></a></li><li><a href="lightroom-tone-coordinates.html">Lightroom 톤과 RGB 좌표<span>같은 엔진·두 출력 색공간 대조</span></a></li><li><a href="lightroom-studio-baseline.html">K-3 III·Q7 Bright 스튜디오 비교<span>정합 통과 영역의 JPEG 대비 색차</span></a></li><li><a href="lightroom-studio-reference.html" aria-current="page">K-3 III·Q7 참조 프로파일 비교<span>같은 장면의 공통 마스크·As Shot 대조</span></a></li></ol></nav>
+<nav class="pager" aria-label="이전·다음 문서"><a class="prev" href="lightroom-studio-baseline.html"><small>← 이전</small>K-3 III·Q7 Bright 스튜디오 비교</a><a class="next" href="af-foundations.html"><small>다음 →</small>AF와 렌즈 제어 안내</a></nav>
+<footer class="sitefoot"><div class="sitefoot-in"><nav aria-label="사이트"><a href="../index.html#map">문서 지도</a><a href="../index.html#levels">검증 수준 읽는 법</a><a href="../glossary.html">용어집</a><a href="research-program.html">세 기종 연구 본부</a><a href="https://github.com/yunhyok/pentax-k3iii-firmware-analysis">GitHub 저장소</a></nav><p>PENTAX 펌웨어 연구. PC에서 수행한 정적 분석과 에뮬레이션 결과이며, 카메라 실기에서 검증한 내용이 아닙니다. 원본 펌웨어와 추출한 독점 코드는 포함하지 않습니다.</p></div></footer>
+<!-- /chrome:bottom -->
+</body>
+</html>
