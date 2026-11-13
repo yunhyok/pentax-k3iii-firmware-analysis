@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>K-3 III PafPulse 기준값의 쓰기 경로</title>
+<link rel="stylesheet" href="../assets/site.css">
+<style>
+main.doc .producer-flow{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.75rem;list-style:none;padding:0;margin:.65rem 0}
+main.doc .producer-flow>li{margin:0;min-width:0;padding:.7rem;border:1px solid var(--line);border-radius:.45rem;overflow-wrap:anywhere}
+main.doc .producer-flow .fixture{border-style:dashed}
+main.doc .producer-flow strong{display:block;margin-bottom:.3rem}
+code.address{white-space:nowrap}
+@media(max-width:900px){main.doc .producer-flow{grid-template-columns:1fr}}
+</style>
+</head>
+<body data-camera="k3iii">
+<!-- chrome:top -->
+<a class="skip" href="#main">본문 바로가기</a>
+<div class="topbar"><div class="topbar-in"><a class="brand" href="../index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="../index.html" aria-current="true">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="https://yunhyok.github.io/pentax-q7-firmware-analysis/">Q7</a></div><nav class="topnav" aria-label="주제"><a href="../index.html">개요</a><a href="guide-boot.html">부팅·저장소</a><a href="guide-update.html">업데이트</a><a href="guide-rebuild.html">재구축</a><a href="guide-rtos.html">명령·셸</a><a href="guide-color.html">색 처리</a><a href="lightroom-bridge.html">Lightroom</a><a href="af-foundations.html" aria-current="true">AF</a><a href="ui-port-contract.html">UI</a></nav></div></div>
+<nav class="crumbs" aria-label="현재 위치"><ol><li><a href="../index.html">PENTAX K-3 Mark III</a></li><li><a href="af-foundations.html">AF와 렌즈 제어</a></li><li aria-current="page">PafPulse 기준값의 쓰기 경로</li></ol></nav>
+<!-- /chrome:top -->
+<header class="page-head">
+<h1>PafPulse 기준값의 쓰기 경로</h1>
+<p class="lead">K-3 III 펌웨어 2.20에서 AF 위치 계산이 <code>PafPulse+0xa88</code>을 갱신합니다. 네 쓰기 지점 중 두 경로를 원본 ARM으로 실행했고, 별도로 시작한 요청 3의 계산이 같은 객체의 새 값을 읽었습니다.</p>
+</header>
+<div class="layout">
+<!-- chrome:toc -->
+<nav class="toc" aria-label="이 문서의 목차"><h2 data-toc="no">이 문서에서</h2><ol><li><a href="#binding">생산자와 소비자가 공유하는 객체</a></li><li><a href="#stores">기준값을 갱신하는 네 명령</a></li><li><a href="#replay-results">두 쓰기 경로와 별도 요청 3 계산을 네 번 재생했습니다</a></li><li><a href="#motor-fields">PafMotor의 두 halfword는 비영값 출처가 남아 있습니다</a></li><li><a href="#reproduce">재현 조건과 실기 검증 범위</a></li></ol></nav>
+<!-- /chrome:toc -->
+<main class="doc" id="main">
+<section id="binding">
+<h2>생산자와 소비자가 공유하는 객체</h2>
+<figure class="diagram">
+<figcaption>하네스가 준비한 조건, 원본 쓰기, 별도 읽기 진입</figcaption>
+<ol class="producer-flow">
+<li class="fixture"><strong>공급한 객체와 값</strong>할당 주소와 초기 factory 상태, PafMovableObject의 word, PafControl 분기값과 기존 Pulse 상태를 준비합니다.</li>
+<li><strong>원본 객체 연결과 쓰기</strong>원본 바인더가 PafMotor와 PafControl에 같은 PafPulse 주소를 씁니다. PafControl의 두 코드 경로는 새 기준값과 그 변화량을 Pulse에 저장합니다.</li>
+<li class="fixture"><strong>별도 소비자 진입</strong><code class="address">0x52f0c9f0</code>의 <code>r0</code>에 시험 수치를 넣습니다. 이후 원본 코드가 같은 Pulse를 읽고, 잔여값에 따라 요청 3 진입 직전 또는 로컬 종료 경로에서 멈춥니다.</li>
+</ol>
+<p>원본에서 하드웨어 읽기 뒤에 오는 숫자 계산을 따로 실행했습니다. 실제 레지스터 읽기는 실행하지 않았고, 시험 수치는 별도 진입에서 레지스터에 직접 넣었습니다.</p>
+</figure>
+<p>AfMotorFactory 초기화의 원본 <code class="address">0x52f08c74</code>부터 PafMotor 0xec바이트가 factory <code>+0xc</code>에, PafPulse 0xab4바이트가 <code>+0x10</code>에 배치됩니다. 두 객체의 ROM vtable <code>+0xc</code>는 각각 <code class="address">0x52f0b380</code>, <code class="address">0x52f0dde0</code>을 가리킵니다. 이번 재생에서는 원본 생성자와 두 바인더를 실행했고 전체 cold 초기화 대신 필요한 factory 슬롯을 준비했습니다.</p>
+<p>원본 <code class="address">0x52f0b46c</code>가 PafMotor <code>+0x14</code>에 Pulse를, <code class="address">0x52f0dea4</code>가 Pulse <code>+0x10</code>에 PafMotor를 기록합니다. PafControl의 <code class="address">0x52cad944</code>도 같은 factory 슬롯에서 Pulse를 읽어 자기 <code>+0x34</code>에 기록합니다. <a href="af-feedback-producer-checks.json">실행 기록과 원본 구간 해시</a></p>
+</section>
+
+<section id="stores">
+<h2>기준값을 갱신하는 네 명령</h2>
+<p>아래에서 M은 PafMovableObject, P는 PafPulse입니다. <code>d</code>는 원본 <code class="address">0x52cbeba4</code>가 만든 보정값입니다. M <code>+0x148</code>의 signed word 절댓값에 M <code>+0x3c</code>의 부호를 적용하고, PafControl <code>+0x74</code>의 값이 1이면 부호를 다시 뒤집습니다. 아래 쓰기에서 기준값은 32비트, 변화량은 하위 16비트입니다.</p>
+<div class="table-wrap" tabindex="0" aria-label="네 기준값 쓰기"><table>
+<thead><tr><th scope="col">원본 쓰기</th><th scope="col">값과 대상</th><th scope="col">확인 방식</th></tr></thead>
+<tbody>
+<tr><th scope="row"><code class="address">0x52cb2c64</code></th><td>PafControl <code>+0x34</code>의 P에 <code>M[+0x4c] + d</code>를 씁니다. <code>P+0x5a</code>에는 새 값에서 이전 기준값을 뺀 결과를 씁니다.</td><td>별도 <code class="address">0x52cb2c24</code>부터 원본 실행. 앞선 <code class="address">0x52cb9908</code>의 비영 반환을 요구하는 분기는 정적으로 확인.</td></tr>
+<tr><th scope="row"><code class="address">0x52cb2e28</code></th><td>같은 P에 <code>M[+0x4c] + d − P[+0xe8]</code>를 씁니다. <code>P+0x5a</code>에는 같은 방식으로 변화량을 씁니다.</td><td><code class="address">0x52cb2ba8</code>부터 원본 실행. <code>P+0x21</code>이 비영인 분기.</td></tr>
+<tr><th scope="row"><code class="address">0x52cb9e10</code></th><td>PafDrive <code>+0x28</code>의 P에 씁니다. 한 경로는 M <code>+0x44</code>에서 값을 읽고, 다른 경로는 보정값과 기존 기준값을 사용합니다.</td><td>원본 분기와 <code class="address">0x52cb8500</code>의 객체 연결을 정적으로 확인.</td></tr>
+<tr><th scope="row"><code class="address">0x52cbeb8c</code></th><td>M <code>+0x1c</code>의 P에 스택에 준비한 값을 씁니다. 앞선 명령이 P <code>+0x36</code>과 기존 기준값의 하위 16비트 중 하나를 선택합니다.</td><td>원본 선택, 스택 저장, <code class="address">0x52cbe5ec</code>의 객체 연결을 정적으로 확인.</td></tr>
+</tbody></table></div>
+<p>M <code>+0x148</code>을 쓰는 원본 <code class="address">0x52cbea90</code>도 확인했습니다. M <code>+0x20</code>이 가리키는 설정 객체의 <code>+0xf4</code> word와 Pulse <code>+0x56</code>을 곱한 뒤, 부호 있는 값의 256 나눗셈과 앞선 호출 결과에 따른 부호 처리를 거칩니다. 재생에서는 이미 계산된 M의 값을 시험 조건으로 공급했습니다. M <code>+0x4c</code>의 비영값 출처와 설정 word의 원래 저장소는 미확인입니다.</p>
+</section>
+
+<section id="replay-results">
+<h2>두 쓰기 경로와 별도 요청 3 계산을 네 번 재생했습니다</h2>
+<div class="table-wrap" tabindex="0" aria-label="기준값과 요청 3 수치 대조"><table>
+<thead><tr><th scope="col">쓰기 대조</th><th scope="col">새 <code>P+0xa88</code></th><th scope="col"><code>P+0x5a</code></th><th scope="col">signed 잔여값</th><th scope="col">소비자 정지 지점</th></tr></thead>
+<tbody>
+<tr><th scope="row">직접 합산 · 분기값 0</th><td>737</td><td>337</td><td>−56</td><td><code class="address">0x52f0ca70</code></td></tr>
+<tr><th scope="row">직접 합산 · 분기값 1</th><td><code class="address">0xfffffff3</code></td><td>65,423</td><td>18</td><td><code class="address">0x52f0c78c</code></td></tr>
+<tr><th scope="row">기존 <code>P+0xe8</code> 차감 · 분기값 0</th><td>65</td><td>81</td><td>41</td><td><code class="address">0x52f0c78c</code></td></tr>
+<tr><th scope="row">기존 <code>P+0xe8</code> 차감 · 분기값 1</th><td><code class="address">0xffffffc7</code></td><td>65,299</td><td>87</td><td><code class="address">0x52f0c78c</code></td></tr>
+</tbody></table></div>
+<p>별도 진입한 원본은 <code>s16(P[+0x2e] − u16(P[+0xa88] − r0))</code>를 계산합니다. <code class="address">0x52f0ca18</code>에서 P <code>+0xf8</code>에 signed 잔여값을 쓰고, 이번 조건에서 양수이면 그 값을 인자로 요청 3 진입 직전까지 진행합니다. 앞선 보고서에서 요청 3의 첫 장치 읽기와 별도 수치 계산도 각각 확인했습니다. <a href="af-mode1-control.html#feedback">요청 3의 피드백 계산</a> · <a href="af-feedback-producer-checks.json">네 재생의 입력과 관측값</a></p>
+</section>
+
+<section id="motor-fields">
+<h2>PafMotor의 두 halfword는 비영값 출처가 남아 있습니다</h2>
+<p>PafMotor 생성자의 <code class="address">0x52f0b57c</code>와 <code class="address">0x52f0b5a0</code>이 <code>+0x56/+0x68</code>을 0으로 초기화합니다. 네 재생에서 이후 두 필드의 쓰기는 없었습니다. PafMotor 인접 코드 <code class="address">0x52f0b354</code>–<code class="address">0x52f0ddb4</code>의 정렬 A32 직접 오프셋 검사에서도 이 두 쓰기를 찾았습니다. 다른 모듈의 별칭, 블록 복사, 계산한 주소나 Thumb의 쓰기는 이 검사에 포함하지 않았습니다.</p>
+<p><code class="address">0x52f0e3f4</code>의 <code>+0x56</code> 쓰기는 PafPulse를 대상으로 하며 렌즈 관련 조건에 따라 값이 달라질 수 있습니다. PafMotor의 동명 필드에는 이 결과를 적용할 수 없습니다. 별도의 PafMotor 소비자 <code class="address">0x52f0cdd0</code>은 <code>+0x68</code>이 비영이면 <code>+0x5c</code>에 ROM 기본값을 쓰고, <code>+0x68</code>의 값을 <code>+0x5a</code>에 씁니다. 인수 <code>r1</code>이 비영이면 200을 더한 하위 16비트를 씁니다. 이 분기는 정적으로 확인했습니다.</p>
+</section>
+
+<section id="reproduce">
+<h2>재현 조건과 실기 검증 범위</h2>
+<p>Unicorn 2.1.4의 Cortex-A7 기본 재생, Cortex-A7과 A15의 호출자 저장 레지스터·NZCV 변경 대조가 일치했습니다. 두 입력에서 결과 JSON이 바이트 단위로 같았습니다. 각 재생은 실행 범위, 쓰기 주소·폭·값, 인접 필드의 카나리, RX 원본 영역의 전체 SHA-256을 확인합니다. 메모리·서비스 설정의 일부는 모형으로 공급했습니다.</p>
+<pre><code>python -B verify_af_feedback_producers.py rtos.bin --output af-producers-rtos.json
+python -B verify_af_feedback_producers.py decoded.bin --output af-producers-decoded.json
+python -B -m unittest discover -s tests -p test_af_feedback_producers.py</code></pre>
+<p>원본 RTOS나 RTOS를 포함한 decoded 파일 중 하나가 필요합니다. <code>-O</code>를 사용하지 않고 아직 없는 출력 경로를 지정합니다. <a href="../verify_af_feedback_producers.py">원본 ARM 재현기</a> · <a href="../tests/test_af_feedback_producers.py">입출력·의존 소스 검사</a> · <a href="af-feedback-producer-checks.json">입력 SHA-256과 전체 결과</a></p>
+<p>이 결과는 소프트웨어의 기준값 생산·사용 경로를 보여 줍니다. 렌즈별 저장 보정 레코드, 실제 거리·각도·시간 단위, 모터의 물리적 종류나 연속 AF 동작은 확인하지 않았습니다.</p>
+</section>
+</main>
+</div>
+<!-- chrome:bottom -->
+<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">AF와 렌즈 제어 — 이 주제의 문서</h2><ol><li><a href="af-foundations.html">AF와 렌즈 제어 안내<span>세 기종 비교</span></a></li><li><a href="af-drive-architecture.html">렌즈 구동 선택·명령·응답<span>렌즈 능력에 따른 구동 선택과 명령</span></a></li><li><a href="af-joint-control.html">Joint 요청과 하위 제어<span>이벤트 0x80에서 첫 서비스·레지스터 경계까지</span></a></li><li><a href="af-service-binding.html">AF 서비스 객체와 레지스터 경계<span>ReloadTimer·Udc의 두 별도 실행</span></a></li><li><a href="af-mode1-control.html">Joint 모드 1의 요청과 피드백 계산<span>리셋 후속 호출, 요청 분기와 피드백 숫자 대조</span></a></li><li><a href="af-feedback-producers.html" aria-current="page">PafPulse 기준값의 쓰기 경로<span>원본 객체 연결, 기준값 갱신과 별도 소비자 진입</span></a></li><li><a href="af-request-consumer.html">AF 요청 큐와 완료 통지<span>요청 슬롯, 처리 task, 완료 통지</span></a></li></ol></nav>
+<nav class="pager" aria-label="이전·다음 문서"><a class="prev" href="af-mode1-control.html"><small>← 이전</small>Joint 모드 1의 요청과 피드백 계산</a><a class="next" href="af-request-consumer.html"><small>다음 →</small>AF 요청 큐와 완료 통지</a></nav>
+<footer class="sitefoot"><div class="sitefoot-in"><nav aria-label="사이트"><a href="../index.html#map">문서 지도</a><a href="../index.html#levels">검증 수준 읽는 법</a><a href="../glossary.html">용어집</a><a href="research-program.html">세 기종 연구 본부</a><a href="https://github.com/yunhyok/pentax-k3iii-firmware-analysis">GitHub 저장소</a></nav><p>PENTAX 펌웨어 연구. PC에서 수행한 정적 분석과 에뮬레이션 결과이며, 카메라 실기에서 검증한 내용이 아닙니다. 원본 펌웨어와 추출한 독점 코드는 포함하지 않습니다.</p></div></footer>
+<!-- /chrome:bottom -->
+</body>
+</html>
