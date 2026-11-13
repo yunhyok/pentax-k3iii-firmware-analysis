@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>K-3 III Joint 이벤트 0x80의 요청과 하위 제어</title>
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-camera="k3iii">
+<!-- chrome:top -->
+<a class="skip" href="#main">본문 바로가기</a>
+<div class="topbar"><div class="topbar-in"><a class="brand" href="../index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="../index.html" aria-current="true">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="https://yunhyok.github.io/pentax-q7-firmware-analysis/">Q7</a></div><nav class="topnav" aria-label="주제"><a href="../index.html">개요</a><a href="guide-boot.html">부팅·저장소</a><a href="guide-update.html">업데이트</a><a href="guide-rebuild.html">재구축</a><a href="guide-rtos.html">명령·셸</a><a href="guide-color.html">색 처리</a><a href="lightroom-bridge.html">Lightroom</a><a href="af-foundations.html" aria-current="true">AF</a><a href="ui-port-contract.html">UI</a></nav></div></div>
+<nav class="crumbs" aria-label="현재 위치"><ol><li><a href="../index.html">PENTAX K-3 Mark III</a></li><li><a href="af-foundations.html">AF와 렌즈 제어</a></li><li aria-current="page">Joint 요청과 하위 제어</li></ol></nav>
+<!-- /chrome:top -->
+<header class="page-head">
+<h1>K-3 III Joint 이벤트 0x80의 요청과 하위 제어</h1>
+<p class="lead">명령 6이 만든 요청에서 Joint 하위 제어의 첫 서비스 또는 MMIO 경계까지 원본 ARM을 실행했습니다.</p>
+</header>
+<div class="layout">
+<!-- chrome:toc -->
+<nav class="toc" aria-label="이 문서의 목차"><h2 data-toc="no">이 문서에서</h2><ol><li><a href="#selection">객체 선택과 Joint 내부의 분기는 서로 다른 값을 읽습니다</a></li><li><a href="#lower-control">하위 함수가 준비하는 값과 종료 지점</a></li><li><a href="#reproduce">재현과 다음 경계</a></li></ol></nav>
+<!-- /chrome:toc -->
+<main class="doc" id="main">
+<section id="selection">
+<h2>객체 선택과 Joint 내부의 분기는 서로 다른 값을 읽습니다</h2>
+<figure class="diagram"><figcaption>객체 선택 뒤에 다시 갈라지는 Joint 내부 제어</figcaption><div class="dg-scroll">
+<svg class="dg" viewBox="0 0 800 300" role="img" aria-labelledby="joint-title joint-desc">
+<title id="joint-title">Joint와 InMotor 선택 및 첫 실행 경계</title><desc id="joint-desc">능력 비트 6이 0이면 Joint 요청과 이벤트 루프로 이어집니다. Joint 내부에서는 client와 상태로 두 모드를 고릅니다. 모드 1은 하위 서비스 직전, 모드 2는 레지스터 읽기 직전에 멈췄습니다. 비트 6이 1인 InMotor는 이번 시험에서 facade 반환까지만 실행했습니다.</desc>
+<defs><marker id="joint-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0 0L10 5L0 10z"/></marker></defs>
+<rect class="b ok" x="20" y="20" width="230" height="60" rx="8"/><text class="t" x="34" y="44">facade 명령 6</text><text class="s" x="34" y="65">렌즈 능력 바이트 bit 6</text>
+<path class="e" d="M250 50H300" marker-end="url(#joint-arrow)"/><text class="s" x="268" y="39">0</text>
+<rect class="b ok" x="306" y="20" width="234" height="60" rx="8"/><text class="t" x="320" y="44">Joint 요청 → 이벤트 0x80</text><text class="s" x="320" y="65">client + 객체 상태로 모드 결정</text>
+<path class="e" d="M135 80V182" marker-end="url(#joint-arrow)"/><text class="s" x="148" y="135">1</text>
+<rect class="b" x="20" y="188" width="230" height="78" rx="8"/><text class="t" x="34" y="213">별도 InMotor 요청</text><text class="s" x="34" y="235">facade 반환에서 종료</text><text class="s" x="34" y="255">InMotor 루프는 미실행</text>
+<path class="e" d="M423 80V116H377V182" marker-end="url(#joint-arrow)"/><text class="s" x="337" y="147">모드 1</text>
+<rect class="b" x="280" y="188" width="240" height="78" rx="8"/><text class="t" x="294" y="213">하위 서비스 호출 직전</text><text class="s mono" x="294" y="235">0x531784b8 (기본 조건)</text><text class="s" x="294" y="255">서비스 객체 연결은 미확정</text>
+<path class="e" d="M423 116H662V182" marker-end="url(#joint-arrow)"/><text class="s" x="616" y="147">모드 2</text>
+<rect class="b" x="550" y="188" width="230" height="78" rx="8"/><text class="t" x="564" y="213">하드웨어 읽기 직전</text><text class="s mono" x="564" y="235">0x5334a3ac / 0x5334a3fc</text><text class="s" x="564" y="255">인자·하한·정수 분할 확인</text>
+</svg></div></figure>
+<ol class="steps">
+<li><strong>facade 명령 6</strong><code>0x52ef89f4 → 0x52ef8c98</code>. 능력 바이트 <code>C+0x5272</code>의 bit 6에 따라 Joint와 InMotor 중 하나를 고릅니다.</li>
+<li><strong>요청 저장과 이벤트</strong><code>0x52ef82b8</code>는 호출자의 client 값이 <code>0x5478442c</code>와 같을 때 요청 필드를 선택된 객체에 쓰고 그 객체의 이벤트에 <code>0x80</code>을 넘깁니다.</li>
+<li><strong>Joint가 요청을 읽음</strong><code>0x52f08828</code>의 반복문이 합성 대기에서 받은 <code>0x80</code>으로 <code>0x52f0853c → 0x52f083f0</code>을 실행합니다. <code>J+0x64</code>의 word를 <code>[J+0xd0]+0x19c4</code>에 저장합니다.</li>
+<li><strong>Joint 내부 모드</strong><code>0x52ef877c</code>가 전역 client와 <code>J+0x60</code>을 읽습니다. 이 분기는 능력 바이트를 다시 읽지 않습니다.</li>
+</ol>
+<p>같은 입력을 facade에 주었을 때 bit 6이 0이면 Joint의 요청과 이벤트가 바뀌었고, 1이면 별도 InMotor 객체의 요청과 이벤트가 바뀌었습니다. InMotor 대조군은 facade 반환에서 종료했습니다. Joint 요청 생산자부터 직접 시작한 별도 쌍에서는 bit 6만 바꿔도 내부 모드 2와 하위 결과가 같았습니다. client가 다르면 생산자가 0을 반환하고 이벤트를 만들지 않았으며, Joint 루프도 두 번째 대기까지 처리기에 들어가지 않았습니다.</p>
+<div class="table-wrap"><table>
+<caption>원본 <code>0x52ef877c</code>의 반환</caption>
+<thead><tr><th scope="col">client word</th><th scope="col">Joint 내부 반환</th></tr></thead>
+<tbody>
+<tr><th scope="row">0, 3, 4, 5</th><td><code>J+0x60</code>이 1 또는 3이면 2, 그 외에는 1</td></tr>
+<tr><th scope="row">1, 2</th><td>client 값 자체. 점프 테이블이 <code>0x52ef87c4</code>의 <code>mov r0,r3</code>로 바로 연결</td></tr>
+<tr><th scope="row">부호 없이 5보다 큼</th><td>1</td></tr>
+</tbody></table></div>
+<p>고정 상태에서는 반환이 항상 1 또는 2입니다. 첫 호출이 1을 반환하면 바로 모드 1로 가고, 그렇지 않으면 두 번째 호출에서 2를 확인합니다. <code>0x52f0843c</code>는 모드 2의 세 하위 호출이 반환한 뒤 합류하는 공통 이벤트 경로이기도 합니다. 전역이 두 읽기 사이에 바뀌는 상황은 실행하지 않았습니다.</p>
+</section>
+<section id="lower-control">
+<h2>하위 함수가 준비하는 값과 종료 지점</h2>
+<p>아래에서 <code>p=[J+0x68]</code>, <code>q=[J+0x6c]</code>, <code>p2=[J+0x7c]</code>, <code>q2=[J+0x7e]</code>는 각각 halfword입니다. 숫자의 물리 단위는 확인하지 않았습니다.</p>
+<div class="table-wrap"><table>
+<caption>Joint 내부 경로와 원본 실행 경계</caption>
+<thead><tr><th scope="col">경로</th><th scope="col">원본에서 관찰한 값</th><th scope="col">실행을 멈춘 곳</th></tr></thead>
+<tbody>
+<tr><th scope="row">모드 1 · <code>0x52f0d83c</code></th><td><code>[J+0xdc]</code>, <code>[J+0x74]</code>, <code>[J+0x5c]</code>, <code>J+0x58</code>을 넘깁니다. 호출 전에 <code>p</code>를 <code>[J+0xe0]+0x2e</code>에 저장합니다. 하위 함수는 두 번째 인자를 자체 <code>+0x38</code>에 쓰고 여러 상태 필드를 초기화합니다.</td><td>기본 합성 상태는 <code>0x531784b8</code>의 channel 0 가상 서비스 분기 직전입니다. singleton이 초기화되지 않은 조건은 <code>0x533aaeb4</code>, 하위 객체 <code>+0x43</code>이 0이 아닌 조건은 <code>0x53178788</code>에서 먼저 멈췄습니다.</td></tr>
+<tr><th scope="row">모드 2 · <code>J+0x82 ≠ 0</code></th><td><code>0x52f09164</code>가 하위 <code>+0x58/+0x5a/+0x5c/+0x5e</code>에 <code>p/max(q,600)/p2/max(q2,600)</code>을 기록합니다. <code>+0x83</code>도 켜진 대조군에서 이 경로가 우선했고, 공통 함수는 <code>+0x7c</code>에 4를 썼습니다.</td><td rowspan="2">원본 서비스가 합성 채널 7을 사용해 주소 <code>0x1e0020f4</code>를 계산한 뒤 <code>0x5334a3ac</code>의 첫 읽기 직전에 멈췄습니다.</td></tr>
+<tr><th scope="row">모드 2 · <code>J+0x82 = 0</code>, <code>J+0x83 ≠ 0</code></th><td><code>0x52f09198</code>가 같은 필드에 <code>p/max(q,600)/0/max(q,600)</code>을 기록합니다. 공통 함수는 <code>+0x7c</code>에 6을 썼습니다. 599·600·601 대조에서 하한 비교가 확인됐습니다.</td></tr>
+<tr><th scope="row">모드 2 · 두 바이트가 0</th><td><code>0x52f0aa44</code>가 <code>q</code>와 <code>q2</code>에 하위 <code>+0xa0</code> 기준을 적용합니다. <code>J+0x78</code>의 float bit pattern, <code>p2</code>, <code>J+0x80</code>, <code>J+0x5c</code>의 0/비0을 하위 상태에 저장합니다. 이 fixture는 하위 <code>+0xd3</code>의 초기값을 0으로 둔 경로입니다.</td><td>합성 채널 7의 주소 <code>0x1e0020ec</code>에서 <code>0x5334a3fc</code>의 첫 읽기 직전에 멈췄습니다.</td></tr>
+</tbody></table></div>
+<p>두 바이트가 0인 경로는 <code>0x52f0943c</code>에서 <code>2p</code>를 60,000 기준 몫과 나머지로 나누고 후속 조정을 합니다. <code>p=29,999 / 30,000 / 30,001</code>에서 하위 <code>+0x36/+0x38</code>은 각각 <code>0/59,998</code>, <code>0/60,000</code>, <code>1/1</code>이었습니다. <code>p=30,000</code>에서는 처음 몫 1이 나머지 0보다 커서 몫을 0으로 낮추고 나머지에 60,000을 더합니다. 이 계산의 단위와 모터 운동에 대한 의미는 확인하지 않았습니다.</p>
+<p>정적으로는 모드 1 하위 호출이 반환한 뒤의 상태 처리와 wrapper의 조건부 <code>0x52ef88dc</code> tailcall도 보입니다. 이번에는 그보다 앞선 서비스에서 멈췄습니다. 반환값을 합성해 뒤의 완료 경로까지 이어 붙이지 않았습니다.</p>
+</section>
+<section id="reproduce">
+<h2>재현과 다음 경계</h2>
+<p>HQ는 원본 명령 700개와 35개 명령 구간을 별도로 대조하고, 공개 재현기를 원본 입력으로 다시 실행했습니다. 아래 결과는 합성 상태에서의 원본 명령 실행이며 카메라 동작 검증과 구분합니다.</p>
+<p>26개 사례를 Unicorn 2.1.4 Cortex-A7에서 실행했습니다. OS 이벤트 설정·대기·지우기만 대체했습니다. 이 세 함수의 반환 때 <code>r1–r3/r12</code>를 덮고 NZCV를 반전한 Cortex-A7·A15 대조군에서도 사례 기록이 같았습니다. RTOS 직접 입력과 decoded 입력의 JSON은 바이트 단위로 일치했고, 실행 뒤 적재된 원본 RTOS 전체의 SHA-256도 유지됐습니다. 합성 메모리에 MMIO 페이지를 매핑하지 않았습니다.</p>
+<pre><code>python verify_af_joint.py /path/to/original-rtos.bin --output fresh-joint-checks.json
+python verify_af_joint.py /path/to/original-decoded.bin --output fresh-decoded-joint-checks.json</code></pre>
+<p>다음으로 확인할 지점은 모드 1에서 <code>0x531784b8</code>이 참조하는 서비스 객체 <code>+0x38</code>과 그 vtable 슬롯 <code>+0x40</code>의 실제 생성자 연결입니다. 이를 추적해야 어떤 하위 서비스가 선택되는지 판단할 수 있습니다. 여기서 확인한 주소 계산과 인자는 실제 렌즈 연결, SDM·바디 모터의 대응, 물리 단위, 모터 이동이나 완료를 입증하지 않습니다.</p>
+<p><a href="af-joint-checks.json">원본 구간 해시와 26개 재생 결과</a> · <a href="../verify_af_joint.py">재현기</a> · <a href="af-drive-architecture.html">기존 AF 구동 선택 근거</a></p>
+</section>
+</main>
+</div>
+<!-- chrome:bottom -->
+<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">AF와 렌즈 제어 — 이 주제의 문서</h2><ol><li><a href="af-foundations.html">AF와 렌즈 제어 안내<span>세 기종 비교</span></a></li><li><a href="af-drive-architecture.html">렌즈 구동 선택·명령·응답<span>렌즈 능력에 따른 구동 선택과 명령</span></a></li><li><a href="af-joint-control.html" aria-current="page">Joint 요청과 하위 제어<span>이벤트 0x80에서 첫 서비스·레지스터 경계까지</span></a></li><li><a href="af-request-consumer.html">AF 요청 큐와 완료 통지<span>요청 슬롯, 처리 task, 완료 통지</span></a></li></ol></nav>
+<nav class="pager" aria-label="이전·다음 문서"><a class="prev" href="af-drive-architecture.html"><small>← 이전</small>렌즈 구동 선택·명령·응답</a><a class="next" href="af-request-consumer.html"><small>다음 →</small>AF 요청 큐와 완료 통지</a></nav>
+<footer class="sitefoot"><div class="sitefoot-in"><nav aria-label="사이트"><a href="../index.html#map">문서 지도</a><a href="../index.html#levels">검증 수준 읽는 법</a><a href="../glossary.html">용어집</a><a href="research-program.html">세 기종 연구 본부</a><a href="https://github.com/yunhyok/pentax-k3iii-firmware-analysis">GitHub 저장소</a></nav><p>PENTAX K-3 Mark III 펌웨어 2.20 분석 문서. PC에서 수행한 정적 분석과 에뮬레이션 결과이며, 카메라 실기에서 검증한 내용이 아닙니다. 원본 펌웨어와 추출한 독점 코드는 포함하지 않습니다.</p></div></footer>
+<!-- /chrome:bottom -->
+</body>
+</html>

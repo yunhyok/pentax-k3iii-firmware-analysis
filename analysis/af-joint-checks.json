@@ -1,0 +1,3404 @@
+{
+  "rtos_sha256": "342d2f35405e8daf1797dfe431d2e4aa70f4b52a2c242a29df48206672f1dfb4",
+  "decoded_sha256": "7ff301d585ef7adcd620a15575faa39b4227cc5a27eaa8d754efe50f667a30f9",
+  "decoded_rtos_offset": "0x1c19c",
+  "unicorn": "2.1.4",
+  "models": [
+    "Cortex-A7",
+    "Cortex-A7-clobber",
+    "Cortex-A15-clobber"
+  ],
+  "controls_equal": true,
+  "mapped_rtos_sha256_after_all_runs": "342d2f35405e8daf1797dfe431d2e4aa70f4b52a2c242a29df48206672f1dfb4",
+  "volatile_control": "r1-r3/r12 overwritten, NZCV inverted at event stub returns",
+  "stubbed": {
+    "0x530ed03c": "producer event-set records object and 0x80; returns 0",
+    "0x530ed1ac": "first loop wait delivers event set by producer; second wait stops",
+    "0x530ed0f4": "event clear records mask; returns 0"
+  },
+  "stop_boundaries": {
+    "0x5334a3ac": "before first MMIO read [r3+0x14]",
+    "0x5334a3fc": "before first MMIO read [r0+0x0c]",
+    "0x531784b8": "before mode1 service adapter's channel-0 virtual dispatch",
+    "0x533aaeb4": "before cold singleton initialization service",
+    "0x53178788": "before earlier service on mode1 child+0x43 nonzero"
+  },
+  "source_ranges": {
+    "facade-head": {
+      "start": "0x52ef89f4",
+      "end_exclusive": "0x52ef8a3c",
+      "sha256": "47a6aa3899212066415d66c2cde933defa69a476408d0ddcbc64dcc995361575"
+    },
+    "facade-return": {
+      "start": "0x52ef8a94",
+      "end_exclusive": "0x52ef8aa0",
+      "sha256": "cb88aebdfee07786be734e7c7626194056443eeae4bbbefc11c28ac38c506aae"
+    },
+    "facade-command-6": {
+      "start": "0x52ef8c68",
+      "end_exclusive": "0x52ef8ca0",
+      "sha256": "0929b23a7a88dae7cec39afb65e23ecb68b2993314ab758b8dc1f792a01ad423"
+    },
+    "facade-capability-wrapper": {
+      "start": "0x52eff628",
+      "end_exclusive": "0x52eff640",
+      "sha256": "292e07c136b1ca3cbca0e7f0e13218b2b30d229c954d590524e64f6f5d9547e7"
+    },
+    "facade-capability-reader": {
+      "start": "0x52efda40",
+      "end_exclusive": "0x52efda54",
+      "sha256": "728e29c45f738944d670b19bf9210557a83c0ab94f00147c98713094c291dc0a"
+    },
+    "request-producer": {
+      "start": "0x52ef82b8",
+      "end_exclusive": "0x52ef8368",
+      "sha256": "4b4400452b9fbf094be8bb40be47b989387501ff882a97dd44a9021a2f8dc025"
+    },
+    "client-mode-head": {
+      "start": "0x52ef877c",
+      "end_exclusive": "0x52ef8794",
+      "sha256": "cad26e69915dbc1917bfdc79919393c2c713510bef383465a939e6a13a4f11c9"
+    },
+    "client-mode-cases": {
+      "start": "0x52ef87ac",
+      "end_exclusive": "0x52ef87d8",
+      "sha256": "bd671bfd93bb2dbc34072bc4ed2856666ccae98a7553eae825b73754c0d23bcd"
+    },
+    "joint-loop": {
+      "start": "0x52f08828",
+      "end_exclusive": "0x52f08a5c",
+      "sha256": "5651fb0c5536c2b77a61cb304841f8016614826ce336ef46a009faafc15a2bb3"
+    },
+    "joint-handler-80": {
+      "start": "0x52f0853c",
+      "end_exclusive": "0x52f08578",
+      "sha256": "260a8bbf27c9f6897078bc926106231391320211127e934b6d896670eb3d639d"
+    },
+    "joint-dispatch": {
+      "start": "0x52f083f0",
+      "end_exclusive": "0x52f0853c",
+      "sha256": "71001da02acd33f9f6bfb5e6193a781f6448a1b56627eee9bdf9dc043af92548"
+    },
+    "mode1-prefix": {
+      "start": "0x52f0d83c",
+      "end_exclusive": "0x52f0d8b0",
+      "sha256": "f8a3aeb4e271c671285dc7db0165d337b1d11bb749ab3dee160123eeb2f02a78"
+    },
+    "singleton-prefix": {
+      "start": "0x53102ce8",
+      "end_exclusive": "0x53102d1c",
+      "sha256": "1c0c3ae956d3e6f9ae6fac4af0c4b040580b52ea38637fd79c9e17ad427b5bf8"
+    },
+    "mode1-reset-prefix": {
+      "start": "0x52f0bae4",
+      "end_exclusive": "0x52f0bb00",
+      "sha256": "a5fb15b14752f36c6c8a869bba2e8654dbf86227c9c71f4852b42cd9720d56e6"
+    },
+    "mode2-4-6-builder": {
+      "start": "0x52f09164",
+      "end_exclusive": "0x52f091bc",
+      "sha256": "e9a934a632207a4599a0c44de3cdf4d932f6aea28fb44e4554854abee55c1398"
+    },
+    "mode2-4-6-common-prefix": {
+      "start": "0x52f090d8",
+      "end_exclusive": "0x52f0912c",
+      "sha256": "2a7e34c7eb8515523d4b9fbc5f96defed6793ff26143e9c7344712e9741407f9"
+    },
+    "mode2-general-prefix": {
+      "start": "0x52f0aa44",
+      "end_exclusive": "0x52f0ab80",
+      "sha256": "875068b74fff0031f1f8305cce97801fb007f06217a06cc89d88c00f396ad7d1"
+    },
+    "mode2-general-split": {
+      "start": "0x52f0943c",
+      "end_exclusive": "0x52f094bc",
+      "sha256": "98e431cb392ca5f44a3cb33abf0cf9e1319e7f8afa7eb2aebe2eee0f5e315271"
+    },
+    "mode2-general-start-prefix": {
+      "start": "0x52f0a948",
+      "end_exclusive": "0x52f0a9a4",
+      "sha256": "714080f47315800475d5be335a4bf0622888295d9cfa5b28d5b6baf53de52508"
+    },
+    "mode2-general-gate": {
+      "start": "0x52f094bc",
+      "end_exclusive": "0x52f0950c",
+      "sha256": "6d9038ff914e819deaa18b0249144f95b948bc372d7bd103e457520d8275978d"
+    },
+    "mode2-general-gate-reader": {
+      "start": "0x52f02e04",
+      "end_exclusive": "0x52f02e0c",
+      "sha256": "d2f2467bb08c5146b84419dbbf1de695bb2c30c2dc652105b2f9242c2b10544b"
+    },
+    "mode2-general-adapter-prefix": {
+      "start": "0x52f0950c",
+      "end_exclusive": "0x52f09544",
+      "sha256": "174648a0085ba8e0303503deff3d63c97cee181bf7fc4c547e252bad4ed6450a"
+    },
+    "service-wrappers": {
+      "start": "0x53178484",
+      "end_exclusive": "0x531784b8",
+      "sha256": "e223e195656fbf636b0b55e6c3ee7519dcf0b68ce8eca34670ed220ed896e7f3"
+    },
+    "service-channel-read": {
+      "start": "0x532726c8",
+      "end_exclusive": "0x53272708",
+      "sha256": "f836753873a8b61406a33cc9124c972fbcffce842eab55e9a8d4bffab9feb73d"
+    },
+    "service-general-adapter-prefix": {
+      "start": "0x531785f8",
+      "end_exclusive": "0x53178620",
+      "sha256": "f6141cc7fce75624e8e2b653b6c4193a2532cbc4d44d536c818173cd93a53f92"
+    },
+    "service-general-inner-prefix": {
+      "start": "0x5317834c",
+      "end_exclusive": "0x5317838c",
+      "sha256": "d8f5e8618388c489ddb78f56d09405af45cc1afa3ccd4e96c731ba0bcc9ff9c3"
+    },
+    "mmio-read-0-prefix": {
+      "start": "0x5334a398",
+      "end_exclusive": "0x5334a3ac",
+      "sha256": "69640796dfee2184a7682b1f6bc85fadc2e10a3379b81b14bc54986e3dcdaf21"
+    },
+    "mmio-read-1-prefix": {
+      "start": "0x5334a3ec",
+      "end_exclusive": "0x5334a3fc",
+      "sha256": "d37c2b14247d18f7182be1c7875e9a03bff475e5827fd6f344cdf3f6c6d0bcfd"
+    },
+    "client-mode-table": {
+      "start": "0x52ef8794",
+      "end_exclusive": "0x52ef87ac",
+      "sha256": "4a9e5fa5f6ffdf965a0bd9ee0f50cc503cfe682001e41b2a3d41b718a9258d1b"
+    },
+    "facade-command-6-table-entry": {
+      "start": "0x52ef8a50",
+      "end_exclusive": "0x52ef8a54",
+      "sha256": "ac05186f9ee73e28d269a9fe58ce1068f474cc9a79a6173bb006ea286c10c287"
+    },
+    "wait-global": {
+      "start": "0x53a6aebc",
+      "end_exclusive": "0x53a6aec0",
+      "sha256": "ad95131bc0b799c0b1af477fb14fcf26a6a9f76079e48bf090acb7e8367bfd0e"
+    },
+    "stack-guard": {
+      "start": "0x53cbb4c0",
+      "end_exclusive": "0x53cbb4c4",
+      "sha256": "d9e0d4c3850aa130f909e1bcafebea98a16700e02171c1df5a2fe31789d94b0f"
+    },
+    "post-mode1-event-helper": {
+      "start": "0x52f08120",
+      "end_exclusive": "0x52f08158",
+      "sha256": "18d54bd5298b5b7666836b2d7c9a54e811e06f12d922f8e3995b1d25f0b55ab3"
+    },
+    "mode1-tailcall-wrapper": {
+      "start": "0x52ef88dc",
+      "end_exclusive": "0x52ef88f4",
+      "sha256": "8f77a77414cce927cd15186f33b8e3a2ac7abbf777ff49b8f0d17a32e9b9e9cf"
+    },
+    "first-mmio-read-0": {
+      "start": "0x5334a3ac",
+      "end_exclusive": "0x5334a3b0",
+      "sha256": "05f759facf43912d4737841ede6cce62ff00c32716392e15915bf37542394608"
+    },
+    "first-mmio-read-1": {
+      "start": "0x5334a3fc",
+      "end_exclusive": "0x5334a400",
+      "sha256": "30810189a3982eeb660de80929b593ff06c81ff24483a7df883e7b74405d93ae"
+    },
+    "singleton-cold-service-first": {
+      "start": "0x533aaeb4",
+      "end_exclusive": "0x533aaeb8",
+      "sha256": "fe8d65ae913df24877f27645b6abefd01c7d55d06183491a9a5cb0579724f022"
+    },
+    "mode1-early-service-first": {
+      "start": "0x53178788",
+      "end_exclusive": "0x5317878c",
+      "sha256": "1113e21301d2283cbb294a220e5b95bd1c1d20963cfd186715ae2df01645bda6"
+    },
+    "mode1-service-virtual-dispatch": {
+      "start": "0x531784b8",
+      "end_exclusive": "0x531784c8",
+      "sha256": "65bdcaafcf9221a3f8d9f01f10fe3433c95592d0f10f189d83ccf169f7d88905"
+    }
+  },
+  "client_mode_table": [
+    "0x52ef87ac",
+    "0x52ef87c4",
+    "0x52ef87c4",
+    "0x52ef87ac",
+    "0x52ef87ac",
+    "0x52ef87ac"
+  ],
+  "cases": [
+    {
+      "case": {
+        "client": 0,
+        "state": 0,
+        "producer_client": 1
+      },
+      "producer_accepted": false,
+      "stop": "0x530ed1ac",
+      "events": [
+        [
+          1393480108,
+          261887
+        ],
+        [
+          1393479924,
+          0
+        ],
+        [
+          1393480108,
+          261887
+        ]
+      ],
+      "wake_targets": [],
+      "control_points": [],
+      "joint_backing_19c4": 287454020,
+      "ranges": {
+        "request-producer": 18,
+        "joint-loop": 66
+      }
+    },
+    {
+      "case": {
+        "client": 0,
+        "state": 0,
+        "early_service": 1
+      },
+      "producer_accepted": true,
+      "stop": "0x53178788",
+      "events": [
+        [
+          1393479740,
+          128
+        ],
+        [
+          1393480108,
+          261887
+        ],
+        [
+          1393479924,
+          128
+        ]
+      ],
+      "wake_targets": [
+        268500992
+      ],
+      "control_points": [
+        [
+          1391494460,
+          [
+            268435456
+          ]
+        ],
+        [
+          1391494128,
+          [
+            268435456
+          ]
+        ],
+        [
+          1391494180,
+          [
+            1
+          ]
+        ],
+        [
+          1391515708,
+          [
+            268451840,
+            5,
+            305419896,
+            268435544
+          ]
+        ]
+      ],
+      "joint_backing_19c4": 1432778632,
+      "ranges": {
+        "request-producer": 51,
+        "joint-loop": 44,
+        "joint-handler-80": 5,
+        "joint-dispatch": 22,
+        "client-mode-head": 5,
+        "client-mode-cases": 8,
+        "mode1-prefix": 19,
+        "singleton-prefix": 11
+      },
+      "dispatch_mode": 1,
+      "mode1_fields": {
+        "0x1f": 0,
+        "0x26": 165,
+        "0x27": 165,
+        "0x2c": 0,
+        "0x2d": 165,
+        "0x2e": 165,
+        "0x2f": 165,
+        "0x30": 165,
+        "0x38": 5,
+        "0x5e": 165
+      },
+      "mode2_fields": {
+        "0x36": 0,
+        "0x38": 0,
+        "0x3c": 0,
+        "0x3e": 0,
+        "0x40": 0,
+        "0x42": 0,
+        "0x44": 0,
+        "0x45": 0,
+        "0x46": 0,
+        "0x54": 0,
+        "0x56": 0,
+        "0x58": 0,
+        "0x5a": 0,
+        "0x5c": 0,
+        "0x5e": 0,
+        "0x74": 0,
+        "0x78": 0,
+        "0x7c": 0,
+        "0xc0": 0,
+        "0xc2": 0,
+        "0xd0": 0,
+        "0xd8": 0
+      },
+      "peer_2e": 1000
+    },
+    {
+      "case": {
+        "client": 3,
+        "state": 0,
+        "warm": 0
+      },
+      "producer_accepted": true,
+      "stop": "0x533aaeb4",
+      "events": [
+        [
+          1393479740,
+          128
+        ],
+        [
+          1393480108,
+          261887
+        ],
+        [
+          1393479924,
+          128
+        ]
+      ],
+      "wake_targets": [
+        268500992
+      ],
+      "control_points": [
+        [
+          1391494460,
+          [
+            268435456
+          ]
+        ],
+        [
+          1391494128,
+          [
+            268435456
+          ]
+        ],
+        [
+          1391494180,
+          [
+            1
+          ]
+        ],
+        [
+          1391515708,
+          [
+            268451840,
+            5,
+            305419896,
+            268435544
+          ]
+        ]
+      ],
+      "joint_backing_19c4": 1432778632,
+      "ranges": {
+        "request-producer": 51,
+        "joint-loop": 44,
+        "joint-handler-80": 5,
+        "joint-dispatch": 22,
+        "client-mode-head": 5,
+        "client-mode-cases": 8,
+        "mode1-prefix": 11,
+        "singleton-prefix": 10
+      },
+      "dispatch_mode": 1,
+      "mode1_fields": {
+        "0x1f": 165,
+        "0x26": 165,
+        "0x27": 165,
+        "0x2c": 0,
+        "0x2d": 165,
+        "0x2e": 165,
+        "0x2f": 165,
+        "0x30": 165,
+        "0x38": 5,
+        "0x5e": 165
+      },
+      "mode2_fields": {
+        "0x36": 0,
+        "0x38": 0,
+        "0x3c": 0,
+        "0x3e": 0,
+        "0x40": 0,
+        "0x42": 0,
+        "0x44": 0,
+        "0x45": 0,
+        "0x46": 0,
+        "0x54": 0,
+        "0x56": 0,
+        "0x58": 0,
+        "0x5a": 0,
+        "0x5c": 0,
+        "0x5e": 0,
+        "0x74": 0,
+        "0x78": 0,
+        "0x7c": 0,
+        "0xc0": 0,
+        "0xc2": 0,
+        "0xd0": 0,
+        "0xd8": 0
+      },
+      "peer_2e": 1000
+    },
+    {
+      "case": {
+        "client": 0,
+        "state": 0
+      },
+      "producer_accepted": true,
+      "stop": "0x531784b8",
+      "events": [
+        [
+          1393479740,
+          128
+        ],
+        [
+          1393480108,
+          261887
+        ],
+        [
+          1393479924,
+          128
+        ]
+      ],
+      "wake_targets": [
+        268500992
+      ],
+      "control_points": [
+        [
+          1391494460,
+          [
+            268435456
+          ]
+        ],
+        [
+          1391494128,
+          [
+            268435456
+          ]
+        ],
+        [
+          1391494180,
+          [
+            1
+          ]
+        ],
+        [
+          1391515708,
+          [
+            268451840,
+            5,
+            305419896,
+            268435544
+          ]
+        ],
+        [
+          1394050216,
+          [
+            268476416,
+            0
+          ]
+        ]
+      ],
+      "joint_backing_19c4": 1432778632,
+      "ranges": {
+        "request-producer": 51,
+        "joint-loop": 44,
+        "joint-handler-80": 5,
+        "joint-dispatch": 22,
+        "client-mode-head": 5,
+        "client-mode-cases": 8,
+        "mode1-prefix": 26,
+        "singleton-prefix": 11,
+        "mode1-reset-prefix": 7,
+        "service-wrappers": 2
+      },
+      "dispatch_mode": 1,
+      "mode1_fields": {
+        "0x1f": 0,
+        "0x26": 0,
+        "0x27": 0,
+        "0x2c": 0,
+        "0x2d": 0,
+        "0x2e": 0,
+        "0x2f": 0,
+        "0x30": 0,
+        "0x38": 5,
+        "0x5e": 0
+      },
+      "mode2_fields": {
+        "0x36": 0,
+        "0x38": 0,
+        "0x3c": 0,
+        "0x3e": 0,
+        "0x40": 0,
+        "0x42": 0,
+        "0x44": 0,
+        "0x45": 0,
+        "0x46": 0,
+        "0x54": 0,
+        "0x56": 0,
+        "0x58": 0,
+        "0x5a": 0,
+        "0x5c": 0,
+        "0x5e": 0,
+        "0x74": 0,
+        "0x78": 0,
+        "0x7c": 0,
+        "0xc0": 0,
+        "0xc2": 0,
+        "0xd0": 0,
+        "0xd8": 0
+      },
+      "peer_2e": 1000
+    },
+    {
+      "case": {
+        "client": 0,
+        "state": 1
+      },
+      "producer_accepted": true,
+      "stop": "0x5334a3fc",
+      "events": [
+        [
+          1393479740,
+          128
+        ],
+        [
+          1393480108,
+          261887
+        ],
+        [
+          1393479924,
+          128
+        ]
+      ],
+      "wake_targets": [
+        268500992
+      ],
+      "control_points": [
+        [
+          1391494460,
+          [
+            268435456
+          ]
+        ],
+        [
+          1391494128,
+          [
+            268435456
+          ]
+        ],
+        [
+          1391494180,
+          [
+            2
+          ]
+        ],
+        [
+          1391494196,
+          [
+            2
+          ]
+        ],
+        [
+          1391503940,
+          [
+            268460032,
+            1000,
+            599,
+            1,
+            23,
+            600,
+            90,
+            1,
+            1067450368
+          ]
+        ],
+        [
+          1391498300,
+          [
+            268460032,
+            1000,
+            0,
+            1
+          ]
+        ],
+        [
+          1391498560,
+          [
+            268476416,
+            1,
+            63537,
+            0
+          ]
+        ]
+      ],
+      "joint_backing_19c4": 1432778632,
+      "ranges": {
+        "request-producer": 51,
+        "joint-loop": 44,
+        "joint-handler-80": 5,
+        "joint-dispatch": 40,
+        "client-mode-head": 10,
+        "client-mode-cases": 12,
+        "mode2-general-prefix": 60,
+        "mode2-general-split": 32,
+        "mode2-general-start-prefix": 23,
+        "mode2-general-gate": 15,
+        "mode2-general-gate-reader": 2,
+        "mode2-general-adapter-prefix": 14,
+        "service-general-adapter-prefix": 10,
+        "service-general-inner-prefix": 16,
+        "service-channel-read": 5,
+        "mmio-read-1-prefix": 4
+      },
+      "dispatch_mode": 2,
+      "unexecuted_mmio_address": "0x1e0020ec",
+      "mode1_fields": {
+        "0x1f": 165,
+        "0x26": 165,
+        "0x27": 165,
+        "0x2c": 165,
+        "0x2d": 165,
+        "0x2e": 165,
+        "0x2f": 165,
+        "0x30": 165,
+        "0x38": 165,
+        "0x5e": 165
+      },
+      "mode2_fields": {
+        "0x36": 0,
+        "0x38": 2000,
+        "0x3c": 1000,
+        "0x3e": 599,
+        "0x40": 599,
+        "0x42": 599,
+        "0x44": 1,
+        "0x45": 0,
+        "0x46": 90,
+        "0x54": 23,
+        "0x56": 600,
+        "0x58": 0,
+        "0x5a": 0,
+        "0x5c": 0,
+        "0x5e": 0,
+        "0x74": 1067450368,
+        "0x78": 1,
+        "0x7c": 1,
+        "0xc0": 0,
+        "0xc2": 0,
+        "0xd0": 0,
+        "0xd8": 2000
+      },
+      "peer_2e": 42405
+    },
+    {
+      "case": {
+        "client": 1,
+        "state": 0
+      },
+      "producer_accepted": true,
+      "stop": "0x531784b8",
+      "events": [
+        [
+          1393479740,
+          128
+        ],
+        [
+          1393480108,
+          261887
+        ],
+        [
+          1393479924,
+          128
+        ]
+      ],
+      "wake_targets": [
+        268500992
+      ],
+      "control_points": [
+        [
+          1391494460,
+          [
+            268435456
+          ]
+        ],
+        [
+          1391494128,
+          [
+            268435456
+          ]
+        ],
+        [
+          1391494180,
+          [
+            1
+          ]
+        ],
+        [
+          1391515708,
+          [
+            268451840,
+            5,
+            305419896,
+            268435544
+          ]
+        ],
+        [
+          1394050216,
+          [
+            268476416,
+            0
+          ]
+        ]
+      ],
+      "joint_backing_19c4": 1432778632,
+      "ranges": {
+        "request-producer": 51,
+        "joint-loop": 44,
+        "joint-handler-80": 5,
+        "joint-dispatch": 22,
+        "client-mode-head": 5,
+        "client-mode-cases": 2,
+        "mode1-prefix": 26,
+        "singleton-prefix": 11,
+        "mode1-reset-prefix": 7,
+        "service-wrappers": 2
+      },
+      "dispatch_mode": 1,
+      "mode1_fields": {
+        "0x1f": 0,
+        "0x26": 0,
+        "0x27": 0,
+        "0x2c": 0,
+        "0x2d": 0,
+        "0x2e": 0,
+        "0x2f": 0,
+        "0x30": 0,
+        "0x38": 5,
+        "0x5e": 0
+      },
+      "mode2_fields": {
+        "0x36": 0,
+        "0x38": 0,
+        "0x3c": 0,
+        "0x3e": 0,
+        "0x40": 0,
+        "0x42": 0,
+        "0x44": 0,
+        "0x45": 0,
+        "0x46": 0,
+        "0x54": 0,
+        "0x56": 0,
+        "0x58": 0,
+        "0x5a": 0,
+        "0x5c": 0,
+        "0x5e": 0,
+        "0x74": 0,
+        "0x78": 0,
+        "0x7c": 0,
+        "0xc0": 0,
+        "0xc2": 0,
+        "0xd0": 0,
+        "0xd8": 0
+      },
+      "peer_2e": 1000
+    },
+    {
+      "case": {
+        "client": 2,
+        "state": 9
+      },
+      "producer_accepted": true,
+      "stop": "0x5334a3fc",
+      "events": [
+        [
+          1393479740,
+          128
+        ],
+        [
+          1393480108,
+          261887
+        ],
+        [
+          1393479924,
+          128
+        ]
+      ],
+      "wake_targets": [
+        268500992
+      ],
+      "control_points": [
+        [
+          1391494460,
+          [
+            268435456
+          ]
+        ],
+        [
+          1391494128,
+          [
+            268435456
+          ]
+        ],
+        [
+          1391494180,
+          [
+            2
+          ]
+        ],
+        [
+          1391494196,
+          [
+            2
+          ]
+        ],
+        [
+          1391503940,
+          [
+            268460032,
+            1000,
+            599,
+            1,
+            23,
+            600,
+            90,
+            9,
+            1067450368
+          ]
+        ],
+        [
+          1391498300,
+          [
+            268460032,
+            1000,
+            0,
+            1
+          ]
+        ],
+        [
+          1391498560,
+          [
+            268476416,
+            1,
+            63537,
+            0
+          ]
+        ]
+      ],
+      "joint_backing_19c4": 1432778632,
+      "ranges": {
+        "request-producer": 51,
+        "joint-loop": 44,
+        "joint-handler-80": 5,
+        "joint-dispatch": 40,
+        "client-mode-head": 10,
+        "client-mode-cases": 4,
+        "mode2-general-prefix": 60,
+        "mode2-general-split": 32,
+        "mode2-general-start-prefix": 23,
+        "mode2-general-gate": 15,
+        "mode2-general-gate-reader": 2,
+        "mode2-general-adapter-prefix": 14,
+        "service-general-adapter-prefix": 10,
+        "service-general-inner-prefix": 16,
+        "service-channel-read": 5,
+        "mmio-read-1-prefix": 4
+      },
+      "dispatch_mode": 2,
+      "unexecuted_mmio_address": "0x1e0020ec",
+      "mode1_fields": {
+        "0x1f": 165,
+        "0x26": 165,
+        "0x27": 165,
+        "0x2c": 165,
+        "0x2d": 165,
+        "0x2e": 165,
+        "0x2f": 165,
+        "0x30": 165,
+        "0x38": 165,
+        "0x5e": 165
+      },
+      "mode2_fields": {
+        "0x36": 0,
+        "0x38": 2000,
+        "0x3c": 1000,
+        "0x3e": 599,
+        "0x40": 599,
+        "0x42": 599,
+        "0x44": 1,
+        "0x45": 0,
+        "0x46": 90,
+        "0x54": 23,
+        "0x56": 600,
+        "0x58": 0,
+        "0x5a": 0,
+        "0x5c": 0,
+        "0x5e": 0,
+        "0x74": 1067450368,
+        "0x78": 1,
+        "0x7c": 1,
+        "0xc0": 0,
+        "0xc2": 0,
+        "0xd0": 0,
+        "0xd8": 2000
+      },
+      "peer_2e": 42405
+    },
+    {
+      "case": {
+        "client": 3,
+        "state": 1
+      },
+      "producer_accepted": true,
+      "stop": "0x5334a3fc",
+      "events": [
+        [
+          1393479740,
+          128
+        ],
+        [
+          1393480108,
+          261887
+        ],
+        [
+          1393479924,
+          128
+        ]
+      ],
+      "wake_targets": [
+        268500992
+      ],
+      "control_points": [
+        [
+          1391494460,
+          [
+            268435456
+          ]
+        ],
+        [
+          1391494128,
+          [
+            268435456
+          ]
+        ],
+        [
+          1391494180,
+          [
+            2
+          ]
+        ],
+        [
+          1391494196,
+          [
+            2
+          ]
+        ],
+        [
+          1391503940,
+          [
+            268460032,
+            1000,
+            599,
+            1,
+            23,
+            600,
+            90,
+            1,
+            1067450368
+          ]
+        ],
+        [
+          1391498300,
+          [
+            268460032,
+            1000,
+            0,
+            1
+          ]
+        ],
+        [
+          1391498560,
+          [
+            268476416,
+            1,
+            63537,
+            0
+          ]
+        ]
+      ],
+      "joint_backing_19c4": 1432778632,
+      "ranges": {
+        "request-producer": 51,
+        "joint-loop": 44,
+        "joint-handler-80": 5,
+        "joint-dispatch": 40,
+        "client-mode-head": 10,
+        "client-mode-cases": 12,
+        "mode2-general-prefix": 60,
+        "mode2-general-split": 32,
+        "mode2-general-start-prefix": 23,
+        "mode2-general-gate": 15,
+        "mode2-general-gate-reader": 2,
+        "mode2-general-adapter-prefix": 14,
+        "service-general-adapter-prefix": 10,
+        "service-general-inner-prefix": 16,
+        "service-channel-read": 5,
+        "mmio-read-1-prefix": 4
+      },
+      "dispatch_mode": 2,
+      "unexecuted_mmio_address": "0x1e0020ec",
+      "mode1_fields": {
+        "0x1f": 165,
+        "0x26": 165,
+        "0x27": 165,
+        "0x2c": 165,
+        "0x2d": 165,
+        "0x2e": 165,
+        "0x2f": 165,
+        "0x30": 165,
+        "0x38": 165,
+        "0x5e": 165
+      },
+      "mode2_fields": {
+        "0x36": 0,
+        "0x38": 2000,
+        "0x3c": 1000,
+        "0x3e": 599,
+        "0x40": 599,
+        "0x42": 599,
+        "0x44": 1,
+        "0x45": 0,
+        "0x46": 90,
+        "0x54": 23,
+        "0x56": 600,
+        "0x58": 0,
+        "0x5a": 0,
+        "0x5c": 0,
+        "0x5e": 0,
+        "0x74": 1067450368,
+        "0x78": 1,
+        "0x7c": 1,
+        "0xc0": 0,
+        "0xc2": 0,
+        "0xd0": 0,
+        "0xd8": 2000
+      },
+      "peer_2e": 42405
+    },
+    {
+      "case": {
+        "client": 4,
+        "state": 3
+      },
+      "producer_accepted": true,
+      "stop": "0x5334a3fc",
+      "events": [
+        [
+          1393479740,
+          128
+        ],
+        [
+          1393480108,
+          261887
+        ],
+        [
+          1393479924,
+          128
+        ]
+      ],
+      "wake_targets": [
+        268500992
+      ],
+      "control_points": [
+        [
+          1391494460,
+          [
+            268435456
+          ]
+        ],
+        [
+          1391494128,
+          [
+            268435456
+          ]
+        ],
+        [
+          1391494180,
+          [
+            2
+          ]
+        ],
+        [
+          1391494196,
+          [
+            2
+          ]
+        ],
+        [
+          1391503940,
+          [
+            268460032,
+            1000,
+            599,
+            1,
+            23,
+            600,
+            90,
+            3,
+            1067450368
+          ]
+        ],
+        [
+          1391498300,
+          [
+            268460032,
+            1000,
+            0,
+            1
+          ]
+        ],
+        [
+          1391498560,
+          [
+            268476416,
+            1,
+            63537,
+            0
+          ]
+        ]
+      ],
+      "joint_backing_19c4": 1432778632,
+      "ranges": {
+        "request-producer": 51,
+        "joint-loop": 44,
+        "joint-handler-80": 5,
+        "joint-dispatch": 40,
+        "client-mode-head": 10,
+        "client-mode-cases": 16,
+        "mode2-general-prefix": 60,
+        "mode2-general-split": 32,
+        "mode2-general-start-prefix": 23,
+        "mode2-general-gate": 15,
+        "mode2-general-gate-reader": 2,
+        "mode2-general-adapter-prefix": 14,
+        "service-general-adapter-prefix": 10,
+        "service-general-inner-prefix": 16,
+        "service-channel-read": 5,
+        "mmio-read-1-prefix": 4
+      },
+      "dispatch_mode": 2,
+      "unexecuted_mmio_address": "0x1e0020ec",
+      "mode1_fields": {
+        "0x1f": 165,
+        "0x26": 165,
+        "0x27": 165,
+        "0x2c": 165,
+        "0x2d": 165,
+        "0x2e": 165,
+        "0x2f": 165,
+        "0x30": 165,
+        "0x38": 165,
+        "0x5e": 165
+      },
+      "mode2_fields": {
+        "0x36": 0,
+        "0x38": 2000,
+        "0x3c": 1000,
+        "0x3e": 599,
+        "0x40": 599,
+        "0x42": 599,
+        "0x44": 1,
+        "0x45": 0,
+        "0x46": 90,
+        "0x54": 23,
+        "0x56": 600,
+        "0x58": 0,
+        "0x5a": 0,
+        "0x5c": 0,
+        "0x5e": 0,
+        "0x74": 1067450368,
+        "0x78": 1,
+        "0x7c": 1,
+        "0xc0": 0,
+        "0xc2": 0,
+        "0xd0": 1,
+        "0xd8": 2000
+      },
+      "peer_2e": 42405
+    },
+    {
+      "case": {
+        "client": 5,
+        "state": 4
+      },
+      "producer_accepted": true,
+      "stop": "0x531784b8",
+      "events": [
+        [
+          1393479740,
+          128
+        ],
+        [
+          1393480108,
+          261887
+        ],
+        [
+          1393479924,
+          128
+        ]
+      ],
+      "wake_targets": [
+        268500992
+      ],
+      "control_points": [
+        [
+          1391494460,
+          [
+            268435456
+          ]
+        ],
+        [
+          1391494128,
+          [
+            268435456
+          ]
+        ],
+        [
+          1391494180,
+          [
+            1
+          ]
+        ],
+        [
+          1391515708,
+          [
+            268451840,
+            5,
+            305419896,
+            268435544
+          ]
+        ],
+        [
+          1394050216,
+          [
+            268476416,
+            0
+          ]
+        ]
+      ],
+      "joint_backing_19c4": 1432778632,
+      "ranges": {
+        "request-producer": 51,
+        "joint-loop": 44,
+        "joint-handler-80": 5,
+        "joint-dispatch": 22,
+        "client-mode-head": 5,
+        "client-mode-cases": 8,
+        "mode1-prefix": 26,
+        "singleton-prefix": 11,
+        "mode1-reset-prefix": 7,
+        "service-wrappers": 2
+      },
+      "dispatch_mode": 1,
+      "mode1_fields": {
+        "0x1f": 0,
+        "0x26": 0,
+        "0x27": 0,
+        "0x2c": 0,
+        "0x2d": 0,
+        "0x2e": 0,
+        "0x2f": 0,
+        "0x30": 0,
+        "0x38": 5,
+        "0x5e": 0
+      },
+      "mode2_fields": {
+        "0x36": 0,
+        "0x38": 0,
+        "0x3c": 0,
+        "0x3e": 0,
+        "0x40": 0,
+        "0x42": 0,
+        "0x44": 0,
+        "0x45": 0,
+        "0x46": 0,
+        "0x54": 0,
+        "0x56": 0,
+        "0x58": 0,
+        "0x5a": 0,
+        "0x5c": 0,
+        "0x5e": 0,
+        "0x74": 0,
+        "0x78": 0,
+        "0x7c": 0,
+        "0xc0": 0,
+        "0xc2": 0,
+        "0xd0": 0,
+        "0xd8": 0
+      },
+      "peer_2e": 1000
+    },
+    {
+      "case": {
+        "client": 6,
+        "state": 1
+      },
+      "producer_accepted": true,
+      "stop": "0x531784b8",
+      "events": [
+        [
+          1393479740,
+          128
+        ],
+        [
+          1393480108,
+          261887
+        ],
+        [
+          1393479924,
+          128
+        ]
+      ],
+      "wake_targets": [
+        268500992
+      ],
+      "control_points": [
+        [
+          1391494460,
+          [
+            268435456
+          ]
+        ],
+        [
+          1391494128,
+          [
+            268435456
+          ]
+        ],
+        [
+          1391494180,
+          [
+            1
+          ]
+        ],
+        [
+          1391515708,
+          [
+            268451840,
+            5,
+            305419896,
+            268435544
+          ]
+        ],
+        [
+          1394050216,
+          [
+            268476416,
+            0
+          ]
+        ]
+      ],
+      "joint_backing_19c4": 1432778632,
+      "ranges": {
+        "request-producer": 51,
+        "joint-loop": 44,
+        "joint-handler-80": 5,
+        "joint-dispatch": 22,
+        "client-mode-head": 6,
+        "client-mode-cases": 3,
+        "mode1-prefix": 26,
+        "singleton-prefix": 11,
+        "mode1-reset-prefix": 7,
+        "service-wrappers": 2
+      },
+      "dispatch_mode": 1,
+      "mode1_fields": {
+        "0x1f": 0,
+        "0x26": 0,
+        "0x27": 0,
+        "0x2c": 0,
+        "0x2d": 0,
+        "0x2e": 0,
+        "0x2f": 0,
+        "0x30": 0,
+        "0x38": 5,
+        "0x5e": 0
+      },
+      "mode2_fields": {
+        "0x36": 0,
+        "0x38": 0,
+        "0x3c": 0,
+        "0x3e": 0,
+        "0x40": 0,
+        "0x42": 0,
+        "0x44": 0,
+        "0x45": 0,
+        "0x46": 0,
+        "0x54": 0,
+        "0x56": 0,
+        "0x58": 0,
+        "0x5a": 0,
+        "0x5c": 0,
+        "0x5e": 0,
+        "0x74": 0,
+        "0x78": 0,
+        "0x7c": 0,
+        "0xc0": 0,
+        "0xc2": 0,
+        "0xd0": 0,
+        "0xd8": 0
+      },
+      "peer_2e": 1000
+    },
+    {
+      "case": {
+        "client": 4294967295,
+        "state": 3
+      },
+      "producer_accepted": true,
+      "stop": "0x531784b8",
+      "events": [
+        [
+          1393479740,
+          128
+        ],
+        [
+          1393480108,
+          261887
+        ],
+        [
+          1393479924,
+          128
+        ]
+      ],
+      "wake_targets": [
+        268500992
+      ],
+      "control_points": [
+        [
+          1391494460,
+          [
+            268435456
+          ]
+        ],
+        [
+          1391494128,
+          [
+            268435456
+          ]
+        ],
+        [
+          1391494180,
+          [
+            1
+          ]
+        ],
+        [
+          1391515708,
+          [
+            268451840,
+            5,
+            305419896,
+            268435544
+          ]
+        ],
+        [
+          1394050216,
+          [
+            268476416,
+            0
+          ]
+        ]
+      ],
+      "joint_backing_19c4": 1432778632,
+      "ranges": {
+        "request-producer": 51,
+        "joint-loop": 44,
+        "joint-handler-80": 5,
+        "joint-dispatch": 22,
+        "client-mode-head": 6,
+        "client-mode-cases": 3,
+        "mode1-prefix": 26,
+        "singleton-prefix": 11,
+        "mode1-reset-prefix": 7,
+        "service-wrappers": 2
+      },
+      "dispatch_mode": 1,
+      "mode1_fields": {
+        "0x1f": 0,
+        "0x26": 0,
+        "0x27": 0,
+        "0x2c": 0,
+        "0x2d": 0,
+        "0x2e": 0,
+        "0x2f": 0,
+        "0x30": 0,
+        "0x38": 5,
+        "0x5e": 0
+      },
+      "mode2_fields": {
+        "0x36": 0,
+        "0x38": 0,
+        "0x3c": 0,
+        "0x3e": 0,
+        "0x40": 0,
+        "0x42": 0,
+        "0x44": 0,
+        "0x45": 0,
+        "0x46": 0,
+        "0x54": 0,
+        "0x56": 0,
+        "0x58": 0,
+        "0x5a": 0,
+        "0x5c": 0,
+        "0x5e": 0,
+        "0x74": 0,
+        "0x78": 0,
+        "0x7c": 0,
+        "0xc0": 0,
+        "0xc2": 0,
+        "0xd0": 0,
+        "0xd8": 0
+      },
+      "peer_2e": 1000
+    },
+    {
+      "case": {
+        "client": 0,
+        "state": 3,
+        "flag82": 1,
+        "flag83": 1,
+        "q": 599,
+        "q2": 65535
+      },
+      "producer_accepted": true,
+      "stop": "0x5334a3ac",
+      "events": [
+        [
+          1393479740,
+          128
+        ],
+        [
+          1393480108,
+          261887
+        ],
+        [
+          1393479924,
+          128
+        ]
+      ],
+      "wake_targets": [
+        268500992
+      ],
+      "control_points": [
+        [
+          1391494460,
+          [
+            268435456
+          ]
+        ],
+        [
+          1391494128,
+          [
+            268435456
+          ]
+        ],
+        [
+          1391494180,
+          [
+            2
+          ]
+        ],
+        [
+          1391494196,
+          [
+            2
+          ]
+        ],
+        [
+          1391497572,
+          [
+            268460032,
+            1000,
+            599,
+            23,
+            65535,
+            1067450368
+          ]
+        ],
+        [
+          1391497432,
+          [
+            268460032,
+            4
+          ]
+        ],
+        [
+          1394050212,
+          [
+            268476416,
+            1
+          ]
+        ]
+      ],
+      "joint_backing_19c4": 1432778632,
+      "ranges": {
+        "request-producer": 51,
+        "joint-loop": 44,
+        "joint-handler-80": 5,
+        "joint-dispatch": 32,
+        "client-mode-head": 10,
+        "client-mode-cases": 16,
+        "mode2-4-6-builder": 13,
+        "mode2-4-6-common-prefix": 21,
+        "service-wrappers": 5,
+        "service-channel-read": 5,
+        "mmio-read-0-prefix": 5
+      },
+      "dispatch_mode": 2,
+      "unexecuted_mmio_address": "0x1e0020f4",
+      "mode1_fields": {
+        "0x1f": 165,
+        "0x26": 165,
+        "0x27": 165,
+        "0x2c": 165,
+        "0x2d": 165,
+        "0x2e": 165,
+        "0x2f": 165,
+        "0x30": 165,
+        "0x38": 165,
+        "0x5e": 165
+      },
+      "mode2_fields": {
+        "0x36": 0,
+        "0x38": 0,
+        "0x3c": 0,
+        "0x3e": 600,
+        "0x40": 0,
+        "0x42": 0,
+        "0x44": 0,
+        "0x45": 0,
+        "0x46": 0,
+        "0x54": 23,
+        "0x56": 65535,
+        "0x58": 1000,
+        "0x5a": 600,
+        "0x5c": 23,
+        "0x5e": 65535,
+        "0x74": 0,
+        "0x78": 0,
+        "0x7c": 4,
+        "0xc0": 0,
+        "0xc2": 1,
+        "0xd0": 0,
+        "0xd8": 0
+      },
+      "peer_2e": 42405
+    },
+    {
+      "case": {
+        "client": 0,
+        "state": 3,
+        "flag82": 1,
+        "q": 601,
+        "q2": 599
+      },
+      "producer_accepted": true,
+      "stop": "0x5334a3ac",
+      "events": [
+        [
+          1393479740,
+          128
+        ],
+        [
+          1393480108,
+          261887
+        ],
+        [
+          1393479924,
+          128
+        ]
+      ],
+      "wake_targets": [
+        268500992
+      ],
+      "control_points": [
+        [
+          1391494460,
+          [
+            268435456
+          ]
+        ],
+        [
+          1391494128,
+          [
+            268435456
+          ]
+        ],
+        [
+          1391494180,
+          [
+            2
+          ]
+        ],
+        [
+          1391494196,
+          [
+            2
+          ]
+        ],
+        [
+          1391497572,
+          [
+            268460032,
+            1000,
+            601,
+            23,
+            599,
+            1067450368
+          ]
+        ],
+        [
+          1391497432,
+          [
+            268460032,
+            4
+          ]
+        ],
+        [
+          1394050212,
+          [
+            268476416,
+            1
+          ]
+        ]
+      ],
+      "joint_backing_19c4": 1432778632,
+      "ranges": {
+        "request-producer": 51,
+        "joint-loop": 44,
+        "joint-handler-80": 5,
+        "joint-dispatch": 32,
+        "client-mode-head": 10,
+        "client-mode-cases": 16,
+        "mode2-4-6-builder": 13,
+        "mode2-4-6-common-prefix": 21,
+        "service-wrappers": 5,
+        "service-channel-read": 5,
+        "mmio-read-0-prefix": 5
+      },
+      "dispatch_mode": 2,
+      "unexecuted_mmio_address": "0x1e0020f4",
+      "mode1_fields": {
+        "0x1f": 165,
+        "0x26": 165,
+        "0x27": 165,
+        "0x2c": 165,
+        "0x2d": 165,
+        "0x2e": 165,
+        "0x2f": 165,
+        "0x30": 165,
+        "0x38": 165,
+        "0x5e": 165
+      },
+      "mode2_fields": {
+        "0x36": 0,
+        "0x38": 0,
+        "0x3c": 0,
+        "0x3e": 601,
+        "0x40": 0,
+        "0x42": 0,
+        "0x44": 0,
+        "0x45": 0,
+        "0x46": 0,
+        "0x54": 23,
+        "0x56": 600,
+        "0x58": 1000,
+        "0x5a": 601,
+        "0x5c": 23,
+        "0x5e": 600,
+        "0x74": 0,
+        "0x78": 0,
+        "0x7c": 4,
+        "0xc0": 0,
+        "0xc2": 1,
+        "0xd0": 0,
+        "0xd8": 0
+      },
+      "peer_2e": 42405
+    },
+    {
+      "case": {
+        "client": 3,
+        "state": 1,
+        "flag83": 1,
+        "q": 600
+      },
+      "producer_accepted": true,
+      "stop": "0x5334a3ac",
+      "events": [
+        [
+          1393479740,
+          128
+        ],
+        [
+          1393480108,
+          261887
+        ],
+        [
+          1393479924,
+          128
+        ]
+      ],
+      "wake_targets": [
+        268500992
+      ],
+      "control_points": [
+        [
+          1391494460,
+          [
+            268435456
+          ]
+        ],
+        [
+          1391494128,
+          [
+            268435456
+          ]
+        ],
+        [
+          1391494180,
+          [
+            2
+          ]
+        ],
+        [
+          1391494196,
+          [
+            2
+          ]
+        ],
+        [
+          1391497624,
+          [
+            268460032,
+            1000,
+            600,
+            1067450368
+          ]
+        ],
+        [
+          1391497432,
+          [
+            268460032,
+            6
+          ]
+        ],
+        [
+          1394050212,
+          [
+            268476416,
+            1
+          ]
+        ]
+      ],
+      "joint_backing_19c4": 1432778632,
+      "ranges": {
+        "request-producer": 51,
+        "joint-loop": 44,
+        "joint-handler-80": 5,
+        "joint-dispatch": 34,
+        "client-mode-head": 10,
+        "client-mode-cases": 12,
+        "mode2-4-6-builder": 9,
+        "mode2-4-6-common-prefix": 21,
+        "service-wrappers": 5,
+        "service-channel-read": 5,
+        "mmio-read-0-prefix": 5
+      },
+      "dispatch_mode": 2,
+      "unexecuted_mmio_address": "0x1e0020f4",
+      "mode1_fields": {
+        "0x1f": 165,
+        "0x26": 165,
+        "0x27": 165,
+        "0x2c": 165,
+        "0x2d": 165,
+        "0x2e": 165,
+        "0x2f": 165,
+        "0x30": 165,
+        "0x38": 165,
+        "0x5e": 165
+      },
+      "mode2_fields": {
+        "0x36": 0,
+        "0x38": 0,
+        "0x3c": 0,
+        "0x3e": 600,
+        "0x40": 0,
+        "0x42": 0,
+        "0x44": 0,
+        "0x45": 0,
+        "0x46": 0,
+        "0x54": 0,
+        "0x56": 600,
+        "0x58": 1000,
+        "0x5a": 600,
+        "0x5c": 0,
+        "0x5e": 600,
+        "0x74": 0,
+        "0x78": 0,
+        "0x7c": 6,
+        "0xc0": 0,
+        "0xc2": 1,
+        "0xd0": 0,
+        "0xd8": 0
+      },
+      "peer_2e": 42405
+    },
+    {
+      "case": {
+        "client": 3,
+        "state": 1,
+        "flag83": 1,
+        "q": 601
+      },
+      "producer_accepted": true,
+      "stop": "0x5334a3ac",
+      "events": [
+        [
+          1393479740,
+          128
+        ],
+        [
+          1393480108,
+          261887
+        ],
+        [
+          1393479924,
+          128
+        ]
+      ],
+      "wake_targets": [
+        268500992
+      ],
+      "control_points": [
+        [
+          1391494460,
+          [
+            268435456
+          ]
+        ],
+        [
+          1391494128,
+          [
+            268435456
+          ]
+        ],
+        [
+          1391494180,
+          [
+            2
+          ]
+        ],
+        [
+          1391494196,
+          [
+            2
+          ]
+        ],
+        [
+          1391497624,
+          [
+            268460032,
+            1000,
+            601,
+            1067450368
+          ]
+        ],
+        [
+          1391497432,
+          [
+            268460032,
+            6
+          ]
+        ],
+        [
+          1394050212,
+          [
+            268476416,
+            1
+          ]
+        ]
+      ],
+      "joint_backing_19c4": 1432778632,
+      "ranges": {
+        "request-producer": 51,
+        "joint-loop": 44,
+        "joint-handler-80": 5,
+        "joint-dispatch": 34,
+        "client-mode-head": 10,
+        "client-mode-cases": 12,
+        "mode2-4-6-builder": 9,
+        "mode2-4-6-common-prefix": 21,
+        "service-wrappers": 5,
+        "service-channel-read": 5,
+        "mmio-read-0-prefix": 5
+      },
+      "dispatch_mode": 2,
+      "unexecuted_mmio_address": "0x1e0020f4",
+      "mode1_fields": {
+        "0x1f": 165,
+        "0x26": 165,
+        "0x27": 165,
+        "0x2c": 165,
+        "0x2d": 165,
+        "0x2e": 165,
+        "0x2f": 165,
+        "0x30": 165,
+        "0x38": 165,
+        "0x5e": 165
+      },
+      "mode2_fields": {
+        "0x36": 0,
+        "0x38": 0,
+        "0x3c": 0,
+        "0x3e": 601,
+        "0x40": 0,
+        "0x42": 0,
+        "0x44": 0,
+        "0x45": 0,
+        "0x46": 0,
+        "0x54": 0,
+        "0x56": 601,
+        "0x58": 1000,
+        "0x5a": 601,
+        "0x5c": 0,
+        "0x5e": 601,
+        "0x74": 0,
+        "0x78": 0,
+        "0x7c": 6,
+        "0xc0": 0,
+        "0xc2": 1,
+        "0xd0": 0,
+        "0xd8": 0
+      },
+      "peer_2e": 42405
+    },
+    {
+      "case": {
+        "client": 3,
+        "state": 1,
+        "flag83": 1,
+        "q": 599,
+        "capability": 64
+      },
+      "producer_accepted": true,
+      "stop": "0x5334a3ac",
+      "events": [
+        [
+          1393479740,
+          128
+        ],
+        [
+          1393480108,
+          261887
+        ],
+        [
+          1393479924,
+          128
+        ]
+      ],
+      "wake_targets": [
+        268500992
+      ],
+      "control_points": [
+        [
+          1391494460,
+          [
+            268435456
+          ]
+        ],
+        [
+          1391494128,
+          [
+            268435456
+          ]
+        ],
+        [
+          1391494180,
+          [
+            2
+          ]
+        ],
+        [
+          1391494196,
+          [
+            2
+          ]
+        ],
+        [
+          1391497624,
+          [
+            268460032,
+            1000,
+            599,
+            1067450368
+          ]
+        ],
+        [
+          1391497432,
+          [
+            268460032,
+            6
+          ]
+        ],
+        [
+          1394050212,
+          [
+            268476416,
+            1
+          ]
+        ]
+      ],
+      "joint_backing_19c4": 1432778632,
+      "ranges": {
+        "request-producer": 51,
+        "joint-loop": 44,
+        "joint-handler-80": 5,
+        "joint-dispatch": 34,
+        "client-mode-head": 10,
+        "client-mode-cases": 12,
+        "mode2-4-6-builder": 9,
+        "mode2-4-6-common-prefix": 21,
+        "service-wrappers": 5,
+        "service-channel-read": 5,
+        "mmio-read-0-prefix": 5
+      },
+      "dispatch_mode": 2,
+      "unexecuted_mmio_address": "0x1e0020f4",
+      "mode1_fields": {
+        "0x1f": 165,
+        "0x26": 165,
+        "0x27": 165,
+        "0x2c": 165,
+        "0x2d": 165,
+        "0x2e": 165,
+        "0x2f": 165,
+        "0x30": 165,
+        "0x38": 165,
+        "0x5e": 165
+      },
+      "mode2_fields": {
+        "0x36": 0,
+        "0x38": 0,
+        "0x3c": 0,
+        "0x3e": 600,
+        "0x40": 0,
+        "0x42": 0,
+        "0x44": 0,
+        "0x45": 0,
+        "0x46": 0,
+        "0x54": 0,
+        "0x56": 600,
+        "0x58": 1000,
+        "0x5a": 600,
+        "0x5c": 0,
+        "0x5e": 600,
+        "0x74": 0,
+        "0x78": 0,
+        "0x7c": 6,
+        "0xc0": 0,
+        "0xc2": 1,
+        "0xd0": 0,
+        "0xd8": 0
+      },
+      "peer_2e": 42405
+    },
+    {
+      "case": {
+        "client": 3,
+        "state": 1,
+        "flag83": 1,
+        "q": 599,
+        "capability": 0
+      },
+      "producer_accepted": true,
+      "stop": "0x5334a3ac",
+      "events": [
+        [
+          1393479740,
+          128
+        ],
+        [
+          1393480108,
+          261887
+        ],
+        [
+          1393479924,
+          128
+        ]
+      ],
+      "wake_targets": [
+        268500992
+      ],
+      "control_points": [
+        [
+          1391494460,
+          [
+            268435456
+          ]
+        ],
+        [
+          1391494128,
+          [
+            268435456
+          ]
+        ],
+        [
+          1391494180,
+          [
+            2
+          ]
+        ],
+        [
+          1391494196,
+          [
+            2
+          ]
+        ],
+        [
+          1391497624,
+          [
+            268460032,
+            1000,
+            599,
+            1067450368
+          ]
+        ],
+        [
+          1391497432,
+          [
+            268460032,
+            6
+          ]
+        ],
+        [
+          1394050212,
+          [
+            268476416,
+            1
+          ]
+        ]
+      ],
+      "joint_backing_19c4": 1432778632,
+      "ranges": {
+        "request-producer": 51,
+        "joint-loop": 44,
+        "joint-handler-80": 5,
+        "joint-dispatch": 34,
+        "client-mode-head": 10,
+        "client-mode-cases": 12,
+        "mode2-4-6-builder": 9,
+        "mode2-4-6-common-prefix": 21,
+        "service-wrappers": 5,
+        "service-channel-read": 5,
+        "mmio-read-0-prefix": 5
+      },
+      "dispatch_mode": 2,
+      "unexecuted_mmio_address": "0x1e0020f4",
+      "mode1_fields": {
+        "0x1f": 165,
+        "0x26": 165,
+        "0x27": 165,
+        "0x2c": 165,
+        "0x2d": 165,
+        "0x2e": 165,
+        "0x2f": 165,
+        "0x30": 165,
+        "0x38": 165,
+        "0x5e": 165
+      },
+      "mode2_fields": {
+        "0x36": 0,
+        "0x38": 0,
+        "0x3c": 0,
+        "0x3e": 600,
+        "0x40": 0,
+        "0x42": 0,
+        "0x44": 0,
+        "0x45": 0,
+        "0x46": 0,
+        "0x54": 0,
+        "0x56": 600,
+        "0x58": 1000,
+        "0x5a": 600,
+        "0x5c": 0,
+        "0x5e": 600,
+        "0x74": 0,
+        "0x78": 0,
+        "0x7c": 6,
+        "0xc0": 0,
+        "0xc2": 1,
+        "0xd0": 0,
+        "0xd8": 0
+      },
+      "peer_2e": 42405
+    },
+    {
+      "case": {
+        "client": 0,
+        "state": 3,
+        "value": 0,
+        "floor": 700,
+        "gate": 1
+      },
+      "producer_accepted": true,
+      "stop": "0x5334a3fc",
+      "events": [
+        [
+          1393479740,
+          128
+        ],
+        [
+          1393480108,
+          261887
+        ],
+        [
+          1393479924,
+          128
+        ]
+      ],
+      "wake_targets": [
+        268500992
+      ],
+      "control_points": [
+        [
+          1391494460,
+          [
+            268435456
+          ]
+        ],
+        [
+          1391494128,
+          [
+            268435456
+          ]
+        ],
+        [
+          1391494180,
+          [
+            2
+          ]
+        ],
+        [
+          1391494196,
+          [
+            2
+          ]
+        ],
+        [
+          1391503940,
+          [
+            268460032,
+            1000,
+            599,
+            0,
+            23,
+            600,
+            90,
+            3,
+            1067450368
+          ]
+        ],
+        [
+          1391498300,
+          [
+            268460032,
+            1000,
+            0,
+            0
+          ]
+        ],
+        [
+          1391498560,
+          [
+            268476416,
+            1,
+            63537,
+            0
+          ]
+        ]
+      ],
+      "joint_backing_19c4": 1432778632,
+      "ranges": {
+        "request-producer": 51,
+        "joint-loop": 44,
+        "joint-handler-80": 5,
+        "joint-dispatch": 40,
+        "client-mode-head": 10,
+        "client-mode-cases": 16,
+        "mode2-general-prefix": 60,
+        "mode2-general-split": 32,
+        "mode2-general-start-prefix": 23,
+        "mode2-general-gate": 15,
+        "mode2-general-gate-reader": 2,
+        "mode2-general-adapter-prefix": 14,
+        "service-general-adapter-prefix": 10,
+        "service-general-inner-prefix": 16,
+        "service-channel-read": 5,
+        "mmio-read-1-prefix": 4
+      },
+      "dispatch_mode": 2,
+      "unexecuted_mmio_address": "0x1e0020ec",
+      "mode1_fields": {
+        "0x1f": 165,
+        "0x26": 165,
+        "0x27": 165,
+        "0x2c": 165,
+        "0x2d": 165,
+        "0x2e": 165,
+        "0x2f": 165,
+        "0x30": 165,
+        "0x38": 165,
+        "0x5e": 165
+      },
+      "mode2_fields": {
+        "0x36": 0,
+        "0x38": 2000,
+        "0x3c": 1000,
+        "0x3e": 700,
+        "0x40": 700,
+        "0x42": 700,
+        "0x44": 0,
+        "0x45": 0,
+        "0x46": 90,
+        "0x54": 23,
+        "0x56": 700,
+        "0x58": 0,
+        "0x5a": 0,
+        "0x5c": 0,
+        "0x5e": 0,
+        "0x74": 1067450368,
+        "0x78": 1,
+        "0x7c": 1,
+        "0xc0": 0,
+        "0xc2": 0,
+        "0xd0": 1,
+        "0xd8": 2000
+      },
+      "peer_2e": 42405
+    },
+    {
+      "case": {
+        "client": 3,
+        "state": 1,
+        "value": 0,
+        "floor": 700,
+        "gate": 0
+      },
+      "producer_accepted": true,
+      "stop": "0x5334a3fc",
+      "events": [
+        [
+          1393479740,
+          128
+        ],
+        [
+          1393480108,
+          261887
+        ],
+        [
+          1393479924,
+          128
+        ]
+      ],
+      "wake_targets": [
+        268500992
+      ],
+      "control_points": [
+        [
+          1391494460,
+          [
+            268435456
+          ]
+        ],
+        [
+          1391494128,
+          [
+            268435456
+          ]
+        ],
+        [
+          1391494180,
+          [
+            2
+          ]
+        ],
+        [
+          1391494196,
+          [
+            2
+          ]
+        ],
+        [
+          1391503940,
+          [
+            268460032,
+            1000,
+            599,
+            0,
+            23,
+            600,
+            90,
+            1,
+            1067450368
+          ]
+        ],
+        [
+          1391498300,
+          [
+            268460032,
+            1000,
+            0,
+            0
+          ]
+        ],
+        [
+          1391498560,
+          [
+            268476416,
+            1,
+            1999,
+            0
+          ]
+        ]
+      ],
+      "joint_backing_19c4": 1432778632,
+      "ranges": {
+        "request-producer": 51,
+        "joint-loop": 44,
+        "joint-handler-80": 5,
+        "joint-dispatch": 40,
+        "client-mode-head": 10,
+        "client-mode-cases": 12,
+        "mode2-general-prefix": 60,
+        "mode2-general-split": 32,
+        "mode2-general-start-prefix": 23,
+        "mode2-general-gate": 15,
+        "mode2-general-gate-reader": 2,
+        "mode2-general-adapter-prefix": 14,
+        "service-general-adapter-prefix": 10,
+        "service-general-inner-prefix": 16,
+        "service-channel-read": 5,
+        "mmio-read-1-prefix": 4
+      },
+      "dispatch_mode": 2,
+      "unexecuted_mmio_address": "0x1e0020ec",
+      "mode1_fields": {
+        "0x1f": 165,
+        "0x26": 165,
+        "0x27": 165,
+        "0x2c": 165,
+        "0x2d": 165,
+        "0x2e": 165,
+        "0x2f": 165,
+        "0x30": 165,
+        "0x38": 165,
+        "0x5e": 165
+      },
+      "mode2_fields": {
+        "0x36": 0,
+        "0x38": 2000,
+        "0x3c": 1000,
+        "0x3e": 700,
+        "0x40": 700,
+        "0x42": 700,
+        "0x44": 0,
+        "0x45": 1,
+        "0x46": 90,
+        "0x54": 23,
+        "0x56": 700,
+        "0x58": 0,
+        "0x5a": 0,
+        "0x5c": 0,
+        "0x5e": 0,
+        "0x74": 1067450368,
+        "0x78": 1,
+        "0x7c": 1,
+        "0xc0": 0,
+        "0xc2": 0,
+        "0xd0": 0,
+        "0xd8": 2000
+      },
+      "peer_2e": 42405
+    },
+    {
+      "case": {
+        "client": 3,
+        "state": 1,
+        "value": 3,
+        "floor": 700,
+        "gate": 1
+      },
+      "producer_accepted": true,
+      "stop": "0x5334a3fc",
+      "events": [
+        [
+          1393479740,
+          128
+        ],
+        [
+          1393480108,
+          261887
+        ],
+        [
+          1393479924,
+          128
+        ]
+      ],
+      "wake_targets": [
+        268500992
+      ],
+      "control_points": [
+        [
+          1391494460,
+          [
+            268435456
+          ]
+        ],
+        [
+          1391494128,
+          [
+            268435456
+          ]
+        ],
+        [
+          1391494180,
+          [
+            2
+          ]
+        ],
+        [
+          1391494196,
+          [
+            2
+          ]
+        ],
+        [
+          1391503940,
+          [
+            268460032,
+            1000,
+            599,
+            1,
+            23,
+            600,
+            90,
+            1,
+            1067450368
+          ]
+        ],
+        [
+          1391498300,
+          [
+            268460032,
+            1000,
+            0,
+            1
+          ]
+        ],
+        [
+          1391498560,
+          [
+            268476416,
+            1,
+            1999,
+            0
+          ]
+        ]
+      ],
+      "joint_backing_19c4": 1432778632,
+      "ranges": {
+        "request-producer": 51,
+        "joint-loop": 44,
+        "joint-handler-80": 5,
+        "joint-dispatch": 40,
+        "client-mode-head": 10,
+        "client-mode-cases": 12,
+        "mode2-general-prefix": 60,
+        "mode2-general-split": 32,
+        "mode2-general-start-prefix": 23,
+        "mode2-general-gate": 15,
+        "mode2-general-gate-reader": 2,
+        "mode2-general-adapter-prefix": 14,
+        "service-general-adapter-prefix": 10,
+        "service-general-inner-prefix": 16,
+        "service-channel-read": 5,
+        "mmio-read-1-prefix": 4
+      },
+      "dispatch_mode": 2,
+      "unexecuted_mmio_address": "0x1e0020ec",
+      "mode1_fields": {
+        "0x1f": 165,
+        "0x26": 165,
+        "0x27": 165,
+        "0x2c": 165,
+        "0x2d": 165,
+        "0x2e": 165,
+        "0x2f": 165,
+        "0x30": 165,
+        "0x38": 165,
+        "0x5e": 165
+      },
+      "mode2_fields": {
+        "0x36": 0,
+        "0x38": 2000,
+        "0x3c": 1000,
+        "0x3e": 700,
+        "0x40": 700,
+        "0x42": 700,
+        "0x44": 1,
+        "0x45": 1,
+        "0x46": 90,
+        "0x54": 23,
+        "0x56": 700,
+        "0x58": 0,
+        "0x5a": 0,
+        "0x5c": 0,
+        "0x5e": 0,
+        "0x74": 1067450368,
+        "0x78": 1,
+        "0x7c": 1,
+        "0xc0": 0,
+        "0xc2": 0,
+        "0xd0": 0,
+        "0xd8": 2000
+      },
+      "peer_2e": 42405
+    },
+    {
+      "case": {
+        "client": 2,
+        "state": 3,
+        "p": 29999
+      },
+      "producer_accepted": true,
+      "stop": "0x5334a3fc",
+      "events": [
+        [
+          1393479740,
+          128
+        ],
+        [
+          1393480108,
+          261887
+        ],
+        [
+          1393479924,
+          128
+        ]
+      ],
+      "wake_targets": [
+        268500992
+      ],
+      "control_points": [
+        [
+          1391494460,
+          [
+            268435456
+          ]
+        ],
+        [
+          1391494128,
+          [
+            268435456
+          ]
+        ],
+        [
+          1391494180,
+          [
+            2
+          ]
+        ],
+        [
+          1391494196,
+          [
+            2
+          ]
+        ],
+        [
+          1391503940,
+          [
+            268460032,
+            29999,
+            599,
+            1,
+            23,
+            600,
+            90,
+            3,
+            1067450368
+          ]
+        ],
+        [
+          1391498300,
+          [
+            268460032,
+            29999,
+            0,
+            1
+          ]
+        ],
+        [
+          1391498560,
+          [
+            268476416,
+            1,
+            5539,
+            0
+          ]
+        ]
+      ],
+      "joint_backing_19c4": 1432778632,
+      "ranges": {
+        "request-producer": 51,
+        "joint-loop": 44,
+        "joint-handler-80": 5,
+        "joint-dispatch": 40,
+        "client-mode-head": 10,
+        "client-mode-cases": 4,
+        "mode2-general-prefix": 60,
+        "mode2-general-split": 32,
+        "mode2-general-start-prefix": 23,
+        "mode2-general-gate": 15,
+        "mode2-general-gate-reader": 2,
+        "mode2-general-adapter-prefix": 14,
+        "service-general-adapter-prefix": 10,
+        "service-general-inner-prefix": 16,
+        "service-channel-read": 5,
+        "mmio-read-1-prefix": 4
+      },
+      "dispatch_mode": 2,
+      "unexecuted_mmio_address": "0x1e0020ec",
+      "mode1_fields": {
+        "0x1f": 165,
+        "0x26": 165,
+        "0x27": 165,
+        "0x2c": 165,
+        "0x2d": 165,
+        "0x2e": 165,
+        "0x2f": 165,
+        "0x30": 165,
+        "0x38": 165,
+        "0x5e": 165
+      },
+      "mode2_fields": {
+        "0x36": 0,
+        "0x38": 59998,
+        "0x3c": 29999,
+        "0x3e": 599,
+        "0x40": 599,
+        "0x42": 599,
+        "0x44": 1,
+        "0x45": 0,
+        "0x46": 90,
+        "0x54": 23,
+        "0x56": 600,
+        "0x58": 0,
+        "0x5a": 0,
+        "0x5c": 0,
+        "0x5e": 0,
+        "0x74": 1067450368,
+        "0x78": 1,
+        "0x7c": 1,
+        "0xc0": 0,
+        "0xc2": 0,
+        "0xd0": 1,
+        "0xd8": 59998
+      },
+      "peer_2e": 42405
+    },
+    {
+      "case": {
+        "client": 2,
+        "state": 3,
+        "p": 30000
+      },
+      "producer_accepted": true,
+      "stop": "0x5334a3fc",
+      "events": [
+        [
+          1393479740,
+          128
+        ],
+        [
+          1393480108,
+          261887
+        ],
+        [
+          1393479924,
+          128
+        ]
+      ],
+      "wake_targets": [
+        268500992
+      ],
+      "control_points": [
+        [
+          1391494460,
+          [
+            268435456
+          ]
+        ],
+        [
+          1391494128,
+          [
+            268435456
+          ]
+        ],
+        [
+          1391494180,
+          [
+            2
+          ]
+        ],
+        [
+          1391494196,
+          [
+            2
+          ]
+        ],
+        [
+          1391503940,
+          [
+            268460032,
+            30000,
+            599,
+            1,
+            23,
+            600,
+            90,
+            3,
+            1067450368
+          ]
+        ],
+        [
+          1391498300,
+          [
+            268460032,
+            30000,
+            0,
+            1
+          ]
+        ],
+        [
+          1391498560,
+          [
+            268476416,
+            1,
+            5537,
+            0
+          ]
+        ]
+      ],
+      "joint_backing_19c4": 1432778632,
+      "ranges": {
+        "request-producer": 51,
+        "joint-loop": 44,
+        "joint-handler-80": 5,
+        "joint-dispatch": 40,
+        "client-mode-head": 10,
+        "client-mode-cases": 4,
+        "mode2-general-prefix": 60,
+        "mode2-general-split": 32,
+        "mode2-general-start-prefix": 23,
+        "mode2-general-gate": 15,
+        "mode2-general-gate-reader": 2,
+        "mode2-general-adapter-prefix": 14,
+        "service-general-adapter-prefix": 10,
+        "service-general-inner-prefix": 16,
+        "service-channel-read": 5,
+        "mmio-read-1-prefix": 4
+      },
+      "dispatch_mode": 2,
+      "unexecuted_mmio_address": "0x1e0020ec",
+      "mode1_fields": {
+        "0x1f": 165,
+        "0x26": 165,
+        "0x27": 165,
+        "0x2c": 165,
+        "0x2d": 165,
+        "0x2e": 165,
+        "0x2f": 165,
+        "0x30": 165,
+        "0x38": 165,
+        "0x5e": 165
+      },
+      "mode2_fields": {
+        "0x36": 0,
+        "0x38": 60000,
+        "0x3c": 30000,
+        "0x3e": 599,
+        "0x40": 599,
+        "0x42": 599,
+        "0x44": 1,
+        "0x45": 0,
+        "0x46": 90,
+        "0x54": 23,
+        "0x56": 600,
+        "0x58": 0,
+        "0x5a": 0,
+        "0x5c": 0,
+        "0x5e": 0,
+        "0x74": 1067450368,
+        "0x78": 1,
+        "0x7c": 1,
+        "0xc0": 0,
+        "0xc2": 0,
+        "0xd0": 1,
+        "0xd8": 60000
+      },
+      "peer_2e": 42405
+    },
+    {
+      "case": {
+        "client": 2,
+        "state": 3,
+        "p": 30001
+      },
+      "producer_accepted": true,
+      "stop": "0x5334a3fc",
+      "events": [
+        [
+          1393479740,
+          128
+        ],
+        [
+          1393480108,
+          261887
+        ],
+        [
+          1393479924,
+          128
+        ]
+      ],
+      "wake_targets": [
+        268500992
+      ],
+      "control_points": [
+        [
+          1391494460,
+          [
+            268435456
+          ]
+        ],
+        [
+          1391494128,
+          [
+            268435456
+          ]
+        ],
+        [
+          1391494180,
+          [
+            2
+          ]
+        ],
+        [
+          1391494196,
+          [
+            2
+          ]
+        ],
+        [
+          1391503940,
+          [
+            268460032,
+            30001,
+            599,
+            1,
+            23,
+            600,
+            90,
+            3,
+            1067450368
+          ]
+        ],
+        [
+          1391498300,
+          [
+            268460032,
+            30001,
+            0,
+            1
+          ]
+        ],
+        [
+          1391498560,
+          [
+            268476416,
+            1,
+            537,
+            0
+          ]
+        ]
+      ],
+      "joint_backing_19c4": 1432778632,
+      "ranges": {
+        "request-producer": 51,
+        "joint-loop": 44,
+        "joint-handler-80": 5,
+        "joint-dispatch": 40,
+        "client-mode-head": 10,
+        "client-mode-cases": 4,
+        "mode2-general-prefix": 60,
+        "mode2-general-split": 32,
+        "mode2-general-start-prefix": 23,
+        "mode2-general-gate": 15,
+        "mode2-general-gate-reader": 2,
+        "mode2-general-adapter-prefix": 14,
+        "service-general-adapter-prefix": 10,
+        "service-general-inner-prefix": 16,
+        "service-channel-read": 5,
+        "mmio-read-1-prefix": 4
+      },
+      "dispatch_mode": 2,
+      "unexecuted_mmio_address": "0x1e0020ec",
+      "mode1_fields": {
+        "0x1f": 165,
+        "0x26": 165,
+        "0x27": 165,
+        "0x2c": 165,
+        "0x2d": 165,
+        "0x2e": 165,
+        "0x2f": 165,
+        "0x30": 165,
+        "0x38": 165,
+        "0x5e": 165
+      },
+      "mode2_fields": {
+        "0x36": 1,
+        "0x38": 1,
+        "0x3c": 32500,
+        "0x3e": 599,
+        "0x40": 599,
+        "0x42": 599,
+        "0x44": 1,
+        "0x45": 0,
+        "0x46": 90,
+        "0x54": 23,
+        "0x56": 600,
+        "0x58": 0,
+        "0x5a": 0,
+        "0x5c": 0,
+        "0x5e": 0,
+        "0x74": 1067450368,
+        "0x78": 1,
+        "0x7c": 1,
+        "0xc0": 0,
+        "0xc2": 0,
+        "0xd0": 1,
+        "0xd8": 65000
+      },
+      "peer_2e": 42405
+    },
+    {
+      "case": {
+        "client": 3,
+        "state": 1,
+        "flag83": 1,
+        "q": 599,
+        "capability": 0,
+        "via_facade": true
+      },
+      "producer_accepted": true,
+      "stop": "0x5334a3ac",
+      "events": [
+        [
+          1393479740,
+          128
+        ],
+        [
+          1393480108,
+          261887
+        ],
+        [
+          1393479924,
+          128
+        ]
+      ],
+      "wake_targets": [
+        268500992
+      ],
+      "control_points": [
+        [
+          1391494460,
+          [
+            268435456
+          ]
+        ],
+        [
+          1391494128,
+          [
+            268435456
+          ]
+        ],
+        [
+          1391494180,
+          [
+            2
+          ]
+        ],
+        [
+          1391494196,
+          [
+            2
+          ]
+        ],
+        [
+          1391497624,
+          [
+            268460032,
+            1000,
+            599,
+            1067450368
+          ]
+        ],
+        [
+          1391497432,
+          [
+            268460032,
+            6
+          ]
+        ],
+        [
+          1394050212,
+          [
+            268476416,
+            1
+          ]
+        ]
+      ],
+      "joint_backing_19c4": 1432778632,
+      "ranges": {
+        "facade-head": 17,
+        "facade-capability-wrapper": 6,
+        "facade-capability-reader": 5,
+        "facade-command-6": 14,
+        "request-producer": 51,
+        "facade-return": 2,
+        "joint-loop": 44,
+        "joint-handler-80": 5,
+        "joint-dispatch": 34,
+        "client-mode-head": 10,
+        "client-mode-cases": 12,
+        "mode2-4-6-builder": 9,
+        "mode2-4-6-common-prefix": 21,
+        "service-wrappers": 5,
+        "service-channel-read": 5,
+        "mmio-read-0-prefix": 5
+      },
+      "dispatch_mode": 2,
+      "unexecuted_mmio_address": "0x1e0020f4",
+      "mode1_fields": {
+        "0x1f": 165,
+        "0x26": 165,
+        "0x27": 165,
+        "0x2c": 165,
+        "0x2d": 165,
+        "0x2e": 165,
+        "0x2f": 165,
+        "0x30": 165,
+        "0x38": 165,
+        "0x5e": 165
+      },
+      "mode2_fields": {
+        "0x36": 0,
+        "0x38": 0,
+        "0x3c": 0,
+        "0x3e": 600,
+        "0x40": 0,
+        "0x42": 0,
+        "0x44": 0,
+        "0x45": 0,
+        "0x46": 0,
+        "0x54": 0,
+        "0x56": 600,
+        "0x58": 1000,
+        "0x5a": 600,
+        "0x5c": 0,
+        "0x5e": 600,
+        "0x74": 0,
+        "0x78": 0,
+        "0x7c": 6,
+        "0xc0": 0,
+        "0xc2": 1,
+        "0xd0": 0,
+        "0xd8": 0
+      },
+      "peer_2e": 42405
+    },
+    {
+      "case": {
+        "client": 3,
+        "state": 1,
+        "flag83": 1,
+        "q": 599,
+        "capability": 64,
+        "via_facade": true
+      },
+      "producer_accepted": true,
+      "selected": "InMotor",
+      "stop": "0x20000000",
+      "events": [
+        [
+          1393479740,
+          128
+        ]
+      ],
+      "wake_targets": [
+        268501248
+      ],
+      "ranges": {
+        "facade-head": 17,
+        "facade-capability-wrapper": 6,
+        "facade-capability-reader": 5,
+        "facade-command-6": 14,
+        "request-producer": 51,
+        "facade-return": 2
+      },
+      "scope": "Stop at facade return without running the InMotor loop"
+    }
+  ],
+  "scope": "Pinned A32 RTOS, synthetic objects and event delivery. Stop before MMIO or an earlier service. No hardware access, physical units, motor identity, timing, or completion."
+}
