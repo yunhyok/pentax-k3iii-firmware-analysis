@@ -1,0 +1,25 @@
+{
+  "schema": 1,
+  "source_marker": "III-REGISTRY-RAM-31",
+  "original_source_script_sha256": "7dd968d21c8510bb629b43918d7c9e24b36b819650ebdcc9dd0d006c0e6da2a0",
+  "public_helper_sha256": "072d660f7abeb63b959848392545f411fb0e1a56a178d21f1f8d3a38bcc6cd3a",
+  "helper_transformation": "Original analysis helper normalized from CRLF to LF; function bodies unchanged. Private maintainer guard runner excluded.",
+  "full_witness_sha256": "95a5ce68c95bcc4391894983e0650cf8098ae6f2c56878667b0a64cb01ef7b98",
+  "full_witness_bytes": 7200103,
+  "witness_encoding": "UTF-8 json.dumps(indent=2) default ensure_ascii plus one LF; original key order preserved",
+  "original_envelope": {
+    "marker": "III-REGISTRY-RAM-31",
+    "decoded_sha256": "7ff301d585ef7adcd620a15575faa39b4227cc5a27eaa8d754efe50f667a30f9",
+    "rtos_sha256": "342d2f35405e8daf1797dfe431d2e4aa70f4b52a2c242a29df48206672f1dfb4",
+    "script_sha256": "7dd968d21c8510bb629b43918d7c9e24b36b819650ebdcc9dd0d006c0e6da2a0",
+    "cases": [],
+    "limits": [
+      "Single-vCPU synthetic RAM only; original LDREX/STREX executes without forced return. No physical exclusivity/coherence proof.",
+      "Original config/platform/page/arena/task initialization use separate selected entries, including core0 branch after stopping MPIDR. Not wholeboot.",
+      "Table0 count and caller slice entered independently; earlier domain allocation and other11 registry count/pointer gates omitted.",
+      "Full original InitTask lookup reaches no-match; no task slot consumed or creator success. Empty-name control is original ROM NUL, not an empty task descriptor.",
+      "Only56 unproduced RMW control bytes may be read; entire synthetic heap backing is initially00 orA5, no allocated hash pointer or hash-array contents are host-injected; empty control takes the original native task pointer as an unused argument.",
+      "All guest stores are logged including synthetic call-stack stores; host initial memory staging is separate."
+    ]
+  }
+}

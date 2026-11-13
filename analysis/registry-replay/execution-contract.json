@@ -1,0 +1,170 @@
+{
+  "marker": "III-REGISTRY-RAM-31",
+  "canonical_sha256": "95a5ce68c95bcc4391894983e0650cf8098ae6f2c56878667b0a64cb01ef7b98",
+  "cpu_model": "Unicorn Cortex-A7, single-vCPU; chosen emulator model, not camera chip identification",
+  "host_initial_memory": {
+    "RTOS": "original bytes at52500000, read+execute only",
+    "global_RAM": "54500000..54c60000 starts zero; original.data copied from53ce7d40 to54500000, length65a80",
+    "call_stack": "10000000..10010000; fresh entries reset SP1000e000,LR1000f000,CPSR13",
+    "heap_bounds": {
+      "start": "0x56492c80",
+      "end_exclusive": "0x57c52c80"
+    },
+    "heap_backing_patterns": [
+      "00",
+      "A5"
+    ],
+    "heap_mapping_padding": "page-rounded padding is mapped but guest reads/writes rejected",
+    "unproduced_dynamic_reads": "only56 bytes at seven RMW pairs, exact instruction guard; all overwritten by guest by end",
+    "raw_control_addresses": [
+      "0x56492c88",
+      "0x56492c90",
+      "0x564aa700",
+      "0x56493260",
+      "0x56493268",
+      "0x56493270",
+      "0x56493278"
+    ]
+  },
+  "host_entry_controls": [
+    {
+      "stage": "original_config_init",
+      "entry": "0x525d6eb4",
+      "stop": "0x1000f000",
+      "reason": "native_return",
+      "host_register_arguments": {},
+      "host_stack_argument": null,
+      "reset_call_stack_and_CPSR": true
+    },
+    {
+      "stage": "original_core_prologue",
+      "entry": "0x525b5a50",
+      "stop": "0x525b5a54",
+      "reason": "before_mrc",
+      "host_register_arguments": {},
+      "host_stack_argument": null,
+      "reset_call_stack_and_CPSR": true
+    },
+    {
+      "stage": "independent_core0_branch",
+      "entry": "0x525b5a6c",
+      "stop": "0x525b5b48",
+      "reason": "declared_boundary",
+      "host_register_arguments": {},
+      "host_stack_argument": null,
+      "reset_call_stack_and_CPSR": false
+    },
+    {
+      "stage": "original_platform_bounds",
+      "entry": "0x525d9e94",
+      "stop": "0x525d9f10",
+      "reason": "declared_boundary",
+      "host_register_arguments": {},
+      "host_stack_argument": null,
+      "reset_call_stack_and_CPSR": true
+    },
+    {
+      "stage": "original_page_region_init",
+      "entry": "0x525d8a34",
+      "stop": "0x1000f000",
+      "reason": "native_return",
+      "host_register_arguments": {},
+      "host_stack_argument": null,
+      "reset_call_stack_and_CPSR": true
+    },
+    {
+      "stage": "original_arena_headers",
+      "entry": "0x525d9a64",
+      "stop": "0x1000f000",
+      "reason": "native_return",
+      "host_register_arguments": {},
+      "host_stack_argument": null,
+      "reset_call_stack_and_CPSR": true
+    },
+    {
+      "stage": "original_task_table_init",
+      "entry": "0x525b8830",
+      "stop": "0x1000f000",
+      "reason": "native_return",
+      "host_register_arguments": {},
+      "host_stack_argument": null,
+      "reset_call_stack_and_CPSR": true
+    },
+    {
+      "stage": "independent_table0_count_store",
+      "entry": "0x525d5bb8",
+      "stop": "0x525d5bbc",
+      "reason": "declared_boundary",
+      "host_register_arguments": {
+        "R0": "0x12c",
+        "R4": "0x5457ec90"
+      },
+      "host_stack_argument": null,
+      "reset_call_stack_and_CPSR": true
+    },
+    {
+      "stage": "table0_calloc_and_original_pointer_store",
+      "entry": "0x525d5bec",
+      "stop": "0x525d5bf8",
+      "reason": "declared_boundary",
+      "host_register_arguments": {
+        "R0": "0x12c",
+        "R5": "0x5457ec90"
+      },
+      "host_stack_argument": null,
+      "reset_call_stack_and_CPSR": true
+    },
+    {
+      "stage": "original_first_name_lookup",
+      "entry": "0x525bb354",
+      "stop": "0x525bb390",
+      "reason": "declared_boundary",
+      "host_register_arguments": {
+        "R5": "0x533e33f8"
+      },
+      "host_stack_argument": null,
+      "reset_call_stack_and_CPSR": true
+    },
+    {
+      "stage": "empty_name_control",
+      "entry": "0x525d575c",
+      "stop": "0x1000f000",
+      "reason": "native_return",
+      "host_register_arguments": {
+        "R0": "0x0",
+        "R1": "0x564aa8d4",
+        "R2": "0x500",
+        "R3": "0x0"
+      },
+      "host_stack_argument": "0x533e3353",
+      "reset_call_stack_and_CPSR": true
+    }
+  ],
+  "allocated_pointer_flow": {
+    "native_return": "R0=0x56508808 from525d99d4",
+    "store": "525d5bf4 directly storesR0 into5457ec94",
+    "lookup": "525d53dc loads5457ec94 and53e0 reads its indexed words",
+    "host_hash_pointer_injected": false
+  },
+  "empty_control": "Original ROM NUL533e3353; original native task table+cc supplied as unused argument, not an actual empty task descriptor",
+  "source_config": {
+    "max_domain_id": 100,
+    "registry_record11_count_if_successfully_initialized": 101,
+    "domain_initializer_executed_in31": false,
+    "note": "Static config values only; no native.domain_count field"
+  },
+  "omitted_gates": [
+    "domain allocation and domain list initialization",
+    "other11 registry counts/pointers",
+    "creator lock/context and actual task slot allocation",
+    "full bootstrap/core choice and inter-core synchronization"
+  ],
+  "no_forced_exclusive_status": true,
+  "exclusive_status_counts": {
+    "original_arena_headers": 2,
+    "original_task_table_init": 4,
+    "table0_calloc_and_original_pointer_store": 4
+  },
+  "physical_lock_coherence_claim": false,
+  "publication_marker": "III-REGISTRY-PUBLIC-32"
+}

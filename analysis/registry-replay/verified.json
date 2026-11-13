@@ -1,0 +1,968 @@
+{
+  "schema": 1,
+  "marker": "III-REGISTRY-PUBLIC-32",
+  "verified": true,
+  "input": {
+    "size": 78683892,
+    "sha256": "7ff301d585ef7adcd620a15575faa39b4227cc5a27eaa8d754efe50f667a30f9"
+  },
+  "rtos_sha256": "342d2f35405e8daf1797dfe431d2e4aa70f4b52a2c242a29df48206672f1dfb4",
+  "original_source_script_sha256": "7dd968d21c8510bb629b43918d7c9e24b36b819650ebdcc9dd0d006c0e6da2a0",
+  "public_helper_sha256": "072d660f7abeb63b959848392545f411fb0e1a56a178d21f1f8d3a38bcc6cd3a",
+  "source_manifest_sha256": "293b9ef7243e0a6ccb45cdc917a457d3dfd32f9a16a53c2bd789e70e7636b2a5",
+  "provenance_manifest_sha256": "1be9be77c0c4c9a680e6ee62a795d8d544ffa42037ac29b614b9cb9ecff0b6cc",
+  "native_engine": {
+    "name": "Unicorn",
+    "version": "2.1.4",
+    "cpu_model": "Cortex-A7",
+    "vcpus_per_VM": 1,
+    "Capstone": "5.0.7"
+  },
+  "complete_witness": {
+    "sha256": "95a5ce68c95bcc4391894983e0650cf8098ae6f2c56878667b0a64cb01ef7b98",
+    "bytes": 7200103,
+    "byte_identical_to_accepted31": true
+  },
+  "cases": [
+    {
+      "backing_ram_pattern": "0x0",
+      "raw_read_control_bytes": 56,
+      "raw_control_addresses": [
+        "0x56492c88",
+        "0x56492c90",
+        "0x564aa700",
+        "0x56493260",
+        "0x56493268",
+        "0x56493270",
+        "0x56493278"
+      ],
+      "logical_heap": {
+        "start": "0x56492c80",
+        "end_exclusive": "0x57c52c80"
+      },
+      "outcomes": [
+        {
+          "stage": "original_config_init",
+          "entry": "0x525d6eb4",
+          "stop": "0x1000f000",
+          "reason": "native_return",
+          "r0": "0x0",
+          "entry_registers": {
+            "R0": "0x0",
+            "R1": "0x0",
+            "R2": "0x0",
+            "R3": "0x0",
+            "R4": "0x0",
+            "R5": "0x0",
+            "R6": "0x0",
+            "R7": "0x0",
+            "R8": "0x0",
+            "R9": "0x0",
+            "R10": "0x0",
+            "R11": "0x0",
+            "R12": "0x0",
+            "SP": "0x1000e000",
+            "LR": "0x1000f000",
+            "CPSR": "0x13"
+          },
+          "host_register_arguments": {},
+          "host_stack_argument": null,
+          "reset_call_stack_and_CPSR": true
+        },
+        {
+          "stage": "original_core_prologue",
+          "entry": "0x525b5a50",
+          "stop": "0x525b5a54",
+          "reason": "before_mrc",
+          "r0": "0x0",
+          "entry_registers": {
+            "R0": "0x0",
+            "R1": "0x0",
+            "R2": "0x533e3138",
+            "R3": "0x0",
+            "R4": "0x0",
+            "R5": "0x0",
+            "R6": "0x0",
+            "R7": "0x0",
+            "R8": "0x0",
+            "R9": "0x0",
+            "R10": "0x0",
+            "R11": "0x0",
+            "R12": "0x54c3fd04",
+            "SP": "0x1000e000",
+            "LR": "0x1000f000",
+            "CPSR": "0x13"
+          },
+          "host_register_arguments": {},
+          "host_stack_argument": null,
+          "reset_call_stack_and_CPSR": true
+        },
+        {
+          "stage": "independent_core0_branch",
+          "entry": "0x525b5a6c",
+          "stop": "0x525b5b48",
+          "reason": "declared_boundary",
+          "r0": "0x547d2cc0",
+          "entry_registers": {
+            "R0": "0x0",
+            "R1": "0x0",
+            "R2": "0x533e3138",
+            "R3": "0x0",
+            "R4": "0x0",
+            "R5": "0x0",
+            "R6": "0x0",
+            "R7": "0x0",
+            "R8": "0x0",
+            "R9": "0x0",
+            "R10": "0x0",
+            "R11": "0x0",
+            "R12": "0x54c3fd04",
+            "SP": "0x1000dff8",
+            "LR": "0x1000f000",
+            "CPSR": "0x13"
+          },
+          "host_register_arguments": {},
+          "host_stack_argument": null,
+          "reset_call_stack_and_CPSR": false
+        },
+        {
+          "stage": "original_platform_bounds",
+          "entry": "0x525d9e94",
+          "stop": "0x525d9f10",
+          "reason": "declared_boundary",
+          "r0": "0x54c40ea0",
+          "entry_registers": {
+            "R0": "0x547d2cc0",
+            "R1": "0x40000",
+            "R2": "0x5457db00",
+            "R3": "0x0",
+            "R4": "0x0",
+            "R5": "0x0",
+            "R6": "0x0",
+            "R7": "0x0",
+            "R8": "0x0",
+            "R9": "0x0",
+            "R10": "0x0",
+            "R11": "0x0",
+            "R12": "0x56492c80",
+            "SP": "0x1000e000",
+            "LR": "0x1000f000",
+            "CPSR": "0x13"
+          },
+          "host_register_arguments": {},
+          "host_stack_argument": null,
+          "reset_call_stack_and_CPSR": true
+        },
+        {
+          "stage": "original_page_region_init",
+          "entry": "0x525d8a34",
+          "stop": "0x1000f000",
+          "reason": "native_return",
+          "r0": "0x0",
+          "entry_registers": {
+            "R0": "0x54c40ea0",
+            "R1": "0x54c40ea8",
+            "R2": "0x54c40e68",
+            "R3": "0x54c40e5c",
+            "R4": "0x57c52c80",
+            "R5": "0x56492c80",
+            "R6": "0x140",
+            "R7": "0x83",
+            "R8": "0x1d001000",
+            "R9": "0x1d002000",
+            "R10": "0x0",
+            "R11": "0x0",
+            "R12": "0x54c40eac",
+            "SP": "0x1000e000",
+            "LR": "0x1000f000",
+            "CPSR": "0x13"
+          },
+          "host_register_arguments": {},
+          "host_stack_argument": null,
+          "reset_call_stack_and_CPSR": true
+        },
+        {
+          "stage": "original_arena_headers",
+          "entry": "0x525d9a64",
+          "stop": "0x1000f000",
+          "reason": "native_return",
+          "r0": "0x0",
+          "entry_registers": {
+            "R0": "0x0",
+            "R1": "0x4",
+            "R2": "0x0",
+            "R3": "0x57c52c80",
+            "R4": "0x57c52c80",
+            "R5": "0x56492c80",
+            "R6": "0x140",
+            "R7": "0x83",
+            "R8": "0x1d001000",
+            "R9": "0x1d002000",
+            "R10": "0x0",
+            "R11": "0x0",
+            "R12": "0x0",
+            "SP": "0x1000e000",
+            "LR": "0x1000f000",
+            "CPSR": "0x13"
+          },
+          "host_register_arguments": {},
+          "host_stack_argument": null,
+          "reset_call_stack_and_CPSR": true
+        },
+        {
+          "stage": "original_task_table_init",
+          "entry": "0x525b8830",
+          "stop": "0x1000f000",
+          "reason": "native_return",
+          "r0": "0x0",
+          "entry_registers": {
+            "R0": "0x0",
+            "R1": "0x54582f80",
+            "R2": "0x54582f70",
+            "R3": "0x54582f60",
+            "R4": "0x57c52c80",
+            "R5": "0x56492c80",
+            "R6": "0x140",
+            "R7": "0x83",
+            "R8": "0x1d001000",
+            "R9": "0x1d002000",
+            "R10": "0x0",
+            "R11": "0x0",
+            "R12": "0x54582f48",
+            "SP": "0x1000e000",
+            "LR": "0x1000f000",
+            "CPSR": "0x13"
+          },
+          "host_register_arguments": {},
+          "host_stack_argument": null,
+          "reset_call_stack_and_CPSR": true
+        },
+        {
+          "stage": "independent_table0_count_store",
+          "entry": "0x525d5bb8",
+          "stop": "0x525d5bbc",
+          "reason": "declared_boundary",
+          "r0": "0x12c",
+          "entry_registers": {
+            "R0": "0x12c",
+            "R1": "0x54c3f4ec",
+            "R2": "0x12c",
+            "R3": "0x54582f60",
+            "R4": "0x5457ec90",
+            "R5": "0x56492c80",
+            "R6": "0x140",
+            "R7": "0x83",
+            "R8": "0x1d001000",
+            "R9": "0x1d002000",
+            "R10": "0x0",
+            "R11": "0x0",
+            "R12": "0x100012c",
+            "SP": "0x1000e000",
+            "LR": "0x1000f000",
+            "CPSR": "0x13"
+          },
+          "host_register_arguments": {
+            "R0": "0x12c",
+            "R4": "0x5457ec90"
+          },
+          "host_stack_argument": null,
+          "reset_call_stack_and_CPSR": true
+        },
+        {
+          "stage": "table0_calloc_and_original_pointer_store",
+          "entry": "0x525d5bec",
+          "stop": "0x525d5bf8",
+          "reason": "declared_boundary",
+          "r0": "0x56508808",
+          "entry_registers": {
+            "R0": "0x12c",
+            "R1": "0x54c3f4ec",
+            "R2": "0x12c",
+            "R3": "0x54582f60",
+            "R4": "0x5457ec90",
+            "R5": "0x5457ec90",
+            "R6": "0x140",
+            "R7": "0x83",
+            "R8": "0x1d001000",
+            "R9": "0x1d002000",
+            "R10": "0x0",
+            "R11": "0x0",
+            "R12": "0x100012c",
+            "SP": "0x1000e000",
+            "LR": "0x1000f000",
+            "CPSR": "0x13"
+          },
+          "host_register_arguments": {
+            "R0": "0x12c",
+            "R5": "0x5457ec90"
+          },
+          "host_stack_argument": null,
+          "reset_call_stack_and_CPSR": true
+        },
+        {
+          "stage": "original_first_name_lookup",
+          "entry": "0x525bb354",
+          "stop": "0x525bb390",
+          "reason": "declared_boundary",
+          "r0": "0x0",
+          "entry_registers": {
+            "R0": "0x56508808",
+            "R1": "0x0",
+            "R2": "0x0",
+            "R3": "0x54582f60",
+            "R4": "0x5457ec90",
+            "R5": "0x533e33f8",
+            "R6": "0x140",
+            "R7": "0x83",
+            "R8": "0x1d001000",
+            "R9": "0x1d002000",
+            "R10": "0x0",
+            "R11": "0x0",
+            "R12": "0x56508cb8",
+            "SP": "0x1000e000",
+            "LR": "0x1000f000",
+            "CPSR": "0x13"
+          },
+          "host_register_arguments": {
+            "R5": "0x533e33f8"
+          },
+          "host_stack_argument": null,
+          "reset_call_stack_and_CPSR": true
+        },
+        {
+          "stage": "empty_name_control",
+          "entry": "0x525d575c",
+          "stop": "0x1000f000",
+          "reason": "native_return",
+          "r0": "0x0",
+          "entry_registers": {
+            "R0": "0x0",
+            "R1": "0x564aa8d4",
+            "R2": "0x500",
+            "R3": "0x0",
+            "R4": "0x5457ec90",
+            "R5": "0x533e33f8",
+            "R6": "0x140",
+            "R7": "0x83",
+            "R8": "0x1d001000",
+            "R9": "0x0",
+            "R10": "0x0",
+            "R11": "0x533e3428",
+            "R12": "0x5b37",
+            "SP": "0x1000e000",
+            "LR": "0x1000f000",
+            "CPSR": "0x13"
+          },
+          "host_register_arguments": {
+            "R0": "0x0",
+            "R1": "0x564aa8d4",
+            "R2": "0x500",
+            "R3": "0x0"
+          },
+          "host_stack_argument": "0x533e3353",
+          "reset_call_stack_and_CPSR": true
+        }
+      ],
+      "native_hash_pointer": "0x56508808",
+      "native_task_pointer": "0x564aa808",
+      "hash_zero_stores": 300,
+      "hash_reads": 300,
+      "task_name_reads": 0,
+      "lookup_returns": [
+        {
+          "stage": "original_first_name_lookup",
+          "inner_lookup_r0": "0xffffffff"
+        },
+        {
+          "stage": "empty_name_control",
+          "inner_lookup_r0": "0xffffffff"
+        }
+      ],
+      "empty_name_original_ROM": "0x533e3353",
+      "exclusive_status": [
+        {
+          "stage": "original_arena_headers",
+          "pc_after_strex": "0x525da5a8",
+          "status": 0
+        },
+        {
+          "stage": "original_arena_headers",
+          "pc_after_strex": "0x525da5d0",
+          "status": 0
+        },
+        {
+          "stage": "original_task_table_init",
+          "pc_after_strex": "0x525da540",
+          "status": 0
+        },
+        {
+          "stage": "original_task_table_init",
+          "pc_after_strex": "0x525da5a8",
+          "status": 0
+        },
+        {
+          "stage": "original_task_table_init",
+          "pc_after_strex": "0x525da5d0",
+          "status": 0
+        },
+        {
+          "stage": "original_task_table_init",
+          "pc_after_strex": "0x525da540",
+          "status": 0
+        },
+        {
+          "stage": "table0_calloc_and_original_pointer_store",
+          "pc_after_strex": "0x525da540",
+          "status": 0
+        },
+        {
+          "stage": "table0_calloc_and_original_pointer_store",
+          "pc_after_strex": "0x525da5a8",
+          "status": 0
+        },
+        {
+          "stage": "table0_calloc_and_original_pointer_store",
+          "pc_after_strex": "0x525da5d0",
+          "status": 0
+        },
+        {
+          "stage": "table0_calloc_and_original_pointer_store",
+          "pc_after_strex": "0x525da540",
+          "status": 0
+        }
+      ],
+      "task_records_and_queue_unchanged": true,
+      "no_forced_exclusive_status": true,
+      "MPIDR_CP15_SVC_executed": false,
+      "original_code_unchanged": true,
+      "registry_count_reads": 301,
+      "registry_pointer_reads": 300,
+      "fill": {
+        "pointer": "0x56508808",
+        "bytes": 1200,
+        "before_sha256": "655a3ef0465a9f30fddf25f4dde0c19a05c6f9069b83961800c1944165955273",
+        "before_pattern": "0x0",
+        "after_sha256": "655a3ef0465a9f30fddf25f4dde0c19a05c6f9069b83961800c1944165955273",
+        "adjacent_bytes_unchanged_by_fill": true,
+        "neighbor_guard_bytes_each_side": 8
+      },
+      "omitted_records": {
+        "writes": {
+          "count": 4473,
+          "sha256": "bdd3cb2def3cef4dd3838fc5e1fced9a490648eae1e2e12fafde03c8a820e523",
+          "serialized_bytes": 473233
+        },
+        "reads": {
+          "count": 966,
+          "sha256": "a4549635032c8cb393a54ffd2df84614e55138b11f7633d041cda966abed538b",
+          "serialized_bytes": 107135
+        },
+        "trace": {
+          "count": 26225,
+          "sha256": "203b4bc8b87b7fca173af8fc5057a837e491683630344bfb8da9246411211109",
+          "serialized_bytes": 1468885
+        },
+        "exclusive_events": {
+          "count": 20,
+          "sha256": "a1906534412e7ea64e92dca4aedce8207b2f1016767fa5d2b2058ede441e83ed",
+          "serialized_bytes": 2571
+        }
+      },
+      "exclusive_RAM_targets": [
+        "0x545011a0",
+        "0x54c40e60"
+      ]
+    },
+    {
+      "backing_ram_pattern": "0xa5",
+      "raw_read_control_bytes": 56,
+      "raw_control_addresses": [
+        "0x56492c88",
+        "0x56492c90",
+        "0x564aa700",
+        "0x56493260",
+        "0x56493268",
+        "0x56493270",
+        "0x56493278"
+      ],
+      "logical_heap": {
+        "start": "0x56492c80",
+        "end_exclusive": "0x57c52c80"
+      },
+      "outcomes": [
+        {
+          "stage": "original_config_init",
+          "entry": "0x525d6eb4",
+          "stop": "0x1000f000",
+          "reason": "native_return",
+          "r0": "0x0",
+          "entry_registers": {
+            "R0": "0x0",
+            "R1": "0x0",
+            "R2": "0x0",
+            "R3": "0x0",
+            "R4": "0x0",
+            "R5": "0x0",
+            "R6": "0x0",
+            "R7": "0x0",
+            "R8": "0x0",
+            "R9": "0x0",
+            "R10": "0x0",
+            "R11": "0x0",
+            "R12": "0x0",
+            "SP": "0x1000e000",
+            "LR": "0x1000f000",
+            "CPSR": "0x13"
+          },
+          "host_register_arguments": {},
+          "host_stack_argument": null,
+          "reset_call_stack_and_CPSR": true
+        },
+        {
+          "stage": "original_core_prologue",
+          "entry": "0x525b5a50",
+          "stop": "0x525b5a54",
+          "reason": "before_mrc",
+          "r0": "0x0",
+          "entry_registers": {
+            "R0": "0x0",
+            "R1": "0x0",
+            "R2": "0x533e3138",
+            "R3": "0x0",
+            "R4": "0x0",
+            "R5": "0x0",
+            "R6": "0x0",
+            "R7": "0x0",
+            "R8": "0x0",
+            "R9": "0x0",
+            "R10": "0x0",
+            "R11": "0x0",
+            "R12": "0x54c3fd04",
+            "SP": "0x1000e000",
+            "LR": "0x1000f000",
+            "CPSR": "0x13"
+          },
+          "host_register_arguments": {},
+          "host_stack_argument": null,
+          "reset_call_stack_and_CPSR": true
+        },
+        {
+          "stage": "independent_core0_branch",
+          "entry": "0x525b5a6c",
+          "stop": "0x525b5b48",
+          "reason": "declared_boundary",
+          "r0": "0x547d2cc0",
+          "entry_registers": {
+            "R0": "0x0",
+            "R1": "0x0",
+            "R2": "0x533e3138",
+            "R3": "0x0",
+            "R4": "0x0",
+            "R5": "0x0",
+            "R6": "0x0",
+            "R7": "0x0",
+            "R8": "0x0",
+            "R9": "0x0",
+            "R10": "0x0",
+            "R11": "0x0",
+            "R12": "0x54c3fd04",
+            "SP": "0x1000dff8",
+            "LR": "0x1000f000",
+            "CPSR": "0x13"
+          },
+          "host_register_arguments": {},
+          "host_stack_argument": null,
+          "reset_call_stack_and_CPSR": false
+        },
+        {
+          "stage": "original_platform_bounds",
+          "entry": "0x525d9e94",
+          "stop": "0x525d9f10",
+          "reason": "declared_boundary",
+          "r0": "0x54c40ea0",
+          "entry_registers": {
+            "R0": "0x547d2cc0",
+            "R1": "0x40000",
+            "R2": "0x5457db00",
+            "R3": "0x0",
+            "R4": "0x0",
+            "R5": "0x0",
+            "R6": "0x0",
+            "R7": "0x0",
+            "R8": "0x0",
+            "R9": "0x0",
+            "R10": "0x0",
+            "R11": "0x0",
+            "R12": "0x56492c80",
+            "SP": "0x1000e000",
+            "LR": "0x1000f000",
+            "CPSR": "0x13"
+          },
+          "host_register_arguments": {},
+          "host_stack_argument": null,
+          "reset_call_stack_and_CPSR": true
+        },
+        {
+          "stage": "original_page_region_init",
+          "entry": "0x525d8a34",
+          "stop": "0x1000f000",
+          "reason": "native_return",
+          "r0": "0x0",
+          "entry_registers": {
+            "R0": "0x54c40ea0",
+            "R1": "0x54c40ea8",
+            "R2": "0x54c40e68",
+            "R3": "0x54c40e5c",
+            "R4": "0x57c52c80",
+            "R5": "0x56492c80",
+            "R6": "0x140",
+            "R7": "0x83",
+            "R8": "0x1d001000",
+            "R9": "0x1d002000",
+            "R10": "0x0",
+            "R11": "0x0",
+            "R12": "0x54c40eac",
+            "SP": "0x1000e000",
+            "LR": "0x1000f000",
+            "CPSR": "0x13"
+          },
+          "host_register_arguments": {},
+          "host_stack_argument": null,
+          "reset_call_stack_and_CPSR": true
+        },
+        {
+          "stage": "original_arena_headers",
+          "entry": "0x525d9a64",
+          "stop": "0x1000f000",
+          "reason": "native_return",
+          "r0": "0x0",
+          "entry_registers": {
+            "R0": "0x0",
+            "R1": "0x4",
+            "R2": "0x0",
+            "R3": "0x57c52c80",
+            "R4": "0x57c52c80",
+            "R5": "0x56492c80",
+            "R6": "0x140",
+            "R7": "0x83",
+            "R8": "0x1d001000",
+            "R9": "0x1d002000",
+            "R10": "0x0",
+            "R11": "0x0",
+            "R12": "0x0",
+            "SP": "0x1000e000",
+            "LR": "0x1000f000",
+            "CPSR": "0x13"
+          },
+          "host_register_arguments": {},
+          "host_stack_argument": null,
+          "reset_call_stack_and_CPSR": true
+        },
+        {
+          "stage": "original_task_table_init",
+          "entry": "0x525b8830",
+          "stop": "0x1000f000",
+          "reason": "native_return",
+          "r0": "0x0",
+          "entry_registers": {
+            "R0": "0x0",
+            "R1": "0x54582f80",
+            "R2": "0x54582f70",
+            "R3": "0x54582f60",
+            "R4": "0x57c52c80",
+            "R5": "0x56492c80",
+            "R6": "0x140",
+            "R7": "0x83",
+            "R8": "0x1d001000",
+            "R9": "0x1d002000",
+            "R10": "0x0",
+            "R11": "0x0",
+            "R12": "0x54582f48",
+            "SP": "0x1000e000",
+            "LR": "0x1000f000",
+            "CPSR": "0x13"
+          },
+          "host_register_arguments": {},
+          "host_stack_argument": null,
+          "reset_call_stack_and_CPSR": true
+        },
+        {
+          "stage": "independent_table0_count_store",
+          "entry": "0x525d5bb8",
+          "stop": "0x525d5bbc",
+          "reason": "declared_boundary",
+          "r0": "0x12c",
+          "entry_registers": {
+            "R0": "0x12c",
+            "R1": "0x54c3f4ec",
+            "R2": "0x12c",
+            "R3": "0x54582f60",
+            "R4": "0x5457ec90",
+            "R5": "0x56492c80",
+            "R6": "0x140",
+            "R7": "0x83",
+            "R8": "0x1d001000",
+            "R9": "0x1d002000",
+            "R10": "0x0",
+            "R11": "0x0",
+            "R12": "0x100012c",
+            "SP": "0x1000e000",
+            "LR": "0x1000f000",
+            "CPSR": "0x13"
+          },
+          "host_register_arguments": {
+            "R0": "0x12c",
+            "R4": "0x5457ec90"
+          },
+          "host_stack_argument": null,
+          "reset_call_stack_and_CPSR": true
+        },
+        {
+          "stage": "table0_calloc_and_original_pointer_store",
+          "entry": "0x525d5bec",
+          "stop": "0x525d5bf8",
+          "reason": "declared_boundary",
+          "r0": "0x56508808",
+          "entry_registers": {
+            "R0": "0x12c",
+            "R1": "0x54c3f4ec",
+            "R2": "0x12c",
+            "R3": "0x54582f60",
+            "R4": "0x5457ec90",
+            "R5": "0x5457ec90",
+            "R6": "0x140",
+            "R7": "0x83",
+            "R8": "0x1d001000",
+            "R9": "0x1d002000",
+            "R10": "0x0",
+            "R11": "0x0",
+            "R12": "0x100012c",
+            "SP": "0x1000e000",
+            "LR": "0x1000f000",
+            "CPSR": "0x13"
+          },
+          "host_register_arguments": {
+            "R0": "0x12c",
+            "R5": "0x5457ec90"
+          },
+          "host_stack_argument": null,
+          "reset_call_stack_and_CPSR": true
+        },
+        {
+          "stage": "original_first_name_lookup",
+          "entry": "0x525bb354",
+          "stop": "0x525bb390",
+          "reason": "declared_boundary",
+          "r0": "0x0",
+          "entry_registers": {
+            "R0": "0x56508808",
+            "R1": "0x0",
+            "R2": "0x0",
+            "R3": "0x54582f60",
+            "R4": "0x5457ec90",
+            "R5": "0x533e33f8",
+            "R6": "0x140",
+            "R7": "0x83",
+            "R8": "0x1d001000",
+            "R9": "0x1d002000",
+            "R10": "0x0",
+            "R11": "0x0",
+            "R12": "0x56508cb8",
+            "SP": "0x1000e000",
+            "LR": "0x1000f000",
+            "CPSR": "0x13"
+          },
+          "host_register_arguments": {
+            "R5": "0x533e33f8"
+          },
+          "host_stack_argument": null,
+          "reset_call_stack_and_CPSR": true
+        },
+        {
+          "stage": "empty_name_control",
+          "entry": "0x525d575c",
+          "stop": "0x1000f000",
+          "reason": "native_return",
+          "r0": "0x0",
+          "entry_registers": {
+            "R0": "0x0",
+            "R1": "0x564aa8d4",
+            "R2": "0x500",
+            "R3": "0x0",
+            "R4": "0x5457ec90",
+            "R5": "0x533e33f8",
+            "R6": "0x140",
+            "R7": "0x83",
+            "R8": "0x1d001000",
+            "R9": "0x0",
+            "R10": "0x0",
+            "R11": "0x533e3428",
+            "R12": "0x5b37",
+            "SP": "0x1000e000",
+            "LR": "0x1000f000",
+            "CPSR": "0x13"
+          },
+          "host_register_arguments": {
+            "R0": "0x0",
+            "R1": "0x564aa8d4",
+            "R2": "0x500",
+            "R3": "0x0"
+          },
+          "host_stack_argument": "0x533e3353",
+          "reset_call_stack_and_CPSR": true
+        }
+      ],
+      "native_hash_pointer": "0x56508808",
+      "native_task_pointer": "0x564aa808",
+      "hash_zero_stores": 300,
+      "hash_reads": 300,
+      "task_name_reads": 0,
+      "lookup_returns": [
+        {
+          "stage": "original_first_name_lookup",
+          "inner_lookup_r0": "0xffffffff"
+        },
+        {
+          "stage": "empty_name_control",
+          "inner_lookup_r0": "0xffffffff"
+        }
+      ],
+      "empty_name_original_ROM": "0x533e3353",
+      "exclusive_status": [
+        {
+          "stage": "original_arena_headers",
+          "pc_after_strex": "0x525da5a8",
+          "status": 0
+        },
+        {
+          "stage": "original_arena_headers",
+          "pc_after_strex": "0x525da5d0",
+          "status": 0
+        },
+        {
+          "stage": "original_task_table_init",
+          "pc_after_strex": "0x525da540",
+          "status": 0
+        },
+        {
+          "stage": "original_task_table_init",
+          "pc_after_strex": "0x525da5a8",
+          "status": 0
+        },
+        {
+          "stage": "original_task_table_init",
+          "pc_after_strex": "0x525da5d0",
+          "status": 0
+        },
+        {
+          "stage": "original_task_table_init",
+          "pc_after_strex": "0x525da540",
+          "status": 0
+        },
+        {
+          "stage": "table0_calloc_and_original_pointer_store",
+          "pc_after_strex": "0x525da540",
+          "status": 0
+        },
+        {
+          "stage": "table0_calloc_and_original_pointer_store",
+          "pc_after_strex": "0x525da5a8",
+          "status": 0
+        },
+        {
+          "stage": "table0_calloc_and_original_pointer_store",
+          "pc_after_strex": "0x525da5d0",
+          "status": 0
+        },
+        {
+          "stage": "table0_calloc_and_original_pointer_store",
+          "pc_after_strex": "0x525da540",
+          "status": 0
+        }
+      ],
+      "task_records_and_queue_unchanged": true,
+      "no_forced_exclusive_status": true,
+      "MPIDR_CP15_SVC_executed": false,
+      "original_code_unchanged": true,
+      "registry_count_reads": 301,
+      "registry_pointer_reads": 300,
+      "fill": {
+        "pointer": "0x56508808",
+        "bytes": 1200,
+        "before_sha256": "82d2de28c1a19827b52756914da05a7e35ad7dc66b4a8316e999d003372c85a5",
+        "before_pattern": "0xa5",
+        "after_sha256": "655a3ef0465a9f30fddf25f4dde0c19a05c6f9069b83961800c1944165955273",
+        "adjacent_bytes_unchanged_by_fill": true,
+        "neighbor_guard_bytes_each_side": 8
+      },
+      "omitted_records": {
+        "writes": {
+          "count": 4473,
+          "sha256": "ad54ab59b9db3abe7ee56654d447b37c4e5ed39e26dc0d0db0016199b96e40a2",
+          "serialized_bytes": 473247
+        },
+        "reads": {
+          "count": 966,
+          "sha256": "a4549635032c8cb393a54ffd2df84614e55138b11f7633d041cda966abed538b",
+          "serialized_bytes": 107135
+        },
+        "trace": {
+          "count": 26225,
+          "sha256": "203b4bc8b87b7fca173af8fc5057a837e491683630344bfb8da9246411211109",
+          "serialized_bytes": 1468885
+        },
+        "exclusive_events": {
+          "count": 20,
+          "sha256": "a1906534412e7ea64e92dca4aedce8207b2f1016767fa5d2b2058ede441e83ed",
+          "serialized_bytes": 2571
+        }
+      },
+      "exclusive_RAM_targets": [
+        "0x545011a0",
+        "0x54c40e60"
+      ]
+    }
+  ],
+  "source_config": {
+    "max_domain_id": 100,
+    "domain_record11_count_if_successful": 101,
+    "domain_initializer_executed": false
+  },
+  "host_initial_memory": {
+    "original_data_copy": {
+      "source": "0x53ce7d40",
+      "destination": "0x54500000",
+      "bytes": 416384
+    },
+    "zero_global_mapping": [
+      "0x54500000",
+      "0x54c60000"
+    ],
+    "synthetic_call_stack": [
+      "0x10000000",
+      "0x10010000"
+    ],
+    "call_SP": "0x1000e000",
+    "call_LR": "0x1000f000",
+    "entry_CPSR": "0x13",
+    "core0_branch_selected_after_MPIDR_stop": true,
+    "other11_registry_types_and_domain_init_omitted": true
+  },
+  "projection": {
+    "full_witness_saved_to_disk": false,
+    "firmware_bytes_or_disassembly_bundled": false,
+    "record_digest_encoding": "UTF-8 JSON sort_keys=True separators=(comma,colon) ensure_ascii=True",
+    "write_log": "All guest stores including synthetic stack",
+    "read_log": "Only unproduced RMW reads and lookup/empty-control reads; not all guest reads",
+    "code_hooks": "May include predicated-false instructions; actual stores logged separately",
+    "adjacent_guard": "Final equality of eight bytes before/after fill, not proof of no intervening write"
+  },
+  "limits": [
+    "Single-vCPU synthetic RAM only; original LDREX/STREX executes without forced return. No physical exclusivity/coherence proof.",
+    "Original config/platform/page/arena/task initialization use separate selected entries, including core0 branch after stopping MPIDR. Not wholeboot.",
+    "Table0 count and caller slice entered independently; earlier domain allocation and other11 registry count/pointer gates omitted.",
+    "Full original InitTask lookup reaches no-match; no task slot consumed or creator success. Empty-name control is original ROM NUL, not an empty task descriptor.",
+    "Only56 unproduced RMW control bytes may be read; entire synthetic heap backing is initially00 orA5, no allocated hash pointer or hash-array contents are host-injected; empty control takes the original native task pointer as an unused argument.",
+    "All guest stores are logged including synthetic call-stack stores; host initial memory staging is separate."
+  ]
+}

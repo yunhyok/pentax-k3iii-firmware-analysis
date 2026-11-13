@@ -1,0 +1,151 @@
+{
+  "schema": 1,
+  "all_supported_tests_passed": true,
+  "positive_replay_tested": true,
+  "fixtures_in_exclusive_temporary_scope": true,
+  "private_guard_runner_bundled": false,
+  "tests": [
+    {
+      "test": "wrong_size",
+      "passed": true,
+      "expected_error": "decoded input size mismatch",
+      "existing_output_preserved": false
+    },
+    {
+      "test": "truncated",
+      "passed": true,
+      "expected_error": "decoded input size mismatch",
+      "existing_output_preserved": false
+    },
+    {
+      "test": "oversized",
+      "passed": true,
+      "expected_error": "decoded input size mismatch",
+      "existing_output_preserved": false
+    },
+    {
+      "test": "wrong_digest",
+      "passed": true,
+      "expected_error": "decoded input hash mismatch",
+      "existing_output_preserved": false
+    },
+    {
+      "test": "optimized_before_optional_imports",
+      "passed": true,
+      "expected_error": "Assertions required",
+      "existing_output_preserved": false
+    },
+    {
+      "test": "existing_output",
+      "passed": true,
+      "expected_error": "output already exists",
+      "existing_output_preserved": true
+    },
+    {
+      "test": "input_alias",
+      "passed": true,
+      "expected_error": "output aliases",
+      "existing_output_preserved": true
+    },
+    {
+      "test": "normalized_input_alias",
+      "passed": true,
+      "expected_error": "output aliases",
+      "existing_output_preserved": true
+    },
+    {
+      "test": "helper_output_alias",
+      "passed": true,
+      "expected_error": "output aliases",
+      "existing_output_preserved": true
+    },
+    {
+      "test": "hardlink_output",
+      "passed": true,
+      "expected_error": "output already exists",
+      "existing_output_preserved": true
+    },
+    {
+      "test": "dangling_symlink",
+      "passed": true,
+      "expected_error": "output already exists",
+      "existing_output_preserved": false
+    },
+    {
+      "test": "tampered_helpers/native.py.inc",
+      "passed": true,
+      "expected_error": "package hash mismatch: helpers/native.py.inc",
+      "existing_output_preserved": false
+    },
+    {
+      "test": "tampered_source-ranges.json",
+      "passed": true,
+      "expected_error": "package hash mismatch: source-ranges.json",
+      "existing_output_preserved": false
+    },
+    {
+      "test": "tampered_provenance.json",
+      "passed": true,
+      "expected_error": "package hash mismatch: provenance.json",
+      "existing_output_preserved": false
+    },
+    {
+      "test": "bool_is_not_data_size",
+      "passed": true,
+      "expected_error": "data size type"
+    },
+    {
+      "test": "unaligned_code",
+      "passed": true,
+      "expected_error": "code alignment"
+    },
+    {
+      "test": "out_of_bounds_data",
+      "passed": true,
+      "expected_error": "source range bounds"
+    },
+    {
+      "test": "no_disassembly_fields",
+      "passed": true,
+      "expected_error": "source record fields"
+    },
+    {
+      "test": "wrong_hook_range_count",
+      "passed": true,
+      "expected_error": "manifest record count"
+    },
+    {
+      "test": "bool_is_not_witness_size",
+      "passed": true,
+      "expected_error": "provenance witness"
+    },
+    {
+      "test": "two_relocated_replays_equal_published_projection",
+      "passed": true,
+      "projection_sha256": "4f533002bf1f8727092c8aa44596544c6dbf339d41231a411297fffdf76839d4",
+      "input_preserved": true
+    },
+    {
+      "test": "wrong_source_range_hash",
+      "passed": true,
+      "expected_error": "source code range mismatch"
+    },
+    {
+      "test": "bool_is_not_native_store_count",
+      "passed": true,
+      "expected_error": "case integer"
+    },
+    {
+      "test": "omitted_guest_store_still_checked",
+      "passed": true,
+      "expected_error": "complete observation witness mismatch"
+    },
+    {
+      "test": "public_helper_hash_is_not_original_provenance",
+      "passed": true,
+      "expected_error": "complete observation witness mismatch"
+    }
+  ],
+  "test_script_sha256": "3ce3427ed4534a6de3e9300371a3e7725570ca378bc2c67595c960ef65c57061",
+  "cli_sha256": "74c4e487c87539bc914b99f38b07aa087bdd043bda32ab5e36fc87f35edd73db"
+}

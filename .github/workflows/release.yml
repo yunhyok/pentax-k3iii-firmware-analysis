@@ -58,6 +58,8 @@ jobs:
       - if: steps.existing.outputs.exists == 'false'
         run: python analysis/allocator-replay/test_replay.py --work-dir "${{ runner.temp }}" --output "${{ runner.temp }}/allocator-tests.json"
       - if: steps.existing.outputs.exists == 'false'
+        run: python analysis/registry-replay/test_replay.py --work-dir "${{ runner.temp }}" --output "${{ runner.temp }}/registry-tests.json"
+      - if: steps.existing.outputs.exists == 'false'
         run: python tools/check_research_program.py
       - if: steps.existing.outputs.exists == 'false'
         run: python tools/check_site.py
