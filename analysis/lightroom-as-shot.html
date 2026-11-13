@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>As Shot과 프로파일별 백색점 — PENTAX 색 연구</title>
+<link rel="stylesheet" href="../assets/site.css">
+<style>
+.as-shot .neutral-flow{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,12rem),1fr));gap:.6rem;margin:.7rem 0 0;padding:0;list-style:none}
+.as-shot .neutral-flow li{padding:.6rem .7rem;border:1px solid var(--line);border-radius:8px}
+.as-shot .neutral-flow strong{display:block}
+.as-shot .table-wrap:focus-visible{outline:2px solid var(--brand);outline-offset:3px}
+</style>
+</head>
+<body data-camera="k3iii">
+<!-- chrome:top -->
+<a class="skip" href="#main">본문 바로가기</a>
+<div class="topbar"><div class="topbar-in"><a class="brand" href="../index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="../index.html" aria-current="true">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="https://yunhyok.github.io/pentax-q7-firmware-analysis/">Q7</a></div><nav class="topnav" aria-label="주제"><a href="../index.html">개요</a><a href="guide-boot.html">부팅·저장소</a><a href="guide-update.html">업데이트</a><a href="guide-rebuild.html">재구축</a><a href="guide-rtos.html">명령·셸</a><a href="guide-color.html">색 처리</a><a href="lightroom-bridge.html" aria-current="true">Lightroom</a><a href="af-foundations.html">AF</a><a href="ui-port-contract.html">UI</a></nav></div></div>
+<nav class="crumbs" aria-label="현재 위치"><ol><li><a href="../index.html">PENTAX K-3 Mark III</a></li><li><a href="lightroom-bridge.html">Lightroom 색 프로파일</a></li><li aria-current="page">As Shot과 프로파일별 백색점</li></ol></nav>
+<!-- /chrome:top -->
+<header class="page-head">
+<p class="eyebrow">Lightroom 색 프로파일 · Q7 / K-3 III</p>
+<h1>같은 As Shot 중립값에서 온도·틴트가 달라지는 이유</h1>
+<p class="lead">Q7의 같은 DNG 중립값을 두 프로파일에 적용했더니 Adobe SDK 수식의 Python 재현에서 −199.657 K와 +10.096의 차이가 났습니다. 실제 Lightroom 표시 변화는 −200 K와 +10이었습니다.</p>
+</header>
+<div class="layout">
+<!-- chrome:toc -->
+<nav class="toc" aria-label="이 문서의 목차"><h2 data-toc="no">이 문서에서</h2><ol><li><a href="#observation">Lightroom 16.0에서 관측한 변화</a></li><li><a href="#sdk">Adobe SDK에서 중립값을 백색점으로 바꾸는 순서</a></li><li><a href="#q7">Q7의 같은 중립값을 두 프로파일로 계산</a></li><li><a href="#next">K-3 III와 실제 채널 이득을 확인하려면</a></li><li><a href="#replay">고정 입력으로 재현</a></li></ol></nav>
+<!-- /chrome:toc -->
+<main id="main" class="doc as-shot">
+
+<section id="observation">
+<h2>Lightroom 16.0에서 관측한 변화</h2>
+<p>같은 RAW의 가상 사본에서 프로파일만 바꿨습니다. As Shot을 유지했고, 화이트밸런스를 수동으로 조정하지 않았습니다. III의 Adobe Standard와 Camera Bright는 둘 다 매트릭스 5400 K/−7에서 5350 K/−6으로 바뀌었습니다. Q7은 매트릭스 5100 K/−17에서 Adobe Standard 4900 K/−7로 바뀌었습니다. 이는 UI와 TIFF XMP의 표시값입니다. 세 출력의 기존 색차 비교는 프로파일과 As Shot 해석을 함께 바꾼 조건으로 유지합니다. <a href="lightroom-studio-reference.html">Lightroom 참조 프로파일 비교</a> · <a href="lightroom-as-shot.json">UI·TIFF와 출처 해시</a></p>
+</section>
+
+<section id="sdk">
+<h2>Adobe SDK에서 중립값을 백색점으로 바꾸는 순서</h2>
+<figure class="diagram">
+<figcaption>고정된 카메라 공간 중립값과 프로파일별 변환</figcaption>
+<ol class="neutral-flow">
+<li><strong>RAW 중립값</strong>Q7의 AsShotNeutral은 (256/411, 1, 256/445)</li>
+<li><strong>프로파일별 역변환</strong>온도에 따라 보간한 ColorMatrix를 역으로 적용해 백색점 xy를 반복 계산</li>
+<li><strong>온도와 틴트</strong>xy를 등온선 표와 보간해 SDK의 온도·틴트 좌표로 표현</li>
+<li><strong>렌더링 변환</strong>xy를 다시 카메라 공간에 보내 CameraWhite를 구하고, ForwardMatrix 또는 Bradford 경로로 D50 PCS에 변환</li>
+</ol>
+</figure>
+<p>SDK는 DNG 중립 벡터의 최대 채널을 1로 맞추고 소수 여섯 자리로 반올림합니다. 렌더러의 명시적 백색점 지정이 없고 카메라 중립값이 있으면, 그 벡터에서 선택된 프로파일의 ColorMatrix로 백색점 xy를 풉니다. 두 조명 행렬 사이의 보간 가중치는 역색온도로 계산합니다. 입력 AnalogBalance와 시그니처가 호환되는 CameraCalibration도 유효 행렬에 반영할 수 있습니다. Q7 입력의 AnalogBalance는 (1, 1, 1)이고 보정 행렬과 시그니처는 없습니다. <a href="lightroom-as-shot.json">SDK Build 2768 파일·행 번호</a> · <a href="https://helpx.adobe.com/camera-raw/desktop/dng-and-file-formats/digital-negative.html">Adobe DNG SDK</a></p>
+<p>ForwardMatrix는 중립값을 xy로 푸는 단계에서 쓰이지 않습니다. 이후의 카메라→D50 변환에서 쓰입니다. Q7 매트릭스 DCP에는 ForwardMatrix가 없어 Bradford 경로를 탔고, Adobe Standard에는 ForwardMatrix가 있어 그 행렬로 변환했습니다. 공개 SDK의 참조 커널은 CameraWhite를 채널별 상한으로 사용한 다음 변환 행렬을 적용합니다.</p>
+</section>
+
+<section id="q7">
+<h2>Q7의 같은 중립값을 두 프로파일로 계산</h2>
+<div class="table-wrap" tabindex="0" role="region" aria-label="Q7 SDK 계산과 Lightroom 표시값 비교">
+<table>
+<caption>SDK 계산과 관측값</caption>
+<thead><tr><th scope="col">프로파일</th><th scope="col">SDK 백색점 xy</th><th scope="col">SDK 온도 / 틴트</th><th scope="col">Lightroom 표시</th></tr></thead>
+<tbody>
+<tr><th scope="row">매트릭스 1760</th><td>(0.340969, 0.337214)</td><td>5120.790 K / −16.980</td><td>5100 K / −17</td></tr>
+<tr><th scope="row">Adobe Standard</th><td>(0.346825, 0.348379)</td><td>4921.133 K / −6.884</td><td>4900 K / −7</td></tr>
+<tr><th scope="row">Adobe Standard − 매트릭스</th><td>—</td><td>−199.657 K / +10.096</td><td>−200 K / +10</td></tr>
+</tbody></table></div>
+<p>두 계산 모두 6회에 수렴했습니다. Python 모델에서 정규화한 CameraWhite의 두 프로파일 간 최대 성분 차이는 1.61×10<sup>−8</sup>입니다. 녹색을 1로 둔 역수 비율의 최대 차이는 4.14×10<sup>−8</sup>입니다. 반면 카메라→D50 변환 행렬은 최대 성분 차이가 0.541446입니다. 같은 센서 중립값이 다른 백색점 좌표로 표시되면서 렌더링 변환도 달라질 수 있습니다. <a href="lightroom-as-shot.json">계산값과 자체 검사</a> · <a href="../tools/check_lightroom_as_shot.py">계산 코드</a></p>
+<p>Python으로 재현한 SDK 수식의 절대 색온도는 실제 표시보다 약 21 K씩 높았습니다. 표시값의 변화는 가까웠지만 Lightroom이 SDK의 같은 코드를 실행했는지, 별도의 채널 이득을 무엇으로 적용했는지는 확인하지 못했습니다. 역수 비율은 모델에서 계산한 값입니다. 촬영 조명의 스펙트럼이나 물리적 색온도를 측정한 자료도 없습니다. 이 실험의 촬영 펌웨어는 Q7 1.00과 III 1.10입니다.</p>
+</section>
+
+<section id="next">
+<h2>K-3 III와 실제 채널 이득을 확인하려면</h2>
+<p>K-3 III PEF의 Pentax MakerNote에는 <code>WhitePoint</code> 18976/8192/8192/13088이 있습니다. 원본 PEF의 IFD0에는 표준 DNG AsShotNeutral과 AsShotWhiteXY가 없습니다. 이 필드를 Adobe PEF 디코더가 어떤 채널 순서와 정규화로 사용하는지는 입증되지 않아 III의 센서 중립값을 추정하지 않았습니다. 표시 Kelvin에서 역산한 벡터도 독립 검증에 쓸 수 없습니다. <a href="https://raw.githubusercontent.com/exiftool/exiftool/master/lib/Image/ExifTool/Pentax.pm">ExifTool Pentax 태그 정의</a></p>
+<p>다음에 III 입력의 독립 근거가 필요하면, 원본 PEF의 읽기 전용 복사본을 고정 버전 Adobe DNG Converter에서 한 번 변환하고 DNG의 AsShotNeutral과 보정 태그를 직접 확인할 수 있습니다. 이는 그 변환기의 해석을 보여 줍니다. Lightroom 렌더러의 채널 이득 동일성을 직접 확인하려면 프로파일 두 조건의 같은 RAW에 대해 백색점 해석 직후, 색 행렬·LUT 적용 전의 채널 이득과 적용 단계가 필요합니다. 예를 들어 이득 D와 뒤따르는 행렬 M의 곱만 알면, 임의의 가역 대각행렬 A에 대해 (M A⁻¹)(A D)도 같은 변환을 만듭니다. 최종 TIFF만으로는 두 인자를 따로 구할 수 없습니다. 촬영 조명 아래 물리적 중립의 센서 응답을 따로 확인하려면, 분광 반사율을 아는 무채색 표적을 함께 촬영하고 포화되지 않은 선형 CFA 채널값에서 블랙 레벨을 뺀 비율을 측정해야 합니다. 광원의 물리적 색도는 별도 측색으로 확인합니다.</p>
+</section>
+<section id="replay">
+<h2>고정 입력으로 재현</h2>
+<p>Adobe DNG SDK 1.7.1 Build 2768 ZIP, Q7 DNG, K-3 III PEF, 매트릭스 1760 DCP, 설치된 Q7 Adobe Standard DCP를 각각 지정합니다. 파일 크기와 SHA-256은 결과 JSON에 고정했습니다. 계산기는 ZIP에서 온도 표를 읽고, 직접 확인한 RAW의 중립값과 프로파일 행렬을 Python 수식에 넣어 원래 계산 결과를 대조합니다. 현재 Adobe 다운로드에 다른 빌드가 제공되면 이 재현의 입력 해시와 일치하지 않을 수 있습니다. <a href="lightroom-as-shot.json">입력 핀과 전체 결과</a> · <a href="lightroom-studio-baseline.html#replay">스튜디오 RAW 출처</a> · <a href="../profiles/Adobe-DNG-SDK-LICENSE.txt">Adobe SDK 라이선스</a></p>
+<pre><code>python -B tools/check_lightroom_as_shot.py \
+  --sdk dng-sdk.zip --raw Q7hSLI00100NR1.DNG \
+  --pef K3IIIhSLI0000100NR0.PEF --matrix pentax-q7-1760-matrix-test.dcp \
+  --adobe-standard "PENTAX Q7 Adobe Standard.dcp" --output as-shot-replay.json</code></pre>
+<p>매트릭스 1760 DCP가 필요하면 <a href="lightroom-studio-baseline.json">스튜디오 기준 JSON</a>의 <code>profile_recipes.q7.spec</code> 객체를 별도 JSON 파일로 저장한 뒤 <code>python tools/profile_bridge.py q7-spec.json pentax-q7-1760-matrix-test.dcp</code>로 생성할 수 있습니다.</p>
+<p>검증기는 고정 기준 JSON과 그 안의 원래 계산 결과를 각각 SHA-256으로 확인합니다. 새 계산은 키, 배열 길이, 자료형과 실수 이외의 값이 모두 같아야 합니다. 유한 실수는 항목마다 절대 차이 <code>1e-10</code>까지 허용합니다. 계산값을 그대로 저장하고 실제 출력의 SHA-256을 표시합니다. 기준과 바이트까지 같으면 <code>exact</code>, 수치 비교만 통과하면 <code>numeric</code>으로 표시합니다.</p>
+<p>Python 3.12.3, NumPy 1.26.4, tifffile 2023.4.12에서 기본 OpenBLAS 경로는 바이트까지 일치했습니다. 같은 환경에서 Nehalem 커널을 선택한 대조는 실수 25개에 최대 <code>6.66×10⁻¹⁶</code> 차이가 있었고 수치 비교를 통과했습니다. 이 대조는 두 실행 환경에서의 관측입니다. 입력 RAW·DCP·SDK 및 원본 온도 표는 별도로 준비해야 합니다. 계산은 고정 입력에 대한 수식 재현이며 SDK 네이티브 실행이나 Lightroom 렌더링을 포함하지 않습니다.</p>
+</section>
+</main>
+</div>
+<!-- chrome:bottom -->
+<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">Lightroom 색 프로파일 — 이 주제의 문서</h2><ol><li><a href="lightroom-bridge.html">Lightroom 프로파일 안내<span>DCP 생성·검증의 전체 흐름</span></a></li><li><a href="raw-test-inputs.html">시험용 RAW 준비</a></li><li><a href="color-comparison-protocol.html">ColorChecker 비교 절차</a></li><li><a href="lightroom-render-comparison.html">실제 TIFF 6개 비교</a></li><li><a href="lightroom-tone-comparison.html">톤 곡선 비교</a></li><li><a href="lightroom-model-exports.html">K-3 III·Q7 DCP 내보내기</a></li><li><a href="lightroom-profile-fingerprints.html">프로파일 지문 재현</a></li><li><a href="lightroom-look-controls.html">LookTable 대조 실험</a></li><li><a href="color-tone-residual.html">톤 보정 뒤 남는 색차</a></li><li><a href="color-scene-transfer.html">고정 톤의 독립 장면 비교<span>K-3 II #1363과 Lightroom 버전 대조</span></a></li><li><a href="lightroom-composed-tone.html">합성 톤 DCP의 실제 Lightroom 출력<span>두 장면·최대 색차 기준 미충족</span></a></li><li><a href="lightroom-tone-coordinates.html">Lightroom 톤과 RGB 좌표<span>같은 엔진·두 출력 색공간 대조</span></a></li><li><a href="lightroom-studio-baseline.html">K-3 III·Q7 Bright 스튜디오 비교<span>정합 통과 영역의 JPEG 대비 색차</span></a></li><li><a href="lightroom-studio-reference.html">K-3 III·Q7 참조 프로파일 비교<span>같은 장면의 공통 마스크·As Shot 대조</span></a></li><li><a href="lightroom-as-shot.html" aria-current="page">As Shot과 프로파일별 백색점<span>같은 Q7 RAW의 SDK 수식 재현</span></a></li></ol></nav>
+<nav class="pager" aria-label="이전·다음 문서"><a class="prev" href="lightroom-studio-reference.html"><small>← 이전</small>K-3 III·Q7 참조 프로파일 비교</a><a class="next" href="af-foundations.html"><small>다음 →</small>AF와 렌즈 제어 안내</a></nav>
+<footer class="sitefoot"><div class="sitefoot-in"><nav aria-label="사이트"><a href="../index.html#map">문서 지도</a><a href="../index.html#levels">검증 수준 읽는 법</a><a href="../glossary.html">용어집</a><a href="research-program.html">세 기종 연구 본부</a><a href="https://github.com/yunhyok/pentax-k3iii-firmware-analysis">GitHub 저장소</a></nav><p>PENTAX 펌웨어 연구. PC에서 수행한 정적 분석과 에뮬레이션 결과이며, 카메라 실기에서 검증한 내용이 아닙니다. 원본 펌웨어와 추출한 독점 코드는 포함하지 않습니다.</p></div></footer>
+<!-- /chrome:bottom -->
+</body>
+</html>

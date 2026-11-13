@@ -1,0 +1,434 @@
+{
+  "schema": 1,
+  "scope": "Python reproduction of bounded Adobe DNG SDK 1.7.1 Build 2768 formulas for Q7, alongside observed Lightroom metadata. No compiled SDK run, Lightroom instrumentation or camera measurement.",
+  "studio31_source_sha256": {
+    "plan.json": "627d67559890e233975d06f198a0c6a4312a0da1c0198312c755857f2449a86e",
+    "digest-amendment.json": "cf1ea0f56cea5c03d84b14061ef06aef2dd58db622aa7a7829e82f6c228f378e",
+    "ui-observations.json": "e4d11c5d51cce54bafb95894ef8f9c3cbfb46dcf742b60d9749d5f7248eeb7f0",
+    "hq-score.json": "079826353a8beab0d2e2d5bae64c46c41878bad8d4835033c4cedc66234bf940"
+  },
+  "observed_ui": {
+    "k3iii-adobe-standard": {
+      "tiff_sha256": "eedd98a10a0afe3608afbd918f941d3f42a29c2a6459f863fdaa0802217cc9a4",
+      "profile_name": "Adobe Standard",
+      "full_xmp_digest": "EA5189A98CDCED8BE2E41A83A5D5DDF8",
+      "baseline_temperature_tint": [
+        5400,
+        -7
+      ],
+      "profile_temperature_tint": [
+        5350,
+        -6
+      ],
+      "lightroom_version": "16.0",
+      "manual_wb": false,
+      "strict_profile_only_passed": false,
+      "descriptive_profile_plus_as_shot": true
+    },
+    "k3iii-camera-bright": {
+      "tiff_sha256": "a783623226d642a1528ccd9df222c8acbdd81f39ac3922f27a9f8f191f42469b",
+      "profile_name": "Camera Bright",
+      "full_xmp_digest": "61779F5DBA8E9688DAB12702E1DA766B",
+      "baseline_temperature_tint": [
+        5400,
+        -7
+      ],
+      "profile_temperature_tint": [
+        5350,
+        -6
+      ],
+      "lightroom_version": "16.0",
+      "manual_wb": false,
+      "strict_profile_only_passed": false,
+      "descriptive_profile_plus_as_shot": true
+    },
+    "q7-adobe-standard": {
+      "tiff_sha256": "0506b9d91f103d7f8bdb7c6877f1c319d54aae680ae0f8c5ad16b9d17fa65eda",
+      "profile_name": "Adobe Standard",
+      "full_xmp_digest": "503F097A9FA804AB87B5D648EB1F36D0",
+      "baseline_temperature_tint": [
+        5100,
+        -17
+      ],
+      "profile_temperature_tint": [
+        4900,
+        -7
+      ],
+      "lightroom_version": "16.0",
+      "manual_wb": false,
+      "strict_profile_only_passed": false,
+      "descriptive_profile_plus_as_shot": true
+    }
+  },
+  "sdk": {
+    "version": "1.7.1",
+    "build": 2768,
+    "zip_sha256": "c1d3a545ed45b150e59af2e6aa0695c1551f0e2bed34ad87436898a05194d2b1",
+    "source_prefix": "dng_sdk_1_7_1/dng_sdk/source/",
+    "source": {
+      "dng_flags.h": {
+        "sha256": "619bee441fd1f844c1c40b6f8228de20b97f5010eaa1aecb2421db511432e704",
+        "source_lines": {
+          "25–31": "Version 1.7.1 Build 2768"
+        },
+        "bytes": 14127
+      },
+      "dng_tag_codes.h": {
+        "sha256": "779e4a6802bad289a39952d9c1599fb827131b736bf4689fa321ad6fcebc06ad",
+        "source_lines": {
+          "261, 305, 358": "CFAPlaneColor, ColorimetricReference, CameraCalibration3 tag codes"
+        },
+        "bytes": 16790
+      },
+      "dng_tag_values.h": {
+        "sha256": "e6b5e7157c7e7e2a3867c3dd1b51d7d0ed7ae3a762734e26d9e0455fc3d07bdb",
+        "source_lines": {
+          "235, 239, 335": "Standard A and D65 illuminant codes; scene-referred code"
+        },
+        "bytes": 12945
+      },
+      "dng_shared.cpp": {
+        "sha256": "d0a574d1e9f69379645c95c29b6a8148f3aca19568174608f769ce964a84bb3f",
+        "source_lines": {
+          "1799, 3051–3066": "Scene-referred default and explicit tag override",
+          "2386–2499": "CameraCalibrationSignature, AnalogBalance, and AsShotNeutral parsing"
+        },
+        "bytes": 81025
+      },
+      "dng_ifd.cpp": {
+        "sha256": "3f9a0e2e803d3a349c575b6c190bcfb6414bf293957a64b7dd6f125a95ee9d61",
+        "source_lines": {
+          "237–239, 3432–3439": "Default RGB CFA plane color order and CFA color lookup"
+        },
+        "bytes": 97540
+      },
+      "dng_negative.cpp": {
+        "sha256": "ed2b54b89b13813d51226010967b78cfe100e00c1ebcd660a1190e409bdd8a6a",
+        "source_lines": {
+          "1588–1628": "AnalogBalance scale/round and identity fallback",
+          "1646–1669": "Normalize neutral by maximum, round to six decimals",
+          "2337–2354": "MakeColorSpec uses selected profile ID",
+          "4050–4079": "Read color channels, AnalogBalance and calibration matrices",
+          "4790–4827": "Scene-referred AsShotNeutral or AsShotWhiteXY; output-referred alternative"
+        },
+        "bytes": 190463
+      },
+      "dng_camera_profile.cpp": {
+        "sha256": "988d3d9531ddfefd0faa0b6b4ebf85276a872a55b1956fd2bb964f89c1dd801f",
+        "source_lines": {
+          "178–215": "A=2850 K, D65=6500 K as profile interpolation endpoints",
+          "265–315": "Scale and round ColorMatrix on ingest",
+          "335–375": "Normalize ForwardMatrix to D50 and four-decimal load rounding",
+          "1523–1560": "Set ColorMatrix and ForwardMatrix from profile parser"
+        },
+        "bytes": 46511
+      },
+      "dng_camera_profile.h": {
+        "sha256": "94a7bc7e16fbbfa7d13acff93eea38f8ce5f32ad33fa8abd03c9847b083dcec4",
+        "source_lines": {
+          "519–533": "CalibrationTemperature accesses illuminant-to-temperature mapping"
+        },
+        "bytes": 33354
+      },
+      "dng_color_spec.cpp": {
+        "sha256": "6fb9ab59dcbdae9cb27a893c67810416ba7b2651a537673caa7d728d16d7ec0a",
+        "source_lines": {
+          "22–57": "Linearized Bradford adaptation with scaling bounds",
+          "110–179, 208–215": "Effective color matrices use profile, signature-gated calibration and AnalogBalance",
+          "301–375, 441–454": "Reciprocal-temperature interpolation and optional forward/calibration matrices",
+          "516–607": "CameraWhite normalization/clamp and forward-matrix or Bradford camera-to-PCS transform",
+          "659–704": "Inverse fixed-point NeutralToXY, 30 passes maximum"
+        },
+        "bytes": 15661
+      },
+      "dng_xy_coord.cpp": {
+        "sha256": "fc28d228f6a8811568d42be52f0d45eb714b45aa11224d6e86b09598b94a490d",
+        "source_lines": {
+          "24–86": "XYZ/xy conversion, D50 PCS"
+        },
+        "bytes": 37497
+      },
+      "dng_xy_coord.h": {
+        "sha256": "b36fcb3c46e4c273ca0e3e30d59e5274c4371a4fdaaac5b3a1432487c9f9651c",
+        "source_lines": {
+          "145–148": "D50 x=0.3457 and y=0.3585"
+        },
+        "bytes": 5179
+      },
+      "dng_matrix.cpp": {
+        "sha256": "a6d53a5e74fb425a17b73c89782c099d01d7f56bd1244f81c91365dd032ef9aa",
+        "source_lines": {
+          "263–275": "Matrix.Round double-precision scale and signed rounding"
+        },
+        "bytes": 22669
+      },
+      "dng_utils.h": {
+        "sha256": "0eb910dd59b46928d5fee734a0cc096eb1a99bab8594d6d2fec77ae0d6fb11e9",
+        "source_lines": {
+          "651–663": "Round_int32 signed half-step treatment"
+        },
+        "bytes": 31644
+      },
+      "dng_temperature.cpp": {
+        "sha256": "a747c94d8b56a821631935ed43ff003fbf35a06b6f978160a17310bad66d3427",
+        "source_lines": {
+          "21–71": "Tint scale and source isotherm table, read on demand",
+          "78–90, 580–588, 666–674": "Default legacy conversion and low-temperature optional branch",
+          "224–356": "LegacyGetXY and LegacySetXY"
+        },
+        "bytes": 18843
+      },
+      "dng_render.cpp": {
+        "sha256": "e8920b456e46b9b11a4bb775694aa516c9b5afe2998926acb0c4086eca71529c",
+        "source_lines": {
+          "916–960": "WhiteXY override, neutral inverse, AsShotWhiteXY, D55 fallback; camera to ProPhoto",
+          "1871–1879, 1906–1921": "CameraWhite and CameraToRGB consumed before HueSat stage"
+        },
+        "bytes": 62319
+      },
+      "dng_reference.cpp": {
+        "sha256": "912afda9ed871fe50ff0037a1be3361d37c1b8ee1230b907eed36d7512c422b6",
+        "source_lines": {
+          "1389–1433": "Reference CameraWhite limits pre-matrix input; CameraToRGB matrix mixes channels"
+        },
+        "bytes": 80303
+      }
+    },
+    "official_distribution": "https://helpx.adobe.com/camera-raw/desktop/dng-and-file-formats/digital-negative.html",
+    "license": {
+      "member": "dng_sdk_1_7_1/LICENSE.txt",
+      "sha256": "89d75e1bfd65269c41ec57be67adacd48926af81554574d92742f96296ed9166",
+      "bytes": 5283,
+      "published_copy": "profiles/Adobe-DNG-SDK-LICENSE.txt"
+    }
+  },
+  "q7": {
+    "raw_sha256": "3f1e046ee1cfd26b3ddf88a3edb925863ba847fddb1e71c7a98264674f9b26a1",
+    "as_shot_neutral_rgb": [
+      [
+        256,
+        411
+      ],
+      [
+        256,
+        256
+      ],
+      [
+        256,
+        445
+      ]
+    ],
+    "analog_balance": [
+      1,
+      1,
+      1
+    ],
+    "no_calibration_matrices_or_signature": true,
+    "reference_calculation_sha256": "0e82a3cc5c2c54161db5f783206b7ab552b2f70ebcf5d774793e9aecc1dbf691",
+    "ui_temperature_tint_delta": [
+      -200,
+      10
+    ],
+    "sdk_temperature_tint_delta": [
+      -199.65698957492805,
+      10.095848259396693
+    ],
+    "sdk_delta_minus_ui_delta": [
+      0.34301042507195234,
+      0.09584825939669273
+    ]
+  },
+  "k3iii": {
+    "raw_sha256": "28b0a4a0fae9b3c60d4950d8d4baeaa5a056a7fb130dfba0c2c212119ed29543",
+    "as_shot_neutral_present": false,
+    "exiftool_pentax_makernote_whitepoint": [
+      18976,
+      8192,
+      8192,
+      13088
+    ],
+    "pentax_makernote_tag": "0x0201",
+    "decoder_mapping_to_adobe_camera_neutral_verified": false,
+    "numeric_sdk_model_applied": false
+  },
+  "limitations": [
+    "SDK reference and Lightroom differ in absolute Q7 temperature by about 21 K; display precision, internal gain and algorithm identity are unverified.",
+    "The MakerNote observation is a decoded field value, with no established Adobe PEF mapping.",
+    "CameraWhite is the SDK normalized camera neutral and an input clipping limit in its reference implementation. Reciprocal ratios are computed mathematical ratios; Lightroom gains are unobserved.",
+    "One source capture fixes the stored raw and encoded neutral; actual illuminant SPD or physical temperature was not measured."
+  ],
+  "primary_sources": {
+    "adobe_lightroom_as_shot": "https://helpx.adobe.com/lightroom-classic/help/image-tone-color.html",
+    "exiftool_pentax_tag": "https://raw.githubusercontent.com/exiftool/exiftool/master/lib/Image/ExifTool/Pentax.pm"
+  },
+  "historical_calculation_source_sha256": "246db341a509598bd055fb348af830478ffcdef6b0cc7721e0d3687df529f496",
+  "inputs": {
+    "sdk": {
+      "bytes": 80509918,
+      "sha256": "c1d3a545ed45b150e59af2e6aa0695c1551f0e2bed34ad87436898a05194d2b1"
+    },
+    "raw": {
+      "bytes": 21913706,
+      "sha256": "3f1e046ee1cfd26b3ddf88a3edb925863ba847fddb1e71c7a98264674f9b26a1",
+      "filename": "Q7hSLI00100NR1.DNG"
+    },
+    "pef": {
+      "bytes": 36368721,
+      "sha256": "28b0a4a0fae9b3c60d4950d8d4baeaa5a056a7fb130dfba0c2c212119ed29543",
+      "filename": "K3IIIhSLI0000100NR0.PEF"
+    },
+    "matrix": {
+      "bytes": 270,
+      "sha256": "fe68b3460a400cf00bf9dfbe49f06f5f1c2cbc1010642d214df375d60504729e",
+      "filename": "pentax-q7-1760-matrix-test.dcp"
+    },
+    "adobe_standard": {
+      "bytes": 120686,
+      "sha256": "83ba6fbd61d52fdb70c60ed6765220fc3554baf8876c6e8834967714fea08fff",
+      "filename": "PENTAX Q7 Adobe Standard.dcp"
+    }
+  },
+  "reference_calculation": {
+    "schema": 1,
+    "scope": "bounded calculation from SDK 2768 source, not Lightroom or PEF emulation",
+    "raw_sha256": "3f1e046ee1cfd26b3ddf88a3edb925863ba847fddb1e71c7a98264674f9b26a1",
+    "pef_sha256": "28b0a4a0fae9b3c60d4950d8d4baeaa5a056a7fb130dfba0c2c212119ed29543",
+    "pef_has_standard_dng_neutral": false,
+    "sdk_sha256": "c1d3a545ed45b150e59af2e6aa0695c1551f0e2bed34ad87436898a05194d2b1",
+    "temperature_source_sha256": "a747c94d8b56a821631935ed43ff003fbf35a06b6f978160a17310bad66d3427",
+    "self_checks": [
+      "legacy_temperature_roundtrip",
+      "identity_exact_xy",
+      "forward_matrix_changes_transform_only",
+      "different_color_matrix_changes_label_with_same_neutral"
+    ],
+    "as_shot_neutral_rational_rgb": [
+      [
+        256,
+        411
+      ],
+      [
+        256,
+        256
+      ],
+      [
+        256,
+        445
+      ]
+    ],
+    "sdk_normalized_rounded_neutral_rgb": [
+      0.622871,
+      1.0,
+      0.5752809999999999
+    ],
+    "profiles": {
+      "matrix": {
+        "xy": [
+          0.34096916445543696,
+          0.33721447015516204
+        ],
+        "sdk_temperature_tint": [
+          5120.789853696042,
+          -16.97978147903529
+        ],
+        "inverse_passes": 6,
+        "calibration_weight_standard_A": 0.21030300837678825,
+        "camera_white_rgb": [
+          0.6228710090450208,
+          1.0,
+          0.5752810005918002
+        ],
+        "camera_white_minus_sdk_neutral": [
+          9.045020843423401e-09,
+          0.0,
+          5.918002754512486e-10
+        ],
+        "reciprocal_neutral_ratios_green_1": [
+          1.6054688458420778,
+          1.0,
+          1.738280942654607
+        ],
+        "camera_to_pcs": [
+          [
+            0.7393909456797935,
+            0.5756682159499961,
+            -0.1250132089548773
+          ],
+          [
+            0.09193550811536824,
+            1.2512737528751663,
+            -0.5363252310864688
+          ],
+          [
+            -0.04286858768928191,
+            -0.21798862791290152,
+            1.8596039670929605
+          ]
+        ],
+        "pcs_white_mapping_max_abs_error": 3.3306690738754696e-16,
+        "dcp_sha256": "fe68b3460a400cf00bf9dfbe49f06f5f1c2cbc1010642d214df375d60504729e"
+      },
+      "adobe_standard": {
+        "xy": [
+          0.34682509509731835,
+          0.3483791971749629
+        ],
+        "sdk_temperature_tint": [
+          4921.132864121114,
+          -6.883933219638596
+        ],
+        "inverse_passes": 6,
+        "calibration_weight_standard_A": 0.25051428178041996,
+        "camera_white_rgb": [
+          0.6228709929654785,
+          1.0,
+          0.5752809969466017
+        ],
+        "camera_white_minus_sdk_neutral": [
+          -7.034521409821082e-09,
+          0.0,
+          -3.0533982009472993e-09
+        ],
+        "reciprocal_neutral_ratios_green_1": [
+          1.605468887287585,
+          1.0,
+          1.738280953669014
+        ],
+        "camera_to_pcs": [
+          [
+            1.2808373354435838,
+            0.1351993938123795,
+            0.05440794990329009
+          ],
+          [
+            0.4623750395388245,
+            0.7119,
+            0.00017382809536690134
+          ],
+          [
+            0.0,
+            0.0,
+            1.4342636153285755
+          ]
+        ],
+        "pcs_white_mapping_max_abs_error": 1.1102230246251565e-16,
+        "dcp_sha256": "83ba6fbd61d52fdb70c60ed6765220fc3554baf8876c6e8834967714fea08fff"
+      }
+    },
+    "adobe_minus_matrix_temperature_tint": [
+      -199.65698957492805,
+      10.095848259396693
+    ],
+    "adobe_minus_matrix_camera_white_rgb": [
+      -1.6079542253244483e-08,
+      0.0,
+      -3.645198476398548e-09
+    ],
+    "adobe_minus_matrix_reciprocal_ratios_green_1": [
+      4.144550724838325e-08,
+      0.0,
+      1.1014406942067012e-08
+    ],
+    "camera_to_pcs_max_abs_element_change": 0.5414463897637903
+  }
+}
