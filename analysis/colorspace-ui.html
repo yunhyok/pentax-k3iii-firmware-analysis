@@ -389,7 +389,7 @@
 
 <h3>observer가 하는 두 가지 일은 조건이 다릅니다</h3>
 <ul>
-<li><strong>캐시 맞추기</strong> — 레코드의 값을 캐시와 비교해 다를 때만 캐시를 갱신합니다.</li>
+<li><strong>캐시 맞추기</strong>: 레코드의 값을 캐시와 비교해 다를 때만 캐시를 갱신합니다.</li>
 <li><strong>하위 요청</strong>: 레코드의 바이트 <code>+0x2c</code>가 0일 때만 색공간 속성 요청 함수로 넘어갑니다. 0이 아니면 캐시만 맞추고 돌아갑니다.</li>
 </ul>
 <p><code>+0x2c</code>를 1로 둔 사례에서 레코드와 캐시는 각각 한 번씩 기록됐고 속성 요청은 없었습니다. 이 바이트가 카메라에서 무엇을 뜻하는지는 확인하지 않았습니다.</p>
@@ -497,11 +497,11 @@
 <section id="limits">
 <h2>한계와 남은 과제</h2>
 <ul>
-<li><strong>입력</strong> — 이벤트 <code>0xe7</code>·<code>0xe9</code>와 실제 버튼·터치의 대응을 확인하지 않았습니다.</li>
-<li><strong>화면</strong> — 레이아웃, 표시 여부, 아이콘·글자 그리기는 대체 함수였습니다. 글리프와 픽셀 배치는 재현하지 않았습니다.</li>
-<li><strong>창의 수명</strong> — 생성자와 화면 열기 진입은 정적으로만 봤습니다. 창을 없애고 다시 만드는 과정은 실행하지 않았습니다.</li>
-<li><strong>아래 단계</strong> — 시험은 속성 요청 함수 입구에서 멈춥니다. 메뉴에서 ISP까지를 한 번에 실행한 결과가 아닙니다.</li>
-<li><strong>저장</strong> — 카메라·렌즈·주변 장치 입출력과 비휘발성 기록은 하지 않았습니다.</li>
+<li><strong>입력</strong>: 이벤트 <code>0xe7</code>·<code>0xe9</code>와 실제 버튼·터치의 대응을 확인하지 않았습니다.</li>
+<li><strong>화면</strong>: 레이아웃, 표시 여부, 아이콘·글자 그리기는 대체 함수였습니다. 글리프와 픽셀 배치는 재현하지 않았습니다.</li>
+<li><strong>창의 수명</strong>: 생성자와 화면 열기 진입은 정적으로만 봤습니다. 창을 없애고 다시 만드는 과정은 실행하지 않았습니다.</li>
+<li><strong>아래 단계</strong>: 시험은 속성 요청 함수 입구에서 멈춥니다. 메뉴에서 ISP까지를 한 번에 실행한 결과가 아닙니다.</li>
+<li><strong>저장</strong>: 카메라·렌즈·주변 장치 입출력과 비휘발성 기록은 하지 않았습니다.</li>
 </ul>
 <p>화면을 옮기려면 실제 입력에서 포커스 변경까지의 연결, 글꼴·문자열 자원의 해석, 창을 만들고 닫을 때의 객체 수명, 설정의 저장과 복원을 더 확인해야 합니다. 그 다음에 K-3 II와 Q7에서 뜻이 대응하는 이벤트·위젯·설정 함수를 각각 찾아야 합니다. 이 문서의 자료는 기능 단위의 대응을 정하는 근거입니다. K-3 Mark III의 함수 주소나 객체를 다른 기종에 그대로 복사할 수 있다는 증거가 아닙니다.</p>
 </section>
@@ -532,7 +532,7 @@
 </main>
 </div>
 <!-- chrome:bottom -->
-<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">UI와 화면 자원 — 이 주제의 문서</h2><ol><li><a href="guide-ui.html">UI와 화면 자원 안내</a></li><li><a href="ui-port-contract.html">UI 이식 설계<span>세 기종 비교</span></a></li><li><a href="colorspace-ui.html" aria-current="page">색공간 화면: 선택·확정·취소<span>16사례</span></a></li><li><a href="colorspace-ui-input.html">색공간 화면: 방향 입력·포커스<span>50사례</span></a></li><li><a href="colorspace-render.html">색공간 행의 아이콘과 글자 측정<span>원본 행·ICONBIN 복사, Latin 글꼴 준비와 sRGB 측정</span></a></li><li><a href="colorspace-text.html">색공간 sRGB 글자의 래스터와 픽셀 전송<span>원본 텍스트 비트맵·합성 표면 전송</span></a></li><li><a href="colorspace-clip.html">sRGB 글자 전송의 화면 경계<span>일곱 좌표에서 32비트 전송과 Q7 행 검사 비교</span></a></li><li><a href="ui-viewport-producers.html">K-3 III 텍스트 viewport의 생산 경로<span>부모 클립과 텍스트 설정의 전달</span></a></li><li><a href="ui-surface-producers.html">K-3 III StringView의 그리기 표면<span>Canvas와 표면 기술자</span></a></li><li><a href="ui-render-chain.html">Q7 갱신에서 원본 픽셀까지<span>마커·두 텍스트·버퍼 교체의 합성 실행</span></a></li><li><a href="cross-ui-text.html">K-3 III와 Q7의 sRGB 글자 그리기 비교<span>32비트 커버리지 전송과 Q7 팔레트 번호·Q16 축소</span></a></li><li><a href="icon-resources.html">ICONBIN 아이콘 자원<span>저장 형식, 복사 규칙, 후보 아이콘</span></a></li></ol></nav>
+<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">UI와 화면 자원 — 이 주제의 문서</h2><ol><li><a href="guide-ui.html">UI와 화면 자원 안내</a></li><li><a href="ui-port-contract.html">UI 이식 설계<span>세 기종 비교</span></a></li><li><a href="colorspace-ui.html" aria-current="page">색공간 화면: 선택·확정·취소<span>16사례</span></a></li><li><a href="colorspace-ui-input.html">색공간 화면: 방향 입력·포커스<span>50사례</span></a></li><li><a href="colorspace-render.html">색공간 행의 아이콘·체크 표시와 글자 크기 측정<span>행·아이콘 복사와 글꼴 준비</span></a></li><li><a href="colorspace-text.html">sRGB 글자를 비트맵으로 만들어 표면에 옮기기<span>글자 비트맵과 표면 전송</span></a></li><li><a href="colorspace-clip.html">글자가 화면 가장자리에 걸릴 때의 전송<span>일곱 위치의 가장자리 처리</span></a></li><li><a href="ui-viewport-producers.html">글자 viewport가 전송 함수에 닿는 경로<span>부모 클립과 글자 영역</span></a></li><li><a href="ui-surface-producers.html">StringView가 그릴 표면을 받는 경로<span>Canvas와 표면 기술자</span></a></li><li><a href="ui-render-chain.html">Q7 화면 갱신 한 번에서 픽셀까지<span>마커·두 글자 줄·버퍼 교체</span></a></li><li><a href="cross-ui-text.html">K-3 III와 Q7의 글자 그리기 비교<span>배율·좌표·픽셀 형식</span></a></li><li><a href="icon-resources.html">ICONBIN 아이콘 자원<span>저장 형식, 복사 규칙, 후보 아이콘</span></a></li></ol></nav>
 <nav class="pager" aria-label="이전·다음 문서"><a class="prev" href="ui-port-contract.html"><small>← 이전</small>UI 이식 설계</a><a class="next" href="colorspace-ui-input.html"><small>다음 →</small>색공간 화면: 방향 입력·포커스</a></nav>
 <footer class="sitefoot"><div class="sitefoot-in"><nav aria-label="사이트"><a href="../index.html#map">문서 지도</a><a href="../index.html#levels">검증 수준 읽는 법</a><a href="../glossary.html">용어집</a><a href="research-program.html">세 기종 연구 본부</a><a href="https://github.com/yunhyok/pentax-k3iii-firmware-analysis">GitHub 저장소</a></nav><p>PENTAX 펌웨어 연구. PC에서 수행한 정적 분석과 에뮬레이션 결과이며, 카메라 실기에서 검증한 내용이 아닙니다. 원본 펌웨어와 추출한 독점 코드는 포함하지 않습니다.</p></div></footer>
 <!-- /chrome:bottom -->

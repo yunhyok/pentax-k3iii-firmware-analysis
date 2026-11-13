@@ -188,8 +188,8 @@
 <p class="small muted">가장 큰 차는 각 출력의 정수 눈금 그대로입니다. 행렬 계수는 −2048~2047 범위의 12비트 값이고 감마 곡선은 상한이 16384인 값입니다.</p>
 
 <ul>
-<li><strong>채도</strong> — 채도 인덱스가 바뀌면 채도 행렬이 바뀌므로 합성된 색 행렬이 달라집니다. 감마 함수는 같은 곡선을 냈습니다.</li>
-<li><strong>대비</strong> — 대비는 일반 감마 생성기의 제어값으로 들어가 곡선을 바꿉니다. 행렬 준비 함수의 출력은 대비와 무관했습니다.</li>
+<li><strong>채도</strong>: 채도 인덱스가 바뀌면 채도 행렬이 바뀌므로 합성된 색 행렬이 달라집니다. 감마 함수는 같은 곡선을 냈습니다.</li>
+<li><strong>대비</strong>: 대비는 일반 감마 생성기의 제어값으로 들어가 곡선을 바꿉니다. 행렬 준비 함수의 출력은 대비와 무관했습니다.</li>
 <li><strong>모드</strong>: Natural, Portrait, Bright는 모드 행렬이 달라 행렬 계수가 모두 달랐습니다. 하지만 같은 일반 생성기와 같은 제어값을 써서 곡선이 같았습니다.</li>
 <li><strong>Reversal Film</strong>: 별도 감마 생성기를 불렀습니다. 그래서 Natural과 곡선이 달랐고 시험한 대비 변경에는 곡선이 변하지 않았습니다. 분기 선택 함수가 Reversal 분기에서 가운데 기준 제어값 네 개를 0으로 놓는다는 코드 분석(<a href="color-algorithms.html#gamma">감마 곡선 절</a>)과 맞는 결과입니다.</li>
 </ul>
@@ -273,7 +273,7 @@
 <h2>한계와 남은 과제</h2>
 <ul>
 <li><span class="badge model">모델</span> <strong>입력</strong>: 파라미터 블록은 직접 만든 것입니다. 모드 번호와 자원 디스크립터는 원본 바이트로 확인했지만 메뉴에서 이 블록을 만드는 상위 코드는 실행하지 않았습니다.</li>
-<li><span class="badge model">모델</span> <strong>따로 실행</strong> — 두 함수를 이어진 영상 처리 흐름 안에서 실행한 것이 아닙니다. 외부 콜백도 실행하지 않았습니다.</li>
+<li><span class="badge model">모델</span> <strong>따로 실행</strong>: 두 함수를 이어진 영상 처리 흐름 안에서 실행한 것이 아닙니다. 외부 콜백도 실행하지 않았습니다.</li>
 <li><span class="badge open">미확인</span> <strong>값의 범위</strong>: 채도는 4와 5, 대비는 4와 6만 시험했습니다. 다른 값과 다른 모드에서도 같은 구분이 성립하는지는 모릅니다.</li>
 <li><span class="badge open">미확인</span> <strong>픽셀과 사진</strong>: 픽셀 처리, 카메라 하드웨어, Lightroom은 실행하지 않았습니다. RAW나 DCP도 읽지 않았습니다. K-3 Mark III에서 Lightroom 출력과 카메라 JPEG의 색차는 아직 재지 않았습니다.</li>
 </ul>
@@ -307,7 +307,7 @@
 </main>
 </div>
 <!-- chrome:bottom -->
-<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">카메라 내부 색 처리 — 이 주제의 문서</h2><ol><li><a href="guide-color.html">색 처리 안내</a></li><li><a href="color-lightroom.html">컬러모드 자원과 Lightroom</a></li><li><a href="color-algorithms.html">색 처리 알고리즘<span>행렬·감마·톤</span></a></li><li><a href="color-mode-boundaries.html" aria-current="page">색 모드별 행렬·감마 조건</a></li><li><a href="pipeline-report.html">JPEG·ISP와 색 재현 경로</a></li></ol></nav>
+<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">카메라 내부 색 처리 — 이 주제의 문서</h2><ol><li><a href="guide-color.html">색 처리 안내</a></li><li><a href="color-lightroom.html">컬러모드 자원과 Lightroom</a></li><li><a href="color-algorithms.html">색 처리 알고리즘<span>행렬·감마·톤</span></a></li><li><a href="color-mode-boundaries.html" aria-current="page">색 모드별 행렬·감마 조건</a></li><li><a href="pipeline-report.html">JPEG·ISP와 색 재현 경로</a></li><li><a href="raw-nr-feasibility.html">RAW 노이즈 감소를 끌 수 있는가</a></li></ol></nav>
 <nav class="pager" aria-label="이전·다음 문서"><a class="prev" href="color-algorithms.html"><small>← 이전</small>색 처리 알고리즘</a><a class="next" href="pipeline-report.html"><small>다음 →</small>JPEG·ISP와 색 재현 경로</a></nav>
 <footer class="sitefoot"><div class="sitefoot-in"><nav aria-label="사이트"><a href="../index.html#map">문서 지도</a><a href="../index.html#levels">검증 수준 읽는 법</a><a href="../glossary.html">용어집</a><a href="research-program.html">세 기종 연구 본부</a><a href="https://github.com/yunhyok/pentax-k3iii-firmware-analysis">GitHub 저장소</a></nav><p>PENTAX 펌웨어 연구. PC에서 수행한 정적 분석과 에뮬레이션 결과이며, 카메라 실기에서 검증한 내용이 아닙니다. 원본 펌웨어와 추출한 독점 코드는 포함하지 않습니다.</p></div></footer>
 <!-- /chrome:bottom -->

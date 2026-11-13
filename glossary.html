@@ -29,6 +29,7 @@
 <section id="basics">
 <h2>펌웨어 분석의 기본 용어</h2>
 <dl class="glossary">
+<dt id="rmw">RMW <small>read-modify-write</small></dt><dd>메모리 값을 읽어 일부 비트만 바꾼 뒤 다시 쓰는 동작입니다. 아직 아무도 쓰지 않은 메모리에 이렇게 하면 처음 들어 있던 값이 결과에 섞일 수 있어, 펌웨어를 다시 만들 때 따로 확인합니다.</dd>
 <dt id="machine-code">기계어 <small>machine code</small></dt><dd>CPU가 직접 실행하는 숫자 형태의 명령입니다. 펌웨어 파일에는 소스 코드가 아니라 기계어가 들어 있습니다.</dd>
 <dt id="disassembly">디스어셈블 <small>disassembly</small></dt><dd>기계어를 사람이 읽을 수 있는 명령 이름(어셈블리)으로 한 줄씩 바꿔 적는 일입니다. 정보가 바뀌지 않는 일대일 변환입니다.</dd>
 <dt id="descriptor">디스크립터 · 설명자 <small>descriptor</small></dt><dd>다른 데이터의 위치·크기·종류를 적어 둔 작은 기록입니다. 문서마다 가리키는 대상이 다르므로(버퍼, 저장 위치, 화면 항목, 아이콘) 각 문서의 설명을 따릅니다.</dd>
@@ -38,10 +39,11 @@
 <dt id="little-endian">리틀엔디언 <small>little-endian</small></dt><dd>여러 바이트로 된 수를 낮은 자리 바이트부터 저장하는 방식입니다. 세 기종의 CPU 모두 이 방식을 씁니다.</dd>
 <dt id="marker">마커 · 표식 <small>marker</small></dt><dd>데이터가 들어 있음을 알리려고 정해진 자리에 적어 두는 고정 값입니다. 두 K-3 기종 모두 0xA55A5AA5 꼴의 값을 씁니다. 내용이 옳다는 보증이나 서명은 아닙니다.</dd>
 <dt id="leaf-function">말단 함수 <small>leaf function</small></dt><dd>다른 함수를 부르지 않는 함수입니다. 입력과 출력이 분명해서 따로 떼어 실행해 비교하기 쉽습니다.</dd>
-<dt id="model">모델 · 스텁 <small>model, stub</small></dt><dd>에뮬레이터 안에는 센서나 저장장치 같은 하드웨어가 없습니다. 그래서 그 부분을 부르는 호출은 연구자가 정한 값을 돌려주는 대역으로 바꿉니다. 이 대역이 모델(스텁)이며, 모델을 쓴 결과는 그 조건에서만 성립합니다.</dd>
-<dt id="symbol">심볼 <small>symbol</small></dt><dd>함수나 변수의 이름과 위치를 적어 둔 정보입니다. 남아 있으면 어디를 조사할지 알려 주지만, 이름이 그 함수의 실제 동작을 보증하지는 않습니다.</dd>
+<dt id="model">모델 · 스텁 <small>model, stub</small></dt><dd>에뮬레이터 안에는 센서나 저장장치 같은 하드웨어가 없습니다. 그래서 그 부분을 부르는 호출은 연구자가 정한 값을 돌려주는 대역으로 바꿉니다. 이 대역이 모델(스텁)이며 모델을 쓴 결과는 그 조건에서만 성립합니다.</dd>
+<dt id="manual-model">수동 모형 · unsat <small>manual model, unsat</small></dt><dd>분석자가 원본 명령의 뜻을 수식으로 옮긴 것이 수동 모형입니다. 검사 도구(solver)가 반례를 찾지 못하면 unsat이라 하며 그 결론은 그 모형과 전제 안에서만 성립합니다.</dd>
+<dt id="symbol">심볼 <small>symbol</small></dt><dd>함수나 변수의 이름과 위치를 적어 둔 정보입니다. 남아 있으면 어디를 조사할지 알려 주지만 이름이 그 함수의 실제 동작을 보증하지는 않습니다.</dd>
 <dt id="emulator">에뮬레이터 <small>emulator</small></dt><dd>다른 CPU의 기계어를 PC에서 실행해 주는 프로그램입니다. 이 연구에서는 카메라 CPU의 원본 코드를 PC에서 한 명령씩 실행하고 메모리에 쓰인 값을 관측하는 데 씁니다. Unicorn과 angr가 이런 도구입니다.</dd>
-<dt id="offset-address">오프셋과 주소 <small>offset, address</small></dt><dd>오프셋은 파일의 처음부터 센 위치이고, 주소는 프로그램이 메모리에 올라간 뒤의 위치입니다. 둘은 다르며, 적재 기준 주소를 알아야 서로 바꿀 수 있습니다.</dd>
+<dt id="offset-address">오프셋과 주소 <small>offset, address</small></dt><dd>오프셋은 파일의 처음부터 센 위치이고 주소는 프로그램이 메모리에 올라간 뒤의 위치입니다. 둘은 다르며 적재 기준 주소를 알아야 서로 바꿀 수 있습니다.</dd>
 <dt id="repack">재포장 · 재패킹 <small>repack</small></dt><dd>펌웨어 파일을 풀었다가 원래 형식으로 다시 묶는 일입니다. 아무것도 바꾸지 않고 재포장한 결과가 원본과 바이트까지 같으면 파일 형식을 정확히 이해했다는 증거가 됩니다.</dd>
 <dt id="stored-block">저장 블록 <small>stored block</small></dt><dd>압축하지 않고 내용을 그대로 담은 블록입니다. 바뀐 부분만 저장 블록으로 넣으면 나머지 압축 블록을 원본 그대로 둘 수 있습니다.</dd>
 <dt id="load-base">적재 기준 주소 <small>load base</small></dt><dd>프로그램 이미지가 메모리에 놓이는 시작 주소입니다. 펌웨어에 적혀 있지 않은 경우 코드 안의 포인터 값들이 서로 맞아떨어지는지를 보고 추정합니다.</dd>
@@ -55,7 +57,7 @@
 <section id="cpu">
 <h2>프로세서와 프로그램 실행</h2>
 <dl class="glossary">
-<dt id="arm">ARM · Cortex-A <small>ARM</small></dt><dd>스마트폰과 카메라에 널리 쓰이는 CPU 계열입니다. K-3 Mark III의 Linux 장치 트리에는 Cortex-A7이 적혀 있고, K-3 II의 시작 코드는 Cortex-A9의 부품 번호를 검사합니다.</dd>
+<dt id="arm">ARM · Cortex-A <small>ARM</small></dt><dd>스마트폰과 카메라에 널리 쓰이는 CPU 계열입니다. K-3 Mark III의 Linux 장치 트리에는 Cortex-A7이 적혀 있고 K-3 II의 시작 코드는 Cortex-A9의 부품 번호를 검사합니다.</dd>
 <dt id="mmio">MMIO <small>memory-mapped I/O</small></dt><dd>하드웨어의 설정 칸을 메모리 주소처럼 읽고 쓰는 방식입니다. 프로그램이 특정 주소에 값을 쓰면 영상 처리 회로나 저장장치 제어기의 동작이 바뀝니다.</dd>
 <dt id="neon">NEON <small>NEON</small></dt><dd>ARM의 확장 명령으로, 여러 데이터를 한 명령으로 처리합니다. AF 계산처럼 같은 연산을 많이 반복하는 곳에 쓰입니다.</dd>
 <dt id="rtti">RTTI <small>run-time type information</small></dt><dd>C++ 프로그램에 남아 있는 클래스 이름 정보입니다. 객체가 어떤 종류인지 이름으로 확인하는 근거가 됩니다.</dd>
@@ -66,7 +68,7 @@
 <dt id="literal-pool">상수 묶음 <small>literal pool</small></dt><dd>함수 뒤에 붙어 있는 상수들의 모음입니다. 명령이 아니므로 실행 명령 수에 넣지 않습니다.</dd>
 <dt id="stack">스택 <small>stack</small></dt><dd>함수가 임시 값과 돌아갈 위치를 쌓아 두는 메모리 영역입니다.</dd>
 <dt id="interrupt">인터럽트 <small>interrupt, IRQ</small></dt><dd>하드웨어가 “일이 끝났다” 같은 신호를 보내 CPU가 하던 일을 잠시 멈추고 처리하게 하는 장치입니다.</dd>
-<dt id="calling-convention">호출 규약 <small>calling convention</small></dt><dd>함수를 부를 때 인수를 어느 레지스터에 넣고, 어떤 레지스터를 보존해야 하는지 정한 약속입니다. ARM에서는 AAPCS라는 규약을 따릅니다.</dd>
+<dt id="calling-convention">호출 규약 <small>calling convention</small></dt><dd>함수를 부를 때 인수를 어느 레지스터에 넣고 어떤 레지스터를 보존해야 하는지 정한 약속입니다. ARM에서는 AAPCS라는 규약을 따릅니다.</dd>
 </dl>
 </section>
 <section id="os">
@@ -74,16 +76,18 @@
 <dl class="glossary">
 <dt id="boot-rom">Boot ROM <small>Boot ROM</small></dt><dd>칩 안에 고정되어 전원이 켜지면 가장 먼저 실행되는 코드입니다. 펌웨어 파일에 들어 있지 않아 분석하지 못했습니다.</dd>
 <dt id="linux">Linux <small>Linux</small></dt><dd>K-3 Mark III에는 RTOS와 함께 Linux도 들어 있습니다. 시작 스크립트로 볼 때 무선 통신과 USB 같은 일을 맡습니다.</dd>
-<dt id="m0-boot">M0 · BOOT <small>M0, BOOT</small></dt><dd>K-3 Mark III 펌웨어에 든 부팅 초기 코드 레코드 두 개입니다. M0는 메모리를 설정하고 다음 이미지를 읽으며, BOOT는 파티션 표를 읽어 RTOS를 올립니다. M0가 칩의 전원 제어용 Cortex-M0에서 돈다는 것은 공개된 칩 설명에서 나온 추정입니다.</dd>
+<dt id="m0-boot">M0 · BOOT <small>M0, BOOT</small></dt><dd>K-3 Mark III 펌웨어에 든 부팅 초기 코드 레코드 두 개입니다. M0는 메모리를 설정하고 다음 이미지를 읽으며 BOOT는 파티션 표를 읽어 RTOS를 올립니다. M0가 칩의 전원 제어용 Cortex-M0에서 돈다는 것은 공개된 칩 설명에서 나온 추정입니다.</dd>
 <dt id="rtos">RTOS <small>real-time operating system</small></dt><dd>정해진 시간 안에 반응해야 하는 기기를 위한 작은 운영체제입니다. 카메라의 촬영·AF·영상 처리는 RTOS 위에서 돕니다.</dd>
 <dt id="stubby">Stubby <small>Stubby</small></dt><dd>LINUX 레코드 앞부분에 든 Linux 부트로더입니다. 소스 코드가 리코의 공개 소스 묶음에 들어 있습니다.</dd>
-<dt id="ttl-sendln">TTL 스크립트 · sendln <small>Tera Term Language</small></dt><dd>TTL은 터미널 프로그램 Tera Term의 매크로 언어이고, sendln은 한 줄을 보내는 명령입니다. K-3 Mark III는 SD 카드의 TTL 스크립트에서 받은 줄을 내부 셸 명령으로 실행하는 경로를 갖고 있습니다.</dd>
+<dt id="ttl-sendln">TTL 스크립트 · sendln <small>Tera Term Language</small></dt><dd>TTL은 터미널 프로그램 Tera Term의 매크로 언어이고 sendln은 한 줄을 보내는 명령입니다. K-3 Mark III는 SD 카드의 TTL 스크립트에서 받은 줄을 내부 셸 명령으로 실행하는 경로를 갖고 있습니다.</dd>
 <dt id="deadline-queue">기한 큐 <small>deadline queue</small></dt><dd>예약된 타이머들이 울릴 시각 순서대로 늘어선 목록입니다. 커널은 맨 앞의 기한만 현재 시각과 비교하면 됩니다.</dd>
 <dt id="resource-slot">리소스 슬롯 <small>resource slot</small></dt><dd>BOOT와 RTOS가 큰 데이터 영역을 번호로 관리하는 표의 칸입니다. 2번이 파티션 표, 5번이 아이콘 데이터입니다.</dd>
+<dt id="allocator">메모리 할당기 <small>allocator, arena</small></dt><dd>RTOS가 RAM을 일정한 크기의 조각으로 나눠 필요한 곳에 내주는 코드입니다. K-3 Mark III의 재현에서는 2,048바이트 페이지 단위로 내줍니다.</dd>
 <dt id="mutex">뮤텍스 <small>mutex</small></dt><dd>여러 태스크가 같은 자원을 동시에 쓰지 못하게 막는 잠금 장치입니다.</dd>
 <dt id="bootloader">부트로더 <small>bootloader</small></dt><dd>전원이 켜진 직후 실행되어 메모리와 저장장치를 준비하고 본 프로그램을 올리는 작은 프로그램입니다.</dd>
 <dt id="shell-command">셸 명령 <small>shell command</small></dt><dd>RTOS에 이름으로 등록된 진단·조작 명령입니다. K-3 Mark III에는 957개가 표로 들어 있습니다.</dd>
-<dt id="completion-notice">완료 통지 <small>completion notice</small></dt><dd>어떤 처리 코드가 끝났음을 다른 태스크에 알리는 메시지나 콜백입니다. 소프트웨어의 처리가 끝났다는 뜻이며, 렌즈가 실제로 움직임을 마쳤다거나 저장장치에 기록됐다는 증거는 아닙니다.</dd>
+<dt id="completion-notice">완료 통지 <small>completion notice</small></dt><dd>어떤 처리 코드가 끝났음을 다른 태스크에 알리는 메시지나 콜백입니다. 소프트웨어의 처리가 끝났다는 뜻이며 렌즈가 실제로 움직임을 마쳤다거나 저장장치에 기록됐다는 증거는 아닙니다.</dd>
+<dt id="name-registry">이름 registry <small>name registry</small></dt><dd>task 같은 객체를 이름으로 찾으려고 RTOS가 두는 표입니다. 이름의 해시로 칸을 고릅니다.</dd>
 <dt id="device-tree">장치 트리 <small>device tree, DTB</small></dt><dd>Linux에게 이 기기에 어떤 CPU와 장치가 있는지 알려 주는 설명 데이터입니다. K-3 Mark III의 칩 계열을 알아낸 직접 근거입니다.</dd>
 <dt id="queue">큐 · 메시지 <small>queue, message</small></dt><dd>태스크끼리 요청을 주고받는 줄입니다. 한쪽이 메시지를 넣으면 다른 쪽이 차례로 꺼내 처리합니다.</dd>
 <dt id="task">태스크 · 스레드 <small>task, thread</small></dt><dd>RTOS가 번갈아 실행하는 일의 단위입니다. AF, 화면, 저장 같은 일이 각각 태스크로 돕니다.</dd>
@@ -108,27 +112,37 @@
 <section id="image">
 <h2>영상 처리와 색</h2>
 <dl class="glossary">
-<dt id="camera-matching">Camera Matching · Adobe Standard <small>Camera Matching</small></dt><dd>Adobe가 기종별로 제공하는 프로파일입니다. Adobe Standard는 기준 프로파일이고, Camera Matching은 카메라의 색 모드를 흉내 내도록 만든 프로파일 묶음입니다.</dd>
+<dt id="active-area">ActiveArea · 기본 크롭 <small>ActiveArea, DefaultCrop</small></dt><dd>RAW에 저장된 배열 가운데 실제 화소가 있는 영역이 ActiveArea이고 그 안에서 최종 사진으로 남기는 범위가 기본 크롭입니다.</dd>
+<dt id="as-shot">As Shot <small>AsShotNeutral</small></dt><dd>촬영할 때 카메라가 기록한 화이트밸런스입니다. RAW에는 회색이 센서에 찍힌 R:G:B 비율로 들어 있고 Lightroom은 이를 색온도와 틴트로 바꿔 보여 줍니다. 같은 값이라도 프로파일이 다르면 표시되는 숫자가 달라집니다.</dd>
+<dt id="camera-matching">Camera Matching · Adobe Standard <small>Camera Matching</small></dt><dd>Adobe가 기종별로 제공하는 프로파일입니다. Adobe Standard는 기준 프로파일이고 Camera Matching은 카메라의 색 모드를 흉내 내도록 만든 프로파일 묶음입니다.</dd>
+<dt id="cfa">CFA · Bayer 배열 <small>color filter array</small></dt><dd>센서의 화소마다 한 가지 색 필터를 얹은 배열입니다. Bayer 배열은 2×2 칸에 R, G, G, B를 반복합니다. RAW 파일에는 화소마다 한 색의 값만 들어 있습니다.</dd>
 <dt id="colorchecker">ColorChecker <small>ColorChecker</small></dt><dd>정해진 색 24칸이 인쇄된 표준 색상표입니다. 같은 표를 찍은 두 결과를 칸별로 비교해 색 차이를 잽니다.</dd>
 <dt id="dcp">DCP · 카메라 프로파일 <small>DNG Camera Profile</small></dt><dd>Adobe Lightroom과 Camera Raw가 RAW의 색을 해석할 때 쓰는 프로파일 파일입니다. 색 행렬, 색상·채도 보정 표, 톤 곡선이 들어 있습니다.</dd>
+<dt id="sdk-stage">DNG SDK Stage 1·2·3 <small>DNG SDK stages</small></dt><dd>Adobe가 공개한 DNG SDK가 RAW를 처리하는 중간 단계입니다. Stage 1은 저장된 값, Stage 2는 블랙 레벨을 빼고 정규화한 값, Stage 3은 디모자이크한 카메라 색입니다. 화이트밸런스·프로파일·톤은 그 뒤의 렌더 단계에서 적용됩니다.</dd>
+<dt id="hue-sat-map">HueSatMap <small>HueSatMap</small></dt><dd>DCP 안의 표입니다. 색상·채도·명도 격자마다 색상을 얼마나 돌리고 채도와 명도를 몇 배로 할지 적혀 있습니다. LookTable도 같은 형식이며 적용하는 순서가 다릅니다.</dd>
 <dt id="icc">ICC 프로파일 <small>ICC profile</small></dt><dd>이미지 파일의 숫자가 어떤 색공간 기준인지 알려 주는 표준 데이터입니다.</dd>
 <dt id="isp">ISP · 영상 처리 파이프라인 <small>image signal processor</small></dt><dd>센서 값을 사진으로 바꾸는 처리 단계의 묶음입니다. 화이트밸런스, 색 변환, 톤 곡선, 압축이 차례로 이어집니다.</dd>
-<dt id="jpeg">JPEG <small>JPEG</small></dt><dd>사진을 압축해 저장하는 표준 형식입니다. 카메라 안에서는 전용 회로가 압축하고, 끝나면 완료 신호와 길이를 알려 줍니다.</dd>
+<dt id="jpeg">JPEG <small>JPEG</small></dt><dd>사진을 압축해 저장하는 표준 형식입니다. 카메라 안에서는 전용 회로가 압축하고 끝나면 완료 신호와 길이를 알려 줍니다.</dd>
 <dt id="looktable">LookTable · HueSatMap <small>LookTable</small></dt><dd>DCP 안의 보정 표입니다. 색상·채도·밝기 구간마다 색을 얼마나 옮길지 적어, 색 모드의 분위기를 만듭니다.</dd>
 <dt id="tone-curve-tag">ProfileToneCurve <small>ProfileToneCurve</small></dt><dd>DCP가 정하는 기본 밝기 곡선입니다. 0~1 범위의 점 목록으로 적습니다.</dd>
 <dt id="raw">RAW · DNG · PEF <small>RAW</small></dt><dd>센서가 받은 값을 거의 그대로 담은 파일입니다. PEF는 펜탁스 고유 형식, DNG는 Adobe가 공개한 형식입니다.</dd>
+<dt id="raw-nr">RAW 노이즈 감소 <small>RAW noise reduction</small></dt><dd>카메라가 RAW 파일을 저장하기 전에 적용하는 노이즈 감소입니다. 메뉴의 고감도 NR을 꺼도 남는 처리가 있는지가 조사 대상입니다. 펌웨어에서 그 처리를 끌 수 있다는 근거는 아직 없습니다.</dd>
 <dt id="ycbcr">YCbCr <small>YCbCr</small></dt><dd>밝기(Y)와 두 색차(Cb, Cr)로 색을 나타내는 방식입니다. JPEG는 이 형태로 압축합니다.</dd>
 <dt id="delta-e">ΔE00 · 색차 <small>CIEDE2000</small></dt><dd>두 색이 사람 눈에 얼마나 다르게 보이는지를 수로 나타낸 값입니다. 0에 가까울수록 같은 색입니다. 흔히 1 안팎을 겨우 알아볼 수 있는 차이로 봅니다.</dd>
 <dt id="gamma">감마 · 톤 곡선 <small>gamma, tone curve</small></dt><dd>밝기 값을 사람 눈에 맞게 휘어 주는 곡선입니다. 대비와 암부·명부의 표현이 여기서 정해집니다.</dd>
 <dt id="gain">게인 <small>gain</small></dt><dd>값에 곱하는 배율입니다. 화이트밸런스의 결과는 색 채널마다의 게인으로 전달됩니다.</dd>
 <dt id="embedded-jpeg">내장 JPEG <small>embedded JPEG</small></dt><dd>카메라가 RAW 파일 안에 함께 넣어 둔, 현상이 끝난 영상입니다. 같은 노출에서 카메라가 만든 색의 기준으로 씁니다.</dd>
+<dt id="demosaic">디모자이크 <small>demosaicing</small></dt><dd>화소마다 빠진 두 색을 주변 화소의 값으로 채워 R·G·B를 모두 갖추게 하는 계산입니다.</dd>
+<dt id="black-white-level">블랙 레벨 · 화이트 레벨 <small>BlackLevel, WhiteLevel</small></dt><dd>빛이 없을 때 센서가 내는 바닥값과, 포화했다고 보는 값입니다. 현상할 때 이 사이를 0에서 1로 늘려 씁니다.</dd>
 <dt id="color-matrix">색 행렬 <small>color matrix</small></dt><dd>빨강·초록·파랑 세 값을 섞어 새 세 값을 만드는 3×3 숫자 표입니다. 센서 고유의 색을 표준 색공간으로 옮기고 색 모드의 분위기를 만드는 데 씁니다.</dd>
 <dt id="color-space">색공간 (sRGB · AdobeRGB) <small>color space</small></dt><dd>숫자와 실제 색의 대응을 정한 기준입니다. AdobeRGB는 sRGB보다 넓은 범위의 색을 담습니다. 카메라 메뉴에서 둘 중 하나를 고릅니다.</dd>
 <dt id="test-dcp">시험 DCP <small>test DCP</small></dt><dd>이 연구가 대조 실험용으로 만든 프로파일입니다. RAW 파일의 색 행렬과 광원 정보만 담거나, 거기에 톤 곡선이나 LookTable 하나를 더한 것입니다. 카메라 색에 맞춘 프로파일이 아닙니다.</dd>
+<dt id="offline-target">오프라인 목표 <small>offline target</small></dt><dd>톤 곡선을 Lightroom 밖에서(PC 계산으로) 적용해 만든 기대값입니다. 후보 프로파일의 실제 Lightroom 출력을 이 값과 비교합니다. 카메라 JPEG와 비교한 값과는 다릅니다.</dd>
+<dt id="registration">정합 · 마스크 <small>registration, mask</small></dt><dd>두 이미지의 같은 지점이 겹치도록 위치를 맞추는 일이 정합입니다. 마스크는 경계나 포화 화소처럼 비교에서 뺄 부분을 고르는 규칙입니다.</dd>
 <dt id="lut">조회표 (LUT) <small>lookup table</small></dt><dd>입력값마다 출력값을 미리 적어 둔 표입니다. 감마와 톤 곡선은 이 형태로 하드웨어에 전달됩니다.</dd>
 <dt id="custom-image">커스텀 이미지 · 색 모드 <small>Custom Image</small></dt><dd>펜탁스 카메라에서 사진의 분위기를 고르는 메뉴입니다. Natural, Bright, Reversal Film 같은 모드마다 색 행렬과 곡선 설정이 달라집니다.</dd>
 <dt id="clipping">클리핑 <small>clipping</small></dt><dd>계산 결과가 표현 범위를 넘으면 최댓값이나 최솟값으로 잘라 내는 처리입니다.</dd>
-<dt id="profile-digest">프로파일 지문 <small>CameraProfileDigest</small></dt><dd>Lightroom이 내보낸 파일의 메타데이터에 적는 32자리 값입니다. 프로파일 내용을 일정한 순서로 늘어놓은 바이트의 MD5이며, 어떤 프로파일이 적용됐는지 확인하는 데 씁니다.</dd>
+<dt id="profile-digest">프로파일 지문 <small>CameraProfileDigest</small></dt><dd>Lightroom이 내보낸 파일의 메타데이터에 적는 32자리 값입니다. 프로파일 내용을 일정한 순서로 늘어놓은 바이트의 MD5이며 어떤 프로파일이 적용됐는지 확인하는 데 씁니다.</dd>
 <dt id="white-balance">화이트밸런스 <small>white balance</small></dt><dd>조명 색에 맞춰 빨강·초록·파랑 값에 서로 다른 배율을 곱해 흰색이 희게 보이도록 맞추는 단계입니다.</dd>
 </dl>
 </section>
@@ -136,22 +150,28 @@
 <h2>AF와 렌즈</h2>
 <dl class="glossary">
 <dt id="af-coupler">AF 커플러 <small>AF coupler</small></dt><dd>바디 모터의 회전을 렌즈로 전달하는 마운트의 축입니다. 렌즈 안에 모터가 있는 렌즈는 이 축을 쓰지 않습니다.</dd>
-<dt id="sad">SAD · SSD <small>sum of absolute / squared differences</small></dt><dd>두 신호의 차이를 절댓값이나 제곱으로 모두 더한 값입니다. 작을수록 두 신호가 닮았다는 뜻이며, 위상차 AF의 어긋남을 찾는 기본 연산입니다.</dd>
+<dt id="pwm">PWM <small>pulse-width modulation</small></dt><dd>전원을 빠르게 켜고 끄면서 켜져 있는 시간의 비율로 평균 출력을 조절하는 방식입니다. 모터의 힘이나 속도를 조절할 때 씁니다. 펌웨어에 PWM 객체가 있다는 것만으로 그것이 AF 모터에 연결된다고 볼 수는 없습니다.</dd>
+<dt id="sad">SAD · SSD <small>sum of absolute / squared differences</small></dt><dd>두 신호의 차이를 절댓값이나 제곱으로 모두 더한 값입니다. 작을수록 두 신호가 닮았다는 뜻이며 위상차 AF의 어긋남을 찾는 기본 연산입니다.</dd>
 <dt id="capability-byte">능력 바이트 <small>capability byte</small></dt><dd>렌즈가 알려 준 정보 가운데 구동 방식을 고르는 데 쓰이는 바이트입니다. 두 K-3 기종 모두 이 바이트의 비트 6에 따라 경로가 갈립니다.</dd>
 <dt id="defocus">디포커스 <small>defocus</small></dt><dd>초점이 맞는 위치에서 벗어난 정도입니다. AF는 이 값을 렌즈 구동량으로 바꿉니다.</dd>
-<dt id="lens-command">렌즈 명령과 응답 <small>lens command</small></dt><dd>바디가 렌즈에 보내는 요청과 렌즈가 돌려주는 답입니다. 이 연구는 펌웨어가 명령을 만들고 응답을 해석하는 코드를 다루며, 실제 통신 신호는 관측하지 않았습니다.</dd>
+<dt id="lens-command">렌즈 명령과 응답 <small>lens command</small></dt><dd>바디가 렌즈에 보내는 요청과 렌즈가 돌려주는 답입니다. 이 연구는 펌웨어가 명령을 만들고 응답을 해석하는 코드를 다루며 실제 통신 신호는 관측하지 않았습니다.</dd>
 <dt id="lens-drive">바디 구동과 렌즈 내 모터 <small>screw drive, in-lens motor</small></dt><dd>펜탁스 K 마운트 렌즈는 바디의 모터가 축을 돌려 초점을 움직이는 것과 렌즈 안의 모터로 움직이는 것이 있습니다. 카메라는 렌즈가 알려 주는 정보를 보고 방식을 고릅니다.</dd>
 <dt id="phase-af">위상차 AF <small>phase-detection AF</small></dt><dd>DSLR이 뷰파인더로 찍을 때 쓰는 방식입니다. 전용 센서가 받은 두 신호가 얼마나 어긋났는지를 재서, 초점이 어느 방향으로 얼마나 벗어났는지 한 번에 계산합니다.</dd>
+<dt id="device-registry">장치 레지스트리 <small>device registry</small></dt><dd>K-3 Mark III 펌웨어에서 타이머 같은 장치 객체를 번호로 등록해 두고 다른 코드가 번호로 꺼내 쓰는 표입니다.</dd>
 </dl>
 </section>
 <section id="ui">
 <h2>화면</h2>
 <dl class="glossary">
+<dt id="viewport">viewport <small>viewport</small></dt><dd>화면 요소가 실제로 그릴 수 있는 사각형입니다. 자기 영역과 부모 영역이 겹친 부분입니다.</dd>
 <dt id="glyph">글리프 <small>glyph</small></dt><dd>글꼴에 들어 있는 글자 하나의 모양 데이터입니다.</dd>
 <dt id="pending-value">보류값 · 임시값 <small>pending value</small></dt><dd>메뉴에서 고르는 중이라 아직 설정에 반영되지 않은 값입니다. 확정하면 설정에 쓰이고 취소하면 버려집니다. Q7은 고르는 즉시 쓰고 취소할 때 되돌리는 방식이라 다릅니다.</dd>
+<dt id="rect-clip">사각형 클리핑 <small>rectangle clipping</small></dt><dd>그릴 사각형 가운데 허용된 범위와 겹치는 부분만 남기는 처리입니다. 글자가 화면 가장자리에 걸릴 때 바깥 부분을 그리지 않게 합니다.</dd>
 <dt id="stride">스트라이드 <small>stride</small></dt><dd>영상 버퍼에서 한 줄의 시작부터 다음 줄의 시작까지의 메모리 거리입니다.</dd>
 <dt id="widget">위젯 <small>widget</small></dt><dd>화면을 이루는 부품(제목, 선택 항목, 도움말)에 붙은 내부 번호 또는 그 부품입니다.</dd>
+<dt id="coverage">커버리지 <small>coverage</small></dt><dd>글자 비트맵의 칸마다 글자의 획이 그 칸을 얼마나 덮는지를 적은 값입니다. 이 값으로 글자색과 배경색을 섞습니다.</dd>
 <dt id="focus">포커스 <small>focus</small></dt><dd>지금 고르고 있는 항목을 가리키는 표시입니다.</dd>
+<dt id="surface">표면 <small>surface</small></dt><dd>그릴 메모리의 시작 주소, 픽셀 형식, 한 줄의 길이를 담은 구조체입니다. 이 연구에서는 PC 메모리에 만든 합성 표면에 그렸습니다.</dd>
 <dt id="frame-buffer">프레임 버퍼 <small>frame buffer</small></dt><dd>화면에 내보낼 그림을 담아 두는 메모리 영역입니다.</dd>
 <dt id="resource">화면 자원 <small>resource</small></dt><dd>아이콘, 글꼴, 문자열처럼 프로그램 코드가 아닌 화면용 데이터입니다.</dd>
 </dl>
@@ -159,7 +179,7 @@
 </main>
 </div>
 <!-- chrome:bottom -->
-<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">시작하기 — 이 주제의 문서</h2><ol><li><a href="index.html">개요</a></li><li><a href="analysis/firmware-structure.html">펌웨어 구조와 하드웨어<span>패키지 15개 레코드, SoC 식별, 재현 절차</span></a></li><li><a href="analysis/research-program.html">세 기종 연구 본부<span>네 가지 목표의 현재 상태</span></a></li><li><a href="analysis/research-checkpoint.html">세 기종 펌웨어 연구 인계<span>검토를 마친 로컬 결과와 다음 확인 지점</span></a></li><li><a href="analysis/research-roadmap.html">수정·이식 선행 연구<span>수정 펌웨어 전에 확인할 것</span></a></li><li><a href="glossary.html" aria-current="page">용어집</a></li></ol></nav>
+<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">시작하기 — 이 주제의 문서</h2><ol><li><a href="index.html">개요</a></li><li><a href="analysis/firmware-structure.html">펌웨어 구조와 하드웨어<span>패키지 15개 레코드, SoC 식별, 재현 절차</span></a></li><li><a href="analysis/research-program.html">세 기종 연구 본부<span>네 가지 목표의 현재 상태</span></a></li><li><a href="analysis/research-checkpoint.html">공개 전 연구 여덟 건 요약<span>로컬에서 검토한 결과와 다음 확인 지점</span></a></li><li><a href="analysis/research-roadmap.html">수정·이식 선행 연구<span>수정 펌웨어 전에 확인할 것</span></a></li><li><a href="glossary.html" aria-current="page">용어집</a></li></ol></nav>
 <nav class="pager" aria-label="이전·다음 문서"><a class="prev" href="analysis/research-roadmap.html"><small>← 이전</small>수정·이식 선행 연구</a><a class="next" href="analysis/guide-boot.html"><small>다음 →</small>부팅과 저장소 안내</a></nav>
 <footer class="sitefoot"><div class="sitefoot-in"><nav aria-label="사이트"><a href="index.html#map">문서 지도</a><a href="index.html#levels">검증 수준 읽는 법</a><a href="glossary.html">용어집</a><a href="analysis/research-program.html">세 기종 연구 본부</a><a href="https://github.com/yunhyok/pentax-k3iii-firmware-analysis">GitHub 저장소</a></nav><p>PENTAX 펌웨어 연구. PC에서 수행한 정적 분석과 에뮬레이션 결과이며, 카메라 실기에서 검증한 내용이 아닙니다. 원본 펌웨어와 추출한 독점 코드는 포함하지 않습니다.</p></div></footer>
 <!-- /chrome:bottom -->

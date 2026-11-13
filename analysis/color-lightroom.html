@@ -30,7 +30,7 @@
 <li>펌웨어의 모드 표에는 <strong>항목이 22개</strong> 있습니다. 메뉴의 Custom Image 13개, 펌웨어 업데이트로 추가된 6개(SATOBI, KATEN, KYUSHU, FUYUNO, HARUBENI, Gold), 내부용 Monochrome 항목 3개입니다.</li>
 <li>모드마다 달라지는 색 자원은 주로 <strong>모드 행렬 하나</strong>입니다. 공통 행렬은 22개 항목이 모두 같은 것을 쓰고 채도 행렬 표와 색상 자원은 각각 두 종류뿐입니다. Gold는 채널별 곡선을, Reversal Film은 별도 감마 생성기를 더 씁니다.</li>
 <li>Adobe는 이 카메라용 <strong>Camera Matching 프로파일 다섯 개</strong>(Bright, Natural, Portrait, Landscape, Vibrant)를 제공합니다. 파일을 직접 읽어 보니 ColorMatrix는 다섯 개가 같고 ForwardMatrix는 모두 다릅니다. 톤 곡선과 LookTable은 두 묶음으로 나뉩니다.</li>
-<li>나머지 모드를 옮기려면 펌웨어의 숫자만으로는 부족합니다. 좌표계와 적용 순서를 맞추고 <strong>같은 RAW의 카메라 출력과 비교</strong>해야 합니다. 그 절차를 제안했고 K-3 Mark III에서 색차를 잰 결과는 아직 없습니다.</li>
+<li>나머지 모드를 옮기려면 펌웨어의 숫자만으로는 부족합니다. 좌표계와 적용 순서를 맞추고 <strong>같은 RAW의 카메라 출력과 비교</strong>해야 합니다. 그 절차를 제안했습니다. K-3 Mark III에서 잰 색차는 스튜디오 장면 한 장의 Bright 비교뿐이고 제안한 절차로 잰 결과는 아직 없습니다.</li>
 </ul>
 </section>
 
@@ -49,7 +49,7 @@
 </ul></div>
 <div class="open"><h3><span class="badge open">미확인</span> 확인하지 않은 것</h3>
 <ul>
-<li>Adobe 프로파일 다섯 개가 카메라 JPEG와 얼마나 가까운지</li>
+<li>Adobe 프로파일 다섯 개가 카메라 JPEG와 얼마나 가까운지(Camera Bright만 한 장면에서 측정)</li>
 <li>나머지 모드를 옮긴 프로파일의 정확도</li>
 <li>카메라가 실행 중에 RAM의 자원을 바꾸는지</li>
 <li>내부용 Monochrome 항목을 메뉴에서 고를 수 있는지</li>
@@ -376,9 +376,10 @@
 
 <h3>Lightroom에서 쓰는 방법과 지원 범위</h3>
 <p>Lightroom에서 K-3 Mark III의 DNG나 PEF를 열고 프로파일 브라우저의 Camera Matching 묶음에서 위 다섯 가지를 고를 수 있습니다. Adobe의 카메라 지원표에는 이 기종의 DNG·PEF와 Camera Matching 지원이 적혀 있습니다. 최소 버전은 Camera Raw 13.3, Lightroom 4.3, Lightroom Classic 10.3입니다.</p>
-<p>이 문서에서 확인한 것은 <strong>설치된 파일의 존재와 구조</strong>입니다. 다섯 프로파일을 K-3 Mark III의 RAW에 적용해 카메라 JPEG와 비교하지는 않았습니다. 이어진 실험의 현재 상태는 아래와 같습니다.</p>
+<p>이 문서에서 확인한 것은 <strong>설치된 파일의 존재와 구조</strong>입니다. 다섯 프로파일을 K-3 Mark III의 RAW에 적용해 카메라 JPEG와 비교하는 일은 이 문서에서 하지 않았습니다. 이어진 실험의 현재 상태는 아래와 같습니다.</p>
 <ul>
-<li><span class="badge ok">확인</span> K-3 Mark III RAW 한 장에 시험용 DCP를 적용해 Lightroom에서 TIFF를 내보냈습니다(<a href="lightroom-model-exports.html">K-3 III·Q7 DCP 내보내기</a>). 이 시험용 DCP는 RAW 안의 색 행렬로 만든 것이고 Camera Matching 프로파일이 아닙니다. 카메라 JPEG와의 색차는 재지 않았습니다.</li>
+<li><span class="badge ok">확인</span> K-3 Mark III RAW 한 장에 시험용 DCP를 적용해 Lightroom에서 TIFF를 내보냈습니다(<a href="lightroom-model-exports.html">K-3 III·Q7 DCP 내보내기</a>). 이 시험용 DCP는 RAW 안의 색 행렬로 만든 것이고 Camera Matching 프로파일이 아닙니다. 이 실험에서는 카메라 JPEG와의 색차를 재지 않았습니다.</li>
+<li><span class="badge ok">확인</span> K-3 Mark III의 스튜디오 PEF 한 장(펌웨어 1.10, Bright)에서 세 프로파일을 카메라 Bright JPEG와 비교했습니다. 픽셀 ΔE<sub>00</sub> 중앙값은 Camera Bright 1.421, Adobe Standard 1.944, 시험용 DCP 2.028입니다(<a href="lightroom-studio-reference.html">참조 프로파일 비교</a>). 나머지 네 Camera Matching 프로파일은 비교하지 않았습니다.</li>
 <li><span class="badge ok">확인</span> K-3 II에서는 같은 이름의 Adobe 프로파일을 실제로 비교했습니다. Camera Natural이 카메라의 Natural 미리보기에 가장 가까웠습니다(<a href="lightroom-render-comparison.html">실제 TIFF 6개 비교</a>). 이 결과를 K-3 Mark III로 일반화하지는 않습니다.</li>
 </ul>
 
@@ -477,7 +478,7 @@
 <ul>
 <li><strong>Auto Select</strong>: 카메라가 실제 적용할 모드를 고르므로 고정 프로파일은 실제로 선택된 모드를 대상으로 삼아야 합니다.</li>
 <li><strong>Cross Processing</strong>: 무작위, 프리셋 1~3, 저장한 설정 1~3에 따라 결과가 달라집니다. 특정 결과 하나를 대상으로 삼아야 합니다.</li>
-<li><strong>Monochrome</strong> — 필터와 토닝 설정마다 목표가 달라집니다.</li>
+<li><strong>Monochrome</strong>: 필터와 토닝 설정마다 목표가 달라집니다.</li>
 </ul>
 <p>정리하면, 이미 있는 Adobe 프로파일 다섯 개는 바로 쓸 수 있는 후보입니다. 나머지 모드는 검증용 RAW와 목표 출력, 색 처리 계수의 연결을 더 확보해야 합니다.</p>
 </section>
@@ -485,7 +486,7 @@
 <section id="limits">
 <h2>한계와 남은 과제</h2>
 <ul>
-<li><span class="badge open">미확인</span> <strong>색 일치</strong>: 새 <code>.dcp</code>나 <code>.xmp</code>가 카메라의 모드와 얼마나 맞는지, RAW에서 JPEG까지 픽셀이 일치하는지를 입증한 결과는 없습니다. 다섯 Adobe 프로파일도 K-3 Mark III에서는 카메라 JPEG와 비교하지 않았습니다.</li>
+<li><span class="badge open">미확인</span> <strong>색 일치</strong>: 새 <code>.dcp</code>나 <code>.xmp</code>가 카메라의 모드와 얼마나 맞는지, RAW에서 JPEG까지 픽셀이 일치하는지를 입증한 결과는 없습니다. 다섯 Adobe 프로파일 가운데 K-3 Mark III에서 카메라 JPEG와 비교한 것은 Camera Bright 하나입니다. 스튜디오 장면 한 장에서 잰 값입니다(<a href="lightroom-studio-reference.html">참조 프로파일 비교</a>).</li>
 <li><span class="badge open">미확인</span> <strong>실행 중 상태</strong>: 자원 표는 펌웨어 파일의 초기값입니다. 실행 중에 RAM의 값이 바뀌는지, Auto Select와 Cross Processing이 어떤 값으로 바꾸는지는 관측하지 않았습니다.</li>
 <li><span class="badge open">미확인</span> <strong>좌표계</strong>: 펌웨어 행렬이 받는 색의 원색과 전달함수를 모릅니다. 그래서 DNG 규격이 정한 방향의 행렬로 바꿀 수 없습니다.</li>
 <li><span class="badge static">정적 분석</span> <strong>RAW 현상 경로</strong>: 호출 관계는 코드를 읽어 확인한 것입니다. 카메라에서 RAW 현상을 실행해 보지는 않았습니다.</li>
@@ -521,7 +522,7 @@ python verify_numeric_kernels.py .private/my-decode/decoded.bin</code></pre>
 </main>
 </div>
 <!-- chrome:bottom -->
-<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">카메라 내부 색 처리 — 이 주제의 문서</h2><ol><li><a href="guide-color.html">색 처리 안내</a></li><li><a href="color-lightroom.html" aria-current="page">컬러모드 자원과 Lightroom</a></li><li><a href="color-algorithms.html">색 처리 알고리즘<span>행렬·감마·톤</span></a></li><li><a href="color-mode-boundaries.html">색 모드별 행렬·감마 조건</a></li><li><a href="pipeline-report.html">JPEG·ISP와 색 재현 경로</a></li></ol></nav>
+<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">카메라 내부 색 처리 — 이 주제의 문서</h2><ol><li><a href="guide-color.html">색 처리 안내</a></li><li><a href="color-lightroom.html" aria-current="page">컬러모드 자원과 Lightroom</a></li><li><a href="color-algorithms.html">색 처리 알고리즘<span>행렬·감마·톤</span></a></li><li><a href="color-mode-boundaries.html">색 모드별 행렬·감마 조건</a></li><li><a href="pipeline-report.html">JPEG·ISP와 색 재현 경로</a></li><li><a href="raw-nr-feasibility.html">RAW 노이즈 감소를 끌 수 있는가</a></li></ol></nav>
 <nav class="pager" aria-label="이전·다음 문서"><a class="prev" href="guide-color.html"><small>← 이전</small>색 처리 안내</a><a class="next" href="color-algorithms.html"><small>다음 →</small>색 처리 알고리즘</a></nav>
 <footer class="sitefoot"><div class="sitefoot-in"><nav aria-label="사이트"><a href="../index.html#map">문서 지도</a><a href="../index.html#levels">검증 수준 읽는 법</a><a href="../glossary.html">용어집</a><a href="research-program.html">세 기종 연구 본부</a><a href="https://github.com/yunhyok/pentax-k3iii-firmware-analysis">GitHub 저장소</a></nav><p>PENTAX 펌웨어 연구. PC에서 수행한 정적 분석과 에뮬레이션 결과이며, 카메라 실기에서 검증한 내용이 아닙니다. 원본 펌웨어와 추출한 독점 코드는 포함하지 않습니다.</p></div></footer>
 <!-- /chrome:bottom -->

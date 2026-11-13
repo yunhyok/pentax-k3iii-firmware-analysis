@@ -10,7 +10,7 @@
       {"file": "index.html", "label": "개요"},
       {"file": "analysis/firmware-structure.html", "label": "펌웨어 구조와 하드웨어", "note": "패키지 15개 레코드, SoC 식별, 재현 절차"},
       {"file": "analysis/research-program.html", "label": "세 기종 연구 본부", "note": "네 가지 목표의 현재 상태"},
-      {"file": "analysis/research-checkpoint.html", "label": "세 기종 펌웨어 연구 인계", "note": "검토를 마친 로컬 결과와 다음 확인 지점"},
+      {"file": "analysis/research-checkpoint.html", "label": "공개 전 연구 여덟 건 요약", "note": "로컬에서 검토한 결과와 다음 확인 지점"},
       {"file": "analysis/research-roadmap.html", "label": "수정·이식 선행 연구", "note": "수정 펌웨어 전에 확인할 것"},
       {"file": "glossary.html", "label": "용어집"}
     ]},
@@ -20,7 +20,7 @@
       {"file": "analysis/m0-board-config.html", "label": "M0 보드 설정", "note": "상수 기록과 SRAM remap의 경계"},
       {"file": "analysis/m0-diagnostic-serial.html", "label": "M0 진단 직렬 출력", "note": "분주식과 문자 출력"},
       {"file": "analysis/stubby-load-auth.html", "label": "Stubby 적재와 인증 경계", "note": "Linux 부트로더의 파일 조건"},
-      {"file": "analysis/stubby-romfs.html", "label": "Stubby ROMFS 선택과 복사", "note": "원본 함수 6사례와 길이 상한"},
+      {"file": "analysis/stubby-romfs.html", "label": "Stubby ROMFS 선택과 복사", "note": "파일 선택·복사 6사례"},
       {"file": "analysis/header-alias-consumer.html", "label": "부트 헤더와 파티션 표", "note": "+4 저장 후보의 실제 대상"}
     ]},
     {"id": "update", "title": "펌웨어 업데이트 과정", "nav": "업데이트", "hub": "analysis/guide-update.html", "pages": [
@@ -32,7 +32,7 @@
       {"file": "analysis/update-media-completion.html", "label": "매체 객체와 완료 통지"},
       {"file": "analysis/update-partition-io.html", "label": "R 파티션과 sector I/O"},
       {"file": "analysis/update-bank-selection.html", "label": "쓰기 bank와 BOOT 선택"},
-      {"file": "analysis/selector-policy.html", "label": "리소스 선택값과 헤더 기록 조건", "note": "FIFO 반례·표와 헤더의 쓰기 분기"},
+      {"file": "analysis/selector-policy.html", "label": "리소스 선택값과 헤더 기록 조건", "note": "선택값과 기록 조건"},
       {"file": "analysis/update-ui-consumer.html", "label": "완료 후 UI 작업"},
       {"file": "analysis/update-ui-timer.html", "label": "UI 타이머와 콜백"},
       {"file": "analysis/update-timer-abi.html", "label": "커널 호출과 예약 시각"},
@@ -47,10 +47,10 @@
       {"file": "analysis/recompiled-kernels.html", "label": "수치 함수 C 재구현", "note": "SAD·SSD와 Q13 행렬 곱"},
       {"file": "analysis/recompiled-integration.html", "label": "재컴파일 함수 배치·재패키징"},
       {"file": "analysis/selective-repack.html", "label": "압축 블록을 보존한 재패키징"},
-      {"file": "analysis/allocator-replay/report.html", "label": "설정에서 첫 task stack까지", "note": "원본 할당 경로 7조건과 RMW 5검증"},
-      {"file": "analysis/registry-replay/report.html", "label": "이름 registry 할당과 조회", "note": "원본 이름 배열 1200바이트 초기화와 조회 재현"},
-      {"file": "analysis/rmw-proof/report.html", "label": "RMW 8바이트의 수동 모형 검증", "note": "초기 64비트와 최종값의 관계, decoded만으로 재현"},
-      {"file": "analysis/rmw-scope/report.html", "label": "RMW 48바이트 분류와 4바이트 증명", "note": "전체 기록 검사 후 공개 필드 추리기, decoded와 accepted31 필요"}
+      {"file": "analysis/allocator-replay/report.html", "label": "설정에서 첫 task 스택까지", "note": "할당 경로 7조건"},
+      {"file": "analysis/registry-replay/report.html", "label": "이름 registry 할당과 조회", "note": "이름 배열의 할당·초기화·조회"},
+      {"file": "analysis/rmw-proof/report.html", "label": "RMW 8바이트의 수동 모형 검증", "note": "초기값과 무관한 최종 8바이트"},
+      {"file": "analysis/rmw-scope/report.html", "label": "RMW 48바이트 분류와 4바이트 증명", "note": "남은 바이트의 범위"}
     ]},
     {"id": "rtos", "title": "RTOS 명령과 셸", "nav": "명령·셸", "hub": "analysis/guide-rtos.html", "pages": [
       {"file": "analysis/guide-rtos.html", "label": "RTOS 명령 안내"},
@@ -84,24 +84,24 @@
       {"file": "analysis/lightroom-studio-reference.html", "label": "K-3 III·Q7 참조 프로파일 비교", "note": "같은 장면의 공통 마스크·As Shot 대조"},
       {"file": "analysis/lightroom-as-shot.html", "label": "As Shot과 프로파일별 백색점", "note": "같은 Q7 RAW의 SDK 수식 재현"},
       {"file": "analysis/lightroom-pef-neutral.html", "label": "K-3 III PEF의 As Shot 중립값", "note": "두 DNG 변환과 세 프로파일 수식 재현"},
-      {"file": "analysis/lightroom-cfa-preservation.html", "label": "K-3 III PEF·DNG의 CFA 샘플 비교", "note": "변환 전후 전체 26,628,096개 샘플 대조"},
+      {"file": "analysis/lightroom-cfa-preservation.html", "label": "K-3 III PEF·DNG의 CFA 샘플 비교", "note": "변환 전후 샘플 전수 대조"},
       {"file": "analysis/lightroom-cfa-range.html", "label": "K-3 III DNG의 CFA 범위와 기본 크롭", "note": "활성 영역과 크롭의 WhiteLevel 대조"},
-      {"file": "analysis/lightroom-sdk-stage2.html", "label": "K-3 III DNG의 Adobe SDK Stage 2 실행", "note": "원본 SDK에서 활성 영역 25,891,840개 전수 대조"},
-      {"file": "analysis/lightroom-sdk-stage3.html", "label": "K-3 III DNG의 Adobe SDK Stage 3", "note": "카메라 채널 77,675,520개 보간 대조"}
+      {"file": "analysis/lightroom-sdk-stage2.html", "label": "K-3 III DNG의 Adobe SDK Stage 2 실행", "note": "정규화 단계 전수 대조"},
+      {"file": "analysis/lightroom-sdk-stage3.html", "label": "K-3 III DNG의 Adobe SDK Stage 3", "note": "Bayer 보간 전수 대조"}
     ]},
     {"id": "af", "title": "AF와 렌즈 제어", "nav": "AF", "hub": "analysis/guide-af.html", "pages": [
       {"file": "analysis/guide-af.html", "label": "AF와 렌즈 제어 안내"},
       {"file": "analysis/af-foundations.html", "label": "세 기종 AF 기초 비교"},
       {"file": "analysis/af-drive-architecture.html", "label": "렌즈 구동 선택·명령·응답", "note": "렌즈 능력에 따른 구동 선택과 명령"},
-      {"file": "analysis/af-joint-control.html", "label": "Joint 요청과 하위 제어", "note": "이벤트 0x80에서 첫 서비스·레지스터 경계까지"},
-      {"file": "analysis/af-service-binding.html", "label": "AF 서비스 객체와 레지스터 경계", "note": "ReloadTimer·Udc의 두 별도 실행"},
-      {"file": "analysis/af-mode1-control.html", "label": "Joint 모드 1의 요청과 피드백 계산", "note": "리셋 후속 호출, 요청 분기와 피드백 숫자 대조"},
-      {"file": "analysis/af-feedback-producers.html", "label": "PafPulse 기준값의 쓰기 경로", "note": "원본 객체 연결, 기준값 갱신과 별도 소비자 진입"},
-      {"file": "analysis/af-motor-fields.html", "label": "PafMotor와 PafPulse의 입력값 경로", "note": "디버그 요청, 설정 레코드 복사, 별도 LensInfo 계산"},
-      {"file": "analysis/af-driver-pwm.html", "label": "AF 드라이버와 PWM 연결", "note": "Motor 별칭, PWM 등록·리셋과 콜백 재생"},
-      {"file": "analysis/af-pwm-parameters.html", "label": "AF PWM 요청과 정수 변환", "note": "두 호출점, 16비트 레코드 패킹과 서비스 호출 전 경계"},
-      {"file": "analysis/af-state-producers.html", "label": "PafMotor 상태 바이트의 쓰기 경로", "note": "22개 직접 저장과 두 피드백·서비스 경계"},
-      {"file": "analysis/af-adaptive-input.html", "label": "AF 적응형 문턱의 입력", "note": "ElapsedTimer 표본과 unsigned 차이의 정수 환산"},
+      {"file": "analysis/af-joint-control.html", "label": "Joint 요청과 하위 제어", "note": "요청 수신과 모드 분기"},
+      {"file": "analysis/af-service-binding.html", "label": "AF 서비스 객체와 레지스터 경계", "note": "ReloadTimer·Udc 객체의 생성과 연결"},
+      {"file": "analysis/af-mode1-control.html", "label": "Joint 모드 1의 요청과 피드백 계산", "note": "리셋 뒤 호출, 요청 분기, 피드백 계산"},
+      {"file": "analysis/af-feedback-producers.html", "label": "PafPulse 기준값의 쓰기 경로", "note": "기준값을 쓰는 네 곳"},
+      {"file": "analysis/af-motor-fields.html", "label": "PafMotor와 PafPulse의 입력값 경로", "note": "필드별 쓰기·읽기 경로"},
+      {"file": "analysis/af-driver-pwm.html", "label": "AF 드라이버와 PWM 연결", "note": "드라이버 객체와 PWM 등록"},
+      {"file": "analysis/af-pwm-parameters.html", "label": "AF PWM 요청과 정수 변환", "note": "요청 패킹과 정수 변환"},
+      {"file": "analysis/af-state-producers.html", "label": "PafMotor 상태 바이트의 쓰기 경로", "note": "상태 바이트를 쓰는 22곳"},
+      {"file": "analysis/af-adaptive-input.html", "label": "AF 적응형 문턱의 입력", "note": "경과 시간 입력과 정수 환산"},
       {"file": "analysis/af-request-consumer.html", "label": "AF 요청 큐와 완료 통지", "note": "요청 슬롯, 처리 task, 완료 통지"}
     ]},
     {"id": "ui", "title": "UI와 화면 자원", "nav": "UI", "hub": "analysis/guide-ui.html", "pages": [
@@ -109,13 +109,13 @@
       {"file": "analysis/ui-port-contract.html", "label": "UI 이식 설계", "note": "세 기종 비교"},
       {"file": "analysis/colorspace-ui.html", "label": "색공간 화면: 선택·확정·취소", "note": "16사례"},
       {"file": "analysis/colorspace-ui-input.html", "label": "색공간 화면: 방향 입력·포커스", "note": "50사례"},
-      {"file": "analysis/colorspace-render.html", "label": "색공간 행의 아이콘과 글자 측정", "note": "원본 행·ICONBIN 복사, Latin 글꼴 준비와 sRGB 측정"},
-      {"file": "analysis/colorspace-text.html", "label": "색공간 sRGB 글자의 래스터와 픽셀 전송", "note": "원본 텍스트 비트맵·합성 표면 전송"},
-      {"file": "analysis/colorspace-clip.html", "label": "sRGB 글자 전송의 화면 경계", "note": "일곱 좌표에서 32비트 전송과 Q7 행 검사 비교"},
-      {"file": "analysis/ui-viewport-producers.html", "label": "K-3 III 텍스트 viewport의 생산 경로", "note": "부모 클립과 텍스트 설정의 전달"},
-      {"file": "analysis/ui-surface-producers.html", "label": "K-3 III StringView의 그리기 표면", "note": "Canvas와 표면 기술자"},
-      {"file": "analysis/ui-render-chain.html", "label": "Q7 갱신에서 원본 픽셀까지", "note": "마커·두 텍스트·버퍼 교체의 합성 실행"},
-      {"file": "analysis/cross-ui-text.html", "label": "K-3 III와 Q7의 sRGB 글자 그리기 비교", "note": "32비트 커버리지 전송과 Q7 팔레트 번호·Q16 축소"},
+      {"file": "analysis/colorspace-render.html", "label": "색공간 행의 아이콘·체크 표시와 글자 크기 측정", "note": "행·아이콘 복사와 글꼴 준비"},
+      {"file": "analysis/colorspace-text.html", "label": "sRGB 글자를 비트맵으로 만들어 표면에 옮기기", "note": "글자 비트맵과 표면 전송"},
+      {"file": "analysis/colorspace-clip.html", "label": "글자가 화면 가장자리에 걸릴 때의 전송", "note": "일곱 위치의 가장자리 처리"},
+      {"file": "analysis/ui-viewport-producers.html", "label": "글자 viewport가 전송 함수에 닿는 경로", "note": "부모 클립과 글자 영역"},
+      {"file": "analysis/ui-surface-producers.html", "label": "StringView가 그릴 표면을 받는 경로", "note": "Canvas와 표면 기술자"},
+      {"file": "analysis/ui-render-chain.html", "label": "Q7 화면 갱신 한 번에서 픽셀까지", "note": "마커·두 글자 줄·버퍼 교체"},
+      {"file": "analysis/cross-ui-text.html", "label": "K-3 III와 Q7의 글자 그리기 비교", "note": "배율·좌표·픽셀 형식"},
       {"file": "analysis/icon-resources.html", "label": "ICONBIN 아이콘 자원", "note": "저장 형식, 복사 규칙, 후보 아이콘"}
     ]}
   ]

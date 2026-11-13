@@ -257,7 +257,7 @@
 <caption>적재 helper가 조건부로 기록하는 값</caption>
 <thead><tr><th>순서</th><th>주소</th><th>값</th></tr></thead>
 <tbody>
-<tr><td>1</td><td><code>0x20000000</code> (벡터)</td><td><code>0xe59ff018</code> — ARM 명령 <code>LDR PC, [PC, #0x18]</code>의 인코딩</td></tr>
+<tr><td>1</td><td><code>0x20000000</code> (벡터)</td><td><code>0xe59ff018</code>: ARM 명령 <code>LDR PC, [PC, #0x18]</code>의 인코딩</td></tr>
 <tr><td>2</td><td><code>0x20000020</code> (진입 주소)</td><td><code>0x3fffa800</code>에서 읽은 값</td></tr>
 <tr><td>3</td><td><code>0x2000fffc</code> (모드)</td><td>1</td></tr>
 <tr><td>4</td><td colspan="2">DSB 명령(앞선 기록이 끝나기를 기다림)</td></tr>
@@ -290,8 +290,8 @@
 <caption>M0의 기록 주소와 공개 소스의 대응 후보</caption>
 <thead><tr><th>M0 쪽 주소</th><th>공개 소스의 주소와 이름</th><th>소스 위치</th><th>두 주소의 차이</th></tr></thead>
 <tbody>
-<tr><th scope="row"><code>0x4d021090</code></th><td><code>0x1d021090</code> — <code>CLK_CRRRS</code> (base <code>0x1d021000</code> + 오프셋 <code>0x90</code>)</td><td><code>arch/arm/mach-milbeaut/snapshot.c</code> 46행(<code>CLK_CRRRS_OFFSET=0x90</code> 정의), 2602행(base 매핑), 2630행·2733행(읽기와 복원)</td><td><code>0x30000000</code></td></tr>
-<tr><th scope="row"><code>0x4dffb208</code></th><td><code>0x1dffb000</code> + <code>0x208</code> — CM0 pinctrl의 <code>EPCR</code> 영역</td><td><code>sc2000.dtsi</code>의 주석 처리된 디버그용 노드, 드라이버 <code>pinctrl-mlb01-cm0.c</code></td><td><code>0x30000000</code></td></tr>
+<tr><th scope="row"><code>0x4d021090</code></th><td><code>0x1d021090</code>: <code>CLK_CRRRS</code> (base <code>0x1d021000</code> + 오프셋 <code>0x90</code>)</td><td><code>arch/arm/mach-milbeaut/snapshot.c</code> 46행(<code>CLK_CRRRS_OFFSET=0x90</code> 정의), 2602행(base 매핑), 2630행·2733행(읽기와 복원)</td><td><code>0x30000000</code></td></tr>
+<tr><th scope="row"><code>0x4dffb208</code></th><td><code>0x1dffb000</code> + <code>0x208</code>: CM0 pinctrl의 <code>EPCR</code> 영역</td><td><code>sc2000.dtsi</code>의 주석 처리된 디버그용 노드, 드라이버 <code>pinctrl-mlb01-cm0.c</code></td><td><code>0x30000000</code></td></tr>
 <tr><th scope="row"><code>0x2000fffc</code></th><td><code>0x0100fffc</code>: BOOT가 모드를 읽는 곳. 공개 Stubby 설정의 SRAM(base <code>0x01000000</code>) 마지막 4바이트</td><td><a href="startup-storage.html#m0-address-map">M0·BOOT 주소 대응</a></td><td><code>0x1f000000</code></td></tr>
 </tbody></table></div>
 
@@ -399,7 +399,7 @@ python verify_m0_board_config.py m0.bin --output m0-board-direct.json</code></pr
 </main>
 </div>
 <!-- chrome:bottom -->
-<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">부팅과 저장소 — 이 주제의 문서</h2><ol><li><a href="guide-boot.html">부팅과 저장소 안내</a></li><li><a href="startup-storage.html">부팅 단계와 저장소 구조<span>M0·BOOT 순서, 파티션 표, bank</span></a></li><li><a href="m0-board-config.html" aria-current="page">M0 보드 설정<span>상수 기록과 SRAM remap의 경계</span></a></li><li><a href="m0-diagnostic-serial.html">M0 진단 직렬 출력<span>분주식과 문자 출력</span></a></li><li><a href="stubby-load-auth.html">Stubby 적재와 인증 경계<span>Linux 부트로더의 파일 조건</span></a></li><li><a href="stubby-romfs.html">Stubby ROMFS 선택과 복사<span>원본 함수 6사례와 길이 상한</span></a></li><li><a href="header-alias-consumer.html">부트 헤더와 파티션 표<span>+4 저장 후보의 실제 대상</span></a></li></ol></nav>
+<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">부팅과 저장소 — 이 주제의 문서</h2><ol><li><a href="guide-boot.html">부팅과 저장소 안내</a></li><li><a href="startup-storage.html">부팅 단계와 저장소 구조<span>M0·BOOT 순서, 파티션 표, bank</span></a></li><li><a href="m0-board-config.html" aria-current="page">M0 보드 설정<span>상수 기록과 SRAM remap의 경계</span></a></li><li><a href="m0-diagnostic-serial.html">M0 진단 직렬 출력<span>분주식과 문자 출력</span></a></li><li><a href="stubby-load-auth.html">Stubby 적재와 인증 경계<span>Linux 부트로더의 파일 조건</span></a></li><li><a href="stubby-romfs.html">Stubby ROMFS 선택과 복사<span>파일 선택·복사 6사례</span></a></li><li><a href="header-alias-consumer.html">부트 헤더와 파티션 표<span>+4 저장 후보의 실제 대상</span></a></li></ol></nav>
 <nav class="pager" aria-label="이전·다음 문서"><a class="prev" href="startup-storage.html"><small>← 이전</small>부팅 단계와 저장소 구조</a><a class="next" href="m0-diagnostic-serial.html"><small>다음 →</small>M0 진단 직렬 출력</a></nav>
 <footer class="sitefoot"><div class="sitefoot-in"><nav aria-label="사이트"><a href="../index.html#map">문서 지도</a><a href="../index.html#levels">검증 수준 읽는 법</a><a href="../glossary.html">용어집</a><a href="research-program.html">세 기종 연구 본부</a><a href="https://github.com/yunhyok/pentax-k3iii-firmware-analysis">GitHub 저장소</a></nav><p>PENTAX 펌웨어 연구. PC에서 수행한 정적 분석과 에뮬레이션 결과이며, 카메라 실기에서 검증한 내용이 아닙니다. 원본 펌웨어와 추출한 독점 코드는 포함하지 않습니다.</p></div></footer>
 <!-- /chrome:bottom -->

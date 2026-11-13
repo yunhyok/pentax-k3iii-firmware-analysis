@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Lightroom 색 프로파일 안내: DCP 만들기와 검증 — PENTAX K-3 Mark III 펌웨어 연구</title>
-<meta name="description" content="Lightroom에서 RAW를 카메라 JPEG에 가까운 색으로 현상하는 프로파일(DCP)을 만들려는 세 기종 연구의 안내 문서입니다. 전체 흐름, 알아낸 것과 모르는 것, 읽는 순서와 함께 설치된 Adobe 프로파일 13개의 구조와 DCP 내보내기 도구를 설명합니다.">
+<title>DCP 구조와 생성 도구: 프로파일 만들기와 검증 — PENTAX K-3 Mark III 펌웨어 연구</title>
+<meta name="description" content="Lightroom에서 RAW를 카메라 JPEG에 가까운 색으로 현상하는 프로파일(DCP)을 만들려는 세 기종 연구의 출발점입니다. 설치된 Adobe 프로파일 13개의 구조와 DCP 내보내기 도구를 설명하고 첫 실험 묶음의 흐름과 현재 상태를 정리했습니다.">
 <link rel="stylesheet" href="../assets/site.css">
 </head>
 <body data-camera="k3iii">
@@ -14,9 +14,9 @@
 <nav class="crumbs" aria-label="현재 위치"><ol><li><a href="../index.html">PENTAX K-3 Mark III</a></li><li><a href="guide-lightroom.html">Lightroom 색 프로파일</a></li><li aria-current="page">DCP 구조와 생성 도구</li></ol></nav>
 <!-- /chrome:top -->
 <header class="page-head">
-<p class="eyebrow">Lightroom 색 프로파일 · 주제 안내</p>
-<h1>Lightroom 색 프로파일 안내: DCP 만들기와 검증</h1>
-<p class="lead">Lightroom은 프로파일이라는 작은 파일로 RAW의 색을 정합니다. 이 주제는 그 프로파일을 직접 만들어 카메라가 낸 JPEG의 색에 다가가려는 연구이며, 프로파일의 구조를 조사하고 실제 Lightroom으로 효과를 측정한 기록입니다.</p>
+<p class="eyebrow">Lightroom 색 프로파일 · 프로파일의 구조와 도구</p>
+<h1>DCP 구조와 생성 도구: 프로파일 만들기와 검증</h1>
+<p class="lead">Lightroom은 프로파일이라는 작은 파일로 RAW의 색을 정합니다. 이 문서는 그 프로파일의 구조를 조사하고 직접 만드는 도구를 마련한 기록입니다. 주제 전체의 지도와 현재 결론은 <a href="guide-lightroom.html">Lightroom 색 프로파일 안내</a>에 있습니다.</p>
 </header>
 <div class="layout">
 <!-- chrome:toc -->
@@ -27,22 +27,23 @@
 <h2 data-toc="no">핵심 요약</h2>
 <ul>
 <li><strong>목표</strong>는 Lightroom에서 RAW를 열었을 때 카메라가 직접 만든 JPEG에 가까운 색이 나오게 하는 프로파일을 만드는 것입니다. 재료는 펌웨어 분석에서 찾은 색 처리 정보입니다. <strong>그런 프로파일은 아직 없습니다.</strong></li>
-<li>지금까지 한 일은 세 가지입니다. Lightroom에 설치된 Adobe 프로파일 13개의 구조를 조사했습니다. 프로파일 파일(DCP)을 직접 만드는 도구를 만들었습니다. 그 도구로 만든 시험 DCP 8개를 <strong>실제 Lightroom Classic 15.6</strong>에 넣어 TIFF 16개를 내보내 측정했습니다.</li>
+<li>지금까지 한 일은 세 가지입니다. Lightroom에 설치된 Adobe 프로파일 13개의 구조를 조사했습니다. 프로파일 파일(DCP)을 직접 만드는 도구를 만들었습니다. 그 도구로 만든 시험 DCP 8개를 <strong>실제 Lightroom Classic 15.6</strong>에 넣어 TIFF 16개를 내보내 측정했습니다. 그 뒤 16.0에서 아홉 번째 시험 DCP와 다른 장면, 다른 기종을 더 쟀습니다.</li>
 <li>직접 만든 DCP가 Lightroom에 그대로 적용되고 프로파일의 톤 곡선이나 LookTable을 바꾸면 출력이 그에 따라 달라진다는 점을 확인했습니다.</li>
-<li>K-3 II의 사진 한 장에서 카메라 JPEG와의 평균 색차(ΔE<sub>00</sub>)는 Adobe의 Camera Natural이 1.615, 행렬만 담은 시험 DCP가 3.073, Adobe Standard가 3.476였습니다. 앞으로 만들 프로파일이 넘어야 할 기준선입니다.</li>
-<li>모든 측정은 <strong>조작이 결과에 반영되는지를 확인한 것</strong>입니다. 카메라의 색 모드를 재현했다는 주장이 아닙니다. 색 비교는 장면 한 장뿐이고 표본을 찍은 펌웨어는 분석한 펌웨어보다 이전 버전입니다.</li>
+<li>K-3 II의 차트 사진 한 장에서 카메라 JPEG와의 평균 색차(ΔE<sub>00</sub>)는 Adobe의 Camera Natural이 1.615, 행렬만 담은 시험 DCP가 3.073, Adobe Standard가 3.476였습니다. 앞으로 만들 프로파일이 넘어야 할 기준선입니다. K-3 II의 다른 장면과 K-3 Mark III·Q7에서 잰 값은 <a href="guide-lightroom.html#release">안내 문서의 표</a>에 있습니다.</li>
+<li>모든 측정은 <strong>조작이 결과에 반영되는지를 확인한 것</strong>입니다. 카메라의 색 모드를 재현했다는 주장이 아닙니다. 색 비교는 기종마다 한두 장면뿐이고 표본을 찍은 펌웨어는 분석한 펌웨어보다 이전 버전입니다.</li>
 </ul>
 </section>
 
 <section id="overview">
 <h2>한눈에 보기: RAW에서 색 비교까지</h2>
 <p class="takeaway">공개 RAW에서 시험 프로파일을 만들고 실제 Lightroom으로 현상한 결과를 네 가지 방법으로 조사했습니다. 펌웨어 분석과 프로파일을 잇는 마지막 고리는 아직 비어 있습니다.</p>
+<p>아래 그림은 Lightroom Classic 15.6에서 한 첫 실험 묶음의 흐름입니다. 그 뒤 16.0에서 한 실험까지 담은 전체 지도는 <a href="guide-lightroom.html#overview">Lightroom 색 프로파일 안내</a>에 있습니다.</p>
 <figure class="diagram">
-<figcaption>전체 흐름과 각 단계를 다루는 문서 (동그라미 숫자는 <a href="#reading">읽는 순서</a>의 문서 번호)</figcaption>
+<figcaption>첫 실험 묶음의 흐름과 각 단계를 다루는 문서 (동그라미 숫자는 <a href="#reading">읽는 순서</a>의 문서 번호)</figcaption>
 <div class="dg-scroll">
 <svg class="dg" viewBox="0 0 800 514" role="img" aria-labelledby="dg-all-title dg-all-desc">
-<title id="dg-all-title">Lightroom 색 프로파일 연구의 전체 흐름과 각 단계를 다루는 문서</title>
-<desc id="dg-all-desc">왼쪽의 공개 RAW 세 장에서 색 행렬과 광원 태그를 꺼내 시험 DCP 여덟 개를 만듭니다. 시험 DCP와 비교용 Adobe 프로파일 두 개를 Lightroom Classic에서 골라 같은 RAW를 현상하고 16비트 TIFF 열여섯 개로 내보냅니다. 오른쪽에서 TIFF를 네 가지로 조사합니다. 내보내기가 되는지와 프로파일 지문, 톤 곡선의 효과, LookTable의 효과, 그리고 RAW 안에 든 카메라 JPEG와의 색차입니다. 아래쪽 점선 테두리 안은 아직 이어지지 않은 부분으로, 펌웨어 분석에서 찾은 색 행렬과 감마, 톤을 카메라 색에 맞춘 프로파일로 옮겨 Lightroom에서 카메라와 같은 색을 내는 일입니다. 동그라미 숫자는 읽는 순서의 문서 번호입니다.</desc>
+<title id="dg-all-title">Lightroom Classic 15.6에서 한 첫 실험 묶음의 흐름과 각 단계를 다루는 문서</title>
+<desc id="dg-all-desc">Lightroom Classic 15.6에서 한 첫 실험 묶음을 그린 그림입니다. 왼쪽의 공개 RAW 세 장에서 색 행렬과 광원 태그를 꺼내 시험 DCP 여덟 개를 만듭니다. 시험 DCP와 비교용 Adobe 프로파일 두 개를 Lightroom Classic에서 골라 같은 RAW를 현상하고 16비트 TIFF 열여섯 개로 내보냅니다. 오른쪽에서 TIFF를 네 가지로 조사합니다. 내보내기가 되는지와 프로파일 지문, 톤 곡선의 효과, LookTable의 효과, 그리고 RAW 안에 든 카메라 JPEG와의 색차입니다. 아래쪽 점선 테두리 안은 아직 이어지지 않은 부분으로, 펌웨어 분석에서 찾은 색 행렬과 감마, 톤을 카메라 색에 맞춘 프로파일로 옮겨 Lightroom에서 카메라와 같은 색을 내는 일입니다. 동그라미 숫자는 읽는 순서의 문서 번호입니다.</desc>
 <defs>
 <marker id="dg-all-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0 0L10 5L0 10z"/></marker>
 <marker id="dg-all-aho" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah open" d="M0 0L10 5L0 10z"/></marker>
@@ -140,7 +141,7 @@
 </div>
 <ul class="dg-legend"><li><i></i>주어진 자료</li><li><i class="key"></i>이 연구에서 만든 프로파일</li><li><i class="ok"></i>Lightroom 출력을 실제로 측정</li><li><i class="open"></i>아직 하지 못한 일</li></ul>
 </figure>
-<p>이 주제의 실험은 모두 PC에 설치한 Adobe Lightroom Classic에서 실제 RAW 파일로 수행했습니다. 그래서 여기의 “확인”은 에뮬레이션 결과를 가리키는 다른 주제와 달리 Lightroom이 실제로 낸 출력의 측정값입니다. 다만 측정 대상은 Lightroom이지 카메라가 아닙니다.</p>
+<p>이 그림의 실험은 모두 PC에 설치한 Adobe Lightroom Classic에서 실제 RAW 파일로 수행했습니다. 그래서 여기의 “확인”은 에뮬레이션 결과를 가리키는 다른 주제와 달리 Lightroom이 실제로 낸 출력의 측정값입니다. 다만 측정 대상은 Lightroom이지 카메라가 아닙니다.</p>
 </section>
 
 <section id="background">
@@ -191,19 +192,20 @@
 <tr><th scope="row">카메라 JPEG와의 기준선</th><td><span class="badge ok">확인</span> <span class="badge model">모델</span></td><td>K-3 II 한 장에서 평균 ΔE<sub>00</sub>은 Camera Natural 1.615, 시험 DCP 3.073, Adobe Standard 3.476입니다. 장면 하나, 고정한 현상 설정에서만 성립합니다.</td><td><a href="lightroom-render-comparison.html">실제 TIFF 6개 비교</a></td></tr>
 <tr><th scope="row">톤 곡선 태그의 효과</th><td><span class="badge ok">확인</span></td><td>같은 프로파일로 다시 내보내면 픽셀이 모두 같았습니다. Adobe SDK의 기본 곡선을 명시한 출력은 곡선을 생략한 출력과 패치 색차가 최대 0.002411였습니다. 직선(항등) 곡선을 넣으면 평균 12.898만큼 달라졌습니다.</td><td><a href="lightroom-tone-comparison.html">톤 곡선 비교</a></td></tr>
 <tr><th scope="row">LookTable 태그의 효과</th><td><span class="badge ok">확인</span></td><td>아무것도 바꾸지 않는 표를 넣은 출력은 표가 없는 출력과 24개 패치의 Lab 중앙값이 같았습니다. 채도를 0.8배로 줄이는 표는 평균 ΔE<sub>00</sub> 4.645의 변화를 냈습니다.</td><td><a href="lightroom-look-controls.html">LookTable 대조 실험</a></td></tr>
-<tr><th scope="row">K-3 Mark III·Q7에서의 적용</th><td><span class="badge ok">확인</span></td><td>두 기종의 시험 DCP를 Lightroom에서 선택해 TIFF로 내보냈습니다(25,560,576픽셀, 10,656,000픽셀). 카메라 JPEG와의 색차는 재지 않았습니다.</td><td><a href="lightroom-model-exports.html">K-3 III·Q7 DCP 내보내기</a></td></tr>
+<tr><th scope="row">K-3 Mark III·Q7에서의 적용</th><td><span class="badge ok">확인</span></td><td>두 기종의 시험 DCP를 Lightroom에서 선택해 TIFF로 내보냈습니다(25,560,576픽셀, 10,656,000픽셀). 그 뒤 스튜디오 장면 한 장씩에서 카메라 Bright JPEG와의 색차도 쟀습니다. 픽셀 ΔE<sub>00</sub> 중앙값은 K-3 Mark III가 시험 DCP 2.028, Camera Bright 1.421이고 Q7은 시험 DCP 2.211, Adobe Standard 2.803입니다. Q7은 국소 영역에서만 잰 값입니다.</td><td><a href="lightroom-model-exports.html">K-3 III·Q7 DCP 내보내기</a> · <a href="lightroom-studio-reference.html">K-3 III·Q7 참조 프로파일 비교</a></td></tr>
+<tr><th scope="row">차트에 맞춘 톤 곡선 DCP</th><td><span class="badge ok">확인</span> <span class="badge model">모델</span></td><td>K-3 II 차트의 무채색 패치에 맞춘 톤 곡선을 아홉 번째 시험 DCP에 넣어 Lightroom Classic 16.0에서 현상했습니다. 출력은 계산한 예측에 가까웠지만 미리 정한 기준 가운데 최대 허용값을 넘었습니다. 카메라 JPEG와의 평균 색차는 차트에서 1.786이었고 같은 차트의 Camera Natural(1.620)보다 컸습니다.</td><td><a href="lightroom-composed-tone.html">합성 톤 DCP의 실제 Lightroom 출력</a> · <a href="guide-lightroom.html#release">안내 문서</a></td></tr>
 <tr><th scope="row">프로파일 지문</th><td><span class="badge ok">확인</span></td><td>Lightroom이 TIFF에 적는 프로파일 지문 여섯 개를 Adobe SDK의 계산 방식으로 DCP에서 다시 계산해 일치시켰습니다. 어느 프로파일이 쓰였는지 파일만으로 확인할 수 있습니다.</td><td><a href="lightroom-profile-fingerprints.html">프로파일 지문 재현</a></td></tr>
 <tr><th scope="row">펌웨어의 값을 DCP로 옮기기</th><td><span class="badge open">미확인</span></td><td>펌웨어에서 찾은 행렬은 DNG가 정의하는 방향의 행렬로 아직 바꿀 수 없습니다. 각 처리 구간의 원색, 백색점, 선형성, 행렬 순서를 더 알아야 합니다.</td><td><a href="#limits">남은 확인</a> · <a href="color-algorithms.html">색 처리 알고리즘</a></td></tr>
-<tr><th scope="row">카메라 색에 맞춘 프로파일</th><td><span class="badge open">미확인</span></td><td>아직 만들지 못했습니다. 시험 DCP에 넣은 톤 곡선과 LookTable은 반응을 보기 위한 대조용 값입니다.</td><td><a href="#limits">남은 확인</a></td></tr>
-<tr><th scope="row">다른 장면과 분석 대상 펌웨어</th><td><span class="badge open">미확인</span></td><td>색 비교는 K-3 II의 사진 한 장(펌웨어 1.10)뿐입니다. 조명과 노출이 다른 장면, 분석 대상 버전(K-3 Mark III 2.20, K-3 II 1.12, Q7 1.01)으로 찍은 RAW와 JPEG 쌍이 필요합니다.</td><td><a href="raw-test-inputs.html#firmware-versions">시험용 RAW 준비</a></td></tr>
+<tr><th scope="row">카메라 색에 맞춘 프로파일</th><td><span class="badge open">미확인</span></td><td>아직 만들지 못했습니다. 대조용 시험 DCP의 톤 곡선과 LookTable은 반응을 보기 위한 값입니다. 차트 한 장에 맞춘 톤 곡선 DCP도 검증 기준을 채우지 못했습니다.</td><td><a href="#limits">남은 확인</a></td></tr>
+<tr><th scope="row">다른 조명과 분석 대상 펌웨어</th><td><span class="badge open">미확인</span></td><td>색 비교는 K-3 II의 두 장면과 K-3 Mark III·Q7의 스튜디오 장면 한 장씩이 전부입니다. 표본은 모두 분석 대상보다 이전 펌웨어로 찍혔습니다. 조명과 노출을 달리한 촬영 쌍, 분석 대상 버전(K-3 Mark III 2.20, K-3 II 1.12, Q7 1.01)으로 찍은 RAW와 JPEG 쌍이 필요합니다.</td><td><a href="raw-test-inputs.html#firmware-versions">시험용 RAW 준비</a></td></tr>
 <tr><th scope="row">Lightroom 내부 동작</th><td><span class="badge open">미확인</span></td><td>Lightroom의 기본 톤 곡선과 내부 처리 순서는 이 실험들로 정할 수 없습니다. 항등 LookTable을 넣었을 때 전체의 약 0.14%인 34,099픽셀에서 코드가 달라진 경로도 확인하지 못했습니다.</td><td><a href="lightroom-tone-comparison.html">톤 곡선 비교</a> · <a href="lightroom-look-controls.html">LookTable 대조 실험</a></td></tr>
-<tr><th scope="row">PEF 형식</th><td><span class="badge open">미확인</span></td><td>시험한 RAW는 모두 DNG입니다. PENTAX 고유 형식인 PEF에서의 적용은 따로 검증해야 합니다.</td><td><a href="#exporter">이 문서</a></td></tr>
+<tr><th scope="row">PEF 형식</th><td><span class="badge ok">확인</span> 한 장</td><td>처음 시험한 RAW는 모두 DNG였습니다. 그 뒤 Lightroom Classic 16.0이 K-3 Mark III의 PEF 한 장에 시험 DCP를 적용했고 그 PEF와 변환 DNG의 센서 값이 같음을 확인했습니다. 두 형식의 Lightroom 출력이 같은지는 비교하지 않았습니다.</td><td><a href="lightroom-studio-baseline.html">K-3 III·Q7 Bright 스튜디오 비교</a> · <a href="lightroom-cfa-preservation.html">PEF·DNG의 CFA 샘플 비교</a></td></tr>
 </tbody></table></div>
 </section>
 
 <section id="reading">
 <h2>읽는 순서</h2>
-<p>아래 순서대로 읽으면 재료, 측정 방법, 결과, 세부 확인의 차례가 됩니다. 결과만 보려면 4번부터 읽어도 됩니다.</p>
+<p>이 문서와 함께 나온 첫 여덟 편의 순서입니다. 아래 순서대로 읽으면 재료, 측정 방법, 결과, 세부 확인의 차례가 됩니다. 결과만 보려면 4번부터 읽어도 됩니다. 이후에 나온 열두 편까지 포함한 순서는 <a href="guide-lightroom.html#reading">Lightroom 색 프로파일 안내</a>에 있습니다.</p>
 <ul class="cards">
 <li class="card"><span class="tag">1 · 지금 이 문서</span><h3><a href="#installed">DCP 생성·검증 개요</a></h3><p class="q">Adobe의 프로파일은 어떻게 생겼고 프로파일을 직접 만들 수 있는가?</p><p>설치된 DCP 13개의 구조를 조사했고 출처가 분명한 값으로 DCP를 만드는 도구를 만들었습니다.</p></li>
 <li class="card"><span class="tag">2 · 재료</span><h3><a href="raw-test-inputs.html">시험용 RAW 준비</a></h3><p class="q">누구나 다시 해 볼 수 있는 시험 재료는 무엇인가?</p><p>세 기종의 CC0 DNG와 그 안의 카메라 JPEG, 행렬만 담은 시험 DCP 세 개입니다.</p></li>
@@ -324,13 +326,13 @@
 <h3>만든 파일을 검사한 방법</h3>
 <ul>
 <li><strong>두 프로그램으로 읽기</strong>: 저장소의 검사기(<a href="../inspect_adobe_profiles.py">inspect_adobe_profiles.py</a>)로 태그를 확인했습니다. ExifTool 13.59이 합성 파일을 <code>DCP</code> 형식으로 읽어 <code>Validate: 0 0 0</code>을 돌려줬습니다.</li>
-<li><strong>단위 테스트 5개</strong> — 광원 두 개짜리 파일의 태그와 배열 값, 잘못된 입력의 거부, 기존 출력 파일의 보존을 검사합니다.</li>
+<li><strong>단위 테스트 5개</strong>: 광원 두 개짜리 파일의 태그와 배열 값, 잘못된 입력의 거부, 기존 출력 파일의 보존을 검사합니다.</li>
 <li><strong>Adobe DNG SDK와의 호환</strong>: SDK(1.7.1 Build 2768)는 행렬을 정규화하고 소수 넷째 자리로 반올림해서 씁니다. 도구는 그렇게 처리한 뒤에도 행렬이 유효한지 검사합니다. 톤 곡선은 SDK의 한도인 8,192점으로 제한합니다.</li>
-<li><strong>실제 Lightroom</strong>: 이 도구로 만든 시험 DCP 8개를 Lightroom Classic 15.6이 프로파일 목록에 올렸고 현상에 적용했습니다. 결과는 <a href="#reading">읽는 순서</a>의 2~8번 문서에 있습니다.</li>
+<li><strong>실제 Lightroom</strong>: 이 도구로 만든 시험 DCP 8개를 Lightroom Classic 15.6이 프로파일 목록에 올렸고 현상에 적용했습니다. 결과는 <a href="#reading">읽는 순서</a>의 2~8번 문서에 있습니다. 아홉 번째 시험 DCP는 16.0에서 적용했습니다(<a href="lightroom-composed-tone.html">합성 톤 DCP의 실제 Lightroom 출력</a>).</li>
 </ul>
 <div class="callout"><strong class="label">이 도구가 하지 않는 일</strong>
 <p>계수를 추정하지 않고 XMP 프로파일을 쓰지 않으며 Lightroom에 설치하지도 않습니다. 파일 구조가 맞는지 검사하는 일과 그 프로파일의 색이 맞는지 검증하는 일은 별개입니다.</p>
-<p>만든 파일에는 <code>ProfileEmbedPolicy</code> 태그를 넣지 않으므로 DNG 규격의 기본값 0(“allow copying”)이 적용됩니다. 규격은 이 값의 프로파일을 DNG가 아닌 파일의 처리에 쓸 수 없다고 정합니다. 그래서 지금의 시험 대상은 DNG이고 PEF에서의 적용은 따로 검증해야 합니다.</p></div>
+<p>만든 파일에는 <code>ProfileEmbedPolicy</code> 태그를 넣지 않으므로 DNG 규격의 기본값 0(“allow copying”)이 적용됩니다. 규격은 이 값의 프로파일을 DNG가 아닌 파일의 처리에 쓸 수 없다고 정합니다. 그래서 첫 시험 대상은 DNG였습니다. 그 뒤 Lightroom Classic 16.0은 K-3 Mark III의 PEF 한 장에도 이 시험 DCP를 적용했습니다(<a href="lightroom-studio-baseline.html">스튜디오 비교</a>).</p></div>
 
 <details class="evidence"><summary>합성 파일의 해시와 검토한 SDK 소스</summary>
 <dl class="kv">
@@ -355,7 +357,7 @@
 </ol>
 <ul>
 <li><strong>Q7의 Smart Effect</strong>: Ricoh 사양에서 Smart Effect는 Custom Image와 별개의 기능입니다. 따로 다뤄야 합니다.</li>
-<li><strong>이름이 같은 모드</strong> — 다른 기종에서 이름이 같은 모드도 기종별로 따로 보정해야 합니다.</li>
+<li><strong>이름이 같은 모드</strong>: 다른 기종에서 이름이 같은 모드도 기종별로 따로 보정해야 합니다.</li>
 </ul>
 </section>
 
@@ -383,7 +385,7 @@ subprocess.run([sys.executable,'inspect_adobe_profiles.py',*files],check=True)" 
 <li><a href="lightroom-bridge.json">lightroom-bridge.json</a> — 설치된 DCP 13개의 태그·해시, 같은 태그를 쓰는 묶음, 합성 파일 검사값</li>
 <li><a href="adobe-profiles.json">adobe-profiles.json</a> — K-3 Mark III 프로파일 여섯 개의 이전 조사 기록</li>
 <li><a href="../tools/profile_bridge.py">tools/profile_bridge.py</a> — DCP 내보내기 도구 · <a href="../tests/test_profile_bridge.py">tests/test_profile_bridge.py</a> — 단위 테스트 · <a href="../inspect_adobe_profiles.py">inspect_adobe_profiles.py</a> — DCP 구조 검사기</li>
-<li>이 주제의 측정 기록: <a href="raw-test-inputs.json">raw-test-inputs.json</a> · <a href="color-comparison-protocol.json">color-comparison-protocol.json</a> · <a href="lightroom-render-comparison.json">lightroom-render-comparison.json</a> · <a href="lightroom-tone-comparison.json">lightroom-tone-comparison.json</a> · <a href="lightroom-model-exports.json">lightroom-model-exports.json</a> · <a href="lightroom-profile-fingerprints.json">lightroom-profile-fingerprints.json</a> · <a href="lightroom-look-controls.json">lightroom-look-controls.json</a></li>
+<li>이 주제의 측정 기록: <a href="raw-test-inputs.json">raw-test-inputs.json</a> · <a href="color-comparison-protocol.json">color-comparison-protocol.json</a> · <a href="lightroom-render-comparison.json">lightroom-render-comparison.json</a> · <a href="lightroom-tone-comparison.json">lightroom-tone-comparison.json</a> · <a href="lightroom-model-exports.json">lightroom-model-exports.json</a> · <a href="lightroom-profile-fingerprints.json">lightroom-profile-fingerprints.json</a> · <a href="lightroom-look-controls.json">lightroom-look-controls.json</a> · <a href="lightroom-composed-tone.json">lightroom-composed-tone.json</a> · <a href="lightroom-studio-reference.json">lightroom-studio-reference.json</a></li>
 <li>카메라 쪽 근거: <a href="color-lightroom.html">컬러모드 자원과 Lightroom</a> · <a href="color-algorithms.html">색 처리 알고리즘</a> · <a href="pipeline-report.html">JPEG·ISP와 색 재현 경로</a> · <a href="research-program.html">세 기종 연구 본부</a></li>
 <li>Adobe 규격: <a href="https://helpx.adobe.com/content/dam/help/en/camera-raw/digital-negative/jcr_content/root/content/flex/items/position/position-par/download_section_733958301/download-1/DNG_Spec_1_7_1_0.pdf">DNG 규격 1.7.1.0 (2023년 9월)</a> — 카메라 프로파일 태그와 색 처리 모델 · <a href="https://helpx.adobe.com/camera-raw/desktop/dng-and-file-formats/digital-negative.html">Adobe DNG 안내와 DNG SDK</a> · <a href="https://download.adobe.com/pub/adobe/lightroom/profile-sdk/ACR_and_Lightroom_Profile_SDK.zip">Adobe Camera Raw·Lightroom Profile SDK (ZIP)</a></li>
 <li>Adobe 지원 정보: <a href="https://helpx.adobe.com/camera-raw/desktop/dng-and-file-formats/camera-raw-plug-supported-cameras.html">Camera Raw가 지원하는 카메라</a></li>
@@ -395,7 +397,7 @@ subprocess.run([sys.executable,'inspect_adobe_profiles.py',*files],check=True)" 
 </main>
 </div>
 <!-- chrome:bottom -->
-<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">Lightroom 색 프로파일 — 이 주제의 문서</h2><ol><li><a href="guide-lightroom.html">Lightroom 색 프로파일 안내</a></li><li><a href="lightroom-bridge.html" aria-current="page">DCP 구조와 생성 도구<span>세 기종 공통</span></a></li><li><a href="raw-test-inputs.html">시험용 RAW 준비</a></li><li><a href="color-comparison-protocol.html">ColorChecker 비교 절차</a></li><li><a href="lightroom-render-comparison.html">실제 TIFF 6개 비교</a></li><li><a href="lightroom-tone-comparison.html">톤 곡선 비교</a></li><li><a href="lightroom-model-exports.html">K-3 III·Q7 DCP 내보내기</a></li><li><a href="lightroom-profile-fingerprints.html">프로파일 지문 재현</a></li><li><a href="lightroom-look-controls.html">LookTable 대조 실험</a></li><li><a href="color-tone-residual.html">톤 보정 뒤 남는 색차</a></li><li><a href="color-scene-transfer.html">고정 톤의 독립 장면 비교<span>K-3 II #1363과 Lightroom 버전 대조</span></a></li><li><a href="lightroom-composed-tone.html">합성 톤 DCP의 실제 Lightroom 출력<span>두 장면·최대 색차 기준 미충족</span></a></li><li><a href="lightroom-tone-coordinates.html">Lightroom 톤과 RGB 좌표<span>같은 엔진·두 출력 색공간 대조</span></a></li><li><a href="lightroom-studio-baseline.html">K-3 III·Q7 Bright 스튜디오 비교<span>정합 통과 영역의 JPEG 대비 색차</span></a></li><li><a href="lightroom-studio-reference.html">K-3 III·Q7 참조 프로파일 비교<span>같은 장면의 공통 마스크·As Shot 대조</span></a></li><li><a href="lightroom-as-shot.html">As Shot과 프로파일별 백색점<span>같은 Q7 RAW의 SDK 수식 재현</span></a></li><li><a href="lightroom-pef-neutral.html">K-3 III PEF의 As Shot 중립값<span>두 DNG 변환과 세 프로파일 수식 재현</span></a></li><li><a href="lightroom-cfa-preservation.html">K-3 III PEF·DNG의 CFA 샘플 비교<span>변환 전후 전체 26,628,096개 샘플 대조</span></a></li><li><a href="lightroom-cfa-range.html">K-3 III DNG의 CFA 범위와 기본 크롭<span>활성 영역과 크롭의 WhiteLevel 대조</span></a></li><li><a href="lightroom-sdk-stage2.html">K-3 III DNG의 Adobe SDK Stage 2 실행<span>원본 SDK에서 활성 영역 25,891,840개 전수 대조</span></a></li><li><a href="lightroom-sdk-stage3.html">K-3 III DNG의 Adobe SDK Stage 3<span>카메라 채널 77,675,520개 보간 대조</span></a></li></ol></nav>
+<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">Lightroom 색 프로파일 — 이 주제의 문서</h2><ol><li><a href="guide-lightroom.html">Lightroom 색 프로파일 안내</a></li><li><a href="lightroom-bridge.html" aria-current="page">DCP 구조와 생성 도구<span>세 기종 공통</span></a></li><li><a href="raw-test-inputs.html">시험용 RAW 준비</a></li><li><a href="color-comparison-protocol.html">ColorChecker 비교 절차</a></li><li><a href="lightroom-render-comparison.html">실제 TIFF 6개 비교</a></li><li><a href="lightroom-tone-comparison.html">톤 곡선 비교</a></li><li><a href="lightroom-model-exports.html">K-3 III·Q7 DCP 내보내기</a></li><li><a href="lightroom-profile-fingerprints.html">프로파일 지문 재현</a></li><li><a href="lightroom-look-controls.html">LookTable 대조 실험</a></li><li><a href="color-tone-residual.html">톤 보정 뒤 남는 색차</a></li><li><a href="color-scene-transfer.html">고정 톤의 독립 장면 비교<span>K-3 II #1363과 Lightroom 버전 대조</span></a></li><li><a href="lightroom-composed-tone.html">합성 톤 DCP의 실제 Lightroom 출력<span>두 장면·최대 색차 기준 미충족</span></a></li><li><a href="lightroom-tone-coordinates.html">Lightroom 톤과 RGB 좌표<span>같은 엔진·두 출력 색공간 대조</span></a></li><li><a href="lightroom-studio-baseline.html">K-3 III·Q7 Bright 스튜디오 비교<span>정합 통과 영역의 JPEG 대비 색차</span></a></li><li><a href="lightroom-studio-reference.html">K-3 III·Q7 참조 프로파일 비교<span>같은 장면의 공통 마스크·As Shot 대조</span></a></li><li><a href="lightroom-as-shot.html">As Shot과 프로파일별 백색점<span>같은 Q7 RAW의 SDK 수식 재현</span></a></li><li><a href="lightroom-pef-neutral.html">K-3 III PEF의 As Shot 중립값<span>두 DNG 변환과 세 프로파일 수식 재현</span></a></li><li><a href="lightroom-cfa-preservation.html">K-3 III PEF·DNG의 CFA 샘플 비교<span>변환 전후 샘플 전수 대조</span></a></li><li><a href="lightroom-cfa-range.html">K-3 III DNG의 CFA 범위와 기본 크롭<span>활성 영역과 크롭의 WhiteLevel 대조</span></a></li><li><a href="lightroom-sdk-stage2.html">K-3 III DNG의 Adobe SDK Stage 2 실행<span>정규화 단계 전수 대조</span></a></li><li><a href="lightroom-sdk-stage3.html">K-3 III DNG의 Adobe SDK Stage 3<span>Bayer 보간 전수 대조</span></a></li></ol></nav>
 <nav class="pager" aria-label="이전·다음 문서"><a class="prev" href="guide-lightroom.html"><small>← 이전</small>Lightroom 색 프로파일 안내</a><a class="next" href="raw-test-inputs.html"><small>다음 →</small>시험용 RAW 준비</a></nav>
 <footer class="sitefoot"><div class="sitefoot-in"><nav aria-label="사이트"><a href="../index.html#map">문서 지도</a><a href="../index.html#levels">검증 수준 읽는 법</a><a href="../glossary.html">용어집</a><a href="research-program.html">세 기종 연구 본부</a><a href="https://github.com/yunhyok/pentax-k3iii-firmware-analysis">GitHub 저장소</a></nav><p>PENTAX 펌웨어 연구. PC에서 수행한 정적 분석과 에뮬레이션 결과이며, 카메라 실기에서 검증한 내용이 아닙니다. 원본 펌웨어와 추출한 독점 코드는 포함하지 않습니다.</p></div></footer>
 <!-- /chrome:bottom -->

@@ -270,7 +270,7 @@ V = Mul32_Q13(sign_extend(U), sign_extend(B))</code></pre>
 <p>채도 설정값 0~8은 미리 저장된 <strong>행렬 9개</strong> 가운데 하나를 고르는 번호입니다. 범위를 벗어나면 4번을 씁니다. “채도 = 무채색 축에서 벌리는 배율” 같은 일반식으로 이 표를 대신할 근거는 찾지 못했습니다.</p>
 <ul>
 <li><strong>가운데 값</strong>: Monochrome 계열을 뺀 18개 모드가 함께 쓰는 표에서 4번 행렬은 Q13 단위행렬입니다. 공개한 SHA-256이 단위행렬 18바이트의 해시와 같습니다. 그래서 이 모드들은 채도 4에서 T가 모드 행렬 M과 같아집니다.</li>
-<li><strong>필터 지정</strong> — 별도 플래그가 켜지면 채도 대신 필터 번호로 같은 표에서 고릅니다.</li>
+<li><strong>필터 지정</strong>: 별도 플래그가 켜지면 채도 대신 필터 번호로 같은 표에서 고릅니다.</li>
 <li><strong>수동 RGB</strong>: 같은 <code>[R, G, B]</code> 행을 세 번 반복한 행렬을 직접 만듭니다. 상위 코드에서 필터값 9가 이 분기를 고릅니다.</li>
 </ul>
 
@@ -428,7 +428,7 @@ V = Mul32_Q13(sign_extend(U), sign_extend(B))</code></pre>
 <li><strong>일반: 계열 섞기</strong>: 밝은 쪽, 가운데, 어두운 쪽 각각에 <var>t</var> = 2 × 대비 + 조절값을 구합니다. <var>t</var>가 양수이면 계열 0과 1을, 아니면 계열 1과 2를 512 단위 가중치로 섞습니다. 가중치는 <var>t</var> × 512 ÷ 12 또는 (<var>t</var> + 12) × 512 ÷ 12이고 0~512로 제한합니다.</li>
 <li><strong>이웃 곡선 섞기</strong>: <var>v</var> ÷ 16 위치에서 두 곡선의 값 <var>a</var>, <var>b</var>를 읽습니다. <var>a</var> ≤ <var>b</var>이면 첫 곡선만, <var>b</var>가 목표값 이상이면 둘째 곡선만 씁니다. 그 밖에는 가중치 = (목표값 − <var>b</var>) × 512 ÷ (<var>a</var> − <var>b</var>)입니다. 섞는 식은 (<var>w</var> × 첫 곡선 + (512 − <var>w</var>) × 둘째 곡선 + 256) ÷ 512입니다.</li>
 <li><strong>일반: 구간 전환</strong>: <var>x</var>가 <var>v</var>보다 크고 밝은 쪽 조절값이 0이 아니면 밝은 쪽 후보와 섞습니다. <var>x</var> ≥ 4<var>v</var>이면 후보를 그대로 씁니다. 그 사이에서는 97항 표에서 읽은 가중치로 (후보 × <var>w</var> + 가운데 × (2048 − <var>w</var>) + 1024) ÷ 2048을 계산합니다. 어두운 쪽도 <var>x</var> ≤ <var>v</var> ÷ 4를 경계로 같은 방식입니다.</li>
-<li><strong>정규화</strong> — 결과에 16384를 곱해 (상수 × 기준값 ÷ 64)로 나누고 16384 이하로 제한합니다.</li>
+<li><strong>정규화</strong>: 결과에 16384를 곱해 (상수 × 기준값 ÷ 64)로 나누고 16384 이하로 제한합니다.</li>
 </ol>
 </details>
 </section>
@@ -549,7 +549,7 @@ y = C[q] + trunc0((C[q+1] - C[q]) * f / 64)   x가 16320 미만일 때</code></p
 </figure>
 
 <ul>
-<li><strong>모드 0</strong> — 앞쪽 256항을 <var>b</var> + <var>d</var>[<var>i</var>]의 하위 16비트로 채우고 나머지 768항을 <var>b</var>로 채웁니다.</li>
+<li><strong>모드 0</strong>: 앞쪽 256항을 <var>b</var> + <var>d</var>[<var>i</var>]의 하위 16비트로 채우고 나머지 768항을 <var>b</var>로 채웁니다.</li>
 <li><strong>그 밖의 모드</strong>: 이웃한 변화량 두 개를 평균한 128항((2<var>b</var> + <var>d</var>[2<var>m</var>] + <var>d</var>[2<var>m</var>+1]) ÷ 2)과 기준값 896항으로 작업 표를 만듭니다. 그 뒤 항마다 별도의 1024항 표를 곱하고 오른쪽으로 12비트 산술 이동합니다.</li>
 </ul>
 <div class="callout warn"><strong class="label">주의</strong>
@@ -746,7 +746,7 @@ y = C[q] + trunc0((C[q+1] - C[q]) * f / 64)   x가 16320 미만일 때</code></p
 <p>수치 검증 통과는 <strong>기록한 경로와 입력에서</strong> 원본 코드와 참조식이 같았음을 뜻합니다. 조건부 초기화, 실행하지 않은 분기, 실기 동작까지 넓혀 읽으면 안 됩니다.</p>
 <ul>
 <li><span class="badge open">미확인</span> <strong>픽셀 처리</strong>: 하드웨어가 계수와 표를 어떤 순서와 연산 폭으로 픽셀에 적용하는지 모릅니다. 12비트 계수 폭과 16384 상한은 설정값의 제한입니다.</li>
-<li><span class="badge open">미확인</span> <strong>좌표계</strong> — 색 행렬과 색상 행렬이 받는 RGB의 원색, 백색점, 전달함수를 확인하지 못했습니다.</li>
+<li><span class="badge open">미확인</span> <strong>좌표계</strong>: 색 행렬과 색상 행렬이 받는 RGB의 원색, 백색점, 전달함수를 확인하지 못했습니다.</li>
 <li><span class="badge open">미확인</span> <strong>실행하지 않은 코드</strong>: Reversal 생성기의 가중치 분기 하나, 0으로 나누는 경로, Gold·Cross의 곡선 선택과 덮어쓰기, 자동 톤 경로 전체.</li>
 <li><span class="badge model">모델</span> <strong>입력의 뜻</strong>: 검증에 넣은 키·강도 값은 산술 경계를 시험하려고 고른 값입니다. 카메라 메뉴에서 나올 수 있는 값인지는 확인하지 않았습니다.</li>
 <li><span class="badge static">정적 분석</span> <strong>호출 관계</strong>: 레시피에서 ImageTuning까지의 간접 호출은 생성자가 설치한 함수 표가 유지된다는 조건에서 성립합니다. 우회 분기와 다른 가상 호출 경로를 모두 배제하지는 않았습니다.</li>
@@ -794,7 +794,7 @@ python decompile_sample.py .private/my-decode/decoded.bin 0x5312cdb4</code></pre
 </main>
 </div>
 <!-- chrome:bottom -->
-<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">카메라 내부 색 처리 — 이 주제의 문서</h2><ol><li><a href="guide-color.html">색 처리 안내</a></li><li><a href="color-lightroom.html">컬러모드 자원과 Lightroom</a></li><li><a href="color-algorithms.html" aria-current="page">색 처리 알고리즘<span>행렬·감마·톤</span></a></li><li><a href="color-mode-boundaries.html">색 모드별 행렬·감마 조건</a></li><li><a href="pipeline-report.html">JPEG·ISP와 색 재현 경로</a></li></ol></nav>
+<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">카메라 내부 색 처리 — 이 주제의 문서</h2><ol><li><a href="guide-color.html">색 처리 안내</a></li><li><a href="color-lightroom.html">컬러모드 자원과 Lightroom</a></li><li><a href="color-algorithms.html" aria-current="page">색 처리 알고리즘<span>행렬·감마·톤</span></a></li><li><a href="color-mode-boundaries.html">색 모드별 행렬·감마 조건</a></li><li><a href="pipeline-report.html">JPEG·ISP와 색 재현 경로</a></li><li><a href="raw-nr-feasibility.html">RAW 노이즈 감소를 끌 수 있는가</a></li></ol></nav>
 <nav class="pager" aria-label="이전·다음 문서"><a class="prev" href="color-lightroom.html"><small>← 이전</small>컬러모드 자원과 Lightroom</a><a class="next" href="color-mode-boundaries.html"><small>다음 →</small>색 모드별 행렬·감마 조건</a></nav>
 <footer class="sitefoot"><div class="sitefoot-in"><nav aria-label="사이트"><a href="../index.html#map">문서 지도</a><a href="../index.html#levels">검증 수준 읽는 법</a><a href="../glossary.html">용어집</a><a href="research-program.html">세 기종 연구 본부</a><a href="https://github.com/yunhyok/pentax-k3iii-firmware-analysis">GitHub 저장소</a></nav><p>PENTAX 펌웨어 연구. PC에서 수행한 정적 분석과 에뮬레이션 결과이며, 카메라 실기에서 검증한 내용이 아닙니다. 원본 펌웨어와 추출한 독점 코드는 포함하지 않습니다.</p></div></footer>
 <!-- /chrome:bottom -->

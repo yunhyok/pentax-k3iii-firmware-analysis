@@ -161,7 +161,7 @@
 <ul>
 <li><strong>좌표 표기</strong>: 원점은 JPEG 왼쪽 위이고 x는 오른쪽, y는 아래로 커집니다. 영역은 <code>[x0, y0, x1, y1)</code>로 적으며 시작 좌표는 포함하고 끝 좌표는 제외합니다. 예를 들어 흰색 19번은 <code>[5019, 3006, 5219, 3206)</code>, 검정 24번은 <code>[5050, 666, 5250, 866)</code>입니다.</li>
 <li><strong>영역을 정한 방법</strong>: 1924×1280으로 줄인 화면에서 패치 중심을 눈으로 골랐습니다. 이 중심을 원본 크기로 환산하고 200×200픽셀을 잡았습니다.</li>
-<li><strong>차트 전체를 볼 때</strong> — <code>[3480, 540, 5400, 3350)</code> 범위를 잘라 보면 차트 전체가 한 화면에 들어옵니다.</li>
+<li><strong>차트 전체를 볼 때</strong>: <code>[3480, 540, 5400, 3350)</code> 범위를 잘라 보면 차트 전체가 한 화면에 들어옵니다.</li>
 </ul>
 
 <details class="evidence"><summary>패치 24개의 좌표와 값</summary>
@@ -235,8 +235,8 @@
 <ul>
 <li><strong>위치 맞춤이 필요했습니다.</strong> DNG 태그로 계산한 기본 크롭의 시작점은 센서 배열의 (16, 16)이고 크롭 크기는 JPEG와 같습니다. 그런데 차트 모서리 네 곳의 윤곽을 맞춰 보니 RAW와 JPEG 사이에 가로 최대 30픽셀, 세로 최대 22픽셀의 차이가 있었습니다. 이 대응에 맞춰 RAW 쪽 패치 중심을 옮겼습니다.</li>
 <li><strong>끝값 없음</strong>: CFA 표본 960,000개 가운데 검정 기준(<code>BlackLevel</code>=1) 이하와 포화 기준(<code>WhiteLevel</code>=16317) 이상이 각각 0개였습니다. 포화 기준의 상위 1% 안에 든 표본도 0개입니다.</li>
-<li><strong>가장 높은 값</strong> — 패치 영역의 최댓값은 흰색 패치의 14,420입니다. 포화 기준 16,317보다 충분히 낮습니다.</li>
-<li><strong>사진 전체</strong> — 기본 크롭 전체에서는 144개 표본이 포화 기준에 닿았습니다. 측정 영역 밖입니다.</li>
+<li><strong>가장 높은 값</strong>: 패치 영역의 최댓값은 흰색 패치의 14,420입니다. 포화 기준 16,317보다 충분히 낮습니다.</li>
+<li><strong>사진 전체</strong>: 기본 크롭 전체에서는 144개 표본이 포화 기준에 닿았습니다. 측정 영역 밖입니다.</li>
 </ul>
 <details class="evidence"><summary>RAW와 JPEG의 위치 맞춤 지점</summary>
 <div class="table-wrap"><table class="compact fit">
@@ -325,8 +325,8 @@
 </tbody></table></div>
 <ul>
 <li><strong>계산 방법</strong>: 위치를 맞춘 200×200 영역에서 R·G1·G2·B 위상마다 표본 10,000개의 중앙값을 구했습니다. CFA를 다시 표본화하지 않았고 값은 <code>(DN−1)/(16317−1)</code>로 정규화했습니다. RAW G는 두 녹색 위상의 평균입니다. JPEG Y는 내장 JPEG의 선형 sRGB 휘도 중앙값입니다.</li>
-<li><strong>두 녹색 위상의 차이</strong> — G1과 G2의 상대 차이는 검정 패치에서 절댓값 0.937%로 가장 컸습니다.</li>
-<li><strong>색 비율의 안정성</strong> — 여섯 패치에서 R/G의 최댓값과 최솟값 차이를 중앙값으로 나누면 3.00%, B/G는 4.12%입니다.</li>
+<li><strong>두 녹색 위상의 차이</strong>: G1과 G2의 상대 차이는 검정 패치에서 절댓값 0.937%로 가장 컸습니다.</li>
+<li><strong>색 비율의 안정성</strong>: 여섯 패치에서 R/G의 최댓값과 최솟값 차이를 중앙값으로 나누면 3.00%, B/G는 4.12%입니다.</li>
 </ul>
 <div class="callout warn"><strong class="label">주의</strong>
 <p>이 검사는 사진 한 장에서 밝기 순서를 확인한 것입니다. 화이트밸런스 보정값이나 DCP 톤 곡선을 추정하지 않았습니다. RAW G는 DCP 톤 곡선에 들어가는 값도 아닙니다.</p></div>
@@ -371,8 +371,8 @@ tificc -t1 '-i*sRGB' '-o*Lab4' -w32 preview-rgb8.tif preview-lab.tif</code></pre
 <p>이 표본으로는 같은 노출과 조명에서 어느 Lightroom 프로파일의 출력이 카메라 Natural 미리보기에 더 가까운지를 재현 가능하게 비교할 수 있습니다. 그 밖의 판단에는 추가 시험이 필요합니다.</p>
 <ul>
 <li><strong>절대 색 정확도</strong>: 차트 실물의 제작 시기, 보관 상태, 조명의 분광 분포와 공간 분포를 모릅니다. 제조사는 2014년 11월을 기준으로 차트의 색 규격을 바꿨습니다. 그래서 표준 색 값과 비교하려면 차트의 제작 시기부터 알아야 합니다.</li>
-<li><strong>다른 조건</strong> — 다른 조명과 노출에서의 성능은 이 한 장으로 알 수 없습니다.</li>
-<li><strong>내장 JPEG의 대표성</strong> — 내장 미리보기가 카메라에 따로 저장되는 JPEG와 같은지 확인하지 못했습니다.</li>
+<li><strong>다른 조건</strong>: 다른 조명과 노출에서의 성능은 이 한 장으로 알 수 없습니다.</li>
+<li><strong>내장 JPEG의 대표성</strong>: 내장 미리보기가 카메라에 따로 저장되는 JPEG와 같은지 확인하지 못했습니다.</li>
 <li><strong>색 모드 일반화</strong>: 실제로 색 모드가 맞는지는 기종별로 독립된 장면, 조명·노출 변화, 카메라에서 따로 현상한 출력으로 검증해야 합니다.</li>
 <li><strong>펌웨어 버전</strong>: 표본은 K-3 II 펌웨어 1.10으로 촬영됐습니다. 세 기종 연구에서 분석한 K-3 II 펌웨어는 1.12입니다.</li>
 </ul>
@@ -413,7 +413,7 @@ python -B tools/check_neutral_rois.py sample-1376.dng sample-1376-preview.jpg --
 </main>
 </div>
 <!-- chrome:bottom -->
-<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">Lightroom 색 프로파일 — 이 주제의 문서</h2><ol><li><a href="guide-lightroom.html">Lightroom 색 프로파일 안내</a></li><li><a href="lightroom-bridge.html">DCP 구조와 생성 도구<span>세 기종 공통</span></a></li><li><a href="raw-test-inputs.html">시험용 RAW 준비</a></li><li><a href="color-comparison-protocol.html" aria-current="page">ColorChecker 비교 절차</a></li><li><a href="lightroom-render-comparison.html">실제 TIFF 6개 비교</a></li><li><a href="lightroom-tone-comparison.html">톤 곡선 비교</a></li><li><a href="lightroom-model-exports.html">K-3 III·Q7 DCP 내보내기</a></li><li><a href="lightroom-profile-fingerprints.html">프로파일 지문 재현</a></li><li><a href="lightroom-look-controls.html">LookTable 대조 실험</a></li><li><a href="color-tone-residual.html">톤 보정 뒤 남는 색차</a></li><li><a href="color-scene-transfer.html">고정 톤의 독립 장면 비교<span>K-3 II #1363과 Lightroom 버전 대조</span></a></li><li><a href="lightroom-composed-tone.html">합성 톤 DCP의 실제 Lightroom 출력<span>두 장면·최대 색차 기준 미충족</span></a></li><li><a href="lightroom-tone-coordinates.html">Lightroom 톤과 RGB 좌표<span>같은 엔진·두 출력 색공간 대조</span></a></li><li><a href="lightroom-studio-baseline.html">K-3 III·Q7 Bright 스튜디오 비교<span>정합 통과 영역의 JPEG 대비 색차</span></a></li><li><a href="lightroom-studio-reference.html">K-3 III·Q7 참조 프로파일 비교<span>같은 장면의 공통 마스크·As Shot 대조</span></a></li><li><a href="lightroom-as-shot.html">As Shot과 프로파일별 백색점<span>같은 Q7 RAW의 SDK 수식 재현</span></a></li><li><a href="lightroom-pef-neutral.html">K-3 III PEF의 As Shot 중립값<span>두 DNG 변환과 세 프로파일 수식 재현</span></a></li><li><a href="lightroom-cfa-preservation.html">K-3 III PEF·DNG의 CFA 샘플 비교<span>변환 전후 전체 26,628,096개 샘플 대조</span></a></li><li><a href="lightroom-cfa-range.html">K-3 III DNG의 CFA 범위와 기본 크롭<span>활성 영역과 크롭의 WhiteLevel 대조</span></a></li><li><a href="lightroom-sdk-stage2.html">K-3 III DNG의 Adobe SDK Stage 2 실행<span>원본 SDK에서 활성 영역 25,891,840개 전수 대조</span></a></li><li><a href="lightroom-sdk-stage3.html">K-3 III DNG의 Adobe SDK Stage 3<span>카메라 채널 77,675,520개 보간 대조</span></a></li></ol></nav>
+<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">Lightroom 색 프로파일 — 이 주제의 문서</h2><ol><li><a href="guide-lightroom.html">Lightroom 색 프로파일 안내</a></li><li><a href="lightroom-bridge.html">DCP 구조와 생성 도구<span>세 기종 공통</span></a></li><li><a href="raw-test-inputs.html">시험용 RAW 준비</a></li><li><a href="color-comparison-protocol.html" aria-current="page">ColorChecker 비교 절차</a></li><li><a href="lightroom-render-comparison.html">실제 TIFF 6개 비교</a></li><li><a href="lightroom-tone-comparison.html">톤 곡선 비교</a></li><li><a href="lightroom-model-exports.html">K-3 III·Q7 DCP 내보내기</a></li><li><a href="lightroom-profile-fingerprints.html">프로파일 지문 재현</a></li><li><a href="lightroom-look-controls.html">LookTable 대조 실험</a></li><li><a href="color-tone-residual.html">톤 보정 뒤 남는 색차</a></li><li><a href="color-scene-transfer.html">고정 톤의 독립 장면 비교<span>K-3 II #1363과 Lightroom 버전 대조</span></a></li><li><a href="lightroom-composed-tone.html">합성 톤 DCP의 실제 Lightroom 출력<span>두 장면·최대 색차 기준 미충족</span></a></li><li><a href="lightroom-tone-coordinates.html">Lightroom 톤과 RGB 좌표<span>같은 엔진·두 출력 색공간 대조</span></a></li><li><a href="lightroom-studio-baseline.html">K-3 III·Q7 Bright 스튜디오 비교<span>정합 통과 영역의 JPEG 대비 색차</span></a></li><li><a href="lightroom-studio-reference.html">K-3 III·Q7 참조 프로파일 비교<span>같은 장면의 공통 마스크·As Shot 대조</span></a></li><li><a href="lightroom-as-shot.html">As Shot과 프로파일별 백색점<span>같은 Q7 RAW의 SDK 수식 재현</span></a></li><li><a href="lightroom-pef-neutral.html">K-3 III PEF의 As Shot 중립값<span>두 DNG 변환과 세 프로파일 수식 재현</span></a></li><li><a href="lightroom-cfa-preservation.html">K-3 III PEF·DNG의 CFA 샘플 비교<span>변환 전후 샘플 전수 대조</span></a></li><li><a href="lightroom-cfa-range.html">K-3 III DNG의 CFA 범위와 기본 크롭<span>활성 영역과 크롭의 WhiteLevel 대조</span></a></li><li><a href="lightroom-sdk-stage2.html">K-3 III DNG의 Adobe SDK Stage 2 실행<span>정규화 단계 전수 대조</span></a></li><li><a href="lightroom-sdk-stage3.html">K-3 III DNG의 Adobe SDK Stage 3<span>Bayer 보간 전수 대조</span></a></li></ol></nav>
 <nav class="pager" aria-label="이전·다음 문서"><a class="prev" href="raw-test-inputs.html"><small>← 이전</small>시험용 RAW 준비</a><a class="next" href="lightroom-render-comparison.html"><small>다음 →</small>실제 TIFF 6개 비교</a></nav>
 <footer class="sitefoot"><div class="sitefoot-in"><nav aria-label="사이트"><a href="../index.html#map">문서 지도</a><a href="../index.html#levels">검증 수준 읽는 법</a><a href="../glossary.html">용어집</a><a href="research-program.html">세 기종 연구 본부</a><a href="https://github.com/yunhyok/pentax-k3iii-firmware-analysis">GitHub 저장소</a></nav><p>PENTAX 펌웨어 연구. PC에서 수행한 정적 분석과 에뮬레이션 결과이며, 카메라 실기에서 검증한 내용이 아닙니다. 원본 펌웨어와 추출한 독점 코드는 포함하지 않습니다.</p></div></footer>
 <!-- /chrome:bottom -->

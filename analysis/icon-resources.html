@@ -67,9 +67,9 @@
 <p>펌웨어 패키지를 풀면 이름이 붙은 레코드 15개가 나옵니다(<a href="firmware-structure.html">펌웨어 구조와 하드웨어</a>). 그중 ICONBIN은 UI 아이콘의 픽셀 데이터이고 패키지 안에서는 종류 4·번호 4인 레코드입니다. 풀린 데이터 78,683,892바이트 가운데 약 3분의 1을 차지합니다.</p>
 <p>아이콘 하나를 화면에 그리려면 세 가지가 맞물려야 합니다. 이 문서는 세 가지를 차례로 확인합니다.</p>
 <ol>
-<li><strong>저장 형식</strong> — 번호로 아이콘의 크기와 위치를 찾는 목록, 그리고 픽셀 자체.</li>
-<li><strong>GUI 호출 경로</strong> — 화면 요소가 받은 번호가 픽셀 복사 함수까지 이어지는 길.</li>
-<li><strong>복사 규칙</strong> — 픽셀을 어떤 단위로, 어떤 조건에서 옮기는지.</li>
+<li><strong>저장 형식</strong>: 번호로 아이콘의 크기와 위치를 찾는 목록, 그리고 픽셀 자체.</li>
+<li><strong>GUI 호출 경로</strong>: 화면 요소가 받은 번호가 픽셀 복사 함수까지 이어지는 길.</li>
+<li><strong>복사 규칙</strong>: 픽셀을 어떤 단위로, 어떤 조건에서 옮기는지.</li>
 </ol>
 
 <h3>읽기 전에 알아 둘 말</h3>
@@ -262,7 +262,7 @@
 
 <ul>
 <li><strong>번호 저장</strong>: IconView의 <code>+0x17c</code>에 16비트 번호를 씁니다. 값이 이전과 다를 때만 다시 그리기 요청 함수(<code>0x52c0205c</code>)를 부릅니다.</li>
-<li><strong>그리기용 사본</strong> — 번호와 위치 사각형을 그리기용 필드로 복사합니다.</li>
+<li><strong>그리기용 사본</strong>: 번호와 위치 사각형을 그리기용 필드로 복사합니다.</li>
 <li><strong>그리기 호출</strong>: IconView 안에 든 그리기 객체가 가상 함수 표로 그리기 함수에 연결되고 설정 객체의 <code>+0x24</code>가 전달됩니다. 여기까지는 명령을 읽어 확인했습니다.</li>
 </ul>
 <p>실제 메뉴 동작이 ID 5를 고르는 지점은 찾지 못했습니다. 아이콘의 모양만 보고 메뉴 이름을 붙이지도 않았습니다.</p>
@@ -444,11 +444,11 @@ copy u32 pixel only when (pixel &gt;&gt; 24) != drawObject.byte7</code></pre>
 <section id="limits">
 <h2>한계와 남은 과제</h2>
 <ul>
-<li><strong>어느 화면의 아이콘인지</strong> — ID 5를 고르는 메뉴 동작을 찾지 못했습니다.</li>
-<li><strong>색의 뜻</strong> — 하위 3바이트의 채널 순서, 감마, 화면 합성에서의 알파 처리를 모릅니다. 미리보기는 회색 아이콘에만 통합니다.</li>
+<li><strong>어느 화면의 아이콘인지</strong>: ID 5를 고르는 메뉴 동작을 찾지 못했습니다.</li>
+<li><strong>색의 뜻</strong>: 하위 3바이트의 채널 순서, 감마, 화면 합성에서의 알파 처리를 모릅니다. 미리보기는 회색 아이콘에만 통합니다.</li>
 <li><strong>다른 그리기 경로</strong>: 회전이 없는 복사 함수 하나만 실행했습니다. 분배 함수의 나머지 분기와 그 뒤의 디스플레이 처리는 보지 않았습니다.</li>
 <li><strong>실행 환경</strong>: GUI의 이벤트 처리, 디스플레이 장치, 카메라 플래시 기록은 실행하지 않았습니다. Cortex-A15 모델로 에뮬레이션해도 카메라 하드웨어와 똑같다는 보장은 없습니다.</li>
-<li><strong>패키지</strong> — 후보 패키지를 하드웨어 디코더와 업데이트 프로그램이 받아들이는지 모릅니다.</li>
+<li><strong>패키지</strong>: 후보 패키지를 하드웨어 디코더와 업데이트 프로그램이 받아들이는지 모릅니다.</li>
 </ul>
 
 <h3 id="port">K-3 II·Q7로 옮기려면 남는 조건</h3>
@@ -483,8 +483,8 @@ python verify_icon_resources.py decoded.bin --output checks.json</code></pre>
 </main>
 </div>
 <!-- chrome:bottom -->
-<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">UI와 화면 자원 — 이 주제의 문서</h2><ol><li><a href="guide-ui.html">UI와 화면 자원 안내</a></li><li><a href="ui-port-contract.html">UI 이식 설계<span>세 기종 비교</span></a></li><li><a href="colorspace-ui.html">색공간 화면: 선택·확정·취소<span>16사례</span></a></li><li><a href="colorspace-ui-input.html">색공간 화면: 방향 입력·포커스<span>50사례</span></a></li><li><a href="colorspace-render.html">색공간 행의 아이콘과 글자 측정<span>원본 행·ICONBIN 복사, Latin 글꼴 준비와 sRGB 측정</span></a></li><li><a href="colorspace-text.html">색공간 sRGB 글자의 래스터와 픽셀 전송<span>원본 텍스트 비트맵·합성 표면 전송</span></a></li><li><a href="colorspace-clip.html">sRGB 글자 전송의 화면 경계<span>일곱 좌표에서 32비트 전송과 Q7 행 검사 비교</span></a></li><li><a href="ui-viewport-producers.html">K-3 III 텍스트 viewport의 생산 경로<span>부모 클립과 텍스트 설정의 전달</span></a></li><li><a href="ui-surface-producers.html">K-3 III StringView의 그리기 표면<span>Canvas와 표면 기술자</span></a></li><li><a href="ui-render-chain.html">Q7 갱신에서 원본 픽셀까지<span>마커·두 텍스트·버퍼 교체의 합성 실행</span></a></li><li><a href="cross-ui-text.html">K-3 III와 Q7의 sRGB 글자 그리기 비교<span>32비트 커버리지 전송과 Q7 팔레트 번호·Q16 축소</span></a></li><li><a href="icon-resources.html" aria-current="page">ICONBIN 아이콘 자원<span>저장 형식, 복사 규칙, 후보 아이콘</span></a></li></ol></nav>
-<nav class="pager" aria-label="이전·다음 문서"><a class="prev" href="cross-ui-text.html"><small>← 이전</small>K-3 III와 Q7의 sRGB 글자 그리기 비교</a></nav>
+<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">UI와 화면 자원 — 이 주제의 문서</h2><ol><li><a href="guide-ui.html">UI와 화면 자원 안내</a></li><li><a href="ui-port-contract.html">UI 이식 설계<span>세 기종 비교</span></a></li><li><a href="colorspace-ui.html">색공간 화면: 선택·확정·취소<span>16사례</span></a></li><li><a href="colorspace-ui-input.html">색공간 화면: 방향 입력·포커스<span>50사례</span></a></li><li><a href="colorspace-render.html">색공간 행의 아이콘·체크 표시와 글자 크기 측정<span>행·아이콘 복사와 글꼴 준비</span></a></li><li><a href="colorspace-text.html">sRGB 글자를 비트맵으로 만들어 표면에 옮기기<span>글자 비트맵과 표면 전송</span></a></li><li><a href="colorspace-clip.html">글자가 화면 가장자리에 걸릴 때의 전송<span>일곱 위치의 가장자리 처리</span></a></li><li><a href="ui-viewport-producers.html">글자 viewport가 전송 함수에 닿는 경로<span>부모 클립과 글자 영역</span></a></li><li><a href="ui-surface-producers.html">StringView가 그릴 표면을 받는 경로<span>Canvas와 표면 기술자</span></a></li><li><a href="ui-render-chain.html">Q7 화면 갱신 한 번에서 픽셀까지<span>마커·두 글자 줄·버퍼 교체</span></a></li><li><a href="cross-ui-text.html">K-3 III와 Q7의 글자 그리기 비교<span>배율·좌표·픽셀 형식</span></a></li><li><a href="icon-resources.html" aria-current="page">ICONBIN 아이콘 자원<span>저장 형식, 복사 규칙, 후보 아이콘</span></a></li></ol></nav>
+<nav class="pager" aria-label="이전·다음 문서"><a class="prev" href="cross-ui-text.html"><small>← 이전</small>K-3 III와 Q7의 글자 그리기 비교</a></nav>
 <footer class="sitefoot"><div class="sitefoot-in"><nav aria-label="사이트"><a href="../index.html#map">문서 지도</a><a href="../index.html#levels">검증 수준 읽는 법</a><a href="../glossary.html">용어집</a><a href="research-program.html">세 기종 연구 본부</a><a href="https://github.com/yunhyok/pentax-k3iii-firmware-analysis">GitHub 저장소</a></nav><p>PENTAX 펌웨어 연구. PC에서 수행한 정적 분석과 에뮬레이션 결과이며, 카메라 실기에서 검증한 내용이 아닙니다. 원본 펌웨어와 추출한 독점 코드는 포함하지 않습니다.</p></div></footer>
 <!-- /chrome:bottom -->
 </body>
