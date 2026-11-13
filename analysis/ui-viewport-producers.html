@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>K-3 III 텍스트 viewport의 생산 경로</title>
+<meta name="description" content="K-3 III 펌웨어 2.20의 부모·자식 클립과 StringView의 63·64바이트 설정 복사를 원본 RTOS로 대조했습니다.">
+<link rel="stylesheet" href="../assets/site.css">
+<style>
+.viewport .flow{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,13rem),1fr));gap:.65rem;margin:.6rem 0 0;padding:0;list-style:none}
+.viewport .flow li{padding:.65rem;border:1px solid var(--line);border-radius:.55rem}
+.viewport .flow b{display:block}
+.viewport .table-wrap:focus-visible{outline:2px solid var(--brand);outline-offset:3px}
+</style>
+</head>
+<body data-camera="k3iii">
+<!-- chrome:top -->
+<a class="skip" href="#main">본문 바로가기</a>
+<div class="topbar"><div class="topbar-in"><a class="brand" href="../index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="../index.html" aria-current="true">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="https://yunhyok.github.io/pentax-q7-firmware-analysis/">Q7</a></div><nav class="topnav" aria-label="주제"><a href="../index.html">개요</a><a href="guide-boot.html">부팅·저장소</a><a href="guide-update.html">업데이트</a><a href="guide-rebuild.html">재구축</a><a href="guide-rtos.html">명령·셸</a><a href="guide-color.html">색 처리</a><a href="lightroom-bridge.html">Lightroom</a><a href="af-foundations.html">AF</a><a href="ui-port-contract.html" aria-current="true">UI</a></nav></div></div>
+<nav class="crumbs" aria-label="현재 위치"><ol><li><a href="../index.html">PENTAX K-3 Mark III</a></li><li><a href="ui-port-contract.html">UI와 화면 자원</a></li><li aria-current="page">K-3 III 텍스트 viewport의 생산 경로</li></ol></nav>
+<!-- /chrome:top -->
+<header class="page-head">
+<p class="eyebrow">UI와 화면 자원 · K-3 III 펌웨어 2.20</p>
+<h1>K-3 III 텍스트 viewport의 생산 경로</h1>
+<p class="lead">부모와 자식의 클립으로 계산한 StringView의 <code>+0x50</code> 사각형이 텍스트 설정 <code>+0x14</code>로 직접 복사됩니다. 원본 RTOS에서 이 설정이 비회전 글자 전송에 전달되는 경로를 확인했습니다.</p>
+</header>
+<div class="layout">
+<!-- chrome:toc -->
+<nav class="toc" aria-label="이 문서의 목차"><h2 data-toc="no">이 문서에서</h2><ol><li><a href="#config">viewport와 텍스트 설정</a></li><li><a href="#geometry">부모 클립과 폭 80</a></li><li><a href="#surface">RAM 표면과 주소 단위</a></li><li><a href="#replay">정적 검증 재현</a></li></ol></nav>
+<!-- /chrome:toc -->
+<main class="doc viewport" id="main">
+<section id="config">
+<h2>viewport와 텍스트 설정</h2>
+<figure class="diagram">
+<figcaption>부모 클립 계산에서 비회전 전송까지</figcaption>
+<ol class="flow">
+<li><b>부모·자식 경계 → V+0x50</b>부호 있는 좌표로 교차 범위를 정합니다.</li>
+<li><b>V+0x50 → 임시 config+0x14</b>viewport의 X·Y·폭·높이를 직접 복사합니다. 같은 값은 일반 스냅샷 N+0x2c에도 별도로 복사됩니다.</li>
+<li><b>임시 설정 → 객체 → 그리기 스택</b>먼저 63바이트를 저장합니다. 그리기 경로에서 표면 포인터를 넣은 뒤 64바이트를 스택에 복사합니다.</li>
+</ol>
+</figure>
+<p>V는 StringView이며, 생성자는 <code>V+0x114</code>에 내부 객체 <code>N=V+0x11c</code>의 포인터를 씁니다. 따라서 객체의 설정 주소 <code>V+0x188</code>과 내부 객체의 <code>N+0x6c</code>가 같습니다. 오프셋 단위는 바이트입니다. <a href="ui-viewport-sources.json">원본 구간과 명령 주소</a></p>
+<div class="table-wrap" tabindex="0" role="region" aria-label="텍스트 설정 복사 경로">
+<table><caption>설정 생산자와 비회전 호출</caption>
+<thead><tr><th scope="col">데이터 이동</th><th scope="col">원본 주소</th><th scope="col">관측한 계약</th></tr></thead>
+<tbody>
+<tr><th scope="row">V+0x50 → N+0x2c</th><td><code>0x52c02590</code></td><td>일반 스냅샷에 16바이트를 복사합니다.</td></tr>
+<tr><th scope="row">V+0x50 → 임시 config+0x14</th><td><code>0x52beea24</code>, <code>0x52beea54–0x52beea5c</code></td><td>viewport의 직접 복사입니다. 원본 주소는 StringView의 V+0x50입니다.</td></tr>
+<tr><th scope="row">정렬한 텍스트 사각형 → config+4</th><td><code>0x52bee9fc → 0x52bee61c</code>, <code>0x52beea4c</code></td><td>V+0x30 절대 좌표와 텍스트 측정 크기로 만든 사각형입니다.</td></tr>
+<tr><th scope="row">임시 config → V+0x188</th><td><code>[0x52beebec,0x52beec40)</code></td><td>48+12+2+1=63바이트를 복사합니다. 마지막 쓰기는 <code>0x52beec3c</code>입니다. config+0x3f는 이 복사 범위 밖입니다.</td></tr>
+<tr><th scope="row">surface → N+0x6c → 스택 config</th><td><code>0x52bedb78</code>, <code>[0x52bedba8,0x52bedbc8)</code></td><td>선택된 그리기 분기에서 첫 워드에 표면 포인터를 쓰고 64바이트를 스택으로 복사합니다. 마지막 쓰기는 <code>0x52bedbc4</code>입니다.</td></tr>
+<tr><th scope="row">스택 config → 비회전 전송</th><td><code>0x52bedbd0 → 0x528c2e30</code>, <code>0x528c2fe0 → 0x528c24e4</code></td><td>디스패처가 surface+2에서 타입 5를 확인하고 config+0x28의 회전값 0을 선택합니다.</td></tr>
+</tbody>
+</table>
+</div>
+<p>두 사각형은 config+4..+35 안에 있어 두 복사에 모두 포함됩니다. 별도 정적 대조에서는 StringView 생성자의 표 리터럴 <code>0x52bee40c</code>와 내부 객체 표 리터럴 <code>0x52bee414</code>를 확인했습니다. 내부 표 <code>0x5386fec0</code>의 +0x14 슬롯은 <code>0x52bedb40</code>을 가리킵니다. A32 정렬 워드의 직접 분기 검사에서는 전송 함수로 향하는 <code>0x528c2fe0</code> 한 곳이 일치했습니다. 실제 호출 순서와 메뉴 도달성은 추가 실행 검증이 필요합니다. <a href="ui-viewport-producers.json">정본 관측과 추가 정적 근거</a></p>
+</section>
+<section id="geometry">
+<h2>부모 클립과 폭 80</h2>
+<p>부모가 있는 분기의 <code>0x52c003f0</code>은 부모의 절대 원점 P+0x30과 자식 로컬 원점 V+0x20을 더합니다. 자식의 로컬 클립 V+0x40을 새 절대 원점으로 옮긴 뒤 P+0x50의 클립과 교차시킵니다. <code>0x52c0053c–0x52c00584</code>는 부호 있게 시작점의 큰 값과 끝점의 작은 값을 고르고, 끝점을 시작점 이상으로 제한합니다. <code>0x52c00588</code>에서 결과를 V+0x50에 저장하는 함수를 호출합니다. <a href="ui-viewport-sources.json">geometry 원본 핀</a></p>
+<p>기존 행 재현에서 부모의 절대 사각형과 클립 <code>[10,12,180,60]</code>은 호스트가 넣었습니다. 자식의 로컬 사각형 <code>[100,10,580,40]</code>은 원본 행 생성자에서 나왔습니다. 자식의 절대 원점은 (110,22)이며, viewport 폭 80은 부모 오른쪽 끝 190에서 110을 뺀 값입니다. 별도로 측정한 텍스트 크기는 76×40이며 config의 텍스트 사각형은 <code>[110,22,76,40]</code>입니다. 중앙 정렬 경로는 두 크기를 각각 절반으로 줄인 뒤 뺍니다. <a href="colorspace-text.html">기존 문자열 측정·전송</a> · <a href="ui-viewport-producers.json">세 산술 사례</a></p>
+</section>
+<section id="surface">
+<h2>RAM 표면과 주소 단위</h2>
+<p>기존 실험의 RAM 표면은 호스트가 만든 256×144개의 32비트 워드입니다. 원본 전송은 <code>0x531128a4</code>에서 surface+8의 RAM 포인터를, <code>0x528c25bc</code>에서 surface+0x18의 부호 없는 16비트 행 간격을 읽습니다. 대상 바이트 오프셋은 <code>4 × (Y × pitchWords + X)</code>입니다. 배경 시작 워드는 높이 0 검사 전에 읽습니다. 이 동작의 관측 범위는 기존 RAM fixture와 분석한 분기입니다. <a href="colorspace-clip.html">이전 경계 접촉 사례</a></p>
+<p>기존 7개 사례는 각각 준비에 모델 호출 72개를 사용했고 최종 전송에 모델 호출은 없었습니다. 기준 사례는 두 사각형을 그대로 두었고, 나머지 여섯 사례에서는 복사된 config의 +4..+35에 두 사각형을 공급했습니다. 기준에서도 부모와 표면은 호스트가 설정했습니다. 최상위 viewport와 실제 표면의 생산자, LCD 동작은 미확인입니다. <a href="colorspace-clip.json">7개 역사적 관측</a></p>
+</section>
+<section id="replay">
+<h2>정적 검증 재현</h2>
+<p>Python과 Capstone 5.0.7에서 고정 decoded 입력을 사용합니다. 도구는 원본 RTOS 25구간과 명령 계약 73개, 별도 검토 5구간, 두 공개 역사 기록을 대조합니다. 세 산술 예시는 작은 정수 좌표의 수동 계산입니다. 정본의 모든 필드와 추가 확인을 포함한 전체 JSON이 정확히 일치할 때만 새 파일을 씁니다. CPU 에뮬레이터와 기존 7개 사례는 실행하지 않습니다.</p>
+<pre><code>python -B tools/verify_ui_viewport_producers.py decoded.bin --output viewport-replay.json
+python -B -m unittest discover -s tests -p test_ui_viewport_producers.py</code></pre>
+<p><a href="../tools/verify_ui_viewport_producers.py">검증 코드</a> · <a href="../tests/test_ui_viewport_producers.py">보호 및 산술 테스트</a> · <a href="ui-viewport-sources.json">소스 핀</a> · <a href="ui-viewport-producers.json">전체 결과 JSON</a></p>
+</section>
+</main>
+</div>
+<!-- chrome:bottom -->
+<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">UI와 화면 자원 — 이 주제의 문서</h2><ol><li><a href="ui-port-contract.html">UI 이식 설계·안내<span>세 기종 비교</span></a></li><li><a href="colorspace-ui.html">색공간 화면: 선택·확정·취소<span>16사례</span></a></li><li><a href="colorspace-ui-input.html">색공간 화면: 방향 입력·포커스<span>50사례</span></a></li><li><a href="colorspace-render.html">색공간 행의 아이콘과 글자 측정<span>원본 행·ICONBIN 복사, Latin 글꼴 준비와 sRGB 측정</span></a></li><li><a href="colorspace-text.html">색공간 sRGB 글자의 래스터와 픽셀 전송<span>원본 텍스트 비트맵·합성 표면 전송</span></a></li><li><a href="colorspace-clip.html">sRGB 글자 전송의 화면 경계<span>일곱 좌표에서 32비트 전송과 Q7 행 검사 비교</span></a></li><li><a href="ui-viewport-producers.html" aria-current="page">K-3 III 텍스트 viewport의 생산 경로<span>부모 클립과 텍스트 설정의 전달</span></a></li><li><a href="ui-render-chain.html">Q7 갱신에서 원본 픽셀까지<span>마커·두 텍스트·버퍼 교체의 합성 실행</span></a></li><li><a href="cross-ui-text.html">K-3 III와 Q7의 sRGB 글자 그리기 비교<span>32비트 커버리지 전송과 Q7 팔레트 번호·Q16 축소</span></a></li><li><a href="icon-resources.html">ICONBIN 아이콘 자원<span>저장 형식, 복사 규칙, 후보 아이콘</span></a></li></ol></nav>
+<nav class="pager" aria-label="이전·다음 문서"><a class="prev" href="colorspace-clip.html"><small>← 이전</small>sRGB 글자 전송의 화면 경계</a><a class="next" href="ui-render-chain.html"><small>다음 →</small>Q7 갱신에서 원본 픽셀까지</a></nav>
+<footer class="sitefoot"><div class="sitefoot-in"><nav aria-label="사이트"><a href="../index.html#map">문서 지도</a><a href="../index.html#levels">검증 수준 읽는 법</a><a href="../glossary.html">용어집</a><a href="research-program.html">세 기종 연구 본부</a><a href="https://github.com/yunhyok/pentax-k3iii-firmware-analysis">GitHub 저장소</a></nav><p>PENTAX 펌웨어 연구. PC에서 수행한 정적 분석과 에뮬레이션 결과이며, 카메라 실기에서 검증한 내용이 아닙니다. 원본 펌웨어와 추출한 독점 코드는 포함하지 않습니다.</p></div></footer>
+<!-- /chrome:bottom -->
+</body>
+</html>
