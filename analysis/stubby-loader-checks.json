@@ -1,0 +1,1287 @@
+{
+  "verified": true,
+  "input_sha256": "7ff301d585ef7adcd620a15575faa39b4227cc5a27eaa8d754efe50f667a30f9",
+  "linux_sha256": "fcb11ce850f22420ddd6a29d63ef9074ad6322bc021d0ba101e1354d1277b9c2",
+  "initfs_sha256": "0f230006ec83cf48567977081ac2446072dec58aa5c9c7ddc2d38009a44650a0",
+  "initfs_decoded_offset": 32855436,
+  "initfs_size": 14452736,
+  "engine": {
+    "name": "Unicorn",
+    "version": "2.1.4",
+    "cpu": "Cortex-A7"
+  },
+  "public_dependencies_sha256_lf": {
+    "verify_stubby_romfs.py": "80060110e7573ef3e87f560454caf2c39e50d0fa7db407429e7e7538b4d8c70d",
+    "verify_stubby_load_auth.py": "a64e6a2473a60e0cf08ea234e9d0159ecafd4324e79451a9689261eed9674664"
+  },
+  "source_ranges": [
+    {
+      "name": "wrapper",
+      "start": "0x9fc",
+      "end": "0xa52",
+      "sha256": "4d53bb01ff17b65beb27ec8ad03c917e00df92cb318548869626c55c499a9833"
+    },
+    {
+      "name": "mount",
+      "start": "0xedc",
+      "end": "0xf1e",
+      "sha256": "0badb2b3dc276715c774150e14d7ce8c718d9140ab79961b69e9c99e916e2ff2"
+    },
+    {
+      "name": "pic_dereference",
+      "start": "0x1080",
+      "end": "0x1098",
+      "sha256": "bcfd9bf5283cbbf9c36a73dbee49c4bc63bd3a994fcbf8ca8395d0ff47fbbaf1"
+    },
+    {
+      "name": "get_address",
+      "start": "0xea4",
+      "end": "0xed4",
+      "sha256": "e52cd97db37f46f1c5946c95e5406bf3d6e41f4fd206e52d6365adfdf5a2f78b"
+    },
+    {
+      "name": "lookup",
+      "start": "0xd30",
+      "end": "0xe52",
+      "sha256": "08a34d703f3e2cbe5f0f49114ee81dd03874e4bf5363041b2ca746afd5ae02f3"
+    },
+    {
+      "name": "read_bigendian",
+      "start": "0xd04",
+      "end": "0xd1a",
+      "sha256": "a1565b2a1f1bf2f6b1f9b7a0f119e18a7cbb0b65774c610c92d825a45945af39"
+    },
+    {
+      "name": "pad_name",
+      "start": "0xd1a",
+      "end": "0xd30",
+      "sha256": "7fdc41564e6519496c10e585a668108b9d3fbbf95743e4ff0e3bdb26433ef8d3"
+    },
+    {
+      "name": "read",
+      "start": "0xe5c",
+      "end": "0xe9c",
+      "sha256": "8fa42ad5be0f8963f5e18b1aba5dde6f7a4b13abec438e8261b8814eb7a338e8"
+    },
+    {
+      "name": "copy_bytes",
+      "start": "0x122e",
+      "end": "0x1244",
+      "sha256": "42b747a73d135264005691f2d3906e30649f57450a499a463b7e5c82daa5db17"
+    },
+    {
+      "name": "loader",
+      "start": "0x984",
+      "end": "0x9be",
+      "sha256": "1d2cefc031380c84133490e18673fadcbd802c89e520c28fdb871d1e7e869211"
+    },
+    {
+      "name": "select_source",
+      "start": "0x928",
+      "end": "0x930",
+      "sha256": "a68d0a87d69f408f7c7657f63089e233c7df9e43ea0edc88577219a3dfdfb214"
+    },
+    {
+      "name": "try_source",
+      "start": "0x930",
+      "end": "0x976",
+      "sha256": "f5925fd9de716d34ea00c0fb1454c8aa13060807b2eff361e1fdc7b43f367df9"
+    },
+    {
+      "name": "load_files",
+      "start": "0xa68",
+      "end": "0xc00",
+      "sha256": "9408ab441cfe68231e29c05278dc1a4e8e3b044e7fdda3185fb00a5d01493f80"
+    },
+    {
+      "name": "config_head",
+      "start": "0x2616",
+      "end": "0x263e",
+      "sha256": "a0ea26f8a4554adbce12ebdde14718e61295e583757b317e1e2b0c2ce26d8634"
+    },
+    {
+      "name": "config_return",
+      "start": "0x2940",
+      "end": "0x2948",
+      "sha256": "d0c92af6ea94c366484612ea240cae0d23a943c5fa231087e393da3ac2cfa7ad"
+    },
+    {
+      "name": "fdt_path_head",
+      "start": "0x24dc",
+      "end": "0x250e",
+      "sha256": "9875a6af78eb502273a888b5598ab52b08e52d75ebe30a922e4b089771336141"
+    },
+    {
+      "name": "fdt_path_body",
+      "start": "0x2512",
+      "end": "0x25ca",
+      "sha256": "0e9cb0657437b5dea8c9c9d93e232978f0ec033a8ff0ef10b7bc2117fbe079fa"
+    },
+    {
+      "name": "read_be32",
+      "start": "0x1218",
+      "end": "0x122e",
+      "sha256": "956864b43b6f0bd77745941173ca664fb08c2e30f654135a6f3d49bde5f00929"
+    },
+    {
+      "name": "write_be32",
+      "start": "0x1208",
+      "end": "0x1218",
+      "sha256": "560c9c56074aeb247459e1653a222c5c49f35f7ba2ab26bc1f97a6a7daf48476"
+    }
+  ],
+  "stubs": {
+    "0x894": "print_info including CP15 MPIDR read; entire diagnostic function skipped",
+    "0x8bc": "describe boot source; entire diagnostic function skipped",
+    "0xc84": "puts; output suppressed"
+  },
+  "stub_abi": "Return via LR with r0=0 and r1/r2/r3/r12 poisoned. Preserve SP and r4–r11 across each diagnostic stub.",
+  "instruction_count_semantics": "CODE callbacks before instructions, including the faulting instruction and excluding stub bodies.",
+  "memory_count_semantics": "Guest data read/write callbacks by region. Invalid reads are recorded separately. Host snapshots and instruction fetches are excluded.",
+  "cases": [
+    {
+      "label": "initfs_unmapped",
+      "entry": "0x41000984",
+      "initial_globals": {
+        "0x40004434": 3736010752,
+        "0x40004430": 3736010753,
+        "0x4000442c": 3736010754,
+        "0x40004004": 3736010755,
+        "0x4000441c": 3736010756,
+        "0x40004000": 3736010757
+      },
+      "maps": [
+        {
+          "base": "0x41000000",
+          "size": 3211264
+        },
+        {
+          "base": "0x40004000",
+          "size": 8192
+        },
+        {
+          "base": "0x40007000",
+          "size": 8192
+        },
+        {
+          "base": "0x427ff000",
+          "size": 69632
+        },
+        {
+          "base": "0x70000000",
+          "size": 65536
+        }
+      ],
+      "events": [
+        {
+          "offset": "0x984",
+          "args": [
+            "0xdead1000",
+            "0xdead1001",
+            "0xdead1002",
+            "0xdead1003"
+          ],
+          "sp": "0x7000f000",
+          "r5": "0xcafe0001",
+          "r8": "0xcafe0004"
+        },
+        {
+          "offset": "0x98c",
+          "args": [
+            "0x0",
+            "0xdeadc043",
+            "0xdeadc044",
+            "0xdeadc045"
+          ],
+          "sp": "0x7000eff8",
+          "r5": "0xcafe0001",
+          "r8": "0xcafe0004"
+        },
+        {
+          "offset": "0x99a",
+          "args": [
+            "0x0",
+            "0x0",
+            "0x0",
+            "0xdeadc045"
+          ],
+          "sp": "0x7000eff8",
+          "r5": "0xcafe0001",
+          "r8": "0xcafe0004"
+        },
+        {
+          "offset": "0x930",
+          "args": [
+            "0x0",
+            "0x0",
+            "0x0",
+            "0xdeadc045"
+          ],
+          "sp": "0x7000eff8",
+          "r5": "0xcafe0001",
+          "r8": "0xcafe0004"
+        },
+        {
+          "offset": "0xedc",
+          "args": [
+            "0x41008000",
+            "0x0",
+            "0x0",
+            "0xdeadc045"
+          ],
+          "sp": "0x7000efe8",
+          "r5": "0x41000000",
+          "r8": "0xcafe0004"
+        },
+        {
+          "offset": "0x95a",
+          "args": [
+            "0x0",
+            "0x148",
+            "0x114",
+            "0x2d736631"
+          ],
+          "sp": "0x7000efe8",
+          "r5": "0x40004000",
+          "r8": "0xcafe0004"
+        },
+        {
+          "offset": "0xa68",
+          "args": [
+            "0x0",
+            "0x1",
+            "0x0",
+            "0xdeadc045"
+          ],
+          "sp": "0x7000eff8",
+          "r5": "0xcafe0001",
+          "r8": "0xcafe0004"
+        },
+        {
+          "offset": "0x9fc",
+          "args": [
+            "0x0",
+            "0x41002b43",
+            "0x40008000",
+            "0x100000"
+          ],
+          "sp": "0x7000efc8",
+          "r5": "0x40004430",
+          "r8": "0x40004434"
+        },
+        {
+          "offset": "0xaa4",
+          "args": [
+            "0xffffffff",
+            "0x0",
+            "0x2",
+            "0x2"
+          ],
+          "sp": "0x7000efc8",
+          "r5": "0x40004430",
+          "r8": "0x40004434"
+        },
+        {
+          "offset": "0x9fc",
+          "args": [
+            "0x0",
+            "0x41002b53",
+            "0x40008000",
+            "0x27f8000"
+          ],
+          "sp": "0x7000efc8",
+          "r5": "0x40004430",
+          "r8": "0x40004434"
+        },
+        {
+          "offset": "0xaba",
+          "args": [
+            "0x2daba0",
+            "0x40004434",
+            "0x43000000",
+            "0x4000442c"
+          ],
+          "sp": "0x7000efc8",
+          "r5": "0x40004430",
+          "r8": "0x40004434"
+        },
+        {
+          "offset": "0x9fc",
+          "args": [
+            "0x0",
+            "0x41002b76",
+            "0x42800000",
+            "0xc800"
+          ],
+          "sp": "0x7000efc8",
+          "r5": "0x40004430",
+          "r8": "0x40004434"
+        },
+        {
+          "offset": "0xad4",
+          "args": [
+            "0x7fb6",
+            "0x412ebb96",
+            "0x412ebb96",
+            "0x42807fb5"
+          ],
+          "sp": "0x7000efc8",
+          "r5": "0x40004430",
+          "r8": "0x40004434"
+        },
+        {
+          "offset": "0xae4",
+          "args": [
+            "0x0",
+            "0x20aa",
+            "0x412ebb96",
+            "0x43000068"
+          ],
+          "sp": "0x7000efc8",
+          "r5": "0x40004430",
+          "r8": "0x40004434"
+        }
+      ],
+      "stub_calls": [
+        {
+          "offset": "0x894",
+          "role": "print_info including CP15 MPIDR read; entire diagnostic function skipped",
+          "arguments": [
+            "0xdead1000",
+            "0xdead1001",
+            "0xdead1002",
+            "0xdead1003"
+          ],
+          "return_address": "0x4100098b",
+          "return_value": 0
+        },
+        {
+          "offset": "0x8bc",
+          "role": "describe boot source; entire diagnostic function skipped",
+          "arguments": [
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x2d736631"
+          ],
+          "return_address": "0x41000969",
+          "return_value": 0
+        }
+      ],
+      "wrapper_returns": [
+        {
+          "role": "bootloader",
+          "result": 4294967295,
+          "kernel_pointer": "0x40008000",
+          "dtb_pointer": "0x42800000"
+        },
+        {
+          "role": "kernel",
+          "result": 2993056,
+          "kernel_pointer": "0x41009000",
+          "dtb_pointer": "0x42800000"
+        },
+        {
+          "role": "dtb",
+          "result": 32694,
+          "kernel_pointer": "0x41009000",
+          "dtb_pointer": "0x42800000"
+        }
+      ],
+      "instruction_count": 165570,
+      "executed_ranges": {
+        "loader": 10,
+        "select_source": 3,
+        "try_source": 23,
+        "mount": 28,
+        "pic_dereference": 11,
+        "load_files": 45,
+        "wrapper": 76,
+        "get_address": 50,
+        "lookup": 1149,
+        "pad_name": 376,
+        "read_bigendian": 297,
+        "read": 26,
+        "copy_bytes": 163476
+      },
+      "dtb_copy_stores": 32694,
+      "dtb_property_stores": [],
+      "missing_input": {
+        "access": 19,
+        "address": "0x43000068",
+        "size": 4,
+        "instruction_offset": "0xae4"
+      },
+      "execution_error": {
+        "type": "UcError",
+        "message": "Invalid memory read (UC_ERR_READ_UNMAPPED)",
+        "code": 6
+      },
+      "stop_pc": "0x41000ae4",
+      "stop_sp": "0x7000efc8",
+      "final_globals": {
+        "0x40004434": "0x41009000",
+        "0x40004430": "0x42800000",
+        "0x4000442c": "0x43000000",
+        "0x40004004": "0x41008000",
+        "0x4000441c": "0x41000e5d",
+        "0x40004000": "0x0"
+      },
+      "original_linux_guest_unchanged": true,
+      "original_initfs_guest_unchanged": null,
+      "kernel_buffer_unchanged": true,
+      "dtb_before_sha256": "b7968478e48fd492678512ef0efaee63f0fb298ad5d3781bc9975994c0d3b70b",
+      "dtb_after_sha256": "b7968478e48fd492678512ef0efaee63f0fb298ad5d3781bc9975994c0d3b70b",
+      "dtb_changed_offsets": [],
+      "dtb_head_canary_preserved": true,
+      "dtb_tail_canary_preserved": true,
+      "initrd_start_property": "0x43000000",
+      "initrd_end_property": "0x43f00000",
+      "observed_instruction_spans": [
+        {
+          "start": "0x928",
+          "end": "0x92c",
+          "sha256": "e867fa64110100fe0a2582a1286163c9addeb1c63ae6e7e0495fd2bbf8e09d41"
+        },
+        {
+          "start": "0x92e",
+          "end": "0x93a",
+          "sha256": "6835b576c853983daa1f8c9b581ac8b50432af1210a5ae916590b0b4442bad12"
+        },
+        {
+          "start": "0x946",
+          "end": "0x952",
+          "sha256": "6664377bea56d042e30f95c767a88745773310eb65cacda9d65d2cb4fabbf42b"
+        },
+        {
+          "start": "0x956",
+          "end": "0x976",
+          "sha256": "3a6adb4ca2bc8be589f8cfc6ab4df479e095cfcb6ee6b502cd08a212d95040c0"
+        },
+        {
+          "start": "0x984",
+          "end": "0x99e",
+          "sha256": "a11fcbc3d76330c262981c9936000e29e778c16c9b091e73d48d23c3b36d5f87"
+        },
+        {
+          "start": "0x9fc",
+          "end": "0xa34",
+          "sha256": "5e6899eb50d04d4665fcfa6de538245415c91ebcf73cf5e81306eb1333eae874"
+        },
+        {
+          "start": "0xa36",
+          "end": "0xa52",
+          "sha256": "9513b5717a12c90c06ecd67fde0bf001f082124e9060da9712b0dfc59f6c564f"
+        },
+        {
+          "start": "0xa68",
+          "end": "0xabe",
+          "sha256": "ae6664c4f1dc6ad511b136e8e332f775d3bcd722f9a369f5c2099945678c0550"
+        },
+        {
+          "start": "0xac4",
+          "end": "0xad8",
+          "sha256": "f4e75cdca39832ce6da8374ccb749266aca8a3d917be9aab55868abcf16b2595"
+        },
+        {
+          "start": "0xade",
+          "end": "0xae6",
+          "sha256": "0a788c05dd03528638f5112b8d89a3f761a0143c2edaf17c47a1a0357f69e3a2"
+        },
+        {
+          "start": "0xd04",
+          "end": "0xd96",
+          "sha256": "984ffc2d71c7c679e5303d8c8271f11fe63f009121c61b7b20f5b82f42b781f9"
+        },
+        {
+          "start": "0xd9c",
+          "end": "0xdac",
+          "sha256": "ef4dd0c4f0286adb646977f497279d4ac3786e00f0a0876f17adff3e94031a5d"
+        },
+        {
+          "start": "0xdca",
+          "end": "0xddc",
+          "sha256": "436d3f55527e6731a7e44efe07727a6617756644c8efcbcecd910233c57c38bc"
+        },
+        {
+          "start": "0xdec",
+          "end": "0xdf6",
+          "sha256": "97770c7c928e6e064568ae0a40972692567ed60a9ac229cf7cbb0f63120bf1f5"
+        },
+        {
+          "start": "0xe2c",
+          "end": "0xe3e",
+          "sha256": "b6615c44d48d6bf555b60e990362dfc5bc63ba0247413bd0359d825b5d9e0e78"
+        },
+        {
+          "start": "0xe4e",
+          "end": "0xe52",
+          "sha256": "7cbeacec16ad9114136c673f63cbe8a0c31e0c134d7fd85e97f8f976e87d81b4"
+        },
+        {
+          "start": "0xe5c",
+          "end": "0xe9a",
+          "sha256": "5684af98ef5b1438205293513fdb3b0bb3a108097e40fcfc9b6419933d59a0a9"
+        },
+        {
+          "start": "0xea4",
+          "end": "0xed4",
+          "sha256": "e52cd97db37f46f1c5946c95e5406bf3d6e41f4fd206e52d6365adfdf5a2f78b"
+        },
+        {
+          "start": "0xedc",
+          "end": "0xf14",
+          "sha256": "4f9cfd37334b95f3d9792cc846cdad880b0092c5357af25720a3d0772842965e"
+        },
+        {
+          "start": "0xf16",
+          "end": "0xf18",
+          "sha256": "548431144999ce11132441250358e8e03153d5cd91cb82cc27a8dbdcf8e1e80d"
+        },
+        {
+          "start": "0xf1a",
+          "end": "0xf1e",
+          "sha256": "3fc5a4463f8ead23ef722e6ece6b684dd42f661dbb263b05b6cd6de94a369980"
+        },
+        {
+          "start": "0x1080",
+          "end": "0x1098",
+          "sha256": "bcfd9bf5283cbbf9c36a73dbee49c4bc63bd3a994fcbf8ca8395d0ff47fbbaf1"
+        },
+        {
+          "start": "0x122e",
+          "end": "0x1244",
+          "sha256": "42b747a73d135264005691f2d3906e30649f57450a499a463b7e5c82daa5db17"
+        }
+      ],
+      "expected_boundary_observed": true,
+      "memory_access_counts": {
+        "write_stack": 95,
+        "read_linux": 33131,
+        "write_globals": 7,
+        "read_stack": 67,
+        "read_globals": 17,
+        "write_dtb": 32694
+      },
+      "stub_return_registers_verified": true,
+      "verified": true
+    },
+    {
+      "label": "original_initfs_at_assumed_base",
+      "entry": "0x41000984",
+      "initial_globals": {
+        "0x40004434": 3736010752,
+        "0x40004430": 3736010753,
+        "0x4000442c": 3736010754,
+        "0x40004004": 3736010755,
+        "0x4000441c": 3736010756,
+        "0x40004000": 3736010757
+      },
+      "maps": [
+        {
+          "base": "0x41000000",
+          "size": 3211264
+        },
+        {
+          "base": "0x40004000",
+          "size": 8192
+        },
+        {
+          "base": "0x40007000",
+          "size": 8192
+        },
+        {
+          "base": "0x427ff000",
+          "size": 69632
+        },
+        {
+          "base": "0x70000000",
+          "size": 65536
+        },
+        {
+          "base": "0x43000000",
+          "size": 14454784
+        }
+      ],
+      "events": [
+        {
+          "offset": "0x984",
+          "args": [
+            "0xdead1000",
+            "0xdead1001",
+            "0xdead1002",
+            "0xdead1003"
+          ],
+          "sp": "0x7000f000",
+          "r5": "0xcafe0001",
+          "r8": "0xcafe0004"
+        },
+        {
+          "offset": "0x98c",
+          "args": [
+            "0x0",
+            "0xdeadc043",
+            "0xdeadc044",
+            "0xdeadc045"
+          ],
+          "sp": "0x7000eff8",
+          "r5": "0xcafe0001",
+          "r8": "0xcafe0004"
+        },
+        {
+          "offset": "0x99a",
+          "args": [
+            "0x0",
+            "0x0",
+            "0x0",
+            "0xdeadc045"
+          ],
+          "sp": "0x7000eff8",
+          "r5": "0xcafe0001",
+          "r8": "0xcafe0004"
+        },
+        {
+          "offset": "0x930",
+          "args": [
+            "0x0",
+            "0x0",
+            "0x0",
+            "0xdeadc045"
+          ],
+          "sp": "0x7000eff8",
+          "r5": "0xcafe0001",
+          "r8": "0xcafe0004"
+        },
+        {
+          "offset": "0xedc",
+          "args": [
+            "0x41008000",
+            "0x0",
+            "0x0",
+            "0xdeadc045"
+          ],
+          "sp": "0x7000efe8",
+          "r5": "0x41000000",
+          "r8": "0xcafe0004"
+        },
+        {
+          "offset": "0x95a",
+          "args": [
+            "0x0",
+            "0x148",
+            "0x114",
+            "0x2d736631"
+          ],
+          "sp": "0x7000efe8",
+          "r5": "0x40004000",
+          "r8": "0xcafe0004"
+        },
+        {
+          "offset": "0xa68",
+          "args": [
+            "0x0",
+            "0x1",
+            "0x0",
+            "0xdeadc045"
+          ],
+          "sp": "0x7000eff8",
+          "r5": "0xcafe0001",
+          "r8": "0xcafe0004"
+        },
+        {
+          "offset": "0x9fc",
+          "args": [
+            "0x0",
+            "0x41002b43",
+            "0x40008000",
+            "0x100000"
+          ],
+          "sp": "0x7000efc8",
+          "r5": "0x40004430",
+          "r8": "0x40004434"
+        },
+        {
+          "offset": "0xaa4",
+          "args": [
+            "0xffffffff",
+            "0x0",
+            "0x2",
+            "0x2"
+          ],
+          "sp": "0x7000efc8",
+          "r5": "0x40004430",
+          "r8": "0x40004434"
+        },
+        {
+          "offset": "0x9fc",
+          "args": [
+            "0x0",
+            "0x41002b53",
+            "0x40008000",
+            "0x27f8000"
+          ],
+          "sp": "0x7000efc8",
+          "r5": "0x40004430",
+          "r8": "0x40004434"
+        },
+        {
+          "offset": "0xaba",
+          "args": [
+            "0x2daba0",
+            "0x40004434",
+            "0x43000000",
+            "0x4000442c"
+          ],
+          "sp": "0x7000efc8",
+          "r5": "0x40004430",
+          "r8": "0x40004434"
+        },
+        {
+          "offset": "0x9fc",
+          "args": [
+            "0x0",
+            "0x41002b76",
+            "0x42800000",
+            "0xc800"
+          ],
+          "sp": "0x7000efc8",
+          "r5": "0x40004430",
+          "r8": "0x40004434"
+        },
+        {
+          "offset": "0xad4",
+          "args": [
+            "0x7fb6",
+            "0x412ebb96",
+            "0x412ebb96",
+            "0x42807fb5"
+          ],
+          "sp": "0x7000efc8",
+          "r5": "0x40004430",
+          "r8": "0x40004434"
+        },
+        {
+          "offset": "0xae4",
+          "args": [
+            "0x0",
+            "0x20aa",
+            "0x412ebb96",
+            "0x43000068"
+          ],
+          "sp": "0x7000efc8",
+          "r5": "0x40004430",
+          "r8": "0x40004434"
+        },
+        {
+          "offset": "0xae8",
+          "args": [
+            "0x0",
+            "0x41002b94",
+            "0x412ebb96",
+            "0x7584dc00"
+          ],
+          "sp": "0x7000efc8",
+          "r5": "0x40004430",
+          "r8": "0x40004434"
+        },
+        {
+          "offset": "0x9fc",
+          "args": [
+            "0x0",
+            "0x41002b94",
+            "0x40004438",
+            "0xfff"
+          ],
+          "sp": "0x7000efc8",
+          "r5": "0x40004430",
+          "r8": "0xdc8475"
+        },
+        {
+          "offset": "0xb02",
+          "args": [
+            "0xffffffff",
+            "0x0",
+            "0x2",
+            "0x2"
+          ],
+          "sp": "0x7000efc8",
+          "r5": "0x40004430",
+          "r8": "0xdc8475"
+        },
+        {
+          "offset": "0xb10",
+          "args": [
+            "0x0",
+            "0xdeadc043",
+            "0xdeadc044",
+            "0xdeadc045"
+          ],
+          "sp": "0x7000efc8",
+          "r5": "0x40004430",
+          "r8": "0xdc8475"
+        },
+        {
+          "offset": "0x2616",
+          "args": [
+            "0x42800000",
+            "0x40004438",
+            "0xffffffff",
+            "0xdeadc045"
+          ],
+          "sp": "0x7000efc8",
+          "r5": "0x40004430",
+          "r8": "0xdc8475"
+        },
+        {
+          "offset": "0x2638",
+          "args": [
+            "0x42800000",
+            "0x0",
+            "0xffffffff",
+            "0x0"
+          ],
+          "sp": "0x7000ec80",
+          "r5": "0x40004430",
+          "r8": "0xdc8475"
+        },
+        {
+          "offset": "0x2940",
+          "args": [
+            "0x42800000",
+            "0x0",
+            "0xffffffff",
+            "0x0"
+          ],
+          "sp": "0x7000ec80",
+          "r5": "0x40004430",
+          "r8": "0xdc8475"
+        },
+        {
+          "offset": "0x24dc",
+          "args": [
+            "0x42800000",
+            "0x41002bb8",
+            "0x7000efd4",
+            "0x0"
+          ],
+          "sp": "0x7000efc8",
+          "r5": "0x40004430",
+          "r8": "0xdc8475"
+        },
+        {
+          "offset": "0xb36",
+          "args": [
+            "0x42800150",
+            "0x74",
+            "0x4",
+            "0x4"
+          ],
+          "sp": "0x7000efc8",
+          "r5": "0x40004430",
+          "r8": "0xdc8475"
+        },
+        {
+          "offset": "0x24dc",
+          "args": [
+            "0x42800000",
+            "0x41002beb",
+            "0x7000efd4",
+            "0x430000"
+          ],
+          "sp": "0x7000efc8",
+          "r5": "0x40004430",
+          "r8": "0xdc8475"
+        },
+        {
+          "offset": "0xb56",
+          "args": [
+            "0x42800160",
+            "0x64",
+            "0x4",
+            "0x4"
+          ],
+          "sp": "0x7000efc8",
+          "r5": "0x40004430",
+          "r8": "0xdc8475"
+        },
+        {
+          "offset": "0xb6e",
+          "args": [
+            "0x42800160",
+            "0x43dc84f5",
+            "0x4",
+            "0x1800003c"
+          ],
+          "sp": "0x7000efc8",
+          "r5": "0x40004430",
+          "r8": "0xdc8475"
+        }
+      ],
+      "stub_calls": [
+        {
+          "offset": "0x894",
+          "role": "print_info including CP15 MPIDR read; entire diagnostic function skipped",
+          "arguments": [
+            "0xdead1000",
+            "0xdead1001",
+            "0xdead1002",
+            "0xdead1003"
+          ],
+          "return_address": "0x4100098b",
+          "return_value": 0
+        },
+        {
+          "offset": "0x8bc",
+          "role": "describe boot source; entire diagnostic function skipped",
+          "arguments": [
+            "0x0",
+            "0x0",
+            "0x0",
+            "0x2d736631"
+          ],
+          "return_address": "0x41000969",
+          "return_value": 0
+        },
+        {
+          "offset": "0xc84",
+          "role": "puts; output suppressed",
+          "arguments": [
+            "0x41002ba1",
+            "0x0",
+            "0x2",
+            "0x2"
+          ],
+          "return_address": "0x41000b0d",
+          "return_value": 0
+        }
+      ],
+      "wrapper_returns": [
+        {
+          "role": "bootloader",
+          "result": 4294967295,
+          "kernel_pointer": "0x40008000",
+          "dtb_pointer": "0x42800000"
+        },
+        {
+          "role": "kernel",
+          "result": 2993056,
+          "kernel_pointer": "0x41009000",
+          "dtb_pointer": "0x42800000"
+        },
+        {
+          "role": "dtb",
+          "result": 32694,
+          "kernel_pointer": "0x41009000",
+          "dtb_pointer": "0x42800000"
+        },
+        {
+          "role": "dtb_config",
+          "result": 4294967295,
+          "kernel_pointer": "0x41009000",
+          "dtb_pointer": "0x42800000"
+        }
+      ],
+      "instruction_count": 167633,
+      "executed_ranges": {
+        "loader": 10,
+        "select_source": 3,
+        "try_source": 23,
+        "mount": 28,
+        "pic_dereference": 11,
+        "load_files": 92,
+        "wrapper": 90,
+        "get_address": 62,
+        "lookup": 1370,
+        "pad_name": 432,
+        "read_bigendian": 369,
+        "read": 26,
+        "copy_bytes": 163476,
+        "config_head": 17,
+        "config_return": 2,
+        "fdt_path_head": 138,
+        "read_be32": 477,
+        "fdt_path_body": 991,
+        "write_be32": 16
+      },
+      "dtb_copy_stores": 32694,
+      "dtb_property_stores": [
+        {
+          "offset": "0x120a",
+          "address": "0x42800150",
+          "size": 1,
+          "value": 67
+        },
+        {
+          "offset": "0x120e",
+          "address": "0x42800151",
+          "size": 1,
+          "value": 0
+        },
+        {
+          "offset": "0x1212",
+          "address": "0x42800152",
+          "size": 1,
+          "value": 0
+        },
+        {
+          "offset": "0x1214",
+          "address": "0x42800153",
+          "size": 1,
+          "value": 128
+        },
+        {
+          "offset": "0x120a",
+          "address": "0x42800160",
+          "size": 1,
+          "value": 67
+        },
+        {
+          "offset": "0x120e",
+          "address": "0x42800161",
+          "size": 1,
+          "value": 220
+        },
+        {
+          "offset": "0x1212",
+          "address": "0x42800162",
+          "size": 1,
+          "value": 132
+        },
+        {
+          "offset": "0x1214",
+          "address": "0x42800163",
+          "size": 1,
+          "value": 245
+        }
+      ],
+      "missing_input": {
+        "access": 19,
+        "address": "0x1800003c",
+        "size": 4,
+        "instruction_offset": "0xb6e"
+      },
+      "execution_error": {
+        "type": "UcError",
+        "message": "Invalid memory read (UC_ERR_READ_UNMAPPED)",
+        "code": 6
+      },
+      "stop_pc": "0x41000b6e",
+      "stop_sp": "0x7000efc8",
+      "final_globals": {
+        "0x40004434": "0x41009000",
+        "0x40004430": "0x42800000",
+        "0x4000442c": "0x43000080",
+        "0x40004004": "0x41008000",
+        "0x4000441c": "0x41000e5d",
+        "0x40004000": "0x0"
+      },
+      "original_linux_guest_unchanged": true,
+      "original_initfs_guest_unchanged": true,
+      "kernel_buffer_unchanged": true,
+      "dtb_before_sha256": "b7968478e48fd492678512ef0efaee63f0fb298ad5d3781bc9975994c0d3b70b",
+      "dtb_after_sha256": "27813ac655b2ec6355034a4f2b574abc2e7f65a8eee3edeb393234e5569555d2",
+      "dtb_changed_offsets": [
+        339,
+        353,
+        354,
+        355
+      ],
+      "dtb_head_canary_preserved": true,
+      "dtb_tail_canary_preserved": true,
+      "initrd_start_property": "0x43000080",
+      "initrd_end_property": "0x43dc84f5",
+      "observed_instruction_spans": [
+        {
+          "start": "0x928",
+          "end": "0x92c",
+          "sha256": "e867fa64110100fe0a2582a1286163c9addeb1c63ae6e7e0495fd2bbf8e09d41"
+        },
+        {
+          "start": "0x92e",
+          "end": "0x93a",
+          "sha256": "6835b576c853983daa1f8c9b581ac8b50432af1210a5ae916590b0b4442bad12"
+        },
+        {
+          "start": "0x946",
+          "end": "0x952",
+          "sha256": "6664377bea56d042e30f95c767a88745773310eb65cacda9d65d2cb4fabbf42b"
+        },
+        {
+          "start": "0x956",
+          "end": "0x976",
+          "sha256": "3a6adb4ca2bc8be589f8cfc6ab4df479e095cfcb6ee6b502cd08a212d95040c0"
+        },
+        {
+          "start": "0x984",
+          "end": "0x99e",
+          "sha256": "a11fcbc3d76330c262981c9936000e29e778c16c9b091e73d48d23c3b36d5f87"
+        },
+        {
+          "start": "0x9fc",
+          "end": "0xa34",
+          "sha256": "5e6899eb50d04d4665fcfa6de538245415c91ebcf73cf5e81306eb1333eae874"
+        },
+        {
+          "start": "0xa36",
+          "end": "0xa52",
+          "sha256": "9513b5717a12c90c06ecd67fde0bf001f082124e9060da9712b0dfc59f6c564f"
+        },
+        {
+          "start": "0xa68",
+          "end": "0xabe",
+          "sha256": "ae6664c4f1dc6ad511b136e8e332f775d3bcd722f9a369f5c2099945678c0550"
+        },
+        {
+          "start": "0xac4",
+          "end": "0xad8",
+          "sha256": "f4e75cdca39832ce6da8374ccb749266aca8a3d917be9aab55868abcf16b2595"
+        },
+        {
+          "start": "0xade",
+          "end": "0xb12",
+          "sha256": "d1abddf439cefa578d3d38cd472054ed5ec5131298c6a0aa3f2046344040a954"
+        },
+        {
+          "start": "0xb1e",
+          "end": "0xb3e",
+          "sha256": "019ac85d3a17a5fa16b35b0c65bf681f32dcdfecba3c8d9e28a6f2be6fad0dc5"
+        },
+        {
+          "start": "0xb44",
+          "end": "0xb5e",
+          "sha256": "5b98934be83b7fc03bd8a3e581a3937bfe3ff103583b9c9f1ac46c114ef0752f"
+        },
+        {
+          "start": "0xb64",
+          "end": "0xb70",
+          "sha256": "5099fc8b3a975cd8b0c6934904882eaf6afa19088faf6e58f6f1621e31dc0f43"
+        },
+        {
+          "start": "0xd04",
+          "end": "0xd96",
+          "sha256": "984ffc2d71c7c679e5303d8c8271f11fe63f009121c61b7b20f5b82f42b781f9"
+        },
+        {
+          "start": "0xd9c",
+          "end": "0xdac",
+          "sha256": "ef4dd0c4f0286adb646977f497279d4ac3786e00f0a0876f17adff3e94031a5d"
+        },
+        {
+          "start": "0xdca",
+          "end": "0xddc",
+          "sha256": "436d3f55527e6731a7e44efe07727a6617756644c8efcbcecd910233c57c38bc"
+        },
+        {
+          "start": "0xdec",
+          "end": "0xdf6",
+          "sha256": "97770c7c928e6e064568ae0a40972692567ed60a9ac229cf7cbb0f63120bf1f5"
+        },
+        {
+          "start": "0xe2c",
+          "end": "0xe3e",
+          "sha256": "b6615c44d48d6bf555b60e990362dfc5bc63ba0247413bd0359d825b5d9e0e78"
+        },
+        {
+          "start": "0xe4e",
+          "end": "0xe52",
+          "sha256": "7cbeacec16ad9114136c673f63cbe8a0c31e0c134d7fd85e97f8f976e87d81b4"
+        },
+        {
+          "start": "0xe5c",
+          "end": "0xe9a",
+          "sha256": "5684af98ef5b1438205293513fdb3b0bb3a108097e40fcfc9b6419933d59a0a9"
+        },
+        {
+          "start": "0xea4",
+          "end": "0xed4",
+          "sha256": "e52cd97db37f46f1c5946c95e5406bf3d6e41f4fd206e52d6365adfdf5a2f78b"
+        },
+        {
+          "start": "0xedc",
+          "end": "0xf14",
+          "sha256": "4f9cfd37334b95f3d9792cc846cdad880b0092c5357af25720a3d0772842965e"
+        },
+        {
+          "start": "0xf16",
+          "end": "0xf18",
+          "sha256": "548431144999ce11132441250358e8e03153d5cd91cb82cc27a8dbdcf8e1e80d"
+        },
+        {
+          "start": "0xf1a",
+          "end": "0xf1e",
+          "sha256": "3fc5a4463f8ead23ef722e6ece6b684dd42f661dbb263b05b6cd6de94a369980"
+        },
+        {
+          "start": "0x1080",
+          "end": "0x1098",
+          "sha256": "bcfd9bf5283cbbf9c36a73dbee49c4bc63bd3a994fcbf8ca8395d0ff47fbbaf1"
+        },
+        {
+          "start": "0x1208",
+          "end": "0x1244",
+          "sha256": "b71bdacd88ac17e2ddcb55a0e635980e2518ba77b1a72bf18d19d3f13208639a"
+        },
+        {
+          "start": "0x24dc",
+          "end": "0x250e",
+          "sha256": "9875a6af78eb502273a888b5598ab52b08e52d75ebe30a922e4b089771336141"
+        },
+        {
+          "start": "0x2512",
+          "end": "0x2536",
+          "sha256": "f5f1e02fd92d872d17580833215ca61303f7682ed4828f63284b238f981c5d7a"
+        },
+        {
+          "start": "0x253a",
+          "end": "0x2546",
+          "sha256": "96610a79197932635db701b68d252fa280fe4d683c962494d668d32cc95130a5"
+        },
+        {
+          "start": "0x2550",
+          "end": "0x255c",
+          "sha256": "257f73a43aae738a205a8c3d56c7bd0798e9e56cf34549925fb37a3cffac8a19"
+        },
+        {
+          "start": "0x2566",
+          "end": "0x25a2",
+          "sha256": "bbcf1f047633753d023fb16d9f54f1bd6a0cdcc70e1de03158ede8f8a5cf54c4"
+        },
+        {
+          "start": "0x25b2",
+          "end": "0x25ca",
+          "sha256": "71a52a760bbf4ab6a5eba3dbb2a5b508dd09c175ae00adda127bbf2256d8114f"
+        },
+        {
+          "start": "0x2616",
+          "end": "0x263e",
+          "sha256": "a0ea26f8a4554adbce12ebdde14718e61295e583757b317e1e2b0c2ce26d8634"
+        },
+        {
+          "start": "0x2940",
+          "end": "0x2948",
+          "sha256": "d0c92af6ea94c366484612ea240cae0d23a943c5fa231087e393da3ac2cfa7ad"
+        }
+      ],
+      "expected_boundary_observed": true,
+      "memory_access_counts": {
+        "write_stack": 145,
+        "read_linux": 33311,
+        "write_globals": 8,
+        "read_stack": 114,
+        "read_globals": 25,
+        "write_dtb": 32702,
+        "read_initfs": 1,
+        "read_dtb": 292
+      },
+      "stub_return_registers_verified": true,
+      "verified": true
+    }
+  ],
+  "disk_input_unchanged": true,
+  "limits": [
+    "LINUX and optional INITFS are mapped by the replay. Runtime placement is unverified.",
+    "Starts at original Thumb loader 0x984. Reset and the listed diagnostic bodies are outside the trace.",
+    "The stops are unmapped reads. The loader does not return and neither kernel entry nor initrd consumption executes.",
+    "No hardware access, ROM authentication, modified-image acceptance or flash was tested."
+  ]
+}

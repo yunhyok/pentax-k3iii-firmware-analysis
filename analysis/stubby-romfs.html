@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Stubby ROMFS: 포인터 선택과 실제 복사 — PENTAX K-3 Mark III 펌웨어 연구</title>
-<meta name="description" content="원본 Stubby의 ROMFS mount·lookup·주소 선택·복사를 Cortex-A7에서 6사례로 재현했습니다. 합성 입력, 길이 제한의 차이, 원본 보존과 실제 부팅을 검증하지 않은 범위를 구분합니다.">
+<meta name="description" content="원본 Stubby의 ROMFS 선택·복사를 Cortex-A7에서 여섯 사례로 재현했습니다. 상위 로더부터 이어 실행해 INITFS 헤더 읽기와 DTB 변경, 보드 주소 읽기 직전까지 두 사례를 추가로 확인했습니다.">
 <link rel="stylesheet" href="../assets/site.css">
 </head>
 <body data-camera="k3iii">
@@ -20,7 +20,7 @@
 </header>
 <div class="layout">
 <!-- chrome:toc -->
-<nav class="toc" aria-label="이 문서의 목차"><h2 data-toc="no">이 문서에서</h2><ol><li><a href="#boundary">이전 시험에서 더 내려간 경계</a></li><li><a href="#path">mount 이후 주소 선택과 복사로 나뉩니다</a></li><li><a href="#cases">Cortex-A7에서 재현한 여섯 사례</a></li><li><a href="#maxsize">maxsize는 모든 경로의 반환 길이 상한이 아닙니다</a></li><li><a href="#checks">원본 보존, 관측 hook과 종료 조건</a></li><li><a href="#limits">이전 계측 실패와 남은 과제</a></li><li><a href="#reproduce">재현 방법</a></li><li><a href="#refs">근거 파일</a></li></ol></nav>
+<nav class="toc" aria-label="이 문서의 목차"><h2 data-toc="no">이 문서에서</h2><ol><li><a href="#boundary">이전 시험에서 더 내려간 경계</a></li><li><a href="#path">mount 이후 주소 선택과 복사로 나뉩니다</a></li><li><a href="#cases">Cortex-A7에서 재현한 여섯 사례</a></li><li><a href="#maxsize">maxsize는 모든 경로의 반환 길이 상한이 아닙니다</a></li><li><a href="#checks">원본 보존, 관측 hook과 종료 조건</a></li><li><a href="#loader">로더 0x984부터 INITFS 헤더와 DTB 준비까지</a></li><li><a href="#limits">이전 계측 실패와 남은 과제</a></li><li><a href="#reproduce">재현 방법</a></li><li><a href="#refs">근거 파일</a></li></ol></nav>
 <!-- /chrome:toc -->
 <main class="doc" id="main">
 
@@ -30,6 +30,7 @@
 <li>원본 mount·파일 조회·wrapper·복사 함수를 <strong>대체 함수 없이</strong> 실행했습니다. Unicorn 2.1.4의 Cortex-A7 모델에서 여섯 사례가 통과했습니다.</li>
 <li>같은 kernel 파일에 <code>maxsize=17</code>을 주어도 포인터 선택 경로는 전체 길이 <strong>2,993,056</strong>을 반환했습니다. 복사 경로는 <strong>17바이트</strong>만 기록했습니다.</li>
 <li>각 사례 뒤 메모리의 원본 payload 전체와 복사 바이트·목적지 앞뒤 검사 영역을 확인했습니다. 디스크 입력은 여섯 사례가 모두 끝난 뒤 재읽어 보존 여부를 검사했습니다.</li>
+<li>별도 두 사례는 원본 로더 <code>0x984</code>부터 같은 ROMFS를 읽었습니다. 원본 INITFS를 가정한 주소에 배치하면 DTB의 initrd 범위를 기록한 뒤 <code>0x1800003c</code> 읽기에서 멈춥니다.</li>
 <li>실행 주소와 호출 인자는 합성 조건입니다. <strong>실제 SRAM 매핑, kernel 실행, 전체 부팅 또는 ROM 인증을 확인한 결과는 아닙니다.</strong></li>
 </ul>
 </section>
@@ -37,13 +38,13 @@
 <div class="scope">
 <div class="ok"><h3><span class="badge ok">확인</span> 원본 코드로 재현</h3><ul><li>ROMFS mount와 파일 조회</li><li>kernel 포인터 선택과 DTB 복사</li><li>길이 상한 17에서 선택·복사의 차이</li><li>원본 전체와 검사 영역 보존</li></ul></div>
 <div class="model"><h3><span class="badge model">모델</span> 재현기에 넣은 조건</h3><ul><li>base <code>0x41000000</code>, 스택과 전역값</li><li>목적지와 호출 인자, 반환 지점</li><li>Unicorn Cortex-A7 CPU 모델</li></ul></div>
-<div class="open"><h3><span class="badge open">미확인</span> 남은 경계</h3><ul><li><code>source=1</code>의 실제 호출자 도달</li><li>상위 적재 함수와의 전체 연결</li><li>ROMFS 무결성·ROM 인증·수정 이미지 수락</li><li>실제 주소 배치와 카메라 동작</li></ul></div>
+<div class="open"><h3><span class="badge open">미확인</span> 남은 경계</h3><ul><li><code>source=1</code>의 실제 호출자 도달</li><li>INITFS를 메모리에 놓는 실제 적재 경로와 보드 값</li><li>ROMFS 무결성·ROM 인증·수정 이미지 수락</li><li>실제 주소 배치와 카메라 동작</li></ul></div>
 </div>
 
 <section id="boundary">
 <h2>이전 시험에서 더 내려간 경계</h2>
 <p><a href="stubby-load-auth.html#verification">기존 Stubby 시험의 여섯 사례</a>는 상위 적재 함수의 성공·실패와 진입 주소 전달을 확인했습니다. 그때는 파일 wrapper <code>0x9fc</code> 전체를 대체해 읽기 결과를 양수·0·음수로 넣었습니다.</p>
-<p>이번에는 원본 LINUX 레코드 안의 ROMFS를 그대로 읽게 했습니다. mount <code>0xedc</code>가 읽기 callback을 설정합니다. wrapper의 주소 조회는 <code>0xea4</code>를 직접 호출하고, wrapper의 복사는 이 callback을 거칩니다. 상위 적재 함수와 DTB 보조 함수는 이번 시험에서 호출하지 않습니다. 두 시험은 범위가 달라 기존 여섯 사례를 대체하지 않습니다.</p>
+<p>이번에는 원본 LINUX 레코드 안의 ROMFS를 그대로 읽게 했습니다. mount <code>0xedc</code>가 읽기 callback을 설정합니다. wrapper의 주소 조회는 <code>0xea4</code>를 직접 호출하고, wrapper의 복사는 이 callback을 거칩니다. 아래 여섯 사례는 하위 함수만 호출합니다. 이후 <a href="#loader">로더 연속 실행</a> 두 사례에서는 상위 함수부터 들어가 DTB를 준비하는 경로까지 따라갔습니다.</p>
 <div class="callout"><strong class="label">주소와 “원본”의 의미</strong><p>작은 주소는 LINUX 레코드 시작에서 잰 offset입니다. <code>0x41000000</code>은 CPU 재현에 주입한 base이며 물리 주소의 증거가 아닙니다. 명령과 ROMFS 바이트는 제공된 원본을 사용하지만, RAM 배치·초기 전역값·호출 인자는 재현기가 정합니다.</p></div>
 </section>
 
@@ -107,11 +108,42 @@
 <p>목적지 앞 16바이트와 복사 구간 뒤의 나머지 버퍼를 검사했습니다. kernel 버퍼는 4,096바이트, DTB 버퍼는 36,864바이트입니다. 예를 들어 DTB 전체 복사 뒤에는 4,170바이트, kernel 17바이트 복사 뒤에는 4,079바이트가 초기값을 유지해야 합니다. 다른 목적지 버퍼와 mount·callback·DTB·initrd 전역값도 검사합니다. JSON은 복사 바이트 일치와 전체 목적지 해시를 함께 기록합니다.</p>
 </section>
 
+<section id="loader">
+<h2>로더 0x984부터 INITFS 헤더와 DTB 준비까지</h2>
+<p>여섯 사례에서는 재현기가 mount와 파일 연산을 따로 호출했습니다. 이어서 두 사례는 원본 Thumb 로더 <code>0x984</code>에서 출발해 source 0 선택과 같은 ROMFS의 mount·조회·복사를 한 번에 실행했습니다. LINUX 기준 주소는 <code>0x41000000</code>입니다.</p>
+<figure class="diagram">
+<figcaption>두 사례가 공통으로 실행한 호출과 첫 입력 읽기</figcaption>
+<ol class="flow">
+<li class="ok"><strong>로더 진입과 ROMFS mount</strong><span><code>0x984 → 0x928 → 0x930</code></span><span><code>try_source(0, 0, 0)</code>에서 <code>0xedc</code> 호출</span><span><code>0x41008000</code>을 mount하고 rootfs_type에 0 기록</span></li>
+<li class="ok"><strong>파일 선택과 첫 INITFS 읽기</strong><span><code>0xa68 → 0x9fc</code>에서 kernel 주소 선택과 DTB 복사</span><span><code>0xae4</code>에서 <code>0x43000068</code> 읽기</span><span>헤더 매핑 조건에 따라 아래 두 결과로 나뉨</span></li>
+</ol>
+</figure>
+<p>원본 <code>load_files(0, 1, 0)</code>가 wrapper에 전달한 source는 모두 0입니다. bootloader 파일 조회는 <code>0xffffffff</code>(−1)를 반환했습니다. kernel 조회는 전역 포인터를 <code>0x41009000</code>으로 갱신하고 길이 2,993,056을 반환했습니다. DTB 32,694바이트는 <code>0x42800000</code>에 순서대로 복사됐습니다. 진단 호출만 대체했고, <code>0xc84</code>의 출력 호출은 INITFS를 매핑한 사례에서만 도달했습니다.</p>
+<div class="table-wrap"><table>
+<caption>두 실행의 첫 미매핑 읽기와 정지 시점</caption>
+<thead><tr><th scope="col">INITFS 조건</th><th scope="col">중단 PC</th><th scope="col">완료되지 않은 읽기</th><th scope="col">진단 stub offset</th><th scope="col" class="n">CODE callback 수</th></tr></thead>
+<tbody>
+<tr><th scope="row">미매핑</th><td><code>0x41000ae4</code></td><td><code>0x43000068</code>, 4바이트</td><td><code>0x894</code>, <code>0x8bc</code></td><td class="n">165,570</td></tr>
+<tr><th scope="row">원본 레코드를 <code>0x43000000</code>에 배치</th><td><code>0x41000b6e</code></td><td><code>0x1800003c</code>, 4바이트</td><td><code>0x894</code>, <code>0x8bc</code>, <code>0xc84</code></td><td class="n">167,633</td></tr>
+</tbody></table></div>
+<p>미매핑 사례의 DTB는 원본과 바이트 단위로 같았습니다. 두 번째 사례는 같은 decoded 스트림의 INITFS 레코드(offset <code>0x1f5558c</code>, 14,452,736바이트)를 읽기 전용으로 배치했습니다. 원본 <code>0xae4</code>가 레코드 <code>+0x68</code>의 4바이트를 읽었고, <code>0xae8</code>에서 big-endian 길이 14,451,829를 구했습니다. <code>0xaf0</code>이 옮긴 시작 포인터는 gzip 데이터의 위치인 <code>0x43000080</code>입니다. 이 읽기 한 번이 재현 중 관측한 INITFS 데이터 접근 전부입니다. 패키지의 레코드 구조는 <a href="firmware-structure.html#records">펌웨어 구조 보고서</a>에서 확인할 수 있습니다.</p>
+<p>두 번째 사례에서 <code>dtb.cfg</code> 조회는 −1을 반환했습니다. 이어 원본 함수가 복사된 DTB의 <code>/chosen</code> 아래 두 속성에 4바이트씩 기록했습니다.</p>
+<div class="table-wrap"><table>
+<caption>INITFS를 매핑한 사례에서 바뀐 DTB 속성</caption>
+<thead><tr><th scope="col">속성</th><th scope="col">값의 주소</th><th scope="col">복사 직후</th><th scope="col">속성 기록 뒤</th></tr></thead>
+<tbody>
+<tr><th scope="row"><code>linux,initrd-start</code></th><td><code>0x42800150</code></td><td><code>0x43000000</code></td><td><code>0x43000080</code></td></tr>
+<tr><th scope="row"><code>linux,initrd-end</code></th><td><code>0x42800160</code></td><td><code>0x43f00000</code></td><td><code>0x43dc84f5</code></td></tr>
+</tbody></table></div>
+<p>종료 주소는 시작 주소에 헤더 길이를 더한 값입니다. 속성에는 1바이트 쓰기가 8회 일어났고, 원본 DTB와 최종 값이 다른 바이트는 <code>+0x153</code>, <code>+0x161</code>, <code>+0x162</code>, <code>+0x163</code> 네 개였습니다. 이후 보드 주소 <code>0x1800003c</code>의 읽기가 완료되기 전에 멈췄습니다. Ricoh의 Stubby 1.60.1 소스 <code>configs/config-sc2000-rtos.h</code> 288–308행에서는 이 값의 하위 5비트로 ASV를 계산하고 조건에 따라 CPU의 <code>operating-points</code> 속성을 바꿉니다. 이 동작의 실제 입력값과 하드웨어 의미는 확인하지 못했습니다. <a href="stubby-load-auth.html#refs">Ricoh 소스 배포와 출처</a></p>
+<p>원본 명령 허용 구간 19개와 실제 실행 구간의 해시를 기록했습니다. 데이터 접근은 메모리 영역별로 검사했고, 쓰기는 스택·전역 영역·복사된 DTB에만 있었습니다. 원본 LINUX와 매핑한 INITFS, kernel 목적지와 DTB 검사 영역의 최종 바이트도 확인했습니다. 진단 대체는 LR로 돌아가 r0에 0을 두고 r1–r3·r12를 바꿉니다. 복귀 직후 SP와 r4–r11이 보존됐음을 검사했습니다. <code>0x894</code> 안의 CP15 MPIDR 읽기는 생략됐습니다.</p>
+<p>표의 수는 원본 명령의 CODE callback 횟수입니다. 완료되지 않은 읽기 명령도 포함하고 진단 stub 본문은 제외합니다. 두 실행은 SP가 <code>0x7000efc8</code>일 때 멈췄습니다. 초기 SP보다 56바이트 낮다는 값은 중단 시점의 차이입니다. 실행 중 최대 스택 사용량은 이 차이로 산정할 수 없습니다. <a href="stubby-loader-checks.json">로더 실행 검증 JSON</a></p>
+</section>
+
 <section id="limits">
 <h2>이전 계측 실패와 남은 과제</h2>
 <p>앞선 재현에서 모든 주소의 쓰기를 관찰한 구성은 <code>0xa2c</code>에서 매핑되지 않은 <code>0x83800000</code>을 읽으려다 멈췄습니다. callback의 PC 읽기와 레지스터 관측을 제거한 시도도 실패했습니다. 이후 쓰기 hook을 목적지로 한정하고 원본 매핑을 read+execute로 설정한 구성에서 통과했습니다. 두 설정을 함께 바꿨으므로 어느 변경이 원인이었는지는 분리하지 못했습니다. 펌웨어나 에뮬레이터 결함으로 단정하지 않습니다.</p>
-<p>이번 도구는 원본 ROMFS의 선택된 파일을 읽는 하위 경계를 확인합니다. ROMFS checksum 검사, 상위 적재 함수와 DTB 보조 함수를 모두 연결한 실행, kernel 진입, M0·BOOT·Boot ROM의 인증, 수정 이미지 수락 여부는 확인하지 않았습니다. 실제 SRAM remap과 bank 선택 문제도 이 시험의 범위 밖입니다.</p>
-<p>다음 단계는 상위 정상 적재 경로에 원본 wrapper를 연결하고, 남은 DTB helper 경계를 분리해 검증하는 일입니다. 기존 상위 여섯 사례의 합성 오류 반환 시험은 그대로 보존합니다. 펌웨어 빌드·플래시·실기 장치 접근은 하지 않았습니다.</p>
+<p>연속 실행은 INITFS 레코드를 지정한 주소에 미리 놓아 DTB의 initrd 범위 기록까지 확인했습니다. 실제로 누가 INITFS를 그 주소에 놓는지, 보드 주소에서 무슨 값이 오는지, kernel이 initrd를 사용하는지는 남아 있습니다. ROMFS checksum, SRAM remap과 bank 선택, M0·BOOT·Boot ROM 인증과 수정 이미지 수락 여부도 이 시험에서 확인하지 않았습니다. 펌웨어 빌드·플래시와 실기 장치 접근은 하지 않았습니다.</p>
 </section>
 
 <section id="reproduce">
@@ -119,7 +151,9 @@
 <p>사용자가 보유한 <code>linux.bin</code> 또는 압축을 푼 전체 <code>decoded.bin</code>을 입력합니다. 기존 <a href="../verify_stubby_load_auth.py">Stubby 도구</a>의 크기·전체 SHA 검증 로더를 재사용하고, 새 도구가 실행 구간 9개의 해시도 확인합니다. 원본 바이너리는 저장소에 포함하지 않습니다.</p>
 <pre><code>python -m pip install unicorn==2.1.4
 python verify_stubby_romfs.py linux.bin --output romfs-linux.json
-python verify_stubby_romfs.py decoded.bin --output romfs-decoded.json</code></pre>
+python verify_stubby_romfs.py decoded.bin --output romfs-decoded.json
+python verify_stubby_loader.py decoded.bin --output stubby-loader.json</code></pre>
+<p>연속 실행에는 LINUX와 INITFS를 모두 담은 전체 <code>decoded.bin</code>이 필요합니다. 원본과 INITFS, 명령 구간 19개, 재사용하는 공개 Python 모듈 두 개의 SHA-256을 확인합니다. 모듈은 줄 끝을 LF로 통일해 해시를 검사한 뒤 불러옵니다.</p>
 <p>기존 출력, 입력 파일 자체, 입력의 hardlink, dangling symlink는 덮어쓰지 않습니다. 출력은 배타적으로 새로 생성하며 검증이 실패하면 비제로 종료합니다. assert 검사를 생략하는 <code>python -O</code> 실행은 시작 단계에서 거부합니다.</p>
 <p>검증한 LINUX SHA-256: <code>fcb11ce850f22420ddd6a29d63ef9074ad6322bc021d0ba101e1354d1277b9c2</code>. 전체 decoded 스트림 SHA-256: <code>7ff301d585ef7adcd620a15575faa39b4227cc5a27eaa8d754efe50f667a30f9</code>. 추출 절차는 <a href="firmware-structure.html#reproduce">펌웨어 구조 보고서</a>에 있습니다.</p>
 </section>
@@ -127,6 +161,8 @@ python verify_stubby_romfs.py decoded.bin --output romfs-decoded.json</code></pr
 <section id="refs">
 <h2>근거 파일</h2>
 <ul class="refs">
+<li><a href="stubby-loader-checks.json">stubby-loader-checks.json</a> — 연속 로더 두 사례, 영역별 접근 수, 레지스터 검사와 DTB 쓰기</li>
+<li><a href="../verify_stubby_loader.py">verify_stubby_loader.py</a> · <a href="../tests/test_stubby_loader.py">CLI 검증 시험</a></li>
 <li><a href="stubby-romfs-checks.json">stubby-romfs-checks.json</a> — Cortex-A7 6사례, 원본·구간 해시, 관측 범위, 복사·검사 영역 결과</li>
 <li><a href="../verify_stubby_romfs.py">verify_stubby_romfs.py</a> — 원본 ROMFS 함수 재현기</li>
 <li><a href="../tests/test_stubby_romfs.py">test_stubby_romfs.py</a> — 입력 SHA 거부, 출력·별칭 보호, 최적화 실행 거부 시험</li>
