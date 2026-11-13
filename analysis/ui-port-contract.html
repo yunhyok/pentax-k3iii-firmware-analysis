@@ -338,7 +338,8 @@
 <tr><td>K-3 Mark III: 방향 이벤트 네 가지, 포커스 이동, 콜백 순서</td><td class="nowrap"><span class="badge ok">확인</span> <span class="badge model">모델</span></td><td><a href="colorspace-ui-input.html">색공간 화면 2</a></td></tr>
 <tr><td>K-3 Mark III: 아이콘 목록과 ICONBIN의 저장 형식</td><td><span class="badge ok">확인</span></td><td><a href="icon-resources.html#geometry">ICONBIN 아이콘 자원</a></td></tr>
 <tr><td>K-3 Mark III: 회전 없는 아이콘 복사 규칙</td><td><span class="badge ok">확인</span></td><td><a href="icon-resources.html#gui">ICONBIN 아이콘 자원</a></td></tr>
-<tr><td>K-3 Mark III: IconView에서 아이콘 그리기 함수로 가는 연결</td><td><span class="badge static">정적 분석</span></td><td><a href="icon-resources.html#gui">ICONBIN 아이콘 자원</a></td></tr>
+<tr><td>K-3 Mark III: 행·IconView에서 아이콘과 체크 표시의 표면 복사까지</td><td class="nowrap"><span class="badge ok">확인</span> <span class="badge model">모델</span></td><td><a href="colorspace-render.html#row">색공간 행의 아이콘 재현</a></td></tr>
+<tr><td>K-3 Mark III: 두 문자열 내용, Latin 글꼴 준비와 sRGB 76×40 배치 측정</td><td class="nowrap"><span class="badge ok">확인</span> <span class="badge model">모델</span></td><td><a href="colorspace-render.html#measure">글꼴 준비와 크기 측정</a></td></tr>
 <tr><td>K-3 Mark III: 아이콘 하나를 바꾼 패키지의 구조·체크섬</td><td><span class="badge ok">확인</span></td><td><a href="icon-resources.html#candidate">ICONBIN 아이콘 자원</a></td></tr>
 <tr><td>K-3 II: 색공간 화면의 선택·확정·취소</td><td class="nowrap"><span class="badge ok">확인</span> <span class="badge model">모델</span></td><td><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/analysis/color-ui.html">K-3 II 색공간 메뉴와 표시</a></td></tr>
 <tr><td>K-3 II: 화면 요청이 화면 할당 함수 입구에 이르는 조건</td><td class="nowrap"><span class="badge ok">확인</span> <span class="badge model">모델</span></td><td><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/analysis/ui-dispatch.html">K-3 II 알림과 화면 전환</a></td></tr>
@@ -346,7 +347,7 @@
 <tr><td>Q7: 갱신 요청, 선택 강조와 글리프의 픽셀 쓰기</td><td class="nowrap"><span class="badge ok">확인</span> <span class="badge model">모델</span></td><td><a href="https://yunhyok.github.io/pentax-q7-firmware-analysis/colorspace-render-report.html">Q7 그리기 경로</a></td></tr>
 <tr><td>세 기종에 공통으로 둘 동작(열기·선택·확정·취소)</td><td><span class="badge plain">설계안</span></td><td><a href="#contract">이 문서</a></td></tr>
 <tr><td>물리 버튼·다이얼·터치가 화면 이벤트가 되는 경로</td><td><span class="badge open">미확인</span></td><td>세 기종 모두</td></tr>
-<tr><td>K-3 Mark III: 문자열의 실제 내용, 글꼴, 완성된 화면 픽셀</td><td><span class="badge open">미확인</span></td><td><a href="colorspace-ui.html#limits">색공간 화면 1</a></td></tr>
+<tr><td>K-3 Mark III: 글자의 최종 표면 복사와 완성된 화면 픽셀</td><td><span class="badge open">미확인</span></td><td><a href="colorspace-render.html#reproduce">측정 이후 남은 연결</a></td></tr>
 <tr><td>창을 만들고 없애는 전체 수명</td><td><span class="badge open">미확인</span></td><td>세 기종 모두</td></tr>
 <tr><td>색 채널 순서, 알파 합성, LCD 출력</td><td><span class="badge open">미확인</span></td><td><a href="icon-resources.html#limits">ICONBIN 아이콘 자원</a></td></tr>
 <tr><td>설정의 영구 저장과 재부팅 뒤의 값</td><td><span class="badge open">미확인</span></td><td>세 기종 모두</td></tr>
@@ -367,11 +368,12 @@
 
 <section id="order">
 <h2>읽는 순서</h2>
-<p>K-3 Mark III의 세 문서를 먼저 읽고, 같은 화면을 다룬 다른 기종의 문서로 넘어가면 차이가 잘 보입니다.</p>
+<p>K-3 Mark III의 선택·입력·그리기 문서를 먼저 읽고, 같은 화면을 다룬 다른 기종의 문서로 넘어가면 차이가 잘 보입니다.</p>
 <ul class="cards">
 <li class="card"><span class="tag">1단계</span><h3><a href="colorspace-ui.html">색공간 화면: 선택·확정·취소</a></h3><p class="q">값을 고르고 확정하면 설정 메모리에 무슨 일이 일어나는가?</p><p>고르는 동안에는 보류 선택만 바뀌고, 확정할 때만 설정 함수로 넘어갑니다. 16개 사례로 확인했습니다.</p></li>
 <li class="card"><span class="tag">2단계</span><h3><a href="colorspace-ui-input.html">색공간 화면: 방향 입력·포커스</a></h3><p class="q">방향 입력은 포커스를 어떻게 옮기는가?</p><p>이벤트 네 가지 중 둘은 끝에서 순환하고 둘은 멈춥니다. 포커스 변경은 콜백으로 메뉴에 전달됩니다. 50개 사례입니다.</p></li>
 <li class="card"><span class="tag">3단계</span><h3><a href="icon-resources.html">ICONBIN 아이콘 자원</a></h3><p class="q">아이콘은 어디에 어떤 모양으로 있고 어떻게 화면 버퍼로 가는가?</p><p>목록은 RTOS에, 32비트 픽셀은 ICONBIN에 있습니다. 아이콘 하나를 바꿨다가 되돌리는 시험도 했습니다.</p></li>
+<li class="card"><span class="tag">4단계</span><h3><a href="colorspace-render.html">색공간 행의 아이콘과 글자 측정</a></h3><p>원본 행·IconView의 복사와 StringView의 글꼴 준비를 별도로 재현했습니다. sRGB의 76×40 배치 측정은 최종 화면 그리기와 구분합니다.</p></li>
 <li class="card"><span class="tag">비교 · K-3 II</span><h3><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/analysis/color-ui.html">K-3 II의 색공간 메뉴와 표시</a></h3><p class="q">K-3 II는 같은 화면을 어떻게 처리하는가?</p><p>임시값을 두고 확정 때 기록하지만, 같은 값이어도 기록한다는 점이 다릅니다.</p>
 <ul><li><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/analysis/ui-dispatch.html">색공간 메뉴 알림과 화면 전환</a></li><li><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/analysis/ui-resources.html">RAW 형식 메뉴와 텍스트</a></li></ul></li>
 <li class="card"><span class="tag">비교 · Q7</span><h3><a href="https://yunhyok.github.io/pentax-q7-firmware-analysis/colorspace-ui-report.html">Q7의 색공간 화면: 선택·확정·취소</a></h3><p class="q">Q7은 같은 화면을 어떻게 처리하는가?</p><p>포커스를 옮기는 즉시 기록하고, 취소하면 백업값으로 되돌립니다.</p>
@@ -388,6 +390,7 @@
 <li><a href="colorspace-ui-checks.json">colorspace-ui-checks.json</a> · <a href="colorspace-ui-evidence.json">colorspace-ui-evidence.json</a> — K-3 Mark III 화면의 16개 사례와 근거</li>
 <li><a href="colorspace-ui-input-checks.json">colorspace-ui-input-checks.json</a> · <a href="colorspace-ui-input-evidence.json">colorspace-ui-input-evidence.json</a> — 방향 입력 50개 사례와 근거</li>
 <li><a href="icon-ui-evidence.json">icon-ui-evidence.json</a> · <a href="icon-ui-checks.json">icon-ui-checks.json</a> — 아이콘 저장 형식과 복사 검사</li>
+<li><a href="colorspace-render.json">colorspace-render.json</a> — 행·아이콘 5개, 글꼴 준비 4개, 초기값 대조 5개의 원본 재현</li>
 <li><a href="research-program.json">research-program.json</a> — 세 기종의 UI 목표 요약과 관문</li>
 <li>공식 문서: <a href="https://www.ricoh-imaging.co.jp/english/support/man-pdf/k-3-3.pdf">K-3 Mark III 사용설명서</a> · <a href="https://www.ricoh-imaging.co.jp/english/products/k-3-3/spec/">K-3 Mark III 사양</a> · <a href="https://www.ricoh-imaging.co.jp/english/support/man-pdf/k-3-2.pdf">K-3 II 사용설명서</a> · <a href="https://www.ricoh-imaging.co.jp/english/support/man-pdf/q7.pdf">Q7 사용설명서</a> · <a href="https://www.ricoh-imaging.co.jp/japan/support/pdf/k-3-3_09.pdf">K-3 Mark III·K-3 II 메뉴 대응표</a></li>
 <li>일반 배경: <a href="https://learn.microsoft.com/en-us/windows/win32/medfound/image-stride">Microsoft Learn: Image Stride</a>(stride의 뜻)</li>
@@ -398,7 +401,7 @@
 </main>
 </div>
 <!-- chrome:bottom -->
-<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">UI와 화면 자원 — 이 주제의 문서</h2><ol><li><a href="ui-port-contract.html" aria-current="page">UI 이식 설계·안내<span>세 기종 비교</span></a></li><li><a href="colorspace-ui.html">색공간 화면: 선택·확정·취소<span>16사례</span></a></li><li><a href="colorspace-ui-input.html">색공간 화면: 방향 입력·포커스<span>50사례</span></a></li><li><a href="ui-render-chain.html">Q7 갱신에서 원본 픽셀까지<span>마커·두 텍스트·버퍼 교체의 합성 실행</span></a></li><li><a href="icon-resources.html">ICONBIN 아이콘 자원<span>저장 형식, 복사 규칙, 후보 아이콘</span></a></li></ol></nav>
+<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">UI와 화면 자원 — 이 주제의 문서</h2><ol><li><a href="ui-port-contract.html" aria-current="page">UI 이식 설계·안내<span>세 기종 비교</span></a></li><li><a href="colorspace-ui.html">색공간 화면: 선택·확정·취소<span>16사례</span></a></li><li><a href="colorspace-ui-input.html">색공간 화면: 방향 입력·포커스<span>50사례</span></a></li><li><a href="colorspace-render.html">색공간 행의 아이콘과 글자 측정<span>원본 행·ICONBIN 복사, Latin 글꼴 준비와 sRGB 측정</span></a></li><li><a href="ui-render-chain.html">Q7 갱신에서 원본 픽셀까지<span>마커·두 텍스트·버퍼 교체의 합성 실행</span></a></li><li><a href="icon-resources.html">ICONBIN 아이콘 자원<span>저장 형식, 복사 규칙, 후보 아이콘</span></a></li></ol></nav>
 <nav class="pager" aria-label="이전·다음 문서"><a class="prev" href="af-request-consumer.html"><small>← 이전</small>AF 요청 큐와 완료 통지</a><a class="next" href="colorspace-ui.html"><small>다음 →</small>색공간 화면: 선택·확정·취소</a></nav>
 <footer class="sitefoot"><div class="sitefoot-in"><nav aria-label="사이트"><a href="../index.html#map">문서 지도</a><a href="../index.html#levels">검증 수준 읽는 법</a><a href="../glossary.html">용어집</a><a href="research-program.html">세 기종 연구 본부</a><a href="https://github.com/yunhyok/pentax-k3iii-firmware-analysis">GitHub 저장소</a></nav><p>PENTAX 펌웨어 연구. PC에서 수행한 정적 분석과 에뮬레이션 결과이며, 카메라 실기에서 검증한 내용이 아닙니다. 원본 펌웨어와 추출한 독점 코드는 포함하지 않습니다.</p></div></footer>
 <!-- /chrome:bottom -->

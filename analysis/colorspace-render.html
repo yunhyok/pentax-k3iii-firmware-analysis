@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>K-3 III 색공간 행의 아이콘과 글자 측정</title>
+<link rel="stylesheet" href="../assets/site.css">
+<style>
+main.doc .render-flow{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.75rem;list-style:none;padding:0;margin:.65rem 0}
+main.doc .render-flow>li{min-width:0;margin:0;padding:.7rem;border:1px solid var(--line);border-radius:.45rem;overflow-wrap:anywhere}
+main.doc .render-flow strong{display:block;margin-bottom:.3rem}
+main.doc .render-flow small{display:block;margin-top:.4rem;color:var(--muted)}
+code.address{white-space:nowrap}
+@media(max-width:900px){main.doc .render-flow{grid-template-columns:1fr}}
+</style>
+</head>
+<body data-camera="k3iii">
+<!-- chrome:top -->
+<a class="skip" href="#main">본문 바로가기</a>
+<div class="topbar"><div class="topbar-in"><a class="brand" href="../index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="../index.html" aria-current="true">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="https://yunhyok.github.io/pentax-q7-firmware-analysis/">Q7</a></div><nav class="topnav" aria-label="주제"><a href="../index.html">개요</a><a href="guide-boot.html">부팅·저장소</a><a href="guide-update.html">업데이트</a><a href="guide-rebuild.html">재구축</a><a href="guide-rtos.html">명령·셸</a><a href="guide-color.html">색 처리</a><a href="lightroom-bridge.html">Lightroom</a><a href="af-foundations.html">AF</a><a href="ui-port-contract.html" aria-current="true">UI</a></nav></div></div>
+<nav class="crumbs" aria-label="현재 위치"><ol><li><a href="../index.html">PENTAX K-3 Mark III</a></li><li><a href="ui-port-contract.html">UI와 화면 자원</a></li><li aria-current="page">색공간 행의 아이콘과 글자 측정</li></ol></nav>
+<!-- /chrome:top -->
+<header class="page-head">
+<h1>K-3 III 색공간 행의 아이콘과 글자 측정</h1>
+<p class="lead">펌웨어 2.20의 원본 ARM 코드가 색공간 행의 아이콘과 체크 표시를 시험 표면에 복사했습니다. 같은 행에서 불러온 sRGB 문자열의 배치 크기는 76×40이었습니다. 이 수치는 글자 배치에 쓰이며, 글자가 표면에 찍힌 범위는 이번 실행에서 측정하지 않았습니다.</p>
+</header>
+<div class="layout">
+<!-- chrome:toc -->
+<nav class="toc" aria-label="이 문서의 목차"><h2 data-toc="no">이 문서에서</h2><ol><li><a href="#row">행이 선택한 아이콘과 문자열</a></li><li><a href="#font">원본 Latin 글꼴을 읽어 캐시를 준비하는 구간</a></li><li><a href="#measure">sRGB의 네 글자가 76×40 배치 크기로 이어졌습니다</a></li><li><a href="#reproduce">재현 입력과 실행 경계</a></li></ol></nav>
+<!-- /chrome:toc -->
+<main class="doc" id="main">
+<section id="row">
+<h2>행이 선택한 아이콘과 문자열</h2>
+<figure class="diagram">
+<figcaption>같은 행을 사용하는 세 가지 원본 코드 재현</figcaption>
+<ol class="render-flow" role="list">
+<li><strong>행과 아이콘 복사</strong>타입 19 행을 만들고 ID를 설정합니다. 별도로 호출한 IconView가 ICONBIN을 시험 표면에 복사합니다.<small>하네스 입력 · 메뉴와 현재값, 아이콘 준비 상태, 표면과 클립</small></li>
+<li><strong>StringView와 글꼴 준비</strong>같은 행의 StringView에서 언어 0에 해당하는 문자열을 찾습니다. sRGB 재생에서 원본 Latin 글꼴을 캐시에 올리고 RT를 준비합니다.<small>하네스 입력 · 진입점과 정지 지점, 할당·파일 호출의 반환과 복사</small></li>
+<li><strong>sRGB 크기 측정과 설정 복사</strong>RT 준비를 지나 원본 문자열 배치를 실행합니다. StringView가 임시 설정 63바이트를 자신의 <code>+0x188</code>에 복사합니다.<small>대조 · 지정한 13개 할당의 초기 채움값만 변경</small></li>
+</ol>
+<p>단계마다 시험 조건을 다시 준비하고, 같은 재생 안에서도 아이콘과 StringView를 별도로 호출합니다. 화면의 전체 이벤트나 호출 순서는 재현 범위에 포함하지 않았습니다.</p>
+</figure>
+<p>타입 19 행의 생성자 <code class="address">0x52c10660</code>은 체크용 IconView를 <code>+0x17c</code>, 행 아이콘을 <code>+0x180</code>, StringView를 <code>+0x18c</code>에 둡니다. 원본 목록 채우기 <code class="address">0x5278e05c</code>가 메뉴 디스크립터 72를 읽고 행에 아이콘과 문자열 ID를 전달합니다. 체크 표시를 켤지는 설정 레코드의 현재값을 비교해 결정합니다. 화면에서 아직 확정하지 않은 포커스는 <a href="colorspace-ui-input.html">방향 입력·포커스 재현</a>에서 다룹니다.</p>
+<div class="table-wrap" tabindex="0" role="region" aria-label="다섯 가지 행 아이콘 대조"><table>
+<thead><tr><th scope="col">현재값 · 스타일과 시험 조건</th><th scope="col">원본 아이콘 ID와 크기</th><th scope="col">픽셀 읽기</th><th scope="col">표면 쓰기</th></tr></thead>
+<tbody>
+<tr><th scope="row">0 · 0</th><td><code>0x539</code> · 40×40</td><td>1,600</td><td>1,444</td></tr>
+<tr><th scope="row">1 · 0</th><td><code>0x537</code> · 40×40</td><td>1,600</td><td>1,444</td></tr>
+<tr><th scope="row">1 · 1</th><td><code>0x330</code> · 50×50</td><td>2,500</td><td>494</td></tr>
+<tr><th scope="row">1 · 0, 아이콘과 겹치지 않는 클립</th><td><code>0x537</code> · 복사 생략</td><td>0</td><td>0</td></tr>
+<tr><th scope="row">0 · 0, 행 콜백 별도 실행</th><td><code>0x539</code> · 40×40, 체크 <code>0x231</code> · 20×40</td><td>2,400</td><td>1,532</td></tr>
+</tbody></table></div>
+<p>마지막 대조에서 하네스가 행의 원본 <code>+0x6c</code> 콜백을 별도로 호출하자 <code class="address">0x52c10d14</code>가 체크 ID <code>0x231</code>을 기록했습니다. 각 아이콘을 별도로 그린 뒤 전체 256×144 시험 표면과 순서가 있는 쓰기 목록을 독립 바이트 계산과 대조했습니다. 호스트가 사각형, ICONBIN 슬롯과 초기화 상태를 공급했고 카메라 LCD의 채널 해석은 시험하지 않았습니다. <a href="icon-resources.html">ICONBIN 형식과 복사 규칙</a></p>
+<p>두 행에 붙은 StringView는 언어 바이트 0을 받아 원본 테이블의 슬롯 1을 선택했습니다. ID <code>0x1f6</code>은 <code>sRGB</code>, ID <code>0x1f7</code>은 <code>AdobeRGB</code>의 NUL 종료 UTF-16LE 리소스를 가리켰습니다. 원본 테이블 21개 슬롯에서 두 이름을 정적으로 대조했고, 동적 재생은 언어 바이트 0으로 한정했습니다. <a href="colorspace-ui.html">색공간 값과 메뉴 리소스의 연결</a></p>
+</section>
+
+<section id="font">
+<h2>원본 Latin 글꼴을 읽어 캐시를 준비하는 구간</h2>
+<p>글꼴 대조는 모두 sRGB 행의 원본 StringView 진입점 <code class="address">0x52beeae4</code>를 사용합니다. 언어 슬롯 1이 글꼴 선택자 0을 고릅니다. 성공 재생에서는 파일 이름·크기·복사 주소를 검사하는 호출 모형이 decoded의 <code>RT_Latin.bin</code> 53,880바이트와 <code>LE_Latin.bin</code> 20,784바이트를 복사합니다. 실제 파일시스템, 잠금, 할당기와 실패 후 재시도는 실행하지 않았습니다.</p>
+<div class="table-wrap" tabindex="0" role="region" aria-label="네 가지 글꼴 준비 조건과 정지 지점"><table>
+<thead><tr><th scope="col">시험 조건</th><th scope="col">정지 지점</th><th scope="col">원본에서 관찰한 동작</th></tr></thead>
+<tbody>
+<tr><th scope="row">렌더러와 IMAGE1 레지스트리 슬롯이 비어 있음</th><td><code class="address">0x528c30e0</code></td><td>렌더러를 초기화한 뒤 ID 14 조회가 null을 돌려줍니다. 그 포인터를 참조하기 전에 멈춥니다.</td></tr>
+<tr><th scope="row">최소 버퍼를 갖춘 기존 캐시에 빈 태그를 공급</th><td><code class="address">0x528c3b48</code></td><td>캐시 미스 분기에서 선택자 0의 RT 파일을 요청합니다. 모형 파일 호출에 진입하기 전에 멈춥니다.</td></tr>
+<tr><th scope="row">IMAGE1과 두 파일 읽기의 성공 조건을 공급</th><td><code class="address">0x528c3438</code></td><td>원본 코드가 두 렌더러를 만들고 글꼴 바이트를 받은 뒤 LE 작업 공간을 준비합니다. 선택된 LE 작업 공간은 36×36, 1,388,072바이트입니다.</td></tr>
+<tr><th scope="row">같은 성공 조건에서 RT 준비까지 실행</th><td><code class="address">0x528c3744</code></td><td><code class="address">0x5339af58</code>이 원본 RT를 읽고 0을 반환합니다. 호출자가 이 상태를 검사하기 전에 멈춥니다.</td></tr>
+</tbody></table></div>
+<p>두 글꼴의 payload는 decoded의 <code class="address">0x04a13c70</code>과 <code class="address">0x046784e0</code>에서 시작합니다. 결과 JSON은 12개 레코드의 이름, 범위, SHA-256과 실행 조건을 담습니다. 원본 payload는 입력에서 읽어 에뮬레이터 메모리에 전달합니다.</p>
+</section>
+
+<section id="measure">
+<h2>sRGB의 네 글자가 76×40 배치 크기로 이어졌습니다</h2>
+<div class="table-wrap" tabindex="0" role="region" aria-label="sRGB 측정의 단계별 원본 관측값"><table>
+<thead><tr><th scope="col">원본 코드</th><th scope="col">관측값</th></tr></thead>
+<tbody>
+<tr><th scope="row"><code class="address">0x528c38a4</code> · 작업 공간 할당</th><td>원본 sizing 경로가 5,960바이트를 요청합니다. 준비 함수는 NUL을 포함한 UTF-16 단위 다섯 개를 받습니다.</td></tr>
+<tr><th scope="row"><code class="address">0x5338aa64</code> · LE 준비</th><td><code>s,R,G,B,NUL</code>을 읽고 LE 매핑 레코드 다섯 개를 만듭니다. 이 레코드에서 RT 글리프 ID는 확인하지 않았습니다.</td></tr>
+<tr><th scope="row"><code class="address">0x5338da60</code> · 문자 측정</th><td>내부 metric 호출 네 번이 순서대로 <code>s,R,G,B</code>를 받아 각각 0을 반환합니다. 요청 경계의 네 halfword는 <code>[0, 2, 75, 37]</code>입니다.</td></tr>
+<tr><th scope="row"><code class="address">0x528c3930</code> · 크기 계산</th><td>20바이트 결과는 <code>[0, 76, 40, 15000, 15000]</code>입니다. 너비는 <code>Xmax+1</code>, 높이는 별도의 줄 높이 계산에서 나왔습니다. 마지막 두 값의 의미는 확인하지 않았습니다.</td></tr>
+<tr><th scope="row"><code class="address">0x52beec08</code> · StringView 복사</th><td>임시 그리기 설정 63바이트가 <code>StringView+0x188</code>에 그대로 복사됩니다. 너비·높이는 각각 <code>+0x194</code>, <code>+0x198</code>에서 읽었습니다.</td></tr>
+</tbody></table></div>
+<p>RT 준비까지만 실행한 두 대조에서 12개 IMAGE1 할당을 <code>A5</code>와 <code>5A</code>로 채웠습니다. 원본 실행 추적과 파일 호출·읽기 기록은 0으로 시작한 글꼴 대조와 일치했습니다. 전체 측정의 세 대조에서는 같은 12개와 추가 작업 공간 한 개를 각각 <code>00</code>, <code>A5</code>, <code>5A</code>로 채웠습니다. 결과에서 조건 이름과 채움값 13개, 총 14개 필드만 정규화하자 세 실행의 전체 관측값이 일치했습니다. 기존 문맥 등 나머지 메모리는 하네스의 초기 상태를 유지했습니다.</p>
+<p>세 측정 모두 같은 63바이트를 복사했고, 앞 단계의 아이콘·체크 표시 1,532개 쓰기와 표면 SHA-256도 같았습니다. 새로 매핑한 LE 임시 레코드 <code class="address">0x547cd248</code>에서 허용한 쓰기는 세 번이며 최종 4바이트는 <code>00 00 00 01</code>입니다. 이 페이지에 선행 쓰기 검사 훅을 두었고 게스트 읽기는 관찰되지 않았습니다. 이 결과가 전체 힙의 초기값 독립성이나 모든 라이브러리 읽기의 초기화 순서를 입증하지는 않습니다.</p>
+</section>
+
+<section id="reproduce">
+<h2>재현 입력과 실행 경계</h2>
+<p>Unicorn 2.1.4에서 Cortex-A15를 사용했습니다. 실행한 A32 명령어를 입력과 비교하고, 메모리 쓰기 범위와 표면 경계, 입력과 재배치 영역의 불변성을 검사합니다. 새 출력 경로와 78,683,892바이트의 K-3 III 2.20 decoded 파일을 사용합니다. CLI는 입력과 도우미 소스의 SHA-256을 확인합니다.</p>
+<pre><code>python -B tools/verify_colorspace_render.py decoded.bin --output colorspace-render-replay.json
+python -B -m unittest discover -s tests -p test_verify_colorspace_render.py</code></pre>
+<p>공개 기록과 같은 환경에서는 새 JSON의 SHA-256을 <a href="colorspace-render.json">전체 재현 결과</a>와 비교할 수 있습니다. 기록에는 사례별 실행 주소와 코드 구간의 SHA-256도 들어 있습니다. <a href="../tools/verify_colorspace_render.py">재현 CLI</a> · <a href="../tests/test_verify_colorspace_render.py">의존 소스와 입출력 검사</a></p>
+<p>다음 연결 지점은 같은 StringView의 별도 그리기 슬롯 <code class="address">0x52bedb40</code>입니다. 여기까지 확인한 것은 시험 표면의 아이콘·체크 표시와 언어 바이트 0에서의 sRGB 배치 계산입니다. 글자 래스터, 전체 화면의 입력·표시·설정 저장, K-3 II와 Q7에서의 동작은 별도 검증이 필요합니다. <a href="ui-port-contract.html">세 기종 UI 이식 검증 조건</a></p>
+</section>
+</main>
+</div>
+<!-- chrome:bottom -->
+<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">UI와 화면 자원 — 이 주제의 문서</h2><ol><li><a href="ui-port-contract.html">UI 이식 설계·안내<span>세 기종 비교</span></a></li><li><a href="colorspace-ui.html">색공간 화면: 선택·확정·취소<span>16사례</span></a></li><li><a href="colorspace-ui-input.html">색공간 화면: 방향 입력·포커스<span>50사례</span></a></li><li><a href="colorspace-render.html" aria-current="page">색공간 행의 아이콘과 글자 측정<span>원본 행·ICONBIN 복사, Latin 글꼴 준비와 sRGB 측정</span></a></li><li><a href="ui-render-chain.html">Q7 갱신에서 원본 픽셀까지<span>마커·두 텍스트·버퍼 교체의 합성 실행</span></a></li><li><a href="icon-resources.html">ICONBIN 아이콘 자원<span>저장 형식, 복사 규칙, 후보 아이콘</span></a></li></ol></nav>
+<nav class="pager" aria-label="이전·다음 문서"><a class="prev" href="colorspace-ui-input.html"><small>← 이전</small>색공간 화면: 방향 입력·포커스</a><a class="next" href="ui-render-chain.html"><small>다음 →</small>Q7 갱신에서 원본 픽셀까지</a></nav>
+<footer class="sitefoot"><div class="sitefoot-in"><nav aria-label="사이트"><a href="../index.html#map">문서 지도</a><a href="../index.html#levels">검증 수준 읽는 법</a><a href="../glossary.html">용어집</a><a href="research-program.html">세 기종 연구 본부</a><a href="https://github.com/yunhyok/pentax-k3iii-firmware-analysis">GitHub 저장소</a></nav><p>PENTAX 펌웨어 연구. PC에서 수행한 정적 분석과 에뮬레이션 결과이며, 카메라 실기에서 검증한 내용이 아닙니다. 원본 펌웨어와 추출한 독점 코드는 포함하지 않습니다.</p></div></footer>
+<!-- /chrome:bottom -->
+</body>
+</html>
