@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>RTOS가 쓰는 bank와 BOOT가 읽는 bank의 선택 조건 — PENTAX K-3 Mark III 펌웨어 연구</title>
-<meta name="description" content="K-3 Mark III 펌웨어에서 RTOS의 쓰기 코드와 BOOT의 적재 코드가 서로 다른 값으로 bank를 고른다는 점을, 같은 합성 파티션 표를 두 원본 코드에 넘긴 12사례로 확인한 기록입니다. 실제 표의 값과 값을 만드는 코드는 확인하지 못했습니다.">
+<meta name="description" content="K-3 Mark III의 RTOS·BOOT bank 선택 12사례와, 원본 PARTPARA에서 INITFS 디스크립터를 만들어 모델 저장소를 거쳐 BOOT 읽기 요청까지 연결한 별도 검증입니다.">
 <link rel="stylesheet" href="../assets/site.css">
 </head>
 <body data-camera="k3iii">
@@ -20,7 +20,7 @@
 </header>
 <div class="layout">
 <!-- chrome:toc -->
-<nav class="toc" aria-label="이 문서의 목차"><h2 data-toc="no">이 문서에서</h2><ol><li><a href="#background">배경: bank와 선택값</a></li><li><a href="#selection">한 표를 함께 써도 두 선택값은 저절로 맞춰지지 않습니다</a></li><li><a href="#boundaries">수정한 이미지가 부팅까지 가려면 거쳐야 하는 단계</a></li><li><a href="#remaining">두 선택값을 만드는 코드는 아직 찾지 못했습니다</a></li><li><a href="#verification">검증 범위와 한계</a></li><li><a href="#reproduce">재현 방법</a></li><li><a href="#refs">근거 파일과 참고 자료</a></li></ol></nav>
+<nav class="toc" aria-label="이 문서의 목차"><h2 data-toc="no">이 문서에서</h2><ol><li><a href="#background">배경: bank와 선택값</a></li><li><a href="#selection">한 표를 함께 써도 두 선택값은 저절로 맞춰지지 않습니다</a></li><li><a href="#initfs-layout">PARTPARA의 INITFS 목적지가 BOOT 읽기 요청에 들어가는 경로</a></li><li><a href="#boundaries">수정한 이미지가 부팅까지 가려면 거쳐야 하는 단계</a></li><li><a href="#remaining">두 선택값을 만드는 코드는 아직 찾지 못했습니다</a></li><li><a href="#verification">검증 범위와 한계</a></li><li><a href="#reproduce">재현 방법</a></li><li><a href="#refs">근거 파일과 참고 자료</a></li></ol></nav>
 <!-- /chrome:toc -->
 <main class="doc" id="main">
 
@@ -31,7 +31,7 @@
 <li>같은 합성 표를 RTOS 쓰기 코드와 BOOT 적재 코드에 차례로 넘겨 12사례를 실행했습니다. 두 값이 같으면 BOOT가 새 payload를 읽었습니다. 다르면 쓰기가 성공했어도 BOOT는 다른 bank에 있던 기존 바이트를 읽었습니다.</li>
 <li>쓰기 함수와 그 앞의 배치 준비 함수는 BOOT가 보는 값을 바꾸지 않았습니다. 쓰기가 성공한 뒤 표에서 바뀐 것은 고른 설명자의 길이와 블록 수뿐입니다.</li>
 <li>실제 카메라의 표에 어떤 값이 들어 있는지는 모릅니다. 생성자는 RTOS 쪽 값을 0으로 만들고, 0이 아닌 값을 만드는 코드는 찾지 못했습니다. 실제 표가 bank 0을 가리킨다면 따로 전환하지 않아도 두 값은 맞습니다.</li>
-<li>표를 저장 장치에 기록하고 다시 읽는 과정, 재시작, 인증은 실행하지 않았습니다. 이 결과는 수정한 이미지가 받아들여지거나 부팅된다는 증거가 아닙니다.</li>
+<li>별도 <a href="#initfs-layout">INITFS 시험</a>에서는 원본 PARTPARA가 만든 목적지 <code>0x43000000</code>이 모델 저장소를 거쳐 BOOT의 읽기 요청에 들어갔습니다. 실제 저장 장치의 기록과 재시작, 인증은 미검증입니다.</li>
 </ul>
 </section>
 
@@ -46,7 +46,7 @@
 <div class="static"><h3><span class="badge static">정적 분석</span> 코드를 읽어 판단</h3>
 <ul>
 <li>BOOT 진입 경로가 mode 값 2를 다루는 방식</li>
-<li>표 전체를 저장소에서 다시 읽는 경로</li>
+<li>실제 부팅에서 표 사본을 선택하고 다시 읽는 경로</li>
 <li>Log·SystemControl 등 후보에서 제외한 코드</li>
 </ul></div>
 <div class="model"><h3><span class="badge model">모델</span> 시험 조건으로 정한 것</h3>
@@ -299,6 +299,32 @@
 </details>
 </section>
 
+<section id="initfs-layout">
+<h2>PARTPARA의 INITFS 목적지가 BOOT 읽기 요청에 들어가는 경로</h2>
+<p>앞의 12사례는 같은 RAM 표를 그대로 넘겨 선택값의 영향을 비교했습니다. 이번에는 디코딩한 원본에서 PARTPARA와 INITFS를 읽고, 원본 RTOS가 만든 표를 저장소 모델에 기록했다가 BOOT 조각에서 다시 읽었습니다. Cortex-A7 ARM 모델에서 여섯 조각을 실행해 원본 명령 콜백 3,001회와 표 쓰기 194회를 기록했습니다. <a href="initfs-layout-checks.json">INITFS 검증 기록</a></p>
+<figure class="diagram">
+<figcaption>원본 코드가 만든 값과 모델이 옮긴 바이트</figcaption>
+<ol class="flow">
+<li class="ok"><strong>원본 RTOS가 표 작성</strong><span>PARTPARA payload <code>+0x68</code>에서 목적지 읽기</span><span>index 6 설명자에 목적지·길이·블록 수 기록</span></li>
+<li class="model"><strong>모델 저장소에 기록·재적재</strong><span>표 <code>0x87</code>블록을 LBA 0에 보관</span><span>재현기가 표 RAM을 덮고 BOOT에 LBA 0 전달</span></li>
+<li class="ok"><strong>원본 BOOT가 요청 생성</strong><span>공통 <code>+4</code>의 하위 16비트로 설명자 선택</span><span><code>0x50b01090</code>에서 INITFS 읽기 호출</span></li>
+</ol>
+</figure>
+<p>원본 kind 2 분기 <code>0x52ff2a24</code>가 layout 함수를 호출합니다. 이 함수는 PARTPARA의 516바이트 payload에서 항목 32개를 읽습니다. index 6의 목적지는 <code>0x52ff200c</code>에서 읽고 <code>0x52ff2020</code>에서 <code>0x50b733a8</code>에 씁니다. 쓰기 객체의 bank 바이트 0은 원본 생성자가 설정했습니다. 별개 필드인 BOOT 레코드 <code>+4</code>의 0은 재현기가 넣었으며, 관측한 원본 표 쓰기는 이 필드를 변경하지 않았습니다.</p>
+<div class="table-wrap"><table>
+<caption>index 6 설명자에서 BOOT 읽기 인수로 전달된 값</caption>
+<thead><tr><th scope="col">항목</th><th scope="col">원본 RTOS 기록</th><th scope="col">복원된 표의 값</th><th scope="col">원본 BOOT 읽기</th></tr></thead>
+<tbody>
+<tr><th scope="row">시작 LBA</th><td><code>0x52ff2014</code></td><td><code>0x72a00</code></td><td><code>0x50b0106c</code> → r0</td></tr>
+<tr><th scope="row">바이트 길이</th><td><code>0x52ff5908</code></td><td><code>0xdc8800</code> (14,452,736)</td><td>이번 실행은 블록 수가 0이 아니어서 길이 계산 분기를 건너뜀</td></tr>
+<tr><th scope="row">블록 수</th><td><code>0x52ff590c</code></td><td><code>0x6e44</code></td><td><code>0x50b01068</code> → r1</td></tr>
+<tr><th scope="row">목적지</th><td><code>0x52ff2020</code></td><td><code>0x43000000</code></td><td><code>0x50b01070</code> → r2</td></tr>
+</tbody></table></div>
+<p>INITFS의 index 6, 원본 길이, 원본 바이트를 둔 주소는 재현기가 indexed writer <code>0x52ff586c</code>에 전달했습니다. 이 함수가 다음 리소스의 시작 LBA와 범위를 비교하고, 하위 쓰기가 1을 돌려준 뒤 길이와 블록 수를 차례로 기록했습니다. 표 기록과 BOOT 표 재적재는 시작 LBA를 키로 삼는 모델에서 바이트를 보관하고 복사했습니다. 표가 복원된 뒤 원본 BOOT가 위 세 인수로 읽기를 호출했고, 모델이 복사한 INITFS 전체는 원본과 일치했습니다.</p>
+<p>진단 <code>0x530fced4</code>, 하위 쓰기 <code>0x53297a84</code>, BOOT 읽기 <code>0x50b03f04</code>는 대체했습니다. 여섯 대체 호출에서 LR 복귀, r0 반환값, r1–r3·r12 변경, SP와 r4–r11 보존을 확인했습니다. 이 결과는 대체 호출의 동작을 검증한 것입니다. 최종 PC <code>0x50b01094</code>는 INITFS 읽기 모델에서 돌아온 지점입니다. 그 주소의 원본 상태 비교는 실행하지 않았습니다.</p>
+<p>객체 연결, 단계별 진입, BOOT의 선택값과 표 LBA는 재현 조건입니다. kind 4의 외부 패키지 처리, 실제 표 사본 선택과 eMMC 전송, 물리 주소 배치와 인증은 이 시험에서 확인하지 못했습니다. <a href="stubby-romfs.html#loader">별도의 Stubby 시험</a>에서는 같은 원본 INITFS를 <code>0x43000000</code>에 미리 놓은 뒤 헤더 읽기와 DTB 속성 기록을 확인했습니다. 두 시험은 각각 BOOT의 요청 생성과 Stubby가 해당 주소의 바이트를 사용하는 경로까지 다룹니다.</p>
+</section>
+
 <section id="boundaries">
 <h2>수정한 이미지가 부팅까지 가려면 거쳐야 하는 단계</h2>
 <p class="takeaway">bank 선택은 여러 단계 가운데 하나입니다. 단계마다 확인한 범위가 다르므로, 각 줄의 결과를 더해 “업데이트 전체가 성공한다”고 읽으면 안 됩니다.</p>
@@ -311,7 +337,7 @@
 <tr><th scope="row">교체 코드의 배치</th><td>다시 컴파일한 Q13 행렬 함수를 원래 주소에 놓고, 고른 실제 호출자 경로에서 출력과 보존 상태를 대조했습니다(<a href="recompiled-integration.html">재컴파일 함수 배치·재패키징</a>).</td><td>다른 분기, 실제 스택 여유, 시간 제약을 포함한 장치 실행</td></tr>
 <tr><th scope="row">입력·디코딩</th><td>C 파일명에서 <code>SdDriver</code>와 파일 인터페이스까지, 입력과 출력 버퍼의 공존을 연결했습니다(<a href="update-media-completion.html#media">매체 객체</a> · <a href="update-file-lifetimes.html">버퍼 수명</a>).</td><td>실제 mount, 연속 메모리 가용량, 하드웨어 디코더가 후보를 받아들이는지</td></tr>
 <tr><th scope="row">payload·표·헤더 기록</th><td>payload 다음에 표, 부트 헤더, BOOT 이미지 순서로 기록합니다. 오류 분기와 고른 설명자의 갱신을 확인했습니다(<a href="startup-storage.html#write-order">기록 순서</a>).</td><td>표와 헤더가 일관된 상태로 매체에 남고 다음 부팅에서 다시 읽히는 과정</td></tr>
-<tr><th scope="row">리소스 bank 선택</th><td>RTOS의 객체 +0x10과 BOOT의 레코드 +4 하위 16비트가 따로 고른다는 점을 같은 합성 표로 비교했습니다(<a href="update-bank-selection-checks.json">이 문서의 12사례</a>).</td><td>실제 표의 초깃값, 0이 아닌 값을 만드는 코드, 레코드 +4의 생성·전환 정책</td></tr>
+<tr><th scope="row">리소스 bank 선택</th><td>RTOS의 객체 +0x10과 BOOT의 레코드 +4 하위 16비트가 따로 고른다는 점을 같은 합성 표로 비교했습니다. 원본 PARTPARA로 생성한 INITFS 설명자도 모델 저장소를 거쳐 BOOT 요청에 사용됐습니다(<a href="update-bank-selection-checks.json">12사례</a> · <a href="#initfs-layout">INITFS 경로</a>).</td><td>실제 표의 초깃값, 0이 아닌 값을 만드는 코드, 레코드 +4의 생성·전환 정책</td></tr>
 <tr><th scope="row">M0 reset·A7 진입 준비</th><td><code>0x3ffe08b4</code>의 초기화와 <code>0x3ffe0808</code>의 작업 등록에서 적재 작업, 진입 주소·mode 기록까지 연결했습니다(<a href="startup-storage.html#m0-reset-chain">reset</a>).</td><td><code>0x2000fffc</code>와 <code>0x0100fffc</code>가 같은 메모리인지, 그렇게 만드는 선행 설정</td></tr>
 <tr><th scope="row">BOOT 적재·인증</th><td>표 사본 순서, RTOS 설명자 선택, 카드 응답·전송 검사와 진입 주소 저장을 추적했습니다(<a href="startup-storage.html#boot-auth">BOOT 범위</a>).</td><td>제공된 이미지보다 앞 단계인 Boot ROM, 키, fuse 정책과 전체 인증 조건</td></tr>
 <tr><th scope="row">완료 통지·UI</th><td>메시지 <code>0x2640820b</code>에서 모델 상태, 작업 <code>0x128</code>까지 연결했습니다(<a href="update-media-completion.html#completion">완료 통지</a> · <a href="update-ui-consumer.html">완료 후 UI 작업</a>).</td><td>실제 큐 전달, 종료, 재부팅, 촬영 성공. UI 상태 값만으로는 판정할 수 없습니다.</td></tr>
@@ -351,7 +377,7 @@
 
 <h3 id="limits">한계</h3>
 <ul>
-<li>표를 저장 장치에 기록하고 다시 읽는 과정과 reset은 실행하지 않았습니다. 같은 RAM 표와 합성 바이트 저장소를 넘겼습니다.</li>
+<li>12사례는 같은 RAM 표를 넘겼습니다. INITFS 시험은 모델 저장소를 통해 표를 기록하고 복원했습니다. 실제 저장 장치와 reset은 실행 범위 밖입니다.</li>
 <li>BOOT의 초기화, 다른 리소스, 실제 mode 전환, 진입 주소로 들어가는 실행, 주변 장치, 인증은 시험 밖입니다.</li>
 <li>합성 매체는 시작 블록 번호별로 바이트를 저장합니다. 시작 블록이 다른 두 구간이 일부만 겹치는 경우는 흉내 내지 못합니다.</li>
 <li>M0가 쓰는 주소와 BOOT가 읽는 주소를 합성 RAM에서 임의로 같은 메모리로 묶지 않았습니다.</li>
@@ -371,13 +397,17 @@
 <dt>Python 패키지</dt><dd><code>unicorn==2.1.4</code></dd>
 </dl>
 <pre><code>python verify_update_bank_selection.py decoded.bin --output bank-decoded.json
-python verify_update_bank_selection.py rtos.bin --boot boot.bin --output bank-split.json</code></pre>
+python verify_update_bank_selection.py rtos.bin --boot boot.bin --output bank-split.json
+python verify_initfs_layout.py decoded.bin --output initfs-layout.json</code></pre>
+<p>INITFS 시험에는 PARTPARA와 INITFS를 포함한 전체 <code>decoded.bin</code>이 필요합니다. 원본 입력과 레코드, 명령 구간 16개의 해시를 확인합니다. 재사용하는 bank 검증기는 줄 끝을 LF로 통일해 고정 해시와 비교한 다음, 검사한 바이트를 실행합니다.</p>
 <p class="small muted"><code>--boot</code>는 RTOS를 따로 넣을 때만 씁니다. 출력 경로에 기존 파일, hardlink, 대상이 없는 symlink가 있으면 멈춥니다. Python을 <code>-O</code>로 실행해 assert를 끄면 실행을 거부합니다.</p>
 </section>
 
 <section id="refs">
 <h2>근거 파일과 참고 자료</h2>
 <ul class="refs">
+<li><a href="initfs-layout-checks.json">initfs-layout-checks.json</a> — 명령 구간 해시, 원본 표 쓰기, 주소·값 흐름과 모델 호출</li>
+<li><a href="../verify_initfs_layout.py">verify_initfs_layout.py</a> · <a href="../tests/test_initfs_layout.py">INITFS 재현기의 입력·출력 시험</a></li>
 <li><a href="update-bank-selection-evidence.json">update-bank-selection-evidence.json</a> — 원본 구간, 핵심 명령과 해시, 대체 호출, 한계</li>
 <li><a href="update-bank-selection-checks.json">update-bank-selection-checks.json</a> — 12사례의 인수, 표 변경, 읽기 결과</li>
 <li><a href="../verify_update_bank_selection.py">verify_update_bank_selection.py</a> — 재현 도구</li>

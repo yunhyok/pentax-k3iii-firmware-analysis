@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>차트의 톤 곡선을 다른 장면에 적용한 결과 — PENTAX 펌웨어 연구</title>
+<meta name="description" content="K-3 II 차트 #1376에서 고정한 톤 곡선을 다른 바디의 야외 RAW #1363에 적용해 카메라 Natural JPEG와 색차를 비교했습니다.">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-camera="k3iii">
+<!-- chrome:top -->
+<a class="skip" href="#main">본문 바로가기</a>
+<div class="topbar"><div class="topbar-in"><a class="brand" href="../index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="../index.html" aria-current="true">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="https://yunhyok.github.io/pentax-q7-firmware-analysis/">Q7</a></div><nav class="topnav" aria-label="주제"><a href="../index.html">개요</a><a href="guide-boot.html">부팅·저장소</a><a href="guide-update.html">업데이트</a><a href="guide-rebuild.html">재구축</a><a href="guide-rtos.html">명령·셸</a><a href="guide-color.html">색 처리</a><a href="lightroom-bridge.html" aria-current="true">Lightroom</a><a href="af-foundations.html">AF</a><a href="ui-port-contract.html">UI</a></nav></div></div>
+<nav class="crumbs" aria-label="현재 위치"><ol><li><a href="../index.html">PENTAX K-3 Mark III</a></li><li><a href="lightroom-bridge.html">Lightroom 색 프로파일</a></li><li aria-current="page">고정 톤의 독립 장면 비교</li></ol></nav>
+<!-- /chrome:top -->
+<header class="page-head">
+<p class="eyebrow">Lightroom 색 프로파일 · K-3 II #1363</p>
+<h1>차트의 톤 곡선을 다른 장면에 적용한 결과</h1>
+<p class="lead">차트 #1376의 무채색으로 구한 곡선을 고정하고, 다른 K-3 II로 찍은 야외 RAW #1363에서 카메라 Natural 내장 JPEG와의 색차를 쟀습니다.</p>
+</header>
+<div class="layout">
+<!-- chrome:toc -->
+<nav class="toc" aria-label="이 문서의 목차"><h2 data-toc="no">이 문서에서</h2><ol><li><a href="#results">고정 곡선을 적용하자 24개 영역의 색차가 줄었습니다</a></li><li><a href="#method">곡선과 비교 영역을 미리 고정했습니다</a></li><li><a href="#bridge">같은 차트의 Lightroom 15.6·16.0 출력을 먼저 비교했습니다</a></li><li><a href="#limits">이 결과의 범위는 야외 장면 한 장입니다</a></li><li><a href="#replay">재현 방법</a></li><li><a href="#refs">근거 파일</a></li></ol></nav>
+<!-- /chrome:toc -->
+<main class="doc" id="main">
+<section id="results">
+<h2>고정 곡선을 적용하자 24개 영역의 색차가 줄었습니다</h2>
+<p class="takeaway">영역별 중앙 ΔE00의 평균이 행렬 TIFF의 5.374에서 4.067로 줄었습니다. 같은 지표에서 Camera Natural은 3.948, Adobe Standard는 5.026이었습니다.</p>
+<figure class="diagram">
+<figcaption>24개 고정 영역 · 영역별 중앙 ΔE00의 평균</figcaption>
+<svg viewBox="0 0 400 217" width="100%" role="img" aria-labelledby="scene-score-title scene-score-desc">
+<title id="scene-score-title">카메라 Natural JPEG와의 색차 비교</title>
+<desc id="scene-score-desc">행렬 5.374, 고정 톤을 더한 행렬 4.067, Camera Natural 3.948, Adobe Standard 5.026. 짧을수록 JPEG와 가깝습니다.</desc>
+<g fill="var(--ink)" font-size="14">
+<text x="6" y="18">행렬 DCP</text><text x="394" y="18" text-anchor="end">5.374</text>
+<text x="6" y="65">행렬 + 고정 톤</text><text x="394" y="65" text-anchor="end">4.067</text>
+<text x="6" y="112">Camera Natural</text><text x="394" y="112" text-anchor="end">3.948</text>
+<text x="6" y="159">Adobe Standard</text><text x="394" y="159" text-anchor="end">5.026</text>
+</g>
+<g fill="var(--faint)">
+<rect x="6" y="25" width="347.52" height="10" rx="2"/>
+<rect x="6" y="119" width="255.64" height="10" rx="2"/>
+<rect x="6" y="166" width="325.01" height="10" rx="2"/>
+</g>
+<rect x="6" y="72" width="263.00" height="10" rx="2" fill="var(--brand)"/>
+<path d="M6 193H394" stroke="var(--line-strong)"/>
+<g fill="var(--muted)" font-size="12"><text x="6" y="211">0</text><text x="200" y="211" text-anchor="middle">3</text><text x="394" y="211" text-anchor="end">6 ΔE00</text></g>
+</svg>
+</figure>
+<div class="table-wrap"><table>
+<caption>같은 픽셀을 비교한 세 범위</caption>
+<thead><tr><th scope="col">범위</th><th scope="col">표본 픽셀</th><th scope="col">행렬</th><th scope="col">행렬 + 고정 톤</th><th scope="col">Camera Natural</th><th scope="col">Adobe Standard</th></tr></thead>
+<tbody>
+<tr><th scope="row">24개 영역 전체</th><td class="n">221,184</td><td class="n">5.374</td><td class="n">4.067</td><td class="n">3.948</td><td class="n">5.026</td></tr>
+<tr><th scope="row">낮은 기울기, 채널 끝값 제외</th><td class="n">53,463</td><td class="n">4.805</td><td class="n">3.349</td><td class="n">3.058</td><td class="n">4.533</td></tr>
+<tr><th scope="row">위 조건과 내부 매듭 범위</th><td class="n">51,164</td><td class="n">4.786</td><td class="n">3.293</td><td class="n">3.053</td><td class="n">4.536</td></tr>
+</tbody></table></div>
+<p>세 범위 모두 24개 영역의 중앙 ΔE00가 개선됐습니다. 전체 범위에서 영역별 평균 절대 ΔL*를 같은 방식으로 집계하면 4.084에서 2.440으로 줄었습니다. Camera Natural은 표의 세 범위에서 영역별 중앙값 평균이 가장 낮았습니다. 전체 픽셀을 합쳐 계산한 p90은 고정 톤 8.079, Camera Natural 8.139로 순서가 달랐습니다. <a href="color-scene-transfer.json">영역별 수치와 분포 요약</a></p>
+</section>
+
+<section id="method">
+<h2>곡선과 비교 영역을 미리 고정했습니다</h2>
+<ol class="steps">
+<li><strong>#1376 차트에서 톤 결정</strong>무채색 여섯 패치의 휘도 관계와 (0, 0), (1, 1)을 고정한 단조 3차 곡선(PCHIP)을 가져왔습니다.</li>
+<li><strong>#1363의 원래 크기 출력 세 개 확보</strong>같은 RAW를 행렬 DCP, Camera Natural, Adobe Standard로 현상했습니다. 카메라 기준은 같은 RAW 안의 Natural JPEG입니다.</li>
+<li><strong>위치 등록 뒤 같은 영역 비교</strong>JPEG와 행렬 TIFF를 맞춘 후 24개 96×96 영역에서 세 현상 결과와 행렬 TIFF에 고정 톤을 더한 값을 비교했습니다.</li>
+</ol>
+<p>공간 위치는 색차와 별개로 결정했습니다. 초록 채널을 흐리게 한 뒤 Sobel 기울기 크기 패턴으로 고정 위치 20곳을 대조했습니다. 교대로 나눈 10곳으로 affine 좌표 변환을 구했고, 남은 10곳의 최대 잔차는 0.0571px였습니다. 세 TIFF의 공통 좌표를 쓰기 전에 행렬 TIFF 기준 최대 이동이 Camera Natural 0.0206px, Adobe Standard 0.0612px임을 확인했습니다. 두 번째 집계는 기울기가 낮고 어느 입력에도 채널 끝값이 없는 픽셀을 사용했습니다. 세 번째는 여기에 세 선형 행렬 RGB 채널이 차트의 내부 매듭 범위에 드는 조건을 더했습니다. <a href="color-scene-plan.json">고정 좌표·마스크·통과 기준</a></p>
+<p>TIFF의 내장 ProPhoto ICC와 JPEG의 sRGB를 LittleCMS 상대 색도 변환에 사용해 D50 Lab으로 바꿨습니다. 고정 톤은 선형 ProPhoto RGB의 최솟값과 최댓값에 곡선을 적용하고 중간 채널은 원래 상대 위치로 보간했습니다. 이 식은 Adobe DNG SDK 1.7.1의 <code>RefBaselineRGBTone</code>을 참고했습니다. 여기서는 이미 현상된 TIFF에 적용하는 오프라인 계산이며 Lightroom의 내부 연산이나 DCP 설치를 재현하는 단계는 없습니다. <a href="color-tone-residual.html">차트의 톤 계산</a> · <a href="https://helpx.adobe.com/camera-raw/desktop/dng-and-file-formats/digital-negative.html">Adobe DNG SDK 배포처</a></p>
+</section>
+
+<section id="bridge">
+<h2>같은 차트의 Lightroom 15.6·16.0 출력을 먼저 비교했습니다</h2>
+<p>#1376에 같은 행렬 DCP를 적용한 두 TIFF에서 디코딩한 RGB16 픽셀 24,064,000개와 내장 ICC가 바이트 단위로 일치했습니다. 현상 XMP에서는 Version이 18.7에서 19.0으로 바뀌었고 <code>ReshapeAmount=0</code>이 추가됐습니다. ProcessVersion 15.4와 나머지 기록된 현상값은 같았습니다. 이 대조는 #1376의 행렬 프로파일과 해당 설정 한 건에 해당합니다. <a href="color-engine-bridge.json">버전 대조 결과</a></p>
+<p>두 RAW는 기종과 펌웨어 버전 1.10이 같고 바디 식별자가 달랐습니다. 내장 ColorMatrix 두 개와 AsShotNeutral도 달랐습니다. 실험에는 #1376 시험 DCP를 그대로 적용했습니다. As Shot을 유지했을 때 #1363의 Lightroom 표기는 행렬이 4650 K/+28, Camera Natural과 Adobe Standard가 4800 K/+30이었습니다. 셋 다 Exposure 0.00이며, 이 비교가 같은 센서 화이트밸런스 배율을 보장하지는 않습니다.</p>
+</section>
+
+<section id="limits">
+<h2>이 결과의 범위는 야외 장면 한 장입니다</h2>
+<p>카메라 Natural JPEG는 이 실험의 출력 기준입니다. 장면의 절대 색 참값은 측정하지 않았습니다. 바디, 렌즈, 촬영 조건, 화이트밸런스와 카메라의 그림자 보정이 차트와 달랐습니다. 남은 색차를 어느 단계가 만들었는지 분리하거나, 같은 곡선이 다른 장면과 조명에서도 개선된다고 판단할 수 없습니다. 24개 영역과 그 안의 픽셀은 한 RAW에서 얻은 관찰값입니다.</p>
+</section>
+
+<section id="replay">
+<h2>재현 방법</h2>
+<p>두 RAW는 raw.pixls.us의 CC0 1.0 표본입니다. #1363은 <code>pentax-k3ii-1363.dng</code>, #1376은 <code>pentax-k3ii-1376.dng</code>로 두고, #1363의 <code>SubIFD1:PreviewImage</code>에서 6016×4000 JPEG를 추출합니다. MakerNote에는 다른 작은 프리뷰도 들어 있습니다. Python의 subprocess로 stdout 바이트를 직접 저장하면 셸의 텍스트 변환을 피할 수 있습니다. <a href="https://raw.pixls.us/getfile.php/1363/nice/Pentax%20-%20K-3%20II%20-%2014bit%20%283:2%29.DNG">#1363 DNG</a> · <a href="https://raw.pixls.us/getfile.php/1376/nice/Pentax%20-%20K-3%20II%20-%2014bit%20%283:2%29.dng">#1376 DNG</a> · <a href="https://creativecommons.org/publicdomain/zero/1.0/">CC0 1.0</a></p>
+<pre><code>python -c "from pathlib import Path; import subprocess; Path('pentax-k3ii-1363-preview.jpg').open('xb').write(subprocess.check_output(['exiftool','-b','-SubIFD1:PreviewImage','pentax-k3ii-1363.dng']))"
+python -B tools/profile_bridge.py analysis/lightroom-matrix-1376.json matrix1376.dcp</code></pre>
+<p>시험 DCP의 SHA-256은 <code class="wrap">6aa402a77f6b41f9fa37e99f1bd6911447e74c112eb7f7601c8c3bb116570ee4</code>입니다. #1376의 ColorMatrix와 보정 조명만 사용하는 고정 레시피입니다. Lightroom에서 이 DCP를 선택하고 #1376 TIFF를 버전 15.6과 16.0에서 각각 준비합니다. #1363은 버전 16.0에서 세 프로파일을 번갈아 적용합니다. <a href="lightroom-matrix-1376.json">DCP 레시피</a></p>
+<p>공통 현상 설정은 ProcessVersion 15.4, SDR, As Shot, 노출 0.00, 기본 톤·채도, 자르기 없음, 렌즈 프로파일·CA·기하 보정 끔입니다. 캡처 샤프닝은 40, 반경 1.0, 세부 25, 마스킹 0이며 휘도 NR 0, 색상 NR 25입니다. TIFF는 무압축 unsigned RGB16 ProPhoto, 원래 크기, 출력 샤프닝·워터마크·재가져오기 끔으로 내보냅니다. 현상 XMP가 포함되도록 메타데이터를 보존합니다. #1363 TIFF의 파일명은 각 폴더에서 <code>pentax-k3ii-1363.tif</code>입니다. 하위 폴더 이름은 <code>matrix1376</code>, <code>camera-natural</code>, <code>adobe-standard</code>입니다. <a href="https://helpx.adobe.com/lightroom-classic/desktop/export-photos/export-files-disk-or-cd.html">Adobe 내보내기 설정</a></p>
+<p>Python 3.11 이상, NumPy, SciPy, OpenCV, Pillow, scikit-image, tifffile, ExifTool과 LittleCMS <code>tificc</code>가 필요합니다. <code>work</code>는 만들어 둔 작업 폴더이고 결과 경로는 새 파일이어야 합니다. 아래 명령은 기록한 TIFF 파일 전체의 해시를 요구합니다.</p>
+<pre><code>python -B tools/check_color_engine_bridge.py --raw pentax-k3ii-1376.dng --old-tiff chart-15.6.tif --new-tiff chart-16.0.tif --output bridge.json
+python -B tools/check_color_scene_transfer.py --raw pentax-k3ii-1363.dng --preview pentax-k3ii-1363-preview.jpg --exports exports --bridge chart-16.0.tif --exiftool exiftool --tificc tificc --scratch work --output transfer.json</code></pre>
+<p>새로 내보낸 TIFF는 저장 시각과 XMP 식별자에 따라 전체 파일 해시가 달라질 수 있습니다. 이 경우 <code>--allow-fresh-export</code>를 지정합니다. 버전 대조의 두 차트 출력과 장면 검증에 쓰는 16.0 차트 출력은 기록된 RGB·ICC·현상 설정이 같아야 합니다. #1363 TIFF는 기록된 프로파일과 현상 설정·ICC를 확인한 뒤 RGB와 색차를 새로 측정합니다. RAW·JPEG·곡선·등록 기준은 고정합니다. 색차를 계산하기 전에 등록만 확인하려면 <code>--registration-only</code>를 사용합니다.</p>
+</section>
+
+<section id="refs">
+<h2>근거 파일</h2>
+<ul class="refs">
+<li><a href="color-scene-plan.json">고정한 계획</a> · <a href="color-scene-transfer.json">장면 비교 수치</a> · <a href="color-engine-bridge.json">엔진 버전 대조 수치</a></li>
+<li><a href="../tools/check_color_scene_transfer.py">장면 검증기</a> · <a href="../tools/check_color_engine_bridge.py">엔진 버전 대조 도구</a></li>
+<li><a href="color-tone-residual.html">차트 톤 잔차</a> · <a href="lightroom-render-comparison.html">차트의 Lightroom 출력 비교</a></li>
+</ul>
+</section>
+</main>
+</div>
+<!-- chrome:bottom -->
+<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">Lightroom 색 프로파일 — 이 주제의 문서</h2><ol><li><a href="lightroom-bridge.html">Lightroom 프로파일 안내<span>DCP 생성·검증의 전체 흐름</span></a></li><li><a href="raw-test-inputs.html">시험용 RAW 준비</a></li><li><a href="color-comparison-protocol.html">ColorChecker 비교 절차</a></li><li><a href="lightroom-render-comparison.html">실제 TIFF 6개 비교</a></li><li><a href="lightroom-tone-comparison.html">톤 곡선 비교</a></li><li><a href="lightroom-model-exports.html">K-3 III·Q7 DCP 내보내기</a></li><li><a href="lightroom-profile-fingerprints.html">프로파일 지문 재현</a></li><li><a href="lightroom-look-controls.html">LookTable 대조 실험</a></li><li><a href="color-tone-residual.html">톤 보정 뒤 남는 색차</a></li><li><a href="color-scene-transfer.html" aria-current="page">고정 톤의 독립 장면 비교<span>K-3 II #1363과 Lightroom 버전 대조</span></a></li></ol></nav>
+<nav class="pager" aria-label="이전·다음 문서"><a class="prev" href="color-tone-residual.html"><small>← 이전</small>톤 보정 뒤 남는 색차</a><a class="next" href="af-foundations.html"><small>다음 →</small>AF와 렌즈 제어 안내</a></nav>
+<footer class="sitefoot"><div class="sitefoot-in"><nav aria-label="사이트"><a href="../index.html#map">문서 지도</a><a href="../index.html#levels">검증 수준 읽는 법</a><a href="../glossary.html">용어집</a><a href="research-program.html">세 기종 연구 본부</a><a href="https://github.com/yunhyok/pentax-k3iii-firmware-analysis">GitHub 저장소</a></nav><p>PENTAX K-3 Mark III 펌웨어 2.20 분석 문서. PC에서 수행한 정적 분석과 에뮬레이션 결과이며, 카메라 실기에서 검증한 내용이 아닙니다. 원본 펌웨어와 추출한 독점 코드는 포함하지 않습니다.</p></div></footer>
+<!-- /chrome:bottom -->
+</body>
+</html>

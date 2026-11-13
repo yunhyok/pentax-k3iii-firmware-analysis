@@ -1,0 +1,138 @@
+{
+  "scope": "Predeclared held-out scene evaluation of fixed chart PCHIP; no #1363 color fit or exposure/WB adjustment.",
+  "fixture": {
+    "raw_sha256": "f43b9dc35e4d1b43918d2d4bd0973bc202af48ed24c924e4aff61250c971b171",
+    "preview_sha256": "a85cc3d06ac1476e1b69db467b337af7edbe24e1a46e7eece312a917017dee75",
+    "shape_yxc": [
+      4000,
+      6016,
+      3
+    ],
+    "raw_filename": "pentax-k3ii-1363.dng",
+    "preview_color_space": "sRGB"
+  },
+  "curve": {
+    "source_json_pointer": "/experiments/matrix_to_native_jpeg/200px/pchip/neutral_xy",
+    "xy": [
+      [
+        0.0,
+        0.0
+      ],
+      [
+        0.014331656803857513,
+        0.02169569141244841
+      ],
+      [
+        0.0780619119394937,
+        0.10987265187622347
+      ],
+      [
+        0.22976813241183844,
+        0.266604751370002
+      ],
+      [
+        0.48576825007373475,
+        0.5027896899419582
+      ],
+      [
+        0.689617102326383,
+        0.7207225396805532
+      ],
+      [
+        0.8553831127885029,
+        0.942952217177566
+      ],
+      [
+        1.0,
+        1.0
+      ]
+    ],
+    "chart_report_sha256_lf": "6b417e8b69940157495fcc751ab4c5560effa5a089c62cf273ab7a66bf9de0ee"
+  },
+  "profiles": {
+    "matrix1376": {
+      "profile": "PENTAX RAW matrix test 1376",
+      "xmp_profile_digest": "1C7CF75BBFB3AA224BCEB9DAF7FBBBC9",
+      "icc_sha256": "0a8ef7d1d958d98225b3b71d93d9e8e3cecd9c302e014973d025d2a977ecf27c"
+    },
+    "camera-natural": {
+      "profile": "Camera Natural",
+      "xmp_profile_digest": "67653F62730129864ADC9A1E8C76BDF0",
+      "icc_sha256": "0a8ef7d1d958d98225b3b71d93d9e8e3cecd9c302e014973d025d2a977ecf27c"
+    },
+    "adobe-standard": {
+      "profile": "Adobe Standard",
+      "xmp_profile_digest": "60AC1A2E4B4616A5F94860B8586E09F4",
+      "icc_sha256": "0a8ef7d1d958d98225b3b71d93d9e8e3cecd9c302e014973d025d2a977ecf27c"
+    }
+  },
+  "engine_bridge_16_tiff_sha256": "0e4359c888dc7bd7ebe18288a68002ba371def85d8a4517f69575863c55ea926",
+  "registration": {
+    "x": [
+      600,
+      1800,
+      3008,
+      4216,
+      5416
+    ],
+    "y": [
+      500,
+      1500,
+      2500,
+      3500
+    ],
+    "fit_sites": "checkerboard parity even; remaining sites held out",
+    "gradient": "Gaussian sigma 1.4 green Sobel magnitude; normalized template correlation",
+    "template_half_px": 70,
+    "search_radius_px": 65,
+    "minimum_template_standard_deviation_8bit_scale": 0.75,
+    "minimum_correlation": 0.8,
+    "minimum_fit_sites": 6,
+    "minimum_held_out_sites": 5,
+    "max_fit_residual_px": 2.0,
+    "max_held_out_residual_px": 3.0,
+    "tiff_to_matrix_max_shift_px": 1.0,
+    "tiff_to_matrix_min_sites": 8
+  },
+  "evaluation": {
+    "x": [
+      600,
+      1563,
+      2526,
+      3490,
+      4453,
+      5416
+    ],
+    "y": [
+      500,
+      1500,
+      2500,
+      3500
+    ],
+    "roi_size_px": 96,
+    "matrix_sampling": "bilinear at affine-mapped coordinates, shared across all TIFFs once TIFF-to-matrix shift passes",
+    "regions": "all fixed regions, equally weighted region statistics; no region picked by color error",
+    "mask_sensitivity": {
+      "jpeg_green_sobel_max_8bit_scale": 24.0,
+      "jpeg_all_codes_open_interval": [
+        1,
+        254
+      ],
+      "prophoto_all_codes_open_interval": [
+        0,
+        65535
+      ],
+      "meaning": "low-gradient JPEG away from channel endpoints in all four unadjusted inputs; common across methods"
+    },
+    "range_subset": "all three pre-transform linear matrix RGB channels inside the inner chart knot domain, combined with low-gradient/nonendpoint mask",
+    "minimum_samples_for_subset_region": 64,
+    "metrics": [
+      "per-region median and p90 deltaE00",
+      "per-region mean absolute delta L*",
+      "per-region mean ab-plane distance",
+      "equal-region mean of those summaries",
+      "pooled median and p90 deltaE00 (descriptive)",
+      "number of paired regions with median improvement/worsening"
+    ]
+  }
+}
