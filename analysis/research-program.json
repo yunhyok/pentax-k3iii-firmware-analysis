@@ -11,7 +11,7 @@
       "name": "K-3 Mark III",
       "firmware_version": "2.20",
       "firmware_sha256": "3c9d466b8160689867af2f58ff2cf0bf3363bc3b42daff43685a33171b91eb1a",
-      "commit": "8686f5dfb8b86b6f07586947c1001dfd88908d11",
+      "commit": "1168039026d5bc5763ea62ff52b26b6f3a73a28b",
       "digest_source": "iii-input",
       "digest_field": "input_sha256",
       "report_source": "iii-integration"
@@ -567,6 +567,11 @@
       "camera": "q7",
       "path": "reports/nand-context.html",
       "label": "NAND 컨텍스트 등록과 별도 매체 발견"
+    },
+    "iii-af-mode1": {
+      "camera": "k3iii",
+      "path": "analysis/af-mode1-control.html",
+      "label": "Joint 모드1 요청·리셋 후속·피드백 계산"
     }
   },
   "tracks": [
@@ -760,9 +765,9 @@
       "dependency": "현재는 향후 변경에 필요한 알고리즘과 렌즈 제어를 오프라인에서 연구합니다. 특정 렌즈용 패치와 실기 구동 시험은 후속 단계입니다.",
       "cards": {
         "k3iii": {
-          "state": "Joint 요청 전달 · ReloadTimer와 Udc 바인딩",
-          "finding": "0x8902 패킷과 Joint 모드 선택을 원본 ARM으로 재현했습니다. D1 ReloadTimer와 키 0x123 Udc의 생성·레지스트리 조회·서비스 및 PafMotor 연결도 확인했습니다. 실제 객체를 따라 첫 MMIO 읽기 직전까지 도달했으나, 레지스터 값·물리 구동과 모터 종류를 확인한 것은 아닙니다.",
-          "next": "요청 코드와 제어 인자, 카운터 피드백의 산술 및 보정값 생산자를 추적합니다. 스크루·렌즈 내 모터의 실제 대응과 광학적 초점은 이후 검증합니다.",
+          "state": "Joint 요청 분기 · 피드백 수치와 별도 MMIO 경계",
+          "finding": "Joint 모드 선택과 ReloadTimer·Udc 연결에 이어 요청 0–9 분기, 극성 인자와 요청3의 누적·조회 계산을 원본 ARM으로 재현했습니다. 리셋 후속, 요청 처리, 피드백 수치 입력은 별도 진입이며 하드웨어 읽기 전에 멈췄습니다. 요청3의 보정값 합산과 요청9·0xff의 직접 대입도 구분했습니다.",
+          "next": "Pulse 기준값과 PafMotor 보정 필드의 생산자·객체 수명을 추적합니다. 실제 피드백 값·물리 단위, 스크루·렌즈 내 모터 대응과 광학적 초점은 이후 검증합니다.",
           "sources": [
             "iii-af",
             "iii-kernels",
@@ -774,7 +779,8 @@
             "iii-af-consumer",
             "iii-af-8902",
             "iii-joint",
-            "iii-af-binding"
+            "iii-af-binding",
+            "iii-af-mode1"
           ]
         },
         "k3ii": {

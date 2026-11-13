@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Lightroom 톤과 내보낸 RGB의 관계 — PENTAX 펌웨어 연구</title>
+<meta name="description" content="같은 K-3 II RAW의 톤 대조군을 ProPhoto RGB와 Adobe RGB로 내보내고 채널 끝값의 순서를 비교했습니다.">
+<link rel="stylesheet" href="../assets/site.css">
+<style>
+.coordinates-flow {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.75rem;list-style:none;padding:0;margin:.75rem 0 0}
+.coordinates-flow li {border:1px solid var(--line);border-radius:8px;padding:.75rem;overflow-wrap:anywhere}
+.coordinates-flow strong {display:block;margin-bottom:.35rem}
+.coordinates-replay code {overflow-wrap:anywhere}
+@media(max-width:700px){.coordinates-flow{grid-template-columns:minmax(0,1fr)}}
+</style>
+</head>
+<body data-camera="k3iii">
+<!-- chrome:top -->
+<a class="skip" href="#main">본문 바로가기</a>
+<div class="topbar"><div class="topbar-in"><a class="brand" href="../index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="../index.html" aria-current="true">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="https://yunhyok.github.io/pentax-q7-firmware-analysis/">Q7</a></div><nav class="topnav" aria-label="주제"><a href="../index.html">개요</a><a href="guide-boot.html">부팅·저장소</a><a href="guide-update.html">업데이트</a><a href="guide-rebuild.html">재구축</a><a href="guide-rtos.html">명령·셸</a><a href="guide-color.html">색 처리</a><a href="lightroom-bridge.html" aria-current="true">Lightroom</a><a href="af-foundations.html">AF</a><a href="ui-port-contract.html">UI</a></nav></div></div>
+<nav class="crumbs" aria-label="현재 위치"><ol><li><a href="../index.html">PENTAX K-3 Mark III</a></li><li><a href="lightroom-bridge.html">Lightroom 색 프로파일</a></li><li aria-current="page">Lightroom 톤과 RGB 좌표</li></ol></nav>
+<!-- /chrome:top -->
+<header class="page-head">
+<p class="eyebrow">Lightroom 색 프로파일 · K-3 II #1376</p>
+<h1>Lightroom 톤과 내보낸 RGB의 관계</h1>
+<p class="lead">같은 RAW와 현상값에서 두 톤 프로파일을 비교했습니다. 파란 채널의 밝기 순서가 뒤집혔고, Adobe RGB로 내보낸 뒤 ProPhoto 좌표로 되돌려도 이 역전은 남았습니다.</p>
+</header>
+<div class="layout">
+<!-- chrome:toc -->
+<nav class="toc" aria-label="이 문서의 목차"><h2 data-toc="no">이 문서에서</h2><ol><li><a href="#same-engine">같은 버전에서도 두 패치의 파란 채널 순서가 뒤집혔습니다</a></li><li><a href="#output-space">Adobe RGB에서도 같은 채널의 역전이 남았습니다</a></li><li><a href="#sdk">Adobe SDK의 참조 구현에서 톤은 선형 작업 RGB에 적용됩니다</a></li><li><a href="#limits">같은 채널 역전만으로는 내부 작업 색공간을 알 수 없습니다</a></li><li><a href="#replay">재현 방법</a></li></ol></nav>
+<!-- /chrome:toc -->
+<main class="doc" id="main">
+<section id="same-engine">
+<h2>같은 버전에서도 두 패치의 파란 채널 순서가 뒤집혔습니다</h2>
+<p>같은 #1376 RAW에 Identity, Explicit ACR3, 곡선을 생략한 행렬 DCP, 기존 합성 톤 DCP를 적용했습니다. Lightroom Classic 16.0에서 내보낸 네 ProPhoto RGB TIFF는 6016×4000 RGB16 무압축입니다. As Shot 5200 K/+2와 노출 0.00을 유지했고, 프로파일 이름·다이제스트를 제외한 기록된 현상값이 같았습니다. 15.6과 16.0의 Identity 및 Explicit ACR3는 기존 24개 200×200 차트 영역에서 역할별 RGB16 코드가 모두 일치했습니다. <a href="lightroom-tone-coordinates.json">같은 엔진 대조 기록</a></p>
+<p>프로파일 곡선을 내보낸 RGB의 최솟값과 최댓값에 그대로 적용한다면, 입력 끝값의 크기 순서는 유지돼야 합니다. 비교에는 각 100×100 패치의 하위 중앙 순위값을 썼습니다. 각 픽셀에서 RGB 채널 순서가 양쪽 출력에서 모두 유지된 패치입니다.</p>
+<div class="table-wrap"><table>
+<caption>ProPhoto RGB16 원래 코드 · 낮은 쪽과 높은 쪽의 패치 통계</caption>
+<thead><tr><th scope="col">패치와 끝값</th><th scope="col">Identity</th><th scope="col">곡선 생략</th><th scope="col">Explicit ACR3</th></tr></thead>
+<tbody><tr><th scope="row">#11 B 최솟값</th><td>15,305</td><td>21,166</td><td>21,166</td></tr>
+<tr><th scope="row">#10 B 최댓값</th><td>15,424</td><td>21,122</td><td>21,122</td></tr>
+<tr><th scope="row">두 패치의 차이</th><td>+119</td><td>−44</td><td>−44</td></tr></tbody>
+</table></div>
+<p>곡선 생략과 Explicit ACR3의 패치 중앙색 ΔE00 중앙값은 0.000144, 최대는 0.001591이었습니다. 두 렌더가 거의 같아도 Identity에 SDK ACR3를 직접 적용한 예측은 관측과 어긋났습니다. 앞서 만든 합성 톤 DCP는 두 장면의 고정 기준 중 최대 색차 조건을 충족하지 못했습니다. <a href="lightroom-composed-tone.html">합성 톤 DCP의 실제 출력</a></p>
+</section>
+
+<section id="output-space">
+<h2>Adobe RGB에서도 같은 채널의 역전이 남았습니다</h2>
+<figure class="diagram"><figcaption>실제 두 출력과 색 관리 대조</figcaption>
+<ol class="coordinates-flow">
+<li><strong>같은 RAW와 프로파일</strong>Identity와 Explicit ACR3에 각각 동일한 현상값을 적용</li>
+<li><strong>실제 TIFF 두 쌍</strong>같은 Lightroom 16.0에서 ProPhoto RGB와 Adobe RGB로 각각 내보냄</li>
+<li><strong>공통 좌표 비교</strong>Adobe RGB를 내장 ICC로 해석해 ProPhoto 선형 RGB와 코드 척도로 환산</li>
+</ol></figure>
+<p>새 TIFF를 읽기 전에 두 ProPhoto 출력에서 예측한 Adobe RGB 선형 RGB가 모두 0.01~0.99 안쪽인 픽셀을 고정했습니다. 960,000개 중 932,946개가 남았습니다. 두 Adobe RGB 파일에서 각 ProPhoto 대조군의 CRS 속성 115개와 중첩 설정 6개가 정확히 일치했습니다. 19개 정합 지점의 최대 이동은 Identity 0.111픽셀, Explicit ACR3 0.124픽셀이었습니다.</p>
+<div class="table-wrap"><table>
+<caption>고정 색역 마스크를 적용한 뒤의 패치 차이 · ProPhoto 코드 척도</caption>
+<thead><tr><th scope="col">패치 쌍</th><th scope="col">ProPhoto<br>Identity → ACR3</th><th scope="col">Adobe RGB 역변환<br>Identity → ACR3</th></tr></thead>
+<tbody><tr><th scope="row">#11 B 최솟값과 #10 B 최댓값</th><td>+119 → −44</td><td>+121.784 → −39.806</td></tr>
+<tr><th scope="row">#10 G 최솟값과 #15 B 최솟값</th><td>+171 → +125</td><td>+170.590 → +122.090</td></tr></tbody>
+</table></div>
+<p>두 번째 패치 쌍의 역전은 마스크를 적용하기 전 ProPhoto에서 137코드였습니다. #15 중앙 10,000개 중 6,669개를 남긴 후에는 두 출력 공간에서 모두 역전이 사라졌습니다. 첫 번째 패치 쌍은 두 패치의 중앙 픽셀을 모두 유지했습니다.</p>
+<p>실제 Adobe RGB와 원래 ProPhoto의 D50 PCS 색차 중앙값은 Identity 0.02580, Explicit ACR3 0.02128이었습니다. 실제 Adobe RGB와 LittleCMS 상대색도 <code>-c0</code> 예측의 최대 차이는 각각 22코드와 24코드였습니다. 직접 ICC 행렬/TRC 예측과 <code>-c0</code>은 채널당 최대 1코드 차이였고 <code>-c1</code>과 <code>-c0</code>은 최대 1,838코드 차이였습니다. 실제 출력 경로에는 작은 차이가 남았지만, 이 두 경로에서 같은 채널 역전의 방향은 유지됐습니다.</p>
+<p>최초 검사는 설치 ICC와 내장 ICC의 파일 해시가 달라 중단됐습니다. 두 ICC는 생성 시각 6바이트와 저작권 연도 4바이트만 달랐습니다. 행렬과 TRC를 비롯한 나머지 바이트가 같았고, 두 ICC로 따로 예측한 전체 ROI의 LittleCMS RGB16 코드도 각각 <code>-c0</code>, <code>-c1</code>에서 모두 일치했습니다. 두 해시와 차이 위치를 명시해 재검사했고 마스크와 판정 기준은 유지했습니다. <a href="lightroom-tone-coordinates.json">정합·ICC·픽셀 차이 전체 기록</a></p>
+</section>
+
+<section id="sdk">
+<h2>Adobe SDK의 참조 구현에서 톤은 선형 작업 RGB에 적용됩니다</h2>
+<figure class="diagram"><figcaption>Adobe DNG SDK 1.7.1 Build 2768의 SDR 참조 순서</figcaption>
+<ol class="coordinates-flow">
+<li><strong>선형 작업 RGB</strong>카메라 RGB를 PCS를 거쳐 선형 ProPhoto RGB로 변환. 조건에 따라 색상·채도, 노출 램프, LookTable 처리</li>
+<li><strong>끝값에 톤 적용</strong>공통 노출 톤 E와 프로파일 곡선 F를 합성한 LUT. 최솟값과 최댓값을 변환하고 가운데 채널을 보간</li>
+<li><strong>출력 변환</strong>조건에 따라 RGBTables, 출력 행렬과 클램프, 감마, 소스 마스크 합성</li>
+</ol></figure>
+<p>같은 입력 좌표에서 E가 단조이고 공통이라면, 이상적인 끝값 연산에서 Identity가 제공하는 값에 B를 적용한 결과는 합성 곡선 B∘E와 같습니다. 원본의 BaselineExposure는 −33165/65536 EV입니다. SDK의 유효 노출에는 Stage3Gain도 들어가므로 UI 노출 0만으로는 실제 E를 알 수 없습니다.</p>
+<p>고정한 세 EV 예시에서 유한 LUT와 순차 적용의 최대 스칼라 차이는 0.00000264였습니다. Python 계산은 float32 원본과 표본을 사용하고 보간은 float64로 했습니다. SDK의 ACR3 평가와 LUT 보간에는 real32 연산이 사용되므로 이 예시는 SDK 산술의 비트 재현이나 모든 노출에서의 상한으로 해석할 수 없습니다.</p>
+<div class="table-wrap"><table>
+<caption>24개 차트 ROI에서 본 정규화 선형 RGB의 최대 절대 변화</caption>
+<thead><tr><th scope="col">고정 비교</th><th scope="col">최대</th></tr></thead>
+<tbody><tr><th scope="row">직접 ICC 역변환과 LittleCMS Lab 경유 차이</th><td>0.00004698</td></tr>
+<tr><th scope="row">SDK D50 정규화 행렬과 감마를 함께 사용한 잔차 변화</th><td>0.00015114</td></tr>
+<tr><th scope="row">ACR3 구간선형과 동일 매듭의 자연 스플라인 차이</th><td>0.00000732</td></tr>
+<tr><th scope="row">Identity에 ACR3를 적용한 예측과 실제 곡선 생략 TIFF 차이</th><td>0.02154775</td></tr></tbody>
+</table></div>
+<p>근거는 Build 2768의 <code>dng_render.cpp</code> 1022–1061, 1862–2148, 2160–2228행, <code>dng_reference.cpp</code> 1871–1989행, <code>dng_color_space.cpp</code> 58–97, 205–226, 993–1007행입니다. 공개 명세는 50940을 선형 감마 FLOAT 쌍으로 정의합니다. 확인한 SDK 멤버와 행 범위 해시는 결과 JSON에 있습니다. <a href="https://helpx.adobe.com/jp/camera-raw/desktop/dng-and-file-formats/digital-negative.html">Adobe Build 2768 안내</a> · <a href="https://helpx.adobe.com/content/dam/help/en/camera-raw/digital-negative/jcr_content/root/content/flex/items/position/position-par/download_section_733958301/download-1/DNG_Spec_1_7_1_0.pdf#page=51">DNG 명세 51쪽</a></p>
+</section>
+
+<section id="limits">
+<h2>같은 채널 역전만으로는 내부 작업 색공간을 알 수 없습니다</h2>
+<p>합성 예시에서 중성축을 보존하는 3×3 행렬 H와 증가 곡선 x²를 사용했습니다. 내보낸 두 RGB의 첫 채널 0.200과 0.201은 H⁻¹로 옮겨 톤을 적용한 뒤 H로 돌아오면 약 0.080347과 0.040451로 역전합니다. 이때 두 픽셀에서 가운데 채널의 상대 위치는 정확히 보존됩니다. 실제 #7 오렌지의 ACR3−Identity 가운데 채널 비율 차이 중앙값도 원래 ProPhoto −0.00001175, Adobe RGB 역변환 +0.00002083으로 작았습니다.</p>
+<p>따라서 테스트한 출력 좌표의 공통 단조 스칼라 모델은 데이터와 맞지 않습니다. 작업 좌표 차이와 채널 문맥에 따른 변환이 모두 가능한 상태이며, 실제 Lightroom의 비공개 처리 순서나 특정 행렬은 식별하지 못했습니다. 다음 JPEG 대조에서는 채널 관계를 다루는 프로파일을 고정한 뒤, 프로파일을 만들 때 쓰지 않은 장면에서 별도로 평가해야 합니다.</p>
+</section>
+
+<section id="replay" class="coordinates-replay">
+<h2>재현 방법</h2>
+<p>원본 DNG는 CC0 표본 #1376입니다. <code>pentax-k3ii-1376.dng</code>라는 이름으로 Lightroom에 가져옵니다. 곡선 생략 행렬 DCP와 Identity 및 Explicit ACR3 대조 DCP의 생성 절차는 기존 톤 보고서에 있습니다. 합성 톤 DCP는 이전 실험의 파일을 사용합니다. 입력용 DCP 디렉터리에 아래 네 이름으로 둡니다. <a href="raw-test-inputs.html">원본 RAW 출처</a> · <a href="lightroom-tone-comparison.html#replay">대조 DCP 준비</a> · <a href="lightroom-composed-tone.html#reproduce">합성 톤 DCP 및 현상 설정</a></p>
+<div class="table-wrap"><table>
+<caption>각 역할의 파일과 카메라 프로파일</caption>
+<thead><tr><th scope="col">역할</th><th scope="col">프로파일</th><th scope="col">TIFF 출력</th></tr></thead>
+<tbody>
+<tr><th scope="row">omitted.dcp</th><td>PENTAX RAW matrix test 1376</td><td>prophoto/omitted</td></tr>
+<tr><th scope="row">candidate.dcp</th><td>PENTAX K-3 II 1376 Composed Tone Offline v1</td><td>prophoto/candidate</td></tr>
+<tr><th scope="row">identity.dcp</th><td>PENTAX 1376 Tone Identity v1</td><td>prophoto/identity, adobe-rgb/identity</td></tr>
+<tr><th scope="row">acr3.dcp</th><td>PENTAX 1376 ACR3 Control v1</td><td>prophoto/acr3, adobe-rgb/acr3</td></tr>
+<tr><th scope="row">15.6 보관 대조</th><td>동일 Identity, Explicit ACR3</td><td>prophoto/old_identity, prophoto/old_acr3</td></tr>
+</tbody></table></div>
+<p>각 TIFF 디렉터리의 파일명은 <code>pentax-k3ii-1376.tif</code>입니다. 16.0에서는 As Shot 5200 K/+2, EV 0.00, PV15.4로 맞추고 전체 크기 SDR, RGB16 무압축, 크기 조정 및 출력 선명하게 하기 해제, 전체 메타데이터로 내보냅니다. SHA로 고정한 Adobe DNG SDK 1.7.1 Build 2768 ZIP, 설치 Adobe RGB (1998) ICC, LittleCMS 2.12의 시험용 <code>tificc</code> 실행 파일도 필요합니다. 파일 해시는 JSON에 있습니다. 재현에 사용한 환경은 Python 3.12.3, NumPy 1.26.4, SciPy 1.13.1, OpenCV 4.13.0, Pillow 10.4.0, scikit-image 0.24.0, tifffile 2023.4.12였습니다.</p>
+<pre><code>python -B tools/check_lightroom_tone_coordinates.py \
+  --raw pentax-k3ii-1376.dng --dcps dcps --tiffs tiffs \
+  --sdk dng-sdk.zip --adobe-icc AdobeRGB1998.icc \
+  --tificc tificc.exe --output replay.json</code></pre>
+<p>기본 모드는 보관한 TIFF 8개의 파일 해시와 재계산한 수치 전체를 대조합니다. 보관 TIFF는 배포하지 않습니다. <code>--fresh-exports</code>를 붙이면 16.0 TIFF 6개로 다시 측정합니다. ProPhoto 4개는 고정 좌표와 마스크를 유지하도록 전체 디코딩 픽셀이 보관 값과 같아야 합니다. TIFF 컨테이너는 달라도 되며, Adobe RGB 두 파일은 같은 ICC와 115+6 현상값 등 고정 조건 안에서 픽셀이 달라도 됩니다. 이 모드는 실제 입력 해시를 기록하고 15.6 대조를 재측정하지 않습니다. 다른 엔진이나 작업 설정으로 범위를 넓히면 별도 실험이 필요합니다. <a href="../tools/check_lightroom_tone_coordinates.py">재현 도구</a> · <a href="lightroom-tone-coordinates.json">동결한 결과·계획·입력 해시</a></p>
+</section>
+</main>
+</div>
+<!-- chrome:bottom -->
+<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">Lightroom 색 프로파일 — 이 주제의 문서</h2><ol><li><a href="lightroom-bridge.html">Lightroom 프로파일 안내<span>DCP 생성·검증의 전체 흐름</span></a></li><li><a href="raw-test-inputs.html">시험용 RAW 준비</a></li><li><a href="color-comparison-protocol.html">ColorChecker 비교 절차</a></li><li><a href="lightroom-render-comparison.html">실제 TIFF 6개 비교</a></li><li><a href="lightroom-tone-comparison.html">톤 곡선 비교</a></li><li><a href="lightroom-model-exports.html">K-3 III·Q7 DCP 내보내기</a></li><li><a href="lightroom-profile-fingerprints.html">프로파일 지문 재현</a></li><li><a href="lightroom-look-controls.html">LookTable 대조 실험</a></li><li><a href="color-tone-residual.html">톤 보정 뒤 남는 색차</a></li><li><a href="color-scene-transfer.html">고정 톤의 독립 장면 비교<span>K-3 II #1363과 Lightroom 버전 대조</span></a></li><li><a href="lightroom-composed-tone.html">합성 톤 DCP의 실제 Lightroom 출력<span>두 장면·최대 색차 기준 미충족</span></a></li><li><a href="lightroom-tone-coordinates.html" aria-current="page">Lightroom 톤과 RGB 좌표<span>같은 엔진·두 출력 색공간 대조</span></a></li></ol></nav>
+<nav class="pager" aria-label="이전·다음 문서"><a class="prev" href="lightroom-composed-tone.html"><small>← 이전</small>합성 톤 DCP의 실제 Lightroom 출력</a><a class="next" href="af-foundations.html"><small>다음 →</small>AF와 렌즈 제어 안내</a></nav>
+<footer class="sitefoot"><div class="sitefoot-in"><nav aria-label="사이트"><a href="../index.html#map">문서 지도</a><a href="../index.html#levels">검증 수준 읽는 법</a><a href="../glossary.html">용어집</a><a href="research-program.html">세 기종 연구 본부</a><a href="https://github.com/yunhyok/pentax-k3iii-firmware-analysis">GitHub 저장소</a></nav><p>PENTAX 펌웨어 연구. PC에서 수행한 정적 분석과 에뮬레이션 결과이며, 카메라 실기에서 검증한 내용이 아닙니다. 원본 펌웨어와 추출한 독점 코드는 포함하지 않습니다.</p></div></footer>
+<!-- /chrome:bottom -->
+</body>
+</html>
