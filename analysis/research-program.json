@@ -4,14 +4,14 @@
   "time_zone": "Asia/Seoul",
   "title": "펜탁스 펌웨어 연구 본부",
   "summary": "K-3 Mark III, K-3 II, Q7의 분석 결과를 네 가지 목표로 비교합니다. 각 항목에 근거가 있는 결과, 아직 넘지 못한 검증 단계, 다음에 확인할 일을 기록합니다.",
-  "boundary": "세 기종의 무변경 재포장과 일부 함수 재컴파일 후보를 원본 코드로 대조했습니다. Lightroom 시험 DCP는 세 기종에서 실제 내보내기를 했고, K-3 II는 두 RAW 장면까지 측정했습니다. 톤 합성 후보는 사전 허용값 일부를 충족하지 못했습니다. 전체 소스 재빌드, 카메라의 수정 이미지 수용·부팅, 범용 색 재현, 렌즈 구동 변경과 대상 기종 UI 이식은 아직 완료되지 않았습니다.",
+  "boundary": "세 기종의 무변경 재포장과 일부 함수 재컴파일 후보를 원본 코드로 대조했습니다. 세 기종에서 시험 DCP를 적용한 Lightroom 출력을 얻었고, K-3 II 톤 후보는 사전 색차 기준 일부를 충족하지 못했습니다. 공개 SDK의 Stage 2 실행과 합성 RAM에서의 화면 전송은 각 시험 입력에 한정됩니다. 전체 소스 재빌드, 카메라의 수정 이미지 수용·부팅과 복구, 범용 색 재현, 렌즈 구동 변경과 대상 기종 UI 이식은 검증이 남아 있습니다.",
   "cameras": [
     {
       "id": "k3iii",
       "name": "K-3 Mark III",
       "firmware_version": "2.20",
       "firmware_sha256": "3c9d466b8160689867af2f58ff2cf0bf3363bc3b42daff43685a33171b91eb1a",
-      "commit": "2b50cf4f46a61b077789692b3ccc851d4d8d65b9",
+      "commit": "10c66576f616056534013b436ef54e831fc5afbe",
       "digest_source": "iii-input",
       "digest_field": "input_sha256",
       "report_source": "iii-integration"
@@ -21,7 +21,7 @@
       "name": "K-3 II",
       "firmware_version": "1.12",
       "firmware_sha256": "a33485f351019960192891ef69ddc5d4904ef9e298671d9d9955679e4c901a9a",
-      "commit": "37251412481bb0245e9ec38bf8555ad3b5b0976b",
+      "commit": "d9f4ddbbd8bb65cba52ab449fb0b3c89840161ff",
       "digest_source": "ii-input",
       "digest_field": "firmware_sha256",
       "report_source": "ii-rebuild"
@@ -31,7 +31,7 @@
       "name": "Q7",
       "firmware_version": "1.01",
       "firmware_sha256": "8a928b574623c28624127501526d8496a98a42eac3d843def6d3b5ceb074ff3b",
-      "commit": "2b867c1968b978252009406702ed182b063b4e8e",
+      "commit": "9613b7f2e41f11a05bbbb88cf8b295972f4a23f4",
       "digest_source": "q-input",
       "digest_field": "input_sha256",
       "report_source": "q-implementation"
@@ -742,6 +742,61 @@
       "camera": "k3ii",
       "path": "analysis/tone-upstream.json",
       "label": "상위 입력 7건과 소비자 4건의 전체 관측"
+    },
+    "iii-sdk-stage2": {
+      "camera": "k3iii",
+      "path": "analysis/lightroom-sdk-stage2.html",
+      "label": "공개 SDK Stage 2 실행"
+    },
+    "iii-sdk-stage2-data": {
+      "camera": "k3iii",
+      "path": "analysis/sdk-stage2/observation.json",
+      "label": "SDK 최초 관측 JSON"
+    },
+    "iii-sdk-stage2-rebuild": {
+      "camera": "k3iii",
+      "path": "analysis/sdk-stage2/rebuild.json",
+      "label": "276개 오브젝트 새 빌드 JSON"
+    },
+    "ii-tone-manager": {
+      "camera": "k3ii",
+      "path": "analysis/tone-manager.html",
+      "label": "톤 설정의 두 호출자와 갱신"
+    },
+    "ii-tone-manager-data": {
+      "camera": "k3ii",
+      "path": "analysis/tone-manager.json",
+      "label": "48바이트 레코드 정적 근거 JSON"
+    },
+    "q-dcp-structure": {
+      "camera": "q7",
+      "path": "reports/q7-dcp-structure.html",
+      "label": "Q7 DCP 두 파일의 저장 구조"
+    },
+    "q-dcp-structure-data": {
+      "camera": "q7",
+      "path": "analysis/q7-dcp-structure.json",
+      "label": "Q7 DCP 태그·집계 JSON"
+    },
+    "iii-clip": {
+      "camera": "k3iii",
+      "path": "analysis/colorspace-clip.html",
+      "label": "sRGB 글자 전송의 화면 경계"
+    },
+    "iii-clip-data": {
+      "camera": "k3iii",
+      "path": "analysis/colorspace-clip.json",
+      "label": "일곱 좌표의 전송 관측 JSON"
+    },
+    "iii-rmw-scope": {
+      "camera": "k3iii",
+      "path": "analysis/rmw-scope/report.html",
+      "label": "RMW 48바이트 이력과 선택 4바이트 모형"
+    },
+    "iii-rmw-scope-data": {
+      "camera": "k3iii",
+      "path": "analysis/rmw-scope/verified.json",
+      "label": "전체 정본 검사 후 공개한 RMW 이력"
     }
   },
   "tracks": [
@@ -751,9 +806,9 @@
       "dependency": "수정 이미지를 사용하는 AF·UI 실기 시험의 선행 조건입니다.",
       "cards": {
         "k3iii": {
-          "state": "원본 registry 재생 · RMW 8바이트 수동 증명",
-          "finding": "무변경 재포장과 Q13 함수 교체 후보를 검증했습니다. 원본 ROMFS 로더와 INITFS 복사를 더 연결했으며, M0 전달 경로에서는 공급한 선택값 1이 BOOT의 bank 1 인수까지 이어졌습니다. 별도 업데이트 완료 경로는 자원 표를 먼저 기록하고 헤더 위치를 기록합니다. 두 시험의 입력과 진입점은 다르므로 실제 업데이트와 부팅이 같은 bank를 선택한다는 증거는 아닙니다. 별도 진입을 포함한 원본 할당기 재생은 task 테이블을 만들었고, 네 대조에서 첫 task의 스택을 확보한 뒤 MPIDR 읽기 직전에 멈췄습니다. 별도 registry 실험에서는 원본 calloc이 반환한 0x56508808을 같은 VM의 registry에 저장하고, 1200바이트 영점 초기화와 hash 300개 조회를 연결했습니다. 00·A5 합성 RAM에서 lookup −1, wrapper 0으로 끝났으며 task 생성 성공을 뜻하지 않습니다. 별도 수동 비트벡터 모형에서는 15개 원본 명령의 순차 RAM 처리 뒤 두 워드가 임의 초기 64비트와 관계없이 (count<<2)|1과 0이 됨을 증명했습니다. 실제 읽기·중간 쓰기는 남으며 이 증명은 새 원본 실행이 아닙니다.",
-          "next": "선택값·bank의 실제 생산자와 부팅 초기화 순서를 추적합니다. 수동 증명 밖의 48바이트와 물리 RAM 생산자를 확인해야 하며, 기존 56바이트 RMW 허용 목록과 11개 독립 진입의 제약을 유지합니다. Boot ROM 인증, 수정 이미지 수용·부팅과 독립 복구는 미검증입니다.",
+          "state": "원본 registry 재생 · 별도 RMW 8바이트·4바이트 모형",
+          "finding": "무변경 재포장과 Q13 함수 교체 후보를 검증했습니다. 원본 ROMFS 로더와 INITFS 복사를 더 연결했으며, M0 전달 경로에서는 공급한 선택값 1이 BOOT의 bank 1 인수까지 이어졌습니다. 별도 업데이트 완료 경로는 자원 표를 먼저 기록하고 헤더 위치를 기록합니다. 두 시험의 입력과 진입점은 다르므로 실제 업데이트와 부팅이 같은 bank를 선택한다는 증거는 아닙니다. 별도 진입을 포함한 원본 할당기 재생은 task 테이블을 만들었고, 네 대조에서 첫 task의 스택을 확보한 뒤 MPIDR 읽기 직전에 멈췄습니다. 별도 registry 실험에서는 원본 calloc이 반환한 0x56508808을 같은 VM의 registry에 저장하고, 1200바이트 영점 초기화와 hash 300개 조회를 연결했습니다. 00·A5 합성 RAM에서 lookup −1, wrapper 0으로 끝났으며 task 생성 성공을 뜻하지 않습니다. 별도 수동 비트벡터 모형에서는 15개 원본 명령의 순차 RAM 처리 뒤 두 워드가 임의 초기 64비트와 관계없이 (count<<2)|1과 0이 됨을 증명했습니다. 실제 읽기·중간 쓰기는 남으며 이 증명은 새 원본 실행이 아닙니다. 후속 분석은 다른 48바이트의 첫 읽기와 후속 기록을 기존 추적에서 분류했습니다. 그중 할당 끝 레코드의 4바이트는 별도 7명령 수동 모형에서 최종값 (count<<2)|3이 초기 32비트와 무관했습니다. 중간 바이트 저장은 초기값에 의존하며, 이 결과는 전체 48바이트의 독립성이나 새 CPU 실행을 뜻하지 않습니다.",
+          "next": "실제 초기 기록자와 부팅 호출 순서, 선택 4바이트 증명 밖의 44바이트를 조사합니다. 기존 56바이트 허용 목록과 11개 독립 진입의 제약은 유지합니다. bank 선택값의 실제 생산자, Boot ROM 인증, 수정 이미지 수용·부팅과 독립 복구는 미검증입니다.",
           "sources": [
             "iii-package",
             "iii-integration",
@@ -778,13 +833,15 @@
             "iii-registry",
             "iii-registry-data",
             "iii-rmw",
-            "iii-rmw-data"
+            "iii-rmw-data",
+            "iii-rmw-scope",
+            "iii-rmw-scope-data"
           ]
         },
         "k3ii": {
           "state": "톤 함수 교체 · 결과 레지스터와 DMA 인수",
           "finding": "무변경 재포장과 톤 함수 교체 후보를 검증했습니다. 원본 설정 생산·소비 연결에 더해, 공급한 레지스터 값에서 count·length를 가져오는 경로와 원본 풀에서 만든 두 버퍼 주소가 DMA 설정 함수로 전달되는 경로를 확인했습니다. DMA 쪽은 별도 진입이며 첫 MMIO 읽기 전에 멈췄습니다.",
-          "next": "DMA 완료와 실제 데이터 생산, 버퍼 수명·소유권 및 보존 기록의 재읽기를 추적합니다. 수정 이미지 부팅과 복구는 실기 검증이 남아 있습니다.",
+          "next": "DMA 완료가 기록 버퍼의 소유권을 넘기는 경로 한 곳을 찾고, 버퍼 재사용과 보존 기록 재읽기를 확인합니다. 수정 이미지 부팅과 복구는 실기 검증이 남아 있습니다.",
           "sources": [
             "ii-rebuild",
             "ii-status",
@@ -863,9 +920,9 @@
       "dependency": "공식 펌웨어의 RAW+JPEG 촬영 쌍과 Lightroom으로 검증할 수 있어 수정 펌웨어 시험과 병행합니다. Bright 스튜디오 색차는 기종당 한 장면의 정합 통과 영역에서 두 현상 결과를 비교한 값입니다. 절대 색 정확도와 기종 간 우열은 확인하지 않았습니다.",
       "cards": {
         "k3iii": {
-          "state": "DCP·As Shot 대조 · CFA 크롭과 정규화",
-          "finding": "원본 ARM의 Natural·Portrait 행렬/감마 분리와 시험 DCP의 Lightroom 내보내기를 확인했습니다. 펌웨어 1.10 PEF 한 장을 Lightroom 16.0에서 현상한 공통 55영역·80,662픽셀의 Bright JPEG 대비 ΔE00 중앙값/90백분위수는 행렬 후보 2.028/4.922, Adobe Standard 1.944/4.548, Camera Bright 1.421/2.636이었습니다. 프로파일 변경 때 As Shot 수치도 바뀌어 엄격한 프로파일 단독 대조는 아닙니다. Converter 18.7의 두 변환에서 중립값을 대조하고 SDK 수식으로 프로파일별 백색점을 재현했습니다. 첫 변환 DNG와 원본 PEF의 전체 CFA 샘플 26,628,096개는 세 디코딩 배열에서 같았습니다. PEF MakerNote와 DNG RAW SubIFD의 WhiteLevel은 각각 16,378과 16,315로 달랐습니다. DNG 활성 영역과 기본 크롭에는 WhiteLevel 초과 샘플 8,529개가 같은 위치에 남았습니다. Adobe 공개 SDK의 기본 uint16 Stage 2 수식 모형에서는 경계값과 같은 1개를 더해 8,530개가 65,535에 이릅니다. SDK 바이너리와 Lightroom 내부 정규화를 실행한 결과는 아닙니다.",
-          "next": "한 장면의 JPEG 근접도와 절대 색 정확도를 구분합니다. 분석 대상 펌웨어 2.20의 여러 조명·Bright/Natural 독립 촬영으로 평가하고, PEF·DNG의 같은 CFA가 Lightroom에서도 같은 렌더를 만드는지 별도로 확인합니다.",
+          "state": "DCP·As Shot 대조 · 공개 SDK Stage 2 전수 일치",
+          "finding": "Natural·Portrait의 원본 ARM 행렬과 감마를 분리했습니다. 펌웨어 1.10 PEF 한 장의 Lightroom 16.0 출력에서, 공통 55영역·80,662픽셀의 Bright JPEG 대비 ΔE00 중앙값/90백분위수는 행렬 후보 2.028/4.922, Adobe Standard 1.944/4.548, Camera Bright 1.421/2.636이었습니다. 프로파일과 함께 As Shot 수치도 달라졌습니다. Converter 18.7 변환 두 건에서 중립값을 대조했고, 첫 변환 DNG와 PEF의 CFA 26,628,096개는 세 디코딩 배열에서 일치했습니다. PEF MakerNote와 DNG RAW SubIFD의 WhiteLevel은 16,378과 16,315였으며, DNG 기본 크롭의 초과값은 8,529개였습니다. 선행 정수 모형의 포화 예측을 별도 검증으로 확인했습니다. 공개 SDK Build 2768 하네스의 오브젝트 276개를 새로 빌드해 고정 DNG의 Stage 2 활성 영역 25,891,840개를 모형과 전수 대조했고, 기본 크롭의 8,530개가 65,535에 이르렀습니다. DNG에 XMP 태그가 있지만 이 빌드에서는 XMP 처리를 껐습니다. Stage 3, Converter 내부와 Lightroom 정규화는 실행 범위 밖입니다.",
+          "next": "펌웨어 2.20에서 조명이 다른 Bright·Natural RAW+JPEG를 확보하고, 고정 프로파일과 같은 ICC·마스크·색차 기준으로 비교합니다. 같은 CFA를 담은 PEF·DNG의 Lightroom 렌더가 일치하는지도 별도로 확인합니다.",
           "sources": [
             "iii-color",
             "iii-lightroom",
@@ -880,13 +937,16 @@
             "iii-cfa",
             "iii-cfa-data",
             "iii-cfa-range",
-            "iii-cfa-range-data"
+            "iii-cfa-range-data",
+            "iii-sdk-stage2",
+            "iii-sdk-stage2-data",
+            "iii-sdk-stage2-rebuild"
           ]
         },
         "k3ii": {
-          "state": "톤 허용값 · 상위 입력과 0 분모 소비 경계",
-          "finding": "차트 #1376에서 고정한 톤을 독립 장면 #1363에 재학습 없이 적용했습니다. 합성 톤 DCP는 오프라인 목표 대비 24개 영역별 픽셀 ΔE00 중앙값의 평균을 3.037→0.160, 4.448→0.129로 줄였지만 차트 주황 패치 ΔE00 0.892는 허용값 0.75를 넘었습니다. 같은 #1376의 Lightroom 16.0에서 톤 프로파일을 바꾸자 두 패치의 파란 채널 순서가 뒤집혔고, Adobe RGB 출력을 ProPhoto 좌표로 되돌려도 역전이 남았습니다. 펌웨어 1.12에서는 원본 문맥 복사, 공유 포인터 전달, 톤 정수 계산과 곡선 생성을 나눠 재현했습니다. 실촬영의 작업 순서와 최종 픽셀은 미확인입니다. 추가 원본 재생은 R5·R8 정수 조건 20건과 같은 job 포인터를 확인하는 3건을 대조했습니다. 낮은 R5 조건에서 recipe+0x9C에 0이 저장될 수 있으며, 물리 단위와 실제 촬영 도달성은 아직 정하지 않았습니다. 후속 입력 7건에서는 내장 객체의 원본 생성자·가상 호출·ROM 표를 대조했습니다. 별도 소비자 4건 중 recipe+0x9C=0은 같은 VM의 최종 분모 0으로 전달되어 Thumb 처리기 첫 명령 전에 멈췄습니다. 구성 파일 경로는 정적 근거이며 입력 7건과 소비자 4건을 연속 촬영으로 연결하지 않았습니다.",
-          "next": "채널 관계를 반영한 후보를 고정해 펌웨어 1.12의 복수 조명·룩별 독립 촬영 쌍에서 평가합니다. 관측된 역전은 출력 좌표에 공통 단조 곡선을 적용하는 모델의 반례입니다. Lightroom 내부 작업 좌표와 처리 순서는 아직 식별하지 못했습니다. 톤 합성 DCP는 시험 후보로 유지합니다.",
+          "state": "톤 허용값 · 48바이트 설정 갱신의 정적 근거",
+          "finding": "차트 #1376에서 정한 톤을 독립 장면 #1363에 재학습 없이 적용했습니다. 합성 톤 DCP는 오프라인 목표 대비 24개 영역별 픽셀 ΔE00 중앙값의 평균을 3.037→0.160, 4.448→0.129로 줄였지만, 차트 주황 패치의 0.892는 허용값 0.75를 넘었습니다. Lightroom 16.0의 두 패치에서 파란 채널 순서가 뒤집혔고, Adobe RGB 출력을 ProPhoto 좌표로 되돌려도 역전이 남았습니다. 펌웨어 1.12의 별도 원본 재생은 톤 문맥·공유 포인터·정수 계산과 곡선 생산을 대조했습니다. recipe+0x9C의 0이 최종 분모에 전달된 소비자 시험은 Thumb 처리기 첫 명령 전에 멈췄습니다. 후속 정적 분석은 직접 호출자 두 곳의 읽기·setter·갱신과 48바이트 내부 설정 레코드 복사를 확인했습니다. 두 setter에서 selector 5·6의 값을 직접 쓰지 않았으며, 48바이트는 픽셀 데이터가 아닙니다.",
+          "next": "selector 5·6의 선행 값 생산과 실제 촬영에서의 버퍼 재사용을 추적합니다. 색 검증은 채널 관계를 반영한 후보를 고정해 펌웨어 1.12의 복수 조명·룩별 독립 촬영에서 반복합니다. 공통 단조 곡선 모델에는 반례가 있으며, Lightroom 내부 좌표와 순서는 아직 식별하지 못했습니다.",
           "sources": [
             "iii-color-test",
             "iii-raw",
@@ -910,13 +970,15 @@
             "ii-tone-inputs",
             "ii-tone-scale",
             "ii-tone-upstream",
-            "ii-tone-upstream-data"
+            "ii-tone-upstream-data",
+            "ii-tone-manager",
+            "ii-tone-manager-data"
           ]
         },
         "q7": {
-          "state": "공통 국소 영역의 참조 DCP · As Shot 수식",
-          "finding": "색 행렬의 레지스터 전달과 HDR 경로, 시험 DCP의 실제 Lightroom 내보내기를 확인했습니다. 펌웨어 1.00의 스튜디오 DNG 한 장은 전역 정합 기준을 통과하지 못했습니다. Adobe 렌즈 보정을 켠 출력의 공통 국소 39영역·56,927픽셀에서 Bright JPEG 대비 ΔE00 중앙값/90백분위수는 행렬 후보 2.211/4.787, Adobe Standard 2.803/5.955였습니다. As Shot 표시가 5100 K/−17에서 4900 K/−7로 바뀌어 프로파일과 As Shot 해석을 함께 비교한 결과입니다. 같은 중립값에 두 프로파일의 SDK 수식을 적용한 백색점 차이는 −199.657 K/+10.096 tint로 Lightroom 표시 차이 −200 K/+10과 가까웠습니다. 두 엔진의 동일성을 입증하지는 않습니다.",
-          "next": "분석 대상 펌웨어 1.01의 독립 촬영에서 정지화상과 HDR을 나눠 평가합니다. 이 수치는 한 장면의 공통 국소 영역에만 적용되며 Adobe 보정과 카메라 보정의 동등성은 미확인입니다.",
+          "state": "공통 국소 색차 · 두 DCP의 저장 구조",
+          "finding": "펌웨어의 색 행렬 전달과 HDR 경로를 조사했고, 시험 DCP를 적용한 Lightroom 출력을 얻었습니다. 펌웨어 1.00의 스튜디오 DNG는 전역 정합 기준을 통과하지 못했습니다. Adobe 렌즈 보정을 켠 공통 국소 39영역·56,927픽셀에서 Bright JPEG 대비 ΔE00 중앙값/90백분위수는 행렬 후보 2.211/4.787, Adobe Standard 2.803/5.955였습니다. 그때 As Shot은 5100 K/−17에서 4900 K/−7로 달라졌고, 같은 중립값에 적용한 SDK 수식의 차이는 −199.657 K/+10.096 tint였습니다. 별도 파일 검사에서 Adobe Standard는 태그 16개, HueSatMap 두 개(각 2,700노드)와 LookTable 4,608노드였고, matrix-test는 태그 6개로 ForwardMatrix와 두 종류의 표가 없었습니다. 두 파일에 저장 ToneCurve가 없지만 렌더러의 기본 곡선은 알 수 없습니다. 파일 검사에서 기존 As Shot을 다시 측정하지 않았습니다.",
+          "next": "펌웨어 1.01의 독립 촬영에서 정지화상과 HDR을 나눠 평가합니다. As Shot과 고정 WB를 따로 대조하고, 같은 마스크에서 밝기·색차와 Adobe 및 카메라 렌즈 보정의 영향을 확인합니다.",
           "sources": [
             "q-route",
             "q-color",
@@ -927,7 +989,9 @@
             "iii-studio-baseline",
             "iii-studio-reference",
             "iii-studio-reference-data",
-            "iii-as-shot"
+            "iii-as-shot",
+            "q-dcp-structure",
+            "q-dcp-structure-data"
           ]
         }
       },
@@ -962,7 +1026,7 @@
         "k3iii": {
           "state": "드라이버·PWM 경계 · 정수 패킹 93조건",
           "finding": "Joint 모드 선택, ReloadTimer·Udc 연결, PafPulse 요청·피드백 쓰기와 Motor 보정 필드를 원본 ARM에서 구간별로 대조했습니다. Driver+0x2c/+0x30과 두 PWM 서비스의 정적 연결, 생성자 접두 구간 및 호스트가 공급한 이벤트를 구분했습니다. 후속 93조건은 두 호출자의 분기와 한 개·두 개의 12바이트 입력 레코드 패킹을 재현했습니다. 각 정수에 signed32(843×x)를 계산하고 1000으로 0 방향 절삭한 뒤 1을 빼 16비트로 자릅니다. 두 값의 합이 65535를 넘으면 둘째 값을 줄입니다. 적응형 함수 호출 직전과 PWM 적용 직전에서 멈췄으며, 두 12바이트 입력과 하위 16바이트 스택 레코드는 별개입니다.",
-          "next": "PafMotor+0x56/+0x68의 비영 생산자와 적응형 입력 컨텍스트를 추적합니다. 정수 문턱에 미치는 영향은 확인했지만, 물리 단위·주파수·듀티와 스크루·렌즈 내 모터 대응, 실제 피드백·광학적 초점은 미확인입니다.",
+          "next": "적응형 함수의 입력 필드를 누가 채우고 반환값이 어떤 분기를 바꾸는지 먼저 추적합니다. +0x56/+0x68에 비영 값을 넣는 경로, 정수의 물리 단위와 스크루·렌즈 내 모터의 대응, 실제 피드백·광학적 초점은 미확인입니다.",
           "sources": [
             "iii-af",
             "iii-kernels",
@@ -1036,9 +1100,9 @@
       "dependency": "첫 이식 단위는 세 기종에 공통인 촬영 색공간 선택 화면입니다. PC 화면 모형과 대상 기종의 렌더링·입력 연결은 단계별로 검증합니다.",
       "cards": {
         "k3iii": {
-          "state": "sRGB 글자 픽셀 · Q7과 그리기 계약 비교",
-          "finding": "색공간 선택·확정·취소와 포커스, 행의 아이콘·체크 복사를 원본 ARM에서 대조했습니다. 후속 글자 시험은 256×144 표면 안의 76×40 sRGB 문자열 비트맵을 그렸고, 부분 혼합 705픽셀과 0 마스크 2,335픽셀을 구분했습니다. float32 가중 혼합과 32비트 색을 쓰는 K-3 III와 Q16 열 선택·2비트 글꼴·8비트 팔레트 인덱스를 쓰는 Q7의 계약을 비교했습니다. 타이머의 설정·큐 삽입·만료·지연 콜백도 합성 상태에서 별도로 확인했습니다.",
-          "next": "다른 배율·잘림·표면 위치와 실제 StringView 호출 이력을 연결합니다. 글자 픽셀 재현을 전체 UI 이식 완료로 보지 않으며 실제 IRQ·입력 이벤트, LCD와 재부팅은 검증이 남아 있습니다.",
+          "state": "sRGB 글자 픽셀 · 일곱 좌표의 전송",
+          "finding": "색공간 선택·확정·취소와 포커스, 행의 아이콘·체크를 원본 ARM으로 대조했습니다. 256×144 RAM 표면에 그린 76×40 sRGB 마스크를 일곱 좌표에서 시험해 소스 읽기 순서, 32비트 대상 쓰기와 전체 프레임이 독립 계산과 일치했습니다. 기준 좌표는 StringView가 만들었고 나머지 여섯 좌표는 호출자 스택의 복사본에서 공급했습니다. 사례당 준비에 모델 호출 72개가 있었고 최종 전송에는 없었습니다. 부분 혼합에는 첫 대상 워드 하나를 배경으로 쓰며, 경계가 닿아 높이가 0인 사례도 그 워드를 읽었습니다. Q7은 다른 마스크와 8비트 인덱스를 사용합니다. 별도 타이머 실험에서는 합성 상태의 설정·삽입·만료·지연 콜백을 대조했습니다.",
+          "next": "실제 메뉴에서 viewport를 만드는 호출을 찾고, 대상 기종의 좌표·팔레트·입력 계약으로 색공간 한 행을 PC에서 대조합니다. 회전 모드, 실제 IRQ·입력, LCD와 재부팅 뒤 설정 유지는 미검증입니다.",
           "sources": [
             "iii-icon",
             "iii-ui",
@@ -1055,7 +1119,9 @@
             "iii-timer-insertion",
             "iii-colorspace-render",
             "iii-text",
-            "iii-cross-text"
+            "iii-cross-text",
+            "iii-clip",
+            "iii-clip-data"
           ]
         },
         "k3ii": {
@@ -1074,7 +1140,7 @@
         "q7": {
           "state": "두 문자열 픽셀 · 글리프 가장자리 조건",
           "finding": "원본 MIPS 실행에서 색공간 갱신, 큐 소비, 선택 표식과 sRGB·AdobeRGB의 글리프 쓰기를 연결했습니다. 합성 등록표·두 컨텍스트·인덱스 팔레트를 사용한 960×480 버퍼의 세 중간 결과를 독립 자원 해석과 대조했습니다. 외부 소비자 복귀 직전에 멈췄으며, 제목·도움말 등 전체 화면과 LCD 출력은 포함하지 않습니다. 별도 736×176 인덱스 표면에서 단일 글리프의 7개 위치를 원본 MIPS/VEX로 대조했습니다. (−9, −12)에서는 개별 X보다 앞선 행 시작 주소 검사 때문에 화면 첫 행의 8픽셀을 건너뛰어 쓰기 220회가 됐습니다. 나머지 보이는 부분의 Q16 샘플링은 유지됐습니다.",
-          "next": "K-3 III의 32비트 색과 Q7의 인덱스 팔레트, 배율·클리핑 계약에 맞춰 첫 이식 화면을 설계합니다. 실제 메뉴의 경계 좌표, 등록·ID 할당·입력·물리 팔레트·LCD 연결은 미검증입니다.",
+          "next": "실제 메뉴의 경계 좌표와 팔레트가 생기는 지점을 추적하고, K-3 III의 32비트 색을 Q7 인덱스 계약으로 옮긴 한 행을 PC에서 대조합니다. 등록·ID 할당·입력·LCD 연결과 실제 이식은 미검증입니다.",
           "sources": [
             "iii-ui",
             "q-implementation",
