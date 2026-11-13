@@ -1,0 +1,101 @@
+{
+  "schema": 1,
+  "mode": "actual_proof_plus_guards",
+  "actual_firmware_bound_proof_run": true,
+  "private31_trace_required": false,
+  "fixtures_in_exclusive_temporary_scope": true,
+  "checks": [
+    {
+      "test": "package_bytes_and_typed_manifest",
+      "status": "passed"
+    },
+    {
+      "test": "wrong_size_before_optional_imports",
+      "status": "passed",
+      "expected_error": "input size mismatch"
+    },
+    {
+      "test": "optimized_mode_before_imports",
+      "status": "passed",
+      "expected_error": "Assertions required"
+    },
+    {
+      "test": "existing_output_preserved",
+      "status": "passed",
+      "expected_error": "output alias"
+    },
+    {
+      "test": "existing_unrelated_output_preserved",
+      "status": "passed",
+      "expected_error": "output exists"
+    },
+    {
+      "test": "package_output_alias",
+      "status": "passed",
+      "expected_error": "output alias"
+    },
+    {
+      "test": "tampered_helpers/model.py.inc",
+      "status": "passed",
+      "expected_error": "package hash mismatch"
+    },
+    {
+      "test": "tampered_source.json",
+      "status": "passed",
+      "expected_error": "package hash mismatch"
+    },
+    {
+      "test": "right_size_wrong_digest",
+      "status": "passed",
+      "expected_error": "input digest mismatch"
+    },
+    {
+      "test": "hardlink_output",
+      "status": "passed",
+      "expected_error": "output exists"
+    },
+    {
+      "test": "dangling_symlink_output",
+      "status": "passed",
+      "expected_error": "output exists"
+    },
+    {
+      "test": "bool_instruction_count",
+      "status": "passed"
+    },
+    {
+      "test": "wrong_block_end",
+      "status": "passed"
+    },
+    {
+      "test": "extra_disassembly_field",
+      "status": "passed"
+    },
+    {
+      "test": "bool_RMW_allowlist",
+      "status": "passed"
+    },
+    {
+      "test": "false_as_integer",
+      "status": "passed"
+    },
+    {
+      "test": "source_provenance_not_helper_hash",
+      "status": "passed"
+    },
+    {
+      "test": "format_guard_checks_do_not_import_optional_packages",
+      "status": "passed"
+    },
+    {
+      "test": "two_relocated_actual_proofs_equal_published_result",
+      "status": "passed",
+      "result_sha256": "0d0a519d95c98c15ff0ac8317136970e722f5231d86267885a806645a21088a9",
+      "input_preserved": true
+    }
+  ],
+  "all_supported_checks_passed": true,
+  "unsupported_count": 0,
+  "cli_sha256": "7929291d654a97cd3834dee38619ef32e68ecc62f90e3c249ff8b75e2e5d1f8a",
+  "test_script_sha256": "80279cd7d4c7280a17d203eb277f8546d8096a1ce30c50a58c01b2822e6c8bce"
+}

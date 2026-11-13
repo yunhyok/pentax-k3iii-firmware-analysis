@@ -1,0 +1,40 @@
+{
+  "schema": 1,
+  "decoded_size": 78683892,
+  "decoded_sha256": "7ff301d585ef7adcd620a15575faa39b4227cc5a27eaa8d754efe50f667a30f9",
+  "rtos": {
+    "offset": 115100,
+    "size": 25483200,
+    "base": "0x52500000",
+    "sha256": "342d2f35405e8daf1797dfe431d2e4aa70f4b52a2c242a29df48206672f1dfb4"
+  },
+  "block": {
+    "start": "0x525d8594",
+    "end_exclusive": "0x525d85d0",
+    "bytes": 60,
+    "instruction_count": 15,
+    "mode": "A32 little-endian",
+    "sha256": "86e67a1d1ddcb8baa1ca1863685ada9ede289648b3cc2353109896d4da0cba8c"
+  },
+  "provenance": {
+    "original33_script_sha256": "895f14ae328b0b93bcfa1bd0f3b84ea43e3a17697d7ee001b0fa4fc21cb191e2",
+    "original33_result_sha256": "765c7ae01b3b20b8fda19219eecac269132960b9b1476eb49580d101f7245ebd",
+    "public_helper_sha256": "9396b221c7756a234e67259dd42d78667afa379a6be99c1f98a49d28cc685959",
+    "transformation": "New authored arithmetic model, checked equivalent to original33 manual model; source script SHA is provenance, not current executable SHA"
+  },
+  "premises": [
+    "Signed count>1 reaches this block",
+    "Eight writable ordinary RAM bytes, little-endian",
+    "Sequential normal completion; no concurrent or asynchronous access, aliasing store, or fault"
+  ],
+  "limits": {
+    "raw_RMW_allowlist_bytes_unchanged": 56,
+    "other_RMW_bytes_not_proved": 48,
+    "physical_initial_producer_known": false,
+    "native_replay": false,
+    "proves_no_reads": false,
+    "proves_concurrency": false,
+    "private31_trace_required": false,
+    "scope_note": "The other48 bytes remain outside this proof; the existing56-byte RMW allowance is unchanged."
+  }
+}

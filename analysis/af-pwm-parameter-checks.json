@@ -1,0 +1,1957 @@
+{
+  "schema": "k3iii-af-pwm-parameters-v1",
+  "original_research_script_sha256": "ea914781ad1fffaba2e2259cd03c68c7ef7c377e3f90141e790bbdd81fdf6f01",
+  "original_full_witness_sha256": "894bd3bc5a684e89063a031dcba466107e41ca6005f1c0584e2ad961876aa89b",
+  "original_typed_witness_sha256": "6f427c2cbd1d148600b25f3d0b3dd296059c4eff91c9eb620a42eadc6ac4db0f",
+  "public_verifier_lf_sha256": "0acb14bb647629348fc35b8f651f8293a40ea426bf2547d3f92ed947c2de6641",
+  "case_counts": {
+    "cpu_and_ram_conditions": 3,
+    "pack_per_condition": 15,
+    "route_per_condition": 6,
+    "caller_per_condition": 10,
+    "total": 93
+  },
+  "observations": {
+    "rtos_sha256": "342d2f35405e8daf1797dfe431d2e4aa70f4b52a2c242a29df48206672f1dfb4",
+    "decoded_sha256": "7ff301d585ef7adcd620a15575faa39b4227cc5a27eaa8d754efe50f667a30f9",
+    "rtos_offset": "0x1c19c",
+    "helper_lf_sha256": {
+      "verify_af_packet_8902.py": "6796dc7821f84b13ddf2545c569568928eec24a130e27d519d70f75326e0ba12",
+      "verify_af_motor_fields.py": "d5fd3ffdb3dcf4f90a8bd5c49a7d6478c679253f7e00854046cd6117d1ac1cf8"
+    },
+    "unicorn": "2.1.4",
+    "scope": "Explicit fixture RAM. Stop before all service/apply calls.",
+    "source_spans": {
+      "motor_router": [
+        "0x52f0bbd4",
+        "0x52f0bcb4",
+        "00ca65b4fd3b68c97cc63aee31ea0e435dc0665c4dae7402f159891f12d349ce"
+      ],
+      "caller_a": [
+        "0x52f0bcb4",
+        "0x52f0bd1c",
+        "27bc798de8cafe9253ba850130ff6c0d43521fe12029e9eb3635690ddaf9e8f0"
+      ],
+      "caller_a_constant_source": [
+        "0x52f0c03c",
+        "0x52f0c068",
+        "e9aad4be0aee9e64c2e73290279953275377d385970d4f4c39de46d11b461203"
+      ],
+      "caller_a_state_source": [
+        "0x52f0c454",
+        "0x52f0c4e8",
+        "b31032e8e2e329652dc106cba281e4aa2046a312357784ad992c64759cef8ebf"
+      ],
+      "caller_a_adaptive_source": [
+        "0x52f0c0d4",
+        "0x52f0c210",
+        "1befb4cddfe84aa795fae6380277d5ea01307231ccefd7028aa9826757c51988"
+      ],
+      "caller_b": [
+        "0x52f0be18",
+        "0x52f0bf14",
+        "dad9be3f4f6e8e66e0a55af35b2405e93f704831d9cd4132e58bc6b03c60468d"
+      ],
+      "caller_b_scale": [
+        "0x52f0bd6c",
+        "0x52f0bdec",
+        "282984ef0b45f93a2e6197ac92a62df3a7dc9b6047f92ea8cabd5b78a9602ed6"
+      ],
+      "caller_b_upstream_a": [
+        "0x52f0c080",
+        "0x52f0c0a4",
+        "ae944f828fbd35e2d29cd3f6158e185e83dac6734e5f4392c3ff28c5dd9a941a"
+      ],
+      "caller_b_upstream_b": [
+        "0x52f0d40c",
+        "0x52f0d590",
+        "84ebab5ba33c0b66894e23842db2b0cd8776f3cbb2ccdb1d6828146521f4568c"
+      ],
+      "local_reset_service_wrapper": [
+        "0x52f0bdec",
+        "0x52f0be18",
+        "a429411cee7a36fd2648818bb4076e56f8096ede49cd248a38c267471fb05eeb"
+      ],
+      "first_prior_service": [
+        "0x53179018",
+        "0x53179058",
+        "ae302b6342d99f69c79d49231d6d434aa7240931830caaf3cddfb807568946e8"
+      ],
+      "single_pack": [
+        "0x531780b8",
+        "0x5317817c",
+        "73307cd27e6440df100b39532f439ea4c85e958b2b4a8ec90d2e82257017ae69"
+      ],
+      "pair_pack": [
+        "0x5317912c",
+        "0x53179264",
+        "0ee0bf266b1716d54859bd1d2d35c8a880e607d03cb3dcb5136cd52f1f3d3ed7"
+      ],
+      "pair_apply_start": [
+        "0x53178ca4",
+        "0x53178d00",
+        "a1d4cb30b1b25e547faef682238e1b2715d5f5a9554c9ae461b14514308bda32"
+      ],
+      "pair_apply_first_mmio_code": [
+        "0x5326c2c4",
+        "0x5326c35c",
+        "9f291bf544f6b51f803eb9adb032915674ec658fd6b458bcba93e746638ccc11"
+      ],
+      "scratch_init": [
+        "0x5326c0f4",
+        "0x5326c128",
+        "4db6f00988c1cf228f7dafcbcb420f57281453b3a360a836ce345ed731d7ffc8"
+      ],
+      "overlay_merge": [
+        "0x5326ca24",
+        "0x5326cb14",
+        "1fb85dfbc0ac766c12e8c7f54e635db66c3c7f591aef744209fd8183bbd43afd"
+      ],
+      "derived_16_byte_record": [
+        "0x5326c7c4",
+        "0x5326ca24",
+        "bc58188f9dabd6613aa6df05369de56bcbcdaa567a41b6471d5d9ca23910f0ff"
+      ],
+      "motor_56_to_threshold": [
+        "0x52f0c988",
+        "0x52f0c9b0",
+        "6c1b05876a84c324a00d6c6a70c8ebc3ac97cf77c209d03cf59607b2ce6fb23f"
+      ],
+      "motor_68_to_threshold": [
+        "0x52f0cde4",
+        "0x52f0ce3c",
+        "8f51928d3cf1f68f2466d9edc5686bf086b74566615fbb0c35570631d3f75175"
+      ],
+      "threshold_branch_a": [
+        "0x52f0bf5c",
+        "0x52f0bfa4",
+        "7581a97475ed091c5b04b51e3ac04d3799391fa55eeeb289163df5f7526d6917"
+      ],
+      "threshold_branch_b": [
+        "0x52f0c4bc",
+        "0x52f0c4e8",
+        "c110065c65052ccec42032a5679714bb7c039112430fe9bd8298819bf1558aeb"
+      ]
+    },
+    "runs": [
+      {
+        "cpu": "A7",
+        "poison": false,
+        "driver_ram": "0x10005500",
+        "slot_pointer_fixtures": [
+          "0x10005600",
+          "0x10005700"
+        ],
+        "routes": [
+          {
+            "entry": "0x52f0bbd4",
+            "stop_before": "0x531780b8",
+            "instructions": 25,
+            "pc_and_original_instruction_sha256": "11a7f9e6c8771950a1951f5e81bae2e051f566becfbf7e02e721b24e6c30be3b",
+            "writes": [],
+            "motor_18_fixture": 0,
+            "request_fixture": 0,
+            "stack_words": [
+              0,
+              1
+            ],
+            "computed_selector": 0
+          },
+          {
+            "entry": "0x52f0bbd4",
+            "stop_before": "0x531780b8",
+            "instructions": 25,
+            "pc_and_original_instruction_sha256": "11a7f9e6c8771950a1951f5e81bae2e051f566becfbf7e02e721b24e6c30be3b",
+            "writes": [],
+            "motor_18_fixture": 0,
+            "request_fixture": 1,
+            "stack_words": [
+              0,
+              1
+            ],
+            "computed_selector": 1
+          },
+          {
+            "entry": "0x52f0bbd4",
+            "stop_before": "0x531780b8",
+            "instructions": 24,
+            "pc_and_original_instruction_sha256": "f4ef1d00f4c6c7f4c60b6d3efdf6ec7e6d410c56dd368df49a0581bfd7c5a494",
+            "writes": [],
+            "motor_18_fixture": 1,
+            "request_fixture": 0,
+            "stack_words": [
+              0,
+              1
+            ],
+            "computed_selector": 1
+          },
+          {
+            "entry": "0x52f0bbd4",
+            "stop_before": "0x531780b8",
+            "instructions": 24,
+            "pc_and_original_instruction_sha256": "f4ef1d00f4c6c7f4c60b6d3efdf6ec7e6d410c56dd368df49a0581bfd7c5a494",
+            "writes": [],
+            "motor_18_fixture": 1,
+            "request_fixture": 1,
+            "stack_words": [
+              0,
+              1
+            ],
+            "computed_selector": 0
+          },
+          {
+            "entry": "0x52f0bbd4",
+            "stop_before": "0x52f0bc88",
+            "instructions": 21,
+            "pc_and_original_instruction_sha256": "232715a0710b03c371422682dd3a45a3b0860b84d7201e9e0aeec613565e0f6c",
+            "writes": [],
+            "motor_18_fixture": 0,
+            "request_fixture": 2,
+            "stack_words": [
+              0,
+              256
+            ],
+            "computed_selector": 0
+          },
+          {
+            "entry": "0x52f0bbd4",
+            "stop_before": "0x52f0bc54",
+            "instructions": 18,
+            "pc_and_original_instruction_sha256": "7c8bfa3ca62d22424b92b909a54e476c9f7771a223a0d9bfed9de9f02c75d7d8",
+            "writes": [],
+            "motor_18_fixture": 1,
+            "request_fixture": 2,
+            "stack_words": [
+              257,
+              1
+            ],
+            "computed_selector": 1
+          }
+        ],
+        "producers": [
+          {
+            "entry": "0x52f0bcb4",
+            "stop_before": "0x52f0bcf0",
+            "instructions": 15,
+            "pc_and_original_instruction_sha256": "3d6347d9e156c597a61a7f751073f1147091f20a6defe01542e042e46306fc59",
+            "writes": [],
+            "caller": "bcf0",
+            "motor_42_fixture": 0,
+            "router_r1_r2_r3": [
+              1,
+              3,
+              20000
+            ],
+            "router_stack_words": [
+              1,
+              0
+            ]
+          },
+          {
+            "entry": "0x52f0bcb4",
+            "stop_before": "0x52f0bcf0",
+            "instructions": 15,
+            "pc_and_original_instruction_sha256": "3d6347d9e156c597a61a7f751073f1147091f20a6defe01542e042e46306fc59",
+            "writes": [],
+            "caller": "bcf0",
+            "motor_42_fixture": 1,
+            "router_r1_r2_r3": [
+              0,
+              3,
+              308
+            ],
+            "router_stack_words": [
+              1,
+              0
+            ]
+          },
+          {
+            "entry": "0x52f0be3c",
+            "stop_before": "0x52f0bea8",
+            "instructions": 15,
+            "pc_and_original_instruction_sha256": "872a631ee50385794507a550bd3f9a3dab3550f4f2ee2f5105bcdd3df1bf106d",
+            "writes": [],
+            "caller": "bea8_post_reset_slice",
+            "motor_2c_fixture": 1,
+            "motor_54_fixture": 1000,
+            "state_fixture": 3,
+            "selector_fixture": 1,
+            "second_stack_word_fixture": 257,
+            "router_r1_r2_r3": [
+              1,
+              1000,
+              500
+            ],
+            "router_stack_words": [
+              0,
+              257
+            ]
+          },
+          {
+            "entry": "0x52f0be3c",
+            "stop_before": "0x52f0bea8",
+            "instructions": 23,
+            "pc_and_original_instruction_sha256": "983ecf1ad2692b787615ea3dc1f76570c43c0e74e7ad7559d090094ab675ca54",
+            "writes": [],
+            "caller": "bea8_post_reset_slice",
+            "motor_2c_fixture": 1,
+            "motor_54_fixture": 1001,
+            "state_fixture": 3,
+            "selector_fixture": 1,
+            "second_stack_word_fixture": 257,
+            "router_r1_r2_r3": [
+              1,
+              500,
+              1000
+            ],
+            "router_stack_words": [
+              0,
+              257
+            ]
+          },
+          {
+            "entry": "0x52f0be3c",
+            "stop_before": "0x52f0bea8",
+            "instructions": 23,
+            "pc_and_original_instruction_sha256": "983ecf1ad2692b787615ea3dc1f76570c43c0e74e7ad7559d090094ab675ca54",
+            "writes": [],
+            "caller": "bea8_post_reset_slice",
+            "motor_2c_fixture": 1,
+            "motor_54_fixture": 2000,
+            "state_fixture": 3,
+            "selector_fixture": 1,
+            "second_stack_word_fixture": 257,
+            "router_r1_r2_r3": [
+              1,
+              500,
+              1000
+            ],
+            "router_stack_words": [
+              0,
+              257
+            ]
+          },
+          {
+            "entry": "0x52f0be3c",
+            "stop_before": "0x52f0bea8",
+            "instructions": 23,
+            "pc_and_original_instruction_sha256": "983ecf1ad2692b787615ea3dc1f76570c43c0e74e7ad7559d090094ab675ca54",
+            "writes": [],
+            "caller": "bea8_post_reset_slice",
+            "motor_2c_fixture": 1,
+            "motor_54_fixture": 2001,
+            "state_fixture": 3,
+            "selector_fixture": 1,
+            "second_stack_word_fixture": 257,
+            "router_r1_r2_r3": [
+              1,
+              500,
+              2000
+            ],
+            "router_stack_words": [
+              0,
+              257
+            ]
+          },
+          {
+            "entry": "0x52f0be3c",
+            "stop_before": "0x52f0bea8",
+            "instructions": 14,
+            "pc_and_original_instruction_sha256": "a7028432fe3a8a211b9aa249471ed59e23d77bb87902318b289bb5005badb878",
+            "writes": [],
+            "caller": "bea8_post_reset_slice",
+            "motor_2c_fixture": 0,
+            "motor_54_fixture": 0,
+            "state_fixture": 1,
+            "selector_fixture": 1,
+            "second_stack_word_fixture": 257,
+            "router_r1_r2_r3": [
+              1,
+              1000,
+              500
+            ],
+            "router_stack_words": [
+              0,
+              257
+            ]
+          },
+          {
+            "entry": "0x52f0be3c",
+            "stop_before": "0x52f0beec",
+            "instructions": 9,
+            "pc_and_original_instruction_sha256": "dbf6c6e16b1139b506b3d5fc2f6cef6ff1cec4e7e8b00fb7dc7b246143e85b72",
+            "writes": [],
+            "caller": "bea8_post_reset_slice",
+            "motor_2c_fixture": 0,
+            "motor_54_fixture": 0,
+            "state_fixture": 2,
+            "selector_fixture": 1,
+            "second_stack_word_fixture": 257,
+            "adaptive_input_r1": 500
+          },
+          {
+            "entry": "0x52f0be3c",
+            "stop_before": "0x52f0bf04",
+            "instructions": 13,
+            "pc_and_original_instruction_sha256": "db32af8a67acefbc5c9ba6d69a1b1e93684d672c45d73ad3746eb4d820d4bf2e",
+            "writes": [],
+            "caller": "bea8_post_reset_slice",
+            "motor_2c_fixture": 0,
+            "motor_54_fixture": 0,
+            "state_fixture": 3,
+            "selector_fixture": 1,
+            "second_stack_word_fixture": 257,
+            "adaptive_input_r1": 500
+          },
+          {
+            "entry": "0x52f0be3c",
+            "stop_before": "0x52f0be68",
+            "instructions": 11,
+            "pc_and_original_instruction_sha256": "b2d7fe8f85d2e1f2330f8af50a7df0bd10a0e5625fe8e123556f0f3f408fbfb9",
+            "writes": [],
+            "caller": "bea8_post_reset_slice",
+            "motor_2c_fixture": 0,
+            "motor_54_fixture": 0,
+            "state_fixture": 5,
+            "selector_fixture": 1,
+            "second_stack_word_fixture": 257,
+            "local_store_pair_r5_r6": [
+              1000,
+              500
+            ]
+          }
+        ],
+        "packs": [
+          {
+            "entry": "0x531780b8",
+            "stop_before": "0x53178154",
+            "instructions": 52,
+            "pc_and_original_instruction_sha256": "6c661a8bb7c34105c98db6be7c7564e6904bcabce245fbcc8a85bd83520f8810",
+            "writes": [],
+            "selected_slot": "+0x2c",
+            "records_hex": [
+              "dc41db41ffffffffffffffff"
+            ],
+            "value_halfwords": [
+              16860,
+              16859
+            ],
+            "selector_fixture": 1,
+            "numeric_fixtures": [
+              3,
+              20000
+            ]
+          },
+          {
+            "entry": "0x531780b8",
+            "stop_before": "0x53178154",
+            "instructions": 52,
+            "pc_and_original_instruction_sha256": "6c661a8bb7c34105c98db6be7c7564e6904bcabce245fbcc8a85bd83520f8810",
+            "writes": [],
+            "selected_slot": "+0x30",
+            "records_hex": [
+              "ee04a401ffffffffffffffff"
+            ],
+            "value_halfwords": [
+              1262,
+              420
+            ],
+            "selector_fixture": 0,
+            "numeric_fixtures": [
+              1000,
+              500
+            ]
+          },
+          {
+            "entry": "0x531780b8",
+            "stop_before": "0x53178154",
+            "instructions": 52,
+            "pc_and_original_instruction_sha256": "6c661a8bb7c34105c98db6be7c7564e6904bcabce245fbcc8a85bd83520f8810",
+            "writes": [],
+            "selected_slot": "+0x30",
+            "records_hex": [
+              "ee04a401ffffffffffffffff"
+            ],
+            "value_halfwords": [
+              1262,
+              420
+            ],
+            "selector_fixture": 2,
+            "numeric_fixtures": [
+              1000,
+              500
+            ]
+          },
+          {
+            "entry": "0x531780b8",
+            "stop_before": "0x53178154",
+            "instructions": 52,
+            "pc_and_original_instruction_sha256": "6c661a8bb7c34105c98db6be7c7564e6904bcabce245fbcc8a85bd83520f8810",
+            "writes": [],
+            "selected_slot": "+0x30",
+            "records_hex": [
+              "ffff0000ffffffffffffffff"
+            ],
+            "value_halfwords": [
+              65535,
+              0
+            ],
+            "selector_fixture": 0,
+            "numeric_fixtures": [
+              0,
+              0
+            ]
+          },
+          {
+            "entry": "0x531780b8",
+            "stop_before": "0x53178154",
+            "instructions": 52,
+            "pc_and_original_instruction_sha256": "6c661a8bb7c34105c98db6be7c7564e6904bcabce245fbcc8a85bd83520f8810",
+            "writes": [],
+            "selected_slot": "+0x2c",
+            "records_hex": [
+              "ffff0000ffffffffffffffff"
+            ],
+            "value_halfwords": [
+              65535,
+              0
+            ],
+            "selector_fixture": 1,
+            "numeric_fixtures": [
+              1,
+              2
+            ]
+          },
+          {
+            "entry": "0x531780b8",
+            "stop_before": "0x53178154",
+            "instructions": 52,
+            "pc_and_original_instruction_sha256": "6c661a8bb7c34105c98db6be7c7564e6904bcabce245fbcc8a85bd83520f8810",
+            "writes": [],
+            "selected_slot": "+0x30",
+            "records_hex": [
+              "ffff0200ffffffffffffffff"
+            ],
+            "value_halfwords": [
+              65535,
+              2
+            ],
+            "selector_fixture": 0,
+            "numeric_fixtures": [
+              -3,
+              -2
+            ]
+          },
+          {
+            "entry": "0x531780b8",
+            "stop_before": "0x53178154",
+            "instructions": 52,
+            "pc_and_original_instruction_sha256": "6c661a8bb7c34105c98db6be7c7564e6904bcabce245fbcc8a85bd83520f8810",
+            "writes": [],
+            "selected_slot": "+0x2c",
+            "records_hex": [
+              "feffb4fcffffffffffffffff"
+            ],
+            "value_halfwords": [
+              65534,
+              64692
+            ],
+            "selector_fixture": 1,
+            "numeric_fixtures": [
+              1000,
+              76742
+            ]
+          },
+          {
+            "entry": "0x531780b8",
+            "stop_before": "0x53178154",
+            "instructions": 52,
+            "pc_and_original_instruction_sha256": "6c661a8bb7c34105c98db6be7c7564e6904bcabce245fbcc8a85bd83520f8810",
+            "writes": [],
+            "selected_slot": "+0x2c",
+            "records_hex": [
+              "ffffb5fcffffffffffffffff"
+            ],
+            "value_halfwords": [
+              65535,
+              64693
+            ],
+            "selector_fixture": 1,
+            "numeric_fixtures": [
+              1000,
+              76743
+            ]
+          },
+          {
+            "entry": "0x531780b8",
+            "stop_before": "0x53178154",
+            "instructions": 52,
+            "pc_and_original_instruction_sha256": "6c661a8bb7c34105c98db6be7c7564e6904bcabce245fbcc8a85bd83520f8810",
+            "writes": [],
+            "selected_slot": "+0x2c",
+            "records_hex": [
+              "ffffb5fcffffffffffffffff"
+            ],
+            "value_halfwords": [
+              65535,
+              64693
+            ],
+            "selector_fixture": 1,
+            "numeric_fixtures": [
+              1000,
+              76744
+            ]
+          },
+          {
+            "entry": "0x531780b8",
+            "stop_before": "0x53178154",
+            "instructions": 52,
+            "pc_and_original_instruction_sha256": "6c661a8bb7c34105c98db6be7c7564e6904bcabce245fbcc8a85bd83520f8810",
+            "writes": [],
+            "selected_slot": "+0x2c",
+            "records_hex": [
+              "fdff643bffffffffffffffff"
+            ],
+            "value_halfwords": [
+              65533,
+              15204
+            ],
+            "selector_fixture": 1,
+            "numeric_fixtures": [
+              2147483647,
+              -2147483648
+            ]
+          },
+          {
+            "entry": "0x531780b8",
+            "stop_before": "0x53178154",
+            "instructions": 52,
+            "pc_and_original_instruction_sha256": "6c661a8bb7c34105c98db6be7c7564e6904bcabce245fbcc8a85bd83520f8810",
+            "writes": [],
+            "selected_slot": "+0x2c",
+            "records_hex": [
+              "ffff653bffffffffffffffff"
+            ],
+            "value_halfwords": [
+              65535,
+              15205
+            ],
+            "selector_fixture": 1,
+            "numeric_fixtures": [
+              2547430,
+              2547431
+            ]
+          },
+          {
+            "entry": "0x5317912c",
+            "stop_before": "0x53179224",
+            "instructions": 88,
+            "pc_and_original_instruction_sha256": "b843a11670a2fe57828d62d0227999b29e46e794971647fee28bb4b44b9df9c2",
+            "writes": [],
+            "slot_order": [
+              "+0x30",
+              "+0x2c"
+            ],
+            "records_hex": [
+              "00000000ffffffffffff03ff",
+              "dc41db41ffffffffffff01ff"
+            ],
+            "value_halfwords": [
+              16860,
+              16859
+            ],
+            "selector_fixture": 1,
+            "numeric_fixtures": [
+              3,
+              20000
+            ]
+          },
+          {
+            "entry": "0x5317912c",
+            "stop_before": "0x53179224",
+            "instructions": 88,
+            "pc_and_original_instruction_sha256": "b843a11670a2fe57828d62d0227999b29e46e794971647fee28bb4b44b9df9c2",
+            "writes": [],
+            "slot_order": [
+              "+0x2c",
+              "+0x30"
+            ],
+            "records_hex": [
+              "00000000ffffffffffff03ff",
+              "dc41db41ffffffffffff01ff"
+            ],
+            "value_halfwords": [
+              16860,
+              16859
+            ],
+            "selector_fixture": 0,
+            "numeric_fixtures": [
+              3,
+              20000
+            ]
+          },
+          {
+            "entry": "0x5317912c",
+            "stop_before": "0x53179224",
+            "instructions": 88,
+            "pc_and_original_instruction_sha256": "b843a11670a2fe57828d62d0227999b29e46e794971647fee28bb4b44b9df9c2",
+            "writes": [],
+            "slot_order": [
+              "+0x2c",
+              "+0x30"
+            ],
+            "records_hex": [
+              "00000000ffffffffffff03ff",
+              "ffffb5fcffffffffffff01ff"
+            ],
+            "value_halfwords": [
+              65535,
+              64693
+            ],
+            "selector_fixture": 2,
+            "numeric_fixtures": [
+              1000,
+              76744
+            ]
+          },
+          {
+            "entry": "0x5317912c",
+            "stop_before": "0x53179224",
+            "instructions": 88,
+            "pc_and_original_instruction_sha256": "b843a11670a2fe57828d62d0227999b29e46e794971647fee28bb4b44b9df9c2",
+            "writes": [],
+            "slot_order": [
+              "+0x30",
+              "+0x2c"
+            ],
+            "records_hex": [
+              "00000000ffffffffffff03ff",
+              "ffff0000ffffffffffff01ff"
+            ],
+            "value_halfwords": [
+              65535,
+              0
+            ],
+            "selector_fixture": 1,
+            "numeric_fixtures": [
+              0,
+              1
+            ]
+          }
+        ]
+      },
+      {
+        "cpu": "A7",
+        "poison": true,
+        "driver_ram": "0x10005780",
+        "slot_pointer_fixtures": [
+          "0x100056c0",
+          "0x10005500"
+        ],
+        "routes": [
+          {
+            "entry": "0x52f0bbd4",
+            "stop_before": "0x531780b8",
+            "instructions": 25,
+            "pc_and_original_instruction_sha256": "11a7f9e6c8771950a1951f5e81bae2e051f566becfbf7e02e721b24e6c30be3b",
+            "writes": [],
+            "motor_18_fixture": 0,
+            "request_fixture": 0,
+            "stack_words": [
+              0,
+              1
+            ],
+            "computed_selector": 0
+          },
+          {
+            "entry": "0x52f0bbd4",
+            "stop_before": "0x531780b8",
+            "instructions": 25,
+            "pc_and_original_instruction_sha256": "11a7f9e6c8771950a1951f5e81bae2e051f566becfbf7e02e721b24e6c30be3b",
+            "writes": [],
+            "motor_18_fixture": 0,
+            "request_fixture": 1,
+            "stack_words": [
+              0,
+              1
+            ],
+            "computed_selector": 1
+          },
+          {
+            "entry": "0x52f0bbd4",
+            "stop_before": "0x531780b8",
+            "instructions": 24,
+            "pc_and_original_instruction_sha256": "f4ef1d00f4c6c7f4c60b6d3efdf6ec7e6d410c56dd368df49a0581bfd7c5a494",
+            "writes": [],
+            "motor_18_fixture": 1,
+            "request_fixture": 0,
+            "stack_words": [
+              0,
+              1
+            ],
+            "computed_selector": 1
+          },
+          {
+            "entry": "0x52f0bbd4",
+            "stop_before": "0x531780b8",
+            "instructions": 24,
+            "pc_and_original_instruction_sha256": "f4ef1d00f4c6c7f4c60b6d3efdf6ec7e6d410c56dd368df49a0581bfd7c5a494",
+            "writes": [],
+            "motor_18_fixture": 1,
+            "request_fixture": 1,
+            "stack_words": [
+              0,
+              1
+            ],
+            "computed_selector": 0
+          },
+          {
+            "entry": "0x52f0bbd4",
+            "stop_before": "0x52f0bc88",
+            "instructions": 21,
+            "pc_and_original_instruction_sha256": "232715a0710b03c371422682dd3a45a3b0860b84d7201e9e0aeec613565e0f6c",
+            "writes": [],
+            "motor_18_fixture": 0,
+            "request_fixture": 2,
+            "stack_words": [
+              0,
+              256
+            ],
+            "computed_selector": 0
+          },
+          {
+            "entry": "0x52f0bbd4",
+            "stop_before": "0x52f0bc54",
+            "instructions": 18,
+            "pc_and_original_instruction_sha256": "7c8bfa3ca62d22424b92b909a54e476c9f7771a223a0d9bfed9de9f02c75d7d8",
+            "writes": [],
+            "motor_18_fixture": 1,
+            "request_fixture": 2,
+            "stack_words": [
+              257,
+              1
+            ],
+            "computed_selector": 1
+          }
+        ],
+        "producers": [
+          {
+            "entry": "0x52f0bcb4",
+            "stop_before": "0x52f0bcf0",
+            "instructions": 15,
+            "pc_and_original_instruction_sha256": "3d6347d9e156c597a61a7f751073f1147091f20a6defe01542e042e46306fc59",
+            "writes": [],
+            "caller": "bcf0",
+            "motor_42_fixture": 0,
+            "router_r1_r2_r3": [
+              1,
+              3,
+              20000
+            ],
+            "router_stack_words": [
+              1,
+              0
+            ]
+          },
+          {
+            "entry": "0x52f0bcb4",
+            "stop_before": "0x52f0bcf0",
+            "instructions": 15,
+            "pc_and_original_instruction_sha256": "3d6347d9e156c597a61a7f751073f1147091f20a6defe01542e042e46306fc59",
+            "writes": [],
+            "caller": "bcf0",
+            "motor_42_fixture": 1,
+            "router_r1_r2_r3": [
+              0,
+              3,
+              308
+            ],
+            "router_stack_words": [
+              1,
+              0
+            ]
+          },
+          {
+            "entry": "0x52f0be3c",
+            "stop_before": "0x52f0bea8",
+            "instructions": 15,
+            "pc_and_original_instruction_sha256": "872a631ee50385794507a550bd3f9a3dab3550f4f2ee2f5105bcdd3df1bf106d",
+            "writes": [],
+            "caller": "bea8_post_reset_slice",
+            "motor_2c_fixture": 1,
+            "motor_54_fixture": 1000,
+            "state_fixture": 3,
+            "selector_fixture": 1,
+            "second_stack_word_fixture": 257,
+            "router_r1_r2_r3": [
+              1,
+              1000,
+              500
+            ],
+            "router_stack_words": [
+              0,
+              257
+            ]
+          },
+          {
+            "entry": "0x52f0be3c",
+            "stop_before": "0x52f0bea8",
+            "instructions": 23,
+            "pc_and_original_instruction_sha256": "983ecf1ad2692b787615ea3dc1f76570c43c0e74e7ad7559d090094ab675ca54",
+            "writes": [],
+            "caller": "bea8_post_reset_slice",
+            "motor_2c_fixture": 1,
+            "motor_54_fixture": 1001,
+            "state_fixture": 3,
+            "selector_fixture": 1,
+            "second_stack_word_fixture": 257,
+            "router_r1_r2_r3": [
+              1,
+              500,
+              1000
+            ],
+            "router_stack_words": [
+              0,
+              257
+            ]
+          },
+          {
+            "entry": "0x52f0be3c",
+            "stop_before": "0x52f0bea8",
+            "instructions": 23,
+            "pc_and_original_instruction_sha256": "983ecf1ad2692b787615ea3dc1f76570c43c0e74e7ad7559d090094ab675ca54",
+            "writes": [],
+            "caller": "bea8_post_reset_slice",
+            "motor_2c_fixture": 1,
+            "motor_54_fixture": 2000,
+            "state_fixture": 3,
+            "selector_fixture": 1,
+            "second_stack_word_fixture": 257,
+            "router_r1_r2_r3": [
+              1,
+              500,
+              1000
+            ],
+            "router_stack_words": [
+              0,
+              257
+            ]
+          },
+          {
+            "entry": "0x52f0be3c",
+            "stop_before": "0x52f0bea8",
+            "instructions": 23,
+            "pc_and_original_instruction_sha256": "983ecf1ad2692b787615ea3dc1f76570c43c0e74e7ad7559d090094ab675ca54",
+            "writes": [],
+            "caller": "bea8_post_reset_slice",
+            "motor_2c_fixture": 1,
+            "motor_54_fixture": 2001,
+            "state_fixture": 3,
+            "selector_fixture": 1,
+            "second_stack_word_fixture": 257,
+            "router_r1_r2_r3": [
+              1,
+              500,
+              2000
+            ],
+            "router_stack_words": [
+              0,
+              257
+            ]
+          },
+          {
+            "entry": "0x52f0be3c",
+            "stop_before": "0x52f0bea8",
+            "instructions": 14,
+            "pc_and_original_instruction_sha256": "a7028432fe3a8a211b9aa249471ed59e23d77bb87902318b289bb5005badb878",
+            "writes": [],
+            "caller": "bea8_post_reset_slice",
+            "motor_2c_fixture": 0,
+            "motor_54_fixture": 0,
+            "state_fixture": 1,
+            "selector_fixture": 1,
+            "second_stack_word_fixture": 257,
+            "router_r1_r2_r3": [
+              1,
+              1000,
+              500
+            ],
+            "router_stack_words": [
+              0,
+              257
+            ]
+          },
+          {
+            "entry": "0x52f0be3c",
+            "stop_before": "0x52f0beec",
+            "instructions": 9,
+            "pc_and_original_instruction_sha256": "dbf6c6e16b1139b506b3d5fc2f6cef6ff1cec4e7e8b00fb7dc7b246143e85b72",
+            "writes": [],
+            "caller": "bea8_post_reset_slice",
+            "motor_2c_fixture": 0,
+            "motor_54_fixture": 0,
+            "state_fixture": 2,
+            "selector_fixture": 1,
+            "second_stack_word_fixture": 257,
+            "adaptive_input_r1": 500
+          },
+          {
+            "entry": "0x52f0be3c",
+            "stop_before": "0x52f0bf04",
+            "instructions": 13,
+            "pc_and_original_instruction_sha256": "db32af8a67acefbc5c9ba6d69a1b1e93684d672c45d73ad3746eb4d820d4bf2e",
+            "writes": [],
+            "caller": "bea8_post_reset_slice",
+            "motor_2c_fixture": 0,
+            "motor_54_fixture": 0,
+            "state_fixture": 3,
+            "selector_fixture": 1,
+            "second_stack_word_fixture": 257,
+            "adaptive_input_r1": 500
+          },
+          {
+            "entry": "0x52f0be3c",
+            "stop_before": "0x52f0be68",
+            "instructions": 11,
+            "pc_and_original_instruction_sha256": "b2d7fe8f85d2e1f2330f8af50a7df0bd10a0e5625fe8e123556f0f3f408fbfb9",
+            "writes": [],
+            "caller": "bea8_post_reset_slice",
+            "motor_2c_fixture": 0,
+            "motor_54_fixture": 0,
+            "state_fixture": 5,
+            "selector_fixture": 1,
+            "second_stack_word_fixture": 257,
+            "local_store_pair_r5_r6": [
+              1000,
+              500
+            ]
+          }
+        ],
+        "packs": [
+          {
+            "entry": "0x531780b8",
+            "stop_before": "0x53178154",
+            "instructions": 52,
+            "pc_and_original_instruction_sha256": "6c661a8bb7c34105c98db6be7c7564e6904bcabce245fbcc8a85bd83520f8810",
+            "writes": [],
+            "selected_slot": "+0x2c",
+            "records_hex": [
+              "dc41db41ffffffffffffffff"
+            ],
+            "value_halfwords": [
+              16860,
+              16859
+            ],
+            "selector_fixture": 1,
+            "numeric_fixtures": [
+              3,
+              20000
+            ]
+          },
+          {
+            "entry": "0x531780b8",
+            "stop_before": "0x53178154",
+            "instructions": 52,
+            "pc_and_original_instruction_sha256": "6c661a8bb7c34105c98db6be7c7564e6904bcabce245fbcc8a85bd83520f8810",
+            "writes": [],
+            "selected_slot": "+0x30",
+            "records_hex": [
+              "ee04a401ffffffffffffffff"
+            ],
+            "value_halfwords": [
+              1262,
+              420
+            ],
+            "selector_fixture": 0,
+            "numeric_fixtures": [
+              1000,
+              500
+            ]
+          },
+          {
+            "entry": "0x531780b8",
+            "stop_before": "0x53178154",
+            "instructions": 52,
+            "pc_and_original_instruction_sha256": "6c661a8bb7c34105c98db6be7c7564e6904bcabce245fbcc8a85bd83520f8810",
+            "writes": [],
+            "selected_slot": "+0x30",
+            "records_hex": [
+              "ee04a401ffffffffffffffff"
+            ],
+            "value_halfwords": [
+              1262,
+              420
+            ],
+            "selector_fixture": 2,
+            "numeric_fixtures": [
+              1000,
+              500
+            ]
+          },
+          {
+            "entry": "0x531780b8",
+            "stop_before": "0x53178154",
+            "instructions": 52,
+            "pc_and_original_instruction_sha256": "6c661a8bb7c34105c98db6be7c7564e6904bcabce245fbcc8a85bd83520f8810",
+            "writes": [],
+            "selected_slot": "+0x30",
+            "records_hex": [
+              "ffff0000ffffffffffffffff"
+            ],
+            "value_halfwords": [
+              65535,
+              0
+            ],
+            "selector_fixture": 0,
+            "numeric_fixtures": [
+              0,
+              0
+            ]
+          },
+          {
+            "entry": "0x531780b8",
+            "stop_before": "0x53178154",
+            "instructions": 52,
+            "pc_and_original_instruction_sha256": "6c661a8bb7c34105c98db6be7c7564e6904bcabce245fbcc8a85bd83520f8810",
+            "writes": [],
+            "selected_slot": "+0x2c",
+            "records_hex": [
+              "ffff0000ffffffffffffffff"
+            ],
+            "value_halfwords": [
+              65535,
+              0
+            ],
+            "selector_fixture": 1,
+            "numeric_fixtures": [
+              1,
+              2
+            ]
+          },
+          {
+            "entry": "0x531780b8",
+            "stop_before": "0x53178154",
+            "instructions": 52,
+            "pc_and_original_instruction_sha256": "6c661a8bb7c34105c98db6be7c7564e6904bcabce245fbcc8a85bd83520f8810",
+            "writes": [],
+            "selected_slot": "+0x30",
+            "records_hex": [
+              "ffff0200ffffffffffffffff"
+            ],
+            "value_halfwords": [
+              65535,
+              2
+            ],
+            "selector_fixture": 0,
+            "numeric_fixtures": [
+              -3,
+              -2
+            ]
+          },
+          {
+            "entry": "0x531780b8",
+            "stop_before": "0x53178154",
+            "instructions": 52,
+            "pc_and_original_instruction_sha256": "6c661a8bb7c34105c98db6be7c7564e6904bcabce245fbcc8a85bd83520f8810",
+            "writes": [],
+            "selected_slot": "+0x2c",
+            "records_hex": [
+              "feffb4fcffffffffffffffff"
+            ],
+            "value_halfwords": [
+              65534,
+              64692
+            ],
+            "selector_fixture": 1,
+            "numeric_fixtures": [
+              1000,
+              76742
+            ]
+          },
+          {
+            "entry": "0x531780b8",
+            "stop_before": "0x53178154",
+            "instructions": 52,
+            "pc_and_original_instruction_sha256": "6c661a8bb7c34105c98db6be7c7564e6904bcabce245fbcc8a85bd83520f8810",
+            "writes": [],
+            "selected_slot": "+0x2c",
+            "records_hex": [
+              "ffffb5fcffffffffffffffff"
+            ],
+            "value_halfwords": [
+              65535,
+              64693
+            ],
+            "selector_fixture": 1,
+            "numeric_fixtures": [
+              1000,
+              76743
+            ]
+          },
+          {
+            "entry": "0x531780b8",
+            "stop_before": "0x53178154",
+            "instructions": 52,
+            "pc_and_original_instruction_sha256": "6c661a8bb7c34105c98db6be7c7564e6904bcabce245fbcc8a85bd83520f8810",
+            "writes": [],
+            "selected_slot": "+0x2c",
+            "records_hex": [
+              "ffffb5fcffffffffffffffff"
+            ],
+            "value_halfwords": [
+              65535,
+              64693
+            ],
+            "selector_fixture": 1,
+            "numeric_fixtures": [
+              1000,
+              76744
+            ]
+          },
+          {
+            "entry": "0x531780b8",
+            "stop_before": "0x53178154",
+            "instructions": 52,
+            "pc_and_original_instruction_sha256": "6c661a8bb7c34105c98db6be7c7564e6904bcabce245fbcc8a85bd83520f8810",
+            "writes": [],
+            "selected_slot": "+0x2c",
+            "records_hex": [
+              "fdff643bffffffffffffffff"
+            ],
+            "value_halfwords": [
+              65533,
+              15204
+            ],
+            "selector_fixture": 1,
+            "numeric_fixtures": [
+              2147483647,
+              -2147483648
+            ]
+          },
+          {
+            "entry": "0x531780b8",
+            "stop_before": "0x53178154",
+            "instructions": 52,
+            "pc_and_original_instruction_sha256": "6c661a8bb7c34105c98db6be7c7564e6904bcabce245fbcc8a85bd83520f8810",
+            "writes": [],
+            "selected_slot": "+0x2c",
+            "records_hex": [
+              "ffff653bffffffffffffffff"
+            ],
+            "value_halfwords": [
+              65535,
+              15205
+            ],
+            "selector_fixture": 1,
+            "numeric_fixtures": [
+              2547430,
+              2547431
+            ]
+          },
+          {
+            "entry": "0x5317912c",
+            "stop_before": "0x53179224",
+            "instructions": 88,
+            "pc_and_original_instruction_sha256": "b843a11670a2fe57828d62d0227999b29e46e794971647fee28bb4b44b9df9c2",
+            "writes": [],
+            "slot_order": [
+              "+0x30",
+              "+0x2c"
+            ],
+            "records_hex": [
+              "00000000ffffffffffff03ff",
+              "dc41db41ffffffffffff01ff"
+            ],
+            "value_halfwords": [
+              16860,
+              16859
+            ],
+            "selector_fixture": 1,
+            "numeric_fixtures": [
+              3,
+              20000
+            ]
+          },
+          {
+            "entry": "0x5317912c",
+            "stop_before": "0x53179224",
+            "instructions": 88,
+            "pc_and_original_instruction_sha256": "b843a11670a2fe57828d62d0227999b29e46e794971647fee28bb4b44b9df9c2",
+            "writes": [],
+            "slot_order": [
+              "+0x2c",
+              "+0x30"
+            ],
+            "records_hex": [
+              "00000000ffffffffffff03ff",
+              "dc41db41ffffffffffff01ff"
+            ],
+            "value_halfwords": [
+              16860,
+              16859
+            ],
+            "selector_fixture": 0,
+            "numeric_fixtures": [
+              3,
+              20000
+            ]
+          },
+          {
+            "entry": "0x5317912c",
+            "stop_before": "0x53179224",
+            "instructions": 88,
+            "pc_and_original_instruction_sha256": "b843a11670a2fe57828d62d0227999b29e46e794971647fee28bb4b44b9df9c2",
+            "writes": [],
+            "slot_order": [
+              "+0x2c",
+              "+0x30"
+            ],
+            "records_hex": [
+              "00000000ffffffffffff03ff",
+              "ffffb5fcffffffffffff01ff"
+            ],
+            "value_halfwords": [
+              65535,
+              64693
+            ],
+            "selector_fixture": 2,
+            "numeric_fixtures": [
+              1000,
+              76744
+            ]
+          },
+          {
+            "entry": "0x5317912c",
+            "stop_before": "0x53179224",
+            "instructions": 88,
+            "pc_and_original_instruction_sha256": "b843a11670a2fe57828d62d0227999b29e46e794971647fee28bb4b44b9df9c2",
+            "writes": [],
+            "slot_order": [
+              "+0x30",
+              "+0x2c"
+            ],
+            "records_hex": [
+              "00000000ffffffffffff03ff",
+              "ffff0000ffffffffffff01ff"
+            ],
+            "value_halfwords": [
+              65535,
+              0
+            ],
+            "selector_fixture": 1,
+            "numeric_fixtures": [
+              0,
+              1
+            ]
+          }
+        ]
+      },
+      {
+        "cpu": "A15",
+        "poison": true,
+        "driver_ram": "0x10005800",
+        "slot_pointer_fixtures": [
+          "0x10005580",
+          "0x10005640"
+        ],
+        "routes": [
+          {
+            "entry": "0x52f0bbd4",
+            "stop_before": "0x531780b8",
+            "instructions": 25,
+            "pc_and_original_instruction_sha256": "11a7f9e6c8771950a1951f5e81bae2e051f566becfbf7e02e721b24e6c30be3b",
+            "writes": [],
+            "motor_18_fixture": 0,
+            "request_fixture": 0,
+            "stack_words": [
+              0,
+              1
+            ],
+            "computed_selector": 0
+          },
+          {
+            "entry": "0x52f0bbd4",
+            "stop_before": "0x531780b8",
+            "instructions": 25,
+            "pc_and_original_instruction_sha256": "11a7f9e6c8771950a1951f5e81bae2e051f566becfbf7e02e721b24e6c30be3b",
+            "writes": [],
+            "motor_18_fixture": 0,
+            "request_fixture": 1,
+            "stack_words": [
+              0,
+              1
+            ],
+            "computed_selector": 1
+          },
+          {
+            "entry": "0x52f0bbd4",
+            "stop_before": "0x531780b8",
+            "instructions": 24,
+            "pc_and_original_instruction_sha256": "f4ef1d00f4c6c7f4c60b6d3efdf6ec7e6d410c56dd368df49a0581bfd7c5a494",
+            "writes": [],
+            "motor_18_fixture": 1,
+            "request_fixture": 0,
+            "stack_words": [
+              0,
+              1
+            ],
+            "computed_selector": 1
+          },
+          {
+            "entry": "0x52f0bbd4",
+            "stop_before": "0x531780b8",
+            "instructions": 24,
+            "pc_and_original_instruction_sha256": "f4ef1d00f4c6c7f4c60b6d3efdf6ec7e6d410c56dd368df49a0581bfd7c5a494",
+            "writes": [],
+            "motor_18_fixture": 1,
+            "request_fixture": 1,
+            "stack_words": [
+              0,
+              1
+            ],
+            "computed_selector": 0
+          },
+          {
+            "entry": "0x52f0bbd4",
+            "stop_before": "0x52f0bc88",
+            "instructions": 21,
+            "pc_and_original_instruction_sha256": "232715a0710b03c371422682dd3a45a3b0860b84d7201e9e0aeec613565e0f6c",
+            "writes": [],
+            "motor_18_fixture": 0,
+            "request_fixture": 2,
+            "stack_words": [
+              0,
+              256
+            ],
+            "computed_selector": 0
+          },
+          {
+            "entry": "0x52f0bbd4",
+            "stop_before": "0x52f0bc54",
+            "instructions": 18,
+            "pc_and_original_instruction_sha256": "7c8bfa3ca62d22424b92b909a54e476c9f7771a223a0d9bfed9de9f02c75d7d8",
+            "writes": [],
+            "motor_18_fixture": 1,
+            "request_fixture": 2,
+            "stack_words": [
+              257,
+              1
+            ],
+            "computed_selector": 1
+          }
+        ],
+        "producers": [
+          {
+            "entry": "0x52f0bcb4",
+            "stop_before": "0x52f0bcf0",
+            "instructions": 15,
+            "pc_and_original_instruction_sha256": "3d6347d9e156c597a61a7f751073f1147091f20a6defe01542e042e46306fc59",
+            "writes": [],
+            "caller": "bcf0",
+            "motor_42_fixture": 0,
+            "router_r1_r2_r3": [
+              1,
+              3,
+              20000
+            ],
+            "router_stack_words": [
+              1,
+              0
+            ]
+          },
+          {
+            "entry": "0x52f0bcb4",
+            "stop_before": "0x52f0bcf0",
+            "instructions": 15,
+            "pc_and_original_instruction_sha256": "3d6347d9e156c597a61a7f751073f1147091f20a6defe01542e042e46306fc59",
+            "writes": [],
+            "caller": "bcf0",
+            "motor_42_fixture": 1,
+            "router_r1_r2_r3": [
+              0,
+              3,
+              308
+            ],
+            "router_stack_words": [
+              1,
+              0
+            ]
+          },
+          {
+            "entry": "0x52f0be3c",
+            "stop_before": "0x52f0bea8",
+            "instructions": 15,
+            "pc_and_original_instruction_sha256": "872a631ee50385794507a550bd3f9a3dab3550f4f2ee2f5105bcdd3df1bf106d",
+            "writes": [],
+            "caller": "bea8_post_reset_slice",
+            "motor_2c_fixture": 1,
+            "motor_54_fixture": 1000,
+            "state_fixture": 3,
+            "selector_fixture": 1,
+            "second_stack_word_fixture": 257,
+            "router_r1_r2_r3": [
+              1,
+              1000,
+              500
+            ],
+            "router_stack_words": [
+              0,
+              257
+            ]
+          },
+          {
+            "entry": "0x52f0be3c",
+            "stop_before": "0x52f0bea8",
+            "instructions": 23,
+            "pc_and_original_instruction_sha256": "983ecf1ad2692b787615ea3dc1f76570c43c0e74e7ad7559d090094ab675ca54",
+            "writes": [],
+            "caller": "bea8_post_reset_slice",
+            "motor_2c_fixture": 1,
+            "motor_54_fixture": 1001,
+            "state_fixture": 3,
+            "selector_fixture": 1,
+            "second_stack_word_fixture": 257,
+            "router_r1_r2_r3": [
+              1,
+              500,
+              1000
+            ],
+            "router_stack_words": [
+              0,
+              257
+            ]
+          },
+          {
+            "entry": "0x52f0be3c",
+            "stop_before": "0x52f0bea8",
+            "instructions": 23,
+            "pc_and_original_instruction_sha256": "983ecf1ad2692b787615ea3dc1f76570c43c0e74e7ad7559d090094ab675ca54",
+            "writes": [],
+            "caller": "bea8_post_reset_slice",
+            "motor_2c_fixture": 1,
+            "motor_54_fixture": 2000,
+            "state_fixture": 3,
+            "selector_fixture": 1,
+            "second_stack_word_fixture": 257,
+            "router_r1_r2_r3": [
+              1,
+              500,
+              1000
+            ],
+            "router_stack_words": [
+              0,
+              257
+            ]
+          },
+          {
+            "entry": "0x52f0be3c",
+            "stop_before": "0x52f0bea8",
+            "instructions": 23,
+            "pc_and_original_instruction_sha256": "983ecf1ad2692b787615ea3dc1f76570c43c0e74e7ad7559d090094ab675ca54",
+            "writes": [],
+            "caller": "bea8_post_reset_slice",
+            "motor_2c_fixture": 1,
+            "motor_54_fixture": 2001,
+            "state_fixture": 3,
+            "selector_fixture": 1,
+            "second_stack_word_fixture": 257,
+            "router_r1_r2_r3": [
+              1,
+              500,
+              2000
+            ],
+            "router_stack_words": [
+              0,
+              257
+            ]
+          },
+          {
+            "entry": "0x52f0be3c",
+            "stop_before": "0x52f0bea8",
+            "instructions": 14,
+            "pc_and_original_instruction_sha256": "a7028432fe3a8a211b9aa249471ed59e23d77bb87902318b289bb5005badb878",
+            "writes": [],
+            "caller": "bea8_post_reset_slice",
+            "motor_2c_fixture": 0,
+            "motor_54_fixture": 0,
+            "state_fixture": 1,
+            "selector_fixture": 1,
+            "second_stack_word_fixture": 257,
+            "router_r1_r2_r3": [
+              1,
+              1000,
+              500
+            ],
+            "router_stack_words": [
+              0,
+              257
+            ]
+          },
+          {
+            "entry": "0x52f0be3c",
+            "stop_before": "0x52f0beec",
+            "instructions": 9,
+            "pc_and_original_instruction_sha256": "dbf6c6e16b1139b506b3d5fc2f6cef6ff1cec4e7e8b00fb7dc7b246143e85b72",
+            "writes": [],
+            "caller": "bea8_post_reset_slice",
+            "motor_2c_fixture": 0,
+            "motor_54_fixture": 0,
+            "state_fixture": 2,
+            "selector_fixture": 1,
+            "second_stack_word_fixture": 257,
+            "adaptive_input_r1": 500
+          },
+          {
+            "entry": "0x52f0be3c",
+            "stop_before": "0x52f0bf04",
+            "instructions": 13,
+            "pc_and_original_instruction_sha256": "db32af8a67acefbc5c9ba6d69a1b1e93684d672c45d73ad3746eb4d820d4bf2e",
+            "writes": [],
+            "caller": "bea8_post_reset_slice",
+            "motor_2c_fixture": 0,
+            "motor_54_fixture": 0,
+            "state_fixture": 3,
+            "selector_fixture": 1,
+            "second_stack_word_fixture": 257,
+            "adaptive_input_r1": 500
+          },
+          {
+            "entry": "0x52f0be3c",
+            "stop_before": "0x52f0be68",
+            "instructions": 11,
+            "pc_and_original_instruction_sha256": "b2d7fe8f85d2e1f2330f8af50a7df0bd10a0e5625fe8e123556f0f3f408fbfb9",
+            "writes": [],
+            "caller": "bea8_post_reset_slice",
+            "motor_2c_fixture": 0,
+            "motor_54_fixture": 0,
+            "state_fixture": 5,
+            "selector_fixture": 1,
+            "second_stack_word_fixture": 257,
+            "local_store_pair_r5_r6": [
+              1000,
+              500
+            ]
+          }
+        ],
+        "packs": [
+          {
+            "entry": "0x531780b8",
+            "stop_before": "0x53178154",
+            "instructions": 52,
+            "pc_and_original_instruction_sha256": "6c661a8bb7c34105c98db6be7c7564e6904bcabce245fbcc8a85bd83520f8810",
+            "writes": [],
+            "selected_slot": "+0x2c",
+            "records_hex": [
+              "dc41db41ffffffffffffffff"
+            ],
+            "value_halfwords": [
+              16860,
+              16859
+            ],
+            "selector_fixture": 1,
+            "numeric_fixtures": [
+              3,
+              20000
+            ]
+          },
+          {
+            "entry": "0x531780b8",
+            "stop_before": "0x53178154",
+            "instructions": 52,
+            "pc_and_original_instruction_sha256": "6c661a8bb7c34105c98db6be7c7564e6904bcabce245fbcc8a85bd83520f8810",
+            "writes": [],
+            "selected_slot": "+0x30",
+            "records_hex": [
+              "ee04a401ffffffffffffffff"
+            ],
+            "value_halfwords": [
+              1262,
+              420
+            ],
+            "selector_fixture": 0,
+            "numeric_fixtures": [
+              1000,
+              500
+            ]
+          },
+          {
+            "entry": "0x531780b8",
+            "stop_before": "0x53178154",
+            "instructions": 52,
+            "pc_and_original_instruction_sha256": "6c661a8bb7c34105c98db6be7c7564e6904bcabce245fbcc8a85bd83520f8810",
+            "writes": [],
+            "selected_slot": "+0x30",
+            "records_hex": [
+              "ee04a401ffffffffffffffff"
+            ],
+            "value_halfwords": [
+              1262,
+              420
+            ],
+            "selector_fixture": 2,
+            "numeric_fixtures": [
+              1000,
+              500
+            ]
+          },
+          {
+            "entry": "0x531780b8",
+            "stop_before": "0x53178154",
+            "instructions": 52,
+            "pc_and_original_instruction_sha256": "6c661a8bb7c34105c98db6be7c7564e6904bcabce245fbcc8a85bd83520f8810",
+            "writes": [],
+            "selected_slot": "+0x30",
+            "records_hex": [
+              "ffff0000ffffffffffffffff"
+            ],
+            "value_halfwords": [
+              65535,
+              0
+            ],
+            "selector_fixture": 0,
+            "numeric_fixtures": [
+              0,
+              0
+            ]
+          },
+          {
+            "entry": "0x531780b8",
+            "stop_before": "0x53178154",
+            "instructions": 52,
+            "pc_and_original_instruction_sha256": "6c661a8bb7c34105c98db6be7c7564e6904bcabce245fbcc8a85bd83520f8810",
+            "writes": [],
+            "selected_slot": "+0x2c",
+            "records_hex": [
+              "ffff0000ffffffffffffffff"
+            ],
+            "value_halfwords": [
+              65535,
+              0
+            ],
+            "selector_fixture": 1,
+            "numeric_fixtures": [
+              1,
+              2
+            ]
+          },
+          {
+            "entry": "0x531780b8",
+            "stop_before": "0x53178154",
+            "instructions": 52,
+            "pc_and_original_instruction_sha256": "6c661a8bb7c34105c98db6be7c7564e6904bcabce245fbcc8a85bd83520f8810",
+            "writes": [],
+            "selected_slot": "+0x30",
+            "records_hex": [
+              "ffff0200ffffffffffffffff"
+            ],
+            "value_halfwords": [
+              65535,
+              2
+            ],
+            "selector_fixture": 0,
+            "numeric_fixtures": [
+              -3,
+              -2
+            ]
+          },
+          {
+            "entry": "0x531780b8",
+            "stop_before": "0x53178154",
+            "instructions": 52,
+            "pc_and_original_instruction_sha256": "6c661a8bb7c34105c98db6be7c7564e6904bcabce245fbcc8a85bd83520f8810",
+            "writes": [],
+            "selected_slot": "+0x2c",
+            "records_hex": [
+              "feffb4fcffffffffffffffff"
+            ],
+            "value_halfwords": [
+              65534,
+              64692
+            ],
+            "selector_fixture": 1,
+            "numeric_fixtures": [
+              1000,
+              76742
+            ]
+          },
+          {
+            "entry": "0x531780b8",
+            "stop_before": "0x53178154",
+            "instructions": 52,
+            "pc_and_original_instruction_sha256": "6c661a8bb7c34105c98db6be7c7564e6904bcabce245fbcc8a85bd83520f8810",
+            "writes": [],
+            "selected_slot": "+0x2c",
+            "records_hex": [
+              "ffffb5fcffffffffffffffff"
+            ],
+            "value_halfwords": [
+              65535,
+              64693
+            ],
+            "selector_fixture": 1,
+            "numeric_fixtures": [
+              1000,
+              76743
+            ]
+          },
+          {
+            "entry": "0x531780b8",
+            "stop_before": "0x53178154",
+            "instructions": 52,
+            "pc_and_original_instruction_sha256": "6c661a8bb7c34105c98db6be7c7564e6904bcabce245fbcc8a85bd83520f8810",
+            "writes": [],
+            "selected_slot": "+0x2c",
+            "records_hex": [
+              "ffffb5fcffffffffffffffff"
+            ],
+            "value_halfwords": [
+              65535,
+              64693
+            ],
+            "selector_fixture": 1,
+            "numeric_fixtures": [
+              1000,
+              76744
+            ]
+          },
+          {
+            "entry": "0x531780b8",
+            "stop_before": "0x53178154",
+            "instructions": 52,
+            "pc_and_original_instruction_sha256": "6c661a8bb7c34105c98db6be7c7564e6904bcabce245fbcc8a85bd83520f8810",
+            "writes": [],
+            "selected_slot": "+0x2c",
+            "records_hex": [
+              "fdff643bffffffffffffffff"
+            ],
+            "value_halfwords": [
+              65533,
+              15204
+            ],
+            "selector_fixture": 1,
+            "numeric_fixtures": [
+              2147483647,
+              -2147483648
+            ]
+          },
+          {
+            "entry": "0x531780b8",
+            "stop_before": "0x53178154",
+            "instructions": 52,
+            "pc_and_original_instruction_sha256": "6c661a8bb7c34105c98db6be7c7564e6904bcabce245fbcc8a85bd83520f8810",
+            "writes": [],
+            "selected_slot": "+0x2c",
+            "records_hex": [
+              "ffff653bffffffffffffffff"
+            ],
+            "value_halfwords": [
+              65535,
+              15205
+            ],
+            "selector_fixture": 1,
+            "numeric_fixtures": [
+              2547430,
+              2547431
+            ]
+          },
+          {
+            "entry": "0x5317912c",
+            "stop_before": "0x53179224",
+            "instructions": 88,
+            "pc_and_original_instruction_sha256": "b843a11670a2fe57828d62d0227999b29e46e794971647fee28bb4b44b9df9c2",
+            "writes": [],
+            "slot_order": [
+              "+0x30",
+              "+0x2c"
+            ],
+            "records_hex": [
+              "00000000ffffffffffff03ff",
+              "dc41db41ffffffffffff01ff"
+            ],
+            "value_halfwords": [
+              16860,
+              16859
+            ],
+            "selector_fixture": 1,
+            "numeric_fixtures": [
+              3,
+              20000
+            ]
+          },
+          {
+            "entry": "0x5317912c",
+            "stop_before": "0x53179224",
+            "instructions": 88,
+            "pc_and_original_instruction_sha256": "b843a11670a2fe57828d62d0227999b29e46e794971647fee28bb4b44b9df9c2",
+            "writes": [],
+            "slot_order": [
+              "+0x2c",
+              "+0x30"
+            ],
+            "records_hex": [
+              "00000000ffffffffffff03ff",
+              "dc41db41ffffffffffff01ff"
+            ],
+            "value_halfwords": [
+              16860,
+              16859
+            ],
+            "selector_fixture": 0,
+            "numeric_fixtures": [
+              3,
+              20000
+            ]
+          },
+          {
+            "entry": "0x5317912c",
+            "stop_before": "0x53179224",
+            "instructions": 88,
+            "pc_and_original_instruction_sha256": "b843a11670a2fe57828d62d0227999b29e46e794971647fee28bb4b44b9df9c2",
+            "writes": [],
+            "slot_order": [
+              "+0x2c",
+              "+0x30"
+            ],
+            "records_hex": [
+              "00000000ffffffffffff03ff",
+              "ffffb5fcffffffffffff01ff"
+            ],
+            "value_halfwords": [
+              65535,
+              64693
+            ],
+            "selector_fixture": 2,
+            "numeric_fixtures": [
+              1000,
+              76744
+            ]
+          },
+          {
+            "entry": "0x5317912c",
+            "stop_before": "0x53179224",
+            "instructions": 88,
+            "pc_and_original_instruction_sha256": "b843a11670a2fe57828d62d0227999b29e46e794971647fee28bb4b44b9df9c2",
+            "writes": [],
+            "slot_order": [
+              "+0x30",
+              "+0x2c"
+            ],
+            "records_hex": [
+              "00000000ffffffffffff03ff",
+              "ffff0000ffffffffffff01ff"
+            ],
+            "value_halfwords": [
+              65535,
+              0
+            ],
+            "selector_fixture": 1,
+            "numeric_fixtures": [
+              0,
+              1
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

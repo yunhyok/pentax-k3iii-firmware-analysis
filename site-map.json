@@ -47,7 +47,8 @@
       {"file": "analysis/recompiled-integration.html", "label": "재컴파일 함수 배치·재패키징"},
       {"file": "analysis/selective-repack.html", "label": "압축 블록을 보존한 재패키징"},
       {"file": "analysis/allocator-replay/report.html", "label": "설정에서 첫 task stack까지", "note": "원본 할당 경로 7조건과 RMW 5검증"},
-      {"file": "analysis/registry-replay/report.html", "label": "이름 registry 할당과 조회", "note": "원본 이름 배열 1200바이트 초기화와 조회 재현"}
+      {"file": "analysis/registry-replay/report.html", "label": "이름 registry 할당과 조회", "note": "원본 이름 배열 1200바이트 초기화와 조회 재현"},
+      {"file": "analysis/rmw-proof/report.html", "label": "RMW 8바이트의 수동 모형 검증", "note": "초기 64비트와 최종값의 관계, decoded만으로 재현"}
     ]},
     {"id": "rtos", "title": "RTOS 명령과 셸", "nav": "명령·셸", "hub": "analysis/guide-rtos.html", "pages": [
       {"file": "analysis/guide-rtos.html", "label": "RTOS 명령 안내"},
@@ -91,6 +92,7 @@
       {"file": "analysis/af-feedback-producers.html", "label": "PafPulse 기준값의 쓰기 경로", "note": "원본 객체 연결, 기준값 갱신과 별도 소비자 진입"},
       {"file": "analysis/af-motor-fields.html", "label": "PafMotor와 PafPulse의 입력값 경로", "note": "디버그 요청, 설정 레코드 복사, 별도 LensInfo 계산"},
       {"file": "analysis/af-driver-pwm.html", "label": "AF 드라이버와 PWM 연결", "note": "Motor 별칭, PWM 등록·리셋과 콜백 재생"},
+      {"file": "analysis/af-pwm-parameters.html", "label": "AF PWM 요청과 정수 변환", "note": "두 호출점, 16비트 레코드 패킹과 서비스 호출 전 경계"},
       {"file": "analysis/af-request-consumer.html", "label": "AF 요청 큐와 완료 통지", "note": "요청 슬롯, 처리 task, 완료 통지"}
     ]},
     {"id": "ui", "title": "UI와 화면 자원", "nav": "UI", "hub": "analysis/ui-port-contract.html", "pages": [

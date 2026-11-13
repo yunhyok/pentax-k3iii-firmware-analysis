@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>K-3 III AF PWM 요청과 정수 변환</title>
+<link rel="stylesheet" href="../assets/site.css">
+<style>
+main.doc .pwm-packing svg{display:block;width:100%;max-width:28rem;height:auto;margin-inline:auto}
+main.doc .pwm-packing .node{fill:var(--soft);stroke:var(--line-strong)}
+main.doc .pwm-packing .packed{fill:var(--brand-soft);stroke:var(--line-strong)}
+main.doc .pwm-packing .edge{fill:none;stroke:var(--edge);stroke-width:1.5}
+main.doc .pwm-packing .static{stroke-dasharray:4 3}
+main.doc .pwm-packing text{fill:var(--ink);font-family:inherit}
+main.doc .pwm-packing .sub{fill:var(--muted)}
+main.doc .address{white-space:nowrap}
+main.doc .hash{overflow-wrap:anywhere}
+main.doc .table-wrap:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+@media (max-width:520px){main.doc .pwm-packing{padding-inline:.45rem}}
+</style>
+</head>
+<body data-camera="k3iii">
+<!-- chrome:top -->
+<a class="skip" href="#main">본문 바로가기</a>
+<div class="topbar"><div class="topbar-in"><a class="brand" href="../index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="../index.html" aria-current="true">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="https://yunhyok.github.io/pentax-q7-firmware-analysis/">Q7</a></div><nav class="topnav" aria-label="주제"><a href="../index.html">개요</a><a href="guide-boot.html">부팅·저장소</a><a href="guide-update.html">업데이트</a><a href="guide-rebuild.html">재구축</a><a href="guide-rtos.html">명령·셸</a><a href="guide-color.html">색 처리</a><a href="lightroom-bridge.html">Lightroom</a><a href="af-foundations.html" aria-current="true">AF</a><a href="ui-port-contract.html">UI</a></nav></div></div>
+<nav class="crumbs" aria-label="현재 위치"><ol><li><a href="../index.html">PENTAX K-3 Mark III</a></li><li><a href="af-foundations.html">AF와 렌즈 제어</a></li><li aria-current="page">AF PWM 요청과 정수 변환</li></ol></nav>
+<!-- /chrome:top -->
+<header class="page-head">
+<h1>AF PWM 요청과 정수 변환</h1>
+<p class="lead">K-3 III 펌웨어 2.20에서 PafMotor의 두 호출점은 스택 플래그에 따라 한 개 또는 두 개의 PWM 입력 레코드로 이어집니다. 원본 ARM을 구간별로 재생해 분기, 32비트 곱셈의 래핑, 16비트 합계 제한을 확인했습니다.</p>
+</header>
+<div class="layout">
+<!-- chrome:toc -->
+<nav class="toc" aria-label="이 문서의 목차"><h2 data-toc="no">이 문서에서</h2><ol><li><a href="#dispatch">두 호출점과 서비스 경계</a></li><li><a href="#arithmetic">두 반워드의 래핑과 제한</a></li><li><a href="#records">패커가 넘긴 12바이트 레코드</a></li><li><a href="#replay">원본 재현</a></li></ol></nav>
+<!-- /chrome:toc -->
+<main class="doc" id="main">
+<section id="dispatch">
+<h2>두 호출점과 서비스 경계</h2>
+<figure class="diagram pwm-packing" aria-labelledby="pwm-caption">
+<figcaption id="pwm-caption">같은 라우터에서 갈라지는 두 PWM 경로</figcaption>
+<svg viewBox="0 0 320 296" role="img" aria-labelledby="pwm-title pwm-desc">
+<title id="pwm-title">PafMotor에서 한 개 또는 두 개의 PWM 레코드로</title>
+<desc id="pwm-desc">왼쪽 52f0bcf0은 스택 첫 바이트 1로 라우터에 들어가 앞선 서비스 호출에서 멈춥니다. 정적으로 확인한 후속 경로는 두 레코드 패커입니다. 오른쪽 52f0bea8에서 스택 둘째 바이트가 비영이면 라우터가 한 레코드 패커로 직접 이어지고, 0이면 먼저 서비스 호출로 향합니다. 두 패커는 별도 진입에서 원본을 실행했습니다.</desc>
+<defs><marker id="packing-arrow" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M0 0L7 3.5L0 7Z" fill="var(--edge)"/></marker></defs>
+<g text-anchor="middle">
+<rect class="node" x="8" y="8" width="145" height="49" rx="7"/>
+<text x="80.5" y="29" font-size="17">0x52f0bcf0</text>
+<text class="sub" x="80.5" y="47" font-size="15">스택 바이트 1, 0</text>
+<rect class="node" x="167" y="8" width="145" height="49" rx="7"/>
+<text x="239.5" y="29" font-size="17">0x52f0bea8</text>
+<text class="sub" x="239.5" y="47" font-size="15">스택 바이트 0, f</text>
+<path class="edge" d="M80.5 57V72" marker-end="url(#packing-arrow)"/>
+<path class="edge" d="M239.5 57V72" marker-end="url(#packing-arrow)"/>
+<rect class="node" x="8" y="74" width="304" height="40" rx="7"/>
+<text x="160" y="100" font-size="17">PafMotor 라우터 · 0x52f0bbd4</text>
+<path class="edge" d="M80.5 114V134" marker-end="url(#packing-arrow)"/>
+<path class="edge" d="M239.5 114V134" marker-end="url(#packing-arrow)"/>
+<rect class="node" x="8" y="136" width="145" height="53" rx="7"/>
+<text x="80.5" y="157" font-size="16">서비스 전 정지</text>
+<text class="sub" x="80.5" y="177" font-size="15">0x52f0bc54</text>
+<rect class="node" x="167" y="136" width="145" height="53" rx="7"/>
+<text x="239.5" y="157" font-size="16">f ≠ 0 · 직접 이동</text>
+<text class="sub" x="239.5" y="177" font-size="15">0x52f0bc34</text>
+<path class="edge static" d="M80.5 189V213" marker-end="url(#packing-arrow)"/>
+<path class="edge" d="M239.5 189V213" marker-end="url(#packing-arrow)"/>
+<rect class="packed" x="8" y="215" width="145" height="53" rx="7"/>
+<text x="80.5" y="236" font-size="16">12바이트 × 2</text>
+<text class="sub" x="80.5" y="256" font-size="15">0x5317912c</text>
+<rect class="packed" x="167" y="215" width="145" height="53" rx="7"/>
+<text x="239.5" y="236" font-size="16">12바이트 × 1</text>
+<text class="sub" x="239.5" y="256" font-size="15">0x531780b8</text>
+<text class="sub" x="160" y="288" font-size="15">두 패커 모두 별도 진입에서 실행</text>
+</g>
+</svg>
+<p>점선은 서비스 호출 이후에 이어지는 정적 경로입니다. 오른쪽에서 <code>f=0</code>이면 <code class="address">0x52f0bc88</code>의 서비스가 앞섭니다. <code>f</code>는 두 번째 스택 워드의 최하위 바이트입니다.</p>
+</figure>
+<p><code class="address">0x52f0bcf0</code>에서 라우터에 전달하는 두 값은 <code>3</code>과 래퍼 진입 <code>r2</code>입니다. 이 두 번째 값은 <code class="address">0x52f0c060</code>의 상수 20000 또는 <code class="address">0x52f0c4e4</code>의 상수·적응형 반환에서 옵니다. 래퍼는 Motor <code>+0x42 == 0</code>을 라우터 <code>r1</code>로 보냅니다. 스택 첫 바이트가 1이므로 서비스가 앞서며, 후속 <code class="address">0x52f0bc7c</code>는 두 레코드 패커로 분기합니다.</p>
+<p><code class="address">0x52f0bea8</code>은 초기 리셋 이후의 상태에서 두 값을 고릅니다. Motor <code>+0x2c</code>가 비영이면 unsigned 반워드 <code>+0x54</code>가 1000 이하, 1001–2000, 2001 이상일 때 각각 <code>(1000,500)</code>, <code>(500,1000)</code>, <code>(500,2000)</code>을 선택합니다. <code>+0x2c=0</code>이면 래퍼 진입 상태 1에서 <code>(1000,500)</code>을 쓰고, 상태 2·3에서 <code class="address">0x52f0bd6c</code>의 반환과 1000·2000을 조합합니다. 그 외 상태는 <code>+0x64/+0x66</code>에 값을 쓸 경로로 갑니다.</p>
+<p>상태 2·3 사례는 각각 <code class="address">0x52f0beec</code>, <code class="address">0x52f0bf04</code>의 <code>BL 0x52f0bd6c</code> 직전에 정지했습니다. 적응형 함수 본문은 정적으로 확인했습니다. 그 함수의 외부 반환 비교 문턱은 래퍼에 넘긴 상태값과 별개인 Motor <code>+0x43</code>에서 고릅니다. <code>+0x43=2</code>일 때 2배·4배의 초과 문턱은 2000·4000, <code>+0x43=3</code>일 때 4000·8000입니다.</p>
+<p>라우터는 Motor <code>+0x18=0</code>이면 <code>r1 == 1</code>, 그 외에는 <code>r1 != 1</code>을 선택값으로 계산합니다. 두 스택 플래그는 바이트로 읽습니다. 첫 바이트가 0일 때 둘째 바이트가 비영이면 한 레코드 패커로 바로 가고, 0이면 앞선 서비스 뒤에 같은 패커가 옵니다. <a href="af-driver-pwm.html#reset">드라이버 등록과 리셋의 원본 경계</a></p>
+</section>
+<section id="arithmetic">
+<h2>두 반워드의 래핑과 제한</h2>
+<pre><code>w(x) = s32(843 × x)
+t(x) = u16(trunc0(w(x) / 1000) − 1)
+a = t(r2)
+b = min(t(r3), 65535 − a)
+record[+0], record[+2] = a + b, b</code></pre>
+<p><code>s32</code>는 곱의 하위 32비트를 부호 있는 값으로 해석합니다. 원본은 상수 <code>0x10624dd3</code>과 부호 보정으로 0 방향 절삭을 계산합니다. 각 결과에서 1을 뺀 뒤 <code>u16</code>으로 래핑하므로 입력 0도 첫 단계에서 65535가 됩니다. 두 반워드의 합이 65535를 넘을 때 둘째 반워드를 줄입니다.</p>
+<div class="table-wrap" tabindex="0" role="region" aria-label="정수 변환의 경계 관측">
+<table>
+<thead><tr><th scope="col">입력 r2, r3</th><th scope="col">레코드 +0, +2</th><th scope="col">확인한 경계</th></tr></thead>
+<tbody>
+<tr><th scope="row">3, 20000</th><td>16860, 16859</td><td>첫 호출점의 상수 조합</td></tr>
+<tr><th scope="row">1000, 500</th><td>1262, 420</td><td>기본 입력과 절삭</td></tr>
+<tr><th scope="row">0, 0</th><td>65535, 0</td><td>감산 뒤 반워드 래핑</td></tr>
+<tr><th scope="row">−3, −2</th><td>65535, 2</td><td>부호와 0 방향 절삭</td></tr>
+<tr><th scope="row">1000, 76742 / 76743 / 76744</th><td>65534, 64692 / 65535, 64693 / 65535, 64693</td><td>합계 제한 직전·일치·초과</td></tr>
+<tr><th scope="row">2147483647, −2147483648</th><td>65533, 15204</td><td>32비트 곱을 무제한 정수로 계산한 경우와 구분</td></tr>
+</tbody>
+</table>
+</div>
+<p>입력 2547430과 2547431 사이에서 <code>843 × x</code>의 하위 32비트 부호가 바뀝니다. 이 조합에서는 최종 합계 제한 때문에 출력만으로 무제한 곱셈과 구별할 수 없습니다. 위의 최대·최소 signed 32비트 조합은 두 방식의 결과를 구별합니다.</p>
+</section>
+<section id="records">
+<h2>패커가 넘긴 12바이트 레코드</h2>
+<ul>
+<li>한 레코드 패커는 선택값이 1이면 드라이버 <code>+0x2c</code>, 그 외에는 <code>+0x30</code>을 선택합니다. 계산한 반워드 두 개를 <code>+0/+2</code>에 쓰고 나머지 여덟 바이트는 <code>0xff</code>입니다. <code class="address">0x53178154</code>의 적용 호출 직전에 정지했습니다.</li>
+<li>두 레코드 패커는 첫 레코드에 반워드 0 두 개와 <code>+0xa=3</code>을, 둘째 레코드에는 계산한 반워드와 <code>+0xa=1</code>을 씁니다. 그 외 바이트는 <code>0xff</code>입니다. 선택값 1은 슬롯을 <code>+0x30, +0x2c</code> 순으로 넘기며, 그 외에는 순서가 반대입니다. <code class="address">0x53179224</code>의 적용 호출 직전에 정지했습니다.</li>
+</ul>
+<p>이 레코드들은 기존 PWM 설정을 부분 갱신하는 12바이트 입력입니다. 후속 <code class="address">0x5326ca24</code>에서는 반워드 0과 대부분의 바이트 <code>0xff</code>가 기존 필드를 유지합니다. 병합한 12바이트 입력을 바탕으로 별도의 16바이트 하위 스택 레코드를 만듭니다. 이번에는 이 후속 실행, PWM 레지스터 접근과 인터럽트 전달을 수행하지 않았습니다.</p>
+<p>Motor <code>+0x56/+0x68</code>을 읽는 경로는 <code>+0x5a</code>의 문턱을 정하고, 이 문턱은 상수 20000을 사용하는 분기에 관여합니다. 두 필드에서 PWM 반워드로 직접 복사하는 경로와 0이 아닌 값의 생산자는 미확인입니다. <a href="af-motor-fields.html#limits">Motor 필드의 입력 범위</a></p>
+</section>
+<section id="replay">
+<h2>원본 재현</h2>
+<p>Cortex-A7 기본, Cortex-A7과 A15의 레지스터·NZCV 변경 조건에서 드라이버와 슬롯의 RAM 주소를 달리했습니다. 패킹 15개, 라우터 6개, 상위 분기 10개씩 총 93개 실행이 같은 관측값을 냈습니다. 주소와 상태값은 시험용이며, 서비스의 성공이나 MMIO 응답은 공급하지 않았습니다. 숫자의 물리 단위나 실제 모터 역할은 미확인입니다.</p>
+<p>저장소 루트에서 Python과 Unicorn 2.1.4를 사용합니다. 입력의 길이·SHA-256과 보조 코드 두 개의 SHA-256을 확인합니다. 원래 관측 전체의 타입을 구분하는 해시와 직렬화 해시를 검사한 뒤 공개 JSON을 만듭니다. 원래 연구 코드와 공개 검증기의 해시는 별도로 기록했습니다. 새 출력 경로를 지정하고 <code>--compare</code>에는 LF 또는 CRLF의 공개 JSON을 사용합니다.</p>
+<pre><code>python -B verify_af_pwm_parameters.py decoded.bin --output af-pwm-decoded.json --compare analysis/af-pwm-parameter-checks.json
+python -B verify_af_pwm_parameters.py rtos.bin --output af-pwm-rtos.json --compare analysis/af-pwm-parameter-checks.json
+python -B -m unittest discover -s tests -p test_af_pwm_parameters.py</code></pre>
+<p><a href="../verify_af_pwm_parameters.py">재현기</a> · <a href="../tests/test_af_pwm_parameters.py">입출력 경계 시험</a> · <a href="af-pwm-parameter-checks.json">22개 원본 구간과 전체 관측</a></p>
+<p class="hash">공개 JSON SHA-256 <code>1f521a7952136a73d09c75c088cc8aaf4b0e50d08d8283ee714d24de1d9f795f</code></p>
+</section>
+</main>
+</div>
+<!-- chrome:bottom -->
+<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">AF와 렌즈 제어 — 이 주제의 문서</h2><ol><li><a href="af-foundations.html">AF와 렌즈 제어 안내<span>세 기종 비교</span></a></li><li><a href="af-drive-architecture.html">렌즈 구동 선택·명령·응답<span>렌즈 능력에 따른 구동 선택과 명령</span></a></li><li><a href="af-joint-control.html">Joint 요청과 하위 제어<span>이벤트 0x80에서 첫 서비스·레지스터 경계까지</span></a></li><li><a href="af-service-binding.html">AF 서비스 객체와 레지스터 경계<span>ReloadTimer·Udc의 두 별도 실행</span></a></li><li><a href="af-mode1-control.html">Joint 모드 1의 요청과 피드백 계산<span>리셋 후속 호출, 요청 분기와 피드백 숫자 대조</span></a></li><li><a href="af-feedback-producers.html">PafPulse 기준값의 쓰기 경로<span>원본 객체 연결, 기준값 갱신과 별도 소비자 진입</span></a></li><li><a href="af-motor-fields.html">PafMotor와 PafPulse의 입력값 경로<span>디버그 요청, 설정 레코드 복사, 별도 LensInfo 계산</span></a></li><li><a href="af-driver-pwm.html">AF 드라이버와 PWM 연결<span>Motor 별칭, PWM 등록·리셋과 콜백 재생</span></a></li><li><a href="af-pwm-parameters.html" aria-current="page">AF PWM 요청과 정수 변환<span>두 호출점, 16비트 레코드 패킹과 서비스 호출 전 경계</span></a></li><li><a href="af-request-consumer.html">AF 요청 큐와 완료 통지<span>요청 슬롯, 처리 task, 완료 통지</span></a></li></ol></nav>
+<nav class="pager" aria-label="이전·다음 문서"><a class="prev" href="af-driver-pwm.html"><small>← 이전</small>AF 드라이버와 PWM 연결</a><a class="next" href="af-request-consumer.html"><small>다음 →</small>AF 요청 큐와 완료 통지</a></nav>
+<footer class="sitefoot"><div class="sitefoot-in"><nav aria-label="사이트"><a href="../index.html#map">문서 지도</a><a href="../index.html#levels">검증 수준 읽는 법</a><a href="../glossary.html">용어집</a><a href="research-program.html">세 기종 연구 본부</a><a href="https://github.com/yunhyok/pentax-k3iii-firmware-analysis">GitHub 저장소</a></nav><p>PENTAX 펌웨어 연구. PC에서 수행한 정적 분석과 에뮬레이션 결과이며, 카메라 실기에서 검증한 내용이 아닙니다. 원본 펌웨어와 추출한 독점 코드는 포함하지 않습니다.</p></div></footer>
+<!-- /chrome:bottom -->
+</body>
+</html>

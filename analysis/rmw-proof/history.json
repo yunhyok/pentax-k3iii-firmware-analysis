@@ -1,0 +1,58 @@
+{
+  "kind": "historical_observation_not_reverified_by_this_public_CLI",
+  "original31_full_witness_sha256": "95a5ce68c95bcc4391894983e0650cf8098ae6f2c56878667b0a64cb01ef7b98",
+  "original33_result_sha256": "765c7ae01b3b20b8fda19219eecac269132960b9b1476eb49580d101f7245ebd",
+  "registry_public_result_sha256": "4f533002bf1f8727092c8aa44596544c6dbf339d41231a411297fffdf76839d4",
+  "cases": [
+    {
+      "pattern": "0x0",
+      "first_writer_PCs": [
+        "0x525d85b0",
+        "0x525d85b4"
+      ],
+      "final_writer_PCs": [
+        "0x525d85c8",
+        "0x525d85cc"
+      ],
+      "earlier_writer_in_selected31_trace": false,
+      "guest_store_count_scanned": 4473,
+      "four_store_values": [
+        "0x1",
+        "0x0",
+        "0xba4d",
+        "0x0"
+      ]
+    },
+    {
+      "pattern": "0xa5",
+      "first_writer_PCs": [
+        "0x525d85b0",
+        "0x525d85b4"
+      ],
+      "final_writer_PCs": [
+        "0x525d85c8",
+        "0x525d85cc"
+      ],
+      "earlier_writer_in_selected31_trace": false,
+      "guest_store_count_scanned": 4473,
+      "four_store_values": [
+        "0xa5",
+        "0xa4",
+        "0xba4d",
+        "0x0"
+      ]
+    }
+  ],
+  "meaning": "Target8-byte indexBF becomes the length descriptor of the remaining free block",
+  "count_derivation": "Earlier original wordBA51 >>2 =2E94; one-page allocation leaves2E93; final wordsBA4D and0",
+  "boundary": "The public proof does not re-run this historical trace; physical producer and all earlier wholeboot writers remain unknown",
+  "registry_report": "../registry-replay/report.html",
+  "original31_final_state": "All56 allowed control bytes are eventually guest-produced; existing48 bytes are also read and written in earlier stages.",
+  "MPIDR_boundary_distinction": {
+    "observed31_stop": "0x525b5a54",
+    "static_candidates_not_observed31_stops": [
+      "0x525d9f4c",
+      "0x525d6f18"
+    ]
+  }
+}

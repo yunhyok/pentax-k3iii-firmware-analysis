@@ -1,0 +1,86 @@
+{
+  "schema": 1,
+  "marker": "III-RMW-PUBLIC-34",
+  "source_bound_manual_model_proved": true,
+  "input_sha256": "7ff301d585ef7adcd620a15575faa39b4227cc5a27eaa8d754efe50f667a30f9",
+  "source": {
+    "block_sha256": "86e67a1d1ddcb8baa1ca1863685ada9ede289648b3cc2353109896d4da0cba8c",
+    "decoded_instruction_count": 15,
+    "Capstone_module": "5.0.7",
+    "Capstone_distribution": "5.0.9",
+    "instruction_text_or_bytes_emitted": false
+  },
+  "source_manifest_sha256": "87fb583052f647352721390f58e011f1cad5563b211aca0ffd8daa325f5ed05c",
+  "original33_script_sha256": "895f14ae328b0b93bcfa1bd0f3b84ea43e3a17697d7ee001b0fa4fc21cb191e2",
+  "original33_result_sha256": "765c7ae01b3b20b8fda19219eecac269132960b9b1476eb49580d101f7245ebd",
+  "public_helper_sha256": "9396b221c7756a234e67259dd42d78667afa379a6be99c1f98a49d28cc685959",
+  "Z3_distribution": "5.3.1.0",
+  "proof": {
+    "engine": "Z3",
+    "version": "5.3.1",
+    "counterexample_result": "unsat",
+    "universal_variables": "two arbitrary32-bit initial words and signed32-bit count>1",
+    "final_word0": "(count << 2 modulo2^32) | 1",
+    "final_word1": 0,
+    "intermediate_stores_depend_on_initial_bits": true,
+    "negative_controls": [
+      {
+        "omitted_model_operation": "clear_first_bit1",
+        "result": "sat",
+        "counterexample": {
+          "initial_word0": "0x2",
+          "initial_word1": "0x0",
+          "count": "0x2e93"
+        }
+      },
+      {
+        "omitted_model_operation": "clear_second_low2",
+        "result": "sat",
+        "counterexample": {
+          "initial_word0": "0x0",
+          "initial_word1": "0x3",
+          "count": "0x2e93"
+        }
+      }
+    ],
+    "model_examples_not_new_native_observations": [
+      {
+        "initial_pattern": "0x0",
+        "count": "0x2e93",
+        "model_store_values": [
+          "0x1",
+          "0x0",
+          "0xba4d",
+          "0x0"
+        ]
+      },
+      {
+        "initial_pattern": "0xa5",
+        "count": "0x2e93",
+        "model_store_values": [
+          "0xa5",
+          "0xa4",
+          "0xba4d",
+          "0x0"
+        ]
+      }
+    ]
+  },
+  "premises": [
+    "Signed count>1 reaches this block",
+    "Eight writable ordinary RAM bytes, little-endian",
+    "Sequential normal completion; no concurrent or asynchronous access, aliasing store, or fault"
+  ],
+  "limits": {
+    "raw_RMW_allowlist_bytes_unchanged": 56,
+    "other_RMW_bytes_not_proved": 48,
+    "physical_initial_producer_known": false,
+    "native_replay": false,
+    "proves_no_reads": false,
+    "proves_concurrency": false,
+    "private31_trace_required": false,
+    "scope_note": "The other48 bytes remain outside this proof; the existing56-byte RMW allowance is unchanged."
+  },
+  "historical31_observation_reverified": false,
+  "firmware_bytes_or_disassembly_bundled": false
+}
