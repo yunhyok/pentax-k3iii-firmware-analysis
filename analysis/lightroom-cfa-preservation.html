@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>K-3 III PEF와 변환 DNG의 CFA 비교 — PENTAX 펌웨어 연구</title>
+<meta name="description" content="원본 PEF와 Adobe DNG Converter 18.7 출력의 전체 CFA 정수 샘플을 세 디코딩 배열로 비교했습니다.">
+<link rel="stylesheet" href="../assets/site.css">
+<style>
+.cfa-compare .decode-flow{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,12rem),1fr));gap:.6rem;margin:.7rem 0 0;padding:0;list-style:none}
+.cfa-compare .decode-flow li{padding:.65rem;border:1px solid var(--line);border-radius:.5rem}
+.cfa-compare .decode-flow b{display:block}
+.cfa-compare .table-wrap:focus-visible{outline:2px solid var(--brand);outline-offset:3px}
+</style>
+</head>
+<body data-camera="k3iii">
+<!-- chrome:top -->
+<a class="skip" href="#main">본문 바로가기</a>
+<div class="topbar"><div class="topbar-in"><a class="brand" href="../index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="../index.html" aria-current="true">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="https://yunhyok.github.io/pentax-q7-firmware-analysis/">Q7</a></div><nav class="topnav" aria-label="주제"><a href="../index.html">개요</a><a href="guide-boot.html">부팅·저장소</a><a href="guide-update.html">업데이트</a><a href="guide-rebuild.html">재구축</a><a href="guide-rtos.html">명령·셸</a><a href="guide-color.html">색 처리</a><a href="lightroom-bridge.html" aria-current="true">Lightroom</a><a href="af-foundations.html">AF</a><a href="ui-port-contract.html">UI</a></nav></div></div>
+<nav class="crumbs" aria-label="현재 위치"><ol><li><a href="../index.html">PENTAX K-3 Mark III</a></li><li><a href="lightroom-bridge.html">Lightroom 색 프로파일</a></li><li aria-current="page">K-3 III PEF·DNG의 CFA 샘플 비교</li></ol></nav>
+<!-- /chrome:top -->
+<header class="page-head">
+<p class="eyebrow">Lightroom 색 프로파일 · K-3 III</p>
+<h1>원본 PEF와 변환 DNG의 CFA 샘플 비교</h1>
+<p class="lead">K-3 III PEF와 Adobe DNG Converter 18.7이 변환한 DNG에서 디모자이크 전 CFA 샘플 26,628,096개가 모두 같았습니다. 변환 DNG의 WhiteLevel은 원본 MakerNote에 기록된 값과 달랐습니다.</p>
+</header>
+<div class="layout">
+<!-- chrome:toc -->
+<nav class="toc" aria-label="이 문서의 목차"><h2 data-toc="no">이 문서에서</h2><ol><li><a href="#samples">세 배열의 모든 위치를 비교했습니다</a></li><li><a href="#metadata">같은 CFA 배열에 기록된 WhiteLevel은 달랐습니다</a></li><li><a href="#replay">고정 PEF·DNG를 다시 비교하는 방법</a></li></ol></nav>
+<!-- /chrome:toc -->
+<main id="main" class="doc cfa-compare">
+<section id="samples">
+<h2>세 배열의 모든 위치를 비교했습니다</h2>
+<figure class="diagram">
+<figcaption>여백을 포함한 4224×6304 uint16 배열을 만든 경로</figcaption>
+<ol class="decode-flow">
+<li><b>원본 PEF</b>rawpy/LibRaw에서 RAW 배열을 복사</li>
+<li><b>첫 변환 DNG</b>rawpy/LibRaw에서 같은 크기의 RAW 배열을 복사</li>
+<li><b>같은 DNG의 RAW SubIFD</b>tifffile/imagecodecs로 저장된 CFA를 별도 디코딩</li>
+<li><b>전체 위치 대조</b>세 배열의 샘플 차이 0, 동일한 SHA-256</li>
+</ol>
+</figure>
+<p>rawpy는 LibRaw의 <code>unpack</code> 뒤 원본 크기의 <code>raw_image</code> 배열을 노출합니다. 스크립트는 디코더가 열린 동안 이 배열을 복사합니다. 비교에는 디모자이크, 화이트밸런스 적용, 크롭, 노출 보정, 블랙 레벨 차감이 들어가지 않았습니다. 별도 검토에서 디코더의 버퍼 열기와 unpack을 명시적으로 호출해 배열의 동등성을 직접 확인했습니다. <a href="https://github.com/letmaik/rawpy/blob/2705f5b223c162c3cbc48474fe1a01c3cf09fa4f/rawpy/_rawpy.pyx#L470-L570">rawpy 게시 커밋의 원본 배열 구현</a> · <a href="https://github.com/LibRaw/LibRaw/blob/0.22.2/src/decoders/decoders_dcraw.cpp#L777-L806">LibRaw Pentax 디코더</a></p>
+<div class="table-wrap" tabindex="0" role="region" aria-label="세 CFA 배열 비교">
+<table><caption>디코딩 배열의 같은 좌표끼리 비교</caption><thead><tr><th scope="col">비교</th><th scope="col">일치 샘플</th><th scope="col">정수 차이 범위</th></tr></thead>
+<tbody><tr><th scope="row">LibRaw DNG와 LibRaw PEF</th><td>26,628,096 / 26,628,096</td><td>0…0</td></tr>
+<tr><th scope="row">TIFF 저장 CFA와 LibRaw DNG</th><td>26,628,096 / 26,628,096</td><td>0…0</td></tr>
+<tr><th scope="row">TIFF 저장 CFA와 LibRaw PEF</th><td>26,628,096 / 26,628,096</td><td>0…0</td></tr></tbody></table>
+</div>
+<p>세 배열을 리틀엔디언 uint16 행 우선 순서로 직렬화한 SHA-256은 모두 <code>b5dbb0a1bcaf6d4002a54c0069fbfd52e17964156cdf7359ae10395519b145b3</code>입니다. RGGB의 네 위치에서도 각각 6,657,024개가 일치했습니다. <a href="lightroom-cfa-preservation.json">전체 비교 결과와 독립 검토 데이터</a></p>
+</section>
+<section id="metadata">
+<h2>같은 CFA 배열에 기록된 WhiteLevel은 달랐습니다</h2>
+<div class="table-wrap" tabindex="0" role="region" aria-label="원본과 변환 파일의 WhiteLevel">
+<table><caption>파일 태그와 LibRaw 반환값</caption><thead><tr><th scope="col">확인 위치</th><th scope="col">WhiteLevel 또는 maximum</th></tr></thead>
+<tbody><tr><th scope="row">PEF Pentax MakerNote WhiteLevel</th><td>16,378</td></tr>
+<tr><th scope="row">PEF를 연 LibRaw maximum</th><td>16,383</td></tr>
+<tr><th scope="row">DNG RAW SubIFD WhiteLevel 및 LibRaw maximum</th><td>16,315</td></tr></tbody></table>
+</div>
+<p>저장 CFA의 최댓값은 16,382였고 DNG WhiteLevel 16,315를 넘는 샘플은 8,565개였습니다. 그 값도 잘라내지 않고 대조했습니다. 두 rawpy 입력의 채널별 블랙 레벨은 모두 64였습니다. rawpy의 채널 표는 RGBG 인덱스 <code>[[0,1],[3,2]]</code>, DNG의 CFA 태그는 RGB 인덱스 <code>[[0,1],[1,2]]</code>이며, 두 표는 동일한 RGGB 위치를 가리킵니다. <a href="lightroom-cfa-preservation.json">태그·채널·유효 영역 기록</a> · <a href="https://github.com/letmaik/rawpy/blob/2705f5b223c162c3cbc48474fe1a01c3cf09fa4f/rawpy/_rawpy.pyx#L745-L817">rawpy 메타데이터 속성</a></p>
+<p>이 결과는 보존한 PEF 한 개와 해당 첫 DNG 변환의 디코딩 배열에 한정됩니다. WhiteLevel과 중립값 등 현상에 쓰이는 메타데이터는 배열과 별도로 해석됩니다. Lightroom에서 PEF와 DNG가 같은 렌더를 만드는지는 검사하지 않았습니다. <a href="lightroom-pef-neutral.html">변환 조건과 AsShotNeutral 검증</a></p>
+</section>
+<section id="replay">
+<h2>고정 PEF·DNG를 다시 비교하는 방법</h2>
+<p>원본 PEF와 첫 변환 DNG의 크기 및 SHA-256을 확인합니다. 새 변환은 날짜나 UUID 때문에 파일 해시가 달라질 수 있습니다. 검증기는 고정 파일 쌍과 원래 결과 전체의 SHA-256을 대조한 후에만 새 JSON을 씁니다. 두 원본 파일과 디코더 바이너리는 이 자료에 포함하지 않았습니다. <a href="lightroom-cfa-preservation.json">입력 핀</a> · <a href="lightroom-pef-neutral.html#replay">Converter 실행 기록</a></p>
+<p>CPython 3.12.3 Windows x86-64, NumPy 1.26.4, tifffile 2023.4.12, imagecodecs 2023.1.23을 사용했습니다. rawpy는 0.28.0, 관측한 LibRaw 버전은 0.22.2입니다. 같은 환경에서 rawpy가 필요하면 공식 wheel을 내려받고 JSON의 SHA-256과 비교한 후 전용 디렉터리에 설치합니다. 스크립트는 설치를 수행하지 않습니다. 공식 wheel과 선택한 설치 파일들의 바이트를 대조했으며, 이 해시로 전체 런타임의 DLL과 의존성을 인증한 것은 아닙니다. <a href="https://pypi.org/project/rawpy/0.28.0/#rawpy-0.28.0-cp312-cp312-win_amd64.whl">공식 rawpy wheel과 SHA-256</a></p>
+<pre><code>Get-FileHash ./rawpy-0.28.0-cp312-cp312-win_amd64.whl
+python -m pip install --no-deps --target .cfa-deps ./rawpy-0.28.0-cp312-cp312-win_amd64.whl
+$env:PYTHONPATH = (Resolve-Path .cfa-deps).Path
+python -B tools/check_lightroom_cfa_preservation.py --pef K3IIIhSLI0000100NR0.PEF --dng first-converted.dng --output cfa-replay.json</code></pre>
+<p>위 환경 변수는 이 PowerShell 세션에 적용됩니다. 설치가 이미 끝난 전용 환경이라면 마지막 명령만 사용합니다. <a href="../tools/check_lightroom_cfa_preservation.py">재현 코드</a></p>
+</section>
+</main>
+</div>
+<!-- chrome:bottom -->
+<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">Lightroom 색 프로파일 — 이 주제의 문서</h2><ol><li><a href="lightroom-bridge.html">Lightroom 프로파일 안내<span>DCP 생성·검증의 전체 흐름</span></a></li><li><a href="raw-test-inputs.html">시험용 RAW 준비</a></li><li><a href="color-comparison-protocol.html">ColorChecker 비교 절차</a></li><li><a href="lightroom-render-comparison.html">실제 TIFF 6개 비교</a></li><li><a href="lightroom-tone-comparison.html">톤 곡선 비교</a></li><li><a href="lightroom-model-exports.html">K-3 III·Q7 DCP 내보내기</a></li><li><a href="lightroom-profile-fingerprints.html">프로파일 지문 재현</a></li><li><a href="lightroom-look-controls.html">LookTable 대조 실험</a></li><li><a href="color-tone-residual.html">톤 보정 뒤 남는 색차</a></li><li><a href="color-scene-transfer.html">고정 톤의 독립 장면 비교<span>K-3 II #1363과 Lightroom 버전 대조</span></a></li><li><a href="lightroom-composed-tone.html">합성 톤 DCP의 실제 Lightroom 출력<span>두 장면·최대 색차 기준 미충족</span></a></li><li><a href="lightroom-tone-coordinates.html">Lightroom 톤과 RGB 좌표<span>같은 엔진·두 출력 색공간 대조</span></a></li><li><a href="lightroom-studio-baseline.html">K-3 III·Q7 Bright 스튜디오 비교<span>정합 통과 영역의 JPEG 대비 색차</span></a></li><li><a href="lightroom-studio-reference.html">K-3 III·Q7 참조 프로파일 비교<span>같은 장면의 공통 마스크·As Shot 대조</span></a></li><li><a href="lightroom-as-shot.html">As Shot과 프로파일별 백색점<span>같은 Q7 RAW의 SDK 수식 재현</span></a></li><li><a href="lightroom-pef-neutral.html">K-3 III PEF의 As Shot 중립값<span>두 DNG 변환과 세 프로파일 수식 재현</span></a></li><li><a href="lightroom-cfa-preservation.html" aria-current="page">K-3 III PEF·DNG의 CFA 샘플 비교<span>변환 전후 전체 26,628,096개 샘플 대조</span></a></li></ol></nav>
+<nav class="pager" aria-label="이전·다음 문서"><a class="prev" href="lightroom-pef-neutral.html"><small>← 이전</small>K-3 III PEF의 As Shot 중립값</a><a class="next" href="af-foundations.html"><small>다음 →</small>AF와 렌즈 제어 안내</a></nav>
+<footer class="sitefoot"><div class="sitefoot-in"><nav aria-label="사이트"><a href="../index.html#map">문서 지도</a><a href="../index.html#levels">검증 수준 읽는 법</a><a href="../glossary.html">용어집</a><a href="research-program.html">세 기종 연구 본부</a><a href="https://github.com/yunhyok/pentax-k3iii-firmware-analysis">GitHub 저장소</a></nav><p>PENTAX 펌웨어 연구. PC에서 수행한 정적 분석과 에뮬레이션 결과이며, 카메라 실기에서 검증한 내용이 아닙니다. 원본 펌웨어와 추출한 독점 코드는 포함하지 않습니다.</p></div></footer>
+<!-- /chrome:bottom -->
+</body>
+</html>
