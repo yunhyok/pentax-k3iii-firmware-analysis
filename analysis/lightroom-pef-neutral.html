@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>K-3 III PEF의 As Shot 중립값 — PENTAX 펌웨어 연구</title>
+<meta name="description" content="Adobe DNG Converter 18.7에서 얻은 K-3 III AsShotNeutral과 프로파일별 SDK 수식 재현을 기록했습니다.">
+<link rel="stylesheet" href="../assets/site.css">
+<style>
+.pef-neutral .neutral-flow{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,12rem),1fr));gap:.6rem;margin:.7rem 0 0;padding:0;list-style:none}
+.pef-neutral .neutral-flow li{padding:.65rem;border:1px solid var(--line);border-radius:.5rem}
+.pef-neutral .neutral-flow b{display:block}
+.pef-neutral .table-wrap:focus-visible{outline:2px solid var(--brand);outline-offset:3px}
+</style>
+</head>
+<body data-camera="k3iii">
+<!-- chrome:top -->
+<a class="skip" href="#main">본문 바로가기</a>
+<div class="topbar"><div class="topbar-in"><a class="brand" href="../index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="../index.html" aria-current="true">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="https://yunhyok.github.io/pentax-q7-firmware-analysis/">Q7</a></div><nav class="topnav" aria-label="주제"><a href="../index.html">개요</a><a href="guide-boot.html">부팅·저장소</a><a href="guide-update.html">업데이트</a><a href="guide-rebuild.html">재구축</a><a href="guide-rtos.html">명령·셸</a><a href="guide-color.html">색 처리</a><a href="lightroom-bridge.html" aria-current="true">Lightroom</a><a href="af-foundations.html">AF</a><a href="ui-port-contract.html">UI</a></nav></div></div>
+<nav class="crumbs" aria-label="현재 위치"><ol><li><a href="../index.html">PENTAX K-3 Mark III</a></li><li><a href="lightroom-bridge.html">Lightroom 색 프로파일</a></li><li aria-current="page">K-3 III PEF의 As Shot 중립값</li></ol></nav>
+<!-- /chrome:top -->
+<header class="page-head">
+<p class="eyebrow">Lightroom 색 프로파일 · K-3 III</p>
+<h1>K-3 III PEF에서 확인한 As Shot 중립값</h1>
+<p class="lead">Adobe DNG Converter 18.7은 PEF 복사본에서 RGB 중립값 (0.431703, 1, 0.625917)을 기록했습니다. 이 값으로 SDK 수식을 재현했을 때 프로파일에 따른 온도 변화는 −42.111 K였고, Lightroom의 원본 PEF 표시에서는 −50 K였습니다.</p>
+</header>
+<div class="layout">
+<!-- chrome:toc -->
+<nav class="toc" aria-label="이 문서의 목차"><h2 data-toc="no">이 문서에서</h2><ol><li><a href="#conversion">두 DNG 변환에서 CFA 데이터가 일치했습니다</a></li><li><a href="#neutral">녹색 기준 역수 비율이 표준 중립값과 일치했습니다</a></li><li><a href="#profiles">같은 중립값에서 프로파일별 온도와 틴트를 계산했습니다</a></li><li><a href="#replay">새 변환과 고정 입력 재현</a></li></ol></nav>
+<!-- /chrome:toc -->
+<main id="main" class="doc pef-neutral">
+<section id="conversion">
+<h2>두 DNG 변환에서 CFA 데이터가 일치했습니다</h2>
+<figure class="diagram">
+<figcaption>실제 변환, 수식 재현, Lightroom 관측을 연결한 근거</figcaption>
+<ol class="neutral-flow">
+<li><b>원본 PEF 복사</b>K-3 III 펌웨어 1.10, MakerNote WhitePoint 확인</li>
+<li><b>Converter 18.7</b>6304×4224 CFA와 표준 AsShotNeutral 기록</li>
+<li><b>SDK 수식의 Python 재현</b>같은 DNG 중립값을 세 프로파일의 행렬에 적용</li>
+<li><b>Lightroom 16.0 관측</b>별도 원본 PEF에서 읽은 As Shot 온도·틴트와 대조</li>
+</ol>
+</figure>
+<p>설치된 Windows CLI에서 원본 해시와 일치하는 복사본 두 개를 각각 변환했습니다. 두 출력은 6304×4224 한 채널 CFA, 16비트 저장, 기본 크롭 6192×4128이었습니다. 425개 타일에서 모두 무손실 JPEG SOF3를 확인했고, 전체 디코딩 픽셀의 SHA-256이 같았습니다. 이 두 차례 변환 검사에서는 원본 PEF 배열을 디코딩하여 대조하지 않았습니다. <a href="lightroom-pef-neutral.json">변환 명령·태그·픽셀 해시</a></p>
+<p>두 DNG는 각각 31,652,772바이트였습니다. 105바이트 차이는 IFD0 날짜, XMP 변환 시각과 생성 UUID, 미리보기 날짜에서만 발생했습니다. 두 실행 모두 종료 코드가 0이었고 GPU·WinML 초기화 진단은 로그에 남겼습니다. 원본과 복사본 PEF의 해시는 변환 전후 같았습니다. <a href="lightroom-pef-neutral.json">두 컨테이너 해시와 비교 결과</a> · <a href="https://helpx.adobe.com/content/dam/help/en/camera-raw/digital-negative/jcr_content/root/content/flex/items/position/position-par/download_section/download-1/dng_converter_commandline.pdf">Adobe 명령줄 명세</a></p>
+</section>
+<section id="neutral">
+<h2>녹색 기준 역수 비율이 표준 중립값과 일치했습니다</h2>
+<p>원본 PEF에는 표준 AsShotNeutral 태그가 없었습니다. Pentax MakerNote 0x0201의 WhitePoint는 18976, 8192, 8192, 13088이며 변환 DNG에도 보존됐습니다. LibRaw의 PEF 파서는 이를 RGGB 순서의 As Shot WB로 해석합니다. 이 표본에서 두 녹색이 같아 녹색을 기준으로 구한 역수의 RGB 비율을 직접 대조할 수 있었습니다. <a href="https://github.com/LibRaw/LibRaw/blob/0.22.0/src/metadata/pentax.cpp#L407-L409">LibRaw 0.22.0 파서</a> · <a href="https://github.com/LibRaw/LibRaw/blob/0.22.0/internal/defines.h#L157-L159">채널 순서</a> · <a href="https://github.com/exiftool/exiftool/blob/13.59/lib/Image/ExifTool/Pentax.pm#L2741-L2748">ExifTool 13.59 태그 정의</a></p>
+<div class="table-wrap" tabindex="0" role="region" aria-label="MakerNote와 DNG 중립값">
+<table><caption>RGB 중립값의 유리수 대조</caption><thead><tr><th scope="col">채널</th><th scope="col">MakerNote 역수 비율</th><th scope="col">DNG AsShotNeutral</th></tr></thead>
+<tbody><tr><th scope="row">R</th><td>256/593</td><td>431703/1000000</td></tr><tr><th scope="row">G</th><td>1</td><td>1000000/1000000</td></tr><tr><th scope="row">B</th><td>256/409</td><td>625917/1000000</td></tr></tbody></table>
+</div>
+<p>두 DNG의 AnalogBalance는 (1, 1, 1)이고 CameraCalibration1/2/3 및 CameraCalibrationSignature는 없습니다. <code>com.adobe</code>는 별도의 ProfileCalibrationSignature 값입니다. 관측한 역수 비율의 일치는 두 녹색 값이 같은 이 표본에 한정됩니다. ExifTool Windows 런처와 설치된 Pentax 파서 모듈의 해시를 각각 기록했습니다. 전체 Perl 실행 환경의 무결성은 확인 범위 밖입니다. <a href="lightroom-pef-neutral.json">표준 태그와 도구 해시</a></p>
+</section>
+<section id="profiles">
+<h2>같은 중립값에서 프로파일별 온도와 틴트를 계산했습니다</h2>
+<p>Converter가 기록한 같은 중립값을 세 프로파일에 적용해 공개 Adobe DNG SDK 1.7.1 Build 2768 수식을 Python으로 재현했습니다. Adobe Standard와 Camera Bright는 ColorMatrix 두 개와 조명 태그가 같아 모델 백색점과 온도·틴트가 같습니다. ForwardMatrix는 다르며 카메라→D50 PCS 행렬의 두 프로파일 간 최대 성분 차이는 0.619123입니다. 모델 CameraWhite는 매트릭스 기준과 최대 1.02×10⁻⁸ 차이였습니다. <a href="lightroom-as-shot.html#sdk">SDK 계산 경로</a> · <a href="lightroom-pef-neutral.json">행렬·태그별 해시</a></p>
+<div class="table-wrap" tabindex="0" role="region" aria-label="K-3 III 프로파일별 백색점과 As Shot">
+<table><caption>고정 DNG 중립값을 쓴 Python 계산과 Lightroom 원본 PEF 관측</caption>
+<thead><tr><th scope="col">프로파일</th><th scope="col">모델 xy</th><th scope="col">모델 온도 / 틴트</th><th scope="col">Lightroom 표시</th><th scope="col">모델 − 표시</th></tr></thead>
+<tbody><tr><th scope="row">매트릭스 4678</th><td>(0.334983, 0.338373)</td><td>5383.940 K / −7.231</td><td>5400 K / −7</td><td>−16.060 K / −0.231</td></tr>
+<tr><th scope="row">Adobe Standard</th><td>(0.335988, 0.339930)</td><td>5341.829 K / −6.123</td><td>5350 K / −6</td><td>−8.171 K / −0.123</td></tr>
+<tr><th scope="row">Camera Bright</th><td>(0.335988, 0.339930)</td><td>5341.829 K / −6.123</td><td>5350 K / −6</td><td>−8.171 K / −0.123</td></tr></tbody></table>
+</div>
+<p>모델 변화는 −42.111 K / +1.107, 관측 변화는 −50 K / +1입니다. 두 변화량의 차이는 +7.889 K / +0.107입니다. 매트릭스 4678과 두 Adobe 프로파일은 각각 8회와 4회에 수렴했습니다. SDK 저온 분기나 미수렴 대안은 사용하지 않았습니다. DNG에 내장된 두 ColorMatrix, 조명 태그 두 개, ForwardMatrix 두 개는 Adobe Standard의 해당 payload와 바이트 단위로 일치합니다. 변환기의 프로파일 선택 과정은 관측하지 않았습니다. <a href="lightroom-pef-neutral.json">세 프로파일 전체 결과</a></p>
+<p>계산 입력은 Converter 18.7의 DNG이고 비교한 표시값은 Lightroom 16.0의 원본 PEF에서 나왔습니다. 실제 Lightroom의 채널 이득, UI 반올림 규칙, PEF·DNG 렌더 동등성은 미확인입니다. 앞선 참조 프로파일 실험에서 As Shot 표시값이 바뀌어 엄격한 WB 동일 조건이 실패한 결과도 그대로입니다. <a href="lightroom-studio-reference.html#controls">원본 PEF 현상 비교</a></p>
+</section>
+<section id="replay">
+<h2>새 변환과 고정 입력 재현</h2>
+<p>새 변환을 확인하려면 원본 PEF의 SHA-256이 기록과 같은지 검증한 후 독립 복사본을 새 폴더에서 변환합니다. <code>-c</code>는 무손실 압축, <code>-p0</code>는 별도 JPEG 미리보기 없음입니다. 실제 결과에는 256×171 RGB 썸네일이 있습니다. 원본 내장·선형 DNG·손실 압축·크기 제한 옵션은 사용하지 않았습니다. <a href="https://helpx.adobe.com/content/dam/help/en/camera-raw/digital-negative/jcr_content/root/content/flex/items/position/position-par/download_section/download-1/dng_converter_commandline.pdf">Adobe CLI 옵션</a></p>
+<pre><code>&amp; $converter -c -p0 -d $newFolder -o K3IIIhSLI0000100NR0.dng $pefCopy</code></pre>
+<p>아래 계산기는 연구 당시의 <strong>첫 번째 DNG 파일</strong>을 입력으로 사용합니다. 새로 변환한 파일은 CFA가 같더라도 날짜와 UUID가 달라져 전체 파일 해시가 바뀝니다. SDK ZIP과 DCP 세 개의 고정 크기·해시도 확인합니다. 온도 표는 지정한 SDK ZIP에서 읽습니다. Adobe DCP·SDK·사진 원본은 배포하지 않습니다. 매트릭스 4678 DCP는 스튜디오 기준 JSON의 <code>profile_recipes.k3iii.spec</code>와 <code>profile_bridge.py</code>로 재생성할 수 있습니다. <a href="lightroom-studio-baseline.json">매트릭스 4678 레시피</a> · <a href="../tools/profile_bridge.py">DCP 생성기</a> · <a href="../profiles/Adobe-DNG-SDK-LICENSE.txt">Adobe SDK 라이선스</a></p>
+<pre><code>python -B tools/check_lightroom_pef_neutral.py --sdk dng-sdk.zip   --dng first-converted.dng --matrix pentax-k3iii-4678-matrix-test.dcp   --adobe-standard "PENTAX K-3 Mark III Adobe Standard.dcp"   --camera-bright "PENTAX K-3 Mark III Camera Bright.dcp" --output result.json</code></pre>
+<p>기준 결과와 전체 구조·자료형을 비교하고 유한 실수 항목에는 절대차 10⁻¹⁰을 적용합니다. 새 출력의 실제 SHA-256과 기준 SHA-256을 각각 표시합니다. 계산기는 Converter나 Lightroom을 실행하지 않습니다. <a href="../tools/check_lightroom_pef_neutral.py">재현 코드</a> · <a href="lightroom-pef-neutral.json">입력 핀과 결과</a> · <a href="https://helpx.adobe.com/camera-raw/desktop/dng-and-file-formats/digital-negative.html">Adobe DNG SDK</a></p>
+</section>
+</main>
+</div>
+<!-- chrome:bottom -->
+<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">Lightroom 색 프로파일 — 이 주제의 문서</h2><ol><li><a href="lightroom-bridge.html">Lightroom 프로파일 안내<span>DCP 생성·검증의 전체 흐름</span></a></li><li><a href="raw-test-inputs.html">시험용 RAW 준비</a></li><li><a href="color-comparison-protocol.html">ColorChecker 비교 절차</a></li><li><a href="lightroom-render-comparison.html">실제 TIFF 6개 비교</a></li><li><a href="lightroom-tone-comparison.html">톤 곡선 비교</a></li><li><a href="lightroom-model-exports.html">K-3 III·Q7 DCP 내보내기</a></li><li><a href="lightroom-profile-fingerprints.html">프로파일 지문 재현</a></li><li><a href="lightroom-look-controls.html">LookTable 대조 실험</a></li><li><a href="color-tone-residual.html">톤 보정 뒤 남는 색차</a></li><li><a href="color-scene-transfer.html">고정 톤의 독립 장면 비교<span>K-3 II #1363과 Lightroom 버전 대조</span></a></li><li><a href="lightroom-composed-tone.html">합성 톤 DCP의 실제 Lightroom 출력<span>두 장면·최대 색차 기준 미충족</span></a></li><li><a href="lightroom-tone-coordinates.html">Lightroom 톤과 RGB 좌표<span>같은 엔진·두 출력 색공간 대조</span></a></li><li><a href="lightroom-studio-baseline.html">K-3 III·Q7 Bright 스튜디오 비교<span>정합 통과 영역의 JPEG 대비 색차</span></a></li><li><a href="lightroom-studio-reference.html">K-3 III·Q7 참조 프로파일 비교<span>같은 장면의 공통 마스크·As Shot 대조</span></a></li><li><a href="lightroom-as-shot.html">As Shot과 프로파일별 백색점<span>같은 Q7 RAW의 SDK 수식 재현</span></a></li><li><a href="lightroom-pef-neutral.html" aria-current="page">K-3 III PEF의 As Shot 중립값<span>두 DNG 변환과 세 프로파일 수식 재현</span></a></li></ol></nav>
+<nav class="pager" aria-label="이전·다음 문서"><a class="prev" href="lightroom-as-shot.html"><small>← 이전</small>As Shot과 프로파일별 백색점</a><a class="next" href="af-foundations.html"><small>다음 →</small>AF와 렌즈 제어 안내</a></nav>
+<footer class="sitefoot"><div class="sitefoot-in"><nav aria-label="사이트"><a href="../index.html#map">문서 지도</a><a href="../index.html#levels">검증 수준 읽는 법</a><a href="../glossary.html">용어집</a><a href="research-program.html">세 기종 연구 본부</a><a href="https://github.com/yunhyok/pentax-k3iii-firmware-analysis">GitHub 저장소</a></nav><p>PENTAX 펌웨어 연구. PC에서 수행한 정적 분석과 에뮬레이션 결과이며, 카메라 실기에서 검증한 내용이 아닙니다. 원본 펌웨어와 추출한 독점 코드는 포함하지 않습니다.</p></div></footer>
+<!-- /chrome:bottom -->
+</body>
+</html>
