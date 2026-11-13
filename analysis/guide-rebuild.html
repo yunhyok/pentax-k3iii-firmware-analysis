@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>펌웨어 재구축 안내 — PENTAX K-3 Mark III 펌웨어 연구</title>
-<meta name="description" content="제조사 소스 없이 펌웨어의 일부를 직접 다시 만들어 원본과 같게 동작시킬 수 있는지 시험한 연구의 길잡이입니다. 함수 재작성, 원래 자리 배치, 패키지 재포장의 세 문서를 이어 줍니다.">
+<meta name="description" content="제조사 소스 없이 펌웨어의 일부를 직접 다시 만들어 원본과 같게 동작시킬 수 있는지 시험한 연구의 길잡이입니다. 함수 재작성, 원래 자리 배치, 패키지 재포장의 세 문서와 할당기·registry 재현, 초기 메모리 RMW 증명 네 문서를 이어 줍니다.">
 <link rel="stylesheet" href="../assets/site.css">
 </head>
 <body data-camera="k3iii">
@@ -16,7 +16,7 @@
 <header class="page-head">
 <p class="eyebrow">펌웨어 재구축</p>
 <h1>펌웨어 재구축 안내</h1>
-<p class="lead">제조사의 소스 코드는 공개되어 있지 않습니다. 이 주제는 펌웨어의 일부를 직접 다시 만들어, 원본과 똑같이 동작하는 코드로 바꿔 넣을 수 있는지를 가장 작은 단위부터 시험합니다.</p>
+<p class="lead">제조사의 소스 코드는 공개되어 있지 않습니다. 이 주제는 펌웨어의 일부를 직접 다시 만들어 원본과 똑같이 동작하는 코드로 바꿔 넣을 수 있는지 가장 작은 단위부터 시험하고, 다시 만든 펌웨어가 부팅하려면 지켜야 할 시작 과정의 조건을 원본 코드로 확인합니다.</p>
 </header>
 <div class="layout">
 <!-- chrome:toc -->
@@ -27,67 +27,102 @@
 <section class="summary">
 <h2 data-toc="no">핵심 요약</h2>
 <ul>
-<li>이 주제는 “원본과 같은 코드를 직접 만들 수 있는가 → 원래 자리에 넣어도 같은가 → 파일 크기를 원본에 가깝게 되돌릴 수 있는가”의 세 단계로 이어집니다.</li>
-<li>모든 확인은 PC에서 원본 기계어를 에뮬레이터로 실행하거나 파일 바이트를 직접 대조하는 방식입니다. <strong>카메라에서 실행한 것은 하나도 없습니다.</strong></li>
-<li>지금까지 함수 하나를 원래 자리에 넣고 패키지를 다시 만들어 원본과 같다는 것까지 확인했습니다. 카메라 수용·부팅은 아직 남은 과제입니다.</li>
+<li>이 주제는 두 갈래입니다. 한 갈래는 “원본과 같은 코드를 직접 만들 수 있는가 → 원래 자리에 넣어도 같은가 → 파일 크기를 원본에 가깝게 되돌릴 수 있는가”의 세 단계입니다.</li>
+<li>다른 갈래는 다시 만든 펌웨어가 부팅하려면 지켜야 할 시작 과정의 전제입니다. 원본 할당기가 task 표와 첫 task 스택, 이름 registry를 만드는 과정을 재현했습니다. 초기 메모리를 읽어 고쳐 쓰는(RMW) 칸 일부는 최종값이 초기 내용과 무관함을 수식 모형으로 증명했습니다.</li>
+<li>모든 확인은 PC에서 원본 기계어를 에뮬레이터로 실행하거나, 파일 바이트를 대조하거나, 분석자가 옮긴 모형을 solver로 검사한 것입니다. <strong>카메라에서 실행한 것은 하나도 없습니다.</strong></li>
+<li>함수 하나를 원래 자리에 넣고 패키지를 다시 만들어 원본과 같다는 것까지 확인했습니다. 시작 과정은 구간별로 끊어 재현했을 뿐입니다. 카메라 수용과 부팅은 아직 남은 과제입니다.</li>
 </ul>
 </section>
 
 <section id="map">
 <h2>한눈에 보기</h2>
-<p class="takeaway">작은 계산 함수 하나를 골라, 다시 만들고 → 원래 자리에 넣고 → 파일을 원본 크기에 가깝게 되돌리는 순서로 진행합니다. 마지막 카메라 단계는 아직 하지 않았습니다.</p>
+<p class="takeaway">위 줄은 함수를 다시 만들어 넣는 세 단계, 아래 줄은 부팅에 필요한 시작 과정의 전제를 재현·증명한 네 문서입니다. 두 갈래가 만나는 카메라 통합은 아직 하지 않았습니다.</p>
 <figure class="diagram">
 <figcaption>재구축 주제의 전체 흐름과 각 단계를 다루는 문서</figcaption>
 <div class="dg-scroll">
-<svg class="dg" viewBox="0 0 800 168" role="img" aria-labelledby="dg-rb-title dg-rb-desc">
-<title id="dg-rb-title">펌웨어 재구축의 다섯 단계</title>
-<desc id="dg-rb-desc">원본 펌웨어에서 함수를 추출하고, C로 다시 만들어 따로 떼어 검증하고(1단계 문서), 원래 주소에 넣어 패키지를 다시 포장하고(2단계 문서), 압축 블록을 보존해 크기를 줄이고(3단계 문서), 마지막으로 카메라 통합과 부팅을 확인합니다. 마지막 단계는 아직 확인하지 않았습니다.</desc>
+<svg class="dg" viewBox="0 0 800 344" role="img" aria-labelledby="dg-rb-title dg-rb-desc">
+<title id="dg-rb-title">펌웨어 재구축의 두 갈래와 문서 일곱 개</title>
+<desc id="dg-rb-desc">위 줄: 원본 펌웨어에서 함수를 추출하고, C로 다시 만들어 따로 떼어 검증하고(1단계 문서), 원래 주소에 넣어 패키지를 다시 포장하고(2단계 문서), 압축 블록을 보존해 크기를 줄입니다(3단계 문서). 마지막 카메라 통합과 부팅은 확인하지 않았습니다. 아래 줄: 원본 RTOS 시작 과정의 전제입니다. 설정에서 첫 task 스택까지의 할당 경로(4번 문서)가 쓰는 초기 메모리 48바이트는 RMW 48바이트 분류(7번 문서)에서, 이름 registry 재현(5번 문서)이 더한 8바이트는 RMW 8바이트 증명(6번 문서)에서 다룹니다. 실제 부팅 순서와 초기 RAM의 출처는 남은 과제이며 카메라 통합으로 이어집니다.</desc>
 <defs><marker id="dg-rb-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0 0L10 5L0 10z"/></marker></defs>
-<rect class="b mute" x="10" y="52" width="148" height="70" rx="8"/>
-<text class="t" x="22" y="84">원본 함수</text>
-<text class="s" x="22" y="104">펌웨어에서 추출</text>
+<rect class="b mute" x="10" y="40" width="148" height="70" rx="8"/>
+<text class="t" x="22" y="72">원본 함수</text>
+<text class="s" x="22" y="92">펌웨어에서 추출</text>
 
-<rect class="b ok" x="168" y="52" width="148" height="70" rx="8"/>
-<text class="s" x="180" y="44">1단계</text>
-<a href="recompiled-kernels.html"><text class="t" x="180" y="84">C 재작성</text></a>
-<text class="s" x="180" y="104">격리 검증</text>
+<rect class="b ok" x="168" y="40" width="148" height="70" rx="8"/>
+<text class="s" x="180" y="32">1단계</text>
+<a href="recompiled-kernels.html"><text class="t" x="180" y="72">C 재작성</text></a>
+<text class="s" x="180" y="92">격리 검증</text>
 
-<rect class="b ok" x="326" y="52" width="148" height="70" rx="8"/>
-<text class="s" x="338" y="44">2단계</text>
-<a href="recompiled-integration.html"><text class="t" x="338" y="84">원래 자리</text></a>
-<text class="s" x="338" y="104">배치·재포장</text>
+<rect class="b ok" x="326" y="40" width="148" height="70" rx="8"/>
+<text class="s" x="338" y="32">2단계</text>
+<a href="recompiled-integration.html"><text class="t" x="338" y="72">원래 자리</text></a>
+<text class="s" x="338" y="92">배치·재포장</text>
 
-<rect class="b ok" x="484" y="52" width="148" height="70" rx="8"/>
-<text class="s" x="496" y="44">3단계</text>
-<a href="selective-repack.html"><text class="t" x="496" y="84">블록 보존</text></a>
-<text class="s" x="496" y="104">크기 축소</text>
+<rect class="b ok" x="484" y="40" width="148" height="70" rx="8"/>
+<text class="s" x="496" y="32">3단계</text>
+<a href="selective-repack.html"><text class="t" x="496" y="72">블록 보존</text></a>
+<text class="s" x="496" y="92">크기 축소</text>
 
-<rect class="b open" x="642" y="52" width="148" height="70" rx="8"/>
-<text class="s" x="654" y="44">다음</text>
-<a href="research-roadmap.html"><text class="t" x="654" y="84">카메라 통합</text></a>
-<text class="s" x="654" y="104">부팅 (미확인)</text>
+<rect class="b open" x="642" y="40" width="148" height="70" rx="8"/>
+<text class="s" x="654" y="32">다음</text>
+<a href="research-roadmap.html"><text class="t" x="654" y="72">카메라 통합</text></a>
+<text class="s" x="654" y="92">부팅 (미확인)</text>
 
-<path class="e" d="M158 87H166" marker-end="url(#dg-rb-ah)"/>
-<path class="e" d="M316 87H324" marker-end="url(#dg-rb-ah)"/>
-<path class="e" d="M474 87H482" marker-end="url(#dg-rb-ah)"/>
-<path class="e open" d="M632 87H640" marker-end="url(#dg-rb-ah)"/>
+<path class="e" d="M158 75H166" marker-end="url(#dg-rb-ah)"/>
+<path class="e" d="M316 75H324" marker-end="url(#dg-rb-ah)"/>
+<path class="e" d="M474 75H482" marker-end="url(#dg-rb-ah)"/>
+<path class="e open" d="M632 75H640" marker-end="url(#dg-rb-ah)"/>
+
+<rect class="g" x="10" y="140" width="780" height="194" rx="12"/>
+<text class="h" x="24" y="164">시작 과정의 전제 · 원본 RTOS 코드 재현과 초기 메모리 증명</text>
+
+<rect class="b ok" x="24" y="180" width="236" height="64" rx="8"/>
+<a href="allocator-replay/report.html"><text class="t" x="36" y="206">4 · 설정 → 첫 task 스택</text></a>
+<text class="s" x="36" y="228">원본 할당기 · 일곱 조건</text>
+<rect class="b ok" x="24" y="258" width="236" height="64" rx="8"/>
+<a href="registry-replay/report.html"><text class="t" x="36" y="284">5 · 이름 registry</text></a>
+<text class="s" x="36" y="306">0 채우기와 이름 조회</text>
+
+<rect class="b model" x="298" y="180" width="236" height="64" rx="8"/>
+<a href="rmw-scope/report.html"><text class="t" x="310" y="206">7 · RMW 48바이트</text></a>
+<text class="s" x="310" y="228">분류 + 4바이트 증명</text>
+<rect class="b model" x="298" y="258" width="236" height="64" rx="8"/>
+<a href="rmw-proof/report.html"><text class="t" x="310" y="284">6 · RMW 8바이트</text></a>
+<text class="s" x="310" y="306">두 워드 최종값 증명</text>
+
+<rect class="b open" x="572" y="180" width="204" height="142" rx="8"/>
+<text class="t" x="584" y="206">남은 것</text>
+<text class="s" x="584" y="230">실제 부팅 호출 순서</text>
+<text class="s" x="584" y="252">초기 RAM의 출처</text>
+<text class="s" x="584" y="274">MPIDR 이후 lock·task 생성</text>
+<text class="s" x="584" y="296">증명 밖의 RMW 바이트</text>
+
+<path class="e" d="M142 244V256" marker-end="url(#dg-rb-ah)"/>
+<path class="e" d="M260 212H296" marker-end="url(#dg-rb-ah)"/>
+<path class="e" d="M260 290H296" marker-end="url(#dg-rb-ah)"/>
+<path class="e open" d="M534 212H570" marker-end="url(#dg-rb-ah)"/>
+<path class="e open" d="M534 290H570" marker-end="url(#dg-rb-ah)"/>
+<path class="e open" d="M716 180V112" marker-end="url(#dg-rb-ah)"/>
 </svg>
 </div>
-<p>상자를 누르면 해당 문서로 갑니다. 파란 상자는 확인을 마친 단계, 점선 상자는 아직 확인하지 않은 단계입니다.</p>
-<ul class="dg-legend"><li><i class="ok"></i>확인한 단계</li><li><i class="open"></i>미확인 단계</li><li><i class="mute"></i>출발 재료</li></ul>
+<p>제목을 누르면 해당 문서로 갑니다. 4·5번에서 6·7번으로 가는 선은 “이 재현이 허용한 초기 메모리 바이트를 저 문서가 다룬다”는 뜻입니다.</p>
+<ul class="dg-legend"><li><i class="ok"></i>원본 코드 실행·파일 대조로 확인</li><li><i class="model"></i>분석자가 옮긴 모형에서 증명</li><li><i class="open"></i>미확인</li><li><i class="mute"></i>출발 재료</li></ul>
 </figure>
 </section>
 
 <section id="background">
 <h2>배경 지식</h2>
-<p>세 문서를 읽는 데 필요한 개념만 짧게 정리합니다.</p>
+<p>이 주제의 문서를 읽는 데 필요한 개념만 짧게 정리합니다.</p>
 <dl class="kv">
 <dt>leaf 함수</dt><dd>다른 함수를 부르지 않고 계산만 하는 말단 함수입니다. 입력과 출력이 분명해 원본과 새 코드를 나란히 실행해 비교하기 쉽습니다.</dd>
-<dt>Q13 고정소수점</dt><dd>실수 1.0을 정수 8,192(2의 13제곱)로 나타내는 표기입니다. 색 변환 행렬 값이 이 형식이라, 곱한 뒤 반올림하고 13비트만큼 내립니다.</dd>
+<dt>Q13 고정소수점</dt><dd>실수 1.0을 정수 8,192(2의 13제곱)로 나타내는 표기입니다. 색 변환 행렬 값이 이 형식이라 곱한 뒤 반올림하고 13비트만큼 내립니다.</dd>
 <dt>SAD·SSD</dt><dd>두 신호의 차이를 재는 기본 연산입니다. 차이의 절댓값 합(SAD)과 제곱 합(SSD)으로, <a href="dispatch-af.html">위상차 AF의 상관 연산</a>에 쓰입니다. 자세한 설명은 <a href="guide-rtos.html">명령·셸 안내</a>에 있습니다.</dd>
-<dt>NEON</dt><dd>ARM의 SIMD 확장입니다. 여러 데이터를 한 명령으로 한 번에 처리해 속도를 높입니다. 원본 SAD·SSD 함수가 이 명령을 씁니다. <a href="https://developer.arm.com/Architectures/Neon">Arm NEON 소개</a></dd>
-<dt>압축 블록과 저장(stored) 블록</dt><dd>펌웨어는 되돌아 참조하는 복사 명령으로 압축됩니다. “그대로 담은” 블록을 저장 블록이라 하며, 바뀐 부분만 저장 블록으로 다시 넣어 원본 압축을 보존할 수 있습니다.</dd>
+<dt>NEON</dt><dd>ARM의 SIMD 확장입니다. 여러 데이터를 한 명령으로 처리해 속도를 높입니다. 원본 SAD·SSD 함수가 이 명령을 씁니다. <a href="https://developer.arm.com/Architectures/Neon">Arm NEON 소개</a></dd>
+<dt>압축 블록과 저장(stored) 블록</dt><dd>펌웨어는 되돌아 참조하는 복사 명령으로 압축됩니다. “그대로 담은” 블록을 저장 블록이라 합니다. 바뀐 부분만 저장 블록으로 다시 넣으면 나머지 원본 압축을 보존할 수 있습니다.</dd>
 <dt>체크섬</dt><dd>파일 바이트를 32비트로 더한 검사 값입니다. 내용이 바뀌면 다시 계산해 맞춰야 합니다. 암호학적 서명이 아닙니다.</dd>
+<dt>메모리 할당기와 task 스택</dt><dd>RTOS는 켜질 때 넓은 RAM을 2,048바이트 페이지로 나누고 필요한 곳에 내줍니다. <a href="../glossary.html#task">task</a>마다 상태 레코드와 실행용 <a href="../glossary.html#stack">스택</a> 버퍼가 필요해서, 시작 과정 초기에 이 할당이 일어납니다.</dd>
+<dt>RMW와 초기 메모리</dt><dd>read-modify-write. 값을 읽어 일부 비트만 바꿔 다시 쓰는 동작입니다. 아직 아무도 쓰지 않은 메모리에 하면 켜질 때 남은 값이 섞일 수 있습니다. 다시 만든 펌웨어가 매번 같은 상태로 시작하려면 그런 칸의 최종값이 초기 내용과 무관해야 합니다.</dd>
+<dt>수동 모형과 Z3</dt><dd>분석자가 원본 명령 몇 개의 의미를 수식으로 옮긴 것을 수동 모형이라 부릅니다. <a href="https://github.com/Z3Prover/z3">Z3</a> solver에게 “결과가 달라지는 초기값이 있는가”를 물어 <code>unsat</code>이 나오면 그 모형과 전제 안에서는 그런 값이 없습니다. 모형이 원본을 바르게 옮겼는지는 사람의 검토에 기댑니다.</dd>
 </dl>
 </section>
 
@@ -102,6 +137,11 @@
 <tr><td>실제 호출자 경로가 변함없이 동작하는가</td><td><span class="badge ok">확인</span></td><td><a href="recompiled-integration.html">함수 배치·재패키징</a></td></tr>
 <tr><td>파일을 원본에 가까운 크기로 되돌릴 수 있는가</td><td><span class="badge ok">확인</span></td><td><a href="selective-repack.html">압축 블록 보존 재패키징</a></td></tr>
 <tr><td>계산 중 바뀌는 CPU 플래그가 뒤에 영향을 주는가</td><td><span class="badge static">정적 분석</span></td><td><a href="recompiled-integration.html#qflag">함수 배치·재패키징</a></td></tr>
+<tr><td>원본 할당기가 설정에서 task 표와 첫 task 스택까지 만드는가 (구간별 별도 진입, 합성 RAM)</td><td><span class="badge ok">확인</span></td><td><a href="allocator-replay/report.html">설정에서 첫 task 스택까지</a></td></tr>
+<tr><td>할당된 이름 registry 배열을 원본 코드가 0으로 채우고 조회까지 잇는가 (단일 vCPU)</td><td><span class="badge ok">확인</span></td><td><a href="registry-replay/report.html">이름 registry 할당과 조회</a></td></tr>
+<tr><td>초기 메모리를 읽는 관리 칸의 최종값이 초기 내용과 무관한가 (다섯 고정 경로, 8바이트, 4바이트)</td><td><span class="badge model">모델</span></td><td><a href="allocator-replay/report.html#proof">할당 경로</a> · <a href="rmw-proof/report.html">RMW 8바이트</a> · <a href="rmw-scope/report.html">RMW 48바이트</a></td></tr>
+<tr><td>분류한 48바이트 중 증명하지 않은 나머지와 실제 초기 기록자</td><td><span class="badge open">미확인</span></td><td><a href="rmw-scope/report.html#limits">RMW 48바이트</a></td></tr>
+<tr><td>MPIDR 이후의 lock·task 생성·스케줄러와 실제 부팅 호출 순서</td><td><span class="badge open">미확인</span></td><td><a href="allocator-replay/report.html#limits">설정에서 첫 task 스택까지</a></td></tr>
 <tr><td>커진 패키지를 카메라 RAM·디코더가 받는가</td><td><span class="badge open">미확인</span></td><td><a href="research-roadmap.html">수정·이식 선행 연구</a></td></tr>
 <tr><td>실제 업데이트 수용과 부팅, 카메라 동작</td><td><span class="badge open">미확인</span></td><td><a href="research-roadmap.html">수정·이식 선행 연구</a></td></tr>
 <tr><td>전체 소스 프로젝트의 재구축</td><td><span class="badge open">미확인</span></td><td><a href="research-roadmap.html">수정·이식 선행 연구</a></td></tr>
@@ -110,23 +150,27 @@
 
 <section id="order">
 <h2>읽는 순서</h2>
-<p>재구축의 세 단계를 차례로 읽고, 이어서 부팅과 메모리의 검증 전제를 확인할 수 있습니다.</p>
+<p>함수를 다시 만들어 넣는 세 단계를 먼저 읽습니다. 그다음 시작 과정의 재현 두 편을 읽은 뒤 마지막으로 초기 메모리 증명 두 편을 봅니다.</p>
 <ul class="cards">
 <li class="card"><span class="tag">1단계</span><h3><a href="recompiled-kernels.html">수치 함수 C 재구현</a></h3><p class="q">직접 만든 코드가 원본과 똑같이 계산하는가?</p><p>SAD·SSD와 Q13 행렬 곱 두 함수를 C로 작성해, 합성 입력 237개에서 원본 기계어와 출력이 모두 같았습니다.</p></li>
-<li class="card"><span class="tag">2단계</span><h3><a href="recompiled-integration.html">함수 배치·재패키징</a></h3><p class="q">그 함수를 원래 자리에 넣고 패키지를 다시 만들어도 같은가?</p><p>원래 주소와 실제 색 행렬 준비 호출자에서 출력·레지스터가 같았고, 원본의 헤더·체크섬 검사도 통과했습니다.</p></li>
-<li class="card"><span class="tag">3단계</span><h3><a href="selective-repack.html">압축 블록 보존 재패키징</a></h3><p class="q">파일을 원본에 가까운 크기로 줄일 수 있는가?</p><p>블록 3,202개 중 4개만 바꿔 35,136,788바이트로 만들었고, 독립 디코더로 다시 풀어도 결과가 같았습니다.</p></li>
-<li class="card"><span class="tag">부팅 전제</span><h3><a href="registry-replay/report.html">원본 할당에서 이름 조회까지</a></h3><p>원본 allocator가 반환한 포인터를 같은 VM에서 초기화하고 조회했습니다. 합성 RAM의 허용 범위와 호스트가 선택한 진입점은 보고서에 명시했습니다.</p></li>
-<li class="card"><span class="tag">메모리 전제</span><h3><a href="rmw-proof/report.html">RMW 8바이트의 수동 모형 검증</a></h3><p>원본 15개 명령의 수동 모형에서 두 워드의 최종값과 초기값의 관계를 증명했습니다. 실제 읽기·중간 쓰기와 나머지 48바이트는 별도 검증 범위로 남습니다.</p></li>
+<li class="card"><span class="tag">2단계</span><h3><a href="recompiled-integration.html">함수 배치·재패키징</a></h3><p class="q">그 함수를 원래 자리에 넣고 패키지를 다시 만들어도 같은가?</p><p>원래 주소와 실제 색 행렬 준비 호출자에서 출력·레지스터가 같았습니다. 원본의 헤더·체크섬 검사도 통과했습니다.</p></li>
+<li class="card"><span class="tag">3단계</span><h3><a href="selective-repack.html">압축 블록 보존 재패키징</a></h3><p class="q">파일을 원본에 가까운 크기로 줄일 수 있는가?</p><p>블록 3,202개 중 4개만 바꿔 35,136,788바이트로 만들었습니다. 독립 디코더로 다시 풀어도 결과가 같았습니다.</p></li>
+<li class="card"><span class="tag">시작 과정 1</span><h3><a href="allocator-replay/report.html">설정에서 첫 task 스택까지</a></h3><p class="q">원본 할당기는 시작할 때 메모리를 어떻게 나눠 주는가?</p><p>설정 300개에서 task 표 188페이지와 첫 스택 13페이지가 나왔습니다. 초기 메모리 네 패턴에서 결과가 같았습니다. 실행은 MPIDR 읽기 직전에서 멈춥니다.</p></li>
+<li class="card"><span class="tag">시작 과정 2</span><h3><a href="registry-replay/report.html">이름 registry 할당과 조회</a></h3><p class="q">할당된 포인터가 0 채우기와 이름 조회까지 그대로 전달되는가?</p><p>원본 calloc이 내준 1,200바이트를 원본 코드가 0으로 채워 저장했습니다. InitTask 조회는 hash 300개를 읽고 일치 없이 끝났습니다.</p></li>
+<li class="card"><span class="tag">초기 메모리 1</span><h3><a href="rmw-proof/report.html">RMW 8바이트의 수동 모형 검증</a></h3><p class="q">빈 블록 길이 칸의 최종값은 초기 RAM과 무관한가?</p><p>원본 명령 15개의 모형에서 두 워드가 초기 64비트와 관계없이 (count&lt;&lt;2)|1과 0이 됨을 증명했습니다. 중간 쓰기와 실제 읽기는 남습니다.</p></li>
+<li class="card"><span class="tag">초기 메모리 2</span><h3><a href="rmw-scope/report.html">RMW 48바이트 분류와 4바이트 증명</a></h3><p class="q">나머지 48바이트는 어떤 칸이며 어디까지 증명했는가?</p><p>48바이트를 여섯 레코드로 분류했습니다. 할당 끝 칸 4바이트의 최종값이 초기 32비트와 무관함을 증명했습니다. 나머지 44바이트는 증명 밖입니다.</p></li>
 </ul>
 </section>
 
 <section id="refs">
 <h2>근거 파일과 참고 자료</h2>
 <ul class="refs">
-<li><a href="recompiled-kernels.json">recompiled-kernels.json</a> · <a href="recompiled-integration.json">recompiled-integration.json</a> · <a href="selective-repack.json">selective-repack.json</a> — 각 단계의 측정값과 해시</li>
+<li><a href="recompiled-kernels.json">recompiled-kernels.json</a> · <a href="recompiled-integration.json">recompiled-integration.json</a> · <a href="selective-repack.json">selective-repack.json</a> — 세 단계의 측정값과 해시</li>
+<li><a href="allocator-replay/verified.json">allocator-replay/verified.json</a> · <a href="registry-replay/verified.json">registry-replay/verified.json</a> — 시작 과정 재현의 공개 검증 결과</li>
+<li><a href="rmw-proof/verified.json">rmw-proof/verified.json</a> · <a href="rmw-scope/verified.json">rmw-scope/verified.json</a> — 초기 메모리 증명의 전제와 결과</li>
 <li><a href="../source/reconstructed/numeric_kernels.c">source/reconstructed/numeric_kernels.c</a> — 새로 작성한 C 소스</li>
 <li><a href="research-roadmap.html">수정·이식 선행 연구</a> — 통합 전 확인할 항목 전체</li>
-<li>외부 자료: <a href="https://developer.arm.com/Architectures/Neon">Arm NEON</a> · <a href="https://github.com/ARM-software/abi-aa/blob/main/aapcs32/aapcs32.rst">Arm 호출 규약(AAPCS32)</a></li>
+<li>외부 자료: <a href="https://developer.arm.com/Architectures/Neon">Arm NEON</a> · <a href="https://github.com/ARM-software/abi-aa/blob/main/aapcs32/aapcs32.rst">Arm 호출 규약(AAPCS32)</a> · <a href="https://github.com/Z3Prover/z3">Z3 solver</a></li>
 </ul>
 </section>
 

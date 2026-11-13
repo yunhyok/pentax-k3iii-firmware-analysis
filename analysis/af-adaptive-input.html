@@ -2,19 +2,10 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>K-3 III — AF 적응형 문턱의 입력</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AF 적응형 문턱에 들어가는 시간 표본 — PENTAX K-3 Mark III 펌웨어 연구</title>
+<meta name="description" content="K-3 Mark III 펌웨어 2.20의 AF 적응형 함수가 ElapsedTimer의 두 카운터 표본 차이를 27로 나눈 몫을 2000·4000·8000과 비교해 배율을 고른다는 것을 원본 명령을 읽고 정수 산술로 대조한 기록입니다. 카운터의 주파수와 물리 단위는 확인하지 않았습니다.">
 <link rel="stylesheet" href="../assets/site.css">
-<style>
-.af-adaptive .counter-flow { display: grid; gap: .7rem; padding: 0; list-style: none; }
-.af-adaptive .counter-flow li { padding: .65rem .85rem; border: 1px solid var(--line-strong); border-radius: .5rem; }
-.af-adaptive .counter-flow li + li { border-inline-start: .25rem solid var(--edge); }
-.af-adaptive .table-wrap { overflow-x: auto; }
-.af-adaptive .table-wrap:focus-visible { outline: 2px solid var(--brand); outline-offset: 3px; }
-.af-adaptive table { min-width: 27rem; }
-.af-adaptive pre { white-space: pre-wrap; overflow-wrap: anywhere; }
-.af-adaptive code { overflow-wrap: anywhere; }
-</style>
 </head>
 <body data-camera="k3iii">
 <!-- chrome:top -->
@@ -23,53 +14,242 @@
 <nav class="crumbs" aria-label="현재 위치"><ol><li><a href="../index.html">PENTAX K-3 Mark III</a></li><li><a href="guide-af.html">AF와 렌즈 제어</a></li><li aria-current="page">AF 적응형 문턱의 입력</li></ol></nav>
 <!-- /chrome:top -->
 <header class="page-head">
-<h1>AF 적응형 문턱의 입력</h1>
-<p class="lead">K-3 III 2.20의 적응형 함수는 <code>ElapsedTimer</code>가 두 카운터 표본의 차이를 27로 나눈 몫을 2000·4000·8000과 비교해 배율을 고릅니다. 원본 명령에서 저장 위치와 환산식을 확인했습니다. 카운터의 실제 주파수와 물리 단위는 미확인입니다.</p>
+<p class="eyebrow">AF와 렌즈 제어 · 상태와 피드백 단계</p>
+<h1>AF 적응형 문턱에 들어가는 시간 표본</h1>
+<p class="lead">PafMotor의 적응형 함수는 어떤 수치를 문턱과 비교해 PWM 값을 2배나 4배로 키울지 정합니다. 그 수치가 어디에서 오고 어떤 계산을 거치는지 원본 명령에서 확인했습니다.</p>
 </header>
 <div class="layout">
 <!-- chrome:toc -->
-<nav class="toc" aria-label="이 문서의 목차"><h2 data-toc="no">이 문서에서</h2><ol><li><a href="#source">이전 표본과 새 표본</a></li><li><a href="#math">차이 계산과 문턱</a></li><li><a href="#boundary">남은 카운터 경계</a></li><li><a href="#verify">원본 정적 대조</a></li></ol></nav>
+<nav class="toc" aria-label="이 문서의 목차"><h2 data-toc="no">이 문서에서</h2><ol><li><a href="#background">배경: 경과 시간과 적응형 문턱</a></li><li><a href="#source">이전 표본과 새 표본</a></li><li><a href="#math">차이 계산과 문턱</a></li><li><a href="#boundary">카운터의 정체는 아직 확정되지 않았습니다</a></li><li><a href="#limits">한계와 남은 과제</a></li><li><a href="#verify">재현 방법</a></li><li><a href="#refs">근거 파일과 참고 자료</a></li></ol></nav>
 <!-- /chrome:toc -->
-<main class="doc af-adaptive" id="main">
+<main class="doc" id="main">
+
+<section class="summary">
+<h2 data-toc="no">핵심 요약</h2>
+<ul>
+<li>비교하는 수치는 <code>ElapsedTimer</code>라는 객체가 계산합니다. PafMotor에 저장해 둔 이전 카운터 표본과 새로 읽은 표본의 차이를 27로 나눈 몫입니다.</li>
+<li>적응형 함수는 이 몫을 PafMotor 상태에 따라 2000·4000 또는 4000·8000과 비교해 배율을 고릅니다. 차이로 환산하면 54,027부터 2000을 넘습니다.</li>
+<li>나눗셈은 곱셈과 시프트로 구현되어 있습니다. 이것이 32비트 입력 전체에서 정확한 나눗셈과 같다는 것을 정수 산술로 확인했습니다.</li>
+<li>이 문서는 정적 분석입니다. 원본 코드, 서비스, 레지스터는 실행하지 않았습니다. 카운터가 어떤 클럭으로 세는지 몰라서 27이나 2000이 몇 초인지는 말할 수 없습니다.</li>
+</ul>
+</section>
+
+<div class="scope">
+<div class="static"><h3><span class="badge static">정적 분석</span> 코드를 읽어 판단</h3>
+<ul>
+<li>ElapsedTimer의 생성, 결합, 차이·환산 함수</li>
+<li>PafMotor에 이전 표본을 저장하는 다섯 곳</li>
+<li>30개 구간 해시, 명령 위치 31개, 포인터 워드 9개와 이름</li>
+<li>환산식의 정수 산술 대조 21건 (PC에서 식만 계산)</li>
+</ul></div>
+<div class="open"><h3><span class="badge open">미확인</span> 확인하지 않은 것</h3>
+<ul>
+<li>원본 코드 실행, 레지스터에서 읽히는 실제 카운터 값</li>
+<li>카운터의 클럭, 계수 방향, 물리 시간 단위</li>
+<li>적응형 호출 전에 초기화가 언제 실행되는지</li>
+<li>래퍼가 보관한 상태와 다시 읽은 상태가 같은지</li>
+</ul></div>
+</div>
+
+<section id="background">
+<h2>배경: 경과 시간과 적응형 문턱</h2>
+<p><a href="af-pwm-parameters.html">AF PWM 요청</a>의 호출점 B는 PafMotor 상태가 2나 3일 때 적응형 함수 <code>0x52f0bd6c</code>를 부릅니다. 이 함수는 어떤 수치가 문턱을 넘으면 PWM 값을 2배나 4배로 키웁니다. 문턱 값은 <a href="af-state-producers.html#feedback">PafMotor 상태 바이트</a>를 다시 읽어 고릅니다.</p>
+<div class="callout plain"><strong class="label">쉽게 말하면</strong>
+<p>초시계의 숫자를 두 번 읽어 그 차이를 보는 것과 같습니다. 이전에 읽어 둔 숫자와 지금 숫자를 빼서 일정한 수로 나눕니다. 그 값이 기준보다 크면 힘을 더 줍니다. 다만 이 초시계가 1초에 몇 번 세는지 모르기 때문에 그 기준이 실제로 몇 초인지는 아직 알 수 없습니다.</p></div>
+<p>이름이 <code>ElapsedTimer</code>(경과 시간 측정기)인 객체가 차이를 계산하므로 시간과 관련된 값으로 보입니다. 그러나 이름은 단위를 증명하지 않습니다. 이 문서는 값이 지나가는 길과 계산식까지만 다룹니다.</p>
+</section>
+
 <section id="source">
 <h2>이전 표본과 새 표본</h2>
-<ol class="counter-flow" aria-label="적응형 입력의 순서">
-<li><strong>이전 표본</strong> — <code>0x531062d4</code>의 반환을 <code>PafMotor+0x80</code>에 저장합니다.</li>
-<li><strong>새 표본</strong> — <code>0x53106370</code>이 <code>ElapsedTimer+4</code>에 연결된 객체의 가상 함수 슬롯 <code>+0x6c</code>를 호출합니다.</li>
-<li><strong>차이와 환산</strong> — <code>0x53106304</code>가 두 32비트 표본과 경계값을 받아 mode 0에서 27로 나눈 몫을 돌려줍니다.</li>
-<li><strong>배율 선택</strong> — <code>0x52f0bdb4</code> 뒤에서 Motor 상태에 따른 문턱과 unsigned로 비교합니다.</li>
+<p class="takeaway">이전 표본은 PafMotor <code>+0x80</code>에 저장해 둔 값입니다. 새 표본은 ElapsedTimer가 결합한 객체의 가상 함수에서 읽습니다. 두 값의 차이를 환산한 몫이 문턱과 비교됩니다.</p>
+<figure class="diagram">
+<figcaption>적응형 문턱에 들어가는 값의 경로</figcaption>
+<div class="dg-scroll">
+<svg class="dg" viewBox="0 0 800 330" role="img" aria-labelledby="dg-el-title dg-el-desc">
+<title id="dg-el-title">두 카운터 표본에서 적응형 배율 선택까지</title>
+<desc id="dg-el-desc">왼쪽 위는 이전 표본입니다. 0x531062d4의 반환이 PafMotor+0x80에 저장됩니다. 왼쪽 아래는 새 표본입니다. 0x53106370이 ElapsedTimer+4에 결합된 객체(레지스트리 키 0xd9)의 가상 함수 +0x6c를 부릅니다. 그 객체가 무엇이고 어떤 클럭으로 세는지는 확인하지 않았습니다. 두 표본과 경계값 ElapsedTimer+8이 차이·환산 함수 0x53106304에 들어가 mode 0에서 27로 나눈 몫이 됩니다. 이 몫이 0x52f0bdb4 뒤에서 상태에 따른 문턱과 unsigned로 비교되어 2배 또는 4배를 고릅니다.</desc>
+<defs>
+<marker id="dg-el-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0 0L10 5L0 10z"/></marker>
+<marker id="dg-el-ah-open" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah open" d="M0 0L10 5L0 10z"/></marker>
+</defs>
+<rect class="b static" x="8" y="20" width="236" height="74" rx="8"/>
+<text class="t" x="20" y="45">이전 표본 old</text>
+<text class="s" x="20" y="65">PafMotor +0x80</text>
+<text class="s mono" x="20" y="83">0x531062d4의 반환</text>
+
+<rect class="b open" x="8" y="122" width="236" height="74" rx="8"/>
+<text class="t" x="20" y="147">카운터 객체 (키 0xd9)</text>
+<text class="s" x="20" y="167">ElapsedTimer +4에 결합</text>
+<text class="s" x="20" y="185">클럭·단위 미확인</text>
+<rect class="b static" x="8" y="224" width="236" height="74" rx="8"/>
+<text class="t" x="20" y="249">새 표본 now</text>
+<text class="s mono" x="20" y="269">0x53106370</text>
+<text class="s" x="20" y="287">가상 함수 +0x6c 호출</text>
+<path class="e open" d="M126 196V222" marker-end="url(#dg-el-ah-open)"/>
+
+<rect class="b key" x="300" y="110" width="240" height="98" rx="8"/>
+<text class="t" x="312" y="136">차이·환산</text>
+<text class="s mono" x="312" y="156">0x53106304</text>
+<text class="s" x="312" y="176">D = old − now (+ bound)</text>
+<text class="s" x="312" y="194">mode 0: D ÷ 27</text>
+<path class="e" d="M244 57H272V140H298" marker-end="url(#dg-el-ah)"/>
+<path class="e" d="M244 261H272V178H298" marker-end="url(#dg-el-ah)"/>
+<text class="n" x="300" y="234">bound = ElapsedTimer +8</text>
+<text class="n" x="300" y="252">(초기화 때 0xffffffff)</text>
+
+<rect class="b static" x="596" y="110" width="196" height="98" rx="8"/>
+<text class="t" x="608" y="136">배율 선택</text>
+<text class="s mono" x="608" y="156">0x52f0bdb4 뒤</text>
+<text class="s" x="608" y="176">상태 2: 2000·4000</text>
+<text class="s" x="608" y="194">상태 3: 4000·8000</text>
+<path class="e" d="M540 159H594" marker-end="url(#dg-el-ah)"/>
+</svg>
+</div>
+<ul class="dg-legend"><li><i class="static"></i>원본 명령을 읽어 확인</li><li><i class="key"></i>이 문서의 중심 계산</li><li><i class="open"></i>정체를 확인하지 못한 부분</li></ul>
+</figure>
+<ol class="steps">
+<li><strong>이전 표본</strong> <code>0x531062d4</code>의 반환을 <code>PafMotor+0x80</code>에 저장합니다.</li>
+<li><strong>새 표본</strong> <code>0x53106370</code>이 <code>ElapsedTimer+4</code>에 결합된 객체의 가상 함수 슬롯 <code>+0x6c</code>를 부릅니다.</li>
+<li><strong>차이와 환산</strong> <code>0x53106304</code>가 두 32비트 표본과 경계값을 받아 mode 0에서 27로 나눈 몫을 돌려줍니다.</li>
+<li><strong>배율 선택</strong> <code>0x52f0bdb4</code> 뒤에서 Motor 상태에 따른 문턱과 unsigned로 비교합니다.</li>
 </ol>
-<p><code>0x53102ce8</code>이 반환하는 <code>UtilityFactory</code>의 <code>+0x0c</code>에는 RTTI 이름이 <code>ElapsedTimer</code>인 객체가 들어갑니다. 생성자 <code>0x531062b8</code>은 Timer <code>+4</code>와 <code>+8</code>을 0으로 씁니다. 할당 직후 호출하는 vslot <code>+8</code>의 <code>0x5310623c</code>는 1을 반환합니다. 별도 vslot <code>+0x0c</code>의 <code>0x5310627c</code>는 키 <code>0xd9</code>로 찾은 객체를 Timer <code>+4</code>에 두고, 그 객체의 vslot <code>+0x30</code> 호출 뒤 Timer <code>+8</code>에 <code>0xffffffff</code>를 씁니다. 실제 적응형 호출 전에 이 초기화가 언제 실행됐는지와 당시 필드 값은 확인하지 못했습니다.</p>
-<p>Motor <code>+0x80</code>은 <code>0x52f0b8fc</code>, <code>0x52f0b974</code>, <code>0x52f0ba10</code>에서 이 카운터의 표본을 받습니다. <code>0x52f0bf48/bf54</code>는 두 번 읽은 값을 <code>+0x84/+0x88</code>에 각각 저장합니다. <code>+0x84</code>는 별도 mode 1 호출의 이전 표본입니다. 상태 선택 경로의 D1은 Driver <code>+0x38</code> 결합을 전제로 <code>0x1e000024</code>에서 읽은 하위 16비트를 사용합니다. D1과 비교해 카운터를 다시 샘플링하는 곳도 있지만 두 반환 경로는 구분됩니다. <a href="af-state-producers.html#feedback">D1 피드백과 상태 재읽기</a></p>
+
+<h3 id="timer-object">ElapsedTimer 객체</h3>
+<div class="table-wrap"><table>
+<caption>ElapsedTimer의 생성과 결합 (정적 분석)</caption>
+<thead><tr><th>단계</th><th>하는 일</th><th>주소</th></tr></thead>
+<tbody>
+<tr><th scope="row">보관 위치</th><td><code>UtilityFactory</code>(<code>0x547bb080</code>)의 <code>+0x0c</code>에 RTTI 이름이 <code>ElapsedTimer</code>인 객체가 들어갑니다.</td><td>factory 반환 <code>0x53102ce8</code></td></tr>
+<tr><th scope="row">생성자</th><td>Timer <code>+4</code>와 <code>+8</code>을 0으로 씁니다.</td><td><code>0x531062b8</code></td></tr>
+<tr><th scope="row">할당 직후 확인</th><td>vslot <code>+8</code>이 1을 돌려줍니다.</td><td><code>0x5310623c</code></td></tr>
+<tr><th scope="row">카운터 결합</th><td>vslot <code>+0x0c</code>가 키 <code>0xd9</code>로 찾은 객체를 Timer <code>+4</code>에 둡니다. 그 객체의 vslot <code>+0x30</code>을 부른 뒤 Timer <code>+8</code>에 <code>0xffffffff</code>를 씁니다.</td><td><code>0x5310627c</code>, 경계값 쓰기 <code>0x531062b0</code></td></tr>
+</tbody></table></div>
+<p>실제 적응형 호출 전에 이 초기화가 언제 실행되는지와 그때의 필드 값은 확인하지 못했습니다.</p>
+
+<h3 id="motor-snapshots">PafMotor에 저장되는 표본</h3>
+<p>Motor <code>+0x80</code>은 <code>0x52f0b8fc</code>, <code>0x52f0b974</code>, <code>0x52f0ba10</code>에서 이 카운터의 표본을 받습니다. <code>0x52f0bf48</code>과 <code>0x52f0bf54</code>는 두 번 읽은 값을 <code>+0x84</code>와 <code>+0x88</code>에 저장합니다. <code>+0x84</code>는 별도 mode 1 호출의 이전 표본입니다.</p>
+<p>상태 선택에 쓰는 피드백(D1)은 다른 값입니다. 드라이버 <code>+0x38</code>이 결합돼 있다는 전제에서 <code>0x1e000024</code>를 읽은 하위 16비트입니다. D1을 보고 카운터를 다시 표본하는 곳도 있지만 두 반환 경로는 구분됩니다(<a href="af-state-producers.html#feedback">D1 피드백과 상태 재읽기</a>).</p>
 </section>
+
 <section id="math">
 <h2>차이 계산과 문턱</h2>
-<p><code>0x5310630c/10</code>의 두 RSB는 모두 이전값에서 현재값을 뺍니다. 이전값이 현재값 이하이면 Timer <code>+8</code>을 더합니다. 최종 차이 <var>D</var>는 unsigned 32비트입니다. 같은 값끼리 빼도 분기 조건에 따라 경계값이 더해집니다.</p>
+<p class="takeaway">차이 <var>D</var>는 이전 값에서 현재 값을 뺀 unsigned 32비트 값입니다. 이전 값이 현재 값 이하이면 경계값을 더합니다. mode 0에서는 <var>D</var>를 27로 나눈 몫이 문턱과 비교됩니다.</p>
 <pre><code>D = u32(old − now + (bound if old ≤ now else 0))
 mode 0: D // 27     mode 1: D // 108
 mode 2: D // 216    mode 3: D // 27000</code></pre>
-<p>bound가 <code>0xffffffff</code>이면 <code>old=1, now=0xffffffff</code>에서 <var>D</var>는 1입니다. 같은 bound에서 <code>old=now</code>이면 <var>D</var>는 <code>0xffffffff</code>이고 mode 0 몫은 159,072,862입니다. 두 값은 원본 조건에서 계산한 산술 대조입니다.</p>
-<p><code>0x53106328..0x5310636f</code>의 UMULL과 시프트를 묶으면 처음 세 모드의 몫은 <code>floor(D×(2³²+A)/(2³²×k))</code>입니다. <code>A=0x2f684bdb</code>, <var>k</var>는 32·128·256입니다. <code>27×(2³²+A)−32×2³²=25</code>여서 u32 입력 전체에서 오차는 각 나눗수의 역수보다 작습니다. mode 3의 두 번째 곱셈 상수 <code>B=0x10624dd3</code>는 <code>1000×B−2³⁸=56</code>을 만족합니다. mode 0 몫의 범위에서 내림 결과는 정확한 1000 나눗셈과 같으므로 원래 <var>D</var>의 27000 나눗셈에 해당합니다.</p>
-<div class="table-wrap" role="region" tabindex="0" aria-label="상태별 문턱 비교 가로 스크롤">
-<table>
-<thead><tr><th scope="col">다시 읽은 Motor 상태</th><th scope="col">2배 문턱</th><th scope="col">4배 문턱</th><th scope="col">차이 D의 최초 초과점</th></tr></thead>
-<tbody><tr><th scope="row">2</th><td>2000</td><td>4000</td><td>54,027 · 108,027</td></tr>
-<tr><th scope="row">3</th><td>4000</td><td>8000</td><td>108,027 · 216,027</td></tr></tbody>
-</table>
-</div>
-<p>먼저 4배 문턱을 검사하고, 이어서 2배 문턱을 검사합니다. 둘 다 엄격한 초과이고, 배율을 적용한 값은 하위 16비트로 자릅니다. 래퍼가 리셋 전에 보관한 상태와 적응형 함수에서 다시 읽은 값의 동일성은 확인되지 않았습니다. <a href="af-pwm-parameters.html">PWM 정수 변환과 이전 정지점</a></p>
+<p><code>0x5310630c</code>와 <code>0x53106310</code>의 두 RSB 명령이 모두 이전 값에서 현재 값을 뺍니다. 이전 값이 현재 값 이하이면 Timer <code>+8</code>을 더합니다. 그래서 같은 값끼리 빼도 경계값이 더해집니다.</p>
+<div class="table-wrap"><table>
+<caption>정수 산술 대조에서 고른 사례 (경계값 <code>0xffffffff</code>)</caption>
+<thead><tr><th class="n">old</th><th class="n">now</th><th class="n">D</th><th class="n">mode 0 몫</th><th>뜻</th></tr></thead>
+<tbody>
+<tr><td class="n">28</td><td class="n">1</td><td class="n">27</td><td class="n">1</td><td>27마다 1씩 늘어남</td></tr>
+<tr><td class="n">1</td><td class="n"><code>0xffffffff</code></td><td class="n">1</td><td class="n">0</td><td>현재 값이 더 클 때 경계값이 더해짐</td></tr>
+<tr><td class="n">123</td><td class="n">123</td><td class="n">4,294,967,295</td><td class="n">159,072,862</td><td>같은 값이면 <var>D</var>가 경계값 전체</td></tr>
+<tr><td class="n">54,028</td><td class="n">1</td><td class="n">54,027</td><td class="n">2,001</td><td>2000 문턱을 처음 넘는 차이</td></tr>
+<tr><td class="n">108,028</td><td class="n">1</td><td class="n">108,027</td><td class="n">4,001</td><td>4000 문턱을 처음 넘는 차이</td></tr>
+<tr><td class="n">216,028</td><td class="n">1</td><td class="n">216,027</td><td class="n">8,001</td><td>8000 문턱을 처음 넘는 차이</td></tr>
+</tbody></table></div>
+<div class="table-wrap"><table class="fit">
+<caption>상태별 문턱과 차이 D의 첫 초과점</caption>
+<thead><tr><th>다시 읽은 Motor 상태</th><th class="n">2배 문턱</th><th class="n">4배 문턱</th><th class="n">D의 첫 초과점 (2배 · 4배)</th></tr></thead>
+<tbody>
+<tr><td>2</td><td class="n">2000</td><td class="n">4000</td><td class="n">54,027 · 108,027</td></tr>
+<tr><td>3</td><td class="n">4000</td><td class="n">8000</td><td class="n">108,027 · 216,027</td></tr>
+</tbody></table></div>
+<p>함수는 4배 문턱을 먼저 검사하고 이어서 2배 문턱을 검사합니다. 둘 다 엄격한 초과 비교입니다. 배율을 적용한 값은 하위 16비트로 자릅니다. 래퍼가 리셋 전에 보관한 상태와 적응형 함수가 다시 읽은 값이 같은지는 확인되지 않았습니다. 이 함수의 호출 직전까지는 <a href="af-pwm-parameters.html">PWM 정수 변환</a>에서 원본 코드를 실행했습니다.</p>
+
+<h3 id="division">곱셈으로 구현한 나눗셈</h3>
+<p><code>0x53106328</code>..<code>0x5310636f</code>의 UMULL과 시프트를 묶으면 처음 세 mode의 몫은 <code>floor(D×(2³²+A)/(2³²×k))</code>입니다. 여기서 <code>A=0x2f684bdb</code>이고 <var>k</var>는 32·128·256입니다.</p>
+<ul>
+<li><code>27×(2³²+A)−32×2³²=25</code>입니다. u32 입력 전체에서 오차가 각 나눗수의 역수보다 작습니다. 그래서 결과는 27·108·216으로 정확히 나눈 몫과 같습니다.</li>
+<li>mode 3의 두 번째 곱셈 상수 <code>B=0x10624dd3</code>은 <code>1000×B−2³⁸=56</code>을 만족합니다. mode 0 몫의 범위에서 이 내림은 정확한 1000 나눗셈과 같습니다. 결과는 원래 <var>D</var>를 27000으로 나눈 몫입니다.</li>
+</ul>
+<p class="small muted">두 등식은 직접 다시 계산해 확인했습니다. 21건의 산술 대조는 이 식을 PC에서 계산한 것이며 원본 명령을 실행한 결과가 아닙니다.</p>
+<details class="evidence"><summary>정수 산술 대조 21건 전체</summary>
+<div class="table-wrap"><table class="compact">
+<thead><tr><th class="n">old</th><th class="n">now</th><th class="n">bound</th><th class="n">D</th><th>mode 0 / 1 / 2 / 3</th></tr></thead>
+<tbody>
+<tr><td class="n">27</td><td class="n">1</td><td class="n">0xffffffff</td><td class="n">26</td><td>0 / 0 / 0 / 0</td></tr>
+<tr><td class="n">28</td><td class="n">1</td><td class="n">0xffffffff</td><td class="n">27</td><td>1 / 0 / 0 / 0</td></tr>
+<tr><td class="n">29</td><td class="n">1</td><td class="n">0xffffffff</td><td class="n">28</td><td>1 / 0 / 0 / 0</td></tr>
+<tr><td class="n">1</td><td class="n">0xffffffff</td><td class="n">0xffffffff</td><td class="n">1</td><td>0 / 0 / 0 / 0</td></tr>
+<tr><td class="n">0</td><td class="n">0xffffffff</td><td class="n">0xffffffff</td><td class="n">0</td><td>0 / 0 / 0 / 0</td></tr>
+<tr><td class="n">123</td><td class="n">123</td><td class="n">0xffffffff</td><td class="n">4,294,967,295</td><td>159,072,862 / 39,768,215 / 19,884,107 / 159,072</td></tr>
+<tr><td class="n">123</td><td class="n">123</td><td class="n">0</td><td class="n">0</td><td>0 / 0 / 0 / 0</td></tr>
+<tr><td class="n">1</td><td class="n">2</td><td class="n">0xffffffff</td><td class="n">4,294,967,294</td><td>159,072,862 / 39,768,215 / 19,884,107 / 159,072</td></tr>
+<tr><td class="n">2</td><td class="n">1</td><td class="n">0xffffffff</td><td class="n">1</td><td>0 / 0 / 0 / 0</td></tr>
+<tr><td class="n">54,000</td><td class="n">1</td><td class="n">0xffffffff</td><td class="n">53,999</td><td>1,999 / 499 / 249 / 1</td></tr>
+<tr><td class="n">54,001</td><td class="n">1</td><td class="n">0xffffffff</td><td class="n">54,000</td><td>2,000 / 500 / 250 / 2</td></tr>
+<tr><td class="n">54,027</td><td class="n">1</td><td class="n">0xffffffff</td><td class="n">54,026</td><td>2,000 / 500 / 250 / 2</td></tr>
+<tr><td class="n">54,028</td><td class="n">1</td><td class="n">0xffffffff</td><td class="n">54,027</td><td>2,001 / 500 / 250 / 2</td></tr>
+<tr><td class="n">108,000</td><td class="n">1</td><td class="n">0xffffffff</td><td class="n">107,999</td><td>3,999 / 999 / 499 / 3</td></tr>
+<tr><td class="n">108,001</td><td class="n">1</td><td class="n">0xffffffff</td><td class="n">108,000</td><td>4,000 / 1,000 / 500 / 4</td></tr>
+<tr><td class="n">108,027</td><td class="n">1</td><td class="n">0xffffffff</td><td class="n">108,026</td><td>4,000 / 1,000 / 500 / 4</td></tr>
+<tr><td class="n">108,028</td><td class="n">1</td><td class="n">0xffffffff</td><td class="n">108,027</td><td>4,001 / 1,000 / 500 / 4</td></tr>
+<tr><td class="n">216,000</td><td class="n">1</td><td class="n">0xffffffff</td><td class="n">215,999</td><td>7,999 / 1,999 / 999 / 7</td></tr>
+<tr><td class="n">216,001</td><td class="n">1</td><td class="n">0xffffffff</td><td class="n">216,000</td><td>8,000 / 2,000 / 1,000 / 8</td></tr>
+<tr><td class="n">216,027</td><td class="n">1</td><td class="n">0xffffffff</td><td class="n">216,026</td><td>8,000 / 2,000 / 1,000 / 8</td></tr>
+<tr><td class="n">216,028</td><td class="n">1</td><td class="n">0xffffffff</td><td class="n">216,027</td><td>8,001 / 2,000 / 1,000 / 8</td></tr>
+</tbody></table></div>
+</details>
 </section>
+
 <section id="boundary">
-<h2>남은 카운터 경계</h2>
-<p>키 <code>0xd9</code>의 객체를 읽는 실제 슬롯은 <code>0x54784f6c</code>입니다. 같은 키를 쓰는 공급자 등록 <code>0x531fc9f0</code>의 슬롯은 <code>0x54785cf8</code>입니다. 두 주소가 다르므로 공급자 등록만으로 결합 객체나 실제 getter를 지정할 수 없습니다. 객체 슬롯의 생산자와 <code>+0x6c</code> 구현, 카운터 클럭을 확인해야 물리 시간 단위를 판정할 수 있습니다.</p>
-<p>후속 정적 조사에서는 별도 객체 등록에 성공한 조건에서 D9 ReloadTimer의 읽기 주소를 확인했습니다. IRQ 키와 객체 키, 등록 실패 가능성은 구분합니다. <a href="research-checkpoint.html#k3iii-d9-object">후속 근거와 남은 시간 단위 검증</a></p>
+<h2>카운터의 정체는 아직 확정되지 않았습니다</h2>
+<p class="takeaway">키 <code>0xd9</code>로 찾는 객체가 무엇인지, 그 객체가 어떤 클럭으로 세는지 알아야 27이나 2000을 시간으로 바꿀 수 있습니다. 지금은 후보까지만 좁혔습니다.</p>
+<p>키 <code>0xd9</code>의 객체를 읽는 실제 레지스트리 칸은 <code>0x54784f6c</code>입니다. 같은 키를 쓰는 공급자 등록 <code>0x531fc9f0</code>의 칸은 <code>0x54785cf8</code>입니다. 두 주소가 다르므로 공급자 등록만으로는 결합 객체나 실제 getter를 정할 수 없습니다. 객체 칸의 생산자, <code>+0x6c</code> 구현, 카운터 클럭을 확인해야 물리 시간 단위를 판정할 수 있습니다.</p>
+<p>별도의 정적 조사는 객체 등록에 성공한 조건에서 이 칸에 D9 ReloadTimer가 들어간다고 확인했습니다. 그 vslot <code>+0x6c</code>가 <code>0x5326d5e8</code>에서 <code>0x1e0000a4</code>를 읽는 경로입니다. IRQ 키와 객체 키, 등록 실패 가능성은 따로 구분합니다. 실제 순서, 계수 방향, 클럭, 단위는 여전히 미확인입니다(<a href="research-checkpoint.html#k3iii-d9-object">D9 객체 근거와 남은 시간 단위 검증</a>).</p>
 </section>
+
+<section id="limits">
+<h2>한계와 남은 과제</h2>
+<ul>
+<li><strong>실행하지 않음</strong>: 원본 ARM, 서비스, 레지스터는 실행하지 않았습니다. 산술 대조는 PC에서 식만 계산했습니다.</li>
+<li><strong>시간 단위</strong>: 카운터의 클럭과 분주 설정을 모르므로 27, 2000, 54,027 같은 숫자를 초나 밀리초로 바꾸지 않습니다.</li>
+<li><strong>초기화 시점</strong>: ElapsedTimer의 카운터 결합과 경계값 설정이 적응형 호출보다 먼저 실행되는지 확인하지 않았습니다.</li>
+<li><strong>상태 값</strong>: 래퍼가 보관한 상태와 적응형 함수가 다시 읽은 상태가 같은지 확인하지 않았습니다.</li>
+</ul>
+</section>
+
 <section id="verify">
-<h2>원본 정적 대조</h2>
-<p>추출한 원본 RTOS를 한 번 읽어 길이와 SHA-256을 확인합니다. Capstone 런타임 5.0.7로 30개 구간의 해시, 31개 명령 위치, 9개 워드와 이름을 대조하고 호스트 산술 조건 21개를 확인합니다. 원본 ARM, 서비스 및 MMIO는 실행하지 않았습니다. 아래 명령은 새 출력 경로를 사용합니다. 출력은 실행 중 다른 프로세스가 변경하지 않는 디렉터리에 둡니다.</p>
+<h2>재현 방법</h2>
+<p>검사기는 추출한 원본 RTOS를 한 번 읽어 길이와 SHA-256을 확인합니다. Capstone 런타임 5.0.7로 30개 구간의 해시, 31개 명령 위치, 9개 워드와 이름을 대조하고 PC 산술 조건 21개를 확인합니다. 출력은 실행 중 다른 프로세스가 바꾸지 않는 디렉터리의 새 경로에 둡니다.</p>
 <pre><code>python -B verify_af_adaptive_input.py path/to/rtos.bin --output new-adaptive-checks.json --compare analysis/af-adaptive-input-checks.json</code></pre>
-<p><a href="../verify_af_adaptive_input.py">정적 검사기</a> · <a href="../tests/test_af_adaptive_input.py">입출력과 산술 테스트</a> · <a href="af-adaptive-input-checks.json">주소·해시·전체 관측 JSON</a></p>
+<details class="evidence"><summary>해시와 대조 구간</summary>
+<dl class="kv">
+<dt>RTOS SHA-256</dt><dd><code class="wrap">342d2f35405e8daf1797dfe431d2e4aa70f4b52a2c242a29df48206672f1dfb4</code></dd>
+<dt>원래 연구 스크립트</dt><dd><code class="wrap">09d272575fb12fc4c2f2ff1b878a02e251a0bf38cc46ec0ecb61c3f16e33385e</code></dd>
+<dt>전체 관측 / 형 구분 관측</dt><dd><code class="wrap">de7849fdb05cd5f00524ae4db686e4e63ac04ef63794984cdc918e6a49205643</code> / <code class="wrap">201c2b5150d00b9d004c0791900d9af4c8fe0dee6e011c9f0739547b623ae405</code></dd>
+<dt>공개 검증기 (LF)</dt><dd><code class="wrap">50cb3c57e0b022640e1fd94820836be30fd6f7780f198ff7416a948899f5a08a</code></dd>
+</dl>
+<div class="table-wrap"><table class="compact">
+<thead><tr><th>역할</th><th>구간</th></tr></thead>
+<tbody>
+<tr><th scope="row">UtilityFactory 초기화 / ElapsedTimer 할당 / 정리 / singleton</th><td><code>0x53102754</code>–<code>0x5310277c</code> / <code>0x5310295c</code>–<code>0x531029a8</code> / <code>0x53102a20</code>–<code>0x53102a68</code> / <code>0x53102ce8</code>–<code>0x53102d74</code></td></tr>
+<tr><th scope="row">UtilityFactory vtable / typeinfo / 이름</th><td><code>0x53a6ec30</code>–<code>0x53a6ec50</code> / <code>0x53a6ec50</code>–<code>0x53a6ec58</code> / <code>0x53a6ec1c</code>–<code>0x53a6ec2d</code></td></tr>
+<tr><th scope="row">ElapsedTimer vtable / typeinfo / 이름 / 필드 이름</th><td><code>0x53a6ee28</code>–<code>0x53a6ee44</code> / <code>0x53a6ee08</code>–<code>0x53a6ee10</code> / <code>0x53a6ee14</code>–<code>0x53a6ee23</code> / <code>0x538f3d64</code>–<code>0x538f3d73</code></td></tr>
+<tr><th scope="row">카운터 결합 / 생성자·표본 / 인접 환산</th><td><code>0x5310627c</code>–<code>0x531062b8</code> / <code>0x531062b8</code>–<code>0x531062e4</code> / <code>0x531062e4</code>–<code>0x53106304</code></td></tr>
+<tr><th scope="row">차이 산술 / 가상 래퍼 / 대기 mode</th><td><code>0x53106304</code>–<code>0x53106370</code> / <code>0x53106370</code>–<code>0x531063b4</code> / <code>0x531063b4</code>–<code>0x5310643c</code></td></tr>
+<tr><th scope="row">레지스트리 singleton / 등록 / 조회</th><td><code>0x52f137f0</code>–<code>0x52f13864</code> / <code>0x52f13864</code>–<code>0x52f1390c</code> / <code>0x52f1390c</code>–<code>0x52f139a4</code></td></tr>
+<tr><th scope="row">별도 공급자 등록 위치 / 삽입</th><td><code>0x531fc9e4</code>–<code>0x531fc9f4</code> / <code>0x52f14044</code>–<code>0x52f14060</code></td></tr>
+<tr><th scope="row">Motor 표본 0 초기화 / 피드백 변화 때 표본 / 리셋 뒤 1·2 / 표본 쌍</th><td><code>0x52f0b5cc</code>–<code>0x52f0b5e0</code> / <code>0x52f0b888</code>–<code>0x52f0b914</code> / <code>0x52f0b928</code>–<code>0x52f0b978</code>, <code>0x52f0b9f4</code>–<code>0x52f0ba14</code> / <code>0x52f0bf14</code>–<code>0x52f0bf5c</code></td></tr>
+<tr><th scope="row">적응형 호출과 문턱 / mode 3·mode 1 기준 소비자</th><td><code>0x52f0bd6c</code>–<code>0x52f0bdec</code> / <code>0x52f0b840</code>–<code>0x52f0b888</code>, <code>0x52f0c1c0</code>–<code>0x52f0c20c</code></td></tr>
+</tbody></table></div>
+<p class="small">명령 위치 31개와 포인터 워드 9개(예: <code>0x531062d0</code> → ElapsedTimer vtable <code>0x53a6ee30</code>, <code>0x53a6ee3c</code> → <code>0x5310627c</code>)는 <a href="af-adaptive-input-checks.json">af-adaptive-input-checks.json</a>에 있습니다.</p>
+</details>
 </section>
+
+<section id="refs">
+<h2>근거 파일과 참고 자료</h2>
+<ul class="refs">
+<li><a href="af-adaptive-input-checks.json">af-adaptive-input-checks.json</a> — 주소·해시·전체 관측, 산술 대조 21건</li>
+<li><a href="../verify_af_adaptive_input.py">verify_af_adaptive_input.py</a> — 정적 검사기</li>
+<li><a href="../tests/test_af_adaptive_input.py">tests/test_af_adaptive_input.py</a> — 입출력과 산술 테스트</li>
+<li>관련 문서: <a href="af-state-producers.html#feedback">D1 피드백과 상태 재읽기</a> · <a href="af-pwm-parameters.html">PWM 정수 변환과 이전 정지점</a> · <a href="research-checkpoint.html#k3iii-d9-object">D9 객체 근거와 남은 시간 단위 검증</a></li>
+<li>도구: <a href="https://www.capstone-engine.org/">Capstone 디스어셈블러</a></li>
+</ul>
+</section>
+
 </main>
 </div>
 <!-- chrome:bottom -->

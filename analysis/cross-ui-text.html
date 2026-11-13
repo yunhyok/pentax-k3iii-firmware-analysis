@@ -9,6 +9,9 @@
 </head>
 <body data-camera="k3iii">
 <!-- chrome:top -->
+<a class="skip" href="#main">본문 바로가기</a>
+<div class="topbar"><div class="topbar-in"><a class="brand" href="../index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="../index.html" aria-current="true">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="https://yunhyok.github.io/pentax-q7-firmware-analysis/">Q7</a></div><nav class="topnav" aria-label="주제"><a href="../index.html">개요</a><a href="guide-boot.html">부팅·저장소</a><a href="guide-update.html">업데이트</a><a href="guide-rebuild.html">재구축</a><a href="guide-rtos.html">명령·셸</a><a href="guide-color.html">색 처리</a><a href="guide-lightroom.html">Lightroom</a><a href="guide-af.html">AF</a><a href="guide-ui.html" aria-current="true">UI</a></nav></div></div>
+<nav class="crumbs" aria-label="현재 위치"><ol><li><a href="../index.html">PENTAX K-3 Mark III</a></li><li><a href="guide-ui.html">UI와 화면 자원</a></li><li aria-current="page">K-3 III와 Q7의 sRGB 글자 그리기 비교</li></ol></nav>
 <!-- /chrome:top -->
 <header class="page-head">
 <p class="eyebrow">UI와 화면 자원 · 기종 비교</p>
@@ -17,6 +20,7 @@
 </header>
 <div class="layout">
 <!-- chrome:toc -->
+<nav class="toc" aria-label="이 문서의 목차"><h2 data-toc="no">이 문서에서</h2><ol><li><a href="#background">배경: 글자를 그리는 약속은 크기·좌표·픽셀 형식으로 나뉩니다</a></li><li><a href="#flow">두 기종의 시험 조건</a></li><li><a href="#arithmetic">같은 값 1이 두 기종에서 다른 픽셀이 됩니다</a></li><li><a href="#context">그리기 대상과 클립은 기종마다 따로 확인해야 합니다</a></li><li><a href="#port">이식에서 다음으로 검증할 조건</a></li><li><a href="#limits">한계와 남은 과제</a></li><li><a href="#reproduce">재현 방법</a></li><li><a href="#refs">근거 파일과 참고 자료</a></li></ol></nav>
 <!-- /chrome:toc -->
 <main class="doc" id="main">
 
@@ -26,7 +30,7 @@
 <li>두 기종이 공유할 수 있는 것은 <strong>표시할 이름과 화면에서의 역할</strong>까지입니다. 글꼴, 크기, 좌표와 클립, 픽셀 형식은 기종마다 다릅니다.</li>
 <li>K-3 III는 커버리지 비트맵과 배경 워드를 섞어 <strong>32비트 색</strong>을 씁니다. Q7은 글꼴 셀을 가로로 4분의 3으로 줄인 뒤 <strong>8비트 팔레트 번호</strong>를 씁니다. 같은 값 1이 K-3 III에서는 <code>0x838d97a2</code>, Q7에서는 번호 2가 됩니다.</li>
 <li>Q7은 그리기 컨텍스트 등록 슬롯이 비어 있으면 그리기 ID만 바뀌고 이전 컨텍스트가 남습니다. 이식할 때는 ID와 함께 실제로 받은 포인터를 확인해야 합니다.</li>
-<li>이 비교는 이미 공개한 두 기종의 원본 실행 기록과 산술 재계산으로 만들었습니다. 이 문서의 명령은 펌웨어를 실행하지 않으며, 실제 LCD 출력과 기종 간 이식은 확인하지 않았습니다.</li>
+<li>이 비교는 이미 공개한 두 기종의 원본 실행 기록과 산술 재계산으로 만들었습니다. 이 문서의 명령은 펌웨어를 실행하지 않으며 실제 LCD 출력과 기종 간 이식은 확인하지 않았습니다.</li>
 </ul>
 </section>
 
@@ -54,7 +58,7 @@
 <section id="background">
 <h2>배경: 글자를 그리는 약속은 크기·좌표·픽셀 형식으로 나뉩니다</h2>
 <p>화면 부품이 글자를 그리려면 그리기 코드와 몇 가지를 약속해야 합니다. 어떤 글꼴을 어떤 크기로 쓸지, 어느 좌표에 놓고 어디서 잘라 낼지, 표면의 픽셀 하나를 어떤 값으로 채울지입니다. 이 문서는 이 묶음을 기종별로 비교합니다.</p>
-<p>픽셀 형식이 특히 다릅니다. K-3 III 표면은 픽셀마다 4바이트 색 값을 담습니다. Q7 표면은 픽셀마다 1바이트 번호를 담고, 실제 색은 그 번호로 팔레트(색 목록)를 찾아 정합니다. 같은 비트맵 값을 넘겨도 두 기종에서 뜻이 달라집니다.</p>
+<p>픽셀 형식이 특히 다릅니다. K-3 III 표면은 픽셀마다 4바이트 색 값을 담습니다. Q7 표면은 픽셀마다 1바이트 번호를 담고 실제 색은 그 번호로 팔레트(색 목록)를 찾아 정합니다. 같은 비트맵 값을 넘겨도 두 기종에서 뜻이 달라집니다.</p>
 
 <figure class="diagram" id="flow-figure">
 <figcaption>같은 sRGB 이름이 두 기종에서 픽셀이 되기까지</figcaption>
@@ -137,13 +141,13 @@
 <tr><th scope="row">Q7 폭 24 → 18, 출력 열 2</th><td>원본 수식은 소스 열 3, 왼쪽 끝을 고르는 수식은 열 2입니다.</td></tr>
 <tr><th scope="row">합성 바이트 <code>0x1b</code></th><td>Q7은 네 코드 <code>0,1,2,3</code>으로 풉니다. K-3 III에 그대로 넘기면 값 27이 되어 검증한 커버리지 범위를 벗어납니다.</td></tr>
 </tbody></table></div>
-<p>합성 바이트 반례에는 원본 글꼴 데이터를 쓰지 않았습니다. 계산한 소스 열 전체와 수치 반례는 <a href="cross-ui-text.json">cross-ui-text.json</a>에 있고, Q7 쪽 수식과 독립 프레임 계산은 <a href="https://github.com/yunhyok/pentax-q7-firmware-analysis/blob/77dfa9db8b9a93ed1e413a157ccba8595141fd24/tools/check_colorspace_attributes.py">Q7 축소 수식과 독립 프레임 계산</a>에 있습니다.</p>
+<p>합성 바이트 반례에는 원본 글꼴 데이터를 쓰지 않았습니다. 계산한 소스 열 전체와 수치 반례는 <a href="cross-ui-text.json">cross-ui-text.json</a>에 있고 Q7 쪽 수식과 독립 프레임 계산은 <a href="https://github.com/yunhyok/pentax-q7-firmware-analysis/blob/77dfa9db8b9a93ed1e413a157ccba8595141fd24/tools/check_colorspace_attributes.py">Q7 축소 수식과 독립 프레임 계산</a>에 있습니다.</p>
 
 <details class="evidence"><summary>두 기종의 원본 주소와 글자별 소스 열</summary>
 <div class="table-wrap"><table class="compact">
 <thead><tr><th>역할</th><th>K-3 III</th><th>Q7</th></tr></thead>
 <tbody>
-<tr><th scope="row">좌표·스냅샷</th><td><code>0x52c003f0</code>, <code>0x52c02538</code></td><td>컨텍스트 설정 <code>0x8024a59c</code></td></tr>
+<tr><th scope="row">좌표·스냅샷</th><td><code>0x52c003f0</code>, <code>0x52c02538</code></td><td>그리기 버퍼 설정 <code>0x8024a59c</code>, 활성 포인터 저장 <code>0x8024a614</code></td></tr>
 <tr><th scope="row">그리기 진입</th><td><code>0x52bedb40</code></td><td><code>0x8024928c</code></td></tr>
 <tr><th scope="row">교차·배율</th><td>교차 <code>0x530fa324</code></td><td>폭 배율 <code>0x8022c0d8</code>, 축소 폭 <code>0x8022c1e0</code></td></tr>
 <tr><th scope="row">배경·역배율</th><td>배경 워드 <code>0x528c2664</code></td><td>가로 나눗셈 <code>0x8022684c</code>, 절반 간격 <code>0x80226938</code></td></tr>
@@ -158,11 +162,11 @@
 
 <section id="context">
 <h2>그리기 대상과 클립은 기종마다 따로 확인해야 합니다</h2>
-<p class="takeaway">K-3 III는 같은 StringView가 하네스의 표면 포인터에 그리고, Q7은 활성 컨텍스트 포인터가 가리키는 곳에 그립니다. Q7에서는 ID가 바뀌어도 포인터가 그대로일 수 있습니다.</p>
-<p>K-3 III의 그리기 슬롯 <code>0x52bedb40</code>은 같은 StringView와 하네스가 공급한 표면 포인터를 이어서 씁니다. 프로필 0에서 원본이 채운 팔레트 26·28번을 읽었고, 팔레트 생성자는 <code>0x529191b0</code>의 UserData 읽기 전에 멈췄습니다. A5 사례에서 전송 재개부터 원본 그리기 함수 복귀까지 모형 호출은 0건이었습니다. 앞 단계의 준비 플래그와 파일·할당 모형은 남아 있습니다(<a href="colorspace-text.json">K-3 III 사례별 실행·모델 기록</a>).</p>
+<p class="takeaway">K-3 III는 같은 StringView가 하네스의 표면 포인터에 그립니다. Q7은 활성 컨텍스트 포인터가 가리키는 곳에 그립니다. Q7에서는 ID가 바뀌어도 포인터가 그대로일 수 있습니다.</p>
+<p>K-3 III의 그리기 슬롯 <code>0x52bedb40</code>은 같은 StringView와 하네스가 공급한 표면 포인터를 이어서 씁니다. 프로필 0에서 원본이 채운 팔레트 26·28번을 읽었고 팔레트 생성자는 <code>0x529191b0</code>의 UserData 읽기 전에 멈췄습니다. A5 사례에서 전송 재개부터 원본 그리기 함수 복귀까지 모형 호출은 0건이었습니다. 앞 단계의 준비 플래그와 파일·할당 모형은 남아 있습니다(<a href="colorspace-text.json">K-3 III 사례별 실행·모델 기록</a>).</p>
 <p>Q7 속성 시험은 ID 0과 17이 같은 컨텍스트를 쓰도록 공급했습니다. 별도 등록표 시험에서 다음 슬롯이 비어 있으면 그리기 ID는 18로 바뀌었지만 활성 포인터 <code>0x800eb4d8</code>는 이전 컨텍스트를 유지했습니다. 그래서 버퍼 교대 뒤에는 ID와 함께 속성·텍스트 호출이 실제로 받은 포인터를 확인해야 합니다(<a href="https://github.com/yunhyok/pentax-q7-firmware-analysis/blob/77dfa9db8b9a93ed1e413a157ccba8595141fd24/analysis/context-binding.json">Q7 등록표·빈 슬롯 대조</a>).</p>
-<p>그 뒤의 960×480 합성 실행은 등록표와 큐 전달 모형을 써서 원본 갱신부터 두 텍스트 행과 마커까지 실행했습니다. 같은 sRGB 글리프 네 번의 호출을 확인했고, 바깥 소비자로 복귀하기 전인 <code>0x80adf468</code>에서 멈췄습니다(<a href="ui-render-chain.html">Q7 갱신에서 원본 픽셀까지</a>).</p>
-<p>Q7 축소 루프의 <code>0x80226a5c..0x80226a90</code>에는 프레임 행 포인터와 가로 좌표 검사가 있습니다. 이 비교의 고정 입력에는 부분 잘림의 원본 실행이 들어 있지 않습니다. 별도 실험에서 일곱 배치를 원본 코드로 실행했고, (−9, −12)에서 행 주소 검사로 보이는 8픽셀이 생략됐습니다(<a href="https://yunhyok.github.io/pentax-q7-firmware-analysis/colorspace-clip-report.html">Q7 원본 글리프의 가장자리 처리</a>, K-3 III 쪽은 <a href="colorspace-clip.html">화면 경계 문서</a>).</p>
+<p>그 뒤의 960×480 합성 실행은 등록표와 큐 전달 모형을 써서 원본 갱신부터 두 텍스트 행과 마커까지 실행했습니다. 같은 sRGB 글리프 네 번의 호출을 확인했고 바깥 소비자로 복귀하기 전인 <code>0x80adf468</code>에서 멈췄습니다(<a href="ui-render-chain.html">Q7 갱신에서 원본 픽셀까지</a>).</p>
+<p>Q7 축소 루프의 <code>0x80226a5c..0x80226a90</code>에는 프레임 행 포인터와 가로 좌표 검사가 있습니다. 이 비교의 고정 입력에는 부분 잘림의 원본 실행이 들어 있지 않습니다. 별도 실험에서는 일곱 배치를 원본 코드로 실행했습니다. (−9, −12)에서는 행 주소 검사로 보이는 8픽셀이 생략됐습니다(<a href="https://yunhyok.github.io/pentax-q7-firmware-analysis/colorspace-clip-report.html">Q7 원본 글리프의 가장자리 처리</a>, K-3 III 쪽은 <a href="colorspace-clip.html">화면 경계 문서</a>).</p>
 <div class="callout fix"><strong class="label">정정</strong>
 <p>원본 명령을 다시 대조해 Q7의 가로 나눗셈 주소를 <code>0x8022684c</code>로 고쳤습니다. 그 몫은 <code>0x802268a4</code>에서 읽습니다. 예전에 적은 <code>0x802268a8</code>은 세로 나눗셈입니다. Q16 열 번호와 픽셀 대조 결과는 같았습니다(<a href="cross-ui-text.json">정정 주소·원본 구간 해시</a>).</p>
 </div>
@@ -170,11 +174,11 @@
 
 <section id="port">
 <h2>이식에서 다음으로 검증할 조건</h2>
-<p class="takeaway">기종 간에는 이름과 역할만 넘기고, 나머지는 대상 기종의 글꼴·컨텍스트·표면에서 다시 대조해야 합니다.</p>
+<p class="takeaway">기종 간에는 이름과 역할만 넘기고 나머지는 대상 기종의 글꼴·컨텍스트·표면에서 다시 대조해야 합니다.</p>
 <ol class="steps">
-<li><strong>글리프 위치</strong> 표시할 이름과 역할을 넘기고, 대상 기종의 문자열·글꼴에서 각 글리프 위치와 합성 프레임을 대조합니다.</li>
+<li><strong>글리프 위치</strong> 표시할 이름과 역할을 넘기고 대상 기종의 문자열·글꼴에서 각 글리프 위치와 합성 프레임을 대조하는 일입니다.</li>
 <li><strong>컨텍스트</strong> Q7에서 등록 슬롯이 있는 경우와 빈 경우를 나눠, 속성 설정과 글자 그리기가 의도한 컨텍스트에 닿는지 확인합니다.</li>
-<li><strong>경계와 색</strong> Q7 합성 표면 경계에 글자를 걸쳐 팔레트 번호 쓰기와 보호 바이트를 확인합니다. 실제 색은 팔레트가 표시 경로로 전달되는 과정에서 따로 확인해야 합니다.</li>
+<li><strong>경계와 색</strong> Q7 합성 표면 경계에 글자를 걸쳐 팔레트 번호 쓰기와 보호 바이트를 확인합니다. 실제 색은 팔레트가 표시 경로로 전달되는 과정에서 따로 확인할 문제입니다.</li>
 </ol>
 <p>세 기종 전체의 이식 조건은 <a href="ui-port-contract.html">세 기종 UI 이식 조건</a>에 정리했습니다.</p>
 </section>
@@ -184,7 +188,7 @@
 <ul>
 <li>이 비교는 고정된 텍스트 경로만 다룹니다. 부분 잘림은 이 비교기가 재현하지 않으며 Q7 별도 실험에 있습니다.</li>
 <li>이 문서의 명령은 원본 펌웨어, ROM 데이터, 글꼴, 비트맵, 프레임을 읽지 않습니다.</li>
-<li>실제 팔레트와 LCD는 검증하지 않았고, 기종 간 UI 이식도 실행하지 않았습니다.</li>
+<li>실제 팔레트와 LCD는 검증하지 않았고 기종 간 UI 이식도 실행하지 않았습니다.</li>
 </ul>
 </section>
 
@@ -211,6 +215,9 @@ python -B -m unittest discover -s tests -p test_check_cross_ui_text.py</code></p
 </main>
 </div>
 <!-- chrome:bottom -->
+<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">UI와 화면 자원 — 이 주제의 문서</h2><ol><li><a href="guide-ui.html">UI와 화면 자원 안내</a></li><li><a href="ui-port-contract.html">UI 이식 설계<span>세 기종 비교</span></a></li><li><a href="colorspace-ui.html">색공간 화면: 선택·확정·취소<span>16사례</span></a></li><li><a href="colorspace-ui-input.html">색공간 화면: 방향 입력·포커스<span>50사례</span></a></li><li><a href="colorspace-render.html">색공간 행의 아이콘과 글자 측정<span>원본 행·ICONBIN 복사, Latin 글꼴 준비와 sRGB 측정</span></a></li><li><a href="colorspace-text.html">색공간 sRGB 글자의 래스터와 픽셀 전송<span>원본 텍스트 비트맵·합성 표면 전송</span></a></li><li><a href="colorspace-clip.html">sRGB 글자 전송의 화면 경계<span>일곱 좌표에서 32비트 전송과 Q7 행 검사 비교</span></a></li><li><a href="ui-viewport-producers.html">K-3 III 텍스트 viewport의 생산 경로<span>부모 클립과 텍스트 설정의 전달</span></a></li><li><a href="ui-surface-producers.html">K-3 III StringView의 그리기 표면<span>Canvas와 표면 기술자</span></a></li><li><a href="ui-render-chain.html">Q7 갱신에서 원본 픽셀까지<span>마커·두 텍스트·버퍼 교체의 합성 실행</span></a></li><li><a href="cross-ui-text.html" aria-current="page">K-3 III와 Q7의 sRGB 글자 그리기 비교<span>32비트 커버리지 전송과 Q7 팔레트 번호·Q16 축소</span></a></li><li><a href="icon-resources.html">ICONBIN 아이콘 자원<span>저장 형식, 복사 규칙, 후보 아이콘</span></a></li></ol></nav>
+<nav class="pager" aria-label="이전·다음 문서"><a class="prev" href="ui-render-chain.html"><small>← 이전</small>Q7 갱신에서 원본 픽셀까지</a><a class="next" href="icon-resources.html"><small>다음 →</small>ICONBIN 아이콘 자원</a></nav>
+<footer class="sitefoot"><div class="sitefoot-in"><nav aria-label="사이트"><a href="../index.html#map">문서 지도</a><a href="../index.html#levels">검증 수준 읽는 법</a><a href="../glossary.html">용어집</a><a href="research-program.html">세 기종 연구 본부</a><a href="https://github.com/yunhyok/pentax-k3iii-firmware-analysis">GitHub 저장소</a></nav><p>PENTAX 펌웨어 연구. PC에서 수행한 정적 분석과 에뮬레이션 결과이며, 카메라 실기에서 검증한 내용이 아닙니다. 원본 펌웨어와 추출한 독점 코드는 포함하지 않습니다.</p></div></footer>
 <!-- /chrome:bottom -->
 </body>
 </html>

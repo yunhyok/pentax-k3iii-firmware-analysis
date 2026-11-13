@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>UI와 화면 자원 안내 — PENTAX K-3 Mark III 펌웨어 연구</title>
-<meta name="description" content="UI와 화면 자원 안내">
+<meta name="description" content="K-3 Mark III 색공간 선택 화면 하나를 골라 입력 이벤트부터 포커스, 다시 그리기, 아이콘·글자 픽셀, 표면·viewport, 클리핑까지 어디를 원본 코드로 확인했고 어디서 지식이 끝나는지 정리한 주제 안내입니다. Q7과 K-3 II 비교 문서도 함께 안내합니다.">
 <link rel="stylesheet" href="../assets/site.css">
 </head>
 <body data-camera="k3iii">
@@ -14,17 +14,259 @@
 <nav class="crumbs" aria-label="현재 위치"><ol><li><a href="../index.html">PENTAX K-3 Mark III</a></li><li aria-current="page">UI와 화면 자원 안내</li></ol></nav>
 <!-- /chrome:top -->
 <header class="page-head">
-<p class="eyebrow">UI와 화면 자원</p>
+<p class="eyebrow">UI와 화면 자원 · 주제 안내</p>
 <h1>UI와 화면 자원 안내</h1>
-<p class="lead">STUB-PLACEHOLDER 이 문서는 작성 중입니다.</p>
+<p class="lead">카메라 메뉴는 버튼 입력을 받아 고르는 값을 바꾸고 바뀐 화면을 아이콘과 글자 픽셀로 다시 그립니다. 이 주제는 세 기종에 모두 있는 색공간(sRGB·AdobeRGB) 선택 화면 하나를 골라, 그 과정을 펌웨어 원본 코드로 어디까지 따라갈 수 있는지 기록합니다.</p>
 </header>
 <div class="layout">
 <!-- chrome:toc -->
-<nav class="toc" aria-label="이 문서의 목차"><h2 data-toc="no">이 문서에서</h2><ol><li><a href="#map">작성 중</a></li><li><a href="#levels">작성 중</a></li></ol></nav>
+<nav class="toc" aria-label="이 문서의 목차"><h2 data-toc="no">이 문서에서</h2><ol><li><a href="#map">한눈에 보기: 메뉴 화면 하나가 그려지는 길</a></li><li><a href="#synthetic">합성 표면 위에서 원본 코드로 확인한 것</a></li><li><a href="#background">배경 지식</a></li><li><a href="#status">지금까지 알아낸 것과 아직 모르는 것</a></li><li><a href="#order">읽는 순서</a></li><li><a href="#refs">근거 파일과 참고 자료</a></li></ol></nav>
 <!-- /chrome:toc -->
 <main class="doc" id="main">
-<section id="map"><h2>작성 중</h2><p>곧 채워집니다.</p></section>
-<section id="levels"><h2>작성 중</h2><p>곧 채워집니다.</p></section>
+
+<section class="summary">
+<h2 data-toc="no">핵심 요약</h2>
+<ul>
+<li>K-3 Mark III에서는 <strong>방향 입력 → 포커스 이동 → 확정·취소와 설정 기록</strong>을 원본 ARM 코드를 PC 에뮬레이터에서 실행해 확인했습니다. 화면 객체와 이벤트는 시험이 만들어 넣었습니다.</li>
+<li>그리기 쪽은 색공간 행의 아이콘 복사, sRGB 글자의 측정과 래스터, 32비트 전송, 일곱 좌표의 클리핑을 원본 코드로 실행했습니다. 픽셀은 256×144 합성 RAM 표면에 썼습니다. 결과는 표면 전체를 독립 계산과 대조했습니다.</li>
+<li>전송에 쓰인 viewport와 표면이 펌웨어 안에서 어디서 오는지는 <strong>코드를 읽어</strong> 이었습니다. 맨 위 부모의 클립과 실제 표면을 만드는 코드는 찾지 못했습니다.</li>
+<li>다시 그리기 요청에서 행 그리기까지의 연결, 실제 화면 전체의 합성, 색 채널 순서, LCD 출력은 확인하지 못했습니다. 카메라에서 실행한 실험은 없습니다.</li>
+<li>Q7 쪽은 갱신 한 번 안에서 마커와 두 글자 줄을 8비트 팔레트 번호 버퍼에 그리는 과정까지 원본 코드로 이었습니다. 기종마다 픽셀 형식과 렌더러가 다릅니다.</li>
+</ul>
+</section>
+
+<section id="map">
+<h2>한눈에 보기: 메뉴 화면 하나가 그려지는 길</h2>
+<p class="takeaway">위에서 아래로 읽습니다. 왼쪽은 단계, 오른쪽은 그 단계를 다루는 문서입니다. 확인된 지식은 합성 RAM 표면에서 끝나고 LCD는 미확인입니다.</p>
+
+<figure class="diagram">
+<figcaption>색공간 화면의 입력부터 픽셀까지, 단계별 검증 수준과 담당 문서</figcaption>
+<div class="dg-scroll">
+<svg class="dg" viewBox="0 0 800 834" role="img" aria-labelledby="dg-map-title dg-map-desc">
+<title id="dg-map-title">UI와 화면 자원 주제 전체 지도</title>
+<desc id="dg-map-desc">위에서 아래로 열 단계가 있습니다. 첫째, 물리 버튼이나 다이얼이 화면 이벤트가 되는 경로는 세 기종 모두 미확인입니다. 둘째, 방향 이벤트가 포커스 번호를 옮기는 과정은 원본 코드 실행으로 확인했고 문서 3이 다룹니다. 셋째, 보류값과 확정·취소, 설정 기록은 확인했고 문서 2가 다룹니다. 넷째, 메뉴 콜백이 표시 갱신 함수 입구에 닿는 데까지 확인했고 실제 그리기는 실행하지 않았습니다. 그 아래 행 그리기로 이어지는 연결은 미확인입니다. 다섯째, 행의 아이콘 복사, 문자열, Latin 글꼴, 76×40 측정은 확인했고 문서 4와 5가 다룹니다. 여섯째, 글리프 커버리지가 32비트 픽셀 값이 되는 과정은 확인했고 문서 6이 다룹니다. 일곱째, viewport와 표면이 어디서 오는지는 코드를 읽어 이었고 문서 8과 9가 다룹니다. 여덟째, 일곱 좌표의 클리핑과 32비트 쓰기는 확인했고 문서 7이 다룹니다. 아홉째, 픽셀이 쓰인 곳은 시험이 만든 256×144 RAM 표면이며 확인된 지식은 여기서 끝납니다. 열째, LCD 출력은 미확인입니다. 맨 아래에는 다른 기종과 비교하는 문서 세 개가 있습니다. 문서 1은 세 기종 UI 이식 설계, 문서 10은 Q7 갱신 한 번에서 픽셀까지, 문서 11은 K-3 III와 Q7의 글자 그리기 비교입니다.</desc>
+<defs><marker id="dg-map-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0 0L10 5L0 10z"/></marker><marker id="dg-map-aho" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah open" d="M0 0L10 5L0 10z"/></marker></defs>
+
+<rect class="b open" x="10" y="14" width="430" height="54" rx="8"/>
+<text class="t" x="22" y="37">물리 버튼·다이얼 → 화면 이벤트</text>
+<text class="s" x="22" y="57">스위치 스캔과 RTOS 전달</text>
+<rect class="b mute" x="470" y="14" width="320" height="54" rx="8"/>
+<text class="s" x="482" y="46">세 기종 모두 미확인</text>
+
+<rect class="b ok" x="10" y="86" width="430" height="54" rx="8"/>
+<text class="t" x="22" y="109">입력 이벤트 → 포커스 이동</text>
+<text class="s" x="22" y="129">방향 이벤트 네 가지, 목록의 포커스 번호 하나만 바뀜</text>
+<rect class="b" x="470" y="86" width="320" height="54" rx="8"/>
+<a href="colorspace-ui-input.html"><text class="t" x="482" y="109">③ 방향 입력·포커스</text></a>
+<text class="s" x="482" y="129">50사례</text>
+
+<rect class="b ok" x="10" y="158" width="430" height="54" rx="8"/>
+<text class="t" x="22" y="181">선택 상태 → 확정·취소</text>
+<text class="s" x="22" y="201">보류값, 확정 때 설정 기록, 취소는 닫기만</text>
+<rect class="b" x="470" y="158" width="320" height="54" rx="8"/>
+<a href="colorspace-ui.html"><text class="t" x="482" y="181">② 선택·확정·취소</text></a>
+<text class="s" x="482" y="201">16사례</text>
+
+<rect class="b ok" x="10" y="230" width="430" height="54" rx="8"/>
+<text class="t" x="22" y="253">다시 그리기 요청</text>
+<text class="s" x="22" y="273">메뉴 콜백이 표시 갱신 입구에 닿음 · 그리기는 실행 안 함</text>
+<rect class="b" x="470" y="230" width="320" height="54" rx="8"/>
+<a href="colorspace-ui-input.html"><text class="t" x="482" y="253">③ 방향 입력·포커스</text></a>
+<text class="s" x="482" y="273">갱신 입구에서 멈춤</text>
+
+<rect class="b ok" x="10" y="302" width="430" height="54" rx="8"/>
+<text class="t" x="22" y="325">행·아이콘·문자열 그리기 준비</text>
+<text class="s" x="22" y="345">IconView 복사, 문자열 ID, Latin 글꼴, 76×40 측정</text>
+<rect class="b" x="470" y="302" width="320" height="54" rx="8"/>
+<a href="icon-resources.html"><text class="t" x="482" y="325">④ ICONBIN 아이콘 자원</text></a>
+<a href="colorspace-render.html"><text class="t" x="482" y="346">⑤ 아이콘과 글자 측정</text></a>
+
+<rect class="b ok" x="10" y="374" width="430" height="54" rx="8"/>
+<text class="t" x="22" y="397">글리프 → 픽셀 값</text>
+<text class="s" x="22" y="417">76×40 커버리지, 부분 커버리지 705개를 32비트 값으로</text>
+<rect class="b" x="470" y="374" width="320" height="54" rx="8"/>
+<a href="colorspace-text.html"><text class="t" x="482" y="397">⑥ 글자 래스터와 픽셀 전송</text></a>
+<text class="s" x="482" y="417">표면 전체 대조</text>
+
+<rect class="b static" x="10" y="446" width="430" height="54" rx="8"/>
+<text class="t" x="22" y="469">표면과 viewport의 출처</text>
+<text class="s" x="22" y="489">부모 클립 → 텍스트 설정, Canvas → StringView</text>
+<rect class="b" x="470" y="446" width="320" height="54" rx="8"/>
+<a href="ui-viewport-producers.html"><text class="t" x="482" y="469">⑧ 글자 viewport</text></a>
+<a href="ui-surface-producers.html"><text class="t" x="482" y="490">⑨ 그리기 표면</text></a>
+
+<rect class="b ok" x="10" y="518" width="430" height="54" rx="8"/>
+<text class="t" x="22" y="541">클리핑과 32비트 쓰기</text>
+<text class="s" x="22" y="561">일곱 좌표, 교차 영역 안에만 쓰기</text>
+<rect class="b" x="470" y="518" width="320" height="54" rx="8"/>
+<a href="colorspace-clip.html"><text class="t" x="482" y="541">⑦ 화면 경계</text></a>
+<text class="s" x="482" y="561">7사례</text>
+
+<rect class="b model" x="10" y="590" width="430" height="54" rx="8"/>
+<text class="t" x="22" y="613">합성 RAM 표면</text>
+<text class="s" x="22" y="633">256×144 워드, 시험이 만든 메모리</text>
+<rect class="b key" x="470" y="590" width="320" height="54" rx="8"/>
+<text class="t" x="482" y="613">확인된 지식은 여기서 끝</text>
+<text class="s" x="482" y="633">이 아래는 근거 없음</text>
+
+<rect class="b open" x="10" y="662" width="430" height="54" rx="8"/>
+<text class="t" x="22" y="685">LCD 출력</text>
+<text class="s" x="22" y="705">실제 표면 할당, 색 채널 순서, 화면 전송</text>
+<rect class="b mute" x="470" y="662" width="320" height="54" rx="8"/>
+<text class="s" x="482" y="694">세 기종 모두 미확인</text>
+
+<rect class="gf" x="0" y="730" width="800" height="96" rx="12"/>
+<text class="h" x="12" y="750">다른 기종과 비교</text>
+<rect class="b" x="10" y="760" width="250" height="56" rx="8"/>
+<a href="ui-port-contract.html"><text class="t" x="22" y="783">① UI 이식 설계</text></a>
+<text class="s" x="22" y="803">세 기종의 같은 화면 비교</text>
+<rect class="b" x="275" y="760" width="250" height="56" rx="8"/>
+<a href="ui-render-chain.html"><text class="t" x="287" y="783">⑩ Q7 갱신에서 픽셀까지</text></a>
+<text class="s" x="287" y="803">마커·두 글자 줄, 8비트 번호</text>
+<rect class="b" x="540" y="760" width="250" height="56" rx="8"/>
+<a href="cross-ui-text.html"><text class="t" x="552" y="783">⑪ K-3 III와 Q7 글자 비교</text></a>
+<text class="s" x="552" y="803">32비트 값 대 팔레트 번호</text>
+
+<path class="e open" d="M225 68V84" marker-end="url(#dg-map-aho)"/>
+<path class="e" d="M225 140V156" marker-end="url(#dg-map-ah)"/>
+<path class="e" d="M225 212V228" marker-end="url(#dg-map-ah)"/>
+<path class="e open" d="M225 284V300" marker-end="url(#dg-map-aho)"/>
+<text class="n topen" x="235" y="297">연결 미확인</text>
+<path class="e" d="M225 356V372" marker-end="url(#dg-map-ah)"/>
+<path class="e" d="M225 428V444" marker-end="url(#dg-map-ah)"/>
+<path class="e" d="M225 500V516" marker-end="url(#dg-map-ah)"/>
+<path class="e" d="M225 572V588" marker-end="url(#dg-map-ah)"/>
+<path class="e open" d="M225 644V660" marker-end="url(#dg-map-aho)"/>
+<path class="e dash" d="M440 41H470"/>
+<path class="e dash" d="M440 113H470"/>
+<path class="e dash" d="M440 185H470"/>
+<path class="e dash" d="M440 257H470"/>
+<path class="e dash" d="M440 329H470"/>
+<path class="e dash" d="M440 401H470"/>
+<path class="e dash" d="M440 473H470"/>
+<path class="e dash" d="M440 545H470"/>
+<path class="e dash" d="M440 617H470"/>
+<path class="e dash" d="M440 689H470"/>
+</svg>
+</div>
+<ul class="dg-legend"><li><i class="ok"></i>원본 코드 실행으로 확인 (객체·입력·표면은 시험 조건)</li><li><i class="static"></i>코드를 읽어 연결</li><li><i class="model"></i>시험이 만든 메모리</li><li><i class="open"></i>미확인, 점선 화살표는 확인하지 못한 연결</li></ul>
+<p>오른쪽의 밑줄 친 이름을 누르면 그 문서로 갑니다. 번호는 아래 <a href="#order">읽는 순서</a>의 번호입니다. 각 단계는 따로 만든 시험 조건에서 확인했습니다. 화살표는 펌웨어 안의 흐름입니다. 입력에서 픽셀까지 한 번에 이어서 실행했다는 표시는 아닙니다.</p>
+</figure>
+</section>
+
+<section id="synthetic">
+<h2>합성 표면 위에서 원본 코드로 확인한 것</h2>
+<p class="takeaway">K-3 Mark III의 그리기 결과는 모두 시험이 만든 256×144 워드 RAM 표면 위의 결과입니다. 원본 코드가 쓴 바이트를 독립 계산과 표면 전체 단위로 대조했습니다.</p>
+<div class="table-wrap"><table>
+<caption>합성 표면에서 실행한 그리기 시험</caption>
+<thead><tr><th>시험</th><th>원본 코드가 한 일</th><th>시험이 정한 것</th><th>문서</th></tr></thead>
+<tbody>
+<tr><td>행과 아이콘</td><td>타입 19 행 생성, IconView가 ICONBIN 아이콘과 체크 표시를 복사(사례 5개)</td><td>메뉴·현재값, 사각형, 표면</td><td><a href="colorspace-render.html">⑤</a></td></tr>
+<tr><td>글자 크기 측정</td><td>Latin 글꼴 두 파일로 캐시를 준비하고 sRGB 배치 크기 76×40을 계산</td><td>파일·할당 호출의 반환값</td><td><a href="colorspace-render.html">⑤</a></td></tr>
+<tr><td>글자 래스터와 전송</td><td>76×40 비트맵을 만들고 부분 커버리지 705개를 32비트 값으로 써서 147,456바이트 표면이 독립 계산과 일치</td><td>부모 사각형, 표면, 팔레트 준비 플래그</td><td><a href="colorspace-text.html">⑥</a></td></tr>
+<tr><td>클리핑</td><td>일곱 좌표에서 마스크 읽기 순서, 대상 쓰기, 전체 프레임이 독립 계산과 일치</td><td>여섯 좌표의 사각형(복사된 설정에 넣음)</td><td><a href="colorspace-clip.html">⑦</a></td></tr>
+<tr><td>Q7 갱신</td><td>갱신 요청부터 버퍼 교체까지 실행, 마커·두 글자 줄 7,675바이트가 독립 계산과 일치</td><td>등록표, 960×480 8비트 RAM, 큐·잠금·할당</td><td><a href="ui-render-chain.html">⑩</a></td></tr>
+</tbody></table></div>
+<p>표면의 크기와 주소는 시험이 정한 값입니다. 카메라 화면의 화소 수로 읽으면 안 됩니다.</p>
+</section>
+
+<section id="background">
+<h2>배경 지식</h2>
+<p>이 주제의 문서를 읽는 데 필요한 개념 여섯 가지입니다.</p>
+<h3>위젯, 포커스, 보류값</h3>
+<p>화면은 행·글자·아이콘 같은 <a href="../glossary.html#widget">위젯</a>으로 이루어집니다. <a href="../glossary.html#focus">포커스</a>는 지금 고르고 있는 행입니다. 확정 전까지 고르는 값은 <a href="../glossary.html#pending-value">보류값</a>으로 따로 둡니다. K-3 Mark III와 K-3 II는 확정할 때 기록합니다. Q7은 고르는 즉시 기록합니다.</p>
+<h3>다시 그리기 요청</h3>
+<p>값이 바뀌어도 펌웨어가 곧바로 픽셀을 칠하지는 않습니다. “다시 그려라”는 요청을 남기면 나중에 그리기 단계가 위젯 전체를 다시 씁니다. 그래서 상태를 바꾸는 코드와 픽셀을 쓰는 코드를 따로 확인해야 합니다. 그 사이의 연결도 별도 과제입니다.</p>
+<h3>글리프와 커버리지</h3>
+<p><a href="../glossary.html#glyph">글리프</a>는 글자 하나의 모양입니다. K-3 Mark III의 글자 비트맵은 픽셀마다 글자가 얼마나 덮는지를 작은 값(커버리지)으로 담습니다. 0이면 배경을 그대로 둡니다. 부분 값이면 전경과 배경 색을 섞은 값을 씁니다.</p>
+<h3>클립과 viewport</h3>
+<p>클립은 그리기를 허용하는 사각형입니다. 자식 요소는 부모의 클립과 자기 영역이 겹친 부분(viewport) 안에만 그립니다(<a href="https://learn.microsoft.com/en-us/windows/win32/gdi/clipping">Microsoft Learn: Clipping</a>).</p>
+<h3>표면, 프레임 버퍼, 스트라이드</h3>
+<p>표면은 그릴 메모리의 시작 주소, 픽셀 형식, 한 줄의 길이를 담은 설명입니다. 화면에 보이는 메모리는 <a href="../glossary.html#frame-buffer">프레임 버퍼</a>입니다(<a href="https://www.kernel.org/doc/html/latest/fb/framebuffer.html">Linux 커널의 frame buffer 문서</a>). 한 줄의 바이트 수는 <a href="../glossary.html#stride">스트라이드</a>라고 합니다(<a href="https://learn.microsoft.com/en-us/windows/win32/medfound/image-stride">Microsoft Learn: Image Stride</a>).</p>
+<h3>32비트 색 값과 8비트 팔레트 번호</h3>
+<p>K-3 Mark III의 아이콘과 글자 전송은 픽셀마다 32비트 값을 씁니다. Q7 메뉴 버퍼는 픽셀마다 팔레트 번호 1바이트를 씁니다. 실제 색은 표시할 때 팔레트에서 찾습니다(<a href="https://www.w3.org/TR/png-3/">W3C PNG 규격</a>의 indexed-colour와 같은 방식). 두 기종 모두 바이트가 LCD에서 어떤 색이 되는지는 확인하지 못했습니다.</p>
+<p class="small">“확인”은 원본 기계어를 PC 에뮬레이터에서 시험 입력으로 실행한 결과입니다. 수준의 뜻은 <a href="../index.html#levels">검증 수준 읽는 법</a>에 있습니다.</p>
+</section>
+
+<section id="status">
+<h2>지금까지 알아낸 것과 아직 모르는 것</h2>
+<p class="takeaway">입력·상태 쪽과 픽셀 쓰기 쪽을 각각 원본 코드로 확인했습니다. 둘 사이의 연결과 표면 이후의 출력은 비어 있습니다.</p>
+<div class="table-wrap"><table>
+<caption>UI와 화면 자원 주제의 확인 상태 (K-3 Mark III, 비교 문서 포함)</caption>
+<thead><tr><th>단계</th><th>내용</th><th>상태</th><th>근거 문서</th></tr></thead>
+<tbody>
+<tr><th scope="row" rowspan="2">입력</th><td>방향 이벤트 네 가지의 이동 방향, 자격 없는 행 건너뛰기, 콜백 순서</td><td class="nowrap"><span class="badge ok">확인</span> <span class="badge model">모델</span></td><td><a href="colorspace-ui-input.html">③</a></td></tr>
+<tr><td>물리 버튼·다이얼·터치가 이벤트 번호가 되는 경로</td><td><span class="badge open">미확인</span></td><td><a href="colorspace-ui-input.html#limits">③</a></td></tr>
+<tr><th scope="row" rowspan="3">선택 상태</th><td>메뉴 항목이 화면 정의(descriptor 72번)를 고르고 행 두 개를 준비</td><td><span class="badge ok">확인</span></td><td><a href="colorspace-ui.html#route">②</a></td></tr>
+<tr><td>보류값과 확정·취소, 같은 값이면 기록 생략, observer와 속성 요청</td><td class="nowrap"><span class="badge ok">확인</span> <span class="badge model">모델</span></td><td><a href="colorspace-ui.html#write">②</a></td></tr>
+<tr><td>설정의 영구 저장과 전원 재시작 뒤의 값</td><td><span class="badge open">미확인</span></td><td><a href="colorspace-ui.html#limits">②</a></td></tr>
+<tr><th scope="row" rowspan="2">다시 그리기</th><td>포커스 변경이 메뉴 콜백을 거쳐 표시 갱신 함수 입구에 닿음</td><td class="nowrap"><span class="badge ok">확인</span> <span class="badge model">모델</span></td><td><a href="colorspace-ui-input.html#callback">③</a></td></tr>
+<tr><td>갱신 요청에서 행·글자 그리기까지의 실제 호출 순서</td><td><span class="badge open">미확인</span></td><td><a href="ui-viewport-producers.html">⑧</a></td></tr>
+<tr><th scope="row" rowspan="3">아이콘·문자열</th><td>ICONBIN의 저장 형식(아이콘 1,665개)과 회전 없는 복사 규칙</td><td><span class="badge ok">확인</span></td><td><a href="icon-resources.html#gui">④</a></td></tr>
+<tr><td>행·IconView에서 아이콘과 체크 표시의 표면 복사</td><td class="nowrap"><span class="badge ok">확인</span> <span class="badge model">모델</span></td><td><a href="colorspace-render.html">⑤</a></td></tr>
+<tr><td>두 문자열(sRGB·AdobeRGB)의 내용, Latin 글꼴 준비, sRGB 76×40 측정</td><td class="nowrap"><span class="badge ok">확인</span> <span class="badge model">모델</span></td><td><a href="colorspace-render.html">⑤</a></td></tr>
+<tr><th scope="row" rowspan="2">글자 픽셀</th><td>sRGB 글자의 76×40 비트맵과 부분 커버리지 705개의 32비트 쓰기</td><td class="nowrap"><span class="badge ok">확인</span> <span class="badge model">모델</span></td><td><a href="colorspace-text.html">⑥</a></td></tr>
+<tr><td>시작 시 팔레트 초기화 전체, 값 255의 단색 쓰기 분기</td><td><span class="badge open">미확인</span></td><td><a href="colorspace-text.html">⑥</a></td></tr>
+<tr><th scope="row" rowspan="3">표면·viewport</th><td>viewport가 부모·자식 클립으로 계산되어 텍스트 설정을 거쳐 전송 함수에 닿는 경로</td><td><span class="badge static">정적 분석</span></td><td><a href="ui-viewport-producers.html">⑧</a></td></tr>
+<tr><td>Canvas의 표면 포인터가 조건 네 개를 거쳐 StringView에 저장되는 경로, 표면 필드의 출처</td><td><span class="badge static">정적 분석</span></td><td><a href="ui-surface-producers.html">⑨</a></td></tr>
+<tr><td>최상위 부모의 클립과 실제 표면을 만드는 코드, 버퍼 주소·치수</td><td><span class="badge open">미확인</span></td><td><a href="ui-viewport-producers.html">⑧</a>, <a href="ui-surface-producers.html">⑨</a></td></tr>
+<tr><th scope="row">클리핑</th><td>일곱 좌표에서 교차 영역에만 쓰기, 높이 0에서도 배경 워드 하나를 읽음</td><td class="nowrap"><span class="badge ok">확인</span> <span class="badge model">모델</span></td><td><a href="colorspace-clip.html">⑦</a></td></tr>
+<tr><th scope="row">출력</th><td>화면 전체 합성, 색 채널 순서와 알파, LCD 출력</td><td><span class="badge open">미확인</span></td><td><a href="icon-resources.html#limits">④</a></td></tr>
+<tr><th scope="row" rowspan="3">다른 기종</th><td>Q7: 갱신 한 번에서 마커·두 글자 줄·버퍼 교체까지 원본 실행</td><td class="nowrap"><span class="badge ok">확인</span> <span class="badge model">모델</span></td><td><a href="ui-render-chain.html">⑩</a></td></tr>
+<tr><td>K-3 III의 32비트 커버리지 전송과 Q7의 팔레트 번호·Q16 축소 비교</td><td><span class="badge ok">확인</span></td><td><a href="cross-ui-text.html">⑪</a></td></tr>
+<tr><td>이식한 화면을 대상 기종에서 실행 (공통 동작은 아직 설계안)</td><td><span class="badge open">미확인</span></td><td><a href="ui-port-contract.html#contract">①</a></td></tr>
+</tbody></table></div>
+<p class="small">‘확인’과 ‘모델’이 함께 붙은 항목은 원본 코드를 실행했지만 화면 객체, 입력, 표면을 시험이 만들어 넣었다는 표시입니다. 비교 문서 ⑪의 ‘확인’은 공개된 실행 기록과 산술을 다시 계산한 결과입니다.</p>
+</section>
+
+<section id="order">
+<h2>읽는 순서</h2>
+<p>입력과 상태에서 시작해 아이콘, 글자, 경계, 출처 순으로 읽으면 앞 문서의 결과가 뒤 문서의 전제가 됩니다. 비교 문서는 K-3 Mark III 쪽을 읽은 뒤에 보면 차이가 잘 보입니다.</p>
+
+<h3>가. 출발점</h3>
+<ul class="cards">
+<li class="card"><span class="tag">①</span><h3><a href="ui-port-contract.html">UI 이식 설계</a></h3><p class="q">왜 색공간 화면을 골랐으며 세 기종은 같은 화면을 어떻게 다르게 처리하는가?</p><p>K-3 Mark III·K-3 II는 확정할 때 기록하고 Q7은 고르는 즉시 기록합니다. 이식은 아직 시작하지 않았습니다.</p></li>
+</ul>
+
+<h3>나. 입력과 선택 상태</h3>
+<ul class="cards">
+<li class="card"><span class="tag">②</span><h3><a href="colorspace-ui.html">색공간 화면: 선택·확정·취소</a></h3><p class="q">값을 고르고 확정하면 설정 메모리에 무슨 일이 일어나는가?</p><p>고르는 동안에는 보류값만 바뀝니다. 확정할 때 설정 함수로 넘어갑니다. 16개 사례입니다.</p></li>
+<li class="card"><span class="tag">③</span><h3><a href="colorspace-ui-input.html">색공간 화면: 방향 입력·포커스</a></h3><p class="q">방향 입력은 포커스를 어떻게 옮기는가?</p><p>네 이벤트 중 둘은 끝에서 순환하고 둘은 멈춥니다. 포커스 변경은 콜백으로 표시 갱신 입구까지 갑니다. 50개 사례입니다.</p></li>
+</ul>
+
+<h3>다. 아이콘과 글자를 픽셀로</h3>
+<ul class="cards">
+<li class="card"><span class="tag">④</span><h3><a href="icon-resources.html">ICONBIN 아이콘 자원</a></h3><p class="q">아이콘은 어디에 어떤 모양으로 있으며 어떻게 화면 버퍼로 복사되는가?</p><p>목록은 RTOS에, 32비트 픽셀은 ICONBIN에 있습니다. 회전 없는 복사는 키 값과 같은 픽셀만 건너뜁니다.</p></li>
+<li class="card"><span class="tag">⑤</span><h3><a href="colorspace-render.html">색공간 행의 아이콘과 글자 측정</a></h3><p class="q">색공간 행은 어떤 아이콘과 문자열을 고르며 글자 크기는 어떻게 정해지는가?</p><p>행·IconView의 아이콘 복사와 Latin 글꼴 준비를 원본 코드로 실행했습니다. sRGB의 배치 크기는 76×40입니다.</p></li>
+<li class="card"><span class="tag">⑥</span><h3><a href="colorspace-text.html">색공간 sRGB 글자의 래스터와 픽셀 전송</a></h3><p class="q">글자 비트맵은 어떻게 표면의 32비트 값이 되는가?</p><p>부분 커버리지 705개가 각각 한 워드를 썼습니다. 147,456바이트 표면 전체가 독립 계산과 같았습니다.</p></li>
+<li class="card"><span class="tag">⑦</span><h3><a href="colorspace-clip.html">sRGB 글자 전송의 화면 경계</a></h3><p class="q">글자가 표면 가장자리에 걸치면 무엇이 잘리는가?</p><p>일곱 좌표 모두 교차 영역에만 썼습니다. 높이가 0인 경우에도 배경 워드 하나는 읽었습니다.</p></li>
+</ul>
+
+<h3>라. 사각형과 표면은 어디서 오는가</h3>
+<ul class="cards">
+<li class="card"><span class="tag">⑧</span><h3><a href="ui-viewport-producers.html">글자 viewport가 전송 함수에 닿는 경로</a></h3><p class="q">전송에 쓰인 viewport 사각형은 펌웨어 안에서 어디서 계산되는가?</p><p>부모·자식 클립의 교차가 텍스트 설정을 거쳐 전송 함수로 갑니다. 정적 분석이며 최상위 생산자는 미확인입니다.</p></li>
+<li class="card"><span class="tag">⑨</span><h3><a href="ui-surface-producers.html">StringView가 그릴 표면을 받는 경로</a></h3><p class="q">글자를 찍을 메모리 정보는 누가 넘겨주는가?</p><p>Canvas의 표면 포인터가 조건 네 개를 거쳐 StringView에 저장됩니다. 정적 분석입니다.</p></li>
+</ul>
+
+<h3>마. 다른 기종과 비교</h3>
+<ul class="cards">
+<li class="card"><span class="tag">⑩</span><h3><a href="ui-render-chain.html">Q7 화면 갱신 한 번에서 픽셀까지</a></h3><p class="q">Q7에서는 갱신 요청부터 픽셀까지 한 번에 이어지는가?</p><p>마커와 두 글자 줄이 같은 8비트 버퍼에 쓰였습니다. 버퍼 교체 뒤 명령 하나 앞에서 멈췄습니다.</p></li>
+<li class="card"><span class="tag">⑪</span><h3><a href="cross-ui-text.html">K-3 III와 Q7의 sRGB 글자 그리기 비교</a></h3><p class="q">같은 “sRGB” 글자를 두 기종은 어떻게 다르게 그리는가?</p><p>K-3 III는 32비트 색 값을 계산하고 Q7은 팔레트 번호를 씁니다. 같은 값 1이 서로 다른 픽셀을 뜻합니다.</p></li>
+</ul>
+<p>Q7 쪽 단계별 결과는 <a href="https://yunhyok.github.io/pentax-q7-firmware-analysis/guide-ui.html">Q7 화면·글꼴 안내</a>에, K-3 II 쪽은 <a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/analysis/color-ui.html">K-3 II 색공간 메뉴와 표시</a>에 있습니다.</p>
+</section>
+
+<section id="refs">
+<h2>근거 파일과 참고 자료</h2>
+<p>문서마다 근거 JSON과 검증 도구가 따로 있습니다. 아래는 주제 전체에서 쓰는 자료입니다.</p>
+<ul class="refs">
+<li><a href="ui-port-contract.json">ui-port-contract.json</a> — 설계를 처음 정리한 때의 접점별 상태와 출처 해시</li>
+<li><a href="research-program.json">research-program.json</a> — 세 기종 UI 목표의 요약과 관문</li>
+<li><a href="../glossary.html">용어집</a> — 위젯, 포커스, 보류값, 글리프, 프레임 버퍼, 스트라이드</li>
+<li>외부 자료: <a href="https://learn.microsoft.com/en-us/windows/win32/gdi/clipping">Microsoft Learn: Clipping (Windows GDI)</a> · <a href="https://www.kernel.org/doc/html/latest/fb/framebuffer.html">Linux 커널 문서: The Frame Buffer Device</a> · <a href="https://learn.microsoft.com/en-us/windows/win32/medfound/image-stride">Microsoft Learn: Image Stride</a> · <a href="https://www.w3.org/TR/png-3/">W3C PNG 규격</a> · <a href="https://www.ricoh-imaging.co.jp/english/support/man-pdf/k-3-3.pdf">PENTAX K-3 Mark III 사용설명서</a></li>
+</ul>
+</section>
+
 </main>
 </div>
 <!-- chrome:bottom -->
