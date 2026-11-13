@@ -11,7 +11,7 @@
       "name": "K-3 Mark III",
       "firmware_version": "2.20",
       "firmware_sha256": "3c9d466b8160689867af2f58ff2cf0bf3363bc3b42daff43685a33171b91eb1a",
-      "commit": "1168039026d5bc5763ea62ff52b26b6f3a73a28b",
+      "commit": "9fce1b91ccbbdb1a46075330f03f772cb9289cee",
       "digest_source": "iii-input",
       "digest_field": "input_sha256",
       "report_source": "iii-integration"
@@ -21,7 +21,7 @@
       "name": "K-3 II",
       "firmware_version": "1.12",
       "firmware_sha256": "a33485f351019960192891ef69ddc5d4904ef9e298671d9d9955679e4c901a9a",
-      "commit": "ed0f6f0ff0fddd91f25068efbe940d035a809598",
+      "commit": "2c60fc840ceeec356aaf5b9dc723afefa13da281",
       "digest_source": "ii-input",
       "digest_field": "firmware_sha256",
       "report_source": "ii-rebuild"
@@ -31,7 +31,7 @@
       "name": "Q7",
       "firmware_version": "1.01",
       "firmware_sha256": "8a928b574623c28624127501526d8496a98a42eac3d843def6d3b5ceb074ff3b",
-      "commit": "2576368f107672163af75437c020530c420a96dd",
+      "commit": "77dfa9db8b9a93ed1e413a157ccba8595141fd24",
       "digest_source": "q-input",
       "digest_field": "input_sha256",
       "report_source": "q-implementation"
@@ -572,6 +572,46 @@
       "camera": "k3iii",
       "path": "analysis/af-mode1-control.html",
       "label": "Joint 모드1 요청·리셋 후속·피드백 계산"
+    },
+    "iii-tone-coordinates": {
+      "camera": "k3iii",
+      "path": "analysis/lightroom-tone-coordinates.html",
+      "label": "같은 Lightroom 버전에서의 톤·출력 좌표 대조"
+    },
+    "iii-af-producers": {
+      "camera": "k3iii",
+      "path": "analysis/af-feedback-producers.html",
+      "label": "PafPulse 기준값의 쓰기와 별도 요청 3 계산"
+    },
+    "iii-colorspace-render": {
+      "camera": "k3iii",
+      "path": "analysis/colorspace-render.html",
+      "label": "색공간 행·아이콘·글꼴 준비·sRGB 배치 측정"
+    },
+    "q-nand-filex": {
+      "camera": "q7",
+      "path": "reports/nand-filex.html",
+      "label": "AppFb의 FileX 인수와 NAND 상태 경계"
+    },
+    "ii-tone-provenance": {
+      "camera": "k3ii",
+      "path": "analysis/tone-provenance.html",
+      "label": "톤 문맥과 곡선 생산자의 연결"
+    },
+    "iii-studio-baseline": {
+      "camera": "k3iii",
+      "path": "analysis/lightroom-studio-baseline.html",
+      "label": "K-3 III·Q7 Bright 스튜디오 색차"
+    },
+    "iii-allocator-replay": {
+      "camera": "k3iii",
+      "path": "analysis/allocator-replay/report.html",
+      "label": "설정에서 첫 task 스택까지의 할당 경로"
+    },
+    "iii-allocator-data": {
+      "camera": "k3iii",
+      "path": "analysis/allocator-replay/verified.json",
+      "label": "할당기 원본 실행 7건과 고정 경로 검증 5건"
     }
   },
   "tracks": [
@@ -582,8 +622,8 @@
       "cards": {
         "k3iii": {
           "state": "함수 교체 후보 · 로더와 선택값 기록 경로",
-          "finding": "무변경 재포장과 Q13 함수 교체 후보를 검증했습니다. 원본 ROMFS 로더와 INITFS 복사를 더 연결했으며, M0 전달 경로에서는 공급한 선택값 1이 BOOT의 bank 1 인수까지 이어졌습니다. 별도 업데이트 완료 경로는 자원 표를 먼저 기록하고 헤더 위치를 기록합니다. 두 시험의 입력과 진입점은 다르므로 실제 업데이트와 부팅이 같은 bank를 선택한다는 증거는 아닙니다.",
-          "next": "선택값과 writer bank의 실제 생산자, 할당·초기화 순서를 추적합니다. Boot ROM 인증, 수정 이미지의 실기 수용·부팅, 독립 복구는 미검증입니다.",
+          "finding": "무변경 재포장과 Q13 함수 교체 후보를 검증했습니다. 원본 ROMFS 로더와 INITFS 복사를 더 연결했으며, M0 전달 경로에서는 공급한 선택값 1이 BOOT의 bank 1 인수까지 이어졌습니다. 별도 업데이트 완료 경로는 자원 표를 먼저 기록하고 헤더 위치를 기록합니다. 두 시험의 입력과 진입점은 다르므로 실제 업데이트와 부팅이 같은 bank를 선택한다는 증거는 아닙니다. 별도 진입을 포함한 원본 할당기 재생은 task 테이블을 만들었고, 네 대조에서 첫 task의 스택을 확보한 뒤 MPIDR 읽기 직전에 멈췄습니다.",
+          "next": "선택값과 writer bank의 실제 생산자, 할당·초기화 순서를 추적합니다. Boot ROM 인증, 수정 이미지의 실기 수용·부팅, 독립 복구는 미검증입니다. 이후 잠금 획득과 task 생성 완료도 별도 검증이 필요합니다.",
           "sources": [
             "iii-package",
             "iii-integration",
@@ -602,7 +642,9 @@
             "iii-romfs-data",
             "iii-loader",
             "iii-initfs",
-            "iii-selector-policy"
+            "iii-selector-policy",
+            "iii-allocator-replay",
+            "iii-allocator-data"
           ]
         },
         "k3ii": {
@@ -623,9 +665,9 @@
           ]
         },
         "q7": {
-          "state": "Q13 교체 재포장 · NAND 컨텍스트와 매체 발견",
-          "finding": "압축 448블록의 재포장과 Q13 교체 ELF를 대조했습니다. MAIN과 E01의 헤더·읽기 경로에 이어 컨텍스트 생성과 매체 정보 발견을 별도 원본 실행으로 재현했습니다. 전자는 FileX 인수를 바꾼 시험이며, 후자는 독립 AppFcuMediaInfoInit 진입에 합성 ID·spare·헤더 응답을 공급했습니다. 두 결과를 실제 부팅 성공으로 연결하지 않았습니다.",
-          "next": "원본 AppFb 인수와 앞선 매체 발견 상태를 연결할 수 있는 조건을 추적합니다. 미확인 헤더 값·선행 FcuInit 상태, 물리 NAND 기록·복구·부팅과 인증 조건이 남아 있습니다.",
+          "state": "Q13 교체 재포장 · AppFb의 NAND 응답 경계",
+          "finding": "압축 448블록의 재포장과 Q13 교체 ELF를 대조했습니다. MAIN·E01의 헤더와 읽기 경로를 확인한 뒤, 인수를 바꾼 FileX 컨텍스트 등록과 합성 응답을 공급한 매체 발견을 별도로 실행했습니다. 후속 AppFb 재생에서 원본은 FileX의 일곱 번째 인수를 1로 구성했고, 합성 매체 상태에서 새 NAND op 6의 상태 분기 직전에 멈췄습니다.",
+          "next": "op 6 응답과 spare의 실제 출처, 선행 FcuInit과 헤더 상태를 추적합니다. FileX 초기화 완료와 물리 NAND 기록·복구·부팅 및 인증 조건은 미검증입니다.",
           "sources": [
             "q-implementation",
             "q-rebuild",
@@ -639,7 +681,8 @@
             "q-nand-header",
             "q-nand-data",
             "q-boot-read",
-            "q-nand-context"
+            "q-nand-context",
+            "q-nand-filex"
           ]
         }
       },
@@ -683,25 +726,26 @@
     {
       "id": "color",
       "title": "Lightroom RAW 색 프로파일",
-      "dependency": "공식 펌웨어의 RAW+JPEG 촬영 쌍과 Lightroom으로 검증할 수 있어 수정 펌웨어 시험과 병행합니다.",
+      "dependency": "공식 펌웨어의 RAW+JPEG 촬영 쌍과 Lightroom으로 검증할 수 있어 수정 펌웨어 시험과 병행합니다. Bright 스튜디오 색차는 기종당 한 장면의 정합 통과 영역에서 두 현상 결과를 비교한 값입니다. 절대 색 정확도와 기종 간 우열은 확인하지 않았습니다.",
       "cards": {
         "k3iii": {
-          "state": "색 모드별 설정 · Lightroom 시험 DCP 적용",
-          "finding": "원본 ARM에서 제어값을 고정해 Natural에서 Portrait로 바꾸자 행렬은 달라지고 감마 곡선은 유지됐습니다. 펌웨어 1.01의 DNG #4678에서는 시험 DCP를 Lightroom Classic 15.6에서 선택해 6,192×4,128 ProPhoto RGB 16비트 TIFF를 내보냈습니다. 별도 대조에서는 세 기종의 TIFF 6개 모두에서 시험 DCP로 재계산한 전체 프로파일 지문이 XMP 값과 일치했습니다.",
-          "next": "내장 Natural JPEG와 색차를 대조하고, 분석 대상 2.20의 독립 촬영으로 모드별 실제 픽셀 변화를 확인합니다.",
+          "state": "Lightroom 시험 DCP 적용 · Bright 스튜디오 색차",
+          "finding": "원본 ARM에서 제어값을 고정해 Natural을 Portrait로 바꾸자 행렬은 달라지고 감마 곡선은 유지됐습니다. 별도 시험에서 펌웨어 1.01의 DNG #4678에 DCP를 적용해 Lightroom Classic 15.6에서 6,192×4,128 ProPhoto RGB 16비트 TIFF를 얻었습니다. 세 기종의 별도 TIFF 6개에서 재계산한 전체 DCP 지문도 XMP와 일치했습니다. 스튜디오 시험에서는 #4678의 행렬로 펌웨어 1.10 PEF 한 장을 현상했습니다. 정합을 통과한 59영역, 87,350픽셀에서 내장 Bright JPEG 대비 ΔE00 중앙값과 90백분위수는 2.065와 5.052였습니다.",
+          "next": "이 색차는 한 장면의 선별 영역에 한정됩니다. 분석 대상 펌웨어 2.20의 독립 촬영으로 Bright와 Natural을 따로 검증합니다.",
           "sources": [
             "iii-color",
             "iii-lightroom",
             "iii-raw",
             "iii-color-mode",
             "iii-model-exports",
-            "iii-profile-fingerprints"
+            "iii-profile-fingerprints",
+            "iii-studio-baseline"
           ]
         },
         "k3ii": {
-          "state": "두 RAW 장면 · 실제 톤 후보의 한계 측정",
-          "finding": "차트 #1376에서 고정한 톤을 독립 장면 #1363에 재학습 없이 적용했습니다. 실제 Lightroom 톤 합성 DCP는 두 RAW에서 오프라인 목표 대비 24영역 평균 오차를 3.037→0.160, 4.448→0.129로 줄였지만, 차트 주황 패치 ΔE00 0.892가 허용값 0.75를 넘었습니다. 상대 개선과 납품 허용값은 별도 판정이며 후보는 실험용입니다.",
-          "next": "남은 오차가 입력 좌표와 처리 단계에 의존하는지 같은 엔진·고정 설정으로 분리합니다. 복수 조명·동일 촬영의 룩별 JPEG와 분석 대상 펌웨어 1.12 자료에서 일반화를 검증해야 합니다.",
+          "state": "두 RAW 장면 · 톤 허용값과 출력 좌표 대조",
+          "finding": "차트 #1376에서 고정한 톤을 독립 장면 #1363에 재학습 없이 적용했습니다. 합성 톤 DCP는 오프라인 목표 대비 24영역 평균 오차를 3.037→0.160, 4.448→0.129로 줄였지만 차트 주황 패치 ΔE00 0.892는 허용값 0.75를 넘었습니다. 같은 #1376의 Lightroom 16.0에서 톤 프로파일을 바꾸자 두 패치의 파란 채널 순서가 뒤집혔고, Adobe RGB 출력을 ProPhoto 좌표로 되돌려도 역전이 남았습니다. 펌웨어 1.12에서는 원본 문맥 복사, 공유 포인터 전달, 톤 정수 계산과 곡선 생성을 나눠 재현했습니다. 실촬영의 작업 순서와 최종 픽셀은 미확인입니다.",
+          "next": "채널 관계를 반영한 후보를 고정해 펌웨어 1.12의 복수 조명·룩별 독립 촬영 쌍에서 평가합니다. 관측된 역전은 출력 좌표에 공통 단조 곡선을 적용하는 모델의 반례입니다. Lightroom 내부 작업 좌표와 처리 순서는 아직 식별하지 못했습니다. 톤 합성 DCP는 시험 후보로 유지합니다.",
           "sources": [
             "iii-color-test",
             "iii-raw",
@@ -719,20 +763,23 @@
             "iii-tone-residual",
             "iii-tone-residual-data",
             "iii-scene-transfer",
-            "iii-composed-tone"
+            "iii-composed-tone",
+            "iii-tone-coordinates",
+            "ii-tone-provenance"
           ]
         },
         "q7": {
-          "state": "색 설정·HDR 경로 · Lightroom 시험 DCP 적용",
-          "finding": "색 행렬이 레지스터에 전달되는 조건과 HDR 최종 패스를 추적했습니다. 펌웨어 1.00의 DNG #1760에서는 시험 DCP를 Lightroom Classic 15.6에서 선택해 4,000×2,664 ProPhoto RGB 16비트 TIFF를 내보냈습니다. XMP의 프로파일 이름과 TIFF 픽셀을 확인했습니다.",
-          "next": "내장 Bright JPEG와의 색차를 측정하고 분석 대상 1.01의 독립 촬영으로 확인합니다. 일반 정지화상의 색 처리와 HDR 패스도 구분합니다.",
+          "state": "색 설정·HDR 경로 · Bright 국소 색차",
+          "finding": "색 행렬이 레지스터에 전달되는 조건과 HDR 최종 패스를 추적했습니다. 별도 시험에서는 펌웨어 1.00의 DNG #1760에 시험 DCP를 적용해 Lightroom Classic 15.6에서 4,000×2,664 ProPhoto RGB 16비트 TIFF를 내보냈고, XMP 프로파일 이름과 픽셀을 확인했습니다. 펌웨어 1.00의 스튜디오 DNG 한 장은 Adobe 렌즈 보정을 켜도 전역 정합 기준을 통과하지 못했습니다. 보정 켬 출력의 국소 정합 40영역, 60,197픽셀에서 내장 Bright JPEG 대비 ΔE00 중앙값과 90백분위수는 2.177과 4.764였습니다. 보정 끔 출력은 국소 정합도 통과하지 못해 색차를 계산하지 않았습니다.",
+          "next": "분석 대상 펌웨어 1.01의 독립 촬영에서 정지화상과 HDR을 나눠 확인합니다. Adobe 보정과 카메라 보정의 동등성은 미확인입니다.",
           "sources": [
             "q-route",
             "q-color",
             "iii-raw",
             "iii-lightroom",
             "q-numeric",
-            "iii-model-exports"
+            "iii-model-exports",
+            "iii-studio-baseline"
           ]
         }
       },
@@ -765,9 +812,9 @@
       "dependency": "현재는 향후 변경에 필요한 알고리즘과 렌즈 제어를 오프라인에서 연구합니다. 특정 렌즈용 패치와 실기 구동 시험은 후속 단계입니다.",
       "cards": {
         "k3iii": {
-          "state": "Joint 요청 분기 · 피드백 수치와 별도 MMIO 경계",
-          "finding": "Joint 모드 선택과 ReloadTimer·Udc 연결에 이어 요청 0–9 분기, 극성 인자와 요청3의 누적·조회 계산을 원본 ARM으로 재현했습니다. 리셋 후속, 요청 처리, 피드백 수치 입력은 별도 진입이며 하드웨어 읽기 전에 멈췄습니다. 요청3의 보정값 합산과 요청9·0xff의 직접 대입도 구분했습니다.",
-          "next": "Pulse 기준값과 PafMotor 보정 필드의 생산자·객체 수명을 추적합니다. 실제 피드백 값·물리 단위, 스크루·렌즈 내 모터 대응과 광학적 초점은 이후 검증합니다.",
+          "state": "Joint 요청 · PafPulse 기준값 생산과 피드백",
+          "finding": "Joint 모드 선택과 ReloadTimer·Udc 연결, 요청 0–9 분기와 극성 인자를 원본 ARM에서 대조했습니다. 이어 두 쓰기 경로가 PafPulse+0xa88을 갱신하고 별도로 진입한 요청 3 계산이 같은 객체에서 새 값을 읽는 것을 확인했습니다. 실제 하드웨어 읽기 없이 피드백 수치를 공급했고, 요청 9·0xff의 직접 대입은 요청 3의 보정값 합산과 구분했습니다.",
+          "next": "PafMotor+0x56/+0x68의 비영값과 렌즈별 보정값의 출처를 추적합니다. 실제 피드백·물리 단위, 스크루·렌즈 내 모터 대응과 광학적 초점은 이후 검증합니다.",
           "sources": [
             "iii-af",
             "iii-kernels",
@@ -780,7 +827,8 @@
             "iii-af-8902",
             "iii-joint",
             "iii-af-binding",
-            "iii-af-mode1"
+            "iii-af-mode1",
+            "iii-af-producers"
           ]
         },
         "k3ii": {
@@ -834,9 +882,9 @@
       "dependency": "첫 이식 단위는 세 기종에 공통인 촬영 색공간 선택 화면입니다. PC 화면 모형과 대상 기종의 렌더링·입력 연결은 단계별로 검증합니다.",
       "cards": {
         "k3iii": {
-          "state": "색공간 위젯 · 업데이트 완료 UI",
-          "finding": "색공간 위젯의 선택·확정·취소, 방향 입력과 포커스를 원본 ARM에서 대조했습니다. 업데이트 완료 UI의 타이머 서비스와 하위 커널을 분리해, 합성 상태에서 설정·기한 큐 삽입·만료·지연 콜백 구간을 각각 실행했습니다. 두 시각 읽기 함수는 합성 카운터로 비교했습니다. 하위 산술은 6,754회 실행해 32비트 중간값의 순환을 확인했습니다.",
-          "next": "물리 입력과 문자·포커스 그리기를 연결합니다. 실제 IRQ·이벤트 전달, 카운터 범위와 시간 단위, LCD와 재부팅은 확인이 남아 있습니다.",
+          "state": "색공간 입력 · 아이콘 복사와 sRGB 배치 측정",
+          "finding": "색공간 위젯의 선택·확정·취소와 방향 입력·포커스를 원본 ARM에서 대조했습니다. 별도 진입으로 행의 아이콘과 체크를 시험 표면에 복사하고, Latin 글꼴을 준비해 sRGB 배치 크기 76×40을 얻었습니다. 업데이트 완료 UI의 타이머는 합성 상태에서 설정·큐 삽입·만료·지연 콜백을 분리해 실행했습니다. 두 시각 읽기 함수와 하위 산술 6,754회로 카운터 입력과 32비트 중간값 순환을 대조했습니다.",
+          "next": "StringView의 글자 그리기와 대상 기종의 화면·입력 연결을 검증합니다. 76×40은 배치 측정값이며 글자 픽셀은 미검증입니다. 실제 IRQ·이벤트 전달, 카운터 범위와 시간 단위, LCD와 재부팅도 확인해야 합니다.",
           "sources": [
             "iii-icon",
             "iii-ui",
@@ -850,7 +898,8 @@
             "iii-subtick",
             "iii-timer-irq",
             "iii-clock-readers",
-            "iii-timer-insertion"
+            "iii-timer-insertion",
+            "iii-colorspace-render"
           ]
         },
         "k3ii": {
@@ -911,7 +960,7 @@
     ],
     [
       "색 검증 샘플",
-      "세 기종에서 실촬영 DNG와 내장 JPEG를 확보했고 시험 DCP를 적용한 Lightroom TIFF도 내보냈습니다. K-3 II 한 장에서 색차와 톤·LookTable을 비교했습니다. 분석 대상 버전에서 조명·노출·모드를 달리한 촬영 쌍이 더 필요합니다."
+      "세 기종에서 실촬영 DNG와 내장 JPEG를 확보했고 시험 DCP를 적용한 Lightroom TIFF도 내보냈습니다. K-3 II는 차트에서 톤·LookTable과 색차를 비교했고, 독립 장면에서도 톤 오차를 측정했습니다. 분석 대상 버전에서 조명·노출·모드를 달리한 촬영 쌍이 더 필요합니다."
     ],
     [
       "AF 렌즈와 평가 조건",
