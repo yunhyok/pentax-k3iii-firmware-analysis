@@ -1,0 +1,269 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>프로파일 생성 프로그램 타당성 검토 — PENTAX K-3 Mark III 펌웨어 연구</title>
+<meta name="description" content="K-3 Mark III의 색 계산을 PC에서 따라 해 Lightroom용 프로파일을 만드는 프로그램을 만들 수 있는지 검토합니다. 확보한 재료, 원본 코드와의 대조 결과, 프로파일 형식의 한계, 남은 작업.">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-camera="k3iii">
+<!-- chrome:top -->
+<a class="skip" href="#main">본문 바로가기</a>
+<div class="topbar"><div class="topbar-in"><a class="brand" href="../index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="../index.html" aria-current="true">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="https://yunhyok.github.io/pentax-q7-firmware-analysis/">Q7</a></div><nav class="topnav" aria-label="주제"><a href="../index.html">개요</a><a href="guide-boot.html">부팅·저장소</a><a href="guide-update.html">업데이트</a><a href="guide-rebuild.html">재구축</a><a href="guide-rtos.html">명령·셸</a><a href="guide-color.html">색 처리</a><a href="color-profiles.html" aria-current="true">프로파일</a><a href="guide-lightroom.html">Lightroom</a><a href="guide-af.html">AF</a><a href="guide-ui.html">UI</a></nav></div></div>
+<nav class="crumbs" aria-label="현재 위치"><ol><li><a href="../index.html">PENTAX K-3 Mark III</a></li><li><a href="color-profiles.html">K-3 Mark III 색 프로파일</a></li><li aria-current="page">프로파일 생성 프로그램 타당성 검토</li></ol></nav>
+<!-- /chrome:top -->
+<header class="page-head">
+<p class="eyebrow">색 프로파일 · 검토</p>
+<h1>프로파일 생성 프로그램 타당성 검토</h1>
+<p class="lead">카메라의 색 계산을 PC에서 그대로 따라 해 Lightroom용 프로파일을 만들어 주는 프로그램을 만들 수 있는지 검토했습니다. 필요한 재료를 어디까지 확보했는지, 프로파일 형식으로 담지 못하는 것이 무엇인지, 쓰기 편한 프로그램이 되려면 무엇이 더 필요한지 정리합니다.</p>
+</header>
+<div class="layout">
+<!-- chrome:toc -->
+<nav class="toc" aria-label="이 문서의 목차"><h2 data-toc="no">이 문서에서</h2><ol><li><a href="#question">무엇을 검토했는가</a></li><li><a href="#have">필요한 것과 확보한 것</a></li><li><a href="#engine">엔진이 원본 코드와 같은가</a></li><li><a href="#now">지금 만들 수 있는 프로파일</a></li><li><a href="#cannot">프로파일에 담지 못하는 것</a></li><li><a href="#program">쓰기 편한 프로그램으로 만들려면</a></li><li><a href="#risks">위험과 한계</a></li><li><a href="#next">권고와 다음 단계</a></li><li><a href="#reproduce">재현 방법</a></li><li><a href="#refs">근거 파일과 참고 자료</a></li></ol></nav>
+<!-- /chrome:toc -->
+<main class="doc" id="main">
+
+<section class="summary">
+<h2 data-toc="no">핵심 요약</h2>
+<ul>
+<li><strong>만들 수 있습니다.</strong> 계산 엔진과 명령줄 프로그램은 이미 저장소에 있고 펌웨어 없이 돕니다. 필요한 것은 공개한 색 표 파일과 Python, numpy뿐입니다.</li>
+<li>엔진은 카메라의 원본 코드와 같은 값을 냅니다. 원본 코드를 에뮬레이터에서 실행한 결과와 <strong>10,087가지 경우</strong>를 비교했고 다른 값이 하나도 없었습니다.</li>
+<li>지금 만들 수 있는 프로파일은 세 가지입니다. Custom Image 16종에 설정 여섯 개를 넣은 프로파일, RAW 파일에 기록된 설정을 읽어 그 사진에 맞춘 프로파일, 모드 행렬을 직접 만든 것으로 바꾼 프로파일입니다.</li>
+<li>프로파일 형식 때문에 담지 못하는 것이 있습니다. 조색, Cross Processing, Gold, Auto Select가 그렇습니다. 그림자 보정이나 샤프니스처럼 색 프로파일 밖에 있는 처리도 빠집니다.</li>
+<li><strong>가장 큰 공백은 Lightroom에서 확인하지 못했다는 점입니다.</strong> 카메라 JPEG과 비교한 모드도 Natural과 Bright 둘뿐입니다. 프로그램을 만드는 일보다 이 확인이 먼저입니다.</li>
+</ul>
+</section>
+
+<div class="scope">
+<div class="ok"><h3><span class="badge ok">확인</span> 실행하거나 계산해 확인</h3>
+<ul>
+<li>계산 엔진의 색 행렬, YC 행렬, 조색 오프셋, 감마 곡선이 원본 코드의 결과와 10,087가지 경우에서 일치</li>
+<li>엔진으로 만든 프로파일 16개와 펌웨어를 직접 실행해 만든 16개가 바이트 단위로 같음</li>
+<li>RAW 두 장에서 Custom Image와 설정을 읽어 프로파일을 만드는 경로</li>
+</ul></div>
+<div class="static"><h3><span class="badge static">정적 분석</span> 코드를 읽어 판단</h3>
+<ul>
+<li>설정 기록(메이커노트 태그 0x0247)의 값 순서. 설정을 색 계산 입력으로 옮기는 코드에서 읽음</li>
+<li>출고 설정 표의 구조</li>
+</ul></div>
+<div class="model"><h3><span class="badge model">모델</span> 연구자가 정한 것</h3>
+<ul>
+<li>출고 설정 표의 각 줄을 Custom Image에 대응시킨 것(간접 근거 셋)</li>
+<li>프로파일의 LookTable을 계산하는 방법</li>
+</ul></div>
+<div class="open"><h3><span class="badge open">미확인</span> 하지 않은 것</h3>
+<ul>
+<li>Lightroom·Camera Raw에서의 실제 결과</li>
+<li>JPEG과 비교하지 않은 14개 모드, 설정을 바꾼 사진</li>
+<li>웹 페이지나 앱 형태의 프로그램, 3D LUT를 담는 확장 프로파일</li>
+</ul></div>
+</div>
+
+<section id="question">
+<h2>무엇을 검토했는가</h2>
+<p class="takeaway">프로그램은 두 부분으로 나뉩니다. 카메라의 색 계산을 따라 하는 부분과 그 결과를 프로파일로 옮기는 부분입니다.</p>
+<p>카메라는 Custom Image와 설정값을 받아 색 행렬, 감마 곡선, YC 변환 행렬 같은 숫자를 계산하고 이 숫자를 영상 처리 회로에 넣습니다. 이 계산을 PC에서 똑같이 할 수 있으면 카메라가 어떤 설정에서 어떤 색을 내는지 알 수 있습니다. 그다음에는 그 색을 Lightroom의 카메라 프로파일(DCP)이 가진 태그로 옮겨야 합니다.</p>
+
+<figure class="diagram">
+<figcaption>프로파일을 만드는 경로와 각 단계의 확인 방법</figcaption>
+<div class="dg-scroll">
+<svg class="dg" viewBox="0 0 800 306" role="img" aria-labelledby="dg-flow-title dg-flow-desc">
+<title id="dg-flow-title">색 표에서 프로파일 파일까지의 경로와 단계별 확인</title>
+<desc id="dg-flow-desc">윗줄은 입력 세 가지입니다. Custom Image와 설정, RAW에 기록된 설정, 직접 만든 모드 행렬이 모두 계산 엔진으로 들어갑니다. 가운데 줄은 왼쪽에서 오른쪽으로 공개한 색 표, 계산 엔진, 색 모델, 프로파일 조립, DCP 파일 순서로 이어집니다. 아랫줄은 확인 방법입니다. 계산 엔진은 원본 코드와 10,087가지 경우를 대조했고, 색 모델은 카메라 JPEG 두 장과 비교했고, 프로파일 조립은 Adobe SDK 루틴과 대조했습니다. DCP 파일을 Lightroom에서 실행하는 확인은 하지 않았습니다.</desc>
+<defs><marker id="dg-flow-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0 0L10 5L0 10z"/></marker></defs>
+
+<rect class="b" x="8" y="12" width="148" height="46" rx="8"/>
+<text class="t" x="18" y="32">Custom Image</text>
+<text class="s" x="18" y="49">설정 여섯 개</text>
+<rect class="b" x="168" y="12" width="148" height="46" rx="8"/>
+<text class="t" x="178" y="32">RAW의 설정 기록</text>
+<text class="s" x="178" y="49">태그 0x0247</text>
+<rect class="b" x="328" y="12" width="148" height="46" rx="8"/>
+<text class="t" x="338" y="32">직접 만든 행렬</text>
+<text class="s" x="338" y="49">모드 행렬 자리에</text>
+<path class="e" d="M82 58V80H210V106" marker-end="url(#dg-flow-ah)"/>
+<path class="e" d="M242 58V106" marker-end="url(#dg-flow-ah)"/>
+<path class="e" d="M402 58V80H274V106" marker-end="url(#dg-flow-ah)"/>
+
+<rect class="b ok" x="8" y="108" width="144" height="60" rx="8"/>
+<text class="t" x="18" y="132">공개한 색 표</text>
+<text class="s" x="18" y="151">행렬·곡선·출고 설정</text>
+<rect class="b key" x="168" y="108" width="144" height="60" rx="8"/>
+<text class="t" x="178" y="132">계산 엔진</text>
+<text class="s" x="178" y="151">펌웨어의 정수 계산</text>
+<rect class="b key" x="328" y="108" width="144" height="60" rx="8"/>
+<text class="t" x="338" y="132">색 모델</text>
+<text class="s" x="338" y="151">카메라 JPEG의 색</text>
+<rect class="b key" x="488" y="108" width="144" height="60" rx="8"/>
+<text class="t" x="498" y="132">프로파일 조립</text>
+<text class="s" x="498" y="151">행렬·곡선·LookTable</text>
+<rect class="b ok" x="648" y="108" width="144" height="60" rx="8"/>
+<text class="t" x="658" y="132">DCP 파일</text>
+<text class="s" x="658" y="151">Lightroom이 읽음</text>
+<path class="e" d="M152 138H166" marker-end="url(#dg-flow-ah)"/>
+<path class="e" d="M312 138H326" marker-end="url(#dg-flow-ah)"/>
+<path class="e" d="M472 138H486" marker-end="url(#dg-flow-ah)"/>
+<path class="e" d="M632 138H646" marker-end="url(#dg-flow-ah)"/>
+
+<text class="h" x="8" y="222">확인 방법</text>
+<rect class="b ok" x="168" y="236" width="144" height="56" rx="8"/>
+<text class="t" x="178" y="258">원본 코드와 대조</text>
+<text class="s" x="178" y="277">10,087가지 일치</text>
+<rect class="b ok" x="328" y="236" width="144" height="56" rx="8"/>
+<text class="t" x="338" y="258">카메라 JPEG 비교</text>
+<text class="s" x="338" y="277">두 모드, 두 장면</text>
+<rect class="b ok" x="488" y="236" width="144" height="56" rx="8"/>
+<text class="t" x="498" y="258">Adobe SDK 대조</text>
+<text class="s" x="498" y="277">LookTable·톤 곡선</text>
+<rect class="b open" x="648" y="236" width="144" height="56" rx="8"/>
+<text class="t" x="658" y="258">Lightroom 실행</text>
+<text class="s" x="658" y="277">하지 않음</text>
+<path class="e dash" d="M240 168V234"/>
+<path class="e dash" d="M400 168V234"/>
+<path class="e dash" d="M560 168V234"/>
+<path class="e dash" d="M720 168V234"/>
+</svg>
+</div>
+<ul class="dg-legend"><li><i class="ok"></i>확보했거나 확인한 것</li><li><i class="key"></i>이 연구가 만든 프로그램</li><li><i class="open"></i>하지 않은 것</li></ul>
+</figure>
+</section>
+
+<section id="have">
+<h2>필요한 것과 확보한 것</h2>
+<p class="takeaway">계산에 필요한 재료는 모두 확보했습니다. 없는 것은 Lightroom에서의 확인입니다.</p>
+<div class="table-wrap"><table class="compact">
+<caption>프로그램에 필요한 재료와 현재 상태</caption>
+<thead><tr><th>필요한 것</th><th>상태</th><th>어디에 있는가</th></tr></thead>
+<tbody>
+<tr><th scope="row">색 표</th><td><span class="badge ok">확보</span></td><td><a href="k3iii-color-tables.json">k3iii-color-tables.json</a>. 행렬 34개, 감마 기준 곡선, 채도 억제 값, 조색 오프셋. <a href="../tools/export_color_tables.py">export_color_tables.py</a>가 펌웨어에서 꺼냄</td></tr>
+<tr><th scope="row">표에서 레지스터 값을 계산하는 규칙</th><td><span class="badge ok">확보</span></td><td><a href="../tools/k3iii_color_engine.py">k3iii_color_engine.py</a>. 행렬 곱의 반올림 세 가지와 감마 곡선 합성. 식은 <a href="color-algorithms.html">색 처리 알고리즘</a>에 있음</td></tr>
+<tr><th scope="row">Custom Image별 출고 설정</th><td><span class="badge model">확보, 대응은 간접</span></td><td>색 표 파일의 <code>factory_settings</code>. 근거는 <a href="color-profiles.html#factory">색 프로파일 모음</a>에 있음</td></tr>
+<tr><th scope="row">사진에 기록된 설정을 읽는 방법</th><td><span class="badge ok">확보</span></td><td>메이커노트 태그 <code>0x0247</code>. <a href="../tools/compare_camera_jpeg.py">compare_camera_jpeg.py</a>의 <code>capture_info</code></td></tr>
+<tr><th scope="row">색 모델을 프로파일로 옮기는 방법</th><td><span class="badge ok">확보</span></td><td><a href="firmware-dcp.html">펌웨어 값으로 만드는 색 프로파일</a>. Adobe DNG SDK의 루틴과 대조함</td></tr>
+<tr><th scope="row">Lightroom에서의 확인</th><td><span class="badge open">없음</span></td><td>이 연구 환경에서는 Lightroom을 실행할 수 없음</td></tr>
+</tbody></table></div>
+</section>
+
+<section id="engine">
+<h2>엔진이 원본 코드와 같은가</h2>
+<p class="takeaway">같습니다. 비교한 10,087가지 경우에서 값이 하나도 다르지 않았습니다.</p>
+<p>엔진은 펌웨어를 실행하지 않습니다. 색 표를 읽어 같은 정수 계산을 Python으로 다시 합니다. 그래서 원본과 같은 값을 내는지를 따로 확인해야 합니다. <a href="../tools/check_color_engine.py">check_color_engine.py</a>는 같은 설정을 엔진과 펌웨어 에뮬레이터에 넣고 결과를 값 하나하나 비교합니다.</p>
+<div class="table-wrap"><table class="compact">
+<caption>엔진과 원본 코드의 대조</caption>
+<thead><tr><th>비교한 범위</th><th>경우의 수</th><th>다른 값</th></tr></thead>
+<tbody>
+<tr><th scope="row">Custom Image 18종 × 설정 조합 × 색공간 2개</th><td class="n">3,526</td><td class="n">0</td></tr>
+<tr><th scope="row">Natural의 톤 설정 네 개의 모든 조합(9<sup>4</sup>)</th><td class="n">6,561</td><td class="n">0</td></tr>
+<tr><th scope="row">합계</th><td class="n">10,087</td><td class="n">0</td></tr>
+</tbody></table></div>
+<p>설정 조합은 모드마다 98가지입니다(출고 설정 기록이 없는 Cross Processing은 97가지). 모든 설정이 0인 경우, 출고 설정, 설정 여섯 개를 하나씩 −4에서 +4까지 바꾼 48가지, 조색 여덟 색, 무작위 조합 40가지입니다. 한 경우마다 색 행렬 9개, YC 행렬 9개, 조색 오프셋 2개, 감마 곡선 256점을 비교했습니다. Cross Processing과 Gold는 감마 곡선을 뺀 나머지만 비교했습니다. 두 모드는 채널마다 다른 곡선을 쓰고 엔진은 그 곡선을 계산하지 않습니다.</p>
+<p>Auto Select는 비교에서 뺐습니다. 장면을 분석해 다른 Custom Image의 행렬을 고르므로 고정된 답이 없습니다.</p>
+<p>프로파일 파일로도 확인했습니다. 같은 PC에서 엔진으로 만든 프로파일 16개와 <a href="../tools/build_firmware_dcp.py">build_firmware_dcp.py</a>가 펌웨어를 실행해 만든 16개가 바이트 단위로 같았습니다. PC나 numpy 판이 다르면 표의 실수 값이 마지막 자리에서 달라질 수 있습니다. 그래서 저장소의 검사는 프로파일을 허용오차 안에서 비교합니다.</p>
+<div class="callout"><strong class="label">AdobeRGB 프로파일의 작은 차이</strong>
+<p>카메라를 AdobeRGB로 설정하면 펌웨어는 감마 표를 다시 부호화합니다. 엔진은 이 변환을 식(sRGB 복호 뒤 감마 2.2 부호화)으로 계산하고 펌웨어 경로는 회로에 들어가는 10비트 표를 그대로 씁니다. 두 값은 표의 한 단계 안에서 같지만 정확히 같지는 않습니다. 그래서 AdobeRGB 프로파일은 두 경로의 파일이 바이트 단위로는 다릅니다.</p></div>
+</section>
+
+<section id="now">
+<h2>지금 만들 수 있는 프로파일</h2>
+<p class="takeaway">명령 한 줄로 프로파일 하나를 만듭니다. 계산은 1초 안에 끝납니다.</p>
+<pre><code>python tools/make_k3iii_profile.py --mode bright --output Bright.dcp
+python tools/make_k3iii_profile.py --mode portrait --saturation 1 --key 1 --output portrait-soft.dcp
+python tools/make_k3iii_profile.py --from-raw IMGP0001.PEF --output IMGP0001.dcp
+python tools/make_k3iii_profile.py --mode natural --look-matrix my-look.json --name "My look" --output my-look.dcp
+python tools/make_k3iii_profile.py --all --color-space adobergb --output-dir adobe-rgb</code></pre>
+<div class="table-wrap"><table class="compact">
+<caption>프로그램의 기능</caption>
+<thead><tr><th>기능</th><th>설명</th></tr></thead>
+<tbody>
+<tr><th scope="row">Custom Image와 설정</th><td>16종 가운데 하나를 고르고 채도, 색상, 키, 대비, 대비(하이라이트), 대비(섀도)를 −4에서 +4로 줍니다. 주지 않은 설정은 그 모드의 출고값을 따릅니다. <code>--neutral</code>을 붙이면 0으로 둡니다.</td></tr>
+<tr><th scope="row">RAW에서 읽기</th><td><code>--from-raw</code>는 PEF나 DNG에서 Custom Image, 설정, 색공간을 읽어 그 사진을 찍을 때의 설정으로 프로파일을 만듭니다.</td></tr>
+<tr><th scope="row">나만의 모드 행렬</th><td><code>--look-matrix</code>는 3×3 행렬을 모드 행렬 자리에 넣습니다. 각 행의 합이 1이어야 회색이 회색으로 남습니다. 카메라의 것으로 오해하지 않도록 <code>--name</code>이 필요합니다.</td></tr>
+<tr><th scope="row">색공간</th><td><code>--color-space adobergb</code>는 카메라를 AdobeRGB로 설정했을 때의 처리를 따릅니다.</td></tr>
+<tr><th scope="row">내 카메라의 색 행렬</th><td><code>--color-matrix-from</code>은 자기 카메라로 찍은 DNG에서 ColorMatrix를 복사합니다. 화이트밸런스 계산에 쓰이는 값입니다.</td></tr>
+</tbody></table></div>
+<p>감마 곡선을 직접 만든 것으로 바꾸는 기능은 엔진의 함수(<code>Engine.camera(curve=...)</code>)에만 있고 명령줄에는 없습니다.</p>
+</section>
+
+<section id="cannot">
+<h2>프로파일에 담지 못하는 것</h2>
+<p class="takeaway">카메라 프로파일은 색 행렬 하나, 톤 곡선 하나, 색조·채도 표로 이루어집니다. 이 틀을 벗어나는 처리는 담지 못합니다.</p>
+<div class="table-wrap"><table class="compact">
+<caption>담지 못하는 처리와 까닭</caption>
+<thead><tr><th>처리</th><th>까닭</th><th>다른 길</th></tr></thead>
+<tbody>
+<tr><th scope="row">조색 (Muted, Bleach Bypass, HARUBENI)</th><td>Cb와 Cr에 상수를 더해 회색까지 물들입니다. 색조·채도 표는 채도에 배율을 곱하므로 채도가 0인 회색을 바꾸지 못합니다.</td><td>Lightroom의 색 보정 패널에서 따로 넣거나 3D LUT를 담는 확장 프로파일을 쓰는 방법이 있습니다. 둘 다 시험하지 않았습니다.</td></tr>
+<tr><th scope="row">Cross Processing, Gold</th><td>R, G, B 채널마다 다른 감마 곡선을 씁니다. 프로파일의 톤 곡선은 하나입니다.</td><td>확장 프로파일. 시험하지 않았습니다.</td></tr>
+<tr><th scope="row">Auto Select</th><td>카메라가 장면을 분석해 열 가지 설정 가운데 하나를 고릅니다.</td><td>카메라가 무엇을 골랐는지 RAW에 남는지 확인하지 않았습니다.</td></tr>
+<tr><th scope="row">Monochrome의 필터 효과와 조색</th><td>엔진에 넣지 않았습니다. 조색은 색차를 고정값으로 두는 방식이라 회색을 물들이는 문제가 같습니다.</td><td>필터 효과는 색 행렬만 바뀌므로 넣을 수 있을 것으로 보이지만 확인하지 않았습니다.</td></tr>
+<tr><th scope="row">그림자 보정, 하이라이트 보정, 명료도, 샤프니스, 노이즈 감소, 디지털 필터, 렌즈 보정</th><td>색 프로파일이 다루는 범위 밖의 처리입니다.</td><td>Lightroom의 해당 기능으로 따로 조정합니다.</td></tr>
+</tbody></table></div>
+<p>확장 프로파일은 Adobe의 XMP 형식 프로파일이고 3D LUT를 담을 수 있습니다. 이 형식에 대해 조사한 내용은 <a href="color-lightroom.html">컬러모드 자원과 Lightroom</a>에 있습니다. 이 연구에서 만들어 보지는 않았습니다.</p>
+</section>
+
+<section id="program">
+<h2>쓰기 편한 프로그램으로 만들려면</h2>
+<p class="takeaway">계산 부분은 끝났고 남은 것은 화면입니다. 설치가 필요 없는 웹 페이지 형태가 가장 알맞습니다.</p>
+<div class="table-wrap"><table class="compact">
+<caption>프로그램의 형태별 비교</caption>
+<thead><tr><th>형태</th><th>쓰는 사람이 할 일</th><th>더 필요한 작업</th><th>평가</th></tr></thead>
+<tbody>
+<tr><th scope="row">명령줄 (지금)</th><td>Python과 numpy를 설치하고 명령을 입력</td><td>없음</td><td>이미 동작합니다. 명령줄에 익숙하지 않으면 쓰기 어렵습니다.</td></tr>
+<tr><th scope="row">웹 페이지</th><td>브라우저에서 모드와 설정을 고르고 파일을 내려받음</td><td>엔진과 프로파일 조립을 JavaScript로 옮기고 Python 결과와 바이트 단위로 대조</td><td>권장합니다. 설치가 없고 이 문서 사이트에 올릴 수 있습니다.</td></tr>
+<tr><th scope="row">데스크톱 앱</th><td>설치하고 RAW를 끌어다 놓음</td><td>포장과 배포, RAW 미리보기</td><td>사진으로 결과를 미리 보는 기능이 필요할 때만 값어치가 있습니다.</td></tr>
+</tbody></table></div>
+<p>웹 페이지로 옮길 때의 기술적 걸림돌은 크지 않습니다. 엔진은 정수 덧셈, 곱셈, 자리 이동만 쓰고 프로파일 조립은 81,000개 격자점의 색을 계산하는 일입니다. Python으로 프로파일 16개와 문서 17쪽을 만드는 데 4초가 걸렸습니다. 파일을 서버로 보낼 필요도 없습니다. 지켜야 할 것은 하나입니다. 옮긴 프로그램이 Python 판과 같은 파일을 내는지 자동으로 대조하는 시험을 함께 두어야 합니다.</p>
+<p>미리보기는 별개의 일입니다. RAW를 화면에 그리려면 디모자이크와 화이트밸런스가 필요합니다. <a href="../tools/compare_camera_jpeg.py">compare_camera_jpeg.py</a>가 비교용으로 절반 크기 영상을 만들고 있어 재료는 있습니다. 다만 프로파일을 만드는 데는 필요하지 않습니다.</p>
+</section>
+
+<section id="risks">
+<h2>위험과 한계</h2>
+<ul>
+<li><strong>Lightroom에서 확인하지 않았습니다.</strong> 프로파일의 결과는 Adobe DNG SDK의 기준 처리 순서로 계산했습니다. Lightroom의 실제 처리가 이와 다르면 결과도 달라집니다. 프로그램을 더 만들기 전에 이것부터 확인해야 합니다.</li>
+<li><strong>카메라 JPEG과 비교한 모드는 둘입니다.</strong> Natural과 Bright에서 평탄 영역의 평균 ΔE00이 0.9 안팎이었습니다. 나머지 14개 모드는 같은 계산 경로를 쓰지만 결과를 따로 재지 않았습니다.</li>
+<li><strong>출고 설정의 대응은 간접 근거에 기댑니다.</strong> 설정 표의 각 줄이 어느 Custom Image인지는 줄 번호의 순서, 표본 한 장, 리코의 설명으로 맞췄습니다.</li>
+<li><strong>펌웨어 2.20의 표입니다.</strong> 다른 버전의 카메라가 같은 표를 쓰는지는 확인하지 않았습니다. 비교한 표본 두 장은 1.01과 1.10으로 찍혔고 결과가 맞았습니다.</li>
+<li><strong>센서의 개체차.</strong> 프로파일의 ColorMatrix 행 배율은 표본 한 대에서 얻었습니다. 자기 카메라의 DNG에서 복사하는 선택지를 두었습니다.</li>
+</ul>
+</section>
+
+<section id="next">
+<h2>권고와 다음 단계</h2>
+<ol>
+<li><strong>Lightroom에서 확인합니다.</strong> 프로파일을 넣고 RAW를 현상한 결과를 같은 사진의 카메라 JPEG과 비교합니다. Lightroom이 있는 PC에서만 할 수 있습니다. 비교 절차는 <a href="color-comparison-protocol.html">ColorChecker 비교 절차</a>에 있습니다.</li>
+<li><strong>비교하지 않은 모드의 표본을 구합니다.</strong> 같은 장면을 RAW+JPEG로 Custom Image마다 한 장씩 찍으면 <a href="../tools/compare_camera_jpeg.py">compare_camera_jpeg.py</a>로 바로 비교할 수 있습니다. 카메라만 있으면 됩니다.</li>
+<li><strong>웹 페이지 판을 만듭니다.</strong> 앞의 두 확인에서 큰 차이가 없을 때 진행합니다.</li>
+<li><strong>확장 프로파일을 검토합니다.</strong> 조색, Cross Processing, Gold를 담으려면 필요합니다.</li>
+</ol>
+</section>
+
+<section id="reproduce">
+<h2>재현 방법</h2>
+<p>펌웨어 없이 할 수 있는 확인입니다. 엔진의 결과가 공개한 기록의 해시와 같은지, 프로파일과 문서가 색 표에서 그대로 다시 만들어지는지 봅니다.</p>
+<pre><code>python tools/check_color_engine.py --compare analysis/k3iii-color-engine-checks.json
+python tools/build_profile_pages.py --check
+python -m unittest tests.test_color_engine</code></pre>
+<p>펌웨어가 있으면 엔진과 원본 코드를 직접 대조할 수 있습니다. <code>--full</code>은 톤 설정 6,561가지를 모두 넣습니다. 프로세서 네 개로 15분쯤 걸립니다.</p>
+<pre><code>python tools/check_color_engine.py --decoded .private/my-decode/decoded.bin --full --compare analysis/k3iii-color-engine-checks.json
+python tools/export_color_tables.py .private/my-decode/decoded.bin --compare analysis/k3iii-color-tables.json</code></pre>
+</section>
+
+<section id="refs">
+<h2>근거 파일과 참고 자료</h2>
+<ul class="refs">
+<li><a href="k3iii-color-tables.json">k3iii-color-tables.json</a> — 색 표와 출고 설정 · <a href="k3iii-color-engine-checks.json">k3iii-color-engine-checks.json</a> — 엔진 대조 기록 · <a href="firmware-color-validation.json">firmware-color-validation.json</a> — 카메라 JPEG 비교</li>
+<li><a href="../tools/k3iii_color_engine.py">tools/k3iii_color_engine.py</a> · <a href="../tools/make_k3iii_profile.py">tools/make_k3iii_profile.py</a> · <a href="../tools/check_color_engine.py">tools/check_color_engine.py</a> · <a href="../tools/export_color_tables.py">tools/export_color_tables.py</a> · <a href="../tests/test_color_engine.py">tests/test_color_engine.py</a></li>
+<li><a href="color-profiles.html">색 프로파일 모음</a> · <a href="firmware-dcp.html">펌웨어 값으로 만드는 색 프로파일</a> · <a href="firmware-color-pipeline.html">펌웨어로 확정한 색 처리 경로</a></li>
+<li>Adobe, <a href="https://helpx.adobe.com/camera-raw/desktop/dng-and-file-formats/digital-negative.html">Digital Negative (DNG)</a> — 명세와 SDK. 카메라 프로파일의 태그와 처리 순서.</li>
+</ul>
+</section>
+
+</main>
+</div>
+<!-- chrome:bottom -->
+<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">K-3 Mark III 색 프로파일 — 이 주제의 문서</h2><ol><li><a href="color-profiles.html">색 프로파일 모음<span>16종 내려받기와 출고 설정</span></a></li><li><a href="profile-maker-feasibility.html" aria-current="page">프로파일 생성 프로그램 타당성 검토<span>펌웨어 없이 도는 계산 엔진</span></a></li><li><a href="profile-natural.html">Natural 프로파일<span>기준이 되는 모드</span></a></li><li><a href="profile-bright.html">Bright 프로파일<span>기본 Custom Image, 대비 +1</span></a></li><li><a href="profile-portrait.html">Portrait 프로파일<span>피부색</span></a></li><li><a href="profile-landscape.html">Landscape 프로파일<span>파랑·초록 강조, 대비 +1</span></a></li><li><a href="profile-vibrant.html">Vibrant 프로파일<span>삼원색 강조</span></a></li><li><a href="profile-radiant.html">Radiant 프로파일<span>키 +2, 대비 +3</span></a></li><li><a href="profile-muted.html">Muted 프로파일<span>키 +4, 대비 −3</span></a></li><li><a href="profile-flat.html">Flat 프로파일<span>대비 −4</span></a></li><li><a href="profile-bleach-bypass.html">Bleach Bypass 프로파일<span>키 −4, 대비 +4, 조색 제외</span></a></li><li><a href="profile-reversal-film.html">Reversal Film 프로파일<span>전용 톤 곡선</span></a></li><li><a href="profile-monochrome.html">Monochrome 프로파일<span>흑백</span></a></li><li><a href="profile-satobi.html">SATOBI 프로파일<span>대비 +2</span></a></li><li><a href="profile-harubeni.html">HARUBENI 프로파일<span>Special Edition, 조색 제외</span></a></li><li><a href="profile-katen.html">KATEN 프로파일<span>Special Edition</span></a></li><li><a href="profile-kyushu.html">KYUSHU 프로파일<span>Special Edition</span></a></li><li><a href="profile-fuyuno.html">FUYUNO 프로파일<span>Special Edition</span></a></li></ol></nav>
+<nav class="pager" aria-label="이전·다음 문서"><a class="prev" href="color-profiles.html"><small>← 이전</small>색 프로파일 모음</a><a class="next" href="profile-natural.html"><small>다음 →</small>Natural 프로파일</a></nav>
+<footer class="sitefoot"><div class="sitefoot-in"><nav aria-label="사이트"><a href="../index.html#map">문서 지도</a><a href="../index.html#levels">검증 수준 읽는 법</a><a href="../glossary.html">용어집</a><a href="research-program.html">세 기종 연구 본부</a><a href="https://github.com/yunhyok/pentax-k3iii-firmware-analysis">GitHub 저장소</a></nav><p>PENTAX 펌웨어 연구. PC에서 수행한 정적 분석과 에뮬레이션 결과이며, 카메라 실기에서 검증한 내용이 아닙니다. 원본 펌웨어와 추출한 독점 코드는 포함하지 않습니다.</p></div></footer>
+<!-- /chrome:bottom -->
+</body>
+</html>

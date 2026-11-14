@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "as_of": "2026-11-13",
+  "as_of": "2026-11-14",
   "time_zone": "Asia/Seoul",
   "title": "펜탁스 펌웨어 연구 본부",
   "summary": "K-3 Mark III, K-3 II, Q7의 분석 결과를 네 가지 목표로 비교합니다. 각 항목에 근거가 있는 결과, 아직 넘지 못한 검증 단계, 다음에 확인할 일을 기록합니다.",
@@ -882,6 +882,51 @@
       "camera": "k3iii",
       "path": "analysis/research-checkpoint.json",
       "label": "후속 연구의 근거 해시와 다음 과제"
+    },
+    "iii-firmware-color": {
+      "camera": "k3iii",
+      "path": "analysis/firmware-color-pipeline.html",
+      "label": "펌웨어로 확정한 색 처리 경로"
+    },
+    "iii-firmware-color-data": {
+      "camera": "k3iii",
+      "path": "analysis/firmware-color-pipeline.json",
+      "label": "색 레지스터 해시·기준 대조"
+    },
+    "iii-firmware-dcp": {
+      "camera": "k3iii",
+      "path": "analysis/firmware-dcp.html",
+      "label": "펌웨어 값으로 만드는 색 프로파일"
+    },
+    "iii-firmware-validation-data": {
+      "camera": "k3iii",
+      "path": "analysis/firmware-color-validation.json",
+      "label": "카메라 JPEG 대조 수치"
+    },
+    "iii-color-tables-data": {
+      "camera": "k3iii",
+      "path": "analysis/k3iii-color-tables.json",
+      "label": "펌웨어 2.20의 색 표와 출고 설정"
+    },
+    "iii-color-engine-data": {
+      "camera": "k3iii",
+      "path": "analysis/k3iii-color-engine-checks.json",
+      "label": "엔진과 에뮬레이터 대조 10,087건"
+    },
+    "iii-profile-accuracy-data": {
+      "camera": "k3iii",
+      "path": "analysis/k3iii-profile-accuracy.json",
+      "label": "프로파일 16종과 색 모델 대조"
+    },
+    "iii-color-profiles": {
+      "camera": "k3iii",
+      "path": "analysis/color-profiles.html",
+      "label": "K-3 Mark III 색 프로파일 모음"
+    },
+    "iii-profile-maker": {
+      "camera": "k3iii",
+      "path": "analysis/profile-maker-feasibility.html",
+      "label": "프로파일 생성 프로그램 타당성 검토"
     }
   },
   "tracks": [
@@ -1004,13 +1049,22 @@
     {
       "id": "color",
       "title": "Lightroom RAW 색 프로파일",
-      "dependency": "공식 펌웨어의 RAW+JPEG 촬영 쌍과 Lightroom으로 검증할 수 있어 수정 펌웨어 시험과 병행합니다. Bright 스튜디오 색차는 기종당 한 장면의 정합 통과 영역에서 두 현상 결과를 비교한 값입니다. 절대 색 정확도와 기종 간 우열은 확인하지 않았습니다.",
+      "dependency": "공식 펌웨어의 RAW+JPEG 촬영 쌍과 Lightroom으로 검증할 수 있어 수정 펌웨어 시험과 병행합니다. Bright 스튜디오 색차는 기종당 한 장면의 정합 통과 영역에서 두 현상 결과를 비교한 값입니다. K-3 Mark III는 펌웨어에서 얻은 값으로 만든 프로파일을 PC에서 카메라 JPEG과 비교했습니다. 절대 색 정확도와 기종 간 우열은 확인하지 않았습니다.",
       "cards": {
         "k3iii": {
-          "state": "DCP·As Shot 대조 · SDK Stage 2·3 전수 일치",
-          "finding": "Natural·Portrait의 원본 ARM 행렬과 감마를 분리했습니다. 펌웨어 1.10 PEF 한 장의 Lightroom 16.0 출력에서 공통 55영역·80,662픽셀을 Bright JPEG와 비교했습니다. ΔE00 중앙값/90백분위수는 행렬 후보 2.028/4.922, Adobe Standard 1.944/4.548, Camera Bright 1.421/2.636이었습니다. 프로파일과 함께 As Shot 수치도 달라졌습니다. Converter 18.7 변환 두 건에서 중립값을 대조했습니다. 첫 변환 DNG와 PEF의 CFA 26,628,096개는 세 디코딩 배열에서 일치했습니다. PEF MakerNote와 DNG RAW SubIFD의 WhiteLevel은 16,378과 16,315였고 DNG 기본 크롭의 초과값은 8,529개였습니다. 선행 정수 모형의 포화 예측을 별도 검증으로 확인했습니다. 공개 SDK Build 2768 하네스의 오브젝트 276개를 새로 빌드했습니다. 이 빌드로 고정 DNG의 Stage 2 활성 영역 25,891,840개를 모형과 전수 대조했습니다. 기본 크롭의 8,530개가 65,535에 이르렀습니다. DNG에 XMP 태그가 있지만 이 빌드에서는 XMP 처리를 껐습니다. 이어 실행한 원본 SDK Stage 3의 카메라 채널 77,675,520개는 가장자리를 포함해 독립 Bayer 보간과 전부 일치했습니다. 값 65,535인 18,299개 성분은 센서 자리에서 유지된 8,530개와 보간된 9,769개입니다. SDK 렌더의 화이트밸런스·색공간·프로파일·톤, Converter 내부와 Lightroom 정규화는 이 실행 범위 밖입니다.",
-          "next": "SDK Stage 3 뒤의 화이트밸런스·프로파일·톤을 각각 확인합니다. 같은 CFA를 담은 PEF·DNG는 고정 프로파일·백색점으로 Lightroom에서 비교합니다. 펌웨어 2.20에서 조명이 다른 Bright·Natural RAW+JPEG를 확보해 같은 ICC·마스크·색차 기준으로 비교합니다.",
+          "state": "펌웨어 색 표·프로파일 16종 공개 · 카메라 JPEG 대조 · Lightroom 실행은 미검증",
+          "finding": "공식 펌웨어 2.20으로 정지 화상 ImageTuning 전체를 PC 에뮬레이터에서 실행해 Custom Image 19종의 색 레지스터를 얻었습니다. 색공간 행렬이 표준 sRGB→AdobeRGB 행렬과 0.0003 안에서 같아 색 행렬의 출력이 선형 sRGB임을 확인했습니다. 펌웨어의 BaselineExposure 계산식에서 노출 기준을 얻어 프로파일에 +0.5 EV 보정을 넣었습니다. 이 값들로 DCP를 만드는 도구를 추가했습니다. 펌웨어에서 읽은 색 표(JSON)와 Custom Image 16종의 프로파일을 공개했습니다. 프로파일은 각 모드의 출고 설정으로 만들었습니다. 펌웨어 없이 같은 정수 계산을 하는 엔진은 펌웨어 에뮬레이터와 10,087개 사례에서 모두 같았습니다. 색·톤 매개변수를 하나도 맞추지 않고 카메라 JPEG과 비교한 평탄 영역의 평균 ΔE00은 펌웨어 모델이 Natural 0.852, Bright 0.907이었고 DNG 기준 파이프라인에 넣은 DCP가 0.904, 0.907이었습니다. Bright는 RAW에 기록된 대비 +1로 계산했습니다. 공개한 16종과 색 모델의 평균 ΔE00은 카메라 색역 안쪽 색에서 0.02~0.11입니다. 두 장면 모두 ISO 100이고 표본의 카메라 펌웨어는 1.01과 1.10입니다. 나머지 14종은 카메라 출력과 비교하지 않았습니다. Lightroom은 실행하지 않았습니다. 이전 블랙박스 측정은 다음과 같습니다. Natural·Portrait의 원본 ARM 행렬과 감마를 분리했습니다. 펌웨어 1.10 PEF 한 장의 Lightroom 16.0 출력에서 공통 55영역·80,662픽셀을 Bright JPEG와 비교했습니다. ΔE00 중앙값/90백분위수는 행렬 후보 2.028/4.922, Adobe Standard 1.944/4.548, Camera Bright 1.421/2.636이었습니다. 프로파일과 함께 As Shot 수치도 달라졌습니다. Converter 18.7 변환 두 건에서 중립값을 대조했습니다. 첫 변환 DNG와 PEF의 CFA 26,628,096개는 세 디코딩 배열에서 일치했습니다. PEF MakerNote와 DNG RAW SubIFD의 WhiteLevel은 16,378과 16,315였고 DNG 기본 크롭의 초과값은 8,529개였습니다. 선행 정수 모형의 포화 예측을 별도 검증으로 확인했습니다. 공개 SDK Build 2768 하네스의 오브젝트 276개를 새로 빌드했습니다. 이 빌드로 고정 DNG의 Stage 2 활성 영역 25,891,840개를 모형과 전수 대조했습니다. 기본 크롭의 8,530개가 65,535에 이르렀습니다. DNG에 XMP 태그가 있지만 이 빌드에서는 XMP 처리를 껐습니다. 이어 실행한 원본 SDK Stage 3의 카메라 채널 77,675,520개는 가장자리를 포함해 독립 Bayer 보간과 전부 일치했습니다. 값 65,535인 18,299개 성분은 센서 자리에서 유지된 8,530개와 보간된 9,769개입니다. SDK 렌더의 화이트밸런스·색공간·프로파일·톤, Converter 내부와 Lightroom 정규화는 이 실행 범위 밖입니다.",
+          "next": "공개한 DCP를 실제 Lightroom에 넣어 카메라 JPEG과 같은 기준으로 비교합니다. 카메라 출력과 비교하지 않은 나머지 14종을 RAW+JPEG 쌍으로 비교합니다. 펌웨어 2.20에서 ISO·조명·모드를 달리하고 Shadow Correction을 끈 RAW+JPEG를 확보해 남은 밝기 차이의 원인을 가립니다. PEF에 Lightroom이 쓰는 BaselineExposure가 카메라 DNG의 값과 같은지 확인합니다. 다축 색 보정과 화이트밸런스 단계는 추적하지 않았습니다.",
           "sources": [
+            "iii-firmware-validation-data",
+            "iii-color-tables-data",
+            "iii-color-engine-data",
+            "iii-profile-accuracy-data",
+            "iii-color-profiles",
+            "iii-profile-maker",
+            "iii-firmware-dcp",
+            "iii-firmware-color-data",
+            "iii-firmware-color",
             "iii-color",
             "iii-lightroom",
             "iii-raw",

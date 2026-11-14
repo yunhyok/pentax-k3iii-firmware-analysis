@@ -17,6 +17,8 @@ TAGS = {
     "ProfileToneCurve": 50940, "ForwardMatrix1": 50964, "ForwardMatrix2": 50965,
     "ProfileLookTableDims": 50981, "ProfileLookTableData": 50982,
     "ProfileHueSatMapEncoding": 51107, "ProfileLookTableEncoding": 51108,
+    "ProfileEmbedPolicy": 50941, "ProfileCopyright": 50942,
+    "BaselineExposureOffset": 51109, "DefaultBlackRender": 51110,
 }
 REQUIRED = {"provenance", "UniqueCameraModel", "ProfileName", "ColorMatrix1", "CalibrationIlluminant1"}
 # shortcut: named standard illuminants only; add IlluminantData for measured custom lights.
@@ -168,6 +170,20 @@ def build_dcp(spec):
                 or any(not 0 <= y <= 1 for _, y in points)
                 or any(left[0] >= right[0] for left, right in zip(points, points[1:]))):
             raise ValueError(f"{key}: expected (0,0) to (1,1), increasing x and y within [0,1]")
+
+    if "ProfileCopyright" in spec:
+        payload = string(spec["ProfileCopyright"], "ProfileCopyright").encode("utf-8") + b"\0"
+        tags["ProfileCopyright"] = 2, len(payload), payload
+    for key, allowed in (("ProfileEmbedPolicy", (0, 1, 2, 3)), ("DefaultBlackRender", (0, 1))):
+        if key in spec:
+            if type(spec[key]) is not int or spec[key] not in allowed:
+                raise ValueError(f"{key}: expected one of {allowed}")
+            tags[key] = 4, 1, struct.pack("<I", spec[key])
+    if "BaselineExposureOffset" in spec:
+        offset_ev = number(spec["BaselineExposureOffset"], "BaselineExposureOffset")
+        if not -10 <= offset_ev <= 10:
+            raise ValueError("BaselineExposureOffset: expected a value within -10..10 EV")
+        tags["BaselineExposureOffset"] = 10, 1, struct.pack("<ii", round(offset_ev * MATRIX_DENOMINATOR), MATRIX_DENOMINATOR)
 
     directory = bytearray(struct.pack("<2sHIH", b"II", 0x4352, 8, len(tags)))
     offset = len(directory) + 12 * len(tags) + 4
