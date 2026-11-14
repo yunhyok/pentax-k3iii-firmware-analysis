@@ -10,7 +10,7 @@
 <body data-camera="k3iii">
 <!-- chrome:top -->
 <a class="skip" href="#main">본문 바로가기</a>
-<div class="topbar"><div class="topbar-in"><a class="brand" href="../index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="../index.html" aria-current="true">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="https://yunhyok.github.io/pentax-q7-firmware-analysis/">Q7</a></div><nav class="topnav" aria-label="주제"><a href="../index.html">개요</a><a href="guide-boot.html">부팅·저장소</a><a href="guide-update.html">업데이트</a><a href="guide-rebuild.html">재구축</a><a href="guide-rtos.html">명령·셸</a><a href="guide-color.html" aria-current="true">색 처리</a><a href="guide-lightroom.html">Lightroom</a><a href="guide-af.html">AF</a><a href="guide-ui.html">UI</a></nav></div></div>
+<div class="topbar"><div class="topbar-in"><a class="brand" href="../index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="../index.html" aria-current="true">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="https://yunhyok.github.io/pentax-q7-firmware-analysis/">Q7</a></div><nav class="topnav" aria-label="주제"><a href="../index.html">개요</a><a href="guide-boot.html">부팅·저장소</a><a href="guide-update.html">업데이트</a><a href="guide-rebuild.html">재구축</a><a href="guide-rtos.html">명령·셸</a><a href="guide-color.html" aria-current="true">색 처리</a><a href="color-profiles.html">프로파일</a><a href="guide-lightroom.html">Lightroom</a><a href="guide-af.html">AF</a><a href="guide-ui.html">UI</a></nav></div></div>
 <nav class="crumbs" aria-label="현재 위치"><ol><li><a href="../index.html">PENTAX K-3 Mark III</a></li><li aria-current="page">색 처리 안내</li></ol></nav>
 <!-- /chrome:top -->
 <header class="page-head">
@@ -29,8 +29,8 @@
 <ul>
 <li>컬러모드(Custom Image)마다 다른 <strong>색 행렬과 감마 곡선을 펌웨어가 계산하는 식</strong>을 복원했습니다. 원본 기계어를 PC 에뮬레이터에서 실행해 식이 맞는지 대조했습니다.</li>
 <li>계산된 값이 화이트밸런스 gain, 색 행렬, 감마·톤 표, JPEG 양자화 표의 형태로 <strong>영상 처리 하드웨어의 레지스터에 기록되는 경로</strong>도 확인했습니다.</li>
-<li>하드웨어 안에서 <strong>픽셀이 실제로 계산되는 식과 순서는 확인하지 못했습니다.</strong> 펌웨어 코드에 없는 내용이고 실물 카메라에서 실행한 실험도 없습니다.</li>
-<li>그래서 이 결과만으로 카메라 JPEG와 같은 색을 내는 Lightroom 프로파일을 만들 수는 없습니다. 실제 Lightroom으로 측정하는 일은 <a href="guide-lightroom.html">Lightroom 색 프로파일</a> 주제가 맡습니다.</li>
+<li>카메라의 <strong>색 설정 루틴 전체를 에뮬레이터에서 실행</strong>해 19개 Custom Image의 하드웨어 설정값을 얻었습니다. 같은 프로세서 계열의 공개 레지스터 헤더로 단계의 순서와 뜻을 정했습니다. 색 행렬의 출력은 선형 sRGB이고 감마 곡선의 출력은 sRGB로 부호화된 값입니다(<a href="firmware-color-pipeline.html">펌웨어로 확정한 색 처리 경로</a>).</li>
+<li>이 값으로 계산한 색을 카메라가 기록한 JPEG과 PC에서 비교했습니다. 평탄 블록의 평균 ΔE<sub>00</sub>은 Natural 0.85, Bright 0.91입니다. Bright는 RAW에 기록된 대비 +1로 계산했습니다. 장면 둘, ISO 100이고 실물 카메라에서 실행한 실험은 없습니다. 이 값으로 Lightroom 프로파일을 만드는 일은 <a href="guide-lightroom.html">Lightroom 색 프로파일</a> 주제가 맡습니다.</li>
 </ul>
 </section>
 
@@ -43,7 +43,7 @@
 <div class="dg-scroll">
 <svg class="dg" viewBox="0 0 800 356" role="img" aria-labelledby="dg-map-title dg-map-desc">
 <title id="dg-map-title">RAW 데이터가 JPEG가 되기까지의 단계와 문서 지도</title>
-<desc id="dg-map-desc">맨 위에는 RAW 현상 레시피가 있고 문서 2가 다룹니다. 가운데 줄은 펌웨어가 계산하는 설정값 여섯 가지입니다. 입력 설정과 화이트밸런스 gain과 양자화 표는 문서 4가, 색 행렬은 문서 1·2·3이, 감마와 톤은 문서 2·3이, YCbCr 행렬은 문서 2가 다룹니다. 각 설정값은 아래 줄의 하드웨어 단계로 전달됩니다. 아래 줄은 RAW 데이터, 화이트밸런스, 색 행렬, 감마·톤, YCbCr 변환, JPEG 압축의 순서로 그린 픽셀 경로이며, 이 경로 안의 계산식과 순서는 확인하지 못했습니다.</desc>
+<desc id="dg-map-desc">맨 위에는 RAW 현상 레시피가 있고 문서 2가 다룹니다. 가운데 줄은 펌웨어가 계산하는 설정값 여섯 가지입니다. 입력 설정과 화이트밸런스 gain과 양자화 표는 문서 4가, 색 행렬은 문서 1·2·3이, 감마와 톤은 문서 2·3이, YCbCr 행렬은 문서 2가 다룹니다. 각 설정값은 아래 줄의 하드웨어 단계로 전달됩니다. 아래 줄은 RAW 데이터, 화이트밸런스, 색 행렬, 감마·톤, YCbCr 변환, JPEG 압축의 순서로 그린 픽셀 경로이며, 이 순서와 각 단계의 뜻은 같은 프로세서 계열의 공개 레지스터 헤더에서 가져왔고 문서 5가 다룹니다. 다축 색 보정의 계산식은 공개되지 않았습니다.</desc>
 <defs>
 <marker id="dg-map-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0 0L10 5L0 10z"/></marker>
 <marker id="dg-map-aho" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah open" d="M0 0L10 5L0 10z"/></marker>
@@ -55,7 +55,8 @@
 <rect class="gf" x="0" y="54" width="800" height="140" rx="12"/>
 <text class="h" x="14" y="74">펌웨어가 계산하는 설정값 · 원본 코드를 PC에서 실행해 확인</text>
 <rect class="gf" x="0" y="228" width="800" height="122" rx="12"/>
-<text class="h" x="14" y="340">영상 처리 하드웨어 안의 픽셀 경로 · 계산식과 순서는 미확인</text>
+<text class="h" x="14" y="340">영상 처리 하드웨어 안의 픽셀 경로 · 순서는 공개 레지스터 헤더 기준</text>
+<a href="firmware-color-pipeline.html"><text class="t end" x="786" y="340">⑤</text></a>
 
 <a href="pipeline-report.html#m2pclip"><text class="t mid" x="64" y="97">④</text></a>
 <rect class="b static" x="6" y="104" width="116" height="78" rx="8"/>
@@ -127,7 +128,7 @@
 </svg>
 </div>
 <ul class="dg-legend"><li><i class="ok"></i>원본 코드를 실행해 확인한 계산</li><li><i class="static"></i>코드를 읽어 확인한 값</li><li><i class="open"></i>확인하지 못한 하드웨어 내부 처리</li></ul>
-<p>위에서 아래로 내려가는 화살표는 설정값이 하드웨어 레지스터에 기록되는 경로이고 모두 문서 ④가 다룹니다. 아래 줄의 단계 순서는 카메라의 일반적인 처리 순서대로 그린 것입니다. 이 카메라의 회로가 실제로 이 순서를 따르는지는 확인하지 못했습니다.</p>
+<p>위에서 아래로 내려가는 화살표는 설정값이 하드웨어 레지스터에 기록되는 경로이고 모두 문서 ④가 다룹니다. 아래 줄의 단계 순서는 같은 프로세서 계열의 공개 레지스터 헤더에 적힌 순서입니다. 이 순서로 계산한 색이 카메라 JPEG과 평균 ΔE<sub>00</sub> 1.4 아래로 맞았습니다. 회로 안의 비트 폭과 다축 색 보정의 계산식은 확인하지 못했습니다(문서 ⑤).</p>
 </figure>
 
 <ul>
@@ -135,6 +136,7 @@
 <li><strong>②</strong> <a href="color-algorithms.html">색 처리 알고리즘</a>: 행렬·감마·톤을 계산하는 식</li>
 <li><strong>③</strong> <a href="color-mode-boundaries.html">색 모드별 행렬·감마 조건</a>: 모드·채도·대비를 바꿨을 때 달라지는 것</li>
 <li><strong>④</strong> <a href="pipeline-report.html">JPEG·ISP와 색 재현 경로</a>: 계산된 값이 하드웨어에 전달되는 경로와 남은 미확인 항목</li>
+<li><strong>⑤</strong> <a href="firmware-color-pipeline.html">펌웨어로 확정한 색 처리 경로</a>: 색 설정 루틴 전체의 실행 결과, 하드웨어 단계의 뜻, 카메라 JPEG과의 비교</li>
 </ul>
 
 <h3>메뉴 설정이 영향을 주는 곳</h3>
@@ -198,7 +200,7 @@ B' = a31·R + a32·G + a33·B</code></pre>
 </div>
 <p>sRGB 규격의 식으로 그린 곡선입니다(<a href="https://registry.color.org/rgb-registry/srgb">ICC의 sRGB 등록 정보</a>). 카메라의 실제 곡선은 컬러모드마다 다르고 이 곡선과 같지 않습니다.</p>
 </figure>
-<p>카메라에서 고를 수 있는 두 색공간은 곡선과 원색이 다릅니다. sRGB는 구간별 식(어두운 구간은 직선, 나머지는 지수 1/2.4)을, <a href="https://www.adobe.com/digitalimag/pdfs/AdobeRGB1998.pdf">Adobe RGB (1998)</a>는 지수 2.19921875의 곡선을 씁니다. 펌웨어는 256항짜리 곡선을 만들어 조회표(<dfn title="입력값마다 출력값을 미리 적어 둔 표">LUT</dfn>) 형태로 하드웨어에 넘깁니다. 펌웨어 안의 곡선이 이 규격의 식과 같은지는 확인하지 않았습니다.</p>
+<p>카메라에서 고를 수 있는 두 색공간은 곡선과 원색이 다릅니다. sRGB는 구간별 식(어두운 구간은 직선, 나머지는 지수 1/2.4)을, <a href="https://www.adobe.com/digitalimag/pdfs/AdobeRGB1998.pdf">Adobe RGB (1998)</a>는 지수 2.19921875의 곡선을 씁니다. 펌웨어는 256항짜리 곡선을 만들어 조회표(<dfn title="입력값마다 출력값을 미리 적어 둔 표">LUT</dfn>) 형태로 하드웨어에 넘깁니다. 펌웨어 안의 곡선은 Custom Image마다 다른 톤 곡선입니다. 펌웨어는 이 곡선의 출력을 sRGB로 부호화된 값으로 다룹니다. AdobeRGB를 고르면 같은 곡선을 sRGB 식으로 풀고 지수 2.2로 다시 부호화한 표를 씁니다(문서 ⑤).</p>
 
 <h3>클리핑</h3>
 <p>값이 표현할 수 있는 범위를 넘으면 한계값으로 잘립니다. 이것이 클리핑(포화)입니다. 잘린 정보는 뒤 단계에서 되살릴 수 없으므로, <strong>어느 단계에서 자르는지</strong>가 결과를 바꿉니다. 예를 들어 값 0.75에 배율 2를 곱하고 1에서 자르면 1이 되지만 먼저 1에서 자르고 배율 2를 곱하면 1.5가 됩니다.</p>
@@ -226,7 +228,7 @@ Cr =  0.5 R − 0.4187 G − 0.0813 B + 128</code></pre>
 
 <section id="status">
 <h2>지금까지 알아낸 것과 아직 모르는 것</h2>
-<p>이 주제의 네 문서를 합친 현재 상태입니다. "확인"은 원본 기계어를 PC 에뮬레이터에서 실행했거나 파일 바이트를 직접 대조했다는 뜻입니다. 실행에 넣은 입력은 모두 직접 만든 합성 값이며 실물 카메라에서 실행한 것은 없습니다.</p>
+<p>이 주제의 다섯 문서를 합친 현재 상태입니다. "확인"은 원본 기계어를 PC 에뮬레이터에서 실행했거나 파일 바이트를 직접 대조했다는 뜻입니다. 실행에 넣은 입력은 직접 만든 값이며 실물 카메라에서 실행한 것은 없습니다.</p>
 <div class="table-wrap"><table>
 <thead><tr><th>항목</th><th>상태</th><th>내용</th><th>문서</th></tr></thead>
 <tbody>
@@ -242,25 +244,26 @@ Cr =  0.5 R − 0.4187 G − 0.0813 B + 128</code></pre>
 <tr><th scope="row">행렬·감마·톤 표의 전달</th><td><span class="badge ok">확인</span></td><td>R2y 레지스터와 표 영역에 기록되는 위치와 비트 폭 312검사</td><td><a href="pipeline-report.html#r2y">④</a></td></tr>
 <tr><th scope="row">JPEG 양자화 표</th><td><span class="badge ok">확인</span></td><td>품질 인수에 따른 표 계산과 기록 4,000조건</td><td><a href="pipeline-report.html#jpeg">④</a></td></tr>
 <tr><th scope="row">Adobe Camera Matching 프로파일</th><td><span class="badge ok">확인</span></td><td>Bright, Natural, Portrait, Landscape, Vibrant 다섯 파일의 구조를 읽었습니다. 파일 구조만 확인했고 색은 비교하지 않았습니다.</td><td><a href="color-lightroom.html">①</a></td></tr>
-<tr><th scope="row">시험에 넣은 입력</th><td><span class="badge model">모델</span></td><td>설정값·버퍼·객체는 합성 값입니다. 메뉴에서 같은 값이 만들어지는지는 따로 확인해야 합니다.</td><td>전체</td></tr>
-<tr><th scope="row">하드웨어 안의 픽셀 계산</th><td><span class="badge open">미확인</span></td><td>화이트밸런스·행렬·감마·톤이 적용되는 순서, 표의 보간 방식, 중간 값의 비트 폭</td><td><a href="pipeline-report.html#clip-semantics">④</a></td></tr>
+<tr><th scope="row">색 설정 루틴 전체 실행</th><td><span class="badge ok">확인</span> <span class="badge model">모델</span></td><td>카메라의 설정 채움 코드가 메뉴 수준의 값(Custom Image, 슬라이더, 색공간, 노출 이득)에서 15개 단계의 설정을 만들었습니다. 19개 모드 모두 펌웨어 assert 없이 끝났습니다. 운영체제 기능은 대역으로 바꿨고 나머지 입력은 0입니다.</td><td><a href="firmware-color-pipeline.html">⑤</a></td></tr>
+<tr><th scope="row">시험에 넣은 입력</th><td><span class="badge model">모델</span></td><td>①~④의 설정값·버퍼·객체는 합성 값입니다. ⑤는 메뉴 수준의 값을 넣고 카메라의 코드로 설정값을 만들었습니다.</td><td>전체</td></tr>
+<tr><th scope="row">하드웨어 안의 픽셀 계산</th><td><span class="badge model">모델</span> <span class="badge open">미확인</span></td><td>단계 순서(화이트밸런스 → 색 행렬 → 다축 보정 → 톤 → 감마 → YC 변환 → 채도 억제)와 감마 표의 형식은 공개 레지스터 헤더를 따랐습니다. 다축 색 보정의 계산식과 중간 값의 비트 폭은 모릅니다.</td><td><a href="firmware-color-pipeline.html">⑤</a> · <a href="pipeline-report.html#clip-semantics">④</a></td></tr>
 <tr><th scope="row">클리핑의 위치와 방식</th><td><span class="badge open">미확인</span></td><td>입력 클리핑 레지스터의 비교 방식, R2y의 상한 후보 필드가 실제로 하는 일</td><td><a href="pipeline-report.html#clip-semantics">④</a></td></tr>
-<tr><th scope="row">색좌표</th><td><span class="badge open">미확인</span></td><td>각 행렬이 받는 입력과 내놓는 출력의 원색, 화이트밸런스 네 채널의 색 이름</td><td><a href="color-algorithms.html">②</a>, <a href="pipeline-report.html#wb-b2r-gain">④</a></td></tr>
+<tr><th scope="row">색좌표</th><td><span class="badge ok">확인</span> <span class="badge open">미확인</span></td><td>색 행렬의 출력은 선형 sRGB입니다. AdobeRGB용 추가 행렬이 표준 “선형 sRGB → 선형 Adobe RGB” 행렬과 맞았습니다(<a href="firmware-color-pipeline.html">⑤</a>). 화이트밸런스 네 채널의 색 이름은 아직 모릅니다.</td><td><a href="color-algorithms.html">②</a>, <a href="pipeline-report.html#wb-b2r-gain">④</a></td></tr>
 <tr><th scope="row">실행 중에 정해지는 선택</th><td><span class="badge open">미확인</span></td><td>Auto Select가 고르는 모드, Cross Processing의 조합, 일부 설정을 바꾸는 런타임 플래그</td><td><a href="color-lightroom.html">①</a>, <a href="color-algorithms.html">②</a></td></tr>
-<tr><th scope="row">카메라 출력과의 대조</th><td><span class="badge open">미확인</span></td><td>같은 RAW에서 얻은 카메라 JPEG와 계산 결과의 비교, 펌웨어 계수를 Lightroom 프로파일로 옮기는 일</td><td><a href="pipeline-report.html#lightroom">④</a></td></tr>
+<tr><th scope="row">카메라 출력과의 대조</th><td><span class="badge ok">확인</span> 일부</td><td>공개 RAW 두 장에서 계산한 색을 카메라가 기록한 JPEG과 PC에서 비교했습니다. 평탄 블록 평균 ΔE<sub>00</sub>은 Natural 0.85, Bright 0.91입니다. 다른 ISO·조명과 나머지 모드는 비교하지 않았습니다. 펌웨어 값으로 만든 Lightroom 프로파일은 <a href="firmware-dcp.html">펌웨어 값으로 만드는 색 프로파일</a>에 있습니다. 펌웨어에서 읽은 색 표는 <a href="k3iii-color-tables.json">k3iii-color-tables.json</a>에 있습니다.</td><td><a href="firmware-color-pipeline.html">⑤</a> · <a href="pipeline-report.html#lightroom">④</a></td></tr>
 </tbody></table></div>
 </section>
 
 <section id="lightroom">
 <h2>Lightroom 색 프로파일 주제와의 관계</h2>
-<p class="takeaway">이 주제는 카메라 안에서 일어나는 일을 펌웨어로 분석하고 Lightroom 주제는 같은 RAW를 PC에서 현상한 결과를 실제로 측정합니다. 두 주제를 잇는 다리는 아직 놓이지 않았습니다.</p>
+<p class="takeaway">이 주제는 카메라 안에서 일어나는 일을 펌웨어로 분석하고 Lightroom 주제는 같은 RAW를 PC에서 현상한 결과를 실제로 측정합니다. 두 주제를 잇는 다리는 K-3 Mark III에서 펌웨어 값으로 프로파일을 만드는 도구로 놓였습니다. 그 프로파일을 실제 Lightroom에서 재는 일은 남아 있습니다.</p>
 
 <figure class="diagram">
 <figcaption>같은 RAW에서 갈라지는 두 경로</figcaption>
 <div class="dg-scroll">
 <svg class="dg" viewBox="0 0 800 250" role="img" aria-labelledby="dg-lr-title dg-lr-desc">
 <title id="dg-lr-title">카메라 내부 색 처리 주제와 Lightroom 색 프로파일 주제의 관계</title>
-<desc id="dg-lr-desc">같은 RAW 파일에서 두 경로가 갈라집니다. 위쪽 경로는 카메라 내부 색 처리로, 카메라 JPEG를 만듭니다. 이 주제가 펌웨어 분석으로 다룹니다. 아래쪽 경로는 Lightroom이 DCP 프로파일로 현상해 TIFF를 내보내는 과정으로, Lightroom 색 프로파일 주제가 실제 측정으로 다룹니다. 두 출력은 색차로 비교할 수 있습니다. 카메라 쪽의 행렬과 곡선을 Lightroom 프로파일로 옮기는 연결은 아직 확인하지 못했습니다.</desc>
+<desc id="dg-lr-desc">같은 RAW 파일에서 두 경로가 갈라집니다. 위쪽 경로는 카메라 내부 색 처리로, 카메라 JPEG를 만듭니다. 이 주제가 펌웨어 분석으로 다룹니다. 아래쪽 경로는 Lightroom이 DCP 프로파일로 현상해 TIFF를 내보내는 과정으로, Lightroom 색 프로파일 주제가 실제 측정으로 다룹니다. 두 출력은 색차로 비교할 수 있습니다. 카메라 쪽의 행렬과 곡선을 Lightroom 프로파일로 옮기는 생성 도구가 있고 그 결과는 실제 Lightroom에서 아직 재지 않았습니다.</desc>
 <defs>
 <marker id="dg-lr-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0 0L10 5L0 10z"/></marker>
 <marker id="dg-lr-aho" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah open" d="M0 0L10 5L0 10z"/></marker>
@@ -290,13 +293,13 @@ Cr =  0.5 R − 0.4187 G − 0.0813 B + 128</code></pre>
 <path class="e" d="M160 140H195V192H228" marker-end="url(#dg-lr-ah)"/>
 <path class="e" d="M530 58H608" marker-end="url(#dg-lr-ah)"/>
 <path class="e" d="M530 192H608" marker-end="url(#dg-lr-ah)"/>
-<path class="e open" d="M300 96V152" marker-end="url(#dg-lr-aho)"/>
-<text class="n topen" x="310" y="129">행렬·곡선을 프로파일로 옮기기: 미확인</text>
+<path class="e" d="M300 96V152" marker-end="url(#dg-lr-ah)"/>
+<a href="firmware-dcp.html"><text class="n" x="310" y="129">행렬·곡선을 프로파일로 옮기기: 생성 도구</text></a>
 <path class="e dash" d="M700 96V154"/>
 <text class="n" x="710" y="129">색차로 비교</text>
 </svg>
 </div>
-<ul class="dg-legend"><li><i class="key"></i>이 주제</li><li><i class="ok"></i>실제 Lightroom으로 측정한 것</li><li><i class="open"></i>점선 화살표: 아직 잇지 못한 연결</li></ul>
+<ul class="dg-legend"><li><i class="key"></i>이 주제</li><li><i class="ok"></i>실제 Lightroom으로 측정한 것</li></ul>
 </figure>
 
 <div class="table-wrap"><table>
@@ -311,10 +314,10 @@ Cr =  0.5 R − 0.4187 G − 0.0813 B + 128</code></pre>
 <ul>
 <li><strong>이미 있는 프로파일</strong>: Adobe는 K-3 Mark III용 Camera Matching 프로파일을 다섯 모드에 제공합니다. 그 파일의 구조는 <a href="color-lightroom.html">컬러모드 자원과 Lightroom</a>에서 읽었습니다. 나머지 모드에는 대응하는 프로파일이 없습니다.</li>
 <li><strong>닮은 관측</strong>: 펌웨어에서 Natural과 Portrait는 감마 곡선이 같고 행렬만 달랐습니다. Adobe의 Camera Natural과 Camera Portrait 프로파일도 톤 곡선과 LookTable이 같고 ForwardMatrix만 다릅니다. 두 관측이 같은 변환을 뜻한다는 증거는 아닙니다. 자세한 내용은 <a href="color-mode-boundaries.html">색 모드별 행렬·감마 조건</a>에 있습니다.</li>
-<li><strong>옮기기 위한 조건</strong>: 펌웨어의 행렬과 곡선을 프로파일로 옮기려면 입력 색좌표, 화이트밸런스 적용 상태, 클리핑 위치를 먼저 알아야 합니다. 조건의 목록은 <a href="pipeline-report.html#lightroom">JPEG·ISP와 색 재현 경로</a>에 있습니다.</li>
+<li><strong>옮기기 위한 조건</strong>: 펌웨어의 행렬과 곡선을 프로파일로 옮기려면 입력 색좌표, 화이트밸런스 적용 상태, 클리핑 위치를 먼저 알아야 했습니다. 조건의 목록은 <a href="pipeline-report.html#lightroom">JPEG·ISP와 색 재현 경로</a>에 있습니다. K-3 Mark III에서 이 조건을 푼 과정은 <a href="firmware-color-pipeline.html">펌웨어로 확정한 색 처리 경로</a>에, 만든 프로파일은 <a href="firmware-dcp.html">펌웨어 값으로 만드는 색 프로파일</a>에 있습니다.</li>
 </ul>
 <div class="callout warn"><strong class="label">주의</strong>
-<p>펌웨어에서 찾은 행렬에 ColorMatrix라는 이름이 붙어 있어도 DNG 프로파일의 ColorMatrix와 같은 것이 아닙니다. Adobe의 설명에 따르면 DNG의 ColorMatrix는 XYZ 값을 화이트밸런스 전의 카메라 값으로 바꿉니다. ForwardMatrix는 화이트밸런스를 적용한 카메라 값을 D50 기준 XYZ로 바꿉니다(<a href="https://android.googlesource.com/platform/external/dng_sdk/+/refs/heads/main/source/dng_camera_profile.h">Adobe DNG SDK, dng_camera_profile.h</a>). 펌웨어 행렬의 입력과 출력 좌표는 아직 모릅니다.</p></div>
+<p>펌웨어에서 찾은 행렬에 ColorMatrix라는 이름이 붙어 있어도 DNG 프로파일의 ColorMatrix와 같은 것이 아닙니다. Adobe의 설명에 따르면 DNG의 ColorMatrix는 XYZ 값을 화이트밸런스 전의 카메라 값으로 바꿉니다. ForwardMatrix는 화이트밸런스를 적용한 카메라 값을 D50 기준 XYZ로 바꿉니다(<a href="https://android.googlesource.com/platform/external/dng_sdk/+/refs/heads/main/source/dng_camera_profile.h">Adobe DNG SDK, dng_camera_profile.h</a>). 펌웨어의 색 행렬은 화이트밸런스를 적용한 센서 RGB를 받아 선형 sRGB를 냅니다(<a href="firmware-color-pipeline.html">⑤</a>). 그래서 DNG의 ForwardMatrix 쪽으로 옮길 수 있습니다.</p></div>
 </section>
 
 <section id="reading">
@@ -325,7 +328,8 @@ Cr =  0.5 R − 0.4187 G − 0.0813 B + 128</code></pre>
 <li class="card"><span class="tag">② 계산식</span><h3><a href="color-algorithms.html">색 처리 알고리즘</a></h3><p class="q">색 행렬, 감마, 톤 곡선은 어떤 식으로 계산되나요?</p><p>행렬 합성, Gold·Cross 보간, 일반·Reversal 감마, ToneControl의 식을 복원하고 원본 코드 실행으로 대조했습니다.</p></li>
 <li class="card"><span class="tag">③ 설정의 효과</span><h3><a href="color-mode-boundaries.html">색 모드별 행렬·감마 조건</a></h3><p class="q">모드, 채도, 대비를 바꾸면 행렬과 감마 가운데 무엇이 달라지나요?</p><p>채도는 행렬을, 대비는 일반 감마를 바꿨습니다. Natural과 Portrait는 감마가 같고 행렬이 달랐습니다.</p></li>
 <li class="card"><span class="tag">④ 하드웨어로 가는 길</span><h3><a href="pipeline-report.html">JPEG·ISP와 색 재현 경로</a></h3><p class="q">계산된 값은 어떻게 하드웨어에 전달되고 무엇이 아직 모르는 부분인가요?</p><p>화이트밸런스, 행렬, 감마·톤, 양자화 표가 레지스터에 기록되는 경로를 확인했습니다. 픽셀 처리 순서와 클리핑의 의미는 미확인입니다.</p></li>
-<li class="card"><span class="tag">다음 주제</span><h3><a href="guide-lightroom.html">Lightroom 색 프로파일</a></h3><p class="q">같은 RAW를 Lightroom에서 현상하면 어떤 결과가 나오나요?</p><p>설치된 Adobe 프로파일의 구조를 확인하고 DCP를 만드는 도구를 마련했습니다. 이어지는 문서에서 시험 프로파일을 실제 Lightroom에 적용해 측정합니다.</p></li>
+<li class="card"><span class="tag">⑤ 전체 실행과 비교</span><h3><a href="firmware-color-pipeline.html">펌웨어로 확정한 색 처리 경로</a></h3><p class="q">카메라가 RAW를 JPEG으로 바꾸는 색 단계는 어떤 순서이고 결과가 카메라 JPEG과 맞나요?</p><p>색 설정 루틴 전체를 에뮬레이터에서 실행했습니다. 색 행렬의 출력은 선형 sRGB이고 카메라 JPEG과의 평균 ΔE<sub>00</sub>은 Natural 0.85, Bright 0.91입니다.</p></li>
+<li class="card"><span class="tag">다음 주제</span><h3><a href="guide-lightroom.html">Lightroom 색 프로파일</a></h3><p class="q">같은 RAW를 Lightroom에서 현상하면 어떤 결과가 나오나요?</p><p>설치된 Adobe 프로파일의 구조를 확인하고 DCP를 만드는 도구를 마련했습니다. 시험 프로파일을 실제 Lightroom에 적용해 측정했고 K-3 Mark III는 펌웨어 값으로 프로파일을 만듭니다(<a href="firmware-dcp.html">펌웨어 값으로 만드는 색 프로파일</a>).</p></li>
 </ul>
 <p>관련된 다른 주제의 문서도 있습니다. 색공간 메뉴 화면의 동작은 <a href="colorspace-ui.html">색공간 화면: 선택·확정·취소</a>가, 색 행렬 곱셈 함수를 C로 다시 만든 과정은 <a href="recompiled-kernels.html">수치 함수 C 재구현</a>이 다룹니다.</p>
 </section>
@@ -341,6 +345,8 @@ Cr =  0.5 R − 0.4187 G − 0.0813 B + 128</code></pre>
 <li><a href="adobe-profiles.json">adobe-profiles.json</a> — Adobe 프로파일 파일의 태그와 해시</li>
 <li><a href="pipeline-evidence.json">pipeline-evidence.json</a> — 하드웨어 설정 경로의 필드 연결과 조건</li>
 <li><a href="deep-evidence.json">deep-evidence.json</a> — 분석 구간의 주소와 바이트 해시</li>
+<li><a href="firmware-color-pipeline.json">firmware-color-pipeline.json</a> — 색 설정 루틴 전체 실행의 모드별 해시와 구조 · <a href="firmware-color-validation.json">firmware-color-validation.json</a> — 카메라 JPEG 비교 결과</li>
+<li>외부 자료 — 레지스터: <a href="https://github.com/killsmm/m10v_mono">공개 Milbeaut SDK 헤더(m10v_mono)</a>의 <code>im_r2y.h</code>, <code>__fr2y6a.h</code></li>
 <li>외부 자료 — 카메라: <a href="https://www.ricoh-imaging.co.jp/english/products/k-3-3/spec/">리코 K-3 Mark III 제품 사양</a> · <a href="https://www.ricoh-imaging.co.jp/english/products/custom_image/special/">리코의 Custom Image 설명</a> · <a href="https://www.ricoh-imaging.co.jp/english/products/k-3-3/firmup/">K-3 Mark III 펌웨어 업데이트 이력</a></li>
 <li>외부 자료 — 처리 과정: <a href="https://www.eecs.yorku.ca/~mbrown/pdf/Karaimer_Brown_ECCV16.pdf">Karaimer·Brown, A Software Platform for Manipulating the Camera Imaging Pipeline (ECCV 2016)</a></li>
 <li>외부 자료 — 색공간: <a href="https://registry.color.org/rgb-registry/srgb">ICC의 sRGB 등록 정보 (IEC 61966-2-1)</a> · <a href="https://www.adobe.com/digitalimag/pdfs/AdobeRGB1998.pdf">Adobe RGB (1998) Color Image Encoding</a></li>
@@ -352,7 +358,7 @@ Cr =  0.5 R − 0.4187 G − 0.0813 B + 128</code></pre>
 </main>
 </div>
 <!-- chrome:bottom -->
-<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">카메라 내부 색 처리 — 이 주제의 문서</h2><ol><li><a href="guide-color.html" aria-current="page">색 처리 안내</a></li><li><a href="color-lightroom.html">컬러모드 자원과 Lightroom</a></li><li><a href="color-algorithms.html">색 처리 알고리즘<span>행렬·감마·톤</span></a></li><li><a href="color-mode-boundaries.html">색 모드별 행렬·감마 조건</a></li><li><a href="pipeline-report.html">JPEG·ISP와 색 재현 경로</a></li><li><a href="raw-nr-feasibility.html">RAW 노이즈 감소를 끌 수 있는가</a></li></ol></nav>
+<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">카메라 내부 색 처리 — 이 주제의 문서</h2><ol><li><a href="guide-color.html" aria-current="page">색 처리 안내</a></li><li><a href="color-lightroom.html">컬러모드 자원과 Lightroom</a></li><li><a href="color-algorithms.html">색 처리 알고리즘<span>행렬·감마·톤</span></a></li><li><a href="color-mode-boundaries.html">색 모드별 행렬·감마 조건</a></li><li><a href="pipeline-report.html">JPEG·ISP와 색 재현 경로</a></li><li><a href="firmware-color-pipeline.html">펌웨어로 확정한 색 처리 경로<span>실제 펌웨어 실행·카메라 JPEG 대조</span></a></li><li><a href="raw-nr-feasibility.html">RAW 노이즈 감소를 끌 수 있는가</a></li></ol></nav>
 <nav class="pager" aria-label="이전·다음 문서"><a class="prev" href="shell-backup-path.html"><small>← 이전</small>SD 셸 입력과 보정 백업</a><a class="next" href="color-lightroom.html"><small>다음 →</small>컬러모드 자원과 Lightroom</a></nav>
 <footer class="sitefoot"><div class="sitefoot-in"><nav aria-label="사이트"><a href="../index.html#map">문서 지도</a><a href="../index.html#levels">검증 수준 읽는 법</a><a href="../glossary.html">용어집</a><a href="research-program.html">세 기종 연구 본부</a><a href="https://github.com/yunhyok/pentax-k3iii-firmware-analysis">GitHub 저장소</a></nav><p>PENTAX 펌웨어 연구. PC에서 수행한 정적 분석과 에뮬레이션 결과이며, 카메라 실기에서 검증한 내용이 아닙니다. 원본 펌웨어와 추출한 독점 코드는 포함하지 않습니다.</p></div></footer>
 <!-- /chrome:bottom -->

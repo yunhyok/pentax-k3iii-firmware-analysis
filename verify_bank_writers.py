@@ -1,7 +1,6 @@
 """Original ARM clear/header routines with synthetic buffers and intercepted storage effects."""
 import argparse,hashlib,json,os,struct,sys
 from pathlib import Path
-sys.path.insert(0,str(Path(os.environ['TEMP'])/'pentax-neon-emulation'))
 from unicorn import Uc,UC_ARCH_ARM,UC_MODE_ARM,UC_MODE_LITTLE_ENDIAN,UC_HOOK_CODE
 from unicorn.arm_const import *
 BASE=0x52500000;SHA='342d2f35405e8daf1797dfe431d2e4aa70f4b52a2c242a29df48206672f1dfb4';sha=lambda x:hashlib.sha256(x).hexdigest();R=[UC_ARM_REG_R0,UC_ARM_REG_R1,UC_ARM_REG_R2,UC_ARM_REG_R3]

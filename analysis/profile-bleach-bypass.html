@@ -1,0 +1,366 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Bleach Bypass 프로파일 — PENTAX K-3 Mark III 펌웨어 연구</title>
+<meta name="description" content="PENTAX K-3 Mark III Custom Image Bleach Bypass의 Lightroom 프로파일. 출고 설정, 펌웨어 색 행렬, 톤 곡선, ColorChecker 24색 비교와 내려받기.">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-camera="k3iii">
+<!-- chrome:top -->
+<a class="skip" href="#main">본문 바로가기</a>
+<div class="topbar"><div class="topbar-in"><a class="brand" href="../index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="../index.html" aria-current="true">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="https://yunhyok.github.io/pentax-q7-firmware-analysis/">Q7</a></div><nav class="topnav" aria-label="주제"><a href="../index.html">개요</a><a href="guide-boot.html">부팅·저장소</a><a href="guide-update.html">업데이트</a><a href="guide-rebuild.html">재구축</a><a href="guide-rtos.html">명령·셸</a><a href="guide-color.html">색 처리</a><a href="color-profiles.html" aria-current="true">프로파일</a><a href="guide-lightroom.html">Lightroom</a><a href="guide-af.html">AF</a><a href="guide-ui.html">UI</a></nav></div></div>
+<nav class="crumbs" aria-label="현재 위치"><ol><li><a href="../index.html">PENTAX K-3 Mark III</a></li><li><a href="color-profiles.html">K-3 Mark III 색 프로파일</a></li><li aria-current="page">Bleach Bypass 프로파일</li></ol></nav>
+<!-- /chrome:top -->
+<header class="page-head">
+<p class="eyebrow">색 프로파일 · Custom Image별</p>
+<h1>Bleach Bypass 프로파일</h1>
+<p class="lead">K-3 Mark III의 Custom Image Bleach Bypass에 맞춘 Lightroom 카메라 프로파일입니다. 펌웨어 2.20의 색 표와 출고 설정으로 계산한 색 행렬과 톤 곡선을 싣고, 같은 색을 Natural과 비교해 이 모드가 색을 어떻게 바꾸는지 보여 줍니다.</p>
+</header>
+<div class="layout">
+<!-- chrome:toc -->
+<nav class="toc" aria-label="이 문서의 목차"><h2 data-toc="no">이 문서에서</h2><ol><li><a href="#official">리코의 설명</a></li><li><a href="#colours">색이 어떻게 달라지는가</a></li><li><a href="#matrix">색 행렬</a></li><li><a href="#tone">톤 곡선</a></li><li><a href="#settings">설정</a></li><li><a href="#download">프로파일 파일</a></li><li><a href="#limits">한계</a></li><li><a href="#refs">근거 파일과 참고 자료</a></li></ol></nav>
+<!-- /chrome:toc -->
+<main class="doc" id="main">
+
+<section class="summary">
+<h2 data-toc="no">핵심 요약</h2>
+<ul>
+<li>리코는 Bleach Bypass가 표백을 생략해 현상한 옛 필름처럼 색을 억누른 로키·고대비 사진을 만든다고 설명합니다. 조색의 기본값은 그린입니다.</li>
+<li>출고 설정은 키 −4, 대비 +4, 샤프니스 −1, 조색 그린입니다. 프로파일은 이 가운데 조색과 샤프니스를 뺀 설정으로 만들었습니다.</li>
+<li>색 패치 18개의 채도가 Natural보다 평균 46% 낮습니다. Natural과의 평균 색차(ΔE00)는 19.5입니다.</li>
+<li><strong>카메라의 출고 설정에는 그린 조색이 켜져 있지만 프로파일에는 없습니다.</strong> 조색은 회색까지 물들이는데 이 형식의 프로파일은 회색을 물들이지 못합니다. 프로파일의 결과는 카메라에서 조색을 끈 설정과 같습니다.</li>
+<li>이 프로파일은 카메라 JPEG과 비교하지 않았습니다. 값은 Natural·Bright와 같은 계산 경로에서 나왔지만 이 모드의 결과가 카메라와 맞는지 따로 잰 적은 없습니다.</li>
+</ul>
+</section>
+
+<section id="official">
+<h2>리코의 설명</h2>
+<p>리코는 Bleach Bypass가 표백을 생략해 현상한 옛 필름처럼 색을 억누른 로키·고대비 사진을 만든다고 설명합니다. 조색의 기본값은 그린입니다. 출처: <a href="https://www.ricoh-imaging.co.jp/english/products/custom_image/">리코 Custom Image 안내(모드와 특징)</a>.</p>
+</section>
+
+<section id="colours">
+<h2>색이 어떻게 달라지는가</h2>
+<p class="takeaway">같은 24색을 Natural과 나란히 계산했습니다. 장면의 중간 회색이 카메라의 기준 노출에 오도록 놓았습니다.</p>
+<figure class="diagram">
+<figcaption>ColorChecker 24색을 Bleach Bypass의 색 모델로 계산한 결과</figcaption>
+<div class="dg-scroll">
+<svg class="dg" viewBox="0 0 800 316" role="img" aria-labelledby="dg-sw-bleach-bypass-title dg-sw-bleach-bypass-desc">
+<title id="dg-sw-bleach-bypass-title">Bleach Bypass의 색 견본</title>
+<desc id="dg-sw-bleach-bypass-desc">가로로 ColorChecker 24색이 차트 순서대로 놓이고 세로로 기준 색 (색상표 측정값을 그대로 sRGB로), Natural, Bleach Bypass (프로파일), Bleach Bypass (카메라 출고 설정: 그린 조색 포함) 순서입니다. 색 이름은 왼쪽부터 어두운 피부, 밝은 피부, 파란 하늘, 나뭇잎, 파란 꽃, 청록, 주황, 보랏빛 파랑, 붉은색, 보라, 연두, 주황빛 노랑, 파랑, 초록, 빨강, 노랑, 자홍, 시안, 흰색, 회색 8, 회색 6.5, 회색 5, 회색 3.5, 검정입니다.</desc>
+<text class="s" x="16" y="20">기준 색 (색상표 측정값을 그대로 sRGB로)</text>
+<rect x="16" y="28" width="30" height="44" fill="#744f41"/>
+<rect x="48" y="28" width="30" height="44" fill="#c5907f"/>
+<rect x="80" y="28" width="30" height="44" fill="#5b789b"/>
+<rect x="112" y="28" width="30" height="44" fill="#5b6c40"/>
+<rect x="144" y="28" width="30" height="44" fill="#837faf"/>
+<rect x="176" y="28" width="30" height="44" fill="#5fbdac"/>
+<rect x="208" y="28" width="30" height="44" fill="#e07c30"/>
+<rect x="240" y="28" width="30" height="44" fill="#455aa7"/>
+<rect x="272" y="28" width="30" height="44" fill="#c5505f"/>
+<rect x="304" y="28" width="30" height="44" fill="#5d3a68"/>
+<rect x="336" y="28" width="30" height="44" fill="#9cbb3a"/>
+<rect x="368" y="28" width="30" height="44" fill="#e3a127"/>
+<rect x="400" y="28" width="30" height="44" fill="#283e91"/>
+<rect x="432" y="28" width="30" height="44" fill="#3d9346"/>
+<rect x="464" y="28" width="30" height="44" fill="#b23639"/>
+<rect x="496" y="28" width="30" height="44" fill="#ecc70f"/>
+<rect x="528" y="28" width="30" height="44" fill="#bf4f92"/>
+<rect x="560" y="28" width="30" height="44" fill="#0085a5"/>
+<rect x="592" y="28" width="30" height="44" fill="#f1f2eb"/>
+<rect x="624" y="28" width="30" height="44" fill="#c9cac9"/>
+<rect x="656" y="28" width="30" height="44" fill="#a1a3a3"/>
+<rect x="688" y="28" width="30" height="44" fill="#797979"/>
+<rect x="720" y="28" width="30" height="44" fill="#535455"/>
+<rect x="752" y="28" width="30" height="44" fill="#323232"/>
+<text class="s" x="16" y="94">Natural</text>
+<rect x="16" y="102" width="30" height="44" fill="#75422f"/>
+<rect x="48" y="102" width="30" height="44" fill="#c49482"/>
+<rect x="80" y="102" width="30" height="44" fill="#547b9f"/>
+<rect x="112" y="102" width="30" height="44" fill="#556c2e"/>
+<rect x="144" y="102" width="30" height="44" fill="#8782b1"/>
+<rect x="176" y="102" width="30" height="44" fill="#5bbdae"/>
+<rect x="208" y="102" width="30" height="44" fill="#d87f1d"/>
+<rect x="240" y="102" width="30" height="44" fill="#3452aa"/>
+<rect x="272" y="102" width="30" height="44" fill="#c4445a"/>
+<rect x="304" y="102" width="30" height="44" fill="#562766"/>
+<rect x="336" y="102" width="30" height="44" fill="#a1bb28"/>
+<rect x="368" y="102" width="30" height="44" fill="#daa516"/>
+<rect x="400" y="102" width="30" height="44" fill="#152b95"/>
+<rect x="432" y="102" width="30" height="44" fill="#2a9736"/>
+<rect x="464" y="102" width="30" height="44" fill="#b42326"/>
+<rect x="496" y="102" width="30" height="44" fill="#dfc507"/>
+<rect x="528" y="102" width="30" height="44" fill="#bf4397"/>
+<rect x="560" y="102" width="30" height="44" fill="#0088a8"/>
+<rect x="592" y="102" width="30" height="44" fill="#e2e2e0"/>
+<rect x="624" y="102" width="30" height="44" fill="#c7c8c7"/>
+<rect x="656" y="102" width="30" height="44" fill="#a5a7a7"/>
+<rect x="688" y="102" width="30" height="44" fill="#7b7b7b"/>
+<rect x="720" y="102" width="30" height="44" fill="#47494a"/>
+<rect x="752" y="102" width="30" height="44" fill="#1e1e1f"/>
+<text class="s" x="16" y="168">Bleach Bypass (프로파일)</text>
+<rect x="16" y="176" width="30" height="44" fill="#2e1b1b"/>
+<rect x="48" y="176" width="30" height="44" fill="#8d6161"/>
+<rect x="80" y="176" width="30" height="44" fill="#2f4759"/>
+<rect x="112" y="176" width="30" height="44" fill="#2b2d1c"/>
+<rect x="144" y="176" width="30" height="44" fill="#4c5572"/>
+<rect x="176" y="176" width="30" height="44" fill="#5e917f"/>
+<rect x="208" y="176" width="30" height="44" fill="#9e4941"/>
+<rect x="240" y="176" width="30" height="44" fill="#19315b"/>
+<rect x="272" y="176" width="30" height="44" fill="#79283d"/>
+<rect x="304" y="176" width="30" height="44" fill="#1b1526"/>
+<rect x="336" y="176" width="30" height="44" fill="#838545"/>
+<rect x="368" y="176" width="30" height="44" fill="#ac6f4d"/>
+<rect x="400" y="176" width="30" height="44" fill="#0a1c3f"/>
+<rect x="432" y="176" width="30" height="44" fill="#325327"/>
+<rect x="464" y="176" width="30" height="44" fill="#601524"/>
+<rect x="496" y="176" width="30" height="44" fill="#c0985f"/>
+<rect x="528" y="176" width="30" height="44" fill="#72305e"/>
+<rect x="560" y="176" width="30" height="44" fill="#16525e"/>
+<rect x="592" y="176" width="30" height="44" fill="#d2d1cf"/>
+<rect x="624" y="176" width="30" height="44" fill="#a8a9a8"/>
+<rect x="656" y="176" width="30" height="44" fill="#787979"/>
+<rect x="688" y="176" width="30" height="44" fill="#424242"/>
+<rect x="720" y="176" width="30" height="44" fill="#1d1e1e"/>
+<rect x="752" y="176" width="30" height="44" fill="#0a0a0b"/>
+<text class="s" x="16" y="242">Bleach Bypass (카메라 출고 설정: 그린 조색 포함)</text>
+<rect x="16" y="250" width="30" height="44" fill="#291f17"/>
+<rect x="48" y="250" width="30" height="44" fill="#87655d"/>
+<rect x="80" y="250" width="30" height="44" fill="#294b55"/>
+<rect x="112" y="250" width="30" height="44" fill="#253119"/>
+<rect x="144" y="250" width="30" height="44" fill="#46596f"/>
+<rect x="176" y="250" width="30" height="44" fill="#58957b"/>
+<rect x="208" y="250" width="30" height="44" fill="#984c3d"/>
+<rect x="240" y="250" width="30" height="44" fill="#133557"/>
+<rect x="272" y="250" width="30" height="44" fill="#742b3a"/>
+<rect x="304" y="250" width="30" height="44" fill="#161822"/>
+<rect x="336" y="250" width="30" height="44" fill="#7d8942"/>
+<rect x="368" y="250" width="30" height="44" fill="#a6734a"/>
+<rect x="400" y="250" width="30" height="44" fill="#04203c"/>
+<rect x="432" y="250" width="30" height="44" fill="#2d5624"/>
+<rect x="464" y="250" width="30" height="44" fill="#5b1920"/>
+<rect x="496" y="250" width="30" height="44" fill="#ba9c5c"/>
+<rect x="528" y="250" width="30" height="44" fill="#6d345b"/>
+<rect x="560" y="250" width="30" height="44" fill="#10565a"/>
+<rect x="592" y="250" width="30" height="44" fill="#ccd5cb"/>
+<rect x="624" y="250" width="30" height="44" fill="#a3aca5"/>
+<rect x="656" y="250" width="30" height="44" fill="#727d75"/>
+<rect x="688" y="250" width="30" height="44" fill="#3c453e"/>
+<rect x="720" y="250" width="30" height="44" fill="#18221b"/>
+<rect x="752" y="250" width="30" height="44" fill="#050e07"/>
+</svg>
+</div>
+</figure>
+<p>채도가 가장 많이 달라지는 패치는 보라(−70%), 나뭇잎(−69%), 어두운 피부(−64%)입니다. 색상각이 가장 많이 도는 패치는 주황(−34.0°), 주황빛 노랑(−29.1°), 밝은 피부(−24.4°)입니다. 이 차이에는 색 행렬뿐 아니라 톤 곡선의 차이도 들어 있습니다. 카메라가 곡선을 R, G, B마다 따로 적용하므로 곡선이 달라지면 채도도 달라집니다.</p>
+<div class="callout warn"><strong class="label">조색</strong>
+<p>카메라는 출고 설정에서 그린 조색을 겁니다. 펌웨어는 채도 억제 뒤에 Cb에 −8, Cr에 −16을 더합니다(색차 전체 범위가 1024). 중간 회색의 JPEG 값은 R −5.6, G +3.5, B −3.5만큼 움직이고 24색 평균 색차(ΔE00)는 4.6입니다. 프로파일의 색조·채도 표는 회색(채도 0)을 물들일 수 없어 이 조색을 담지 못했습니다. 위 견본의 마지막 줄이 조색을 넣은 계산 결과입니다.</p></div>
+<figure class="diagram">
+<figcaption>Natural에서 Bleach Bypass(으)로: 색 패치 18개의 a*–b* 이동</figcaption>
+<div class="dg-scroll">
+<svg class="dg" viewBox="0 0 800 500" role="img" aria-labelledby="dg-ab-bleach-bypass-title dg-ab-bleach-bypass-desc">
+<title id="dg-ab-bleach-bypass-title">Bleach Bypass의 색 이동</title>
+<desc id="dg-ab-bleach-bypass-desc">CIELAB의 a*–b* 평면입니다. 가로축 a*는 왼쪽이 초록, 오른쪽이 빨강이고 세로축 b*는 아래가 파랑, 위가 노랑입니다. 색 패치 18개마다 Natural의 위치에서 Bleach Bypass의 위치로 선을 그었습니다. 원점에서 멀수록 채도가 높습니다.</desc>
+<circle class="g" cx="250" cy="250" r="57" fill="none"/>
+<text class="n" x="310" y="246">25</text>
+<circle class="g" cx="250" cy="250" r="115" fill="none"/>
+<text class="n" x="368" y="246">50</text>
+<circle class="g" cx="250" cy="250" r="172" fill="none"/>
+<text class="n" x="426" y="246">75</text>
+<circle class="g" cx="250" cy="250" r="230" fill="none"/>
+<text class="n" x="483" y="246">100</text>
+<line class="g" x1="10" y1="250" x2="490" y2="250"/><line class="g" x1="250" y1="10" x2="250" y2="490"/>
+<text class="n end" x="490" y="266">a* (빨강 쪽)</text><text class="n" x="10" y="266">(초록 쪽)</text>
+<text class="n mid" x="250" y="10">b* (노랑 쪽)</text><text class="n mid" x="250" y="498">(파랑 쪽)</text>
+<line class="e" x1="295.5" y1="201.9" x2="271.6" y2="239.9"/>
+<circle class="b" cx="295.5" cy="201.9" r="3.5"/>
+<circle cx="271.6" cy="239.9" r="7" fill="#2e1b1b" stroke="none"/>
+<line class="e" x1="285.2" y1="212.1" x2="290.7" y2="233.0"/>
+<circle class="b" cx="285.2" cy="212.1" r="3.5"/>
+<circle cx="290.7" cy="233.0" r="7" fill="#8d6161" stroke="none"/>
+<line class="e" x1="242.6" y1="305.2" x2="241.0" y2="281.1"/>
+<circle class="b" cx="242.6" cy="305.2" r="3.5"/>
+<circle cx="241.0" cy="281.1" r="7" fill="#2f4759" stroke="none"/>
+<line class="e" x1="205.2" y1="177.8" x2="239.4" y2="225.8"/>
+<circle class="b" cx="205.2" cy="177.8" r="3.5"/>
+<circle cx="239.4" cy="225.8" r="7" fill="#2b2d1c" stroke="none"/>
+<line class="e" x1="277.4" y1="305.0" x2="259.0" y2="290.9"/>
+<circle class="b" cx="277.4" cy="305.0" r="3.5"/>
+<circle cx="259.0" cy="290.9" r="7" fill="#4c5572" stroke="none"/>
+<line class="e" x1="175.5" y1="253.4" x2="200.3" y2="239.7"/>
+<circle class="b" cx="175.5" cy="253.4" r="3.5"/>
+<circle cx="200.3" cy="239.7" r="7" fill="#5e917f" stroke="none"/>
+<line class="e" x1="313.5" y1="107.9" x2="330.3" y2="199.9"/>
+<circle class="b" cx="313.5" cy="107.9" r="3.5"/>
+<circle cx="330.3" cy="199.9" r="7" fill="#9e4941" stroke="none"/>
+<line class="e" x1="294.6" y1="367.1" x2="264.0" y2="313.9"/>
+<circle class="b" cx="294.6" cy="367.1" r="3.5"/>
+<circle cx="264.0" cy="313.9" r="7" fill="#19315b" stroke="none"/>
+<line class="e" x1="370.5" y1="214.6" x2="335.8" y2="236.4"/>
+<circle class="b" cx="370.5" cy="214.6" r="3.5"/>
+<circle cx="335.8" cy="236.4" r="7" fill="#79283d" stroke="none"/>
+<line class="e" x1="325.9" y1="314.4" x2="268.6" y2="273.9"/>
+<circle class="b" cx="325.9" cy="314.4" r="3.5"/>
+<circle cx="268.6" cy="273.9" r="7" fill="#1b1526" stroke="none"/>
+<line class="e" x1="186.3" y1="99.6" x2="224.9" y2="171.8"/>
+<circle class="b" cx="186.3" cy="99.6" r="3.5"/>
+<circle cx="224.9" cy="171.8" r="7" fill="#838545" stroke="none"/>
+<line class="e" x1="268.4" y1="86.2" x2="297.1" y2="184.2"/>
+<circle class="b" cx="268.4" cy="86.2" r="3.5"/>
+<circle cx="297.1" cy="184.2" r="7" fill="#ac6f4d" stroke="none"/>
+<line class="e" x1="327.3" y1="387.5" x2="267.2" y2="306.8"/>
+<circle class="b" cx="327.3" cy="387.5" r="3.5"/>
+<circle cx="267.2" cy="306.8" r="7" fill="#0a1c3f" stroke="none"/>
+<line class="e" x1="134.1" y1="154.6" x2="200.8" y2="200.3"/>
+<circle class="b" cx="134.1" cy="154.6" r="3.5"/>
+<circle cx="200.8" cy="200.3" r="7" fill="#325327" stroke="none"/>
+<line class="e" x1="379.7" y1="167.0" x2="329.1" y2="225.2"/>
+<circle class="b" cx="379.7" cy="167.0" r="3.5"/>
+<circle cx="329.1" cy="225.2" r="7" fill="#601524" stroke="none"/>
+<line class="e" x1="235.1" y1="66.2" x2="267.5" y2="168.4"/>
+<circle class="b" cx="235.1" cy="66.2" r="3.5"/>
+<circle cx="267.5" cy="168.4" r="7" fill="#c0985f" stroke="none"/>
+<line class="e" x1="384.1" y1="296.9" x2="331.2" y2="281.5"/>
+<circle class="b" cx="384.1" cy="296.9" r="3.5"/>
+<circle cx="331.2" cy="281.5" r="7" fill="#72305e" stroke="none"/>
+<line class="e" x1="205.6" y1="308.9" x2="216.4" y2="278.3"/>
+<circle class="b" cx="205.6" cy="308.9" r="3.5"/>
+<circle cx="216.4" cy="278.3" r="7" fill="#16525e" stroke="none"/>
+<circle class="b" cx="540" cy="60" r="3.5"/><text class="s" x="554" y="65">Natural</text>
+<circle cx="540" cy="86" r="7" fill="#601524" stroke="none"/><text class="s" x="554" y="91">Bleach Bypass</text>
+<text class="h" x="532" y="130">색 패치</text>
+<rect x="532" y="142" width="14" height="14" fill="#2e1b1b"/><text class="n" x="552" y="154">어두운 피부</text>
+<rect x="532" y="166" width="14" height="14" fill="#8d6161"/><text class="n" x="552" y="178">밝은 피부</text>
+<rect x="532" y="190" width="14" height="14" fill="#2f4759"/><text class="n" x="552" y="202">파란 하늘</text>
+<rect x="532" y="214" width="14" height="14" fill="#2b2d1c"/><text class="n" x="552" y="226">나뭇잎</text>
+<rect x="532" y="238" width="14" height="14" fill="#4c5572"/><text class="n" x="552" y="250">파란 꽃</text>
+<rect x="532" y="262" width="14" height="14" fill="#5e917f"/><text class="n" x="552" y="274">청록</text>
+<rect x="532" y="286" width="14" height="14" fill="#9e4941"/><text class="n" x="552" y="298">주황</text>
+<rect x="532" y="310" width="14" height="14" fill="#19315b"/><text class="n" x="552" y="322">보랏빛 파랑</text>
+<rect x="532" y="334" width="14" height="14" fill="#79283d"/><text class="n" x="552" y="346">붉은색</text>
+<rect x="664" y="142" width="14" height="14" fill="#1b1526"/><text class="n" x="684" y="154">보라</text>
+<rect x="664" y="166" width="14" height="14" fill="#838545"/><text class="n" x="684" y="178">연두</text>
+<rect x="664" y="190" width="14" height="14" fill="#ac6f4d"/><text class="n" x="684" y="202">주황빛 노랑</text>
+<rect x="664" y="214" width="14" height="14" fill="#0a1c3f"/><text class="n" x="684" y="226">파랑</text>
+<rect x="664" y="238" width="14" height="14" fill="#325327"/><text class="n" x="684" y="250">초록</text>
+<rect x="664" y="262" width="14" height="14" fill="#601524"/><text class="n" x="684" y="274">빨강</text>
+<rect x="664" y="286" width="14" height="14" fill="#c0985f"/><text class="n" x="684" y="298">노랑</text>
+<rect x="664" y="310" width="14" height="14" fill="#72305e"/><text class="n" x="684" y="322">자홍</text>
+<rect x="664" y="334" width="14" height="14" fill="#16525e"/><text class="n" x="684" y="346">시안</text>
+</svg>
+</div>
+</figure>
+<details><summary>패치 24개의 수치</summary>
+<div class="table-wrap"><table class="compact">
+<caption>Bleach Bypass의 결과와 Natural 대비 변화</caption>
+<thead><tr><th>#</th><th>패치</th><th>결과 sRGB</th><th>ΔE00</th><th>채도</th><th>색상각</th><th>밝기 L*</th></tr></thead>
+<tbody><tr><td class="n">1</td><td>어두운 피부</td><td><code>#2e1b1b</code></td><td class="n">19.06</td><td class="n">−64%</td><td class="n">−21.2°</td><td class="n">−21.5</td></tr><tr><td class="n">2</td><td>밝은 피부</td><td><code>#8d6161</code></td><td class="n">19.76</td><td class="n">−15%</td><td class="n">−24.4°</td><td class="n">−19.6</td></tr><tr><td class="n">3</td><td>파란 하늘</td><td><code>#2f4759</code></td><td class="n">19.12</td><td class="n">−42%</td><td class="n">−8.5°</td><td class="n">−21.0</td></tr><tr><td class="n">4</td><td>나뭇잎</td><td><code>#2b2d1c</code></td><td class="n">22.94</td><td class="n">−69%</td><td class="n">−8.0°</td><td class="n">−24.6</td></tr><tr><td class="n">5</td><td>파란 꽃</td><td><code>#4c5572</code></td><td class="n">20.19</td><td class="n">−32%</td><td class="n">−14.1°</td><td class="n">−19.9</td></tr><tr><td class="n">6</td><td>청록</td><td><code>#5e917f</code></td><td class="n">13.71</td><td class="n">−32%</td><td class="n">−14.5°</td><td class="n">−14.2</td></tr><tr><td class="n">7</td><td>주황</td><td><code>#9e4941</code></td><td class="n">29.12</td><td class="n">−39%</td><td class="n">−34.0°</td><td class="n">−19.8</td></tr><tr><td class="n">8</td><td>보랏빛 파랑</td><td><code>#19315b</code></td><td class="n">14.11</td><td class="n">−48%</td><td class="n">−8.4°</td><td class="n">−16.4</td></tr><tr><td class="n">9</td><td>붉은색</td><td><code>#79283d</code></td><td class="n">17.15</td><td class="n">−31%</td><td class="n">−7.4°</td><td class="n">−18.5</td></tr><tr><td class="n">10</td><td>보라</td><td><code>#1b1526</code></td><td class="n">17.90</td><td class="n">−70%</td><td class="n">−11.9°</td><td class="n">−16.9</td></tr><tr><td class="n">11</td><td>연두</td><td><code>#838545</code></td><td class="n">18.38</td><td class="n">−50%</td><td class="n">−5.1°</td><td class="n">−17.7</td></tr><tr><td class="n">12</td><td>주황빛 노랑</td><td><code>#ac6f4d</code></td><td class="n">25.59</td><td class="n">−51%</td><td class="n">−29.1°</td><td class="n">−18.2</td></tr><tr><td class="n">13</td><td>파랑</td><td><code>#0a1c3f</code></td><td class="n">14.21</td><td class="n">−62%</td><td class="n">−12.4°</td><td class="n">−12.9</td></tr><tr><td class="n">14</td><td>초록</td><td><code>#325327</code></td><td class="n">24.31</td><td class="n">−53%</td><td class="n">−5.9°</td><td class="n">−23.3</td></tr><tr><td class="n">15</td><td>빨강</td><td><code>#601524</code></td><td class="n">19.07</td><td class="n">−46%</td><td class="n">−15.3°</td><td class="n">−19.0</td></tr><tr><td class="n">16</td><td>노랑</td><td><code>#c0985f</code></td><td class="n">19.14</td><td class="n">−55%</td><td class="n">−16.7°</td><td class="n">−14.2</td></tr><tr><td class="n">17</td><td>자홍</td><td><code>#72305e</code></td><td class="n">17.31</td><td class="n">−39%</td><td class="n">−1.9°</td><td class="n">−17.9</td></tr><tr><td class="n">18</td><td>시안</td><td><code>#16525e</code></td><td class="n">19.83</td><td class="n">−40%</td><td class="n">−13.0°</td><td class="n">−20.5</td></tr><tr><td class="n">19</td><td>흰색</td><td><code>#d2d1cf</code></td><td class="n">3.89</td><td class="n">−6%</td><td class="n">–</td><td class="n">−6.0</td></tr><tr><td class="n">20</td><td>회색 8</td><td><code>#a8a9a8</code></td><td class="n">8.23</td><td class="n">–</td><td class="n">–</td><td class="n">−11.2</td></tr><tr><td class="n">21</td><td>회색 6.5</td><td><code>#787979</code></td><td class="n">15.55</td><td class="n">–</td><td class="n">–</td><td class="n">−17.6</td></tr><tr><td class="n">22</td><td>회색 5</td><td><code>#424242</code></td><td class="n">20.86</td><td class="n">–</td><td class="n">–</td><td class="n">−23.8</td></tr><tr><td class="n">23</td><td>회색 3.5</td><td><code>#1d1e1e</code></td><td class="n">13.82</td><td class="n">–</td><td class="n">–</td><td class="n">−19.7</td></tr><tr><td class="n">24</td><td>검정</td><td><code>#0a0a0b</code></td><td class="n">5.14</td><td class="n">–</td><td class="n">–</td><td class="n">−8.4</td></tr></tbody></table></div>
+<p class="small muted">색상각은 CIELAB a*–b* 평면의 각도 변화입니다. 양수는 빨강에서 노랑, 초록, 파랑 순서 쪽으로 도는 방향입니다. 채도가 5보다 낮은 패치는 비워 두었습니다.</p></details>
+<div class="callout"><strong class="label">읽는 법</strong>
+<p>이 그림은 펌웨어의 색 계산을 PC에서 다시 한 결과입니다. 화면에 보이는 색은 모니터에 따라 다르므로 수치를 함께 보십시오. 기준 색은 X-Rite가 공개한 ColorChecker 측정값이고 실제 장면을 찍은 것이 아닙니다.</p></div>
+</section>
+
+<section id="matrix">
+<h2>색 행렬</h2>
+<p class="takeaway">색 행렬은 화이트밸런스를 맞춘 센서 RGB를 선형 sRGB로 바꿉니다. 공통 행렬에 이 모드의 모드 행렬을 곱해 만듭니다.</p>
+<div class="table-wrap"><table class="compact">
+<caption>Bleach Bypass의 모드 행렬 (펌웨어 값 ÷ 8192)</caption>
+<thead><tr><th></th><th>R 입력</th><th>G 입력</th><th>B 입력</th><th>행의 합</th></tr></thead>
+<tbody><tr><th scope="row">R 출력</th><td class="n">+0.5977</td><td class="n">+0.4102</td><td class="n">-0.0078</td><td class="n">1.000</td></tr><tr><th scope="row">G 출력</th><td class="n">+0.0625</td><td class="n">+0.7773</td><td class="n">+0.1602</td><td class="n">1.000</td></tr><tr><th scope="row">B 출력</th><td class="n">+0.1602</td><td class="n">+0.2422</td><td class="n">+0.5977</td><td class="n">1.000</td></tr></tbody></table></div>
+<div class="table-wrap"><table class="compact">
+<caption>Bleach Bypass의 색 행렬 (레지스터 값 ÷ 256)</caption>
+<thead><tr><th></th><th>R 입력</th><th>G 입력</th><th>B 입력</th><th>행의 합</th></tr></thead>
+<tbody><tr><th scope="row">R 출력</th><td class="n">+0.7812</td><td class="n">+0.2500</td><td class="n">-0.0312</td><td class="n">1.000</td></tr><tr><th scope="row">G 출력</th><td class="n">-0.0352</td><td class="n">+0.9922</td><td class="n">+0.0430</td><td class="n">1.000</td></tr><tr><th scope="row">B 출력</th><td class="n">+0.2227</td><td class="n">-0.0352</td><td class="n">+0.8125</td><td class="n">1.000</td></tr></tbody></table></div>
+<p>행의 합이 모두 1이어서 무채색은 무채색으로 남습니다. 레지스터에 들어가는 정수는 <code>200, 64, -8, -9, 254, 11, 57, -9, 208</code>입니다. 프로파일의 ForwardMatrix에는 16개 프로파일이 함께 쓰는 공통 행렬이 들어갑니다. 이 모드의 색 행렬이 공통 행렬과 다른 만큼은 LookTable이 맡습니다.</p>
+</section>
+
+<section id="tone">
+<h2>톤 곡선</h2>
+<p class="takeaway">출고 설정(키 −4, 대비 +4, 조색 그린) 때문에 곡선이 Natural과 다릅니다. 설정을 모두 0으로 두면 Natural과 같은 곡선이 됩니다.</p>
+<figure class="diagram">
+<figcaption>Bleach Bypass의 톤 곡선</figcaption>
+<div class="dg-scroll">
+<svg class="dg" viewBox="0 0 800 410" role="img" aria-labelledby="dg-tone-bleach-bypass-title dg-tone-bleach-bypass-desc">
+<title id="dg-tone-bleach-bypass-title">Bleach Bypass의 톤 곡선</title>
+<desc id="dg-tone-bleach-bypass-desc">가로축은 장면의 밝기로, 중간 회색(반사율 18%)을 0으로 둔 노출 단계입니다. 세로축은 JPEG의 8비트 값입니다. Bleach Bypass (출고 설정), Natural, sRGB 부호화만 곡선을 그렸습니다.</desc>
+<line class="g" x1="70" y1="24" x2="70" y2="354"/><text class="n mid" x="70" y="372">−7</text>
+<line class="g" x1="120" y1="24" x2="120" y2="354"/><text class="n mid" x="120" y="372">−6</text>
+<line class="g" x1="170" y1="24" x2="170" y2="354"/><text class="n mid" x="170" y="372">−5</text>
+<line class="g" x1="220" y1="24" x2="220" y2="354"/><text class="n mid" x="220" y="372">−4</text>
+<line class="g" x1="270" y1="24" x2="270" y2="354"/><text class="n mid" x="270" y="372">−3</text>
+<line class="g" x1="320" y1="24" x2="320" y2="354"/><text class="n mid" x="320" y="372">−2</text>
+<line class="g" x1="370" y1="24" x2="370" y2="354"/><text class="n mid" x="370" y="372">−1</text>
+<line class="g" x1="420" y1="24" x2="420" y2="354"/><text class="n mid" x="420" y="372">0</text>
+<line class="g" x1="470" y1="24" x2="470" y2="354"/><text class="n mid" x="470" y="372">+1</text>
+<line class="g" x1="520" y1="24" x2="520" y2="354"/><text class="n mid" x="520" y="372">+2</text>
+<line class="g" x1="570" y1="24" x2="570" y2="354"/><text class="n mid" x="570" y="372">+3</text>
+<line class="g" x1="70" y1="354" x2="570" y2="354"/><text class="n end" x="62" y="358">0</text>
+<line class="g" x1="70" y1="271" x2="570" y2="271"/><text class="n end" x="62" y="275">64</text>
+<line class="g" x1="70" y1="188" x2="570" y2="188"/><text class="n end" x="62" y="192">128</text>
+<line class="g" x1="70" y1="106" x2="570" y2="106"/><text class="n end" x="62" y="110">192</text>
+<line class="g" x1="70" y1="24" x2="570" y2="24"/><text class="n end" x="62" y="28">255</text>
+<text class="s mid" x="320" y="394">장면 밝기 (중간 회색 기준 노출 단계, EV)</text>
+<text class="s" x="8" y="14">JPEG 값</text>
+<polyline class="e key" fill="none" points="70.0,353.0 75.0,352.8 80.0,352.7 85.0,352.7 90.0,352.6 95.0,352.4 100.0,352.3 105.0,352.2 110.0,352.1 115.0,351.9 120.0,351.8 125.0,351.7 130.0,351.5 135.0,351.3 140.0,351.2 145.0,350.9 150.0,350.8 155.0,350.5 160.0,350.2 165.0,350.0 170.0,349.6 175.0,349.5 180.0,349.3 185.0,349.2 190.0,349.1 195.0,349.0 200.0,348.7 205.0,348.6 210.0,348.3 215.0,348.2 220.0,347.9 225.0,347.7 230.0,347.3 235.0,347.0 240.0,346.6 245.0,346.4 250.0,346.0 255.0,345.5 260.0,345.1 265.0,344.6 270.0,344.0 275.0,343.4 280.0,342.7 285.0,342.0 290.0,341.2 295.0,340.3 300.0,339.4 305.0,338.3 310.0,337.3 315.0,336.1 320.0,334.8 325.0,333.4 330.0,331.9 335.0,330.2 340.0,328.4 345.0,326.6 350.0,324.5 355.0,322.2 360.0,319.8 365.0,317.2 370.0,314.5 375.0,311.6 380.0,308.4 385.0,305.1 390.0,301.5 395.0,297.7 400.0,293.6 405.0,289.2 410.0,284.4 415.0,279.2 420.0,273.8 425.0,267.8 430.0,261.5 435.0,254.9 440.0,247.9 445.0,240.6 450.0,233.0 455.0,225.1 460.0,216.8 465.0,208.3 470.0,199.5 475.0,190.6 480.0,181.6 485.0,172.7 490.0,163.8 495.0,154.7 500.0,145.8 505.0,136.7 510.0,127.8 515.0,118.6 520.0,109.5 525.0,100.4 530.0,91.0 535.0,81.8 540.0,72.9 545.0,64.1 550.0,55.4 555.0,46.9 560.0,38.5 565.0,29.7 570.0,24.0"/>
+<polyline class="e dash" fill="none" points="70.0,351.8 75.0,351.7 80.0,351.5 85.0,351.4 90.0,351.2 95.0,351.0 100.0,350.8 105.0,350.5 110.0,350.2 115.0,350.0 120.0,349.7 125.0,349.3 130.0,349.1 135.0,348.7 140.0,348.3 145.0,347.9 150.0,347.5 155.0,347.0 160.0,346.5 165.0,346.0 170.0,345.5 175.0,344.9 180.0,344.4 185.0,343.8 190.0,343.1 195.0,342.5 200.0,341.8 205.0,341.1 210.0,340.3 215.0,339.4 220.0,338.5 225.0,337.4 230.0,336.4 235.0,335.4 240.0,334.1 245.0,332.8 250.0,331.5 255.0,330.1 260.0,328.5 265.0,327.0 270.0,325.1 275.0,323.3 280.0,321.4 285.0,319.3 290.0,317.1 295.0,314.8 300.0,312.3 305.0,309.7 310.0,306.9 315.0,304.0 320.0,300.9 325.0,297.6 330.0,294.1 335.0,290.5 340.0,286.6 345.0,282.4 350.0,278.0 355.0,273.5 360.0,268.7 365.0,263.5 370.0,258.2 375.0,252.5 380.0,246.7 385.0,240.8 390.0,234.8 395.0,229.0 400.0,223.0 405.0,217.2 410.0,211.3 415.0,205.4 420.0,199.5 425.0,193.7 430.0,187.7 435.0,181.8 440.0,175.8 445.0,169.8 450.0,163.9 455.0,157.8 460.0,151.9 465.0,145.8 470.0,139.7 475.0,133.6 480.0,127.5 485.0,121.4 490.0,115.4 495.0,109.2 500.0,103.1 505.0,96.9 510.0,90.6 515.0,84.4 520.0,78.2 525.0,72.5 530.0,66.7 535.0,61.0 540.0,55.2 545.0,49.5 550.0,43.7 555.0,37.8 560.0,32.2 565.0,26.3 570.0,24.0"/>
+<polyline class="e" fill="none" points="70.0,348.0 75.0,347.5 80.0,347.1 85.0,346.6 90.0,346.1 95.0,345.5 100.0,344.9 105.0,344.3 110.0,343.5 115.0,342.9 120.0,342.0 125.0,341.2 130.0,340.3 135.0,339.2 140.0,338.3 145.0,337.3 150.0,336.3 155.0,335.2 160.0,334.2 165.0,333.0 170.0,332.0 175.0,330.7 180.0,329.5 185.0,328.2 190.0,327.0 195.0,325.7 200.0,324.4 205.0,322.9 210.0,321.5 215.0,320.0 220.0,318.5 225.0,316.9 230.0,315.3 235.0,313.6 240.0,311.9 245.0,310.1 250.0,308.3 255.0,306.5 260.0,304.6 265.0,302.5 270.0,300.6 275.0,298.4 280.0,296.3 285.0,294.1 290.0,291.8 295.0,289.4 300.0,287.0 305.0,284.5 310.0,281.9 315.0,279.2 320.0,276.5 325.0,273.8 330.0,270.8 335.0,267.8 340.0,264.8 345.0,261.6 350.0,258.4 355.0,255.1 360.0,251.6 365.0,248.1 370.0,244.5 375.0,240.8 380.0,236.9 385.0,233.0 390.0,228.9 395.0,224.7 400.0,220.3 405.0,215.9 410.0,211.3 415.0,206.6 420.0,201.8 425.0,196.8 430.0,191.6 435.0,186.3 440.0,180.8 445.0,175.3 450.0,169.5 455.0,163.6 460.0,157.4 465.0,151.2 470.0,144.7 475.0,138.0 480.0,131.2 485.0,124.2 490.0,116.8 495.0,109.4 500.0,101.6 505.0,93.8 510.0,85.6 515.0,77.2 520.0,68.5 525.0,59.6 530.0,50.5 535.0,41.1 540.0,31.4 545.0,24.0 550.0,24.0 555.0,24.0 560.0,24.0 565.0,24.0 570.0,24.0"/>
+<line class="e key" x1="600" y1="60" x2="640" y2="60"/><text class="s" x="648" y="64">Bleach Bypass (출고 설정)</text>
+<line class="e dash" x1="600" y1="86" x2="640" y2="86"/><text class="s" x="648" y="90">Natural</text>
+<line class="e" x1="600" y1="112" x2="640" y2="112"/><text class="s" x="648" y="116">sRGB 부호화만</text>
+</svg>
+</div>
+</figure>
+<p>중간 회색(0 EV)의 JPEG 값은 62입니다. 3단계 어두운 곳은 8, 2단계 밝은 곳은 189입니다. Natural은 차례로 119, 22, 213입니다.</p>
+</section>
+
+<section id="settings">
+<h2>설정</h2>
+<p class="takeaway">이 모드는 채도, 키, 대비, 대비(하이라이트), 대비(섀도) 설정을 색 계산에 반영합니다. 출고값은 펌웨어의 설정 표에서 읽었습니다.</p>
+<div class="table-wrap"><table class="compact">
+<caption>이 Custom Image의 출고 설정과 펌웨어의 처리</caption>
+<thead><tr><th>설정</th><th>출고값</th><th>펌웨어의 처리</th></tr></thead>
+<tbody><tr><th scope="row">채도</th><td class="n">0</td><td>색 계산에 반영합니다</td></tr><tr><th scope="row">색상</th><td class="n">없음</td><td>색 계산에 쓰지 않습니다. 항상 0으로 계산합니다</td></tr><tr><th scope="row">키</th><td class="n">−4</td><td>색 계산에 반영합니다</td></tr><tr><th scope="row">대비</th><td class="n">+4</td><td>색 계산에 반영합니다</td></tr><tr><th scope="row">대비(하이라이트)</th><td class="n">없음</td><td>색 계산에 반영합니다</td></tr><tr><th scope="row">대비(섀도)</th><td class="n">없음</td><td>색 계산에 반영합니다</td></tr><tr><th scope="row">샤프니스</th><td class="n">−1</td><td>프로파일 밖의 처리입니다</td></tr><tr><th scope="row">조색</th><td class="n">그린</td><td>Cb와 Cr에 상수를 더합니다. 프로파일에는 담지 못합니다</td></tr></tbody></table></div>
+<p>배포하는 파일은 출고 설정의 프로파일입니다. 카메라에서 설정을 바꿔 찍었다면 같은 값을 넣어 프로파일을 다시 만드십시오. 채도는 색 행렬을, 색상은 YC 변환을, 키와 대비 셋은 톤 곡선을 바꿉니다.</p>
+<pre><code>python tools/make_k3iii_profile.py --mode bleach-bypass --saturation 1 --output my-bleach-bypass.dcp</code></pre>
+</section>
+
+<section id="download">
+<h2>프로파일 파일</h2>
+<ul>
+<li>파일: <a href="../profiles/k3iii/k3iii-firmware-bleach-bypass.dcp">k3iii-firmware-bleach-bypass.dcp</a> (952 KB). Lightroom에 보이는 이름은 “K-3 III Firmware Bleach Bypass”입니다.</li>
+<li>SHA-256: <code>34868fcfdfeb6a453088de3a7f55e6382960cb45f9b57de3d26daa8d5628f091</code></li>
+<li>프로파일과 이 문서의 색 모델을 무작위 장면 색 60,000개로 비교하면 평균 ΔE00이 0.03, 99백분위가 0.18, 최대가 0.6입니다. 한 채널이 2% 아래인 고채도 색에서는 평균 0.03, 최대 0.6입니다. LookTable을 빼면 평균이 10.7입니다.</li>
+<li>넣는 방법은 <a href="color-profiles.html#install">색 프로파일 모음</a>에, 프로파일의 구조는 <a href="firmware-dcp.html">펌웨어 값으로 만드는 색 프로파일</a>에 있습니다.</li>
+</ul>
+</section>
+
+<section id="limits">
+<h2>한계</h2>
+<ul>
+<li>이 프로파일은 카메라 JPEG과 비교하지 않았습니다. 값은 Natural·Bright와 같은 계산 경로에서 나왔지만 이 모드의 결과가 카메라와 맞는지 따로 잰 적은 없습니다.</li>
+<li>Lightroom에서 이 프로파일을 적용한 결과는 아직 재지 않았습니다. 수치는 Adobe DNG SDK의 기준 처리 순서로 계산한 것입니다.</li>
+<li>출고 설정의 조색은 프로파일에 없습니다.</li>
+<li>그림자 보정, 하이라이트 보정, 명료도, 디지털 필터, 렌즈 보정, 노이즈 감소, 샤프니스는 프로파일에 들어 있지 않습니다.</li>
+<li>색 견본은 색상표의 측정값을 넣어 계산한 것입니다. 센서가 실제 장면에서 내는 값과는 다를 수 있습니다.</li>
+</ul>
+</section>
+
+<section id="refs">
+<h2>근거 파일과 참고 자료</h2>
+<ul class="refs">
+<li><a href="k3iii-color-tables.json">k3iii-color-tables.json</a> — 펌웨어에서 꺼낸 색 표와 출고 설정. <a href="k3iii-profile-data.json">k3iii-profile-data.json</a> — 이 문서의 수치. <a href="k3iii-profile-notes.json">k3iii-profile-notes.json</a> — 리코 자료 조사 기록.</li>
+<li><a href="../tools/k3iii_color_engine.py">tools/k3iii_color_engine.py</a> · <a href="../tools/make_k3iii_profile.py">tools/make_k3iii_profile.py</a> · <a href="../tools/build_profile_pages.py">tools/build_profile_pages.py</a></li>
+<li><a href="firmware-color-pipeline.html">펌웨어로 확정한 색 처리 경로</a> — 계산 순서와 근거.</li>
+<li>기준 색: X-Rite ColorChecker Classic 참조 데이터(2014년 11월 이후 제조분), <a href="https://www.xrite.com/service-support/new_color_specifications_for_colorchecker_sg_and_classic_charts">X-Rite 안내</a>.</li>
+</ul>
+</section>
+
+</main>
+</div>
+<!-- chrome:bottom -->
+<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">K-3 Mark III 색 프로파일 — 이 주제의 문서</h2><ol><li><a href="color-profiles.html">색 프로파일 모음<span>16종 내려받기와 출고 설정</span></a></li><li><a href="profile-maker-feasibility.html">프로파일 생성 프로그램 타당성 검토<span>펌웨어 없이 도는 계산 엔진</span></a></li><li><a href="profile-natural.html">Natural 프로파일<span>기준이 되는 모드</span></a></li><li><a href="profile-bright.html">Bright 프로파일<span>기본 Custom Image, 대비 +1</span></a></li><li><a href="profile-portrait.html">Portrait 프로파일<span>피부색</span></a></li><li><a href="profile-landscape.html">Landscape 프로파일<span>파랑·초록 강조, 대비 +1</span></a></li><li><a href="profile-vibrant.html">Vibrant 프로파일<span>삼원색 강조</span></a></li><li><a href="profile-radiant.html">Radiant 프로파일<span>키 +2, 대비 +3</span></a></li><li><a href="profile-muted.html">Muted 프로파일<span>키 +4, 대비 −3</span></a></li><li><a href="profile-flat.html">Flat 프로파일<span>대비 −4</span></a></li><li><a href="profile-bleach-bypass.html" aria-current="page">Bleach Bypass 프로파일<span>키 −4, 대비 +4, 조색 제외</span></a></li><li><a href="profile-reversal-film.html">Reversal Film 프로파일<span>전용 톤 곡선</span></a></li><li><a href="profile-monochrome.html">Monochrome 프로파일<span>흑백</span></a></li><li><a href="profile-satobi.html">SATOBI 프로파일<span>대비 +2</span></a></li><li><a href="profile-harubeni.html">HARUBENI 프로파일<span>Special Edition, 조색 제외</span></a></li><li><a href="profile-katen.html">KATEN 프로파일<span>Special Edition</span></a></li><li><a href="profile-kyushu.html">KYUSHU 프로파일<span>Special Edition</span></a></li><li><a href="profile-fuyuno.html">FUYUNO 프로파일<span>Special Edition</span></a></li></ol></nav>
+<nav class="pager" aria-label="이전·다음 문서"><a class="prev" href="profile-flat.html"><small>← 이전</small>Flat 프로파일</a><a class="next" href="profile-reversal-film.html"><small>다음 →</small>Reversal Film 프로파일</a></nav>
+<footer class="sitefoot"><div class="sitefoot-in"><nav aria-label="사이트"><a href="../index.html#map">문서 지도</a><a href="../index.html#levels">검증 수준 읽는 법</a><a href="../glossary.html">용어집</a><a href="research-program.html">세 기종 연구 본부</a><a href="https://github.com/yunhyok/pentax-k3iii-firmware-analysis">GitHub 저장소</a></nav><p>PENTAX 펌웨어 연구. PC에서 수행한 정적 분석과 에뮬레이션 결과이며, 카메라 실기에서 검증한 내용이 아닙니다. 원본 펌웨어와 추출한 독점 코드는 포함하지 않습니다.</p></div></footer>
+<!-- /chrome:bottom -->
+</body>
+</html>
