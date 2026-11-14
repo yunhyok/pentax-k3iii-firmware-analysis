@@ -59,6 +59,7 @@ STILL_BLOCK = 0x79B58              # shooting-info block of the still stage
 # Offsets inside the still block.
 MODE, SATURATION, HUE, KEY, CONTRAST = 0x264E, 0x264F, 0x2650, 0x2651, 0x2652
 HIGHLIGHT_CONTRAST, SHADOW_CONTRAST, SHARPNESS_KIND, SHARPNESS = 0x2653, 0x2654, 0x2655, 0x2656
+TONING = 0x265B                    # toning colour of Muted, Bleach Bypass and HARUBENI: 0 = off, 9..16 = eight colours
 COLOR_SPACE = 0x26B5               # 1 = AdobeRGB
 EXPOSURE_GAIN = 0x2788             # numerator of the gamma knee ratio; 0x2000 = nominal
 TONE_TAG_BUFFER = 0x1A4            # ImageTuning member: caller-supplied buffer
@@ -72,6 +73,21 @@ MODES = {
     "reversal-film": 10, "monochrome": 11, "cross-processing": 12,
     "satobi": 23, "harubeni": 24, "katen": 25, "kyushu": 26, "fuyuno": 27,
     "gold": 31,
+}
+
+
+SLIDERS = ("saturation", "hue", "key", "contrast", "highlight", "shadow")
+SETTING_TABLE = 0x53C174E0         # setting records of every image finish: count at +0x30, records at +0x32
+SETTING_RECORD = 0x34              # 26 signed 16-bit values: id, 21 setting values, 4 more
+NOT_AVAILABLE = -32768
+# Record id of each Custom Image in the setting table.  The ids rise in the order of the
+# camera's Custom Image setting value (Natural 0, Bright 1, Portrait 2, ... Gold 17).  The
+# settings a record marks "not available" are the ones the tuning code ignores in that
+# Custom Image, and the Bright record equals the setting tag of a Bright photograph.
+SETTING_RECORD_ID = {
+    "natural": 0, "bright": 1, "portrait": 16, "landscape": 17, "vibrant": 18, "monochrome": 19, "muted": 20,
+    "reversal-film": 23, "bleach-bypass": 24, "radiant": 25, "flat": 27, "satobi": 28, "harubeni": 29,
+    "katen": 30, "kyushu": 31, "fuyuno": 32, "gold": 33,
 }
 
 
@@ -105,7 +121,8 @@ class ColourRegisters:
     csp_gain: list
     csp_border: list
     chroma_fixed: bool
-    ycof: list
+    chroma_fixed_value: list        # CFIX: Cb, Cr used when chroma is fixed (10-bit signed)
+    ycof: list                      # YCOF: offsets added to Y, Cb, Cr after chroma suppression (11-bit signed, 10-bit scale)
     multi_axis: bytes = field(repr=False, default=b"")
 
     @classmethod
@@ -131,7 +148,8 @@ class ColourRegisters:
             csp_gain=[_signed(struct.unpack_from("<H", csp, 0x10 + 2 * i)[0], 11) for i in range(4)],
             csp_border=[struct.unpack_from("<H", csp, 0x18 + 2 * i)[0] & 0x3FF for i in range(3)],
             chroma_fixed=bool(csp[0x21] & 1),
-            ycof=[_signed(struct.unpack_from("<H", csp, 0x28 + 2 * i)[0], 11) for i in range(3)],
+            chroma_fixed_value=[_signed(struct.unpack_from("<H", csp, offset)[0], 10) for offset in (0x24, 0x26)],
+            ycof=[_signed(struct.unpack_from("<H", csp, offset)[0], 11) for offset in (0x28, 0x2C, 0x2E)],
             multi_axis=bytes(r[0x80:0xA40]),
         )
 
@@ -289,8 +307,14 @@ class StillTuning:
         e.w8(self.info + INFO_STAGE, 1)
 
     def make(self, mode: int, *, saturation=0, hue=0, key=0, contrast=0, highlight=0, shadow=0,
-             adobe_rgb=False, exposure_gain=0x2000) -> TuningResult:
-        """Run Make.  Slider arguments use the menu scale -4..+4 (0 = centre)."""
+             toning=0, adobe_rgb=False, exposure_gain=0x2000) -> TuningResult:
+        """Run Make.  Slider arguments use the menu scale -4..+4 (0 = centre).
+
+        `toning` is the toning colour of Muted, Bleach Bypass and HARUBENI as the
+        camera's setting record stores it: 0 = off, 1..8 = green, yellow, orange,
+        red, magenta, purple, blue, cyan.  The setting code (0x52f83160) turns
+        1..8 into 9..16 for the tuning input.
+        """
         e = self.e
         block = self.shooting_info + STILL_BLOCK
         for offset, value in ((SATURATION, saturation), (HUE, hue), (KEY, key), (CONTRAST, contrast),
@@ -298,6 +322,9 @@ class StillTuning:
             if not -4 <= value <= 4:
                 raise ValueError("slider values must be within -4..+4")
             e.w8(block + offset, value + 4)
+        if not 0 <= toning <= 8:
+            raise ValueError("toning must be within 0..8")
+        e.w8(block + TONING, toning + 8 if toning else 0)
         e.w8(block + SHARPNESS_KIND, 1)
         e.w8(block + MODE, mode)
         e.w8(block + COLOR_SPACE, 1 if adobe_rgb else 0)
@@ -333,3 +360,27 @@ def read_table(rtos: bytes, address: int, count: int, fmt: str):
     if DATA_VMA <= address < DATA_VMA + DATA_SIZE:
         address = address - DATA_VMA + DATA_LMA
     return list(struct.unpack_from(f"<{count}{fmt}", rtos, address - BASE))
+
+
+def factory_settings(rtos: bytes) -> dict:
+    """Setting values each Custom Image ships with, from the firmware's setting table.
+
+    Per Custom Image: the six tone and colour settings, sharpness and the toning
+    colour on the menu scale; None where the camera offers no such setting.
+    The routine at 0x52f835dc copies a record's values into the tuning input in
+    this order: saturation, hue, key, contrast, contrast (highlight), contrast
+    (shadow), sharpness; value 12 is the toning colour.
+    """
+    count = read_table(rtos, SETTING_TABLE + 0x30, 1, "H")[0]
+    records = {}
+    for index in range(count):
+        record = read_table(rtos, SETTING_TABLE + 0x32 + SETTING_RECORD * index, 26, "h")
+        records[record[0]] = record
+    out = {}
+    for name, record_id in SETTING_RECORD_ID.items():
+        record = records[record_id]
+        values = {key: (None if record[1 + i] == NOT_AVAILABLE else record[1 + i])
+                  for i, key in enumerate(SLIDERS + ("sharpness",))}
+        values["toning"] = None if record[13] in (NOT_AVAILABLE, -1) else record[13]
+        out[name] = {"record_id": record_id, **values}
+    return out

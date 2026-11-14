@@ -64,8 +64,12 @@ def _first(entry, order):
     return struct.unpack_from(order + fmt, payload)[0] if fmt else None
 
 
+CUSTOM_IMAGE_SETTINGS = 0x247      # maker-note tag with the Custom Image setting values of the shot
+SETTINGS = ("saturation", "hue", "key", "contrast", "highlight", "shadow")
+
+
 def capture_info(path: Path) -> dict:
-    """Image tone, colour space, exposure gain value and DNG BaselineExposure of a RAW file."""
+    """Image tone, its six settings, colour space, exposure gain value and DNG BaselineExposure of a RAW file."""
     data = Path(path).read_bytes()
     order = "<" if data[:2] == b"II" else ">"
     ifd0 = _ifd(data, struct.unpack_from(order + "I", data, 4)[0], order)
@@ -91,6 +95,13 @@ def capture_info(path: Path) -> dict:
         for name, tag in (("image_tone", 0x4F), ("color_space", 0x37), ("mid_level", 0x9D), ("white_level", 0x7E)):
             if tag in tags:
                 info[name] = _first(tags[tag], note_order)
+        if CUSTOM_IMAGE_SETTINGS in tags and len(tags[CUSTOM_IMAGE_SETTINGS][2]) >= 12:
+            # The camera stores its setting record as it is: little-endian 16-bit values, -4..+4,
+            # 0x8000 where a setting does not apply.  Routine 0x52f835dc copies the first six
+            # into the tuning input in this order.
+            values = struct.unpack_from(f"<{len(tags[CUSTOM_IMAGE_SETTINGS][2]) // 2}h", tags[CUSTOM_IMAGE_SETTINGS][2])
+            info["settings"] = {name: (value if -4 <= value <= 4 else 0) for name, value in zip(SETTINGS, values)}
+            info["toning"] = values[12] if len(values) > 12 and 0 <= values[12] <= 8 else 0
     return info
 
 
@@ -209,7 +220,7 @@ def statistics(delta, reference_lab, flat):
 
 
 def compare(raw_path: Path, decoded: Path, jpeg_path: Path | None = None, mode: str | None = None,
-            profile_path: Path | None = None, block: int = 16) -> dict:
+            profile_path: Path | None = None, block: int = 16, settings: dict | None = None) -> dict:
     import cv2
     import k3iii_tuning_emulator as emulator
     from build_firmware_dcp import build_profile
@@ -235,8 +246,11 @@ def compare(raw_path: Path, decoded: Path, jpeg_path: Path | None = None, mode: 
     jpeg = cv2.resize(jpeg, (width, height), interpolation=cv2.INTER_AREA)
     camera_rgb = np.clip(rgb * balance, 0.0, 1.0)          # neutral = equal values, raw clip at 1
 
+    # Settings of the shot: from the maker note unless given.
+    settings = {**dict.fromkeys(SETTINGS, 0), **(info.get("settings") or {}), **(settings or {})}
     rtos = emulator.load_rtos(decoded)
-    tuning = emulator.StillTuning(rtos).make(emulator.MODES[mode], adobe_rgb=adobe)
+    toning = info.get("toning", 0)          # the model follows it; a profile cannot (it tints grey)
+    tuning = emulator.StillTuning(rtos).make(emulator.MODES[mode], adobe_rgb=adobe, toning=toning, **settings)
     space = "adobergb" if adobe else "srgb"
     camera = model.CameraColour.from_tuning(tuning, mode, space)
     # The camera works on (raw - black) / 2^14 scaled by 8192 / exposure gain.
@@ -246,8 +260,7 @@ def compare(raw_path: Path, decoded: Path, jpeg_path: Path | None = None, mode: 
     if profile_path:
         profile = model.read_dcp(Path(profile_path).read_bytes())
     else:
-        neutral = dict.fromkeys(("saturation", "hue", "key", "contrast", "highlight", "shadow"), 0)
-        profile = model.read_dcp(build_profile(rtos, mode, neutral, color_space=space)[0])
+        profile = model.read_dcp(build_profile(rtos, mode, settings, color_space=space)[0])
     baseline = info.get("baseline_exposure")
     baseline_source = "DNG tag"
     if baseline is None:
@@ -280,6 +293,8 @@ def compare(raw_path: Path, decoded: Path, jpeg_path: Path | None = None, mode: 
         "raw_sha256": hashlib.sha256(Path(raw_path).read_bytes()).hexdigest(),
         "camera_jpeg": "separate file" if jpeg_path else "preview stored in the RAW file",
         "custom_image": mode, "color_space": "AdobeRGB" if adobe else "sRGB",
+        "settings": settings, "toning": toning,
+        "settings_source": "maker note tag 0x0247" if info.get("settings") else "all zero (not recorded)",
         "exposure_gain": exposure_gain, "model_exposure_scale": round(scale, 5),
         "baseline_exposure": round(baseline, 4), "baseline_exposure_source": baseline_source,
         "profile_total_exposure_ev": round(total_exposure, 4), "profile_name": profile["ProfileName"],
@@ -298,9 +313,13 @@ def main():
     parser.add_argument("--mode", help="Custom Image (default: read from the maker note)")
     parser.add_argument("--profile", type=Path, help="DCP to test (default: built on the fly)")
     parser.add_argument("--output", type=Path)
+    for name in SETTINGS:
+        parser.add_argument(f"--{name}", type=int, choices=range(-4, 5), metavar="-4..4",
+                            help="override the setting read from the maker note")
     args = parser.parse_args()
+    override = {name: getattr(args, name) for name in SETTINGS if getattr(args, name) is not None}
     try:
-        result = compare(args.raw, args.decoded, args.jpeg, args.mode, args.profile)
+        result = compare(args.raw, args.decoded, args.jpeg, args.mode, args.profile, settings=override)
     except (OSError, ValueError, RuntimeError) as error:
         parser.exit(1, f"Comparison failed: {error}\n")
     text = json.dumps(result, indent=2)

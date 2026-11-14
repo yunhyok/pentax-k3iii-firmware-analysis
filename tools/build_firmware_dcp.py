@@ -13,8 +13,9 @@ runs in a CPU emulator on the decoded firmware 2.20 image:
 * ColorMatrix1/2     the firmware's DNG tables (illuminants A and D65), scaled per channel
                      like the camera does when it writes a DNG
 
-No firmware data is stored in this repository; the output file contains values
-derived from your firmware copy.  See analysis/firmware-dcp.html.
+This tool reads the values from a firmware image.  tools/make_k3iii_profile.py
+builds the same profiles from the published tables without the firmware.
+See analysis/firmware-dcp.html.
 
 Example
     python inspect_firmware.py fwdc233b.bin --output-dir .private/my-decode
@@ -88,44 +89,37 @@ def color_matrices_from_dng(path: Path):
     return [found[50721], found[50722]]
 
 
-def build_profile(rtos: bytes, mode: str, sliders: dict, table_dims=(90, 30, 30), color_matrices=None,
-                  name: str | None = None, color_space: str = "srgb"):
-    """Return (dcp bytes, report dict) for one Custom Image.
+def profile_name(mode: str, sliders: dict, color_space: str, prefix: str = "K-3 III Firmware",
+                 factory: dict | None = None) -> str:
+    """Name shown in Lightroom: the Custom Image, then every setting that differs from the factory value."""
+    factory = factory or {}
+    changed = {key: value for key, value in sliders.items() if value != (factory.get(key) or 0)}
+    suffix = "".join(f" {key[:3]}{value:+d}" for key, value in changed.items())
+    if color_space == "adobergb":
+        suffix += " (AdobeRGB)"
+    return f"{prefix} {LABELS[mode]}{suffix}"
 
-    `color_space` is the camera setting to follow: "srgb" or "adobergb".  The
-    camera uses a wider colour matrix and re-encodes its curve for AdobeRGB.
+
+def assemble_profile(camera, common: np.ndarray, color_matrices, name: str, table_dims=(90, 30, 30),
+                     provenance: str = "Built from K-3 Mark III firmware 2.20 colour values"):
+    """Turn colour parameters (firmware_color_model.CameraColour) into DCP bytes and a short report.
+
+    `common` is the sensor matrix shared by all Custom Images; it becomes the
+    ForwardMatrix base when the colour matrix itself is singular (Monochrome).
     """
-    if mode in UNSUPPORTED:
-        raise ValueError(f"{mode}: not supported ({UNSUPPORTED[mode]})")
-    if color_space not in model.RGB_SPACES:
-        raise ValueError("color space must be srgb or adobergb")
-    result = emulator.StillTuning(rtos).make(emulator.MODES[mode], adobe_rgb=color_space == "adobergb", **sliders)
-    if result.asserts:
-        raise RuntimeError(f"firmware assertions fired during Make: {result.asserts}")
-    for channel in "rgb":
-        if not np.array_equal(result.channel_curves[channel], result.gamma_curve):
-            raise ValueError(f"{mode}: per-channel gamma curves; a profile cannot hold them")
-    camera = model.CameraColour.from_tuning(result, mode, color_space)
-    common = np.array(emulator.read_table(rtos, COMMON_MATRIX, 9, "h"), dtype=np.float64).reshape(3, 3) / 8192.0
     singular = abs(np.linalg.det(camera.matrix)) < 1e-3          # Monochrome: all rows equal
     forward_base = common if singular else None
     forward = camera.forward_matrix(forward_base)
     curve_x, curve_y = camera.tone_curve(257)
     table = model.build_look_table(camera, curve_x, curve_y, *table_dims, forward_base=forward_base)
-    matrices = color_matrices if color_matrices is not None else firmware_color_matrices(rtos)
-    label = LABELS[mode]
-    changed = {key: value for key, value in sliders.items() if value}
-    suffix = "".join(f" {key[:3]}{value:+d}" for key, value in changed.items())
-    if color_space == "adobergb":
-        suffix += " (AdobeRGB)"
     spec = {
-        "provenance": "Built by tools/build_firmware_dcp.py from a user-supplied K-3 Mark III firmware 2.20 image",
+        "provenance": provenance,
         "UniqueCameraModel": CAMERA_MODEL,
-        "ProfileName": name or f"K-3 III Firmware {label}{suffix}",
-        "ProfileCopyright": "Generated from the user's firmware copy with pentax-k3iii-firmware-analysis tools",
+        "ProfileName": name,
+        "ProfileCopyright": "Derived from PENTAX K-3 Mark III firmware 2.20 colour tables (pentax-k3iii-firmware-analysis)",
         "ProfileEmbedPolicy": 0,
         "CalibrationIlluminant1": 17, "CalibrationIlluminant2": 21,
-        "ColorMatrix1": matrices[0].tolist(), "ColorMatrix2": matrices[1].tolist(),
+        "ColorMatrix1": color_matrices[0].tolist(), "ColorMatrix2": color_matrices[1].tolist(),
         "ForwardMatrix1": forward.tolist(), "ForwardMatrix2": forward.tolist(),
         "ProfileToneCurve": [[float(a), float(b)] for a, b in zip(curve_x, curve_y)],
         "ProfileLookTableDims": list(table_dims), "ProfileLookTableEncoding": 1,
@@ -135,16 +129,52 @@ def build_profile(rtos: bytes, mode: str, sliders: dict, table_dims=(90, 30, 30)
     }
     data = build_dcp(spec)
     report = {
-        "mode": mode, "profile_name": spec["ProfileName"], "sliders": sliders, "color_space": color_space,
+        "profile_name": name,
         "forward_matrix_source": "common matrix (colour matrix is singular)" if singular else "CC0 colour matrix",
         "look_table_dims": list(table_dims), "tone_curve_points": len(curve_x),
+        "dcp_bytes": len(data), "dcp_sha256": hashlib.sha256(data).hexdigest(),
+    }
+    return data, report
+
+
+def build_profile(rtos: bytes, mode: str, sliders: dict, table_dims=(90, 30, 30), color_matrices=None,
+                  name: str | None = None, color_space: str = "srgb"):
+    """Return (dcp bytes, report dict) for one Custom Image, from the firmware image.
+
+    A setting left out of `sliders` (or None) takes the value the camera ships
+    with for that Custom Image.  `color_space` is the camera setting to follow:
+    "srgb" or "adobergb".  The camera uses a wider colour matrix and re-encodes
+    its curve for AdobeRGB.
+    """
+    if mode in UNSUPPORTED:
+        raise ValueError(f"{mode}: not supported ({UNSUPPORTED[mode]})")
+    if color_space not in model.RGB_SPACES:
+        raise ValueError("color space must be srgb or adobergb")
+    factory = emulator.factory_settings(rtos)[mode]
+    sliders = {key: (factory[key] or 0) if sliders.get(key) is None else sliders[key] for key in emulator.SLIDERS}
+    # Toning (a constant added to Cb and Cr) tints grey, which a profile cannot do; it stays off.
+    result = emulator.StillTuning(rtos).make(emulator.MODES[mode], adobe_rgb=color_space == "adobergb", **sliders)
+    if result.asserts:
+        raise RuntimeError(f"firmware assertions fired during Make: {result.asserts}")
+    for channel in "rgb":
+        if not np.array_equal(result.channel_curves[channel], result.gamma_curve):
+            raise ValueError(f"{mode}: per-channel gamma curves; a profile cannot hold them")
+    camera = model.CameraColour.from_tuning(result, mode, color_space)
+    common = np.array(emulator.read_table(rtos, COMMON_MATRIX, 9, "h"), dtype=np.float64).reshape(3, 3) / 8192.0
+    matrices = color_matrices if color_matrices is not None else firmware_color_matrices(rtos)
+    data, report = assemble_profile(
+        camera, common, matrices, name or profile_name(mode, sliders, color_space, factory=factory), table_dims,
+        "Built by tools/build_firmware_dcp.py from a user-supplied K-3 Mark III firmware 2.20 image")
+    report.update({
+        "mode": mode, "sliders": sliders, "color_space": color_space,
+        "factory_settings": {key: factory[key] or 0 for key in emulator.SLIDERS},
+        "factory_toning_left_out": factory["toning"] or 0,
         "register_sha256": {
             "cc0": hashlib.sha256(result.registers.cc0.astype("<i2").tobytes()).hexdigest(),
             "gamma_curve": hashlib.sha256(result.gamma_curve.astype("<u2").tobytes()).hexdigest(),
             "yc": hashlib.sha256(result.registers.yc.astype("<i2").tobytes()).hexdigest(),
         },
-        "dcp_bytes": len(data), "dcp_sha256": hashlib.sha256(data).hexdigest(),
-    }
+    })
     return data, report
 
 
@@ -156,9 +186,10 @@ def main():
     group.add_argument("--all", action="store_true", help="build every supported Custom Image")
     parser.add_argument("--output", type=Path, help="output .dcp (with --mode)")
     parser.add_argument("--output-dir", type=Path, help="output folder (with --all)")
-    for slider in ("saturation", "hue", "key", "contrast", "highlight", "shadow"):
-        parser.add_argument(f"--{slider}", type=int, default=0, choices=range(-4, 5), metavar="-4..4",
-                            help=f"Custom Image {slider} setting baked into the profile (default 0)")
+    for slider in emulator.SLIDERS:
+        parser.add_argument(f"--{slider}", type=int, choices=range(-4, 5), metavar="-4..4",
+                            help=f"Custom Image {slider} setting baked into the profile (default: the camera's factory value)")
+    parser.add_argument("--neutral", action="store_true", help="settings not given are 0 instead of the factory value")
     parser.add_argument("--table", default="90x30x30", help="LookTable size HxSxV (default 90x30x30)")
     parser.add_argument("--color-matrix-from", type=Path, metavar="DNG",
                         help="copy ColorMatrix1/2 from a DNG shot with your own camera")
@@ -172,13 +203,13 @@ def main():
             raise ValueError("--table: expected HxSxV such as 90x30x30")
         rtos = emulator.load_rtos(args.decoded)
         matrices = color_matrices_from_dng(args.color_matrix_from) if args.color_matrix_from else None
-        sliders = {name: getattr(args, name) for name in ("saturation", "hue", "key", "contrast", "highlight", "shadow")}
+        sliders = {name: (0 if args.neutral and getattr(args, name) is None else getattr(args, name)) for name in emulator.SLIDERS}
         if args.all:
             if not args.output_dir:
                 raise ValueError("--all needs --output-dir")
             args.output_dir.mkdir(parents=True, exist_ok=True)
-            tail = " AdobeRGB" if args.color_space == "adobergb" else ""
-            jobs = [(mode, args.output_dir / f"PENTAX K-3 Mark III Firmware {LABELS[mode]}{tail}.dcp", None) for mode in LABELS]
+            tail = "-adobergb" if args.color_space == "adobergb" else ""
+            jobs = [(mode, args.output_dir / f"k3iii-firmware-{mode}{tail}.dcp", None) for mode in LABELS]
         else:
             if not args.output or args.output.suffix.lower() != ".dcp":
                 raise ValueError("--mode needs --output ending in .dcp")

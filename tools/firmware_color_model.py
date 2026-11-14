@@ -79,6 +79,7 @@ class CameraColour:
     csp_gain: tuple = (73, 0, -7, -14)
     csp_border: tuple = (56, 768, 856)
     chroma_fixed: bool = False
+    chroma_offset: tuple = (0, 0)           # YCOF: added to Cb, Cr after chroma suppression; 10-bit scale (1.0 = 1024)
     name: str = ""
     space: str = "srgb"                     # colour space of the JPEG the camera would write
     notes: dict = field(default_factory=dict)
@@ -103,7 +104,7 @@ class CameraColour:
         return cls(cc0=r.cc0.astype(np.float64), cc0_unit=256.0, curves=curves, curve_max=curve_max, yc=r.yc.astype(np.float64),
                    csp_enable=bool(r.csp_control[0] & 1), csp_offset=tuple(r.csp_offset),
                    csp_gain=tuple(r.csp_gain), csp_border=tuple(r.csp_border),
-                   chroma_fixed=r.chroma_fixed, name=name, space=space,
+                   chroma_fixed=r.chroma_fixed, chroma_offset=tuple(r.ycof[1:]), name=name, space=space,
                    notes={"csp_mix": r.csp_control[0] >> 4, "csp_table": (r.csp_control[1] >> 4) & 1})
 
     # -- stages ---------------------------------------------------------------
@@ -163,6 +164,8 @@ class CameraColour:
         elif self.csp_enable:
             gain = self.chroma_gain(np.clip(ycc[..., 0], 0.0, 1.0))[..., None]
             ycc = np.concatenate([ycc[..., :1], ycc[..., 1:] * gain], axis=-1)
+        if any(self.chroma_offset):             # toning: a constant added to Cb and Cr
+            ycc = ycc + np.array([0.0, self.chroma_offset[0] / 1024.0, self.chroma_offset[1] / 1024.0])
         if extend:
             return np.minimum(ycc @ JFIF_DECODE.T, 1.0)
         ycc = np.concatenate([np.clip(ycc[..., :1], 0.0, 1.0), np.clip(ycc[..., 1:], -0.5, 0.5)], axis=-1)
