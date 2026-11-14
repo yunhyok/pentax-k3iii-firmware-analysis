@@ -10,7 +10,7 @@
 <body data-camera="k3iii">
 <!-- chrome:top -->
 <a class="skip" href="#main">본문 바로가기</a>
-<div class="topbar"><div class="topbar-in"><a class="brand" href="../index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="../index.html" aria-current="true">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="https://yunhyok.github.io/pentax-q7-firmware-analysis/">Q7</a></div><nav class="topnav" aria-label="주제"><a href="../index.html">개요</a><a href="guide-boot.html">부팅·저장소</a><a href="guide-update.html">업데이트</a><a href="guide-rebuild.html">재구축</a><a href="guide-rtos.html">명령·셸</a><a href="guide-color.html" aria-current="true">색 처리</a><a href="guide-lightroom.html">Lightroom</a><a href="guide-af.html">AF</a><a href="guide-ui.html">UI</a></nav></div></div>
+<div class="topbar"><div class="topbar-in"><a class="brand" href="../index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="../index.html" aria-current="true">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="https://yunhyok.github.io/pentax-q7-firmware-analysis/">Q7</a></div><nav class="topnav" aria-label="주제"><a href="../index.html">개요</a><a href="guide-boot.html">부팅·저장소</a><a href="guide-update.html">업데이트</a><a href="guide-rebuild.html">재구축</a><a href="guide-rtos.html">명령·셸</a><a href="guide-color.html" aria-current="true">색 처리</a><a href="color-profiles.html">프로파일</a><a href="guide-lightroom.html">Lightroom</a><a href="guide-af.html">AF</a><a href="guide-ui.html">UI</a></nav></div></div>
 <nav class="crumbs" aria-label="현재 위치"><ol><li><a href="../index.html">PENTAX K-3 Mark III</a></li><li><a href="guide-color.html">카메라 내부 색 처리</a></li><li aria-current="page">JPEG·ISP와 색 재현 경로</li></ol></nav>
 <!-- /chrome:top -->
 <header class="page-head">
@@ -863,7 +863,7 @@ q &gt; 50 :  배율 = trunc(1000 × (100 − q) / 50)
 <li><strong>압축의 영향 분리하기</strong> JPEG 압축과 크로마 처리 때문에 파일 바이트가 완전히 같기를 합격 조건으로 삼기는 어렵습니다. 디코딩한 이미지에 같은 색 관리와 출력 크기를 적용하고 패치 안쪽의 색과 경계 부근의 공간 오차를 나눠 평가합니다.</li>
 </ol>
 <div class="callout"><strong class="label">현재 상태</strong>
-<p>이 문서의 추적에서는 RAW·JPEG 쌍, 카메라의 하드웨어 출력, Lightroom 적용 결과를 시험하지 않았습니다. 그 뒤에 한 실제 Lightroom 실험은 <a href="lightroom-bridge.html">Lightroom 색 프로파일</a> 주제에 있습니다. K-3 Mark III는 그 뒤 펌웨어 값으로 모드별 프로파일을 만드는 도구가 생겼습니다(<a href="firmware-color-pipeline.html">펌웨어로 확정한 색 처리 경로</a>, <a href="firmware-dcp.html">펌웨어 값으로 만드는 색 프로파일</a>). 카메라 JPEG과는 PC에서 두 장면만 비교했고 실제 Lightroom에서는 아직 재지 않았습니다. Adobe 형식의 적용 위치와 기존 프로파일 구조는 <a href="color-lightroom.html">컬러모드 자원과 Lightroom</a>에 정리했습니다.</p></div>
+<p>이 문서의 추적에서는 RAW·JPEG 쌍, 카메라의 하드웨어 출력, Lightroom 적용 결과를 시험하지 않았습니다. 그 뒤에 한 실제 Lightroom 실험은 <a href="lightroom-bridge.html">Lightroom 색 프로파일</a> 주제에 있습니다. K-3 Mark III는 그 뒤 펌웨어 값으로 모드별 프로파일을 만드는 도구가 생겼습니다(<a href="firmware-color-pipeline.html">펌웨어로 확정한 색 처리 경로</a>, <a href="firmware-dcp.html">펌웨어 값으로 만드는 색 프로파일</a>). 펌웨어에서 읽은 색 표(<a href="k3iii-color-tables.json">k3iii-color-tables.json</a>)와 프로파일 16종(<a href="color-profiles.html">K-3 Mark III 색 프로파일 모음</a>)은 공개했습니다. 카메라 JPEG과는 PC에서 두 장면만 비교했고 실제 Lightroom에서는 아직 재지 않았습니다. Adobe 형식의 적용 위치와 기존 프로파일 구조는 <a href="color-lightroom.html">컬러모드 자원과 Lightroom</a>에 정리했습니다.</p></div>
 </section>
 
 <section id="verification">

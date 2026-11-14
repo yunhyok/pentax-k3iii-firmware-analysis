@@ -9,6 +9,10 @@ camera's own JPEG (a separate file, or the preview stored in the RAW file):
   profile  a DCP built by build_firmware_dcp.py, applied with the DNG reference
            pipeline (ForwardMatrix, exposure, LookTable, tone curve).
 
+The Custom Image and its settings are read from the RAW file (maker-note tags
+0x004F and 0x0247); the six settings can be overridden with --contrast and so
+on.  The profile is built for the same settings.
+
 Only geometry is aligned (the JPEG has lens corrections and a small crop).
 The result is colour difference CIEDE2000 over 16x16-pixel block means of the
 half-size image.

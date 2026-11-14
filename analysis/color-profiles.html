@@ -536,11 +536,12 @@
 <caption>프로파일 태그와 출처</caption>
 <thead><tr><th>태그</th><th>내용</th></tr></thead>
 <tbody>
-<tr><th scope="row">ForwardMatrix</th><td>펌웨어의 색 행렬(화이트밸런스를 맞춘 센서 RGB → 선형 sRGB)을 XYZ D50으로 옮긴 것</td></tr>
+<tr><th scope="row">ForwardMatrix</th><td>모든 Custom Image가 함께 쓰는 센서 공통 행렬(화이트밸런스를 맞춘 센서 RGB → 선형 sRGB)을 XYZ D50으로 옮긴 것. 16개 프로파일이 같습니다</td></tr>
 <tr><th scope="row">ProfileToneCurve</th><td>펌웨어가 출고 설정으로 계산한 감마 곡선을 sRGB 함수로 푼 것</td></tr>
-<tr><th scope="row">ProfileLookTable</th><td>카메라가 채널별로 곡선을 적용하는 방식과 밝기에 따른 채도 억제를 담은 90×30×30 표</td></tr>
+<tr><th scope="row">ProfileLookTable</th><td>모드 행렬, 채널별 곡선 적용, 색역 밖 색의 처리, 밝기에 따른 채도 억제를 담은 90×30×30 표</td></tr>
 <tr><th scope="row">BaselineExposureOffset</th><td>+0.5 EV. 펌웨어의 BaselineExposure 계산식에서 나온 값</td></tr>
 </tbody></table></div>
+<p>프로파일이 색 모델을 제대로 옮겼는지는 무작위 장면 색으로 쟀습니다. 프로파일 16개의 평균 ΔE00은 0.02에서 0.11 사이이고 고채도 색과 어두운 색까지 넣은 최대값은 3.8입니다(<a href="k3iii-profile-accuracy.json">k3iii-profile-accuracy.json</a>). 이 수치는 프로파일 형식이 모델을 얼마나 따라가는지를 말합니다. 모델이 카메라와 맞는지는 위의 카메라 JPEG 비교가 말합니다.</p>
 <p>태그를 만드는 방법과 검증은 <a href="firmware-dcp.html">펌웨어 값으로 만드는 색 프로파일</a>에, 값을 얻은 경로는 <a href="firmware-color-pipeline.html">펌웨어로 확정한 색 처리 경로</a>에 있습니다.</p>
 </section>
 

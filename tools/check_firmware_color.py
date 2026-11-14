@@ -1,7 +1,8 @@
 """Check the firmware-derived colour pipeline of the K-3 Mark III against the published record.
 
 Runs the camera's still ImageTuning routine in a CPU emulator for every Custom
-Image and records, without exporting coefficients:
+Image and records hashes and structure (the values themselves are exported by
+tools/export_color_tables.py into analysis/k3iii-color-tables.json):
 
 * SHA-256 of each colour register group (colour matrix, gamma curve, YC matrix,
   chroma suppress, multi-axis block) and structural facts (row sums, which
@@ -109,7 +110,7 @@ def survey(decoded: Path) -> dict:
         }
 
     return {
-        "scope": "Hashes and structural facts of firmware-derived colour parameters. Coefficient arrays are not exported.",
+        "scope": "Hashes and structural facts of firmware-derived colour parameters, all settings 0. The values are in analysis/k3iii-color-tables.json.",
         "firmware": {"rtos_sha256": emulator.RTOS_SHA256, "rtos_base": f"{emulator.BASE:#x}"},
         "routines": {
             "ImageTuningStill constructor": f"{emulator.CTOR_STILL:#x}", "Initialize": f"{emulator.INITIALIZE:#x}",

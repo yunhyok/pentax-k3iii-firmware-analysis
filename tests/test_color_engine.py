@@ -19,6 +19,7 @@ sys.path.insert(0, str(ROOT / "tools"))
 
 import build_profile_pages                      # noqa: E402
 import check_color_engine                       # noqa: E402
+import check_profile_accuracy                   # noqa: E402
 import compare_camera_jpeg                      # noqa: E402
 import firmware_color_model as model            # noqa: E402
 from k3iii_color_engine import SLIDERS, Engine  # noqa: E402
@@ -97,9 +98,14 @@ class EngineAgainstPublishedRecords(unittest.TestCase):
 
 class GeneratedFiles(unittest.TestCase):
     def test_profiles_pages_and_data_are_up_to_date(self):
-        stale = [path for path, content in build_profile_pages.build().items()
-                 if not (ROOT / path).is_file() or (ROOT / path).read_bytes() != content]
-        self.assertEqual(stale, [], "run python tools/build_profile_pages.py")
+        # Profiles and the data record within a rounding step (numpy builds differ in the last bit), pages exactly.
+        self.assertEqual(build_profile_pages.stale_files(), [], "run python tools/build_profile_pages.py")
+
+    def test_profile_accuracy_record_is_up_to_date(self):
+        published = json.loads((ROOT / "analysis" / "k3iii-profile-accuracy.json").read_text(encoding="utf-8"))
+        self.assertTrue(check_profile_accuracy.close(published, check_profile_accuracy.survey()))
+        worst = max(v["max"] for p in published["profiles"].values() for k, v in p.items() if k != "inside_without_look_table")
+        self.assertLess(worst, 5.0)                 # no colour class may fall apart (an earlier design reached 40-56)
 
     def test_default_profile_uses_the_factory_settings(self):
         engine = Engine.load()
@@ -119,8 +125,10 @@ class GeneratedFiles(unittest.TestCase):
         self.assertEqual(profile["ProfileName"], "K-3 III Firmware Natural")
         self.assertEqual((profile["LookTable"].hue, profile["LookTable"].sat, profile["LookTable"].val), (90, 30, 30))
         engine = Engine.load()
-        expected = model.SRGB_TO_PCS @ (np.array(engine.cc0("natural")).reshape(3, 3) / 256.0)
+        expected = model.SRGB_TO_PCS @ engine.common_matrix()                  # the sensor matrix shared by all modes
         self.assertLess(np.abs(profile["ForwardMatrix1"] - expected).max(), 1e-4)
+        vivid = model.read_dcp((ROOT / "profiles" / "k3iii" / "k3iii-firmware-radiant.dcp").read_bytes())
+        self.assertTrue(np.array_equal(vivid["ForwardMatrix1"], profile["ForwardMatrix1"]))
 
 
 def raw_with_settings(order: str, tone: int, values: tuple) -> bytes:

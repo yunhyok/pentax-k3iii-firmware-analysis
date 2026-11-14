@@ -12,6 +12,16 @@ Writes
     python tools/build_profile_pages.py           write everything
     python tools/build_profile_pages.py --check   fail if a written file is out of date
 
+The work has two steps.  The numeric step computes the profile files and the
+data record; its results can differ in the last bit between numpy builds, so
+--check compares them with the files on disk within a rounding step.  The text
+step renders the pages from the data record and the profile files on disk
+without floating-point library calls; --check compares the pages exactly.
+
+The pages quote analysis/k3iii-profile-accuracy.json.  After a change that
+alters the profile files, run this tool, then tools/check_profile_accuracy.py
+--output (replacing that record), then this tool again.
+
 The reference colours are the 24 ColorChecker Classic patches (X-Rite reference
 data for charts made from November 2014, CIE L*a*b* D50).
 """
@@ -38,6 +48,7 @@ from site_chrome import Site                   # noqa: E402
 ROOT = Path(__file__).resolve().parents[1]
 NOTES = ROOT / "analysis" / "k3iii-profile-notes.json"
 VALIDATION = ROOT / "analysis" / "firmware-color-validation.json"
+ACCURACY = ROOT / "analysis" / "k3iii-profile-accuracy.json"
 DATA = "analysis/k3iii-profile-data.json"
 OVERVIEW = "analysis/color-profiles.html"
 PROFILE_DIR = "profiles/k3iii"
@@ -88,10 +99,6 @@ def lab_of(code: np.ndarray) -> np.ndarray:
 
 def hex_colour(code) -> str:
     return "#" + "".join(f"{int(round(float(np.clip(v, 0, 1)) * 255)):02x}" for v in code)
-
-
-def hex_to_code(colours: list) -> np.ndarray:
-    return np.array([[int(c[i:i + 2], 16) / 255 for i in (1, 3, 5)] for c in colours])
 
 
 def characterise(engine: Engine) -> dict:
@@ -165,7 +172,9 @@ def characterise(engine: Engine) -> dict:
         "scope": "The 24 ColorChecker Classic reference colours rendered by each profile's colour model at the Custom Image's factory settings, sRGB.",
         "reference": {"patches": "X-Rite ColorChecker24 reference data, November 2014 edition and newer (CIE L*a*b*, D50)",
                       "exposure": "scene luminance 0.18 placed at 0.125 of the gamma input (nominal exposure gain)",
-                      "names": [p[0] for p in PATCHES], "chart_srgb": [hex_colour(c) for c in chart]},
+                      "names": [p[0] for p in PATCHES], "chart_srgb": [hex_colour(c) for c in chart],
+                      "chart_lab": [[round(float(v), 1) for v in row] for row in lab_of(chart)],
+                      "srgb_encoding_only_curve_codes": [round(float(model.srgb_encode(min(0.18 * 2.0 ** ev, 1.0))) * 255, 1) for ev in stops]},
         "tone_axis_ev": [round(float(v), 1) for v in stops],
         "profiles": profiles,
     }
@@ -363,8 +372,9 @@ def official_text(mode: str, notes: dict) -> tuple:
     return note["description_ko"], out
 
 
-def profile_page(mode: str, data: dict, notes: dict, validation: dict, dcp: bytes) -> str:
+def profile_page(mode: str, data: dict, notes: dict, validation: dict, dcp: bytes, accuracy: dict) -> str:
     profile = data["profiles"][mode]
+    fit = accuracy["profiles"][mode]
     label = profile["label"]
     names = data["reference"]["names"]
     chart = data["reference"]["chart_srgb"]
@@ -414,9 +424,9 @@ def profile_page(mode: str, data: dict, notes: dict, validation: dict, dcp: byte
     if toning:
         rows.append((f"{label} (카메라 출고 설정: {TONING_KO[toning['value']]} 조색 포함)", toning["rendered"]))
     swatches = figure(f"ColorChecker 24색을 {label}의 색 모델로 계산한 결과", swatch_figure(f"dg-sw-{mode}", f"{label}의 색 견본", rows, names))
-    reference_lab = lab_of(hex_to_code(chart if is_natural else natural["patches"]["rendered"]))
+    reference_lab = data["reference"]["chart_lab"] if is_natural else natural["patches"]["lab"]
     ab = figure(f"{reference_label}에서 {label}(으)로: 색 패치 18개의 a*–b* 이동",
-                ab_figure(f"dg-ab-{mode}", f"{label}의 색 이동", reference_lab.tolist(), patches["lab"], patches["rendered"], names, reference_label, label))
+                ab_figure(f"dg-ab-{mode}", f"{label}의 색 이동", reference_lab, patches["lab"], patches["rendered"], names, reference_label, label))
     if profile["chroma_fixed"]:
         change_text = "<p>흑백 모드여서 색 이동을 따로 적지 않습니다. 아래 그림에서 모든 패치가 원점(무채색)으로 모입니다.</p>"
     else:
@@ -459,8 +469,7 @@ def profile_page(mode: str, data: dict, notes: dict, validation: dict, dcp: byte
     curves = [(f"{label} (출고 설정)" if factory_colour else label, "e key", profile["tone"]["curve_codes"])]
     if not is_natural and not profile["curve_same_as_natural"]:
         curves.append(("Natural", "e dash", natural["tone"]["curve_codes"]))
-    plain = [round(float(model.srgb_encode(min(0.18 * 2.0 ** ev, 1.0))) * 255, 1) for ev in data["tone_axis_ev"]]
-    curves.append(("톤 곡선 없이 sRGB로만 부호화", "e", plain))
+    curves.append(("sRGB 부호화만", "e", data["reference"]["srgb_encoding_only_curve_codes"]))
     curve = figure(f"{label}의 톤 곡선", curve_figure(f"dg-tone-{mode}", f"{label}의 톤 곡선", data["tone_axis_ev"], curves))
     if profile["gamma"] == "reversal":
         tone_takeaway = "이 모드는 전용 곡선을 씁니다. 키와 대비 설정은 곡선에 들어가지 않습니다."
@@ -502,7 +511,7 @@ def profile_page(mode: str, data: dict, notes: dict, validation: dict, dcp: byte
 <p class="takeaway">색 행렬은 화이트밸런스를 맞춘 센서 RGB를 선형 sRGB로 바꿉니다. 공통 행렬에 이 모드의 모드 행렬을 곱해 만듭니다.</p>
 {look_text}
 {matrix_table(f"{label}의 색 행렬 (레지스터 값 ÷ 256)", profile["colour_matrix"])}
-<p>행의 합이 모두 1이어서 무채색은 무채색으로 남습니다. 레지스터에 들어가는 정수는 <code>{", ".join(str(v) for v in profile["cc0_register"])}</code>입니다. 프로파일의 ForwardMatrix는 이 행렬에 sRGB→XYZ D50 행렬을 곱한 것입니다{" (흑백 모드는 행렬식이 0이어서 공통 행렬을 대신 씁니다)" if profile["chroma_fixed"] else ""}.</p>
+<p>행의 합이 모두 1이어서 무채색은 무채색으로 남습니다. 레지스터에 들어가는 정수는 <code>{", ".join(str(v) for v in profile["cc0_register"])}</code>입니다. 프로파일의 ForwardMatrix에는 16개 프로파일이 함께 쓰는 공통 행렬이 들어갑니다. 이 모드의 색 행렬이 공통 행렬과 다른 만큼은 LookTable이 맡습니다.</p>
 </section>
 
 <section id="tone">
@@ -525,6 +534,7 @@ def profile_page(mode: str, data: dict, notes: dict, validation: dict, dcp: byte
 <ul>
 <li>파일: <a href="../{PROFILE_DIR}/{dcp_name}">{dcp_name}</a> ({len(dcp) / 1024:.0f} KB). Lightroom에 보이는 이름은 “K-3 III Firmware {esc(label)}”입니다.</li>
 <li>SHA-256: <code>{hashlib.sha256(dcp).hexdigest()}</code></li>
+<li>프로파일과 이 문서의 색 모델을 무작위 장면 색 {accuracy["colours_per_class"]:,}개로 비교하면 평균 ΔE00이 {fit["inside"]["mean"]:.2f}, 99백분위가 {fit["inside"]["p99"]:.2f}, 최대가 {fit["inside"]["max"]:.1f}입니다. 한 채널이 2% 아래인 고채도 색에서는 평균 {fit["saturated"]["mean"]:.2f}, 최대 {fit["saturated"]["max"]:.1f}입니다. LookTable을 빼면 평균이 {fit["inside_without_look_table"]["mean"]:.1f}입니다.</li>
 <li>넣는 방법은 <a href="color-profiles.html#install">색 프로파일 모음</a>에, 프로파일의 구조는 <a href="firmware-dcp.html">펌웨어 값으로 만드는 색 프로파일</a>에 있습니다.</li>
 </ul>
 </section>
@@ -557,8 +567,11 @@ def profile_page(mode: str, data: dict, notes: dict, validation: dict, dcp: byte
                       "색 프로파일 · Custom Image별", lead, body)
 
 
-def overview_page(data: dict, notes: dict, validation: dict, dcps: dict, tables: dict) -> str:
+def overview_page(data: dict, notes: dict, validation: dict, dcps: dict, tables: dict, accuracy: dict) -> str:
     profiles = data["profiles"]
+    fits = accuracy["profiles"].values()
+    fit_low, fit_high = min(f["inside"]["mean"] for f in fits), max(f["inside"]["mean"] for f in fits)
+    fit_max = max(x["max"] for f in fits for key, x in f.items() if key != "inside_without_look_table")
     rows = [("기준 색", data["reference"]["chart_srgb"])] + [(profiles[m]["label"], profiles[m]["patches"]["rendered"]) for m in ORDER]
     left, width, gap, height = 130, 26, 2, 22
     svg = [f'<svg class="dg" viewBox="0 0 800 {16 + len(rows) * (height + 6)}" role="img" aria-labelledby="dg-all-title dg-all-desc">',
@@ -666,11 +679,12 @@ def overview_page(data: dict, notes: dict, validation: dict, dcps: dict, tables:
 <caption>프로파일 태그와 출처</caption>
 <thead><tr><th>태그</th><th>내용</th></tr></thead>
 <tbody>
-<tr><th scope="row">ForwardMatrix</th><td>펌웨어의 색 행렬(화이트밸런스를 맞춘 센서 RGB → 선형 sRGB)을 XYZ D50으로 옮긴 것</td></tr>
+<tr><th scope="row">ForwardMatrix</th><td>모든 Custom Image가 함께 쓰는 센서 공통 행렬(화이트밸런스를 맞춘 센서 RGB → 선형 sRGB)을 XYZ D50으로 옮긴 것. 16개 프로파일이 같습니다</td></tr>
 <tr><th scope="row">ProfileToneCurve</th><td>펌웨어가 출고 설정으로 계산한 감마 곡선을 sRGB 함수로 푼 것</td></tr>
-<tr><th scope="row">ProfileLookTable</th><td>카메라가 채널별로 곡선을 적용하는 방식과 밝기에 따른 채도 억제를 담은 90×30×30 표</td></tr>
+<tr><th scope="row">ProfileLookTable</th><td>모드 행렬, 채널별 곡선 적용, 색역 밖 색의 처리, 밝기에 따른 채도 억제를 담은 90×30×30 표</td></tr>
 <tr><th scope="row">BaselineExposureOffset</th><td>+0.5 EV. 펌웨어의 BaselineExposure 계산식에서 나온 값</td></tr>
 </tbody></table></div>
+<p>프로파일이 색 모델을 제대로 옮겼는지는 무작위 장면 색으로 쟀습니다. 프로파일 16개의 평균 ΔE00은 {fit_low:.2f}에서 {fit_high:.2f} 사이이고 고채도 색과 어두운 색까지 넣은 최대값은 {fit_max:.1f}입니다(<a href="k3iii-profile-accuracy.json">k3iii-profile-accuracy.json</a>). 이 수치는 프로파일 형식이 모델을 얼마나 따라가는지를 말합니다. 모델이 카메라와 맞는지는 위의 카메라 JPEG 비교가 말합니다.</p>
 <p>태그를 만드는 방법과 검증은 <a href="firmware-dcp.html">펌웨어 값으로 만드는 색 프로파일</a>에, 값을 얻은 경로는 <a href="firmware-color-pipeline.html">펌웨어로 확정한 색 처리 경로</a>에 있습니다.</p>
 </section>
 
@@ -734,41 +748,108 @@ python tools/make_k3iii_profile.py --mode natural --look-matrix my-look.json --n
                       "색 프로파일 · 모음", lead, body)
 
 
-def build() -> dict:
-    """Return {repository path: bytes} for every generated file."""
+def compute() -> tuple:
+    """Numeric step: ({mode: profile bytes}, data record)."""
     engine = Engine.load()
     data = characterise(engine)
-    notes = json.loads(NOTES.read_text(encoding="utf-8")) if NOTES.is_file() else {}
-    validation = json.loads(VALIDATION.read_text(encoding="utf-8"))
     dcps = {mode: make_profile(engine, mode)[0] for mode in ORDER}
     for mode in ORDER:
-        data["profiles"][mode]["dcp"] = {"file": f"{PROFILE_DIR}/k3iii-firmware-{mode}.dcp", "bytes": len(dcps[mode]),
-                                         "sha256": hashlib.sha256(dcps[mode]).hexdigest()}
-    files = {f"{PROFILE_DIR}/k3iii-firmware-{mode}.dcp": dcps[mode] for mode in ORDER}
-    files[DATA] = (json.dumps(data, ensure_ascii=False, indent=1, sort_keys=True) + "\n").encode("utf-8")
-    files[OVERVIEW] = overview_page(data, notes, validation, dcps, engine.tables).encode("utf-8")
+        data["profiles"][mode]["dcp"] = {"file": dcp_path(mode), "bytes": len(dcps[mode]), "sha256": hashlib.sha256(dcps[mode]).hexdigest()}
+    return dcps, data
+
+
+def dcp_path(mode: str) -> str:
+    return f"{PROFILE_DIR}/k3iii-firmware-{mode}.dcp"
+
+
+def data_text(data: dict) -> bytes:
+    return (json.dumps(data, ensure_ascii=False, indent=1, sort_keys=True) + "\n").encode("utf-8")
+
+
+def render(data: dict, dcps: dict) -> dict:
+    """Text step: {repository path: page bytes} from the data record and the profile files."""
+    notes = json.loads(NOTES.read_text(encoding="utf-8")) if NOTES.is_file() else {}
+    validation = json.loads(VALIDATION.read_text(encoding="utf-8"))
+    accuracy = json.loads(ACCURACY.read_text(encoding="utf-8"))
+    tables = Engine.load().tables
+    pages = {OVERVIEW: overview_page(data, notes, validation, dcps, tables, accuracy).encode("utf-8")}
     for mode in ORDER:
-        files[f"analysis/profile-{mode}.html"] = profile_page(mode, data, notes, validation, dcps[mode]).encode("utf-8")
-    return files
+        pages[f"analysis/profile-{mode}.html"] = profile_page(mode, data, notes, validation, dcps[mode], accuracy).encode("utf-8")
+    return pages
+
+
+def _unit(value: float) -> float:
+    """One step of the last decimal a stored figure was rounded to."""
+    text = repr(float(value))
+    return 10.0 ** -len(text.split(".")[1]) if "." in text and "e" not in text else 1e-9
+
+
+def _close(stored, computed) -> bool:
+    if isinstance(stored, dict):
+        return (isinstance(computed, dict) and stored.keys() == computed.keys()
+                and all(key == "sha256" or _close(stored[key], computed[key]) for key in stored))
+    if isinstance(stored, list):
+        return isinstance(computed, list) and len(stored) == len(computed) and all(_close(a, b) for a, b in zip(stored, computed))
+    if isinstance(stored, str) and isinstance(computed, str) and len(stored) == len(computed) == 7 and stored[0] == computed[0] == "#":
+        return all(abs(int(stored[i:i + 2], 16) - int(computed[i:i + 2], 16)) <= 1 for i in (1, 3, 5))      # an 8-bit colour
+    if isinstance(stored, float) and isinstance(computed, (int, float)) and not isinstance(computed, bool):
+        return abs(stored - computed) <= 1.01 * _unit(stored)
+    return stored == computed
+
+
+def _same_profile(stored: bytes, computed: bytes) -> bool:
+    if len(stored) != len(computed):
+        return False
+    a, b = model.read_dcp(stored), model.read_dcp(computed)
+    return (a["ProfileName"] == b["ProfileName"]
+            and all(np.allclose(a[key], b[key], rtol=0.0, atol=2e-6) for key in ("ForwardMatrix1", "curve_x", "curve_y"))
+            and np.allclose(a["LookTable"].data, b["LookTable"].data, rtol=0.0, atol=2e-5))
+
+
+def stale_files() -> list:
+    """Paths whose content on disk no longer follows from the colour tables and records."""
+    stale = []
+    dcps, data = compute()
+    stored = {}
+    for mode in ORDER:
+        target = ROOT / dcp_path(mode)
+        if target.is_file() and _same_profile(target.read_bytes(), dcps[mode]):
+            stored[mode] = target.read_bytes()
+        else:
+            stale.append(dcp_path(mode))
+    target = ROOT / DATA
+    stored_data = json.loads(target.read_text(encoding="utf-8")) if target.is_file() else None
+    if stored_data is None or not _close(stored_data, json.loads(data_text(data))):
+        stale.append(DATA)
+    elif any(stored_data["profiles"][mode]["dcp"]["sha256"] != hashlib.sha256(stored[mode]).hexdigest() for mode in stored):
+        stale.append(DATA)
+    if stale:
+        return stale
+    for path, content in render(stored_data, stored).items():
+        if not (ROOT / path).is_file() or (ROOT / path).read_bytes() != content:
+            stale.append(path)
+    return stale
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--check", action="store_true", help="compare with the files on disk instead of writing")
     args = parser.parse_args()
-    files = build()
-    stale = []
+    if args.check:
+        stale = stale_files()
+        if stale:
+            parser.exit(1, "Out of date: " + ", ".join(stale) + "\nRun python tools/build_profile_pages.py\n")
+        print(f"checked {len(ORDER) * 2 + 2} files")
+        return
+    dcps, data = compute()
+    files = {dcp_path(mode): dcps[mode] for mode in ORDER}
+    files[DATA] = data_text(data)
+    files.update(render(json.loads(files[DATA]), dcps))
     for path, content in files.items():
         target = ROOT / path
-        if args.check:
-            if not target.is_file() or target.read_bytes() != content:
-                stale.append(path)
-        else:
-            target.parent.mkdir(parents=True, exist_ok=True)
-            target.write_bytes(content)
-    if stale:
-        parser.exit(1, "Out of date: " + ", ".join(stale) + "\nRun python tools/build_profile_pages.py\n")
-    print(f"{'checked' if args.check else 'wrote'} {len(files)} files")
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_bytes(content)
+    print(f"wrote {len(files)} files")
 
 
 if __name__ == "__main__":

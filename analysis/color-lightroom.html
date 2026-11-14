@@ -10,7 +10,7 @@
 <body data-camera="k3iii">
 <!-- chrome:top -->
 <a class="skip" href="#main">본문 바로가기</a>
-<div class="topbar"><div class="topbar-in"><a class="brand" href="../index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="../index.html" aria-current="true">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="https://yunhyok.github.io/pentax-q7-firmware-analysis/">Q7</a></div><nav class="topnav" aria-label="주제"><a href="../index.html">개요</a><a href="guide-boot.html">부팅·저장소</a><a href="guide-update.html">업데이트</a><a href="guide-rebuild.html">재구축</a><a href="guide-rtos.html">명령·셸</a><a href="guide-color.html" aria-current="true">색 처리</a><a href="guide-lightroom.html">Lightroom</a><a href="guide-af.html">AF</a><a href="guide-ui.html">UI</a></nav></div></div>
+<div class="topbar"><div class="topbar-in"><a class="brand" href="../index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="../index.html" aria-current="true">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="https://yunhyok.github.io/pentax-q7-firmware-analysis/">Q7</a></div><nav class="topnav" aria-label="주제"><a href="../index.html">개요</a><a href="guide-boot.html">부팅·저장소</a><a href="guide-update.html">업데이트</a><a href="guide-rebuild.html">재구축</a><a href="guide-rtos.html">명령·셸</a><a href="guide-color.html" aria-current="true">색 처리</a><a href="color-profiles.html">프로파일</a><a href="guide-lightroom.html">Lightroom</a><a href="guide-af.html">AF</a><a href="guide-ui.html">UI</a></nav></div></div>
 <nav class="crumbs" aria-label="현재 위치"><ol><li><a href="../index.html">PENTAX K-3 Mark III</a></li><li><a href="guide-color.html">카메라 내부 색 처리</a></li><li aria-current="page">컬러모드 자원과 Lightroom</li></ol></nav>
 <!-- /chrome:top -->
 <header class="page-head">
@@ -220,7 +220,7 @@
 
 <h3>Gold와 Reversal Film의 추가 자원</h3>
 <p>Gold는 R·G·B 곡선 세 개를 따로 고릅니다. 확인한 구간은 곡선마다 부호 없는 16비트 256항입니다. Reversal Film은 일반 감마 생성 경로와 다른 분기를 씁니다. 두 경로의 계산은 <a href="color-algorithms.html#curves">채널 곡선 보간</a>과 <a href="color-algorithms.html#gamma">감마 곡선</a> 절에 있습니다.</p>
-<p>공개 자료에는 자원의 주소·크기·해시만 있습니다. 실제 행렬과 곡선의 값은 공개하지 않습니다. 이 값들을 Adobe의 변환으로 옮기려면 앞 단계의 보정값, 보간 규칙, 좌표계, 출력 단계를 함께 알아야 합니다.</p>
+<p>이 문서의 근거 파일에는 자원의 주소·크기·해시가 있습니다. 행렬과 감마 기준 곡선의 값은 펌웨어에서 읽은 색 표 <a href="k3iii-color-tables.json">k3iii-color-tables.json</a>에 있습니다. 이 값들을 Adobe의 변환으로 옮기려면 앞 단계의 보정값, 보간 규칙, 좌표계, 출력 단계를 함께 알아야 합니다.</p>
 
 <div class="callout fix"><strong class="label">정정</strong>
 <p>초기 기록은 자원 표 <code>0x54561b58</code>을 ColorReference라고 적었습니다. 이 표는 <strong>YCbCrMatrix</strong>의 것입니다. 표에서 꺼낸 값은 파라미터 <code>+0x18</code>로 가고 할당할 때의 진단 이름이 <code>m_YCbCrMatrixTuning</code>입니다. 진짜 ColorReference는 파라미터 <code>+0x28</code>을 읽습니다. 주소·해시·모드 대응은 그대로 두고 공개 JSON의 해당 키만 <code>ycbcrmatrix</code>와 <code>ycbcrmatrix_pointer</code>로 고쳤습니다. 호출 근거는 <a href="color-algorithms.html#hue">계산식 문서의 색상 절</a>에 있습니다.</p></div>
@@ -502,7 +502,7 @@ python inspect_adobe_profiles.py "C:\ProgramData\Adobe\CameraRaw\CameraProfiles\
 <p>펌웨어 쪽 표와 자원은 <a href="../inspect_firmware.py">추출기</a>가 만든 <code>decoded.bin</code>으로 대조합니다.</p>
 <pre><code>python verify_deep_analysis.py .private/my-decode/decoded.bin
 python verify_numeric_kernels.py .private/my-decode/decoded.bin</code></pre>
-<p class="small muted">원본 펌웨어, 추출한 계수, 디컴파일한 C 원문은 공개하지 않습니다.</p>
+<p class="small muted">펌웨어에서 읽은 색 표는 <a href="k3iii-color-tables.json">k3iii-color-tables.json</a>에 공개했습니다. 원본 펌웨어와 디컴파일한 C 원문은 공개하지 않습니다.</p>
 </section>
 
 <section id="refs">

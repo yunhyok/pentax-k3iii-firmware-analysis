@@ -3,10 +3,13 @@
 The profile values come from the camera's own tuning code, which this tool
 runs in a CPU emulator on the decoded firmware 2.20 image:
 
-* ForwardMatrix      the CC0 colour matrix (white-balanced sensor RGB -> linear sRGB) carried to XYZ D50
-* ProfileToneCurve   the gamma curve the firmware computes for the chosen Custom Image
-* ProfileLookTable   what is left: the camera applies its curve per channel and suppresses
-                     chroma by luminance, Lightroom applies a curve differently
+* ForwardMatrix      the sensor matrix shared by all Custom Images (white-balanced sensor RGB
+                     -> linear sRGB) carried to XYZ D50
+* ProfileToneCurve   the gamma curve the firmware computes for the chosen Custom Image and
+                     its settings (the camera's factory settings unless given)
+* ProfileLookTable   everything else: the Custom Image's own matrix, the camera's clip at
+                     the edge of its output gamut, its per-channel use of the curve and its
+                     chroma suppression by luminance
 * BaselineExposureOffset +0.5 EV: the firmware's own BaselineExposure formula holds a
                      factor 1448/2048; with the offset Lightroom's linear value equals
                      the input of the camera's gamma stage

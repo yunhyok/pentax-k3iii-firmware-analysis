@@ -10,7 +10,7 @@
 <body data-camera="k3iii">
 <!-- chrome:top -->
 <a class="skip" href="#main">본문 바로가기</a>
-<div class="topbar"><div class="topbar-in"><a class="brand" href="../index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="../index.html" aria-current="true">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="https://yunhyok.github.io/pentax-q7-firmware-analysis/">Q7</a></div><nav class="topnav" aria-label="주제"><a href="../index.html">개요</a><a href="guide-boot.html">부팅·저장소</a><a href="guide-update.html">업데이트</a><a href="guide-rebuild.html">재구축</a><a href="guide-rtos.html">명령·셸</a><a href="guide-color.html" aria-current="true">색 처리</a><a href="guide-lightroom.html">Lightroom</a><a href="guide-af.html">AF</a><a href="guide-ui.html">UI</a></nav></div></div>
+<div class="topbar"><div class="topbar-in"><a class="brand" href="../index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="../index.html" aria-current="true">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="https://yunhyok.github.io/pentax-q7-firmware-analysis/">Q7</a></div><nav class="topnav" aria-label="주제"><a href="../index.html">개요</a><a href="guide-boot.html">부팅·저장소</a><a href="guide-update.html">업데이트</a><a href="guide-rebuild.html">재구축</a><a href="guide-rtos.html">명령·셸</a><a href="guide-color.html" aria-current="true">색 처리</a><a href="color-profiles.html">프로파일</a><a href="guide-lightroom.html">Lightroom</a><a href="guide-af.html">AF</a><a href="guide-ui.html">UI</a></nav></div></div>
 <nav class="crumbs" aria-label="현재 위치"><ol><li><a href="../index.html">PENTAX K-3 Mark III</a></li><li><a href="guide-color.html">카메라 내부 색 처리</a></li><li aria-current="page">펌웨어로 확정한 색 처리 경로</li></ol></nav>
 <!-- /chrome:top -->
 <header class="page-head">
@@ -20,7 +20,7 @@
 </header>
 <div class="layout">
 <!-- chrome:toc -->
-<nav class="toc" aria-label="이 문서의 목차"><h2 data-toc="no">이 문서에서</h2><ol><li><a href="#background">배경: 설정을 만드는 코드와 공개 레지스터 설명을 이었습니다</a></li><li><a href="#make">카메라의 설정 계산 전체를 PC에서 실행했습니다</a></li><li><a href="#order">처리 순서와 각 단계의 뜻</a></li><li><a href="#matrix">색 행렬의 출력은 선형 sRGB입니다</a></li><li><a href="#gamma">감마 곡선과 노출 기준</a></li><li><a href="#yc">YC 변환, 채도 억제, 다축 색 보정</a></li><li><a href="#modes">Custom Image마다 달라지는 것</a></li><li><a href="#jpeg">카메라 JPEG과의 대조</a></li><li><a href="#rerun">기존 검증기를 실제 펌웨어로 다시 돌렸습니다</a></li><li><a href="#limits">한계와 남은 과제</a></li><li><a href="#reproduce">재현 방법</a></li><li><a href="#refs">근거 파일과 참고 자료</a></li></ol></nav>
+<nav class="toc" aria-label="이 문서의 목차"><h2 data-toc="no">이 문서에서</h2><ol><li><a href="#background">배경: 설정을 만드는 코드와 공개 레지스터 설명을 이었습니다</a></li><li><a href="#make">카메라의 설정 계산 전체를 PC에서 실행했습니다</a></li><li><a href="#order">처리 순서와 각 단계의 뜻</a></li><li><a href="#matrix">색 행렬의 출력은 선형 sRGB입니다</a></li><li><a href="#gamma">감마 곡선과 노출 기준</a></li><li><a href="#yc">YC 변환, 채도 억제, 다축 색 보정</a></li><li><a href="#modes">Custom Image마다 달라지는 것</a></li><li><a href="#settings">설정값의 출처: 사진의 설정 기록과 출고 설정 표</a></li><li><a href="#jpeg">카메라 JPEG과의 대조</a></li><li><a href="#rerun">기존 검증기를 실제 펌웨어로 다시 돌렸습니다</a></li><li><a href="#limits">한계와 남은 과제</a></li><li><a href="#reproduce">재현 방법</a></li><li><a href="#refs">근거 파일과 참고 자료</a></li></ol></nav>
 <!-- /chrome:toc -->
 <main class="doc" id="main">
 

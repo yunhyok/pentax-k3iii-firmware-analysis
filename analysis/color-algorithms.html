@@ -10,7 +10,7 @@
 <body data-camera="k3iii">
 <!-- chrome:top -->
 <a class="skip" href="#main">본문 바로가기</a>
-<div class="topbar"><div class="topbar-in"><a class="brand" href="../index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="../index.html" aria-current="true">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="https://yunhyok.github.io/pentax-q7-firmware-analysis/">Q7</a></div><nav class="topnav" aria-label="주제"><a href="../index.html">개요</a><a href="guide-boot.html">부팅·저장소</a><a href="guide-update.html">업데이트</a><a href="guide-rebuild.html">재구축</a><a href="guide-rtos.html">명령·셸</a><a href="guide-color.html" aria-current="true">색 처리</a><a href="guide-lightroom.html">Lightroom</a><a href="guide-af.html">AF</a><a href="guide-ui.html">UI</a></nav></div></div>
+<div class="topbar"><div class="topbar-in"><a class="brand" href="../index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="../index.html" aria-current="true">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="https://yunhyok.github.io/pentax-q7-firmware-analysis/">Q7</a></div><nav class="topnav" aria-label="주제"><a href="../index.html">개요</a><a href="guide-boot.html">부팅·저장소</a><a href="guide-update.html">업데이트</a><a href="guide-rebuild.html">재구축</a><a href="guide-rtos.html">명령·셸</a><a href="guide-color.html" aria-current="true">색 처리</a><a href="color-profiles.html">프로파일</a><a href="guide-lightroom.html">Lightroom</a><a href="guide-af.html">AF</a><a href="guide-ui.html">UI</a></nav></div></div>
 <nav class="crumbs" aria-label="현재 위치"><ol><li><a href="../index.html">PENTAX K-3 Mark III</a></li><li><a href="guide-color.html">카메라 내부 색 처리</a></li><li aria-current="page">색 처리 알고리즘</li></ol></nav>
 <!-- /chrome:top -->
 <header class="page-head">
@@ -69,8 +69,9 @@
 <ul>
 <li><strong>행렬 출력의 원색</strong>: AdobeRGB에서만 곱하는 고정 행렬 A는 표준 “선형 sRGB → 선형 Adobe RGB” 행렬과 0.000277 안에서 같았습니다. 그래서 F·M·B의 출력은 선형 sRGB입니다. 행렬은 화이트밸런스를 적용한 센서 RGB를 받습니다.</li>
 <li><strong>gain의 뜻</strong>: gain은 행렬 전체에 곱하는 배율입니다. 기본값(17항 표의 8번 값 128, 실행 중 값 <code>0x100</code>)에서 gain은 128이고 각 행의 합 2 × gain은 256입니다. 256이 1.0이므로 무채색은 무채색으로 남습니다. 19개 모드 모두 행의 합이 정확히 256이었습니다.</li>
-<li><strong>카메라 JPEG과의 비교</strong>: 이 경로로 계산한 색을 카메라가 기록한 JPEG과 PC에서 비교했습니다. 평탄 블록의 평균 ΔE<sub>00</sub>은 Natural 0.85, Bright 1.38입니다. 공개 RAW 두 장(ISO 100, 카메라 펌웨어 1.01과 1.10)에서 얻은 값입니다.</li>
-</ul></div>
+<li><strong>카메라 JPEG과의 비교</strong>: 이 경로로 계산한 색을 카메라가 기록한 JPEG과 PC에서 비교했습니다. 평탄 블록의 평균 ΔE<sub>00</sub>은 Natural 0.85, Bright 0.91입니다. 공개 RAW 두 장(ISO 100, 카메라 펌웨어 1.01과 1.10)에서 얻은 값입니다. Bright는 RAW에 기록된 대비 +1로 계산했습니다.</li>
+</ul>
+<p>이 문서의 식이 읽는 행렬과 감마 기준 곡선의 값은 그 뒤 <a href="k3iii-color-tables.json">k3iii-color-tables.json</a>에 공개했습니다. 같은 정수 계산을 펌웨어 없이 하는 <code>tools/k3iii_color_engine.py</code>는 펌웨어 에뮬레이터와 10,087개 사례에서 모두 같았습니다(<a href="k3iii-color-engine-checks.json">k3iii-color-engine-checks.json</a>).</p></div>
 
 <section id="background">
 <h2>배경: 색 설정은 계수와 표로 바뀐 뒤 하드웨어로 넘어갑니다</h2>
@@ -430,7 +431,7 @@ V = Mul32_Q13(sign_extend(U), sign_extend(B))</code></pre>
 <tr><th scope="row">구간 전환 가중치</th><td><code>0x53aa8220</code></td><td>16비트 97항</td></tr>
 <tr><th scope="row">정규화 기준값</th><td><code>0x53aac8fc</code></td><td>16비트 1항</td></tr>
 </tbody></table></div>
-<p class="small">아래는 <a href="../verify_gamma_tone.py">verify_gamma_tone.py</a>의 정수 모델을 풀어 쓴 것입니다. 기준 곡선과 표의 값은 공개하지 않았고 주소와 해시만 <a href="deep-evidence.json">deep-evidence.json</a>에 있습니다.</p>
+<p class="small">아래는 <a href="../verify_gamma_tone.py">verify_gamma_tone.py</a>의 정수 모델을 풀어 쓴 것입니다. 주소와 해시는 <a href="deep-evidence.json">deep-evidence.json</a>에 있습니다. 기준 곡선의 값은 <a href="k3iii-color-tables.json">k3iii-color-tables.json</a>에 있습니다.</p>
 <ol>
 <li><strong>좌표</strong>: 배율 = 키 배율 표의 값 × 512 ÷ 256. <var>v</var> = (분자 × 배율에서 하위 13비트를 지운 값) ÷ 분모. 일반은 64~2048, Reversal은 64~1024로 제한합니다. Reversal은 플래그에 따라 512 대신 256을 씁니다.</li>
 <li><strong>일반: 계열 섞기</strong>: 밝은 쪽, 가운데, 어두운 쪽 각각에 <var>t</var> = 2 × 대비 + 조절값을 구합니다. <var>t</var>가 양수이면 계열 0과 1을, 아니면 계열 1과 2를 512 단위 가중치로 섞습니다. 가중치는 <var>t</var> × 512 ÷ 12 또는 (<var>t</var> + 12) × 512 ÷ 12이고 0~512로 제한합니다.</li>
@@ -766,7 +767,7 @@ y = C[q] + trunc0((C[q+1] - C[q]) * f / 64)   x가 16320 미만일 때</code></p
 
 <section id="reproduce">
 <h2>재현 방법</h2>
-<p id="재현">입력은 <a href="../inspect_firmware.py">추출기</a>가 만드는 <code>decoded.bin</code>입니다. 실제 펌웨어의 계수는 실행할 때 이 파일에서 읽으며 공개 도구에는 들어 있지 않습니다.</p>
+<p id="재현">입력은 <a href="../inspect_firmware.py">추출기</a>가 만드는 <code>decoded.bin</code>입니다. 아래 검증기는 실행할 때 이 파일에서 계수를 읽습니다. 펌웨어에서 읽은 색 표는 <a href="k3iii-color-tables.json">k3iii-color-tables.json</a>에 따로 공개했습니다.</p>
 <dl class="kv">
 <dt>바이트 대조</dt><dd>Python 표준 라이브러리</dd>
 <dt>수치 실행</dt><dd><code>unicorn==2.1.4</code> (Cortex-A7 모델)</dd>
@@ -781,7 +782,7 @@ python verify_gamma_tone.py .private/my-decode/decoded.bin \
 python trace_raw_recipes.py .private/my-decode/decoded.bin \
   --output .private/raw-recipes.json
 python decompile_sample.py .private/my-decode/decoded.bin 0x5312cdb4</code></pre>
-<p class="small muted">검사 결과에는 입력 조건·해시·범위만 기록하고 실제 프로파일 계수 배열은 넣지 않았습니다. 원본 펌웨어, 추출한 계수, 디컴파일한 C 원문은 공개하지 않습니다.</p>
+<p class="small muted">검사 결과에는 입력 조건·해시·범위만 기록했습니다. 색 표의 값은 <a href="k3iii-color-tables.json">k3iii-color-tables.json</a>에 있습니다. 원본 펌웨어와 디컴파일한 C 원문은 공개하지 않습니다.</p>
 </section>
 
 <section id="refs">
