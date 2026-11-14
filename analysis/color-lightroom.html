@@ -486,9 +486,9 @@
 <section id="limits">
 <h2>한계와 남은 과제</h2>
 <ul>
-<li><span class="badge open">미확인</span> <strong>색 일치</strong>: 새 <code>.dcp</code>나 <code>.xmp</code>가 카메라의 모드와 얼마나 맞는지, RAW에서 JPEG까지 픽셀이 일치하는지를 입증한 결과는 없습니다. 다섯 Adobe 프로파일 가운데 K-3 Mark III에서 카메라 JPEG와 비교한 것은 Camera Bright 하나입니다. 스튜디오 장면 한 장에서 잰 값입니다(<a href="lightroom-studio-reference.html">참조 프로파일 비교</a>).</li>
+<li><span class="badge open">미확인</span> <strong>색 일치</strong>: 새 <code>.dcp</code>나 <code>.xmp</code>가 카메라의 모드와 얼마나 맞는지, RAW에서 JPEG까지 픽셀이 일치하는지를 입증한 결과는 없습니다. 다섯 Adobe 프로파일 가운데 K-3 Mark III에서 카메라 JPEG와 비교한 것은 Camera Bright 하나입니다. 스튜디오 장면 한 장에서 잰 값입니다(<a href="lightroom-studio-reference.html">참조 프로파일 비교</a>). 펌웨어 값으로 만든 프로파일을 PC에서 카메라 JPEG과 비교한 결과는 <a href="firmware-dcp.html">펌웨어 값으로 만드는 색 프로파일</a>에 있고 실제 Lightroom에서는 아직 재지 않았습니다.</li>
 <li><span class="badge open">미확인</span> <strong>실행 중 상태</strong>: 자원 표는 펌웨어 파일의 초기값입니다. 실행 중에 RAM의 값이 바뀌는지, Auto Select와 Cross Processing이 어떤 값으로 바꾸는지는 관측하지 않았습니다.</li>
-<li><span class="badge open">미확인</span> <strong>좌표계</strong>: 펌웨어 행렬이 받는 색의 원색과 전달함수를 모릅니다. 그래서 DNG 규격이 정한 방향의 행렬로 바꿀 수 없습니다.</li>
+<li><span class="badge open">미확인</span> <strong>좌표계</strong>: 이 문서의 조사로는 펌웨어 행렬이 받는 색의 원색과 전달함수를 정하지 못했습니다. 그 뒤 행렬의 출력이 선형 sRGB임을 확인했고 DNG 방향의 행렬로 옮겼습니다(<a href="firmware-color-pipeline.html">펌웨어로 확정한 색 처리 경로</a>, <a href="firmware-dcp.html">펌웨어 값으로 만드는 색 프로파일</a>).</li>
 <li><span class="badge static">정적 분석</span> <strong>RAW 현상 경로</strong>: 호출 관계는 코드를 읽어 확인한 것입니다. 카메라에서 RAW 현상을 실행해 보지는 않았습니다.</li>
 <li><span class="badge open">미확인</span> <strong>외부 사실</strong>: Auto Select가 모드를 고르는 기준은 제조사 자료에서 찾지 못했습니다. Adobe 지원표의 최소 버전은 조사 기준일에 읽은 값입니다.</li>
 </ul>
@@ -522,7 +522,7 @@ python verify_numeric_kernels.py .private/my-decode/decoded.bin</code></pre>
 </main>
 </div>
 <!-- chrome:bottom -->
-<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">카메라 내부 색 처리 — 이 주제의 문서</h2><ol><li><a href="guide-color.html">색 처리 안내</a></li><li><a href="color-lightroom.html" aria-current="page">컬러모드 자원과 Lightroom</a></li><li><a href="color-algorithms.html">색 처리 알고리즘<span>행렬·감마·톤</span></a></li><li><a href="color-mode-boundaries.html">색 모드별 행렬·감마 조건</a></li><li><a href="pipeline-report.html">JPEG·ISP와 색 재현 경로</a></li><li><a href="raw-nr-feasibility.html">RAW 노이즈 감소를 끌 수 있는가</a></li></ol></nav>
+<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">카메라 내부 색 처리 — 이 주제의 문서</h2><ol><li><a href="guide-color.html">색 처리 안내</a></li><li><a href="color-lightroom.html" aria-current="page">컬러모드 자원과 Lightroom</a></li><li><a href="color-algorithms.html">색 처리 알고리즘<span>행렬·감마·톤</span></a></li><li><a href="color-mode-boundaries.html">색 모드별 행렬·감마 조건</a></li><li><a href="pipeline-report.html">JPEG·ISP와 색 재현 경로</a></li><li><a href="firmware-color-pipeline.html">펌웨어로 확정한 색 처리 경로<span>실제 펌웨어 실행·카메라 JPEG 대조</span></a></li><li><a href="raw-nr-feasibility.html">RAW 노이즈 감소를 끌 수 있는가</a></li></ol></nav>
 <nav class="pager" aria-label="이전·다음 문서"><a class="prev" href="guide-color.html"><small>← 이전</small>색 처리 안내</a><a class="next" href="color-algorithms.html"><small>다음 →</small>색 처리 알고리즘</a></nav>
 <footer class="sitefoot"><div class="sitefoot-in"><nav aria-label="사이트"><a href="../index.html#map">문서 지도</a><a href="../index.html#levels">검증 수준 읽는 법</a><a href="../glossary.html">용어집</a><a href="research-program.html">세 기종 연구 본부</a><a href="https://github.com/yunhyok/pentax-k3iii-firmware-analysis">GitHub 저장소</a></nav><p>PENTAX 펌웨어 연구. PC에서 수행한 정적 분석과 에뮬레이션 결과이며, 카메라 실기에서 검증한 내용이 아닙니다. 원본 펌웨어와 추출한 독점 코드는 포함하지 않습니다.</p></div></footer>
 <!-- /chrome:bottom -->

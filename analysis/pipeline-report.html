@@ -863,7 +863,7 @@ q &gt; 50 :  배율 = trunc(1000 × (100 − q) / 50)
 <li><strong>압축의 영향 분리하기</strong> JPEG 압축과 크로마 처리 때문에 파일 바이트가 완전히 같기를 합격 조건으로 삼기는 어렵습니다. 디코딩한 이미지에 같은 색 관리와 출력 크기를 적용하고 패치 안쪽의 색과 경계 부근의 공간 오차를 나눠 평가합니다.</li>
 </ol>
 <div class="callout"><strong class="label">현재 상태</strong>
-<p>이 문서의 추적에서는 RAW·JPEG 쌍, 카메라의 하드웨어 출력, Lightroom 적용 결과를 시험하지 않았습니다. 그 뒤에 한 실제 Lightroom 실험은 <a href="lightroom-bridge.html">Lightroom 색 프로파일</a> 주제에 있습니다. 카메라 JPEG와 색을 맞춘 모드별 프로파일은 아직 없습니다. Adobe 형식의 적용 위치와 기존 프로파일 구조는 <a href="color-lightroom.html">컬러모드 자원과 Lightroom</a>에 정리했습니다.</p></div>
+<p>이 문서의 추적에서는 RAW·JPEG 쌍, 카메라의 하드웨어 출력, Lightroom 적용 결과를 시험하지 않았습니다. 그 뒤에 한 실제 Lightroom 실험은 <a href="lightroom-bridge.html">Lightroom 색 프로파일</a> 주제에 있습니다. K-3 Mark III는 그 뒤 펌웨어 값으로 모드별 프로파일을 만드는 도구가 생겼습니다(<a href="firmware-color-pipeline.html">펌웨어로 확정한 색 처리 경로</a>, <a href="firmware-dcp.html">펌웨어 값으로 만드는 색 프로파일</a>). 카메라 JPEG과는 PC에서 두 장면만 비교했고 실제 Lightroom에서는 아직 재지 않았습니다. Adobe 형식의 적용 위치와 기존 프로파일 구조는 <a href="color-lightroom.html">컬러모드 자원과 Lightroom</a>에 정리했습니다.</p></div>
 </section>
 
 <section id="verification">
@@ -973,8 +973,8 @@ python decompile_sample.py path/to/decoded.bin 0x531bc180</code></pre>
 </main>
 </div>
 <!-- chrome:bottom -->
-<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">카메라 내부 색 처리 — 이 주제의 문서</h2><ol><li><a href="guide-color.html">색 처리 안내</a></li><li><a href="color-lightroom.html">컬러모드 자원과 Lightroom</a></li><li><a href="color-algorithms.html">색 처리 알고리즘<span>행렬·감마·톤</span></a></li><li><a href="color-mode-boundaries.html">색 모드별 행렬·감마 조건</a></li><li><a href="pipeline-report.html" aria-current="page">JPEG·ISP와 색 재현 경로</a></li><li><a href="raw-nr-feasibility.html">RAW 노이즈 감소를 끌 수 있는가</a></li></ol></nav>
-<nav class="pager" aria-label="이전·다음 문서"><a class="prev" href="color-mode-boundaries.html"><small>← 이전</small>색 모드별 행렬·감마 조건</a><a class="next" href="raw-nr-feasibility.html"><small>다음 →</small>RAW 노이즈 감소를 끌 수 있는가</a></nav>
+<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">카메라 내부 색 처리 — 이 주제의 문서</h2><ol><li><a href="guide-color.html">색 처리 안내</a></li><li><a href="color-lightroom.html">컬러모드 자원과 Lightroom</a></li><li><a href="color-algorithms.html">색 처리 알고리즘<span>행렬·감마·톤</span></a></li><li><a href="color-mode-boundaries.html">색 모드별 행렬·감마 조건</a></li><li><a href="pipeline-report.html" aria-current="page">JPEG·ISP와 색 재현 경로</a></li><li><a href="firmware-color-pipeline.html">펌웨어로 확정한 색 처리 경로<span>실제 펌웨어 실행·카메라 JPEG 대조</span></a></li><li><a href="raw-nr-feasibility.html">RAW 노이즈 감소를 끌 수 있는가</a></li></ol></nav>
+<nav class="pager" aria-label="이전·다음 문서"><a class="prev" href="color-mode-boundaries.html"><small>← 이전</small>색 모드별 행렬·감마 조건</a><a class="next" href="firmware-color-pipeline.html"><small>다음 →</small>펌웨어로 확정한 색 처리 경로</a></nav>
 <footer class="sitefoot"><div class="sitefoot-in"><nav aria-label="사이트"><a href="../index.html#map">문서 지도</a><a href="../index.html#levels">검증 수준 읽는 법</a><a href="../glossary.html">용어집</a><a href="research-program.html">세 기종 연구 본부</a><a href="https://github.com/yunhyok/pentax-k3iii-firmware-analysis">GitHub 저장소</a></nav><p>PENTAX 펌웨어 연구. PC에서 수행한 정적 분석과 에뮬레이션 결과이며, 카메라 실기에서 검증한 내용이 아닙니다. 원본 펌웨어와 추출한 독점 코드는 포함하지 않습니다.</p></div></footer>
 <!-- /chrome:bottom -->
 </body>

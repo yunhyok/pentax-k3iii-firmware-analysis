@@ -1,0 +1,600 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>펌웨어에서 확정한 RAW→JPEG 색 처리 경로 — PENTAX K-3 Mark III 펌웨어 연구</title>
+<meta name="description" content="K-3 Mark III 펌웨어 2.20의 영상 처리 설정 루틴 전체를 PC 에뮬레이터에서 실행해 색 행렬, 감마, YC 변환, 채도 억제의 실제 값과 뜻을 정하고, 그 결과를 카메라가 저장한 JPEG 파일과 비교한 기록입니다.">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-camera="k3iii">
+<!-- chrome:top -->
+<a class="skip" href="#main">본문 바로가기</a>
+<div class="topbar"><div class="topbar-in"><a class="brand" href="../index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="../index.html" aria-current="true">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="https://yunhyok.github.io/pentax-q7-firmware-analysis/">Q7</a></div><nav class="topnav" aria-label="주제"><a href="../index.html">개요</a><a href="guide-boot.html">부팅·저장소</a><a href="guide-update.html">업데이트</a><a href="guide-rebuild.html">재구축</a><a href="guide-rtos.html">명령·셸</a><a href="guide-color.html" aria-current="true">색 처리</a><a href="guide-lightroom.html">Lightroom</a><a href="guide-af.html">AF</a><a href="guide-ui.html">UI</a></nav></div></div>
+<nav class="crumbs" aria-label="현재 위치"><ol><li><a href="../index.html">PENTAX K-3 Mark III</a></li><li><a href="guide-color.html">카메라 내부 색 처리</a></li><li aria-current="page">펌웨어로 확정한 색 처리 경로</li></ol></nav>
+<!-- /chrome:top -->
+<header class="page-head">
+<p class="eyebrow">카메라 내부 색 처리 · 실제 펌웨어 실행과 카메라 JPEG 대조</p>
+<h1>펌웨어에서 확정한 RAW→JPEG 색 처리 경로</h1>
+<p class="lead">카메라가 JPEG의 색을 정할 때 쓰는 설정 계산 코드를 실제 펌웨어 2.20에서 꺼내 PC에서 그대로 실행했습니다. 그렇게 만든 색을 카메라가 직접 저장한 JPEG 파일과 비교해 어디까지 맞는지 확인했습니다.</p>
+</header>
+<div class="layout">
+<!-- chrome:toc -->
+<nav class="toc" aria-label="이 문서의 목차"><h2 data-toc="no">이 문서에서</h2><ol><li><a href="#background">배경: 설정을 만드는 코드와 공개 레지스터 설명을 이었습니다</a></li><li><a href="#make">카메라의 설정 계산 전체를 PC에서 실행했습니다</a></li><li><a href="#order">처리 순서와 각 단계의 뜻</a></li><li><a href="#matrix">색 행렬의 출력은 선형 sRGB입니다</a></li><li><a href="#gamma">감마 곡선과 노출 기준</a></li><li><a href="#yc">YC 변환, 채도 억제, 다축 색 보정</a></li><li><a href="#modes">Custom Image마다 달라지는 것</a></li><li><a href="#jpeg">카메라 JPEG과의 대조</a></li><li><a href="#rerun">기존 검증기를 실제 펌웨어로 다시 돌렸습니다</a></li><li><a href="#limits">한계와 남은 과제</a></li><li><a href="#reproduce">재현 방법</a></li><li><a href="#refs">근거 파일과 참고 자료</a></li></ol></nav>
+<!-- /chrome:toc -->
+<main class="doc" id="main">
+
+<section class="summary">
+<h2 data-toc="no">핵심 요약</h2>
+<ul>
+<li>카메라가 사진 한 장의 영상 처리 설정을 만드는 루틴 <strong>전체</strong>를 PC 에뮬레이터에서 실행했습니다. Custom Image 19개 모두 끝까지 돌았고 펌웨어의 자체 검사(assert)는 한 번도 걸리지 않았습니다.</li>
+<li>색 행렬의 출력은 <strong>선형 sRGB</strong>입니다. AdobeRGB를 고르면 덧붙는 행렬이 표준 “선형 sRGB → 선형 Adobe RGB” 행렬과 0.0003 안에서 같았습니다. 감마 곡선의 출력도 sRGB로 부호화된 값입니다.</li>
+<li>노출 기준은 펌웨어가 DNG의 BaselineExposure를 계산하는 식에서 얻었습니다. 기준 노출 이득에서 이 식의 배율은 1448/2048이고 0.5 EV에 해당합니다.</li>
+<li>색·톤 매개변수를 하나도 맞추지 않은 계산이 카메라 JPEG과 평탄 블록 평균 <strong>ΔE00 0.85(Natural)와 1.38(Bright)</strong>만큼 달랐습니다. 채도가 높은 평탄 블록에서는 0.42와 0.77이었습니다.</li>
+<li>한계: ISO 100 장면 두 장뿐이고 표본은 카메라 펌웨어 1.01·1.10으로 찍혔습니다. 카메라 JPEG과 대조한 모드는 Natural과 Bright 둘입니다. 다축 색 보정의 식, 화이트밸런스 단계, 무채색 영역의 밝기 차 원인은 모릅니다. Lightroom은 실행하지 않았습니다.</li>
+</ul>
+</section>
+
+<div class="scope">
+<div class="ok"><h3><span class="badge ok">확인</span> 원본 코드 실행과 계산으로 확인</h3>
+<ul>
+<li>설정 루틴 Make 전체를 19개 모드에서 실행, 자체 검사 실패 0회</li>
+<li>색공간 행렬이 표준 sRGB→AdobeRGB 행렬과 최대 0.000277 차이</li>
+<li>AdobeRGB 감마 표가 sRGB 복호 후 감마 2.2 재부호화와 10비트 0.947단계 안에서 일치</li>
+<li>카메라 JPEG 두 장과 PC에서 계산한 색차(맞춘 매개변수 0개)</li>
+</ul></div>
+<div class="static"><h3><span class="badge static">정적 분석</span> 코드를 읽어 판단</h3>
+<ul>
+<li>BaselineExposure 계산식과 그 상수(루틴은 실행하지 않음)</li>
+<li>메뉴 값이 들어가는 입력 필드의 위치와 뜻</li>
+<li>DNG ColorMatrix1·2 표를 채널별 값으로 나누어 쓰는 경로</li>
+</ul></div>
+<div class="model"><h3><span class="badge model">모델</span> 연구자가 정한 조건</h3>
+<ul>
+<li>운영체제 기능의 대역, 나열한 입력 밖의 값은 모두 0</li>
+<li>레지스터가 픽셀에 하는 일은 공개 헤더의 설명을 따름(회로는 실행하지 않음)</li>
+<li>톤 제어 표는 히스토그램 입력이 없어 항등, 화이트밸런스는 RAW 파일의 촬영 시 값</li>
+</ul></div>
+<div class="open"><h3><span class="badge open">미확인</span> 확인하지 않은 것</h3>
+<ul>
+<li>다른 ISO·조명, Natural·Bright 밖 모드의 카메라 JPEG 대조</li>
+<li>다축 색 보정 블록의 하드웨어 식, 화이트밸런스 단계</li>
+<li>무채색 영역에서 카메라 JPEG이 한두 단계 밝은 원인</li>
+<li>Lightroom에서의 결과</li>
+</ul></div>
+</div>
+
+<section id="background">
+<h2>배경: 설정을 만드는 코드와 공개 레지스터 설명을 이었습니다</h2>
+<p>K-3 Mark III의 영상 처리 회로에는 RAW에서 얻은 RGB를 JPEG용 YCbCr로 바꾸는 블록이 있습니다. 공개 SDK 헤더는 이 블록을 <dfn title="RGB to YC. Milbeaut 계열 영상 처리 회로에서 RGB를 휘도·색차(YCbCr)로 바꾸는 처리 블록입니다.">R2Y</dfn>라고 부릅니다. CPU는 픽셀을 직접 고치지 않고 이 블록의 레지스터에 넣을 값을 계산합니다.</p>
+<p>펌웨어만 읽으면 어떤 값을 쓰는지까지만 압니다. 회로가 그 값으로 무엇을 하는지는 레지스터 설명이 있어야 압니다. 같은 SoC 계열의 공개 헤더 <code>im_r2y.h</code>와 <code>__fr2y6a.h</code>가 그 설명을 줍니다. 레지스터 묶음은 주소 순서로 아래와 같습니다. 펌웨어의 레지스터 덤프 문자열도 같은 이름(<code>R2Y_Core.CCA0.CC0CTL</code>, <code>R2Y_Core.GAM.GMCTL</code>, <code>R2Y_Core.CSP.CSYCTL</code> 등)을 씁니다.</p>
+<ol class="flow">
+<li class="model"><strong>OFG</strong><span>오프셋·화이트밸런스 이득</span></li>
+<li class="ok"><strong>CCA0</strong><span>색 행렬 CC0</span></li>
+<li class="open"><strong>MCC</strong><span>다축 색 보정</span></li>
+<li class="model"><strong>BTC/TC</strong><span>톤 제어</span></li>
+<li class="ok"><strong>GAM</strong><span>감마</span></li>
+<li class="ok"><strong>CCA1 · YC</strong><span>두 번째 행렬 · YC 변환</span></li>
+<li class="ok"><strong>CSP</strong><span>채도 억제(YNR·윤곽 처리 뒤)</span></li>
+</ol>
+<p>자매 기종 GR III의 공개 분석도 같은 계열 펌웨어를 다룹니다. 그 분석은 ImageTuning 15단계를 나열하고 설정 루틴 전체를 Unicorn에서 돌리는 방법을 보였습니다. 이 연구의 에뮬레이터 배치는 그 구성을 따랐습니다. 다만 GR III 분석은 <code>CC0CTL</code>의 비트 1이 휘도 혼합 단계를 켠다고 적었습니다. 공개 헤더에서 이 필드는 소수점 위치이므로 이 문서는 헤더를 따랐습니다.</p>
+
+<div class="callout plain"><strong class="label">쉽게 말하면</strong>
+<p>카메라 안의 계산 담당이 회로에 건네는 작업 지시서를 PC에서 그대로 다시 써 보았습니다. 지시서의 각 칸이 무슨 뜻인지는 회로 제조사가 공개한 설명서에서 찾았습니다. 그 지시대로 색을 계산해 카메라가 실제로 만든 JPEG과 나란히 놓았습니다.</p></div>
+
+<p>관련 문서와 나눈 범위는 다음과 같습니다.</p>
+<div class="table-wrap"><table class="fit">
+<caption>색 처리 문서들의 범위</caption>
+<thead><tr><th scope="col">문서</th><th scope="col">다루는 것</th><th scope="col">이 문서와의 관계</th></tr></thead>
+<tbody>
+<tr><td><a href="color-algorithms.html">색 처리 알고리즘</a></td><td>색 행렬·감마·톤 함수 하나하나의 정수 계산식</td><td>합성 입력으로 단일 함수를 검증했습니다. 여기서는 루틴 전체를 메뉴 값에서 출발해 실행합니다.</td></tr>
+<tr><td><a href="color-mode-boundaries.html">색 모드별 행렬·감마 조건</a></td><td>모드·채도·대비를 바꿀 때 달라지는 설정값</td><td>같은 질문을 19개 모드와 슬라이더 6개로 넓혔습니다.</td></tr>
+<tr><td><a href="pipeline-report.html">JPEG·ISP와 색 재현 경로</a></td><td>설정이 영상 처리 회로에 도달하는 경로</td><td>그 문서가 열어 둔 “행렬이 받는 RGB의 원색과 전달함수”에 답합니다.</td></tr>
+<tr><td><a href="firmware-dcp.html">펌웨어 값으로 만드는 색 프로파일</a></td><td>이 결과로 만든 Lightroom용 DCP와 그 검증</td><td>이 문서의 처리 경로가 프로파일의 재료입니다.</td></tr>
+</tbody></table></div>
+</section>
+
+<section id="make">
+<h2>카메라의 설정 계산 전체를 PC에서 실행했습니다</h2>
+<p class="takeaway">설정 루틴 <code>ImageTuningStill::Make</code>가 15개 단계를 차례로 부르며 레지스터 이미지를 채웁니다. 이 루틴을 메뉴 수준의 입력만 넣고 19개 모드에서 끝까지 실행했습니다.</p>
+
+<figure class="diagram">
+<figcaption>Make의 실행 순서와 색에 관여하는 단계</figcaption>
+<div class="dg-scroll">
+<svg class="dg" viewBox="0 0 800 510" role="img" aria-labelledby="dg-make-title dg-make-desc">
+<title id="dg-make-title">메뉴 입력에서 레지스터 이미지까지 Make가 부르는 15단계</title>
+<desc id="dg-make-desc">맨 위에서 메뉴 값이 촬영 정보 블록에 들어가고 설정 채우기 함수가 설정 블록을 만듭니다. 그다음 15단계가 네 줄에 걸쳐 차례로 실행됩니다. Interpolation, ColorMatrix, MultiAxial, LumaNr, YCbCrMatrix, ColorReference, CoordinateScale, ColorLpf, EdgeEnhancement, YCbCrOperation, Gamma, ToneControl, ResizeEdge, SuppreFilter, ReduceFilter 순서입니다. 색과 직접 관계된 ColorMatrix, MultiAxial, YCbCrMatrix, Gamma, ToneControl을 강조했습니다. 윤곽 강조 단계 EdgeEnhancement와 단계 뒤의 두 처리는 에뮬레이션에서 건너뛰었습니다. 결과는 info+0x120의 레지스터 이미지에 쌓입니다.</desc>
+<defs><marker id="dg-make-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0 0L10 5L0 10z"/></marker></defs>
+<rect class="b model" x="20" y="16" width="250" height="56" rx="8"/>
+<text class="t" x="32" y="40">메뉴 값 입력</text>
+<text class="s" x="32" y="60">모드·슬라이더 6개·색공간·노출 이득</text>
+<rect class="b ok" x="320" y="16" width="250" height="56" rx="8"/>
+<text class="t" x="332" y="40">설정 블록 채우기</text>
+<text class="s mono" x="332" y="60">0x53129e78</text>
+<path class="e" d="M270 44H318" marker-end="url(#dg-make-ah)"/>
+<path class="e" d="M445 72V86H105V108" marker-end="url(#dg-make-ah)"/>
+
+<rect class="b mute" x="20" y="110" width="170" height="52" rx="8"/><text class="t" x="32" y="132">Interpolation</text><text class="s" x="32" y="151">1 · 보간</text>
+<rect class="b key" x="220" y="110" width="170" height="52" rx="8"/><text class="t" x="232" y="132">ColorMatrix</text><text class="s" x="232" y="151">2 · 색 행렬 CC0</text>
+<rect class="b key" x="420" y="110" width="170" height="52" rx="8"/><text class="t" x="432" y="132">MultiAxial</text><text class="s" x="432" y="151">3 · 다축 색 보정</text>
+<rect class="b mute" x="620" y="110" width="170" height="52" rx="8"/><text class="t" x="632" y="132">LumaNr</text><text class="s" x="632" y="151">4 · 휘도 노이즈</text>
+<path class="e" d="M190 136H218" marker-end="url(#dg-make-ah)"/><path class="e" d="M390 136H418" marker-end="url(#dg-make-ah)"/><path class="e" d="M590 136H618" marker-end="url(#dg-make-ah)"/>
+<path class="e" d="M705 162V176H105V188" marker-end="url(#dg-make-ah)"/>
+
+<rect class="b key" x="20" y="190" width="170" height="52" rx="8"/><text class="t" x="32" y="212">YCbCrMatrix</text><text class="s" x="32" y="231">5 · YC 변환 행렬</text>
+<rect class="b mute" x="220" y="190" width="170" height="52" rx="8"/><text class="t" x="232" y="212">ColorReference</text><text class="s" x="232" y="231">6</text>
+<rect class="b mute" x="420" y="190" width="170" height="52" rx="8"/><text class="t" x="432" y="212">CoordinateScale</text><text class="s" x="432" y="231">7</text>
+<rect class="b mute" x="620" y="190" width="170" height="52" rx="8"/><text class="t" x="632" y="212">ColorLpf</text><text class="s" x="632" y="231">8 · 색 저역 필터</text>
+<path class="e" d="M190 216H218" marker-end="url(#dg-make-ah)"/><path class="e" d="M390 216H418" marker-end="url(#dg-make-ah)"/><path class="e" d="M590 216H618" marker-end="url(#dg-make-ah)"/>
+<path class="e" d="M705 242V256H105V268" marker-end="url(#dg-make-ah)"/>
+
+<rect class="b open" x="20" y="270" width="170" height="52" rx="8"/><text class="t" x="32" y="292">EdgeEnhancement</text><text class="s" x="32" y="311">9 · 건너뜀</text>
+<rect class="b mute" x="220" y="270" width="170" height="52" rx="8"/><text class="t" x="232" y="292">YCbCrOperation</text><text class="s" x="232" y="311">10</text>
+<rect class="b key" x="420" y="270" width="170" height="52" rx="8"/><text class="t" x="432" y="292">Gamma</text><text class="s" x="432" y="311">11 · 감마 곡선</text>
+<rect class="b key" x="620" y="270" width="170" height="52" rx="8"/><text class="t" x="632" y="292">ToneControl</text><text class="s" x="632" y="311">12 · 톤 제어 표</text>
+<path class="e" d="M190 296H218" marker-end="url(#dg-make-ah)"/><path class="e" d="M390 296H418" marker-end="url(#dg-make-ah)"/><path class="e" d="M590 296H618" marker-end="url(#dg-make-ah)"/>
+<path class="e" d="M705 322V336H105V348" marker-end="url(#dg-make-ah)"/>
+
+<rect class="b mute" x="20" y="350" width="170" height="52" rx="8"/><text class="t" x="32" y="372">ResizeEdge</text><text class="s" x="32" y="391">13</text>
+<rect class="b mute" x="220" y="350" width="170" height="52" rx="8"/><text class="t" x="232" y="372">SuppreFilter</text><text class="s" x="232" y="391">14</text>
+<rect class="b mute" x="420" y="350" width="170" height="52" rx="8"/><text class="t" x="432" y="372">ReduceFilter</text><text class="s" x="432" y="391">15</text>
+<path class="e" d="M190 376H218" marker-end="url(#dg-make-ah)"/><path class="e" d="M390 376H418" marker-end="url(#dg-make-ah)"/>
+<path class="e" d="M505 402V420H145V438" marker-end="url(#dg-make-ah)"/>
+<path class="e" d="M505 420H565V438" marker-end="url(#dg-make-ah)"/>
+
+<rect class="b open" x="20" y="440" width="250" height="56" rx="8"/>
+<text class="t" x="32" y="464">단계 뒤의 두 처리</text>
+<text class="s" x="32" y="484">건너뜀 (DNG 색 태그 준비 포함)</text>
+<rect class="b ok" x="440" y="440" width="250" height="56" rx="8"/>
+<text class="t" x="452" y="464">레지스터 이미지</text>
+<text class="s mono" x="452" y="484">info+0x120</text>
+</svg>
+</div>
+<ul class="dg-legend"><li><i class="key"></i>색에 직접 관여하는 단계(실행함)</li><li><i class="mute"></i>그 밖의 단계(실행함, 이 문서에서 다루지 않음)</li><li><i class="ok"></i>원본 코드 실행으로 확인</li><li><i class="model"></i>연구자가 넣은 입력</li><li><i class="open"></i>건너뛴 부분</li></ul>
+</figure>
+
+<p>단계 이름은 펌웨어의 이름 그대로입니다. 색에 관여하는 다섯 단계는 출력 레지스터를 읽어 역할을 확인했습니다. 나머지 단계의 한국어 풀이는 이름으로 짐작한 것이고 출력을 따로 분석하지 않았습니다. 채도 억제(CSP) 묶음은 레지스터 이미지에서 읽었고 어느 단계가 썼는지는 나누어 보지 않았습니다.</p>
+
+<div class="table-wrap"><table class="compact">
+<caption>Make가 부르는 15단계 (순서대로)</caption>
+<thead><tr><th scope="col" class="n">#</th><th scope="col">단계</th><th scope="col">주소</th><th scope="col">채우는 것</th><th scope="col">색 처리</th></tr></thead>
+<tbody>
+<tr><td class="n">1</td><td>Interpolation</td><td><code>0x5312cbe0</code></td><td>보간 설정(이름 기준)</td><td>다루지 않음</td></tr>
+<tr><td class="n">2</td><td>ColorMatrix</td><td><code>0x5312d344</code></td><td>색 행렬 CC0 (행렬 계산 <code>0x5312ce30</code>)</td><td><span class="badge ok">확인</span> 관여</td></tr>
+<tr><td class="n">3</td><td>MultiAxial</td><td><code>0x531323c8</code></td><td>다축 색 보정 MCC 매개변수</td><td><span class="badge open">미확인</span> 식 비공개</td></tr>
+<tr><td class="n">4</td><td>LumaNr</td><td><code>0x5313259c</code></td><td>휘도 노이즈 감소(이름 기준)</td><td>다루지 않음</td></tr>
+<tr><td class="n">5</td><td>YCbCrMatrix</td><td><code>0x531326e4</code></td><td>YC 변환 행렬(Hue 반영)</td><td><span class="badge ok">확인</span> 관여</td></tr>
+<tr><td class="n">6</td><td>ColorReference</td><td><code>0x53132bf8</code></td><td>분석하지 않음</td><td>다루지 않음</td></tr>
+<tr><td class="n">7</td><td>CoordinateScale</td><td><code>0x53132e00</code></td><td>분석하지 않음</td><td>다루지 않음</td></tr>
+<tr><td class="n">8</td><td>ColorLpf</td><td><code>0x531330a0</code></td><td>색 저역 필터(이름 기준)</td><td>다루지 않음</td></tr>
+<tr><td class="n">9</td><td>EdgeEnhancement</td><td><code>0x53135488</code></td><td>윤곽 강조 준비</td><td>건너뜀</td></tr>
+<tr><td class="n">10</td><td>YCbCrOperation</td><td><code>0x53135944</code></td><td>분석하지 않음</td><td>다루지 않음</td></tr>
+<tr><td class="n">11</td><td>Gamma</td><td><code>0x53137564</code></td><td>감마 곡선과 하드웨어 감마 표</td><td><span class="badge ok">확인</span> 관여</td></tr>
+<tr><td class="n">12</td><td>ToneControl</td><td><code>0x531382e8</code></td><td>톤 제어 표</td><td><span class="badge model">모델</span> 항등</td></tr>
+<tr><td class="n">13</td><td>ResizeEdge</td><td><code>0x53139584</code></td><td>크기 조정 관련(이름 기준)</td><td>다루지 않음</td></tr>
+<tr><td class="n">14</td><td>SuppreFilter</td><td><code>0x5313aa88</code></td><td>분석하지 않음</td><td>다루지 않음</td></tr>
+<tr><td class="n">15</td><td>ReduceFilter</td><td><code>0x531396c0</code></td><td>분석하지 않음</td><td>다루지 않음</td></tr>
+</tbody></table></div>
+
+<h3>대역으로 바꾼 것과 넣어 준 입력</h3>
+<p>에뮬레이터에는 카메라의 운영체제가 없습니다. 그래서 C++ <code>new</code>/<code>delete</code>, assert, 풀 할당기, 정적 초기화 보호, 잠금·해제, 기종 변형 표의 캐시된 행을 대역 함수로 바꿨습니다. 윤곽 강조 단계와 단계 뒤의 두 처리(<code>0x531275d0</code>, <code>0x53127888</code>)는 건너뛰었습니다. 뒤의 것은 DNG 색 태그를 준비하는 루틴이며 <a href="#gamma">노출 기준</a>에서 읽은 내용을 다룹니다.</p>
+<p>입력은 촬영 정보 블록 안의 필드 몇 개뿐입니다. 나머지는 모두 0입니다. 기존 검증기는 함수 하나에 손으로 만든 매개변수 블록을 넣었습니다. 지금은 카메라 자신의 설정 채우기 함수 <code>0x53129e78</code>가 메뉴 값에서 매개변수를 만듭니다.</p>
+<div class="table-wrap"><table class="fit compact">
+<caption>넣어 준 입력 (촬영 정보 블록 <code>SI+0x79b58</code> 기준 오프셋)</caption>
+<thead><tr><th scope="col">항목</th><th scope="col">오프셋</th><th scope="col">값</th></tr></thead>
+<tbody>
+<tr><td>Custom Image 번호</td><td><code>+0x264e</code></td><td>0~31 중 모드 번호</td></tr>
+<tr><td>채도 · 색상 · 키</td><td><code>+0x264f</code> · <code>+0x2650</code> · <code>+0x2651</code></td><td>0~8, 가운데 4</td></tr>
+<tr><td>대비 · 하이라이트 대비 · 섀도 대비</td><td><code>+0x2652</code> · <code>+0x2653</code> · <code>+0x2654</code></td><td>0~8, 가운데 4</td></tr>
+<tr><td>색공간</td><td><code>+0x26b5</code></td><td>1이면 AdobeRGB</td></tr>
+<tr><td>노출 이득</td><td><code>+0x2788</code></td><td>기준값 <code>0x2000</code>(8192)</td></tr>
+</tbody></table></div>
+
+<details class="evidence"><summary>클래스와 루틴 주소, 해시</summary>
+<dl class="kv">
+<dt>클래스</dt><dd><code>ImageTuningStill</code>, vtable <code>0x53a76810</code></dd>
+<dt>생성자 · Initialize · Make</dt><dd><code>0x5312b650</code> · <code>0x53125b7c</code> · <code>0x5312b310</code></dd>
+<dt>건너뛴 주소</dt><dd><code>0x53135488</code>, <code>0x531275d0</code>, <code>0x53127888</code></dd>
+<dt>레지스터 이미지</dt><dd><code>info+0x120</code></dd>
+<dt>펌웨어 파일</dt><dd><code>fwdc233b.bin</code> (2.20), SHA-256 <code class="wrap">3c9d466b8160689867af2f58ff2cf0bf3363bc3b42daff43685a33171b91eb1a</code></dd>
+<dt>복호한 스트림</dt><dd>SHA-256 <code class="wrap">7ff301d585ef7adcd620a15575faa39b4227cc5a27eaa8d754efe50f667a30f9</code></dd>
+<dt>RTOS 레코드</dt><dd>SHA-256 <code class="wrap">342d2f35405e8daf1797dfe431d2e4aa70f4b52a2c242a29df48206672f1dfb4</code>, 적재 기준 <code>0x52500000</code></dd>
+</dl>
+<p>파일과 복호 스트림의 해시는 <a href="../evidence.json">evidence.json</a>의 값과 같습니다. 모드별 레지스터 묶음의 해시는 <a href="firmware-color-pipeline.json">firmware-color-pipeline.json</a>의 <code>modes</code>에 있습니다.</p>
+</details>
+</section>
+
+<section id="order">
+<h2>처리 순서와 각 단계의 뜻</h2>
+<p class="takeaway">RAW 값은 화이트밸런스 이득, 색 행렬, 감마, YC 변환, 채도 억제를 거쳐 JPEG이 됩니다. 각 단계의 값은 실행한 코드에서, 그 값의 뜻은 공개 헤더에서 얻었습니다.</p>
+
+<figure class="diagram">
+<figcaption>R2Y 블록의 색 처리 순서와 근거</figcaption>
+<div class="dg-scroll">
+<svg class="dg" viewBox="0 0 800 360" role="img" aria-labelledby="dg-pipe-title dg-pipe-desc">
+<title id="dg-pipe-title">RAW에서 JPEG까지 아홉 단계의 처리 순서</title>
+<desc id="dg-pipe-desc">세 줄로 된 흐름도입니다. 첫 줄은 RAW 센서 값, 블랙 레벨과 화이트밸런스 이득, 색 행렬 CC0입니다. CC0의 출력은 선형 sRGB입니다. 둘째 줄은 다축 색 보정(기본 세트, 효과가 보이지 않음), 톤 제어(이 에뮬레이션에서 항등), 감마(12비트 입력, 10비트 출력)입니다. 셋째 줄은 JFIF 정수 행렬을 쓰는 YC 변환, 휘도에 따라 색차를 줄이는 채도 억제, JPEG입니다. 화이트밸런스는 추적하지 않아 RAW의 촬영 시 값을 썼고, 다축 색 보정의 식은 공개되지 않았습니다.</desc>
+<defs><marker id="dg-pipe-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0 0L10 5L0 10z"/></marker></defs>
+<rect class="b mute" x="20" y="20" width="220" height="80" rx="8"/>
+<text class="t" x="32" y="46">RAW 센서 값</text><text class="s" x="32" y="66">2×2 베이어 셀</text><text class="n" x="32" y="86">출처: RAW 파일</text>
+<rect class="b model" x="290" y="20" width="220" height="80" rx="8"/>
+<text class="t" x="302" y="46">OFG 블랙·WB 이득</text><text class="s" x="302" y="66">채널별 이득</text><text class="n" x="302" y="86">추적 안 함, 촬영 시 값 사용</text>
+<rect class="b key" x="560" y="20" width="220" height="80" rx="8"/>
+<text class="t" x="572" y="46">CC0 색 행렬</text><text class="s" x="572" y="66">출력 = 선형 sRGB</text><text class="n" x="572" y="86">헤더 + 실행한 코드</text>
+<path class="e" d="M240 60H288" marker-end="url(#dg-pipe-ah)"/><path class="e" d="M510 60H558" marker-end="url(#dg-pipe-ah)"/>
+<path class="e" d="M670 100V120H130V138" marker-end="url(#dg-pipe-ah)"/>
+
+<rect class="b open" x="20" y="140" width="220" height="80" rx="8"/>
+<text class="t" x="32" y="166">MCC 다축 색 보정</text><text class="s" x="32" y="186">기본 세트, 효과 안 보임</text><text class="n" x="32" y="206">하드웨어 식 비공개</text>
+<rect class="b model" x="290" y="140" width="220" height="80" rx="8"/>
+<text class="t" x="302" y="166">TC 톤 제어</text><text class="s" x="302" y="186">이 에뮬레이션에서 항등</text><text class="n" x="302" y="206">히스토그램 입력 없음</text>
+<rect class="b ok" x="560" y="140" width="220" height="80" rx="8"/>
+<text class="t" x="572" y="166">GAM 감마</text><text class="s" x="572" y="186">12비트 입력 → 10비트 출력</text><text class="n" x="572" y="206">헤더 + 실행한 코드</text>
+<path class="e" d="M240 180H288" marker-end="url(#dg-pipe-ah)"/><path class="e" d="M510 180H558" marker-end="url(#dg-pipe-ah)"/>
+<path class="e" d="M670 220V240H130V258" marker-end="url(#dg-pipe-ah)"/>
+
+<rect class="b ok" x="20" y="260" width="220" height="80" rx="8"/>
+<text class="t" x="32" y="286">YC 변환</text><text class="s" x="32" y="306">JFIF(BT.601) 정수 행렬</text><text class="n" x="32" y="326">헤더 + 실행한 코드</text>
+<rect class="b ok" x="290" y="260" width="220" height="80" rx="8"/>
+<text class="t" x="302" y="286">CSP 채도 억제</text><text class="s" x="302" y="306">휘도에 따른 Cb·Cr 이득</text><text class="n" x="302" y="326">헤더 + 실행한 코드</text>
+<rect class="b mute" x="560" y="260" width="220" height="80" rx="8"/>
+<text class="t" x="572" y="286">JPEG</text><text class="s" x="572" y="306">카메라가 쓴 파일과 비교</text><text class="n" x="572" y="326">PC에서 계산</text>
+<path class="e" d="M240 300H288" marker-end="url(#dg-pipe-ah)"/><path class="e" d="M510 300H558" marker-end="url(#dg-pipe-ah)"/>
+</svg>
+</div>
+<ul class="dg-legend"><li><i class="key"></i>이 문서의 핵심 결과</li><li><i class="ok"></i>값을 실행으로 얻고 뜻을 헤더로 확인</li><li><i class="model"></i>대역 값·추적하지 않은 값</li><li><i class="open"></i>식 미확인</li><li><i class="mute"></i>입력과 비교 대상</li></ul>
+</figure>
+
+<p>두 번째 행렬 CC1은 모든 모드에서 꺼져 있어 그림에서 뺐습니다. 노이즈 감소와 윤곽 처리도 색 경로에서 다루지 않았습니다.</p>
+<div class="table-wrap"><table class="compact">
+<caption>단계별로 공개 헤더에서 얻은 것과 실행한 코드에서 얻은 것</caption>
+<thead><tr><th scope="col">단계</th><th scope="col">공개 헤더에서</th><th scope="col">실행한 코드에서</th></tr></thead>
+<tbody>
+<tr><td>CC0 색 행렬</td><td><code>CC0CTL</code>은 소수점 위치(<code>CC0DP</code>, 2비트)만 담고 <code>CC0K</code>는 12비트 부호 있는 계수</td><td>19개 모드의 계수, 소수점 1, 행의 합 256</td></tr>
+<tr><td>감마</td><td><code>Im_R2Y_Set_Gamma_Table</code>: 기준값 256개와 차분 256개, “12비트 입력 차분형”, 표 번호 0 RGB 공통 · 1 R · 2 G · 3 B · 4 Yb</td><td>256점 16비트 곡선과 하드웨어 표</td></tr>
+<tr><td>YC 변환</td><td>9비트 부호 있는 계수</td><td>JFIF 정수 행렬(색상 0일 때)</td></tr>
+<tr><td>채도 억제</td><td><code>T_IM_R2Y_CTRL_CS</code>: 켜기, 휘도·채도 혼합비 0~8, 오프셋 4개(10비트), 이득 4개(11비트 부호), 경계 3개(10비트)</td><td>모든 모드에서 켜짐, 휘도 기준(혼합비 8)</td></tr>
+<tr><td>다축 색 보정</td><td>레지스터 이름만 있고 픽셀 식은 없음</td><td>모든 모드가 같은 기본 세트</td></tr>
+</tbody></table></div>
+</section>
+
+<section id="matrix">
+<h2>색 행렬의 출력은 선형 sRGB입니다</h2>
+<p class="takeaway">AdobeRGB를 고를 때만 곱해지는 행렬이 표준 “선형 sRGB → 선형 Adobe RGB (1998)” 행렬과 같았습니다. 그 앞까지의 행렬은 화이트밸런스를 마친 센서 RGB를 선형 sRGB로 바꿉니다.</p>
+<p>색 행렬은 네 행렬을 곱해 만듭니다. 순서는 <code>out = A·F·M·B·in</code>이고 <code>in</code>은 화이트밸런스를 마친 센서 RGB입니다. 이 순서는 <a href="color-algorithms.html">색 처리 알고리즘</a>에서 이미 다뤘습니다.</p>
+<dl class="kv">
+<dt>B 공통 행렬</dt><dd>디스크립터 32개가 모두 같은 포인터를 씁니다. 각 행의 합은 정확히 1.0입니다.</dd>
+<dt>M 모드 행렬</dt><dd>Custom Image마다 다릅니다. Natural은 단위 행렬입니다.</dd>
+<dt>F 채도 행렬</dt><dd>채도 슬라이더 가운데(인덱스 4)에서 단위 행렬입니다.</dd>
+<dt>A 색공간 행렬</dt><dd>색공간이 AdobeRGB일 때만 곱합니다.</dd>
+</dl>
+<p>A를 표준 행렬과 비교하니 가장 큰 차이가 0.000277이었습니다. 1/8192 단위로 두 단위쯤입니다. A가 선형 sRGB를 받으므로 그 앞의 <code>F·M·B</code>는 선형 sRGB를 내보냅니다. AdobeRGB 모드의 행렬도 sRGB 모드의 행렬에 A를 곱한 값과 0.005 안에서 같았습니다. 지금까지 <a href="pipeline-report.html">경로 문서</a>와 <a href="color-algorithms.html">계산식 문서</a>가 미확인으로 남긴 “행렬이 받는 RGB의 원색과 전달함수”는 이렇게 정해졌습니다.</p>
+<p>레지스터 값도 이 해석과 맞습니다. 19개 모드 모두 소수점 위치가 1이고 각 행의 합이 정확히 256입니다. 256이 1.0이므로 회색은 회색으로 남습니다. 행렬은 화이트밸런스나 광원에 따라 바뀌지 않습니다. 모든 조건에서 공통 행렬 하나를 쓰고 화이트밸런스는 그 앞의 OFG 블록에서 채널 이득으로 처리합니다. 이 이득은 더 따라가지 않았습니다.</p>
+
+<div class="callout fix"><strong class="label">보완</strong>
+<p><a href="color-algorithms.html">색 처리 알고리즘</a>은 대각 원소를 보정해 “행의 합이 2 × gain”이 되게 한다고 적었습니다. 식은 맞습니다. 여기서 gain은 행렬 전체의 배율입니다. 기본 gain 인덱스 8의 표 값 128과 실행 중 gain <code>0x100</code>이 만나면 gain은 128이고 행의 합은 256이 됩니다. 정지 사진의 실행 중 gain은 <code>SI+0x3e1b6</code>에서 오며 <code>0x100</code>~<code>0x200</code>으로 제한됩니다.</p></div>
+
+<details class="evidence"><summary>행렬 주소와 해시</summary>
+<div class="table-wrap"><table class="compact">
+<thead><tr><th scope="col">항목</th><th scope="col">주소</th><th scope="col">SHA-256</th></tr></thead>
+<tbody>
+<tr><td>공통 행렬 B (행의 합 1.0, 1.0, 1.0)</td><td><code>0x53a7d2e4</code></td><td><code class="wrap">3d5841d4ce2402f1a164442216c62def69c8d398e66d2c605b89d678cff8b8fa</code></td></tr>
+<tr><td>색공간 행렬 A (선형 sRGB → 선형 Adobe RGB, D65와 최대 0.000277 차이)</td><td><code>0x53a7bacc</code></td><td><code class="wrap">ec369193e45c2f4adaa74a38c7f134d165dcbf41cc07805c4aa97ba856558d8e</code></td></tr>
+</tbody></table></div>
+<p>계수 값은 저장소 공개 방침에 따라 싣지 않았습니다. 모드별 CC0 레지스터의 해시는 <a href="firmware-color-pipeline.json">firmware-color-pipeline.json</a>의 <code>modes[*].sha256.cc0</code>에 있습니다.</p>
+</details>
+</section>
+
+<section id="gamma">
+<h2>감마 곡선과 노출 기준</h2>
+<p class="takeaway">감마 곡선의 출력은 sRGB로 부호화된 값입니다. 곡선 입력의 노출 기준은 펌웨어 자신의 BaselineExposure 식으로 정해지며 기준 이득에서 0.5 EV 차이가 납니다.</p>
+
+<h3>곡선에서 하드웨어 표로</h3>
+<p>Gamma 단계는 256점짜리 16비트 곡선을 계산합니다. 최댓값은 16384이고 12비트 입력 눈금에서 16마다 한 점입니다. 하드웨어 표는 이 곡선의 위쪽 10비트입니다. 기준값 256개와 기준값마다 4비트 증분 16개(64비트 워드 하나)로 구성됩니다. 곡선 하나를 쓰는 모든 모드에서 “기준값 = 곡선 &gt;&gt; 4”가 성립했습니다. 출력은 10비트입니다.</p>
+
+<h3>AdobeRGB 표가 알려 준 곡선의 뜻</h3>
+<p>AdobeRGB를 고르면 펌웨어 곡선은 그대로이고 하드웨어 표만 바뀝니다. 바뀐 표는 sRGB 표를 sRGB 함수로 풀고 Adobe RGB 감마(563/256, 약 2.2)로 다시 감은 값과 같았습니다. 가장 큰 차이는 10비트 한 단계의 0.947배였습니다. 펌웨어가 곡선 출력을 sRGB 부호화 값으로 다룬다는 증거입니다. 그래서 선형 톤 곡선은 감마 곡선을 sRGB로 복호한 것으로 정했습니다.</p>
+
+<h3>중간 회색 기준점</h3>
+<p>노출 이득이 N일 때 곡선의 꺾이는 점은 4096 가운데 입력 512·N/8192에 놓입니다. N = 8192이면 전체 눈금의 12.5%입니다. 이 점은 출력 전체의 약 0.47로 옮겨지며 sRGB 8비트 코드로 약 119입니다.</p>
+
+<h3>노출 이득과 BaselineExposure 식</h3>
+<p>카메라는 노출 이득 G를 제조사 태그 <code>0x009d</code>에 G/4로 저장합니다. DNG 색 태그를 준비하는 루틴 <code>0x53127888</code>은 이 이득으로 <dfn title="DNG 태그. RAW 값을 기준 밝기로 올리거나 내릴 노출 보정량(EV)입니다.">BaselineExposure</dfn>를 계산합니다. 코드를 읽어 얻은 식은 다음과 같습니다.</p>
+<pre><code>BaselineExposure = log2( 1448 / ( c × (maxval / (white − black)) × (G / 8192) / d ) )
+
+c      = 2048 (SI+0x2bc9 플래그가 켜지면 1024)
+maxval = 2^bits − 1
+G      = 노출 이득 (info+0x82d8)
+d      = 1 (SI+0x2bcc가 켜지지 않았을 때)
+저장할 때 분모 65536</code></pre>
+<p>식의 상수 2048.0, 1024.0, 1/8192, 1448.0, 65536.0은 펌웨어 이미지에서 직접 읽어 확인했습니다. 1448은 1024·√2에 가깝습니다. 기준 이득 G = 8192에서 화이트 레벨이 거의 꽉 차면 배율은 1448/2048이 되고 BaselineExposure는 약 −0.5 EV입니다.</p>
+<div class="table-wrap"><table class="fit compact">
+<caption>표본으로 확인한 식</caption>
+<thead><tr><th scope="col">표본</th><th scope="col" class="n">태그 <code>0x009d</code></th><th scope="col" class="n">G</th><th scope="col">BaselineExposure</th></tr></thead>
+<tbody>
+<tr><td>raw.pixls.us #4678 (화이트 16379, 블랙 64)</td><td class="n">2576</td><td class="n">10304</td><td>DNG 태그 −54871/65536 = −0.8373, 식 −0.8371</td></tr>
+<tr><td>Imaging Resource 표본</td><td class="n">2048</td><td class="n">8192</td><td>DNG 없음, 식으로 −0.5058</td></tr>
+</tbody></table></div>
+<p>Lightroom이 BaselineExposure를 적용한 선형 값에 √2를 곱하면 기준 이득일 때 카메라 감마 단계의 입력과 같아집니다. 프로파일에 BaselineExposureOffset +0.5 EV를 두면 Lightroom이 카메라의 눈금에 맞춰집니다. 이때 프로파일 톤 곡선은 기준 곡선(N = <code>0x2000</code>)입니다. 이 내용은 <a href="firmware-dcp.html">펌웨어 값으로 만드는 색 프로파일</a>에서 씁니다.</p>
+<p>#4678에서 노출 배율을 자유롭게 맞추면 0.7924가 나왔습니다. 펌웨어 값으로 계산한 배율 8192/10304·(16315/16384) = 0.7917과 거의 같습니다. 다른 해석도 시험했습니다. “이득은 곡선에 들어가고 입력은 그대로”라고 두면 채도 50 이상의 평탄 블록에서 색차가 4.69였습니다. 채택한 모델(입력에 8192/G를 곱하고 기준 곡선 사용)은 0.31이었으므로 그 해석은 버렸습니다.</p>
+
+<details class="evidence"><summary>상수 주소와 DNG 색 행렬 표</summary>
+<dl class="kv">
+<dt>상수</dt><dd><code>0x53127b00</code> 2048.0 · <code>0x53127b08</code> 1024.0 · <code>0x53127b10</code> 1/8192 · <code>0x53127b18</code> 1448.0 · <code>0x53127b20</code> 65536.0 (모두 기대값과 같음)</dd>
+<dt>BaselineExposure 분모</dt><dd><code>0x53c16c04</code>, 65536</dd>
+<dt>ColorMatrix1 표 (광원 A)</dt><dd><code>0x53c16c08</code>, SHA-256 <code class="wrap">2f410156acd970986e57a55a7763d95744478e4d6e8f37b3a1737ce087579925</code></dd>
+<dt>ColorMatrix2 표 (D65)</dt><dd><code>0x53c16220</code>, SHA-256 <code class="wrap">9a3494a14c20cae08d4e86c113b36e76e889a1ef74d47f60e21994eff273ca68</code></dd>
+</dl>
+<p>두 표는 분모 65536인 유리수 9개씩입니다. 루틴은 각 행을 정보 블록의 채널별 값으로 나눈 뒤 DNG에 씁니다. #4678의 DNG 값은 표의 행에 0.68926(R), 1.0(G), 0.31733(B)을 곱한 것과 같았습니다. 이 값은 본체마다 다른 보정값으로 보이지만 추적하지 않았습니다.</p>
+</details>
+</section>
+
+<section id="yc">
+<h2>YC 변환, 채도 억제, 다축 색 보정</h2>
+<p class="takeaway">YC 변환은 JFIF 표준 행렬 그대로입니다. 채도 억제는 아주 어두운 곳과 밝은 곳에서 색차를 줄입니다. 다축 색 보정은 기본 세트만 들어 있고 효과를 찾지 못했습니다.</p>
+
+<h3>YC 변환은 JFIF 행렬입니다</h3>
+<p>색상 슬라이더가 0이면 19개 모드 모두 YC 변환 계수가 JFIF(BT.601) 정수 행렬과 정확히 같았습니다. 256으로 나누는 값입니다.</p>
+<div class="table-wrap"><table class="fit compact">
+<caption>YC 변환 정수 행렬 (/256, ITU-T T.871과 같은 값)</caption>
+<thead><tr><th scope="col">출력</th><th scope="col" class="n">R</th><th scope="col" class="n">G</th><th scope="col" class="n">B</th></tr></thead>
+<tbody>
+<tr><td>Y</td><td class="n">77</td><td class="n">150</td><td class="n">29</td></tr>
+<tr><td>Cb</td><td class="n">−43</td><td class="n">−85</td><td class="n">128</td></tr>
+<tr><td>Cr</td><td class="n">128</td><td class="n">−107</td><td class="n">−21</td></tr>
+</tbody></table></div>
+
+<h3>채도 억제는 휘도에 따라 색차 이득을 바꿉니다</h3>
+<figure class="diagram">
+<figcaption>채도 억제의 색차 이득 (어림값)</figcaption>
+<div class="dg-scroll">
+<svg class="dg" viewBox="0 0 800 290" role="img" aria-labelledby="dg-csp-title dg-csp-desc">
+<title id="dg-csp-title">10비트 휘도에 따른 Cb·Cr 이득</title>
+<desc id="dg-csp-desc">가로축은 휘도를 전체 눈금의 백분율로, 세로축은 Cb·Cr 이득을 0부터 1까지 나타냅니다. 이득은 휘도 0에서 0으로 시작해 약 5%에서 1이 됩니다. 약 75%까지 1을 유지하다가 84%에서 약 0.84로, 흰색에서 약 0.27로 떨어집니다. 모든 모드에서 같습니다.</desc>
+<path class="e" d="M90 30V230H760"/>
+<path class="e dash" d="M90 50H760"/>
+<path class="e dash" d="M585 50V230"/>
+<path class="e dash" d="M644 79V230"/>
+<path class="e key" d="M90 230L123 50L585 50L644 79L750 181"/>
+<text class="n end" x="80" y="54">1</text>
+<text class="n end" x="80" y="144">0.5</text>
+<text class="n end" x="80" y="234">0</text>
+<text class="n mid" x="90" y="250">0%</text>
+<text class="n mid" x="255" y="250">25%</text>
+<text class="n mid" x="420" y="250">50%</text>
+<text class="n mid" x="585" y="250">75%</text>
+<text class="n mid" x="750" y="250">100%</text>
+<text class="s mid" x="420" y="278">휘도 (10비트 전체 눈금 대비)</text>
+<text class="s" x="100" y="24">Cb·Cr 이득</text>
+<text class="n" x="130" y="74">약 5%에서 1에 도달</text>
+<text class="n end" x="575" y="74">약 75%까지 1</text>
+<text class="n end" x="636" y="100">84%에서 약 0.84</text>
+<text class="n end" x="740" y="200">흰색에서 약 0.27</text>
+</svg>
+</div>
+<ul class="dg-legend"><li><i class="key"></i>레지스터 값으로 그린 구간 선형 이득(백분율은 어림)</li></ul>
+</figure>
+<p>채도 억제(CSP)는 모든 모드에서 켜져 있고 휘도를 기준으로 씁니다(혼합비 8). 색차 이득은 10비트 휘도에 대한 구간 선형 함수입니다. 모양은 모든 모드에서 같습니다. Monochrome은 여기에 “색차 고정”을 더 켜서 Cb와 Cr을 0으로 둡니다.</p>
+<p>이 단계를 빼면 결과가 나빠집니다. Imaging Resource 표본에서 채도 5~15의 평탄 블록은 단계를 빼면 1.81, 넣으면 1.09였습니다.</p>
+
+<h3>다축 색 보정은 모델에 넣지 않았습니다</h3>
+<p>다축 색 보정(MCC) 블록은 모든 모드가 같은 기본 세트를 씁니다. 영역 경계와 영역 번호가 모두 0이어서 모든 픽셀이 영역 0에 들어갑니다. 하드웨어가 이 값으로 무엇을 계산하는지는 공개되지 않았습니다. 두 가지 해석을 시험했고 둘 다 결과를 나쁘게 만들었습니다.</p>
+<ul>
+<li>기본 행렬을 밝은 영역의 채도 감소로 해석: 밝고 채도 높은 블록이 0.87에서 1.09로 나빠졌습니다.</li>
+<li>저장된 값을 그대로 행렬로 해석(1.0 = 1024): 무채색 블록이 1.4에서 2.2로 나빠졌습니다.</li>
+</ul>
+<p>그래서 이 블록은 효과가 없는 것으로 두었습니다. 식을 모르는 상태이므로 <span class="badge open">미확인</span>으로 남깁니다.</p>
+</section>
+
+<section id="modes">
+<h2>Custom Image마다 달라지는 것</h2>
+<p class="takeaway">슬라이더가 기본값이면 대부분의 모드는 색 행렬만 Natural과 다릅니다. 곡선까지 다른 모드는 Reversal Film, Auto Select, Cross Processing, Gold이고 Monochrome은 색차를 없앱니다.</p>
+<p>아래 표는 모드별 레지스터 묶음의 해시를 Natural과 비교한 결과입니다. YC 변환, 채도 억제, 다축 색 보정은 19개 모드 모두 같았고 톤 제어 표는 모두 항등이었습니다.</p>
+<div class="table-wrap"><table class="compact">
+<caption>Natural과 비교한 모드별 차이 (슬라이더 기본값)</caption>
+<thead><tr><th scope="col" class="n">번호</th><th scope="col">Custom Image</th><th scope="col">색 행렬 CC0</th><th scope="col">공통 감마 곡선</th><th scope="col">채널별 곡선</th><th scope="col">색차 고정</th><th scope="col">카메라 JPEG 대조</th></tr></thead>
+<tbody>
+<tr><td class="n">0</td><td>Auto Select</td><td>Bright와 같음</td><td>자체 곡선 (카메라에서는 장면에 따라 다름)</td><td>아니오</td><td>아니오</td><td>안 함</td></tr>
+<tr><td class="n">1</td><td>Natural</td><td>기준</td><td>기준</td><td>아니오</td><td>아니오</td><td>#4678</td></tr>
+<tr><td class="n">2</td><td>Bright</td><td>다름</td><td>Natural과 같음</td><td>아니오</td><td>아니오</td><td>Imaging Resource</td></tr>
+<tr><td class="n">3</td><td>Portrait</td><td>다름</td><td>Natural과 같음</td><td>아니오</td><td>아니오</td><td>안 함</td></tr>
+<tr><td class="n">4</td><td>Landscape</td><td>다름</td><td>Natural과 같음</td><td>아니오</td><td>아니오</td><td>안 함</td></tr>
+<tr><td class="n">5</td><td>Vibrant</td><td>다름</td><td>Natural과 같음</td><td>아니오</td><td>아니오</td><td>안 함</td></tr>
+<tr><td class="n">6</td><td>Radiant</td><td>다름</td><td>Natural과 같음</td><td>아니오</td><td>아니오</td><td>안 함</td></tr>
+<tr><td class="n">7</td><td>Muted</td><td>다름</td><td>Natural과 같음</td><td>아니오</td><td>아니오</td><td>안 함</td></tr>
+<tr><td class="n">8</td><td>Flat</td><td>다름</td><td>Natural과 같음</td><td>아니오</td><td>아니오</td><td>안 함</td></tr>
+<tr><td class="n">9</td><td>Bleach Bypass</td><td>다름</td><td>Natural과 같음</td><td>아니오</td><td>아니오</td><td>안 함</td></tr>
+<tr><td class="n">10</td><td>Reversal Film</td><td>다름</td><td>자체 곡선</td><td>아니오</td><td>아니오</td><td>안 함</td></tr>
+<tr><td class="n">11</td><td>Monochrome</td><td>다름 (랭크 1 행렬)</td><td>Natural과 같음</td><td>아니오</td><td>예</td><td>안 함</td></tr>
+<tr><td class="n">12</td><td>Cross Processing</td><td>Natural과 같음</td><td>Natural과 같음</td><td>예</td><td>아니오</td><td>안 함</td></tr>
+<tr><td class="n">23</td><td>SATOBI</td><td>다름</td><td>Natural과 같음</td><td>아니오</td><td>아니오</td><td>안 함</td></tr>
+<tr><td class="n">24</td><td>HARUBENI</td><td>다름</td><td>Natural과 같음</td><td>아니오</td><td>아니오</td><td>안 함</td></tr>
+<tr><td class="n">25</td><td>KATEN</td><td>다름</td><td>Natural과 같음</td><td>아니오</td><td>아니오</td><td>안 함</td></tr>
+<tr><td class="n">26</td><td>KYUSHU</td><td>다름</td><td>Natural과 같음</td><td>아니오</td><td>아니오</td><td>안 함</td></tr>
+<tr><td class="n">27</td><td>FUYUNO</td><td>다름</td><td>Natural과 같음</td><td>아니오</td><td>아니오</td><td>안 함</td></tr>
+<tr><td class="n">31</td><td>Gold</td><td>다름</td><td>Natural과 같음</td><td>예</td><td>아니오</td><td>안 함</td></tr>
+</tbody></table></div>
+<p>“랭크 1 행렬”은 세 행이 서로 비례하는 행렬입니다. 출력 세 채널이 같은 밝기 값이 되어 흑백이 됩니다. Cross Processing과 Gold는 공통 곡선 대신 채널마다 다른 곡선을 씁니다. “기준값 = 곡선 &gt;&gt; 4” 검사는 곡선 하나를 쓰는 모드에 해당합니다. JSON에서는 Gold만 이 항목이 거짓으로 기록되어 있습니다.</p>
+
+<p>Natural에서 슬라이더를 하나씩 +2만큼 움직이면 움직이는 레지스터 묶음은 아래와 같습니다.</p>
+<div class="table-wrap"><table class="fit compact">
+<caption>슬라이더와 바뀌는 레지스터 묶음 (Natural, 각 +2)</caption>
+<thead><tr><th scope="col">슬라이더</th><th scope="col">색 행렬</th><th scope="col">감마 곡선</th><th scope="col">YC 행렬</th></tr></thead>
+<tbody>
+<tr><td>채도</td><td>바뀜</td><td>그대로</td><td>그대로</td></tr>
+<tr><td>색상</td><td>그대로</td><td>그대로</td><td>바뀜</td></tr>
+<tr><td>키</td><td>그대로</td><td>바뀜</td><td>그대로</td></tr>
+<tr><td>대비</td><td>그대로</td><td>바뀜</td><td>그대로</td></tr>
+<tr><td>하이라이트 대비</td><td>그대로</td><td>바뀜</td><td>그대로</td></tr>
+<tr><td>섀도 대비</td><td>그대로</td><td>바뀜</td><td>그대로</td></tr>
+</tbody></table></div>
+<p>모드별 원자료는 <a href="firmware-color-pipeline.json">firmware-color-pipeline.json</a>의 <code>modes</code>(<code>gamma_curve_shared_with</code>, <code>per_channel_gamma_curves</code>, <code>cc0_rank_one</code>, <code>chroma_fixed</code>)와 <code>slider_effect_natural</code>에 있습니다.</p>
+</section>
+
+<section id="jpeg">
+<h2>카메라 JPEG과의 대조</h2>
+<p class="takeaway">색·톤 매개변수를 하나도 맞추지 않고 계산한 색이 카메라 JPEG과 평탄 블록 평균 ΔE00 0.85(Natural)와 1.38(Bright)만큼 달랐습니다. 모드를 바꿔 넣으면 차이가 크게 벌어져 모드 행렬이 구별됩니다.</p>
+
+<h3>방법</h3>
+<ol class="steps">
+<li><strong>RAW 준비</strong> 2×2 센서 셀을 묶어 절반 크기 영상을 만들고 RAW의 촬영 시 화이트밸런스를 씁니다.</li>
+<li><strong>펌웨어 색 단계 적용</strong> 위에서 정한 행렬·감마·YC 변환·채도 억제를 그대로 계산합니다. 맞춘 색·톤 매개변수는 0개입니다.</li>
+<li><strong>위치 맞춤</strong> 카메라 JPEG에는 렌즈 보정과 잘라 내기가 들어 있어 아핀 정합(ECC)으로 기하만 맞춥니다.</li>
+<li><strong>비교</strong> 16×16 픽셀 블록 평균끼리 <dfn title="CIE가 2000년에 정한 색차 공식. 값 1 안팎이면 나란히 놓고 겨우 구별되는 정도입니다.">CIEDE2000(ΔE00)</dfn>을 계산합니다. 카메라 JPEG은 자기 색공간으로 해석합니다. “평탄” 블록은 윤곽이 없는 블록입니다.</li>
+</ol>
+<p>모두 카메라가 저장해 둔 파일을 PC에서 계산한 것입니다. 이 표의 값은 펌웨어 색 단계를 직접 계산한 “모델” 결과입니다. 같은 비교를 DCP 프로파일로 한 값은 <a href="firmware-dcp.html">펌웨어 값으로 만드는 색 프로파일</a>에 있습니다.</p>
+
+<div class="table-wrap"><table class="compact">
+<caption>카메라 JPEG과의 평균 ΔE00 (모델, 블록 평균 기준)</caption>
+<thead><tr><th scope="col">표본</th><th scope="col">모드 / 색공간</th><th scope="col" class="n">노출 이득</th><th scope="col" class="n">평탄 블록</th><th scope="col" class="n">무채색 (C&lt;5)</th><th scope="col" class="n">채도 5~30</th><th scope="col" class="n">채도 30 이상</th><th scope="col" class="n">모든 블록</th></tr></thead>
+<tbody>
+<tr><td>raw.pixls.us #4678 (펌웨어 1.01)</td><td>Natural / AdobeRGB</td><td class="n">10304</td><td class="n">0.852</td><td class="n">0.878</td><td class="n">0.854</td><td class="n">0.418</td><td class="n">0.928</td></tr>
+<tr><td>Imaging Resource (펌웨어 1.10)</td><td>Bright / sRGB</td><td class="n">8192</td><td class="n">1.382</td><td class="n">1.458</td><td class="n">1.072</td><td class="n">0.770</td><td class="n">1.295</td></tr>
+</tbody></table></div>
+<p class="small muted">평탄 블록 수는 17,639개와 5,240개, 평탄 블록의 95백분위는 1.514와 1.908입니다. 범주별 블록 수: #4678은 7,898 · 9,202 · 539개, Imaging Resource는 4,498 · 371 · 371개입니다. 두 표본 모두 ISO 100입니다.</p>
+
+<figure class="diagram">
+<figcaption>범주별 평균 ΔE00과 대조 실험</figcaption>
+<div class="dg-scroll">
+<svg class="dg" viewBox="0 0 800 430" role="img" aria-labelledby="dg-cmp-title dg-cmp-desc">
+<title id="dg-cmp-title">두 표본의 범주별 평균 색차와 모드를 바꿔 넣은 대조 실험</title>
+<desc id="dg-cmp-desc">0부터 4까지의 공통 눈금을 쓴 가로 막대입니다. 평탄 블록 전체는 Natural 표본 0.852, Bright 표본 1.382입니다. 무채색은 0.878과 1.458, 채도 5~30은 0.854와 1.072, 채도 30 이상은 0.418과 0.770, 모든 블록은 0.928과 1.295입니다. 아래 대조 실험은 Bright 표본의 채도 높은 평탄 블록에 Bright 매개변수를 쓰면 0.76, Natural 매개변수를 쓰면 3.81입니다.</desc>
+
+
+<text class="end" x="220" y="62">평탄 블록 전체</text>
+<rect class="b key" x="230" y="40" width="110.8" height="16" rx="4"/><text class="mono" x="347" y="53">0.852</text>
+<rect class="b static" x="230" y="60" width="179.7" height="16" rx="4"/><text class="mono" x="416" y="73">1.382</text>
+
+<text class="end" x="220" y="118">무채색 (C&lt;5)</text>
+<rect class="b key" x="230" y="96" width="114.1" height="16" rx="4"/><text class="mono" x="350" y="109">0.878</text>
+<rect class="b static" x="230" y="116" width="189.5" height="16" rx="4"/><text class="mono" x="426" y="129">1.458</text>
+
+<text class="end" x="220" y="174">채도 5~30</text>
+<rect class="b key" x="230" y="152" width="111.0" height="16" rx="4"/><text class="mono" x="347" y="165">0.854</text>
+<rect class="b static" x="230" y="172" width="139.4" height="16" rx="4"/><text class="mono" x="376" y="185">1.072</text>
+
+<text class="end" x="220" y="230">채도 30 이상</text>
+<rect class="b key" x="230" y="208" width="54.3" height="16" rx="4"/><text class="mono" x="291" y="221">0.418</text>
+<rect class="b static" x="230" y="228" width="100.1" height="16" rx="4"/><text class="mono" x="337" y="241">0.770</text>
+
+<text class="end" x="220" y="286">모든 블록</text>
+<rect class="b key" x="230" y="264" width="120.6" height="16" rx="4"/><text class="mono" x="357" y="277">0.928</text>
+<rect class="b static" x="230" y="284" width="168.4" height="16" rx="4"/><text class="mono" x="405" y="297">1.295</text>
+
+<path class="e" d="M20 318H780"/>
+<text class="h" x="20" y="338">대조 실험: Bright 표본, 채도 50 이상 평탄 블록</text>
+<text class="end" x="220" y="362">Bright 매개변수</text>
+<rect class="b static" x="230" y="350" width="98.8" height="16" rx="4"/><text class="mono" x="335" y="363">0.76</text>
+<text class="end" x="220" y="384">Natural 매개변수</text>
+<rect class="b open" x="230" y="372" width="495.3" height="16" rx="4"/><text class="mono" x="731" y="385">3.81</text>
+
+<path class="e" d="M230 30V310"/><path class="e" d="M230 344V398H750"/><path class="e" d="M360 398V404"/><path class="e" d="M490 398V404"/><path class="e" d="M620 398V404"/><path class="e" d="M750 398V404"/>
+<text class="n mid" x="230" y="416">0</text><text class="n mid" x="360" y="416">1</text><text class="n mid" x="490" y="416">2</text><text class="n mid" x="620" y="416">3</text><text class="n mid" x="750" y="416">4</text>
+</svg>
+</div>
+<ul class="dg-legend"><li><i class="key"></i>#4678 Natural / AdobeRGB</li><li><i class="static"></i>Imaging Resource Bright / sRGB</li><li><i class="open"></i>일부러 틀린 모드를 넣은 경우</li></ul>
+</figure>
+
+<p>대조 실험은 모드 행렬이 실제로 구별되는지 보려는 것입니다. Bright 표본에 Natural 매개변수를 넣으면 채도 높은 평탄 블록의 색차가 0.76에서 3.81로 커졌습니다. 이 실험은 별도 임시 스크립트로 계산했습니다.</p>
+
+<h3>남은 밝기 차</h3>
+<p>두 표본 모두 무채색 영역에서 카메라 JPEG이 모델보다 8비트 기준 한두 단계 밝습니다. 제조사 태그를 보면 두 장 모두 섀도 보정(Shadow Correction)이 Auto로 찍혔습니다. 에뮬레이션의 톤 제어 표는 항등이어서 이 보정이 빠졌을 가능성이 있습니다. 원인은 확정하지 못했습니다.</p>
+
+<div class="callout warn"><strong class="label">주의</strong>
+<p>이 사이트의 기존 블랙박스 실험(<a href="lightroom-studio-reference.html">Lightroom 참조 프로파일과 카메라 Bright 비교</a>)에는 시험 행렬 DCP 2.028, Adobe Camera Bright 1.421, Adobe Standard 1.944가 있습니다. 그 값은 실제 Lightroom으로 현상한 픽셀의 중앙값입니다. 블록 평균을 쓰는 이 문서의 값과 방법이 달라 같은 줄에 놓고 순위를 매기면 안 됩니다.</p></div>
+
+<details class="evidence"><summary>표본과 정합 정보</summary>
+<div class="table-wrap"><table class="compact">
+<thead><tr><th scope="col">항목</th><th scope="col">raw.pixls.us #4678</th><th scope="col">Imaging Resource</th></tr></thead>
+<tbody>
+<tr><td>장면</td><td>야외, 흰 종이와 검은 천 위의 색 큐브</td><td>스튜디오 정물</td></tr>
+<tr><td>라이선스</td><td>CC0</td><td>재배포하지 않음, 비교에만 사용</td></tr>
+<tr><td>카메라 JPEG</td><td>RAW 안의 미리보기</td><td>별도 JPEG 파일</td></tr>
+<tr><td>RAW SHA-256</td><td><code class="wrap">1e3352ccba0db428fd2a183718fc857fb283b1d43ad704305e5094c19e0a0428</code></td><td><code class="wrap">28b0a4a0fae9b3c60d4950d8d4baeaa5a056a7fb130dfba0c2c212119ed29543</code></td></tr>
+<tr><td>절반 크기 영상</td><td>3085 × 2051</td><td>3112 × 2080</td></tr>
+<tr><td>모델 노출 배율</td><td>0.79168</td><td>0.99603</td></tr>
+<tr><td>BaselineExposure</td><td>−0.8373 (DNG 태그)</td><td>−0.5058 (제조사 태그 이득과 펌웨어 식)</td></tr>
+</tbody></table></div>
+</details>
+</section>
+
+<section id="rerun">
+<h2>기존 검증기를 실제 펌웨어로 다시 돌렸습니다</h2>
+<p class="takeaway">기존 검토는 펌웨어 파일 없이 이루어졌습니다. 펌웨어에 의존하는 검증기 101개를 실제 파일로 다시 돌렸고 모두 재현되었습니다.</p>
+<p>펌웨어는 RICOH IMAGING의 공식 다운로드 페이지에서 받은 <code>k3III_v220.zip</code>의 <code>fwdc233b.bin</code>입니다. 파일과 복호 스트림의 SHA-256이 <a href="../evidence.json">evidence.json</a>과 같았습니다.</p>
+<dl class="kv">
+<dt>실행</dt><dd>122회 실행, 스크립트와 재생 101개</dd>
+<dt>재현</dt><dd>101개 모두 재현</dd>
+<dt>JSON 대조</dt><dd>출력 107개 중 104개가 바이트 단위로 같음. 3개는 입력 해시 필드만 다름(분리한 레코드 대신 <code>decoded.bin</code>으로 실행)</dd>
+<dt>불일치한 결론</dt><dd>없음</dd>
+</dl>
+<p>돌리지 못한 것은 세 가지입니다.</p>
+<ul>
+<li><a href="rmw-scope/report.html">rmw-scope</a>의 펌웨어 모드: <code>accepted31.json</code>이 필요합니다.</li>
+<li><code>tools/verify_recompiled_kernels.py</code>와 <code>verify_recompiled_integration.py</code>: 버전을 고정한 Zig Windows 실행 파일이 필요합니다.</li>
+<li><code>tools/check_ui_render_chain.py</code>: Q7 펌웨어가 필요합니다.</li>
+</ul>
+<p>이식성 결함 하나를 찾아 고쳤습니다. <a href="../verify_bank_writers.py">verify_bank_writers.py</a>가 Windows에만 있는 <code>TEMP</code> 환경 변수를 읽고 있었습니다.</p>
+</section>
+
+<section id="limits">
+<h2>한계와 남은 과제</h2>
+<ul>
+<li><span class="badge open">미확인</span> <strong>표본 범위</strong>: 장면 두 개, 둘 다 ISO 100입니다. 표본은 카메라 펌웨어 1.01과 1.10으로 찍혔고 분석한 펌웨어는 2.20입니다. 고감도와 다른 조명은 시험하지 않았습니다.</li>
+<li><span class="badge open">미확인</span> <strong>모드 범위</strong>: 19개 모드를 모두 실행했지만 카메라 JPEG과 대조한 것은 Natural과 Bright뿐입니다.</li>
+<li><span class="badge open">미확인</span> <strong>남은 밝기 차</strong>: 무채색 영역에서 카메라 JPEG이 한두 단계 밝습니다. 섀도 보정 Auto와 항등 톤 제어 표의 차이로 짐작하지만 확인하지 않았습니다.</li>
+<li><span class="badge open">미확인</span> <strong>다축 색 보정과 화이트밸런스</strong>: 다축 색 보정은 식을 몰라 넣지 않았습니다. 화이트밸런스 이득과 그 앞 단계(블랙 레벨, 디모자이크)는 추적하지 않았고 RAW의 촬영 시 값을 썼습니다.</li>
+<li><span class="badge model">모델</span> <strong>에뮬레이션 조건</strong>: 운영체제 기능은 대역이고 나열한 필드 밖의 입력은 0입니다. 카메라에서는 섀도·하이라이트 보정이 장면마다 톤 제어 표를 바꿀 수 있습니다. Auto Select의 곡선도 카메라에서는 장면에 따라 달라집니다.</li>
+<li><span class="badge model">모델</span> <strong>하드웨어 해석</strong>: 회로 자체는 실행하지 않았습니다. 레지스터가 픽셀에 하는 일은 공개 헤더의 설명을 따랐습니다.</li>
+<li><span class="badge open">미확인</span> <strong>Lightroom</strong>: 실행하지 않았습니다. PEF 파일에 Lightroom이 쓰는 BaselineExposure가 카메라가 DNG에 쓰는 값과 같은지도 확인하지 않았습니다. 프로파일 쪽 한계는 <a href="firmware-dcp.html">펌웨어 값으로 만드는 색 프로파일</a>에 있습니다.</li>
+</ul>
+</section>
+
+<section id="reproduce">
+<h2>재현 방법</h2>
+<p>펌웨어는 사용자가 RICOH IMAGING에서 직접 받아야 합니다. 도구는 실행할 때 <code>decoded.bin</code>에서 값을 읽으며 저장소에는 펌웨어, 계수 표, 프로파일이 없습니다.</p>
+<dl class="kv">
+<dt>에뮬레이터·검사기</dt><dd><code>unicorn==2.1.4</code>, <code>numpy</code></dd>
+<dt>카메라 JPEG 대조</dt><dd>위에 더해 <code>rawpy</code>, <code>opencv-python-headless</code></dd>
+</dl>
+<pre><code>python inspect_firmware.py fwdc233b.bin --output-dir .private/my-decode
+python tools/check_firmware_color.py .private/my-decode/decoded.bin \
+  --compare analysis/firmware-color-pipeline.json
+python tools/compare_camera_jpeg.py IMGP0001.PEF --jpeg IMGP0001.JPG \
+  --decoded .private/my-decode/decoded.bin</code></pre>
+<p>첫 명령은 펌웨어를 복호합니다. 둘째 명령은 19개 모드를 실행해 공개 JSON의 해시·구조와 비교합니다. 셋째 명령은 자기 RAW와 카메라 JPEG 한 쌍을 비교합니다(<code>--jpeg</code>를 빼면 RAW 안의 미리보기를 씁니다). 단위 시험 <code>tests/test_firmware_color_model.py</code>는 환경 변수 <code>PENTAX_K3III_DECODED</code>가 있으면 펌웨어 실행 시험까지 돌립니다.</p>
+</section>
+
+<section id="refs">
+<h2>근거 파일과 참고 자료</h2>
+<ul class="refs">
+<li><a href="firmware-color-pipeline.json">firmware-color-pipeline.json</a> — 모드별 레지스터 해시와 구조(행의 합, 곡선 공유, 채널별 곡선, 색차 고정), 슬라이더 효과, 기준 행렬·상수 대조</li>
+<li><a href="firmware-color-validation.json">firmware-color-validation.json</a> — 카메라 JPEG 대조 지표, 대조 실험, 버린 가설, 한계</li>
+<li><a href="../evidence.json">evidence.json</a> — 펌웨어 파일과 복호 스트림의 해시</li>
+<li><a href="../tools/k3iii_tuning_emulator.py">tools/k3iii_tuning_emulator.py</a> — 설정 루틴 Make를 실행하는 에뮬레이터</li>
+<li><a href="../tools/firmware_color_model.py">tools/firmware_color_model.py</a> — 펌웨어 색 단계 모델</li>
+<li><a href="../tools/check_firmware_color.py">tools/check_firmware_color.py</a> · <a href="../tools/compare_camera_jpeg.py">tools/compare_camera_jpeg.py</a> — 구조 검사와 카메라 JPEG 대조</li>
+<li><a href="../tests/test_firmware_color_model.py">tests/test_firmware_color_model.py</a> — 모델 단위 시험 11개</li>
+<li>관련 문서: <a href="guide-color.html">색 처리 안내</a> · <a href="color-algorithms.html">색 처리 알고리즘</a> · <a href="color-mode-boundaries.html">색 모드별 행렬·감마 조건</a> · <a href="pipeline-report.html">JPEG·ISP와 색 재현 경로</a> · <a href="firmware-dcp.html">펌웨어 값으로 만드는 색 프로파일</a> · <a href="lightroom-studio-reference.html">Lightroom 참조 프로파일과 카메라 Bright 비교</a></li>
+<li><a href="https://www.ricoh-imaging.co.jp/english/support/digital/k-3-3.html">RICOH IMAGING K-3 Mark III 펌웨어 다운로드</a> — 분석한 2.20 파일의 출처</li>
+<li><a href="https://github.com/killsmm/m10v_mono/blob/cebff0686425/ca7_rtos/target/cpu_tkernel/basefw/MILB_API/include/im_r2y.h">im_r2y.h</a> · <a href="https://github.com/killsmm/m10v_mono/blob/cebff0686425/ca7_rtos/target/cpu_tkernel/basefw/MILB_API/MILB_Header/include/Image/__fr2y6a.h">__fr2y6a.h</a> — 공개 Milbeaut SDK의 R2Y 블록 헤더(커밋 cebff0686425)</li>
+<li><a href="https://github.com/judgem00/gr3-look-editor">judgem00/gr3-look-editor</a> — GR III 영상 처리 경로와 에뮬레이터 하네스(MIT)</li>
+<li><a href="https://helpx.adobe.com/camera-raw/desktop/dng-and-file-formats/digital-negative.html">Adobe DNG 안내와 DNG SDK</a> · <a href="https://helpx.adobe.com/content/dam/help/en/camera-raw/digital-negative/jcr_content/root/content/flex/items/position/position-par/download_section_733958301/download-1/DNG_Spec_1_7_1_0.pdf">DNG 규격 1.7.1.0</a> — BaselineExposure와 프로파일 태그</li>
+<li><a href="https://webstore.iec.ch/publication/6169">IEC 61966-2-1:1999</a> — sRGB 기본 RGB 색공간</li>
+<li><a href="https://www.adobe.com/digitalimag/pdfs/AdobeRGB1998.pdf">Adobe RGB (1998) Color Image Encoding</a> — 감마 563/256과 원색</li>
+<li><a href="https://www.itu.int/rec/T-REC-T.871">ITU-T T.871</a> — JFIF의 YCbCr 변환</li>
+<li><a href="https://hajim.rochester.edu/ece/sites/gsharma/ciede2000/">Sharma, Wu, Dalal: CIEDE2000 구현 노트</a> — 색차 공식</li>
+<li><a href="https://raw.pixls.us/">raw.pixls.us</a> (#4678, CC0) · <a href="https://www.imaging-resource.com/cameras/pentax-k-3-iii-review/samples/K3IIIhSLI0000100NR0.PEF.HTM">Imaging Resource K-3 III 표본</a> — 비교한 RAW와 JPEG</li>
+<li><a href="https://github.com/NationalSecurityAgency/ghidra">Ghidra</a> 11.3.2 · <a href="https://www.capstone-engine.org/">Capstone</a> · <a href="https://github.com/unicorn-engine/unicorn">Unicorn</a> 2.1.4 — 분석 도구</li>
+</ul>
+</section>
+
+</main>
+</div>
+<!-- chrome:bottom -->
+<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">카메라 내부 색 처리 — 이 주제의 문서</h2><ol><li><a href="guide-color.html">색 처리 안내</a></li><li><a href="color-lightroom.html">컬러모드 자원과 Lightroom</a></li><li><a href="color-algorithms.html">색 처리 알고리즘<span>행렬·감마·톤</span></a></li><li><a href="color-mode-boundaries.html">색 모드별 행렬·감마 조건</a></li><li><a href="pipeline-report.html">JPEG·ISP와 색 재현 경로</a></li><li><a href="firmware-color-pipeline.html" aria-current="page">펌웨어로 확정한 색 처리 경로<span>실제 펌웨어 실행·카메라 JPEG 대조</span></a></li><li><a href="raw-nr-feasibility.html">RAW 노이즈 감소를 끌 수 있는가</a></li></ol></nav>
+<nav class="pager" aria-label="이전·다음 문서"><a class="prev" href="pipeline-report.html"><small>← 이전</small>JPEG·ISP와 색 재현 경로</a><a class="next" href="raw-nr-feasibility.html"><small>다음 →</small>RAW 노이즈 감소를 끌 수 있는가</a></nav>
+<footer class="sitefoot"><div class="sitefoot-in"><nav aria-label="사이트"><a href="../index.html#map">문서 지도</a><a href="../index.html#levels">검증 수준 읽는 법</a><a href="../glossary.html">용어집</a><a href="research-program.html">세 기종 연구 본부</a><a href="https://github.com/yunhyok/pentax-k3iii-firmware-analysis">GitHub 저장소</a></nav><p>PENTAX 펌웨어 연구. PC에서 수행한 정적 분석과 에뮬레이션 결과이며, 카메라 실기에서 검증한 내용이 아닙니다. 원본 펌웨어와 추출한 독점 코드는 포함하지 않습니다.</p></div></footer>
+<!-- /chrome:bottom -->
+</body>
+</html>
