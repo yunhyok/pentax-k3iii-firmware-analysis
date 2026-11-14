@@ -89,17 +89,23 @@ def color_matrices_from_dng(path: Path):
 
 
 def build_profile(rtos: bytes, mode: str, sliders: dict, table_dims=(90, 25, 25), color_matrices=None,
-                  name: str | None = None):
-    """Return (dcp bytes, report dict) for one Custom Image."""
+                  name: str | None = None, color_space: str = "srgb"):
+    """Return (dcp bytes, report dict) for one Custom Image.
+
+    `color_space` is the camera setting to follow: "srgb" or "adobergb".  The
+    camera uses a wider colour matrix and re-encodes its curve for AdobeRGB.
+    """
     if mode in UNSUPPORTED:
         raise ValueError(f"{mode}: not supported ({UNSUPPORTED[mode]})")
-    result = emulator.StillTuning(rtos).make(emulator.MODES[mode], **sliders)
+    if color_space not in model.RGB_SPACES:
+        raise ValueError("color space must be srgb or adobergb")
+    result = emulator.StillTuning(rtos).make(emulator.MODES[mode], adobe_rgb=color_space == "adobergb", **sliders)
     if result.asserts:
         raise RuntimeError(f"firmware assertions fired during Make: {result.asserts}")
     for channel in "rgb":
         if not np.array_equal(result.channel_curves[channel], result.gamma_curve):
             raise ValueError(f"{mode}: per-channel gamma curves; a profile cannot hold them")
-    camera = model.CameraColour.from_tuning(result, mode)
+    camera = model.CameraColour.from_tuning(result, mode, color_space)
     common = np.array(emulator.read_table(rtos, COMMON_MATRIX, 9, "h"), dtype=np.float64).reshape(3, 3) / 8192.0
     singular = abs(np.linalg.det(camera.matrix)) < 1e-3          # Monochrome: all rows equal
     forward_base = common if singular else None
@@ -110,6 +116,8 @@ def build_profile(rtos: bytes, mode: str, sliders: dict, table_dims=(90, 25, 25)
     label = LABELS[mode]
     changed = {key: value for key, value in sliders.items() if value}
     suffix = "".join(f" {key[:3]}{value:+d}" for key, value in changed.items())
+    if color_space == "adobergb":
+        suffix += " (AdobeRGB)"
     spec = {
         "provenance": "Built by tools/build_firmware_dcp.py from a user-supplied K-3 Mark III firmware 2.20 image",
         "UniqueCameraModel": CAMERA_MODEL,
@@ -127,7 +135,7 @@ def build_profile(rtos: bytes, mode: str, sliders: dict, table_dims=(90, 25, 25)
     }
     data = build_dcp(spec)
     report = {
-        "mode": mode, "profile_name": spec["ProfileName"], "sliders": sliders,
+        "mode": mode, "profile_name": spec["ProfileName"], "sliders": sliders, "color_space": color_space,
         "forward_matrix_source": "common matrix (colour matrix is singular)" if singular else "CC0 colour matrix",
         "look_table_dims": list(table_dims), "tone_curve_points": len(curve_x),
         "register_sha256": {
@@ -154,6 +162,8 @@ def main():
     parser.add_argument("--table", default="90x25x25", help="LookTable size HxSxV (default 90x25x25)")
     parser.add_argument("--color-matrix-from", type=Path, metavar="DNG",
                         help="copy ColorMatrix1/2 from a DNG shot with your own camera")
+    parser.add_argument("--color-space", choices=("srgb", "adobergb"), default="srgb",
+                        help="camera colour-space setting to follow (default srgb)")
     parser.add_argument("--name", help="profile name shown in Lightroom (with --mode)")
     args = parser.parse_args()
     try:
@@ -167,14 +177,15 @@ def main():
             if not args.output_dir:
                 raise ValueError("--all needs --output-dir")
             args.output_dir.mkdir(parents=True, exist_ok=True)
-            jobs = [(mode, args.output_dir / f"PENTAX K-3 Mark III Firmware {LABELS[mode]}.dcp", None) for mode in LABELS]
+            tail = " AdobeRGB" if args.color_space == "adobergb" else ""
+            jobs = [(mode, args.output_dir / f"PENTAX K-3 Mark III Firmware {LABELS[mode]}{tail}.dcp", None) for mode in LABELS]
         else:
             if not args.output or args.output.suffix.lower() != ".dcp":
                 raise ValueError("--mode needs --output ending in .dcp")
             jobs = [(args.mode, args.output, args.name)]
         reports = []
         for mode, path, name in jobs:
-            data, report = build_profile(rtos, mode, sliders, dims, matrices, name)
+            data, report = build_profile(rtos, mode, sliders, dims, matrices, name, args.color_space)
             with path.open("xb") as output:
                 output.write(data)
             report["file"] = path.name

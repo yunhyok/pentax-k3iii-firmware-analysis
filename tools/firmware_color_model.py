@@ -25,6 +25,7 @@ import numpy as np
 # Adobe DNG SDK 1.7.1, dng_color_space.cpp: RGB -> PCS (XYZ D50).
 SRGB_TO_PCS = np.array([[0.4361, 0.3851, 0.1431], [0.2225, 0.7169, 0.0606], [0.0139, 0.0971, 0.7141]])
 PROPHOTO_TO_PCS = np.array([[0.7977, 0.1352, 0.0313], [0.2880, 0.7119, 0.0001], [0.0000, 0.0000, 0.8249]])
+ADOBE_RGB_TO_PCS = np.array([[0.6097, 0.2053, 0.1492], [0.3111, 0.6257, 0.0632], [0.0195, 0.0609, 0.7446]])
 PCS_TO_SRGB = np.linalg.inv(SRGB_TO_PCS)
 PCS_TO_PROPHOTO = np.linalg.inv(PROPHOTO_TO_PCS)
 SRGB_TO_PROPHOTO = PCS_TO_PROPHOTO @ SRGB_TO_PCS
@@ -44,13 +45,29 @@ def srgb_decode(y):
     return np.where(y <= 0.0031308 * 12.92, y / 12.92, np.power((np.maximum(y, 0.04045) + 0.055) / 1.055, 2.4))
 
 
+ADOBE_GAMMA = 563.0 / 256.0          # Adobe RGB (1998) encoding exponent
+
+
+def adobe_encode(x):
+    return np.power(np.clip(np.asarray(x, dtype=np.float64), 0.0, None), 1.0 / ADOBE_GAMMA)
+
+
+def adobe_decode(y):
+    return np.power(np.clip(np.asarray(y, dtype=np.float64), 0.0, None), ADOBE_GAMMA)
+
+
+# name -> (RGB to PCS matrix, encode, decode)
+RGB_SPACES = {"srgb": (SRGB_TO_PCS, srgb_encode, srgb_decode), "adobergb": (ADOBE_RGB_TO_PCS, adobe_encode, adobe_decode)}
+
+
 @dataclass
 class CameraColour:
     """Parameters of the colour stages for one Custom Image setting."""
 
     cc0: np.ndarray                         # 3x3 integer colour matrix (register values)
     cc0_unit: float                         # register value that means 1.0 (256 with decimal point 1)
-    curves: np.ndarray                      # (3, 256) gamma curves R,G,B as computed by the firmware (max 16384)
+    curves: np.ndarray                      # (3, N) gamma curves R,G,B; N = 256 (firmware curve) or 4096 (hardware table)
+    curve_max: float                        # value that means 1.0 (16384 for the firmware curve, 1023 for the table)
     yc: np.ndarray                          # 3x3 YC conversion, 1.0 = 256
     csp_enable: bool = True
     csp_offset: tuple = (0, 512, 512, 432)
@@ -58,10 +75,11 @@ class CameraColour:
     csp_border: tuple = (56, 768, 856)
     chroma_fixed: bool = False
     name: str = ""
+    space: str = "srgb"                     # colour space of the JPEG the camera would write
     notes: dict = field(default_factory=dict)
 
     @classmethod
-    def from_tuning(cls, result, name: str = "") -> "CameraColour":
+    def from_tuning(cls, result, name: str = "", space: str = "srgb") -> "CameraColour":
         r = result.registers
         if r.cc0_decimal_point != 1:
             raise ValueError("unexpected CC0 decimal point position")
@@ -69,32 +87,50 @@ class CameraColour:
             raise ValueError("the second colour matrix (CC1) is enabled; not modelled")
         if not np.all(r.tone_table == 4096):
             raise ValueError("tone-control table is not the identity; not modelled")
+        # The firmware computes a 16-bit curve (256 points, maximum 16384) and writes its upper
+        # ten bits to the hardware table.  With AdobeRGB selected the table is re-encoded
+        # (sRGB decode, gamma 2.2 encode) and no longer equals the curve; then the table is used.
         curves = np.stack([result.channel_curves[c] for c in "rgb"]).astype(np.float64)
-        return cls(cc0=r.cc0.astype(np.float64), cc0_unit=256.0, curves=curves, yc=r.yc.astype(np.float64),
+        curve_max = 16384.0
+        if any(not np.array_equal(np.minimum(result.channel_curves[c] >> 4, 1023), r.gamma_full[c]) for c in "rgb"):
+            curves = np.stack([r.gamma_table(c) for c in "rgb"]).astype(np.float64)
+            curve_max = 1023.0
+        return cls(cc0=r.cc0.astype(np.float64), cc0_unit=256.0, curves=curves, curve_max=curve_max, yc=r.yc.astype(np.float64),
                    csp_enable=bool(r.csp_control[0] & 1), csp_offset=tuple(r.csp_offset),
                    csp_gain=tuple(r.csp_gain), csp_border=tuple(r.csp_border),
-                   chroma_fixed=r.chroma_fixed, name=name,
+                   chroma_fixed=r.chroma_fixed, name=name, space=space,
                    notes={"csp_mix": r.csp_control[0] >> 4, "csp_table": (r.csp_control[1] >> 4) & 1})
 
     # -- stages ---------------------------------------------------------------
 
     @property
     def matrix(self) -> np.ndarray:
-        """Colour matrix as real numbers: white-balanced camera RGB -> linear sRGB."""
+        """Colour matrix as real numbers: white-balanced camera RGB -> linear RGB of the output space."""
         return self.cc0 / self.cc0_unit
+
+    @property
+    def to_pcs(self) -> np.ndarray:
+        return RGB_SPACES[self.space][0]
+
+    def decode(self, code):
+        """JPEG code values 0..1 -> linear light in the output space."""
+        return RGB_SPACES[self.space][2](code)
 
     def gamma(self, linear, channel=None):
         """Gamma stage.  `linear`: 1.0 = full scale of the 12-bit input.  Returns 0..1.
 
-        The curve has 256 points at input steps of 16; the hardware interpolates
-        with a difference table, which equals linear interpolation to within one
-        10-bit step.
+        The firmware curve has 256 points at input steps of 16; the hardware
+        interpolates with a difference table, which equals linear interpolation
+        to within one 10-bit step.
         """
-        x = np.clip(np.asarray(linear, dtype=np.float64), 0.0, 1.0) * 4096.0 / 16.0
-        grid = np.arange(256, dtype=np.float64)
+        size = self.curves.shape[1]
+        x = np.clip(np.asarray(linear, dtype=np.float64), 0.0, 1.0) * size
+        grid = np.arange(size, dtype=np.float64)
         if channel is None:
-            return np.stack([np.interp(x[..., c], grid, self.curves[c]) for c in range(3)], axis=-1) / 16384.0
-        return np.interp(x, grid, self.curves[channel]) / 16384.0
+            out = np.stack([np.interp(x[..., c], grid, self.curves[c]) for c in range(3)], axis=-1)
+        else:
+            out = np.interp(x, grid, self.curves[channel])
+        return np.minimum(out / self.curve_max, 1.0)
 
     def chroma_gain(self, luma):
         """Chroma-suppress gain over luminance (0..1).  1.0 = register value 512; slope unit 1/8 per 10-bit step."""
@@ -125,14 +161,14 @@ class CameraColour:
     def tone_curve(self, points: int = 257):
         """ProfileToneCurve: linear in -> linear out, both 0..1, from the green gamma curve."""
         x = np.linspace(0.0, 1.0, points)
-        y = srgb_decode(self.gamma(x, channel=1))
+        y = self.decode(self.gamma(x, channel=1))
         y[0], y[-1] = 0.0, 1.0
         y = np.maximum.accumulate(np.clip(y, 0.0, 1.0))
         return x, y
 
     def forward_matrix(self, base: np.ndarray | None = None) -> np.ndarray:
-        """ForwardMatrix: white-balanced camera RGB -> XYZ D50, via linear sRGB."""
-        return SRGB_TO_PCS @ (self.matrix if base is None else base)
+        """ForwardMatrix: white-balanced camera RGB -> XYZ D50, via the linear output space."""
+        return (self.to_pcs if base is None else SRGB_TO_PCS) @ (self.matrix if base is None else base)
 
 
 # -- DNG reference pipeline pieces (Adobe DNG SDK 1.7.1) ----------------------------
@@ -254,14 +290,14 @@ def build_look_table(camera: CameraColour, curve_x, curve_y, hue=90, sat=25, val
     v = srgb_decode(v_enc)
     vv, hh, ss = np.meshgrid(v, h, s, indexing="ij")
     p = hsv_to_rgb(np.stack([hh, ss, vv], axis=-1))                  # linear ProPhoto
-    srgb_linear = p @ PROPHOTO_TO_SRGB.T
     if forward_base is None:
-        matrix_output = srgb_linear                                  # ForwardMatrix already holds the colour matrix
-    else:                                                            # ForwardMatrix holds `forward_base` only
-        camera_rgb = np.clip(srgb_linear @ np.linalg.inv(forward_base).T, 0.0, None)
+        # ForwardMatrix already holds the colour matrix: p is its output, seen from ProPhoto.
+        matrix_output = p @ (np.linalg.inv(camera.to_pcs) @ PROPHOTO_TO_PCS).T
+    else:                                                            # ForwardMatrix holds `forward_base` (camera -> linear sRGB) only
+        camera_rgb = np.clip(p @ (np.linalg.inv(forward_base) @ PROPHOTO_TO_SRGB).T, 0.0, None)
         matrix_output = camera_rgb @ camera.matrix.T
     jpeg = camera.encode(matrix_output)
-    target = np.clip(srgb_decode(jpeg) @ SRGB_TO_PROPHOTO.T, 0.0, 1.0)
+    target = np.clip(camera.decode(jpeg) @ (PCS_TO_PROPHOTO @ camera.to_pcs).T, 0.0, 1.0)
     q = rgb_tone_inverse(target, curve_x, curve_y)
     hsv_p, hsv_q = rgb_to_hsv(p), rgb_to_hsv(q)
     shift = (hsv_q[..., 0] - hsv_p[..., 0]) * 60.0
@@ -281,18 +317,78 @@ def build_look_table(camera: CameraColour, curve_x, curve_y, hue=90, sat=25, val
     return LookTable(hue, sat, val, data.astype(np.float32).astype(np.float64))
 
 
-def dng_render(camera_rgb, forward_matrix, table: LookTable | None, curve_x, curve_y, exposure_ev=0.0):
-    """DNG reference rendering for a white-balanced camera colour, to linear sRGB.
+def exposure_tone(x, exposure_ev):
+    """dng_function_exposure_tone: how the SDK applies a negative total exposure.
 
-    camera RGB (neutral = equal values) -> ForwardMatrix -> XYZ D50 -> linear
-    ProPhoto -> exposure -> LookTable -> tone curve -> sRGB.
-    A positive exposure scales and clips at 1 (exposure ramp); a negative one is
-    applied as a plain scale here (the SDK folds it into the tone curve with a
-    highlight shoulder).
+    Below 0.25 the value is scaled; above, a quadratic keeps white at white.
     """
-    rgb = np.asarray(camera_rgb, dtype=np.float64) @ (PCS_TO_PROPHOTO @ forward_matrix).T
-    rgb = np.clip(rgb * (2.0 ** exposure_ev), 0.0, 1.0)
+    x = np.asarray(x, dtype=np.float64)
+    if exposure_ev >= 0:
+        return x
+    slope = 2.0 ** exposure_ev
+    a = 16.0 / 9.0 * (1.0 - slope)
+    b = slope - 0.5 * a
+    c = 1.0 - a - b
+    return np.where(x <= 0.25, x * slope, (a * x + b) * x + c)
+
+
+def dng_render(camera_rgb, forward_matrix, table: LookTable | None, curve_x, curve_y, exposure_ev=0.0, output="srgb"):
+    """DNG reference rendering (dng_render.cpp) of a white-balanced camera colour, to a linear RGB space.
+
+    camera RGB (neutral = equal values, clipped at 1) -> ForwardMatrix -> XYZ D50
+    -> linear ProPhoto -> exposure ramp -> LookTable -> tone curve -> sRGB.
+    `exposure_ev` is BaselineExposure + BaselineExposureOffset.  A positive
+    value scales and clips at 1 before the LookTable.  A negative value leaves
+    the ramp alone and is folded into the tone curve (exposure_tone), so the
+    LookTable then sees values that are not yet darkened.
+    """
+    rgb = np.clip(np.asarray(camera_rgb, dtype=np.float64), 0.0, 1.0) @ (PCS_TO_PROPHOTO @ forward_matrix).T
+    if exposure_ev > 0:
+        rgb = rgb * (2.0 ** exposure_ev)
+    rgb = np.clip(rgb, 0.0, 1.0)
     if table is not None:
         rgb = table.apply(rgb)
-    rgb = rgb_tone(rgb, curve_x, curve_y)
-    return np.clip(rgb @ PROPHOTO_TO_SRGB.T, 0.0, 1.0)
+    grid = np.linspace(0.0, 1.0, 4097)
+    total = np.interp(exposure_tone(grid, exposure_ev), curve_x, curve_y)
+    rgb = rgb_tone(rgb, grid, total)
+    return np.clip(rgb @ (np.linalg.inv(RGB_SPACES[output][0]) @ PROPHOTO_TO_PCS).T, 0.0, 1.0)
+
+
+def read_dcp(data: bytes) -> dict:
+    """Read the profile tags used here from a DCP file (little-endian camera profile IFD)."""
+    import struct
+
+    if data[:2] != b"II" or struct.unpack_from("<H", data, 2)[0] != 0x4352:
+        raise ValueError("not a little-endian DCP file")
+    offset = struct.unpack_from("<I", data, 4)[0]
+    count = struct.unpack_from("<H", data, offset)[0]
+    sizes = {2: 1, 3: 2, 4: 4, 10: 8, 11: 4}
+    raw = {}
+    for i in range(count):
+        tag, kind, n = struct.unpack_from("<HHI", data, offset + 2 + 12 * i)
+        size = sizes[kind] * n
+        at = offset + 2 + 12 * i + 8
+        if size > 4:
+            at = struct.unpack_from("<I", data, at)[0]
+        raw[tag] = (kind, n, data[at:at + size])
+
+    def rationals(tag):
+        kind, n, payload = raw[tag]
+        values = struct.unpack(f"<{2 * n}i", payload)
+        return np.array([values[2 * k] / values[2 * k + 1] for k in range(n)])
+
+    def floats(tag):
+        return np.frombuffer(raw[tag][2], dtype="<f4").astype(np.float64)
+
+    def longs(tag):
+        return list(struct.unpack(f"<{raw[tag][1]}I", raw[tag][2]))
+
+    out = {"ForwardMatrix1": rationals(50964).reshape(3, 3), "ColorMatrix1": rationals(50721).reshape(3, 3)}
+    curve = floats(50940).reshape(-1, 2)
+    out["curve_x"], out["curve_y"] = curve[:, 0], curve[:, 1]
+    hue, sat, val = longs(50981)
+    out["LookTable"] = LookTable(hue, sat, val, floats(50982).reshape(val, hue, sat, 3), longs(51108)[0] if 51108 in raw else 0)
+    out["BaselineExposureOffset"] = float(rationals(51109)[0]) if 51109 in raw else 0.0
+    out["DefaultBlackRender"] = longs(51110)[0] if 51110 in raw else 0
+    out["ProfileName"] = raw[50936][2].split(b"\0")[0].decode("utf-8")
+    return out
