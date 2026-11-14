@@ -88,7 +88,7 @@ def color_matrices_from_dng(path: Path):
     return [found[50721], found[50722]]
 
 
-def build_profile(rtos: bytes, mode: str, sliders: dict, table_dims=(90, 25, 25), color_matrices=None,
+def build_profile(rtos: bytes, mode: str, sliders: dict, table_dims=(90, 30, 30), color_matrices=None,
                   name: str | None = None, color_space: str = "srgb"):
     """Return (dcp bytes, report dict) for one Custom Image.
 
@@ -159,7 +159,7 @@ def main():
     for slider in ("saturation", "hue", "key", "contrast", "highlight", "shadow"):
         parser.add_argument(f"--{slider}", type=int, default=0, choices=range(-4, 5), metavar="-4..4",
                             help=f"Custom Image {slider} setting baked into the profile (default 0)")
-    parser.add_argument("--table", default="90x25x25", help="LookTable size HxSxV (default 90x25x25)")
+    parser.add_argument("--table", default="90x30x30", help="LookTable size HxSxV (default 90x30x30)")
     parser.add_argument("--color-matrix-from", type=Path, metavar="DNG",
                         help="copy ColorMatrix1/2 from a DNG shot with your own camera")
     parser.add_argument("--color-space", choices=("srgb", "adobergb"), default="srgb",
@@ -169,7 +169,7 @@ def main():
     try:
         dims = tuple(int(n) for n in args.table.lower().split("x"))
         if len(dims) != 3 or dims[0] < 6 or dims[1] < 2 or dims[2] < 2:
-            raise ValueError("--table: expected HxSxV such as 90x25x25")
+            raise ValueError("--table: expected HxSxV such as 90x30x30")
         rtos = emulator.load_rtos(args.decoded)
         matrices = color_matrices_from_dng(args.color_matrix_from) if args.color_matrix_from else None
         sliders = {name: getattr(args, name) for name in ("saturation", "hue", "key", "contrast", "highlight", "shadow")}

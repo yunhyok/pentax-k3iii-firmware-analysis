@@ -1,0 +1,321 @@
+{
+  "scope": "Comparison of firmware-derived colour with camera JPEGs. Metrics only; no image data, coefficients or profiles are stored here.",
+  "date": "2026-11-14",
+  "firmware": {
+    "version": "2.20",
+    "file": "fwdc233b.bin",
+    "sha256": "3c9d466b8160689867af2f58ff2cf0bf3363bc3b42daff43685a33171b91eb1a",
+    "source": "https://www.ricoh-imaging.co.jp/english/support/digital/k-3-3.html (k3III_v220.zip)"
+  },
+  "tool": "tools/compare_camera_jpeg.py",
+  "method": {
+    "image": "half-size image from 2x2 CFA cells, as-shot white balance, 16x16-pixel block means",
+    "alignment": "affine registration of the rendering onto the camera JPEG (ECC); geometry only",
+    "flat_blocks": "blocks whose mean differs from the neighbours by less than 2 code values (8 bit) per block step, three blocks from the border excluded",
+    "metric": "CIEDE2000 between block means, camera JPEG decoded in its own colour space",
+    "fitted_colour_or_tone_parameters": 0
+  },
+  "samples": [
+    {
+      "id": "raw.pixls.us #4678",
+      "url": "https://raw.pixls.us/getfile.php/4678/nice/Pentax%20-%20K-3%20Mark%20III%20-%2014bit%20%283:2%29.DNG",
+      "licence": "CC0",
+      "camera_firmware": "1.01",
+      "scene": "outdoor, colour cube on white paper and black cloth",
+      "iso": 100,
+      "shadow_correction": "Auto",
+      "result": {
+        "raw_sha256": "1e3352ccba0db428fd2a183718fc857fb283b1d43ad704305e5094c19e0a0428",
+        "camera_jpeg": "preview stored in the RAW file",
+        "custom_image": "natural",
+        "color_space": "AdobeRGB",
+        "exposure_gain": 10304,
+        "model_exposure_scale": 0.79168,
+        "baseline_exposure": -0.8373,
+        "baseline_exposure_source": "DNG tag",
+        "profile_total_exposure_ev": -0.3373,
+        "profile_name": "K-3 III Firmware Natural (AdobeRGB)",
+        "half_size_image": [
+          3085,
+          2051
+        ],
+        "block_size": 16,
+        "alignment_affine": [
+          [
+            1.00352,
+            -0.0,
+            -12.86879
+          ],
+          [
+            1e-05,
+            1.00634,
+            -16.97408
+          ]
+        ],
+        "fitted_colour_or_tone_parameters": 0,
+        "delta_e_2000": {
+          "model": {
+            "all_blocks": {
+              "blocks": 24576,
+              "mean": 0.928,
+              "median": 0.842,
+              "p95": 1.723,
+              "max": 7.2
+            },
+            "flat_blocks": {
+              "blocks": 17639,
+              "mean": 0.852,
+              "median": 0.797,
+              "p95": 1.514,
+              "max": 3.087
+            },
+            "flat_neutral_chroma_below_5": {
+              "blocks": 7898,
+              "mean": 0.878,
+              "median": 0.814,
+              "p95": 1.529,
+              "max": 3.087
+            },
+            "flat_chroma_5_to_30": {
+              "blocks": 9202,
+              "mean": 0.854,
+              "median": 0.789,
+              "p95": 1.514,
+              "max": 2.653
+            },
+            "flat_chroma_30_and_above": {
+              "blocks": 539,
+              "mean": 0.418,
+              "median": 0.32,
+              "p95": 0.889,
+              "max": 1.235
+            }
+          },
+          "profile": {
+            "all_blocks": {
+              "blocks": 24576,
+              "mean": 0.985,
+              "median": 0.928,
+              "p95": 1.802,
+              "max": 7.198
+            },
+            "flat_blocks": {
+              "blocks": 17639,
+              "mean": 0.904,
+              "median": 0.871,
+              "p95": 1.604,
+              "max": 3.137
+            },
+            "flat_neutral_chroma_below_5": {
+              "blocks": 7898,
+              "mean": 0.94,
+              "median": 0.873,
+              "p95": 1.65,
+              "max": 3.137
+            },
+            "flat_chroma_5_to_30": {
+              "blocks": 9202,
+              "mean": 0.868,
+              "median": 0.866,
+              "p95": 1.585,
+              "max": 2.724
+            },
+            "flat_chroma_30_and_above": {
+              "blocks": 539,
+              "mean": 1.004,
+              "median": 1.076,
+              "p95": 1.431,
+              "max": 1.528
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "Imaging Resource K3IIIhSLI0000100NR0",
+      "url": "https://www.imaging-resource.com/PRODS/pentax-k3-iii/FULLRES/K3IIIhSLI0000100NR0.PEF",
+      "licence": "not redistributed; fetched for comparison only",
+      "camera_firmware": "1.10",
+      "scene": "studio still life",
+      "iso": 100,
+      "shadow_correction": "Auto",
+      "jpeg_sha256": "5cb2b4a10a3aac53c6bb742b7e55f0077c5cf65de67009abbebccb86f6cc7abe",
+      "result": {
+        "raw_sha256": "28b0a4a0fae9b3c60d4950d8d4baeaa5a056a7fb130dfba0c2c212119ed29543",
+        "camera_jpeg": "separate file",
+        "custom_image": "bright",
+        "color_space": "sRGB",
+        "exposure_gain": 8192,
+        "model_exposure_scale": 0.99603,
+        "baseline_exposure": -0.5058,
+        "baseline_exposure_source": "firmware formula with the maker-note exposure gain",
+        "profile_total_exposure_ev": -0.0058,
+        "profile_name": "K-3 III Firmware Bright",
+        "half_size_image": [
+          3112,
+          2080
+        ],
+        "block_size": 16,
+        "alignment_affine": [
+          [
+            0.99488,
+            -1e-05,
+            14.05248
+          ],
+          [
+            2e-05,
+            0.99233,
+            12.02542
+          ]
+        ],
+        "fitted_colour_or_tone_parameters": 0,
+        "delta_e_2000": {
+          "model": {
+            "all_blocks": {
+              "blocks": 25220,
+              "mean": 1.295,
+              "median": 1.256,
+              "p95": 2.132,
+              "max": 6.668
+            },
+            "flat_blocks": {
+              "blocks": 5240,
+              "mean": 1.382,
+              "median": 1.435,
+              "p95": 1.908,
+              "max": 3.801
+            },
+            "flat_neutral_chroma_below_5": {
+              "blocks": 4498,
+              "mean": 1.458,
+              "median": 1.487,
+              "p95": 1.924,
+              "max": 3.801
+            },
+            "flat_chroma_5_to_30": {
+              "blocks": 371,
+              "mean": 1.072,
+              "median": 1.081,
+              "p95": 1.524,
+              "max": 2.936
+            },
+            "flat_chroma_30_and_above": {
+              "blocks": 371,
+              "mean": 0.77,
+              "median": 0.749,
+              "p95": 1.172,
+              "max": 1.934
+            }
+          },
+          "profile": {
+            "all_blocks": {
+              "blocks": 25220,
+              "mean": 1.296,
+              "median": 1.255,
+              "p95": 2.141,
+              "max": 6.651
+            },
+            "flat_blocks": {
+              "blocks": 5240,
+              "mean": 1.381,
+              "median": 1.433,
+              "p95": 1.906,
+              "max": 3.805
+            },
+            "flat_neutral_chroma_below_5": {
+              "blocks": 4498,
+              "mean": 1.456,
+              "median": 1.485,
+              "p95": 1.922,
+              "max": 3.805
+            },
+            "flat_chroma_5_to_30": {
+              "blocks": 371,
+              "mean": 1.063,
+              "median": 1.073,
+              "p95": 1.506,
+              "max": 2.939
+            },
+            "flat_chroma_30_and_above": {
+              "blocks": 371,
+              "mean": 0.778,
+              "median": 0.75,
+              "p95": 1.21,
+              "max": 2.143
+            }
+          }
+        }
+      }
+    }
+  ],
+  "control": {
+    "description": "Natural parameters applied to the Bright sample (scratch script, half-size blocks, flat blocks with chroma of 50 or more)",
+    "bright_parameters_delta_e_2000": 0.76,
+    "natural_parameters_delta_e_2000": 3.81
+  },
+  "profile_against_model": {
+    "description": "DCP rendered with the DNG reference pipeline against the firmware model, 60,000 random colours per class, Natural, table 90x30x30, CIEDE2000",
+    "without_look_table": {
+      "interior_mean": 1.652,
+      "interior_p95": 4.89
+    },
+    "interior": {
+      "mean": 0.048,
+      "p99": 0.4,
+      "max": 1.44
+    },
+    "gamut_edge": {
+      "mean": 0.046,
+      "p99": 0.46,
+      "max": 2.23
+    },
+    "near_neutral": {
+      "mean": 0.012,
+      "p99": 0.09,
+      "max": 0.24
+    },
+    "dark": {
+      "mean": 0.043,
+      "p99": 0.16,
+      "max": 0.23
+    }
+  },
+  "adobe_sdk_cross_check": {
+    "description": "LookTable and tone curve of five generated profiles run through RefBaselineHueSatMap and RefBaselineRGBTone compiled from Adobe DNG SDK 1.7.1 (dng_reference.cpp), against tools/firmware_color_model.py; 200,000 random colours each; difference in sRGB 8-bit code values",
+    "profiles": {
+      "Natural": {
+        "mean": 0.0188,
+        "max": 0.377
+      },
+      "Bright": {
+        "mean": 0.019,
+        "max": 0.357
+      },
+      "Radiant": {
+        "mean": 0.019,
+        "max": 0.382
+      },
+      "Monochrome": {
+        "mean": 0.0166,
+        "max": 0.159
+      },
+      "Reversal Film": {
+        "mean": 0.0198,
+        "max": 0.408
+      }
+    },
+    "not_covered": "profile parsing, colour matrices and exposure handling by SDK code (the full SDK needs libjxl and was not built); Lightroom itself"
+  },
+  "exploratory_checks_not_reproducible_from_repository_tools": {
+    "note": "Run with scratch scripts while the model was being worked out; kept as a record of what was ruled out.",
+    "exposure_gain_in_curve_instead_of_input": "curve computed for gain 10305 with unscaled input on #4678: flat chroma>=50 blocks 4.69 against 0.31 for the adopted model (input scaled by 8192/gain, nominal curve)",
+    "chroma_suppress_stage": "Imaging Resource sample, flat blocks with chroma 5 to 15: 1.81 without the stage, 1.09 with it",
+    "multi_axis_stock_parameters": "treating the stock multi-axis matrix as highlight desaturation worsened bright saturated blocks (0.87 to 1.09); treating it as stored (1.0 = 1024) worsened neutral blocks (1.4 to 2.2). No effect is modelled."
+  },
+  "limits": [
+    "Two scenes, both ISO 100, taken with camera firmware 1.01 and 1.10; the analysed firmware is 2.20.",
+    "Both shots had Shadow Correction on Auto; the emulated tone-control table is the identity. The camera JPEG is one to two 8-bit steps brighter than the model in neutral areas.",
+    "The profile rendering is the DNG SDK reference pipeline, not Lightroom. Lightroom was not run.",
+    "With a negative total exposure (#4678) the reference pipeline folds the exposure into the tone curve after the LookTable; saturated colours then differ more (1.00 against 0.42 for the model)."
+  ]
+}

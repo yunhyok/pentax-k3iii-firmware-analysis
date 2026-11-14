@@ -36,24 +36,29 @@ JFIF_DECODE = np.array([[1.0, 0.0, 1.402], [1.0, -0.344136, -0.714136], [1.0, 1.
 
 
 def srgb_encode(x):
+    """sRGB encoding; negative input is mirrored (odd symmetry)."""
     x = np.asarray(x, dtype=np.float64)
-    return np.where(x <= 0.0031308, 12.92 * x, 1.055 * np.power(np.maximum(x, 0.0031308), 1 / 2.4) - 0.055)
+    a = np.abs(x)
+    return np.sign(x) * np.where(a <= 0.0031308, 12.92 * a, 1.055 * np.power(np.maximum(a, 0.0031308), 1 / 2.4) - 0.055)
 
 
 def srgb_decode(y):
     y = np.asarray(y, dtype=np.float64)
-    return np.where(y <= 0.0031308 * 12.92, y / 12.92, np.power((np.maximum(y, 0.04045) + 0.055) / 1.055, 2.4))
+    a = np.abs(y)
+    return np.sign(y) * np.where(a <= 0.0031308 * 12.92, a / 12.92, np.power((np.maximum(a, 0.04045) + 0.055) / 1.055, 2.4))
 
 
 ADOBE_GAMMA = 563.0 / 256.0          # Adobe RGB (1998) encoding exponent
 
 
 def adobe_encode(x):
-    return np.power(np.clip(np.asarray(x, dtype=np.float64), 0.0, None), 1.0 / ADOBE_GAMMA)
+    x = np.asarray(x, dtype=np.float64)
+    return np.sign(x) * np.power(np.abs(x), 1.0 / ADOBE_GAMMA)
 
 
 def adobe_decode(y):
-    return np.power(np.clip(np.asarray(y, dtype=np.float64), 0.0, None), ADOBE_GAMMA)
+    y = np.asarray(y, dtype=np.float64)
+    return np.sign(y) * np.power(np.abs(y), ADOBE_GAMMA)
 
 
 # name -> (RGB to PCS matrix, encode, decode)
@@ -124,13 +129,14 @@ class CameraColour:
         to within one 10-bit step.
         """
         size = self.curves.shape[1]
-        x = np.clip(np.asarray(linear, dtype=np.float64), 0.0, 1.0) * size
+        linear = np.asarray(linear, dtype=np.float64)
+        x = np.minimum(np.abs(linear), 1.0) * size         # negative input (only used by `extend`) is mirrored
         grid = np.arange(size, dtype=np.float64)
         if channel is None:
             out = np.stack([np.interp(x[..., c], grid, self.curves[c]) for c in range(3)], axis=-1)
         else:
             out = np.interp(x, grid, self.curves[channel])
-        return np.minimum(out / self.curve_max, 1.0)
+        return np.sign(linear) * np.minimum(out / self.curve_max, 1.0)
 
     def chroma_gain(self, luma):
         """Chroma-suppress gain over luminance (0..1).  1.0 = register value 512; slope unit 1/8 per 10-bit step."""
@@ -140,15 +146,25 @@ class CameraColour:
             gain = np.where(y10 >= border, self.csp_offset[i + 1] + self.csp_gain[i + 1] * (y10 - border) / 8.0, gain)
         return np.clip(gain, 0.0, 1023.0) / 512.0
 
-    def encode(self, matrix_output):
-        """From the colour-matrix output (linear sRGB, 1.0 = full scale) to JPEG RGB code values 0..1."""
-        rgb = self.gamma(np.clip(matrix_output, 0.0, 1.0))
+    def encode(self, matrix_output, extend: bool = False):
+        """From the colour-matrix output (linear RGB, 1.0 = full scale) to JPEG RGB code values 0..1.
+
+        The camera clips negative matrix output to zero, which puts a kink at the
+        edge of the output gamut.  With `extend` the same stages are continued
+        smoothly below zero instead (odd-symmetric curve, no lower clip), so a
+        lookup table built from it interpolates cleanly up to the gamut edge;
+        the result is the same for every colour the camera does not clip.
+        """
+        matrix_output = np.asarray(matrix_output, dtype=np.float64)
+        rgb = self.gamma(np.minimum(matrix_output, 1.0) if extend else np.clip(matrix_output, 0.0, 1.0))
         ycc = rgb @ (self.yc.T / 256.0)
         if self.chroma_fixed:
             ycc = np.concatenate([ycc[..., :1], np.zeros_like(ycc[..., 1:])], axis=-1)
         elif self.csp_enable:
             gain = self.chroma_gain(np.clip(ycc[..., 0], 0.0, 1.0))[..., None]
             ycc = np.concatenate([ycc[..., :1], ycc[..., 1:] * gain], axis=-1)
+        if extend:
+            return np.minimum(ycc @ JFIF_DECODE.T, 1.0)
         ycc = np.concatenate([np.clip(ycc[..., :1], 0.0, 1.0), np.clip(ycc[..., 1:], -0.5, 0.5)], axis=-1)
         return np.clip(ycc @ JFIF_DECODE.T, 0.0, 1.0)
 
@@ -276,13 +292,17 @@ class LookTable:
 
 
 def build_look_table(camera: CameraColour, curve_x, curve_y, hue=90, sat=25, val=25,
-                     forward_base: np.ndarray | None = None) -> LookTable:
+                     forward_base: np.ndarray | None = None, extend: bool = True) -> LookTable:
     """LookTable that makes the DNG pipeline land on the camera's colour.
 
     For every grid colour p (linear ProPhoto, after exposure) the camera model
     gives the JPEG colour.  The table stores the change from p to the colour q
     for which Adobe's tone-curve step followed by the output conversion gives
     that JPEG colour:  tone(q) = ProPhoto(decode(camera(p))).
+
+    Grid colours outside the camera's output gamut use the smooth continuation
+    (CameraColour.encode with extend=True); the final conversion to the output
+    space clips them, where the camera clips before its gamma stage.
     """
     h = np.arange(hue) * (6.0 / hue)
     s = np.arange(sat) / (sat - 1)
@@ -296,7 +316,7 @@ def build_look_table(camera: CameraColour, curve_x, curve_y, hue=90, sat=25, val
     else:                                                            # ForwardMatrix holds `forward_base` (camera -> linear sRGB) only
         camera_rgb = np.clip(p @ (np.linalg.inv(forward_base) @ PROPHOTO_TO_SRGB).T, 0.0, None)
         matrix_output = camera_rgb @ camera.matrix.T
-    jpeg = camera.encode(matrix_output)
+    jpeg = camera.encode(matrix_output, extend=extend)
     target = np.clip(camera.decode(jpeg) @ (PCS_TO_PROPHOTO @ camera.to_pcs).T, 0.0, 1.0)
     q = rgb_tone_inverse(target, curve_x, curve_y)
     hsv_p, hsv_q = rgb_to_hsv(p), rgb_to_hsv(q)
@@ -308,12 +328,16 @@ def build_look_table(camera: CameraColour, curve_x, curve_y, hue=90, sat=25, val
     enc_p, enc_q = srgb_encode(hsv_p[..., 2]), srgb_encode(hsv_q[..., 2])
     val_scale = np.where(enc_p > 0, enc_q / np.where(enc_p > 0, enc_p, 1.0), 1.0)
     data = np.stack([shift, sat_scale, val_scale], axis=-1)
-    # Zero saturation: no hue or saturation change, and the DNG rule "value scale 1".
-    data[:, :, 0, 0] = 0.0
-    data[:, :, 0, 1] = 1.0
+    # Value 0 is black whatever the entry says; repeating the first row above it keeps
+    # the darkest colours from being interpolated towards "no change".
+    data[0] = data[1]
+    if camera.chroma_fixed:
+        data[..., 0], data[..., 1] = 0.0, 0.0                        # monochrome: every colour becomes grey
+    # Zero saturation: hue shift and saturation scale continue from the first step
+    # (their limit towards grey); the DNG rule requires value scale 1 there.
+    data[:, :, 0, 0] = data[:, :, 1, 0]
+    data[:, :, 0, 1] = data[:, :, 1, 1]
     data[:, :, 0, 2] = 1.0
-    data[0, :, :, :] = (0.0, 1.0, 1.0)                               # value 0
-    # A hue shift is undefined where the result is grey; copy the nearest defined one along saturation
     return LookTable(hue, sat, val, data.astype(np.float32).astype(np.float64))
 
 
