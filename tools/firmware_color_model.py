@@ -295,7 +295,7 @@ class LookTable:
 
 
 def build_look_table(camera: CameraColour, curve_x, curve_y, hue=90, sat=25, val=25,
-                     forward_base: np.ndarray | None = None, extend: bool = True) -> LookTable:
+                     forward_base: np.ndarray | None = None, extend: bool = False) -> LookTable:
     """LookTable that makes the DNG pipeline land on the camera's colour.
 
     For every grid colour p (linear ProPhoto, after exposure) the camera model
@@ -303,9 +303,16 @@ def build_look_table(camera: CameraColour, curve_x, curve_y, hue=90, sat=25, val
     for which Adobe's tone-curve step followed by the output conversion gives
     that JPEG colour:  tone(q) = ProPhoto(decode(camera(p))).
 
-    Grid colours outside the camera's output gamut use the smooth continuation
-    (CameraColour.encode with extend=True); the final conversion to the output
-    space clips them, where the camera clips before its gamma stage.
+    `forward_base` is the matrix the profile's ForwardMatrix holds (camera ->
+    linear sRGB).  With the sensor matrix shared by all Custom Images there,
+    the table also carries the Custom Image's own matrix and the camera's clip
+    at the edge of its output gamut.  Without it the ForwardMatrix is taken to
+    hold the whole colour matrix; saturated colours then leave ProPhoto and
+    are clipped before the table, which costs accuracy in vivid modes.
+
+    `extend` replaces the camera's clip of negative matrix output by a smooth
+    continuation.  It keeps the table smooth at the gamut edge but turns
+    strongly out-of-gamut colours dark; it is off by default.
     """
     h = np.arange(hue) * (6.0 / hue)
     s = np.arange(sat) / (sat - 1)

@@ -87,8 +87,11 @@ def export(decoded: Path) -> dict:
             fields[slider] = "slider" if value == 5 else value - 4      # fixed setting on the -4..+4 scale
         result = emulator.StillTuning(rtos).make(number)
         registers = result.registers
-        offsets = [emulator.StillTuning(rtos).make(number, toning=value).registers.ycof[1:] for value in range(9)]
-        if any(any(pair) for pair in offsets):
+        # Toning: the offsets differ between the sRGB and AdobeRGB settings, not between Custom Images.
+        offsets = {space: [emulator.StillTuning(rtos).make(number, toning=value, adobe_rgb=space == "adobergb").registers.ycof[1:]
+                           for value in range(9)] for space in ("srgb", "adobergb")}
+        has_toning = any(any(pair) for pair in offsets["srgb"])
+        if has_toning:
             toning_offsets.setdefault("chroma_offsets", offsets)
             if toning_offsets["chroma_offsets"] != offsets:
                 raise ValueError(f"{name}: toning offsets differ from the other Custom Images")
@@ -103,7 +106,7 @@ def export(decoded: Path) -> dict:
             "gamma": ("per-channel" if any(list(result.channel_curves[c]) != list(result.gamma_curve) for c in "rgb")
                       else "reversal" if number == 10 else "auto" if number == 0 else "regular"),
             "chroma_fixed": bool(registers.chroma_fixed),
-            "toning": any(any(pair) for pair in offsets),
+            "toning": has_toning,
             "factory_settings": factory.get(name),
             "default_registers": {"cc0": [int(v) for v in registers.cc0.reshape(-1)],
                                   "yc": [int(v) for v in registers.yc.reshape(-1)]},
@@ -135,7 +138,8 @@ def export(decoded: Path) -> dict:
                             "gain": reference.csp_gain, "border": reference.csp_border},
         "dng_color_matrix_tables": {"illuminant_a": table(DNG_MATRIX_A, 18, "i"), "d65": table(DNG_MATRIX_D65, 18, "i")},
         "toning": {"names": list(TONING_NAMES), "chroma_offsets": toning_offsets["chroma_offsets"],
-                   "unit": "added to Cb and Cr after chroma suppression; 1024 = full chroma range (4 = one 8-bit step)"},
+                   "unit": "added to Cb and Cr after chroma suppression; 1024 = full chroma range (4 = one 8-bit step); "
+                           "one list per colour-space setting of the camera"},
         "auto_select_scenes": scenes,
         "modes": modes,
     }

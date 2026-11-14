@@ -1,5 +1,5 @@
 {
-  "scope": "Comparison of firmware-derived colour with camera JPEGs. Metrics only; no image data, coefficients or profiles are stored here.",
+  "scope": "Comparison of firmware-derived colour with camera JPEGs. Metrics only; no image data is stored here. The colour tables themselves are in analysis/k3iii-color-tables.json.",
   "date": "2026-11-14",
   "firmware": {
     "version": "2.20",
@@ -13,7 +13,9 @@
     "alignment": "affine registration of the rendering onto the camera JPEG (ECC); geometry only",
     "flat_blocks": "blocks whose mean differs from the neighbours by less than 2 code values (8 bit) per block step, three blocks from the border excluded",
     "metric": "CIEDE2000 between block means, camera JPEG decoded in its own colour space",
-    "fitted_colour_or_tone_parameters": 0
+    "fitted_colour_or_tone_parameters": 0,
+    "settings": "the Custom Image settings of each shot are read from maker-note tag 0x0247 (the routine at 0x52f835dc copies its first six values into the tuning input); the profile is built for those settings",
+    "lightness_difference": "CIE L* of the rendering minus L* of the camera JPEG, flat blocks with chroma below 5; negative = rendering darker"
   },
   "samples": [
     {
@@ -29,6 +31,16 @@
         "camera_jpeg": "preview stored in the RAW file",
         "custom_image": "natural",
         "color_space": "AdobeRGB",
+        "settings": {
+          "saturation": 0,
+          "hue": 0,
+          "key": 0,
+          "contrast": 0,
+          "highlight": 0,
+          "shadow": 0
+        },
+        "toning": 0,
+        "settings_source": "maker note tag 0x0247",
         "exposure_gain": 10304,
         "model_exposure_scale": 0.79168,
         "baseline_exposure": -0.8373,
@@ -97,36 +109,46 @@
               "mean": 0.985,
               "median": 0.928,
               "p95": 1.802,
-              "max": 7.198
+              "max": 7.199
             },
             "flat_blocks": {
               "blocks": 17639,
               "mean": 0.904,
               "median": 0.871,
-              "p95": 1.604,
+              "p95": 1.601,
               "max": 3.137
             },
             "flat_neutral_chroma_below_5": {
               "blocks": 7898,
-              "mean": 0.94,
+              "mean": 0.941,
               "median": 0.873,
-              "p95": 1.65,
+              "p95": 1.652,
               "max": 3.137
             },
             "flat_chroma_5_to_30": {
               "blocks": 9202,
-              "mean": 0.868,
-              "median": 0.866,
-              "p95": 1.585,
+              "mean": 0.866,
+              "median": 0.864,
+              "p95": 1.579,
               "max": 2.724
             },
             "flat_chroma_30_and_above": {
               "blocks": 539,
-              "mean": 1.004,
-              "median": 1.076,
-              "p95": 1.431,
-              "max": 1.528
+              "mean": 1.007,
+              "median": 1.069,
+              "p95": 1.44,
+              "max": 1.54
             }
+          }
+        },
+        "lightness_minus_camera_flat_neutral_blocks": {
+          "model": {
+            "mean": -0.465,
+            "median": -0.419
+          },
+          "profile": {
+            "mean": -0.157,
+            "median": -0.232
           }
         }
       }
@@ -145,6 +167,16 @@
         "camera_jpeg": "separate file",
         "custom_image": "bright",
         "color_space": "sRGB",
+        "settings": {
+          "saturation": 0,
+          "hue": 0,
+          "key": 0,
+          "contrast": 1,
+          "highlight": 0,
+          "shadow": 0
+        },
+        "toning": 0,
+        "settings_source": "maker note tag 0x0247",
         "exposure_gain": 8192,
         "model_exposure_scale": 0.99603,
         "baseline_exposure": -0.5058,
@@ -159,13 +191,13 @@
         "alignment_affine": [
           [
             0.99488,
-            -1e-05,
-            14.05248
+            -2e-05,
+            14.07257
           ],
           [
-            2e-05,
+            3e-05,
             0.99233,
-            12.02542
+            12.01728
           ]
         ],
         "fitted_colour_or_tone_parameters": 0,
@@ -173,136 +205,220 @@
           "model": {
             "all_blocks": {
               "blocks": 25220,
-              "mean": 1.295,
-              "median": 1.256,
-              "p95": 2.132,
-              "max": 6.668
+              "mean": 0.954,
+              "median": 0.867,
+              "p95": 2.037,
+              "max": 6.508
             },
             "flat_blocks": {
               "blocks": 5240,
-              "mean": 1.382,
-              "median": 1.435,
-              "p95": 1.908,
-              "max": 3.801
+              "mean": 0.907,
+              "median": 0.946,
+              "p95": 1.625,
+              "max": 3.354
             },
             "flat_neutral_chroma_below_5": {
               "blocks": 4498,
-              "mean": 1.458,
-              "median": 1.487,
-              "p95": 1.924,
-              "max": 3.801
+              "mean": 0.955,
+              "median": 0.997,
+              "p95": 1.65,
+              "max": 3.354
             },
             "flat_chroma_5_to_30": {
               "blocks": 371,
-              "mean": 1.072,
-              "median": 1.081,
-              "p95": 1.524,
-              "max": 2.936
+              "mean": 0.691,
+              "median": 0.75,
+              "p95": 1.2,
+              "max": 2.821
             },
             "flat_chroma_30_and_above": {
               "blocks": 371,
-              "mean": 0.77,
-              "median": 0.749,
-              "p95": 1.172,
-              "max": 1.934
+              "mean": 0.544,
+              "median": 0.502,
+              "p95": 1.209,
+              "max": 1.676
             }
           },
           "profile": {
             "all_blocks": {
               "blocks": 25220,
-              "mean": 1.296,
-              "median": 1.255,
-              "p95": 2.141,
-              "max": 6.651
+              "mean": 0.954,
+              "median": 0.867,
+              "p95": 2.038,
+              "max": 6.497
             },
             "flat_blocks": {
               "blocks": 5240,
-              "mean": 1.381,
-              "median": 1.433,
-              "p95": 1.906,
-              "max": 3.805
+              "mean": 0.907,
+              "median": 0.946,
+              "p95": 1.625,
+              "max": 3.303
             },
             "flat_neutral_chroma_below_5": {
               "blocks": 4498,
-              "mean": 1.456,
-              "median": 1.485,
-              "p95": 1.922,
-              "max": 3.805
+              "mean": 0.955,
+              "median": 0.998,
+              "p95": 1.648,
+              "max": 3.303
             },
             "flat_chroma_5_to_30": {
               "blocks": 371,
-              "mean": 1.063,
-              "median": 1.073,
-              "p95": 1.506,
-              "max": 2.939
+              "mean": 0.689,
+              "median": 0.726,
+              "p95": 1.198,
+              "max": 2.829
             },
             "flat_chroma_30_and_above": {
               "blocks": 371,
-              "mean": 0.778,
-              "median": 0.75,
-              "p95": 1.21,
-              "max": 2.143
+              "mean": 0.535,
+              "median": 0.483,
+              "p95": 1.224,
+              "max": 1.809
             }
+          }
+        },
+        "lightness_minus_camera_flat_neutral_blocks": {
+          "model": {
+            "mean": -0.194,
+            "median": -0.198
+          },
+          "profile": {
+            "mean": -0.189,
+            "median": -0.19
           }
         }
       }
     }
   ],
   "control": {
-    "description": "Natural parameters applied to the Bright sample (scratch script, half-size blocks, flat blocks with chroma of 50 or more)",
+    "description": "Natural parameters applied to the Bright sample (scratch script, half-size blocks, flat blocks with chroma of 50 or more); computed with all settings 0, before the shot's settings were read",
     "bright_parameters_delta_e_2000": 0.76,
     "natural_parameters_delta_e_2000": 3.81
   },
   "profile_against_model": {
-    "description": "DCP rendered with the DNG reference pipeline against the firmware model, 60,000 random colours per class, Natural, table 90x30x30, CIEDE2000",
-    "without_look_table": {
-      "interior_mean": 1.652,
-      "interior_p95": 4.89
+    "description": "Each of the 16 published profiles rendered with the DNG reference pipeline against the colour model it was built from; 60,000 random scene colours per class, CIEDE2000. Full figures: analysis/k3iii-profile-accuracy.json (tools/check_profile_accuracy.py).",
+    "natural": {
+      "inside": {
+        "mean": 0.044,
+        "p99": 0.341,
+        "max": 1.636
+      },
+      "inside_without_look_table": {
+        "mean": 2.666,
+        "p99": 7.131,
+        "max": 9.02
+      },
+      "saturated": {
+        "mean": 0.135,
+        "p99": 0.99,
+        "max": 1.613
+      },
+      "near_neutral": {
+        "mean": 0.011,
+        "p99": 0.04,
+        "max": 0.196
+      },
+      "dark": {
+        "mean": 0.127,
+        "p99": 0.8,
+        "max": 1.218
+      }
     },
-    "interior": {
-      "mean": 0.048,
-      "p99": 0.4,
-      "max": 1.44
+    "worst_over_16_profiles": {
+      "inside_mean": 0.112,
+      "saturated_mean": 0.16,
+      "max_any_class": 3.79
     },
-    "gamut_edge": {
-      "mean": 0.046,
-      "p99": 0.46,
-      "max": 2.23
-    },
-    "near_neutral": {
-      "mean": 0.012,
-      "p99": 0.09,
-      "max": 0.24
-    },
-    "dark": {
-      "mean": 0.043,
-      "p99": 0.16,
-      "max": 0.23
-    }
+    "design_note": "ForwardMatrix holds the sensor matrix shared by all Custom Images; the Custom Image's matrix and the camera's gamut clip are in the LookTable. An earlier design (ForwardMatrix = whole colour matrix, smooth continuation outside the gamut) turned saturated blues black in vivid modes (CIEDE2000 up to 40-56 against the model) and was dropped."
   },
   "adobe_sdk_cross_check": {
-    "description": "LookTable and tone curve of five generated profiles run through RefBaselineHueSatMap and RefBaselineRGBTone compiled from Adobe DNG SDK 1.7.1 (dng_reference.cpp), against tools/firmware_color_model.py; 200,000 random colours each; difference in sRGB 8-bit code values",
+    "description": "LookTable and tone curve of the 16 published profiles run through RefBaselineHueSatMap and RefBaselineRGBTone compiled from Adobe DNG SDK 1.7.1 (dng_reference.cpp), against tools/firmware_color_model.py; 200,000 random colours each; difference in sRGB 8-bit code values",
     "profiles": {
-      "Natural": {
-        "mean": 0.0188,
-        "max": 0.377
+      "Bleach Bypass": {
+        "mean": 0.0182,
+        "p99": 0.2023,
+        "max": 0.2734
       },
       "Bright": {
-        "mean": 0.019,
-        "max": 0.357
+        "mean": 0.0226,
+        "p99": 0.1758,
+        "max": 0.3302
       },
-      "Radiant": {
-        "mean": 0.019,
-        "max": 0.382
+      "Flat": {
+        "mean": 0.0174,
+        "p99": 0.2359,
+        "max": 0.6774
+      },
+      "FUYUNO": {
+        "mean": 0.0388,
+        "p99": 0.3924,
+        "max": 0.9438
+      },
+      "HARUBENI": {
+        "mean": 0.0301,
+        "p99": 0.2109,
+        "max": 0.4317
+      },
+      "KATEN": {
+        "mean": 0.0335,
+        "p99": 0.2745,
+        "max": 0.5143
+      },
+      "KYUSHU": {
+        "mean": 0.0211,
+        "p99": 0.1784,
+        "max": 0.361
+      },
+      "Landscape": {
+        "mean": 0.023,
+        "p99": 0.1761,
+        "max": 0.3294
       },
       "Monochrome": {
-        "mean": 0.0166,
-        "max": 0.159
+        "mean": 0.0165,
+        "p99": 0.1378,
+        "max": 0.1586
+      },
+      "Muted": {
+        "mean": 0.0624,
+        "p99": 0.7056,
+        "max": 2.0184
+      },
+      "Natural": {
+        "mean": 0.021,
+        "p99": 0.1739,
+        "max": 0.3663
+      },
+      "Portrait": {
+        "mean": 0.0215,
+        "p99": 0.1746,
+        "max": 0.398
+      },
+      "Radiant": {
+        "mean": 0.037,
+        "p99": 0.3435,
+        "max": 0.679
       },
       "Reversal Film": {
-        "mean": 0.0198,
-        "max": 0.408
+        "mean": 0.0221,
+        "p99": 0.1644,
+        "max": 0.3908
+      },
+      "SATOBI": {
+        "mean": 0.023,
+        "p99": 0.1836,
+        "max": 0.3748
+      },
+      "Vibrant": {
+        "mean": 0.0206,
+        "p99": 0.1732,
+        "max": 0.3512
       }
+    },
+    "worst": {
+      "mean": 0.0624,
+      "p99": 0.7056,
+      "max": 2.0184
     },
     "not_covered": "profile parsing, colour matrices and exposure handling by SDK code (the full SDK needs libjxl and was not built); Lightroom itself",
     "tool": "tools/check_dcp_against_sdk.py with tools/dng_sdk_harness.cpp (SDK source supplied by the user)"
@@ -315,8 +431,42 @@
   },
   "limits": [
     "Two scenes, both ISO 100, taken with camera firmware 1.01 and 1.10; the analysed firmware is 2.20.",
-    "Both shots had Shadow Correction on Auto; the emulated tone-control table is the identity. The camera JPEG is one to two 8-bit steps brighter than the model in neutral areas.",
+    "Only Natural (all settings 0) and Bright (contrast +1) were compared. The other 14 profiles, and the key, highlight-contrast and shadow-contrast settings that some of them ship with, were not compared with camera output.",
+    "Both shots had Shadow Correction on Auto; the emulated tone-control table is the identity. In flat neutral areas the model is 0.2 L* (Bright sample) and 0.5 L* (Natural sample) darker than the camera JPEG.",
     "The profile rendering is the DNG SDK reference pipeline, not Lightroom. Lightroom was not run.",
-    "With a negative total exposure (#4678) the reference pipeline folds the exposure into the tone curve after the LookTable; saturated colours then differ more (1.00 against 0.42 for the model)."
-  ]
+    "With a negative total exposure (#4678) the reference pipeline folds the exposure into the tone curve after the LookTable; saturated colours then differ more (1.00 against 0.42 for the model).",
+    "Toning (Muted, Bleach Bypass, HARUBENI) is in the model but cannot be put into a profile; neither sample uses it."
+  ],
+  "settings_control": {
+    "description": "Bright sample rendered with all settings 0 instead of the settings recorded in the file (contrast +1); flat blocks, mean CIEDE2000",
+    "recorded_settings": {
+      "model": 0.907,
+      "profile": 0.907,
+      "lightness_minus_camera": {
+        "model": {
+          "mean": -0.194,
+          "median": -0.198
+        },
+        "profile": {
+          "mean": -0.189,
+          "median": -0.19
+        }
+      }
+    },
+    "all_settings_zero": {
+      "model": 1.382,
+      "profile": 1.381,
+      "lightness_minus_camera": {
+        "model": {
+          "mean": -1.301,
+          "median": -1.547
+        },
+        "profile": {
+          "mean": -1.296,
+          "median": -1.538
+        }
+      }
+    },
+    "note": "Until the setting record was found, this sample was compared with all settings 0 (1.38); the published v0.5.0 draft figures were those."
+  }
 }

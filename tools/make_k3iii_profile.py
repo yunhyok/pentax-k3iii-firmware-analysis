@@ -13,7 +13,11 @@ matrix (in place of the Custom Image's matrix) and your own settings.
     python tools/make_k3iii_profile.py --mode natural --output Natural.dcp
     python tools/make_k3iii_profile.py --mode bright --saturation 1 --contrast -1 --output "Bright soft.dcp"
     python tools/make_k3iii_profile.py --all --output-dir my-profiles
+    python tools/make_k3iii_profile.py --from-raw IMGP0001.PEF --output IMGP0001.dcp
     python tools/make_k3iii_profile.py --mode natural --look-matrix my-look.json --name "My look" --output MyLook.dcp
+
+--from-raw reads the Custom Image, its settings and the colour space that the
+camera recorded in a PEF or DNG, and builds the profile for exactly that shot.
 
 The toning colour of Muted, Bleach Bypass and HARUBENI is left out: it tints
 grey, which this kind of profile cannot do.
@@ -83,14 +87,16 @@ def main():
     group = parser.add_mutually_exclusive_group(required=True)
     group.add_argument("--mode", choices=sorted(LABELS))
     group.add_argument("--all", action="store_true", help="every supported Custom Image at its factory settings")
+    group.add_argument("--from-raw", type=Path, metavar="RAW",
+                       help="K-3 Mark III PEF or DNG: use the Custom Image, settings and colour space recorded in it")
     parser.add_argument("--output", type=Path, help="output .dcp (with --mode)")
     parser.add_argument("--output-dir", type=Path, help="output folder (with --all)")
     for slider in SLIDERS:
         parser.add_argument(f"--{slider}", type=int, choices=range(-4, 5), metavar="-4..4",
                             help=f"Custom Image {slider} setting baked into the profile (default: the camera's factory value)")
     parser.add_argument("--neutral", action="store_true", help="settings not given are 0 instead of the factory value")
-    parser.add_argument("--color-space", choices=("srgb", "adobergb"), default="srgb",
-                        help="camera colour-space setting to follow (default srgb)")
+    parser.add_argument("--color-space", choices=("srgb", "adobergb"),
+                        help="camera colour-space setting to follow (default srgb, or the RAW file's with --from-raw)")
     parser.add_argument("--look-matrix", type=Path, metavar="JSON",
                         help="3x3 matrix used in place of the Custom Image's own look matrix")
     parser.add_argument("--color-matrix-from", type=Path, metavar="DNG",
@@ -109,6 +115,21 @@ def main():
         matrices = color_matrices_from_dng(args.color_matrix_from) if args.color_matrix_from else None
         look = look_matrix_from_file(args.look_matrix) if args.look_matrix else None
         sliders = {name: (0 if args.neutral and getattr(args, name) is None else getattr(args, name)) for name in SLIDERS}
+        recorded = None
+        if args.from_raw:
+            from compare_camera_jpeg import IMAGE_TONE, capture_info
+
+            info = capture_info(args.from_raw)
+            args.mode = IMAGE_TONE.get(info.get("image_tone"))
+            if args.mode not in LABELS:
+                raise ValueError(f"--from-raw: Custom Image '{args.mode or info.get('image_tone')}' has no profile")
+            if "settings" not in info:
+                raise ValueError("--from-raw: no setting record (maker-note tag 0x0247) in this file")
+            sliders = {name: info["settings"][name] if sliders[name] is None else sliders[name] for name in SLIDERS}
+            args.color_space = args.color_space or ("adobergb" if info.get("color_space") == 1 else "srgb")
+            recorded = {"custom_image": args.mode, "settings": info["settings"], "toning": info.get("toning", 0),
+                        "color_space": "adobergb" if info.get("color_space") == 1 else "srgb"}
+        args.color_space = args.color_space or "srgb"
         if args.all:
             if not args.output_dir or look is not None:
                 raise ValueError("--all needs --output-dir and cannot be combined with --look-matrix")
@@ -117,7 +138,7 @@ def main():
             jobs = [(mode, args.output_dir / f"k3iii-firmware-{mode}{tail}.dcp", None) for mode in LABELS]
         else:
             if not args.output or args.output.suffix.lower() != ".dcp":
-                raise ValueError("--mode needs --output ending in .dcp")
+                raise ValueError("--mode and --from-raw need --output ending in .dcp")
             if look is not None and not args.name:
                 raise ValueError("--look-matrix needs --name so the profile is not mistaken for the camera's own")
             jobs = [(args.mode, args.output, args.name)]
@@ -127,6 +148,8 @@ def main():
             with path.open("xb") as output:
                 output.write(data)
             report["file"] = path.name
+            if recorded:
+                report["recorded_in_raw"] = recorded
             reports.append(report)
         print(json.dumps({"profiles": reports}, indent=2))
     except (OSError, ValueError, RuntimeError) as error:

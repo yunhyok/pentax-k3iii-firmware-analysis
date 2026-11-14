@@ -37,8 +37,11 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import firmware_color_model as model          # noqa: E402
 
+# Maker-note ImageTone value -> Custom Image.  0..11 as documented by ExifTool; 12..17 from the
+# firmware's own table of setting values (0x539076bc), which lists them in this order.
 IMAGE_TONE = {0: "natural", 1: "bright", 2: "portrait", 3: "landscape", 4: "vibrant", 5: "monochrome",
-              6: "muted", 7: "reversal-film", 8: "bleach-bypass", 9: "radiant", 11: "flat"}
+              6: "muted", 7: "reversal-film", 8: "bleach-bypass", 9: "radiant", 10: "cross-processing", 11: "flat",
+              12: "satobi", 13: "harubeni", 14: "katen", 15: "kyushu", 16: "fuyuno", 17: "gold"}
 ADOBE_RGB_TO_XYZ = np.array([[0.5767309, 0.1855540, 0.1881852], [0.2973769, 0.6273491, 0.0752741], [0.0270343, 0.0706872, 0.9911085]])
 SRGB_TO_XYZ = np.array([[0.4124564, 0.3575761, 0.1804375], [0.2126729, 0.7151522, 0.0721750], [0.0193339, 0.1191920, 0.9503041]])
 
@@ -285,10 +288,14 @@ def compare(raw_path: Path, decoded: Path, jpeg_path: Path | None = None, mode: 
     flat[:, :3] = flat[:, -3:] = False
     model_blocks = block_mean(warp_image(render_model, warp), block)
     profile_blocks = block_mean(warp_image(render_profile, warp), block)
-    results = {
-        "model": statistics(delta_e_2000(to_lab(decode(model_blocks), to_xyz), reference_lab), reference_lab, flat),
-        "profile": statistics(delta_e_2000(to_lab(decode(profile_blocks), to_xyz), reference_lab), reference_lab, flat),
-    }
+    results, lightness = {}, {}
+    neutral = flat & (np.hypot(reference_lab[..., 1], reference_lab[..., 2]) < 5)
+    for name, blocks in (("model", model_blocks), ("profile", profile_blocks)):
+        lab = to_lab(decode(blocks), to_xyz)
+        results[name] = statistics(delta_e_2000(lab, reference_lab), reference_lab, flat)
+        # Signed: positive = the rendering is lighter than the camera JPEG.
+        difference = (lab[..., 0] - reference_lab[..., 0])[neutral]
+        lightness[name] = {"mean": round(float(difference.mean()), 3), "median": round(float(np.median(difference)), 3)}
     return {
         "raw_sha256": hashlib.sha256(Path(raw_path).read_bytes()).hexdigest(),
         "camera_jpeg": "separate file" if jpeg_path else "preview stored in the RAW file",
@@ -302,6 +309,7 @@ def compare(raw_path: Path, decoded: Path, jpeg_path: Path | None = None, mode: 
         "alignment_affine": [[round(float(v), 5) for v in row] for row in warp],
         "fitted_colour_or_tone_parameters": 0,
         "delta_e_2000": results,
+        "lightness_minus_camera_flat_neutral_blocks": lightness,
     }
 
 

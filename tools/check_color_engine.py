@@ -47,7 +47,7 @@ def cases_for(engine, mode: str, number: int) -> list:
 def engine_result(engine, mode: str, case: dict, adobe: bool) -> bytes:
     kind = engine.modes[mode]["gamma"]
     data = struct.pack("<9h9h2h", *engine.cc0(mode, case.get("saturation", 0), adobe_rgb=adobe), *engine.yc(mode, case.get("hue", 0)),
-                       *engine.chroma_offset(mode, case.get("toning", 0)))
+                       *engine.chroma_offset(mode, case.get("toning", 0), "adobergb" if adobe else "srgb"))
     if kind in ("regular", "reversal"):
         data += struct.pack("<256H", *engine.gamma(mode, **{name: case.get(name, 0) for name in TONE}))
     return data

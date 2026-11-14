@@ -104,14 +104,16 @@ def assemble_profile(camera, common: np.ndarray, color_matrices, name: str, tabl
                      provenance: str = "Built from K-3 Mark III firmware 2.20 colour values"):
     """Turn colour parameters (firmware_color_model.CameraColour) into DCP bytes and a short report.
 
-    `common` is the sensor matrix shared by all Custom Images; it becomes the
-    ForwardMatrix base when the colour matrix itself is singular (Monochrome).
+    `common` is the sensor matrix shared by all Custom Images (white-balanced
+    sensor RGB -> linear sRGB).  It alone goes into the ForwardMatrix; the
+    Custom Image's own matrix, the per-channel curve and the camera's gamut
+    clip go into the LookTable.  A ForwardMatrix that held the Custom Image's
+    matrix would push saturated colours out of the pipeline's working space,
+    where they are clipped before the LookTable can treat them.
     """
-    singular = abs(np.linalg.det(camera.matrix)) < 1e-3          # Monochrome: all rows equal
-    forward_base = common if singular else None
-    forward = camera.forward_matrix(forward_base)
+    forward = camera.forward_matrix(common)
     curve_x, curve_y = camera.tone_curve(257)
-    table = model.build_look_table(camera, curve_x, curve_y, *table_dims, forward_base=forward_base)
+    table = model.build_look_table(camera, curve_x, curve_y, *table_dims, forward_base=common)
     spec = {
         "provenance": provenance,
         "UniqueCameraModel": CAMERA_MODEL,
@@ -130,7 +132,7 @@ def assemble_profile(camera, common: np.ndarray, color_matrices, name: str, tabl
     data = build_dcp(spec)
     report = {
         "profile_name": name,
-        "forward_matrix_source": "common matrix (colour matrix is singular)" if singular else "CC0 colour matrix",
+        "forward_matrix_source": "sensor matrix shared by all Custom Images",
         "look_table_dims": list(table_dims), "tone_curve_points": len(curve_x),
         "dcp_bytes": len(data), "dcp_sha256": hashlib.sha256(data).hexdigest(),
     }

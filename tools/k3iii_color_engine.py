@@ -108,13 +108,13 @@ class Engine:
         record = self.modes[mode].get("factory_settings") or {}
         return record.get("toning") or 0
 
-    def chroma_offset(self, mode: str, toning: int = 0) -> tuple:
+    def chroma_offset(self, mode: str, toning: int = 0, color_space: str = "srgb") -> tuple:
         """Constant added to Cb and Cr for a toning colour 0..8 (1024 = full chroma range)."""
         if not 0 <= toning <= 8:
             raise ValueError("toning must be within 0..8")
         if not self.modes[mode].get("toning"):
             return (0, 0)
-        return tuple(self.tables["toning"]["chroma_offsets"][toning])
+        return tuple(self.tables["toning"]["chroma_offsets"][color_space][toning])
 
     # -- colour matrix (routine 0x5312ce30) --------------------------------------------
 
@@ -254,7 +254,7 @@ class Engine:
             yc=np.array(self.yc(mode, s["hue"]), dtype=np.float64).reshape(3, 3),
             csp_enable=bool(csp["control"][0] & 1), csp_offset=tuple(csp["offset"]), csp_gain=tuple(csp["gain"]),
             csp_border=tuple(csp["border"]), chroma_fixed=self.modes[mode]["chroma_fixed"],
-            chroma_offset=self.chroma_offset(mode, toning), name=mode, space=color_space)
+            chroma_offset=self.chroma_offset(mode, toning, color_space), name=mode, space=color_space)
 
     def common_matrix(self) -> np.ndarray:
         """Sensor matrix shared by every Custom Image: white-balanced sensor RGB -> linear sRGB."""
