@@ -96,12 +96,16 @@ class CameraColour:
         # The firmware computes a 16-bit curve (256 points, maximum 16384) and writes its upper
         # ten bits to the hardware table.  With AdobeRGB selected the table is re-encoded
         # (sRGB decode, gamma 2.2 encode) and no longer equals the curve; then the table is used.
-        curves = np.stack([result.channel_curves[c] for c in "rgb"]).astype(np.float64)
+        # The register image's legacy keys map to physical R/G/B at 0xaa00/0xac00/0xae00.
+        register_rgb = ("rgb", "r", "g")
+        curves = np.stack([result.channel_curves[c] for c in "rgb"])
         curve_max = 16384.0
-        if any(not np.array_equal(np.minimum(result.channel_curves[c] >> 4, 1023), r.gamma_full[c]) for c in "rgb"):
-            curves = np.stack([r.gamma_table(c) for c in "rgb"]).astype(np.float64)
+        if any(not np.array_equal(np.minimum(curve >> 4, 1023), r.gamma_full[key])
+               for curve, key in zip(curves, register_rgb)):
+            curves = np.stack([r.gamma_table(key) for key in register_rgb])
             curve_max = 1023.0
-        return cls(cc0=r.cc0.astype(np.float64), cc0_unit=256.0, curves=curves, curve_max=curve_max, yc=r.yc.astype(np.float64),
+        return cls(cc0=r.cc0.astype(np.float64), cc0_unit=256.0, curves=curves.astype(np.float64),
+                   curve_max=curve_max, yc=r.yc.astype(np.float64),
                    csp_enable=bool(r.csp_control[0] & 1), csp_offset=tuple(r.csp_offset),
                    csp_gain=tuple(r.csp_gain), csp_border=tuple(r.csp_border),
                    chroma_fixed=r.chroma_fixed, chroma_offset=tuple(r.ycof[1:]), name=name, space=space,
@@ -137,7 +141,7 @@ class CameraColour:
             out = np.stack([np.interp(x[..., c], grid, self.curves[c]) for c in range(3)], axis=-1)
         else:
             out = np.interp(x, grid, self.curves[channel])
-        return np.sign(linear) * np.minimum(out / self.curve_max, 1.0)
+        return np.where(linear < 0, -1.0, 1.0) * np.minimum(out / self.curve_max, 1.0)
 
     def chroma_gain(self, luma):
         """Chroma-suppress gain over luminance (0..1).  1.0 = register value 512; slope unit 1/8 per 10-bit step."""

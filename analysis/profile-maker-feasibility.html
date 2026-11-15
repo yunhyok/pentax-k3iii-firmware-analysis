@@ -26,6 +26,7 @@
 
 <section class="summary">
 <h2 data-toc="no">핵심 요약</h2>
+<p>이 문서는 v0.5.0에서 공개한 계산 엔진과 DCP 16종의 검토 기록입니다. 이후 Gold 기준 감마와 조색을 XMP 확장 프로파일로 구현했습니다. <a href="gold-enhanced-profile.html">후속 연구와 앱 구현</a></p>
 <ul>
 <li><strong>만들 수 있습니다.</strong> 계산 엔진과 명령줄 프로그램은 이미 저장소에 있고 펌웨어 없이 돕니다. 필요한 것은 공개한 색 표 파일과 Python, numpy뿐입니다.</li>
 <li>엔진은 카메라의 원본 코드와 같은 값을 냅니다. 원본 코드를 에뮬레이터에서 실행한 결과와 <strong>10,087가지 경우</strong>를 비교했고 다른 값이 하나도 없었습니다.</li>
@@ -157,7 +158,7 @@
 <tr><th scope="row">Natural의 톤 설정 네 개의 모든 조합(9<sup>4</sup>)</th><td class="n">6,561</td><td class="n">0</td></tr>
 <tr><th scope="row">합계</th><td class="n">10,087</td><td class="n">0</td></tr>
 </tbody></table></div>
-<p>설정 조합은 모드마다 98가지입니다(출고 설정 기록이 없는 Cross Processing은 97가지). 모든 설정이 0인 경우, 출고 설정, 설정 여섯 개를 하나씩 −4에서 +4까지 바꾼 48가지, 조색 여덟 색, 무작위 조합 40가지입니다. 한 경우마다 색 행렬 9개, YC 행렬 9개, 조색 오프셋 2개, 감마 곡선 256점을 비교했습니다. Cross Processing과 Gold는 감마 곡선을 뺀 나머지만 비교했습니다. 두 모드는 채널마다 다른 곡선을 쓰고 엔진은 그 곡선을 계산하지 않습니다.</p>
+<p>설정 조합은 모드마다 98가지입니다(출고 설정 기록이 없는 Cross Processing은 97가지). 모든 설정이 0인 경우, 출고 설정, 설정 여섯 개를 하나씩 −4에서 +4까지 바꾼 48가지, 조색 여덟 색, 무작위 조합 40가지입니다. 한 경우마다 색 행렬 9개, YC 행렬 9개, 조색 오프셋 2개, 감마 곡선 256점을 비교했습니다. Cross Processing과 Gold는 감마 곡선을 뺀 나머지만 비교했습니다. v0.5.0 엔진의 비교 범위에는 두 모드의 채널별 곡선이 없었습니다. Gold의 후속 비교는 별도 기록에 있습니다. <a href="gold-enhanced-profile.html#verification">Gold의 원본 코드 대조</a></p>
 <p>Auto Select는 비교에서 뺐습니다. 장면을 분석해 다른 Custom Image의 행렬을 고르므로 고정된 답이 없습니다.</p>
 <p>프로파일 파일로도 확인했습니다. 같은 PC에서 엔진으로 만든 프로파일 16개와 <a href="../tools/build_firmware_dcp.py">build_firmware_dcp.py</a>가 펌웨어를 실행해 만든 16개가 바이트 단위로 같았습니다. PC나 numpy 판이 다르면 표의 실수 값이 마지막 자리에서 달라질 수 있습니다. 그래서 저장소의 검사는 프로파일을 허용오차 안에서 비교합니다.</p>
 <div class="callout"><strong class="label">AdobeRGB 프로파일의 작은 차이</strong>
@@ -198,7 +199,7 @@ python tools/make_k3iii_profile.py --all --color-space adobergb --output-dir ado
 <tr><th scope="row">Monochrome의 필터 효과와 조색</th><td>엔진에 넣지 않았습니다. 조색은 색차를 고정값으로 두는 방식이라 회색을 물들이는 문제가 같습니다.</td><td>필터 효과는 색 행렬만 바뀌므로 넣을 수 있을 것으로 보이지만 확인하지 않았습니다.</td></tr>
 <tr><th scope="row">그림자 보정, 하이라이트 보정, 명료도, 샤프니스, 노이즈 감소, 디지털 필터, 렌즈 보정</th><td>색 프로파일이 다루는 범위 밖의 처리입니다.</td><td>Lightroom의 해당 기능으로 따로 조정합니다.</td></tr>
 </tbody></table></div>
-<p>확장 프로파일은 Adobe의 XMP 형식 프로파일이고 3D LUT를 담을 수 있습니다. 이 형식에 대해 조사한 내용은 <a href="color-lightroom.html">컬러모드 자원과 Lightroom</a>에 있습니다. 이 연구에서 만들어 보지는 않았습니다.</p>
+<p>Adobe의 XMP 확장 프로파일은 3D LUT를 담을 수 있습니다. v0.5.0에서는 이 형식의 쓰임을 조사했습니다. 이후 Firmware Color Studio에서 Gold와 조색을 확장 프로파일로 내보내도록 구현했습니다. <a href="color-lightroom.html">컬러모드 자원과 Lightroom</a> · <a href="gold-enhanced-profile.html#xmp">XMP 구현 범위</a></p>
 </section>
 
 <section id="program">
@@ -261,8 +262,8 @@ python tools/export_color_tables.py .private/my-decode/decoded.bin --compare ana
 </main>
 </div>
 <!-- chrome:bottom -->
-<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">K-3 Mark III 색 프로파일 — 이 주제의 문서</h2><ol><li><a href="color-profiles.html">색 프로파일 모음<span>16종 내려받기와 출고 설정</span></a></li><li><a href="profile-maker-feasibility.html" aria-current="page">프로파일 생성 프로그램 타당성 검토<span>펌웨어 없이 도는 계산 엔진</span></a></li><li><a href="profile-natural.html">Natural 프로파일<span>기준이 되는 모드</span></a></li><li><a href="profile-bright.html">Bright 프로파일<span>기본 Custom Image, 대비 +1</span></a></li><li><a href="profile-portrait.html">Portrait 프로파일<span>피부색</span></a></li><li><a href="profile-landscape.html">Landscape 프로파일<span>파랑·초록 강조, 대비 +1</span></a></li><li><a href="profile-vibrant.html">Vibrant 프로파일<span>삼원색 강조</span></a></li><li><a href="profile-radiant.html">Radiant 프로파일<span>키 +2, 대비 +3</span></a></li><li><a href="profile-muted.html">Muted 프로파일<span>키 +4, 대비 −3</span></a></li><li><a href="profile-flat.html">Flat 프로파일<span>대비 −4</span></a></li><li><a href="profile-bleach-bypass.html">Bleach Bypass 프로파일<span>키 −4, 대비 +4, 조색 제외</span></a></li><li><a href="profile-reversal-film.html">Reversal Film 프로파일<span>전용 톤 곡선</span></a></li><li><a href="profile-monochrome.html">Monochrome 프로파일<span>흑백</span></a></li><li><a href="profile-satobi.html">SATOBI 프로파일<span>대비 +2</span></a></li><li><a href="profile-harubeni.html">HARUBENI 프로파일<span>Special Edition, 조색 제외</span></a></li><li><a href="profile-katen.html">KATEN 프로파일<span>Special Edition</span></a></li><li><a href="profile-kyushu.html">KYUSHU 프로파일<span>Special Edition</span></a></li><li><a href="profile-fuyuno.html">FUYUNO 프로파일<span>Special Edition</span></a></li></ol></nav>
-<nav class="pager" aria-label="이전·다음 문서"><a class="prev" href="color-profiles.html"><small>← 이전</small>색 프로파일 모음</a><a class="next" href="profile-natural.html"><small>다음 →</small>Natural 프로파일</a></nav>
+<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">K-3 Mark III 색 프로파일 — 이 주제의 문서</h2><ol><li><a href="color-profiles.html">색 프로파일 모음<span>16종 내려받기와 출고 설정</span></a></li><li><a href="profile-maker-feasibility.html" aria-current="page">프로파일 생성 프로그램 타당성 검토<span>펌웨어 없이 도는 계산 엔진</span></a></li><li><a href="gold-enhanced-profile.html">Gold 감마와 조색 확장 프로파일<span>물리 R·G·B와 원본 ARM 대조</span></a></li><li><a href="profile-natural.html">Natural 프로파일<span>기준이 되는 모드</span></a></li><li><a href="profile-bright.html">Bright 프로파일<span>기본 Custom Image, 대비 +1</span></a></li><li><a href="profile-portrait.html">Portrait 프로파일<span>피부색</span></a></li><li><a href="profile-landscape.html">Landscape 프로파일<span>파랑·초록 강조, 대비 +1</span></a></li><li><a href="profile-vibrant.html">Vibrant 프로파일<span>삼원색 강조</span></a></li><li><a href="profile-radiant.html">Radiant 프로파일<span>키 +2, 대비 +3</span></a></li><li><a href="profile-muted.html">Muted 프로파일<span>키 +4, 대비 −3</span></a></li><li><a href="profile-flat.html">Flat 프로파일<span>대비 −4</span></a></li><li><a href="profile-bleach-bypass.html">Bleach Bypass 프로파일<span>키 −4, 대비 +4, 조색 제외</span></a></li><li><a href="profile-reversal-film.html">Reversal Film 프로파일<span>전용 톤 곡선</span></a></li><li><a href="profile-monochrome.html">Monochrome 프로파일<span>흑백</span></a></li><li><a href="profile-satobi.html">SATOBI 프로파일<span>대비 +2</span></a></li><li><a href="profile-harubeni.html">HARUBENI 프로파일<span>Special Edition, 조색 제외</span></a></li><li><a href="profile-katen.html">KATEN 프로파일<span>Special Edition</span></a></li><li><a href="profile-kyushu.html">KYUSHU 프로파일<span>Special Edition</span></a></li><li><a href="profile-fuyuno.html">FUYUNO 프로파일<span>Special Edition</span></a></li></ol></nav>
+<nav class="pager" aria-label="이전·다음 문서"><a class="prev" href="color-profiles.html"><small>← 이전</small>색 프로파일 모음</a><a class="next" href="gold-enhanced-profile.html"><small>다음 →</small>Gold 감마와 조색 확장 프로파일</a></nav>
 <footer class="sitefoot"><div class="sitefoot-in"><nav aria-label="사이트"><a href="../index.html#map">문서 지도</a><a href="../index.html#levels">검증 수준 읽는 법</a><a href="../glossary.html">용어집</a><a href="research-program.html">세 기종 연구 본부</a><a href="https://github.com/yunhyok/pentax-k3iii-firmware-analysis">GitHub 저장소</a></nav><p>PENTAX 펌웨어 연구. PC에서 수행한 정적 분석과 에뮬레이션 결과이며, 카메라 실기에서 검증한 내용이 아닙니다. 원본 펌웨어와 추출한 독점 코드는 포함하지 않습니다.</p></div></footer>
 <!-- /chrome:bottom -->
 </body>

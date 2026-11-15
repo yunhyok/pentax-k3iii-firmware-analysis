@@ -82,6 +82,8 @@ python verify_findings.py .private/my-decode/decoded.bin
 
 펌웨어 없이 프로파일을 만들려면 `tools/make_k3iii_profile.py`를 씁니다. 이 도구는 색 표 JSON만 읽습니다. 펌웨어 사본(`fwdc233b.bin`, 2.20)이 있으면 에뮬레이터 경로로 같은 프로파일을 만들고 결과를 확인할 수 있습니다. 같은 PC에서 두 경로로 만든 16개 파일은 바이트까지 같습니다.
 
+v0.5.0에서 공개한 DCP 16종에 이어 Gold의 기준 상태 감마와 조색을 확장 프로파일로 옮겼습니다. Gold 수치 표와 원본 ARM 튜닝 코드의 306건 대조 기록을 공개합니다. Windows 앱은 DCP와 XMP가 들어 있는 ZIP을 내보냅니다. [Gold와 조색 연구](analysis/gold-enhanced-profile.html) · [Firmware Color Studio](https://github.com/yunhyok/firmware-color-studio)
+
 | 도구 | 하는 일 | 필요한 것 |
 |---|---|---|
 | `tools/make_k3iii_profile.py` | 색 표 JSON만으로 DCP를 만듦(`--mode`, `--all --output-dir`, `--from-raw RAW`, 설정 6종 `--saturation --hue --key --contrast --highlight --shadow`, `--neutral`, `--color-space`, `--look-matrix` + `--name`, `--color-matrix-from`, `--table`). 주지 않은 설정은 카메라의 출고 값을 씀 | numpy |

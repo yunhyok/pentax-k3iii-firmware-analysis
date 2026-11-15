@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Gold 감마와 조색 확장 프로파일 — PENTAX K-3 Mark III 펌웨어 연구</title>
+<meta name="description" content="K-3 Mark III 펌웨어 2.20의 Gold 채널별 감마를 계산하고 원본 ARM 코드와 대조한 결과, 조색을 XMP 확장 프로파일로 옮긴 방법과 검증 범위입니다.">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-camera="k3iii">
+<!-- chrome:top -->
+<a class="skip" href="#main">본문 바로가기</a>
+<div class="topbar"><div class="topbar-in"><a class="brand" href="../index.html">PENTAX <b>펌웨어 연구</b></a><div class="cams" aria-label="기종 선택"><a href="../index.html" aria-current="true">K-3 III</a><a href="https://yunhyok.github.io/pentax-k3ii-firmware-analysis/">K-3 II</a><a href="https://yunhyok.github.io/pentax-q7-firmware-analysis/">Q7</a></div><nav class="topnav" aria-label="주제"><a href="../index.html">개요</a><a href="guide-boot.html">부팅·저장소</a><a href="guide-update.html">업데이트</a><a href="guide-rebuild.html">재구축</a><a href="guide-rtos.html">명령·셸</a><a href="guide-color.html">색 처리</a><a href="color-profiles.html" aria-current="true">프로파일</a><a href="guide-lightroom.html">Lightroom</a><a href="guide-af.html">AF</a><a href="guide-ui.html">UI</a></nav></div></div>
+<nav class="crumbs" aria-label="현재 위치"><ol><li><a href="../index.html">PENTAX K-3 Mark III</a></li><li><a href="color-profiles.html">K-3 Mark III 색 프로파일</a></li><li aria-current="page">Gold 감마와 조색 확장 프로파일</li></ol></nav>
+<!-- /chrome:top -->
+<header class="page-head">
+<p class="eyebrow">색 프로파일 · 원본 코드 대조</p>
+<h1>Gold 감마와 조색 확장 프로파일</h1>
+<p class="lead">고정한 기준 상태에서 K-3 Mark III 펌웨어 2.20이 만드는 Gold 감마를 R·G·B 채널별로 재현했습니다. Firmware Color Studio는 이 계산과 조색 오프셋을 XMP의 3차원 색 변환 표에 담습니다.</p>
+</header>
+<div class="layout">
+<!-- chrome:toc -->
+<nav class="toc" aria-label="이 문서의 목차"><h2 data-toc="no">이 문서에서</h2><ol><li><a href="#gamma">Gold 감마의 계산</a></li><li><a href="#registers">레지스터 이미지의 물리 채널</a></li><li><a href="#verification">확인한 상태와 원본 코드 대조</a></li><li><a href="#xmp">조색과 Gold를 XMP로 내보내는 이유</a></li><li><a href="#lut">색 행렬을 앞단에 배치한 v2의 오차</a></li><li><a href="#reproduce">자료와 재현</a></li></ol></nav>
+<!-- /chrome:toc -->
+<main class="doc" id="main">
+<section id="gamma">
+<h2>Gold 감마의 계산</h2>
+<p>Gold는 튜닝 ID 31, 출고 설정 기록 33, MakerNote ImageTone 17입니다. 출고 기록에서 하이라이트·섀도 대비는 사용 불가로 표시되지만, 원본 튜닝 함수에 두 값을 넣으면 감마 계산에 반영됩니다. 앱의 여섯 조절값은 확인한 계산 입력을 제공합니다. <a href="https://github.com/yunhyok/firmware-color-studio/blob/v0.1.1/docs/gold.md">Gold 계산과 출고 설정 근거</a></p>
+<ol>
+<li>감마 단계 <code>0x53137564</code>에서 기준 곡선 생성기 <code>0x53136728</code>와 일반 감마 함수 <code>0x53135da0</code>를 거쳐 256점의 공통 곡선을 만듭니다. 키·대비·하이라이트 대비와 부호를 바꾼 섀도 대비를 적용합니다.</li>
+<li>채널 곡선 준비 함수 <code>0x531368e0</code>는 설정 <code>+0x98=0</code>, <code>+0x99=1</code>일 때 Gold를 선택합니다. 원본 조회 함수 <code>0x5313de6c</code>가 돌려주는 R·G·B 표의 주소는 각각 <code>0x53c1557c</code>, <code>0x53c1598c</code>, <code>0x53c15d8c</code>입니다. 공통 곡선 값 <var>x</var>에 대해 <code>q=x&gt;&gt;6</code>, <code>f=x&amp;63</code>으로 두고 각 표에서 <code>C[q] + trunc((C[q+1]−C[q])*f/64)</code>를 계산합니다. <code>trunc</code>는 0 방향 절삭이며 <code>x ≥ 16320</code>이면 <code>C[255]</code>를 사용합니다. 네 번째 표의 값은 <code>Y=(77R+150G+29B)&gt;&gt;8</code>입니다.</li>
+<li>최종 단계 <code>0x53137144</code>는 <code>0x53136f4c</code>를 호출합니다. 채널 값 <var>v</var>를 sRGB에서는 <code>min(v&gt;&gt;4,1023)</code>으로 줄입니다. AdobeRGB에서는 <code>0x53aa021c</code>의 원본 조회 표를 거친 뒤 같은 양자화를 적용합니다. 공개 자료에는 각 10비트 값에 처음 도달하는 입력 값 1,024개를 담았습니다.</li>
+<li>인접한 10비트 값이 <var>a</var>, <var>b</var>이면 <code>d=clamp(b−a,0,240)</code>입니다. <code>0x53aac900</code>의 차분 기록 241개를 검산한 결과, 한 구간은 <code>a+floor(d*j/16)</code> (<code>j=0…15</code>)으로 펼쳐집니다. 마지막 구간은 <code>d=0</code>입니다. <code>0x53135c60</code>가 이 기준값과 차분을 레지스터 이미지에 기록합니다. <a href="gold-tables.json">수치 표와 원본 주소</a></li>
+</ol>
+</section>
+
+<section id="registers">
+<h2>레지스터 이미지의 물리 채널</h2>
+<p>원본 전송 함수 <code>0x532512cc</code>를 에뮬레이터에서 실행해 레지스터 이미지의 오프셋과 감마 SRAM 주소를 연결했습니다. 공개 Milbeaut 헤더의 <code>GMRFL</code>, <code>GMGFL</code>, <code>GMBFL</code>, <code>GMYBFL</code>도 기준값의 물리 채널을 같은 순서로 가리킵니다. <a href="../verify_isp_configuration.py">원본 전송 검증기</a> · <a href="https://github.com/killsmm/m10v_mono/blob/main/ca7_rtos/target/cpu_tkernel/basefw/MILB_API/include/im_r2y.h">Milbeaut R2Y 헤더</a></p>
+<div class="table-wrap"><table class="compact">
+<caption>기존 에뮬레이터 키와 물리 채널의 대응</caption>
+<thead><tr><th scope="col">물리 채널</th><th scope="col">이미지 오프셋</th><th scope="col">SRAM 기준값 주소</th><th scope="col">SRAM 차분 주소</th><th scope="col">기존 키</th></tr></thead>
+<tbody>
+<tr><th scope="row">R</th><td><code>0x4768</code></td><td><code>0xaa00</code></td><td><code>0x8800</code></td><td><code>rgb</code></td></tr>
+<tr><th scope="row">G</th><td><code>0x4968</code></td><td><code>0xac00</code></td><td><code>0x9000</code></td><td><code>r</code></td></tr>
+<tr><th scope="row">B</th><td><code>0x4b68</code></td><td><code>0xae00</code></td><td><code>0x9800</code></td><td><code>g</code></td></tr>
+<tr><th scope="row">Yb</th><td><code>0x4d68</code></td><td><code>0xb000</code></td><td><code>0xa000</code></td><td><code>b</code></td></tr>
+</tbody>
+</table></div>
+<p>기존 변환기는 레지스터에서 <code>r</code>, <code>g</code>, <code>b</code>를 고르므로 실제 G·B·Yb를 읽었습니다. 세 채널 곡선이 동일한 모드에서는 차이가 드러나지 않았습니다. <code>CameraColour.from_tuning</code>의 비교와 표 확장에 물리 R·G·B에 해당하는 키를 사용하도록 고쳤습니다. <a href="../tools/firmware_color_model.py">변환기</a> · <a href="../tests/test_firmware_color_model.py">서로 다른 네 곡선으로 확인하는 회귀 검사</a></p>
+<p>기준 상태의 원본 ARM 코드를 다시 실행해 물리 B의 감마가 입력 0에서 sRGB 96, Adobe RGB 120을 내는 것을 확인했습니다. 두 색공간 각각에서 3×4,096개의 응답이 앱의 값과 일치했습니다. 기존 감마 함수는 0에 부호값 0을 곱해 첫 값을 잃었습니다. 입력 0에서도 표의 값을 보존하고 음수로 확장할 때만 부호를 반전하도록 고쳤습니다. <a href="gold-gamma-zero.json">0번 응답과 전체 표 해시</a> · <a href="../tools/verify_gold_gamma_zero.py">원본 코드 검증기</a> · <a href="../tests/test_firmware_color_model.py">감마 회귀 검사</a></p>
+</section>
+
+<section id="verification">
+<h2>확인한 상태와 원본 코드 대조</h2>
+<p>노출 이득과 분모를 각각 <code>0x2000</code>, 프로젝트 행을 0으로 고정했습니다. Cross 플래그는 0, Gold 플래그는 1, 설정 <code>+0x8d</code>와 싱글턴(<code>0x547bbe44</code>)의 상태 <code>+0x33</code>은 0입니다. 이 상태에서 앱이 사용하는 각 채널의 4,096점 곡선을 계산합니다. <a href="gold-tables.json">기준 상태와 수치 표</a></p>
+<p>원본 ARM 튜닝 루틴과 기준 상태의 계산을 306가지 조합에서 대조했습니다. sRGB와 AdobeRGB 각각에서 출고값, 조절값 여섯 개의 개별 단계, 여섯 값이 각각 양 끝에 있는 64가지 조합, 시드를 고정한 혼합 조합 40가지를 확인했습니다. 네 채널의 기준 표·차분 기록·확장 값과 CC0·YC·채도 억제 설정은 모두 일치했습니다. 별도로 채널 준비의 16비트 입력 65,536개, AdobeRGB 조회 입력 16,385개, 차분 기록 241개, 원본 패킹 134건을 검증했습니다. <a href="gold-verification.json">원본 ARM 검증 기록</a></p>
+<p>내부 상태 분기에서는 <code>+0x33</code>과 <code>+0x39</code>가 켜질 때 가중 Y를 RGB에 복사하고, <code>+0x8d</code>를 주면 RGB만 4096으로 바뀌는 것을 확인했습니다. <code>+0x33</code>에서 열리는 별도 조회 경로와 두 플래그가 켜질 때 우선 선택되는 Cross의 색 계산은 기준 모델의 범위 밖입니다. 원본 코드 대조는 전체 9<sup>6</sup> 조합이나 카메라 ISP의 픽셀 실행을 포함하지 않습니다. <a href="https://github.com/yunhyok/firmware-color-studio/blob/v0.1.1/docs/gold.md#runtime-boundary">기준 상태와 분기 대조 범위</a></p>
+</section>
+
+<section id="xmp">
+<h2>조색과 Gold를 XMP로 내보내는 이유</h2>
+<p>Muted, Bleach Bypass, HARUBENI의 조색은 채도 억제 뒤 Cb와 Cr에 상수를 더하므로 무채색도 물듭니다. 기존 DCP의 색조·채도 표는 채도를 곱하는 방식이라 채도가 0이면 색을 붙일 수 없습니다. 단일 톤 곡선도 Gold의 세 채널 응답을 각각 표현할 수 없습니다. <a href="profile-maker-feasibility.html#cannot">기존 DCP 구조의 제약</a></p>
+<p>Firmware Color Studio v0.1.1은 공통 센서 행렬을 기준 DCP에 두고 CC0와 그 뒤의 RGB 변환을 XMP에 함께 담았습니다. v0.1.2의 v2 구조는 펌웨어 CC0를 기준 DCP로 옮깁니다. 두 구조 모두 DCP와 XMP가 한 쌍이며, 앱에서 ZIP으로 내보냅니다. <a href="https://github.com/yunhyok/firmware-color-studio/releases/tag/v0.1.1">Firmware Color Studio v0.1.1</a> · <a href="https://github.com/yunhyok/firmware-color-studio/blob/main/docs/enhanced.md">앱의 확장 프로파일 안내</a></p>
+</section>
+
+<section id="lut">
+<h2>색 행렬을 앞단에 배치한 v2의 오차</h2>
+<p>펌웨어 CC0가 <var>M</var>, ProPhoto RGB에서 XYZ D50으로 가는 행렬이 <var>P</var>일 때 v2의 <code>ForwardMatrix</code>는 <code>P M</code>입니다. 프로파일 변환 직후의 수치가 <code>M x</code>가 되므로 Adobe의 이 단계 범위 제한이 펌웨어의 감마 앞단 범위 제한과 같은 자리에서 일어납니다. Adobe가 저장된 행렬을 읽어 10<sup>−4</sup> 단위로 반올림하고 D50으로 정규화한 뒤의 실효 행렬을 <var>A</var>라 하면, LUT에서 <code>M A<sup>−1</sup></code>로 차이를 보정합니다. 이어 감마·YC·채도 억제·조색을 계산해 실제 ProPhoto RGB로 내보냅니다. <a href="https://github.com/yunhyok/firmware-color-studio/blob/main/docs/lut-fidelity.md">행렬과 Adobe SDK 근거</a></p>
+<p>색공간 두 종류, 전체 모드의 기본값, 지원하는 조색과 조절값 끝점을 포함한 198개 레시피에 합성 센서 RGB 18,666,801개를 넣었습니다. 33<sup>3</sup> 격자와 시드를 고정한 일반·암부 표본, CC0 클리핑 경계 양쪽의 입력을 포함합니다. 아래 표는 총 노출 0 EV에서 같은 펌웨어 기반 직접 계산을 기준으로 비교한 값입니다. 오차 단위는 정규화한 sRGB 채널의 절대차에 255를 곱한 값입니다. <a href="gold-lut-fidelity.json">레시피·입력·출력·오차 기록</a> · <a href="../tools/check_gold_lut_fidelity.py">합성 시험 재현 코드</a></p>
+<div class="table-wrap"><table class="compact">
+<caption>Gold 기본 설정의 평균·최대 채널 오차</caption>
+<thead><tr><th scope="col">색공간</th><th scope="col">공개 v1 평균 / 최대</th><th scope="col">v1의 감마 0만 수정</th><th scope="col">CC0를 옮긴 v2</th></tr></thead>
+<tbody>
+<tr><th scope="row">sRGB</th><td class="n">2.115 / 110.172</td><td class="n">0.933 / 110.379</td><td class="n">0.221 / 4.015</td></tr>
+<tr><th scope="row">Adobe RGB</th><td class="n">1.512 / 97.942</td><td class="n">0.585 / 96.588</td><td class="n">0.240 / 18.923</td></tr>
+</tbody>
+</table></div>
+<p>이전에 보고한 Gold Adobe RGB 한 점의 파랑 오차 59.138에는 직접 계산이 파랑의 첫 감마 값을 0으로 지운 문제가 포함돼 있었습니다. 기준을 고쳐 같은 입력을 다시 비교하니 공개 v1의 최대 채널 오차는 8.784, 감마 0만 고친 v1은 1.859, v2는 1.072였습니다. <a href="gold-lut-fidelity.json">해당 입력과 세 계산의 비교</a></p>
+<p>LUT는 32<sup>3</sup> 격자, 16비트, sRGB 전달함수와 사면체 보간을 사용합니다. v2 오차가 가장 큰 표본은 Muted Adobe RGB의 조색 1·키 −4였으며, 최종 sRGB 범위 경계에서 빨강이 29.481만큼 달랐습니다. 이는 합성 표본에서 관측한 최대값입니다. Adobe 앱에서의 실제 RAW 현상과 펌웨어의 모든 설정 조합은 별도 검증 대상입니다. <a href="https://github.com/yunhyok/firmware-color-studio/blob/main/docs/lut-fidelity.md">격자·오차의 검증 범위</a></p>
+<p>앱에서 만든 v2 Gold 두 색공간, 녹색 조색 Bleach Bypass, HARUBENI 조색 0…8을 Lightroom Classic 16.0에서 선택하고 16비트 sRGB TIFF로 내보냈습니다. 12개 결과의 LUT 식별자와 짝 DCP를 확인했습니다. 사진은 검증에만 사용했으며 LUT나 공식의 fitting에는 사용하지 않았습니다. 같은 촬영의 PEF와 Adobe 변환 DNG로 확인한 미리보기 차이는 앱의 별도 보고서에 기록했습니다. <a href="https://github.com/yunhyok/firmware-color-studio/blob/main/docs/lightroom-fidelity.json">실제 Lightroom 검증 기록</a> · <a href="https://github.com/yunhyok/firmware-color-studio/blob/main/docs/pef-fidelity.md">PEF 처리 차이</a></p>
+</section>
+
+<section id="reproduce">
+<h2>자료와 재현</h2>
+<p>아래 두 JSON은 Firmware Color Studio v0.1.1의 공개 파일과 SHA-256이 같습니다. 수치 표와 검증 결과를 담고 있으며 재현 검증에는 사용자가 준비한 2.20 펌웨어 사본이 필요합니다. <a href="https://github.com/yunhyok/firmware-color-studio/blob/v0.1.1/docs/gold.md#verification-and-reproduction">실행 방법</a> · <a href="https://github.com/yunhyok/firmware-color-studio/blob/v0.1.1/tools/verify_gold.py">원본 ARM 검증기</a> · <a href="https://github.com/yunhyok/firmware-color-studio/blob/v0.1.1/src/firmware_color_studio/gold.py">앱 계산 코드</a></p>
+<ul class="refs">
+<li>Gold R·G·B 표와 AdobeRGB 임계값 · <a href="gold-tables.json">gold-tables.json</a><br><code>f0a5e752f901fd40528cd610075b36d4e3dd11956d61ccf720649633a29c9776</code></li>
+<li>원본 ARM 실행 조건, 비교 결과, 대조 해시 · <a href="gold-verification.json">gold-verification.json</a><br><code>e4099106293d00a157386070f8cde462bff5ee7c000a4f2ba719b967ac55922c</code></li>
+</ul>
+<p>아래 명령은 위 오차 기록의 소스 해시와 일치하는 v2 앱 체크아웃과 Python 환경을 사용합니다. 두 번째 명령은 Unicorn과 사용자가 준비한 디코딩 이미지가 필요하며 이 저장소의 고정 튜닝 하네스를 사용합니다. <a href="../tools/check_gold_lut_fidelity.py">합성 RGB 검사</a> · <a href="../tools/verify_gold_gamma_zero.py">원본 ARM 검사</a></p>
+<pre><code>python -B tools/check_gold_lut_fidelity.py --app-repo /path/to/firmware-color-studio --output gold-lut-check.json
+python -B tools/verify_gold_gamma_zero.py /path/to/decoded.bin --app-repo /path/to/firmware-color-studio --output gold-gamma-zero-check.json</code></pre>
+</section>
+</main>
+</div>
+<!-- chrome:bottom -->
+<nav class="related" aria-label="같은 주제의 문서"><h2 data-toc="no">K-3 Mark III 색 프로파일 — 이 주제의 문서</h2><ol><li><a href="color-profiles.html">색 프로파일 모음<span>16종 내려받기와 출고 설정</span></a></li><li><a href="profile-maker-feasibility.html">프로파일 생성 프로그램 타당성 검토<span>펌웨어 없이 도는 계산 엔진</span></a></li><li><a href="gold-enhanced-profile.html" aria-current="page">Gold 감마와 조색 확장 프로파일<span>물리 R·G·B와 원본 ARM 대조</span></a></li><li><a href="profile-natural.html">Natural 프로파일<span>기준이 되는 모드</span></a></li><li><a href="profile-bright.html">Bright 프로파일<span>기본 Custom Image, 대비 +1</span></a></li><li><a href="profile-portrait.html">Portrait 프로파일<span>피부색</span></a></li><li><a href="profile-landscape.html">Landscape 프로파일<span>파랑·초록 강조, 대비 +1</span></a></li><li><a href="profile-vibrant.html">Vibrant 프로파일<span>삼원색 강조</span></a></li><li><a href="profile-radiant.html">Radiant 프로파일<span>키 +2, 대비 +3</span></a></li><li><a href="profile-muted.html">Muted 프로파일<span>키 +4, 대비 −3</span></a></li><li><a href="profile-flat.html">Flat 프로파일<span>대비 −4</span></a></li><li><a href="profile-bleach-bypass.html">Bleach Bypass 프로파일<span>키 −4, 대비 +4, 조색 제외</span></a></li><li><a href="profile-reversal-film.html">Reversal Film 프로파일<span>전용 톤 곡선</span></a></li><li><a href="profile-monochrome.html">Monochrome 프로파일<span>흑백</span></a></li><li><a href="profile-satobi.html">SATOBI 프로파일<span>대비 +2</span></a></li><li><a href="profile-harubeni.html">HARUBENI 프로파일<span>Special Edition, 조색 제외</span></a></li><li><a href="profile-katen.html">KATEN 프로파일<span>Special Edition</span></a></li><li><a href="profile-kyushu.html">KYUSHU 프로파일<span>Special Edition</span></a></li><li><a href="profile-fuyuno.html">FUYUNO 프로파일<span>Special Edition</span></a></li></ol></nav>
+<nav class="pager" aria-label="이전·다음 문서"><a class="prev" href="profile-maker-feasibility.html"><small>← 이전</small>프로파일 생성 프로그램 타당성 검토</a><a class="next" href="profile-natural.html"><small>다음 →</small>Natural 프로파일</a></nav>
+<footer class="sitefoot"><div class="sitefoot-in"><nav aria-label="사이트"><a href="../index.html#map">문서 지도</a><a href="../index.html#levels">검증 수준 읽는 법</a><a href="../glossary.html">용어집</a><a href="research-program.html">세 기종 연구 본부</a><a href="https://github.com/yunhyok/pentax-k3iii-firmware-analysis">GitHub 저장소</a></nav><p>PENTAX 펌웨어 연구. PC에서 수행한 정적 분석과 에뮬레이션 결과이며, 카메라 실기에서 검증한 내용이 아닙니다. 원본 펌웨어와 추출한 독점 코드는 포함하지 않습니다.</p></div></footer>
+<!-- /chrome:bottom -->
+</body>
+</html>
