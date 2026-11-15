@@ -18,6 +18,7 @@ sys.path.insert(0, str(ROOT / "tools"))
 
 import compare_camera_jpeg as compare      # noqa: E402
 import firmware_color_model as model       # noqa: E402
+import k3iii_tuning_emulator as tuning     # noqa: E402
 from profile_bridge import build_dcp       # noqa: E402
 
 
@@ -43,6 +44,42 @@ def random_colours(count, seed=3):
 
 
 class ColourModel(unittest.TestCase):
+    def test_tuning_uses_physical_rgb_curves(self):
+        info = bytearray(tuning.INFO_SIZE)
+        start = tuning.REGISTER_IMAGE
+        info[start] = 1
+        info[start + 0x1568:start + 0x1D68] = np.full(1024, 4096, dtype="<u2").tobytes()
+        rgb_yb = np.arange(256, dtype="<u2") + np.array([0, 128, 256, 384], dtype="<u2")[:, None]
+        curves = rgb_yb << 4
+        for remap in (0, 64):
+            with self.subTest(remap=remap):
+                register_curves = rgb_yb + remap
+                for offset, curve in zip((0x4768, 0x4968, 0x4B68, 0x4D68), register_curves):
+                    info[start + offset:start + offset + 0x200] = curve.tobytes()
+                registers = tuning.ColourRegisters.from_info(bytes(info))
+                result = tuning.TuningResult(registers, curves[0], dict(zip("rgby", curves)), b"")
+                camera = model.CameraColour.from_tuning(result)
+                if remap:
+                    self.assertEqual(camera.curve_max, 1023.0)
+                    np.testing.assert_array_equal(camera.curves, np.repeat(register_curves[:3], 16, axis=1))
+                else:
+                    self.assertEqual(camera.curve_max, 16384.0)
+                    np.testing.assert_array_equal(camera.curves, curves[:3])
+
+    def test_gamma_preserves_the_gold_table_origin(self):
+        tables = json.loads((ROOT / "analysis" / "gold-tables.json").read_text(encoding="utf-8"))
+        camera = synthetic_camera()
+        camera.curves = np.minimum(np.array([tables["gold_rgb"][c] for c in "rgb"]) >> 4, 1023)
+        camera.curve_max = 1023.0
+        expected = np.array([0, 0, 96]) / 1023
+        epsilon = np.full(3, 1e-9)
+        positive = camera.gamma(epsilon)
+
+        np.testing.assert_array_equal(camera.gamma(np.zeros(3)), expected)
+        self.assertEqual(camera.gamma(0, channel=2), expected[2])
+        np.testing.assert_allclose(positive, expected, atol=1e-8, rtol=0)
+        np.testing.assert_array_equal(camera.gamma(-epsilon), -positive)
+
     def test_hsv_round_trip(self):
         rgb = random_colours(5000)
         back = model.hsv_to_rgb(model.rgb_to_hsv(rgb))
