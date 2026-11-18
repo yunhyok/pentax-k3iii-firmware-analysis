@@ -20,7 +20,7 @@
 </header>
 <div class="layout">
 <!-- chrome:toc -->
-<nav class="toc" aria-label="이 문서의 목차"><h2 data-toc="no">이 문서에서</h2><ol><li><a href="#gamma">Gold 감마의 계산</a></li><li><a href="#registers">레지스터 이미지의 물리 채널</a></li><li><a href="#verification">확인한 상태와 원본 코드 대조</a></li><li><a href="#xmp">조색과 Gold를 XMP로 내보내는 이유</a></li><li><a href="#lut">색 행렬을 앞단에 배치한 v2의 오차</a></li><li><a href="#reproduce">자료와 재현</a></li></ol></nav>
+<nav class="toc" aria-label="이 문서의 목차"><h2 data-toc="no">이 문서에서</h2><ol><li><a href="#gamma">Gold 감마의 계산</a></li><li><a href="#registers">레지스터 이미지의 물리 채널</a></li><li><a href="#verification">확인한 상태와 원본 코드 대조</a></li><li><a href="#xmp">조색과 Gold를 XMP로 내보내는 이유</a></li><li><a href="#lut">색 행렬을 앞단에 배치한 v2의 오차</a></li><li><a href="#lut-v3">32³ 격자 사이의 오차를 줄이는 v3</a></li><li><a href="#reproduce">자료와 재현</a></li></ol></nav>
 <!-- /chrome:toc -->
 <main class="doc" id="main">
 <section id="gamma">
@@ -79,6 +79,31 @@
 <p>이전에 보고한 Gold Adobe RGB 한 점의 파랑 오차 59.138에는 직접 계산이 파랑의 첫 감마 값을 0으로 지운 문제가 포함돼 있었습니다. 기준을 고쳐 같은 입력을 다시 비교하니 공개 v1의 최대 채널 오차는 8.784, 감마 0만 고친 v1은 1.859, v2는 1.072였습니다. <a href="gold-lut-fidelity.json">해당 입력과 세 계산의 비교</a></p>
 <p>LUT는 32<sup>3</sup> 격자, 16비트, sRGB 전달함수와 사면체 보간을 사용합니다. v2 오차가 가장 큰 표본은 Muted Adobe RGB의 조색 1·키 −4였으며, 최종 sRGB 범위 경계에서 빨강이 29.481만큼 달랐습니다. 이는 합성 표본에서 관측한 최대값입니다. Adobe 앱에서의 실제 RAW 현상과 펌웨어의 모든 설정 조합은 별도 검증 대상입니다. <a href="https://github.com/yunhyok/firmware-color-studio/blob/main/docs/lut-fidelity.md">격자·오차의 검증 범위</a></p>
 <p>앱에서 만든 v2 Gold 두 색공간, 녹색 조색 Bleach Bypass, HARUBENI 조색 0…8을 Lightroom Classic 16.0에서 선택하고 16비트 sRGB TIFF로 내보냈습니다. 12개 결과의 LUT 식별자와 짝 DCP를 확인했습니다. 사진은 검증에만 사용했으며 LUT나 공식의 fitting에는 사용하지 않았습니다. 같은 촬영의 PEF와 Adobe 변환 DNG로 확인한 미리보기 차이는 앱의 별도 보고서에 기록했습니다. <a href="https://github.com/yunhyok/firmware-color-studio/blob/main/docs/lightroom-fidelity.json">실제 Lightroom 검증 기록</a> · <a href="https://github.com/yunhyok/firmware-color-studio/blob/main/docs/pef-fidelity.md">PEF 처리 차이</a></p>
+</section>
+
+<section id="lut-v3">
+<h2>32³ 격자 사이의 오차를 줄이는 v3</h2>
+<p>v3는 직접 계산한 격자점으로 시작해 사면체 보간이 쓰는 일곱 방향 모서리의 중점에서 오차를 구합니다. 이 오차를 양 끝 표본에 나누어 반영하는 과정을 네 번 반복합니다. 경계면의 표본에는 면 안의 모서리만 반영합니다. LUT 입방체의 열두 바깥 모서리와 세 인덱스가 같은 중립 대각선은 매 반복에서 고정합니다. 내보낸 표는 32³, 채널당 16비트이며 기존 DCP 행렬 및 ProPhoto RGB·sRGB 전달함수를 사용합니다. <a href="https://github.com/yunhyok/firmware-color-studio/blob/main/src/firmware_color_studio/enhanced.py">앱의 LUT 생성 코드</a> · <a href="https://helpx.adobe.com/camera-raw/desktop/dng-and-file-formats/digital-negative.html">Adobe Profiles SDK 및 DNG SDK</a></p>
+<p>v0.1.2 태그의 소스와 v3를 각각 불러와 기존 레시피 198개와 총 노출 −2, −1, +0.5, +1 EV의 32개 조건을 비교했습니다. 직접 계산에는 앱의 원래 펌웨어 색 모델과 CC0를 사용하고 직렬화 행렬의 반올림이나 LUT 보간은 적용하지 않았습니다. 노출은 Adobe SDK의 순서를 따라 CC0 좌표에서 감마 앞에 적용했습니다. 이 노출 시험은 프로파일의 처리 순서를 검증합니다. <a href="https://github.com/yunhyok/firmware-color-studio/tree/v0.1.2">비교 기준 소스</a> · <a href="lut-boundary-v3.json">소스 해시와 전 조건 수치</a> · <a href="../tools/check_lut_boundary_v3.py">재현 코드</a></p>
+<p>재검증에는 별도 시드의 암부·일반 입력, CC0 경계, 최종 선형 sRGB가 0 또는 1을 지나는 지점 양쪽을 추가했습니다. 같은 값으로 제한되는 구간의 시작점은 별도 집계했습니다. 회색축 257점과 센서 RGB 입방체의 여덟 꼭짓점도 확인했습니다. 선형 ProPhoto RGB와 출력 sRGB 모두에서 채널 절대 오차에 255를 곱했습니다. Adobe RGB 레시피에서는 직접 계산의 선형 sRGB가 0 또는 1에서 1/255보다 멀리 벗어난 입력을 찾고, LUT 출력도 같은 채널의 같은 쪽에 남는지 확인했습니다. <a href="lut-boundary-v3.json">조건별 경계 및 색역 기록</a></p>
+<div class="table-wrap"><table class="compact">
+<caption>각 조건에서 구한 95·99백분위수와 최대 오차의 조건별 최댓값</caption>
+<thead><tr><th scope="col">표본과 노출</th><th scope="col">측정 색공간</th><th scope="col">v0.1.2 p95 / p99 / 최대</th><th scope="col">v3 p95 / p99 / 최대</th></tr></thead>
+<tbody>
+<tr><th scope="row">기존 0 EV</th><td>출력 sRGB</td><td class="n">1.232 / 2.938 / 29.481</td><td class="n">1.008 / 2.749 / 27.990</td></tr>
+<tr><th scope="row">독립 0 EV</th><td>출력 sRGB</td><td class="n">1.186 / 3.229 / 24.059</td><td class="n">0.983 / 2.851 / 19.720</td></tr>
+<tr><th scope="row">기존 0 EV</th><td>선형 ProPhoto RGB</td><td class="n">1.654 / 4.362 / 22.468</td><td class="n">1.415 / 4.538 / 19.956</td></tr>
+<tr><th scope="row">독립 0 EV</th><td>선형 ProPhoto RGB</td><td class="n">1.556 / 4.883 / 22.480</td><td class="n">1.328 / 4.707 / 20.090</td></tr>
+<tr><th scope="row">기존 0 EV 밖</th><td>출력 sRGB</td><td class="n">0.815 / 1.599 / 15.650</td><td class="n">0.679 / 1.321 / 13.747</td></tr>
+<tr><th scope="row">독립 0 EV 밖</th><td>출력 sRGB</td><td class="n">0.802 / 1.730 / 16.490</td><td class="n">0.694 / 1.432 / 13.853</td></tr>
+<tr><th scope="row">기존 0 EV 밖</th><td>선형 ProPhoto RGB</td><td class="n">0.911 / 1.962 / 7.512</td><td class="n">0.766 / 1.639 / 6.235</td></tr>
+<tr><th scope="row">독립 0 EV 밖</th><td>선형 ProPhoto RGB</td><td class="n">0.856 / 1.831 / 7.111</td><td class="n">0.743 / 1.540 / 6.212</td></tr>
+</tbody></table></div>
+<p>0 EV의 기존 표본에서 10개 레시피, 독립 표본에서 9개 레시피는 출력 sRGB 최대 오차가 0.01보다 더 커졌습니다. 가장 큰 증가는 각각 2.045와 1.890입니다. 기존 표본의 선형 ProPhoto RGB p99 최댓값도 4.362에서 4.538로 증가했습니다. 독립 표본의 출력 경계 교차 83,684개에서는 최대 오차가 24.059에서 19.720으로, 별도로 집계한 클리핑 구간 시작점 주변 65,140개에서는 11.601에서 10.061로 줄었습니다. 198개 레시피에서 고정한 LUT 표본의 16비트 값은 모두 일치했습니다. 센서에서 회색축으로 들어온 입력의 최대 오차도 같았습니다. <a href="lut-boundary-v3.json">개별 레시피 오차와 고정 표본 검사</a></p>
+<p>기존 0 EV 표본에서 Adobe RGB에 속하면서 sRGB 범위를 벗어나는 2,217,821개 중 같은 채널의 같은 쪽에 남은 수는 2,212,386개에서 2,214,217개로 증가했습니다. 1,852개가 새로 이 조건을 충족했고 21개는 기존에 충족했던 조건에서 벗어났습니다. 이 21개의 직접 계산에서 sRGB 범위를 넘은 폭은 최대 1.719/255였습니다. 독립 0 EV 표본에서는 296개가 새로 충족했고 5개는 충족하지 못했습니다. <a href="lut-boundary-v3.json">Adobe RGB 색역 경계 검사</a></p>
+<p>Lightroom Classic 16.0에서는 데모 DNG에 Gold Adobe RGB, Muted Adobe RGB(키 −4·조색 1), Bleach Bypass sRGB(조색 1)를 적용해 16비트 sRGB TIFF 세 건을 내보냈습니다. 각 TIFF의 내장 XMP에서 짝 DCP와 RGB 표의 식별자가 생성한 프로파일과 일치함을 확인했습니다. <a href="https://github.com/yunhyok/firmware-color-studio/blob/v0.1.3/docs/lut-boundary-lightroom.json">Lightroom TIFF 세 건의 프로파일 식별자와 내보내기 검증</a></p>
+<p>위 합성 RGB 비교를 재현하려면 v0.1.2 태그를 가진 앱 Git 체크아웃과 앱의 Python 환경이 필요합니다. 사진 없이 실행할 수 있습니다. <a href="lut-boundary-v3.json">레시피별 분위수, 최대 오차 입력과 출력</a></p>
+<pre><code>&amp; "PATH_TO_APP/.venv/Scripts/python.exe" -B tools/check_lut_boundary_v3.py --app-repo "PATH_TO_APP" --output lut-v3-check.json</code></pre>
 </section>
 
 <section id="reproduce">
