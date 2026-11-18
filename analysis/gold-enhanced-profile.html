@@ -20,7 +20,7 @@
 </header>
 <div class="layout">
 <!-- chrome:toc -->
-<nav class="toc" aria-label="이 문서의 목차"><h2 data-toc="no">이 문서에서</h2><ol><li><a href="#gamma">Gold 감마의 계산</a></li><li><a href="#registers">레지스터 이미지의 물리 채널</a></li><li><a href="#verification">확인한 상태와 원본 코드 대조</a></li><li><a href="#xmp">조색과 Gold를 XMP로 내보내는 이유</a></li><li><a href="#lut">색 행렬을 앞단에 배치한 v2의 오차</a></li><li><a href="#lut-v3">32³ 격자 사이의 오차를 줄이는 v3</a></li><li><a href="#reproduce">자료와 재현</a></li></ol></nav>
+<nav class="toc" aria-label="이 문서의 목차"><h2 data-toc="no">이 문서에서</h2><ol><li><a href="#gamma">Gold 감마의 계산</a></li><li><a href="#registers">레지스터 이미지의 물리 채널</a></li><li><a href="#verification">확인한 상태와 원본 코드 대조</a></li><li><a href="#xmp">조색과 Gold를 XMP로 내보내는 이유</a></li><li><a href="#lut">색 행렬을 앞단에 배치한 v2의 오차</a></li><li><a href="#lut-v3">32³ 격자 사이의 오차를 줄이는 v3</a></li><li><a href="#lut-v4">v4 보간과 기존 최대 오차 사례</a></li><li><a href="#reproduce">자료와 재현</a></li></ol></nav>
 <!-- /chrome:toc -->
 <main class="doc" id="main">
 <section id="gamma">
@@ -104,6 +104,49 @@
 <p>Lightroom Classic 16.0에서는 데모 DNG에 Gold Adobe RGB, Muted Adobe RGB(키 −4·조색 1), Bleach Bypass sRGB(조색 1)를 적용해 16비트 sRGB TIFF 세 건을 내보냈습니다. 각 TIFF의 내장 XMP에서 짝 DCP와 RGB 표의 식별자가 생성한 프로파일과 일치함을 확인했습니다. <a href="https://github.com/yunhyok/firmware-color-studio/blob/v0.1.3/docs/lut-boundary-lightroom.json">Lightroom TIFF 세 건의 프로파일 식별자와 내보내기 검증</a></p>
 <p>위 합성 RGB 비교를 재현하려면 v0.1.2 태그를 가진 앱 Git 체크아웃과 앱의 Python 환경이 필요합니다. 사진 없이 실행할 수 있습니다. <a href="lut-boundary-v3.json">레시피별 분위수, 최대 오차 입력과 출력</a></p>
 <pre><code>&amp; "PATH_TO_APP/.venv/Scripts/python.exe" -B tools/check_lut_boundary_v3.py --app-repo "PATH_TO_APP" --output lut-v3-check.json</code></pre>
+</section>
+
+<section id="lut-v4">
+<h2>v4 보간과 기존 최대 오차 사례</h2>
+<p>v4는 v3의 32³ 표에서 시작합니다. 이웃 정점의 휘도 범위가 실제 채도 이득 단차를 포함하고, 그 주변에 선형 sRGB 채널이 0.0031308 이하인 색이 있을 때 보정 대상으로 삼습니다. 표의 정점과 모서리 중점에서 출력 sRGB 오차가 2/255를 넘는 셀 중 보정 대상과 맞닿은 셀을 1/4 셀 간격으로 다시 평가합니다. 이때 sRGB 전달함수를 범위 밖에서도 부호를 유지해 계산하고, 정점에는 계산된 보정의 절반을 반영합니다. <a href="https://github.com/yunhyok/firmware-color-studio/blob/v0.1.4/src/firmware_color_studio/enhanced.py">v4 LUT 생성 코드</a></p>
+<p>v0.1.2와 v0.1.3 태그를 별도 소스 트리에서 불러와, 기존 198개 레시피와 32개 노출 조건의 공개 통계를 다시 계산했습니다. 0 EV에서 이전 연구의 기존 표본 18,666,801개와 독립 표본 3,889,597개에 같은 입력과 직접 계산을 기준으로 v4를 비교했습니다. 후보 설계에 쓰지 않은 새 시드의 전체 영역·암부 표본 2,027,520개와 HARUBENI 최악점 주변의 국소 표본은 별도로 집계했습니다. 오차는 채널 차이에 255를 곱한 값입니다. <a href="https://github.com/yunhyok/firmware-color-studio/tree/v0.1.2">v0.1.2 소스</a> · <a href="https://github.com/yunhyok/firmware-color-studio/tree/v0.1.3">v0.1.3 소스</a> · <a href="lut-boundary-v4.json">태그·소스 해시와 조건별 검증 수치</a></p>
+<div class="table-wrap"><table class="compact">
+<caption>0 EV에서 레시피별로 구한 출력 sRGB p95·p99·최대 오차 중 각각 가장 큰 값</caption>
+<thead><tr><th scope="col">표본</th><th scope="col">v0.1.2</th><th scope="col">v0.1.3</th><th scope="col">v4</th></tr></thead>
+<tbody>
+<tr><th scope="row">기존 18,666,801개</th><td class="n">1.232 / 2.938 / 29.481</td><td class="n">1.008 / 2.749 / 27.990</td><td class="n">1.008 / 2.749 / 27.990</td></tr>
+<tr><th scope="row">독립 3,889,597개</th><td class="n">1.186 / 3.229 / 24.059</td><td class="n">0.983 / 2.851 / 19.720</td><td class="n">0.983 / 2.841 / 18.633</td></tr>
+<tr><th scope="row">독립 표본 중 출력 경계 교차 83,684개</th><td class="n">8.623 / 14.774 / 24.059</td><td class="n">7.430 / 8.496 / 19.720</td><td class="n">7.430 / 8.270 / 18.392</td></tr>
+<tr><th scope="row">새 시드 2,027,520개</th><td class="n">1.167 / 2.563 / 19.097</td><td class="n">0.954 / 2.329 / 14.672</td><td class="n">0.953 / 2.329 / 13.033</td></tr>
+</tbody></table></div>
+<p>기존 0 EV 표본에서 v0.1.3보다 최대 오차가 0.01 이상 크게 증가한 레시피는 세 개였습니다. Gold Adobe RGB의 하이라이트 대비 +4가 10.588에서 11.048, 여섯 값이 −4와 +4를 교대로 취하는 조합이 14.818에서 15.006, Bleach Bypass Adobe RGB의 조색 1·섀도 대비 +4가 7.013에서 7.159였습니다. 같은 기준으로 독립 표본에서는 11개, 새 시드에서는 4개 레시피의 최대 오차가 커졌습니다. 0 EV의 선형 ProPhoto RGB에서는 세 표본의 p95·p99·최대 오차 최댓값은 v0.1.3과 같았으며, 새 시드에서 18개 레시피의 최대 오차가 0.01보다 더 커졌습니다. 0 EV 외의 32개 노출 조건에서 출력 sRGB 최대 오차는 기존 표본에서 13.747에서 11.787, 독립 표본에서 13.853에서 11.062로 줄었습니다. <a href="lut-boundary-v4.json">개별 레시피의 오차 변화와 노출 조건</a></p>
+<p>세 버전에서 198개 레시피의 짝 DCP 바이트가 일치했습니다. 표의 바깥 열두 모서리 368점과 중립 대각선 32점에서도 채널당 16비트 값이 일치했습니다. v0.1.3과 비교한 Adobe RGB 색역 경계 판정은 기존 0 EV 표본에서 4개가 새로 조건을 충족하고 2개가 충족하지 못했습니다. 이 두 입력의 직접 계산에서 선형 sRGB 범위를 벗어난 거리는 최대 1.638/255였습니다. 독립 표본에서는 5개가 새로 충족하고, 새 시드에서는 판정이 같았습니다. <a href="lut-boundary-v4.json">DCP·LUT 고정점과 색역 경계 판정</a></p>
+<p>v0.1.3에서 기존 표본의 최대 오차가 0.01보다 더 커진 10개 레시피는 두 태그와 v4의 최악점 좌표에서 세 버전을 각각 실행했습니다. 10개 중 6개는 두 태그의 최악점 좌표가 달랐습니다. 센서 RGB, 선형 sRGB와 ProPhoto, 출력 sRGB의 부호 있는 오차, 사면체의 정점과 가중치를 기록했습니다. HARUBENI에서는 최악점을 제외하고 LUT 좌표의 자유축 방향으로 셀 폭의 1/8과 1/4만큼 이동한 입력을 추가했습니다. <a href="lut-boundary-v4.json">같은 좌표에서의 부호 있는 오차와 단계별 수치</a></p>
+<div class="table-wrap"><table class="compact">
+<caption>v0.1.3에서 최대 오차가 커졌던 10개 레시피의 기존 표본 최대 오차</caption>
+<thead><tr><th scope="col">레시피</th><th scope="col">v0.1.2</th><th scope="col">v0.1.3</th><th scope="col">v4</th></tr></thead>
+<tbody>
+<tr><th scope="row">Vibrant Adobe RGB, 기본값</th><td class="n">9.687</td><td class="n">9.703</td><td class="n">8.246</td></tr>
+<tr><th scope="row">HARUBENI Adobe RGB, 조색 4</th><td class="n">12.429</td><td class="n">12.882</td><td class="n">9.239</td></tr>
+<tr><th scope="row">HARUBENI Adobe RGB, 조색 5</th><td class="n">10.480</td><td class="n">11.254</td><td class="n">9.140</td></tr>
+<tr><th scope="row">FUYUNO sRGB, 기본값</th><td class="n">2.571</td><td class="n">2.626</td><td class="n">2.310</td></tr>
+<tr><th scope="row">Gold Adobe RGB, +4·−4·+4·−4·+4·−4</th><td class="n">10.496</td><td class="n">10.699</td><td class="n">10.170</td></tr>
+<tr><th scope="row">HARUBENI Adobe RGB, 조색 1·키 −4</th><td class="n">12.196</td><td class="n">12.291</td><td class="n">10.111</td></tr>
+<tr><th scope="row">HARUBENI Adobe RGB, 조색 1·키 +4</th><td class="n">11.619</td><td class="n">12.579</td><td class="n">9.022</td></tr>
+<tr><th scope="row">HARUBENI Adobe RGB, 조색 1·대비 −4</th><td class="n">11.782</td><td class="n">12.950</td><td class="n">11.127</td></tr>
+<tr><th scope="row">HARUBENI Adobe RGB, 조색 1·하이라이트 대비 −4</th><td class="n">8.629</td><td class="n">10.674</td><td class="n">6.462</td></tr>
+<tr><th scope="row">HARUBENI Adobe RGB, 조색 8·여섯 조절값 모두 +4</th><td class="n">9.653</td><td class="n">10.614</td><td class="n">7.854</td></tr>
+</tbody></table></div>
+<p>Gold의 혼합 설정은 채도, 색조, 키, 대비, 하이라이트 대비, 섀도 대비 순입니다. <a href="lut-boundary-v4.json">레시피별 전체 설정과 독립 표본 결과</a></p>
+<p>v0.1.3의 최악점에서는 HARUBENI 조색 4·5를 포함한 6개 사례의 가장 큰 단계별 변화가 채도 억제 상단 경계 856과 이어졌습니다. 2개 사례는 암부 경계 56과 이어졌습니다. HARUBENI 조색 1·키 −4에서는 감마 단계의 변화가 가장 컸습니다. HARUBENI 조색 8·조절값 6개 모두 +4에서는 v0.1.3의 최악점에 v0.1.2를 적용한 빨강 오차가 +0.453, 같은 입력에서 v0.1.3의 오차가 −10.614였습니다. 사면체의 정점은 이웃 셀도 함께 쓰므로, 보정이 적용된 노드와 최악점에서 관측된 단계별 변화는 서로 다른 범위를 설명합니다. <a href="lut-boundary-v4.json">10개 사례의 설정과 단계별 변화</a></p>
+<p>v0.1.3에서 최대 오차 증가가 가장 컸던 HARUBENI Adobe RGB(조색 1·하이라이트 대비 −4)는 두 태그의 최악점 좌표가 달랐습니다. v0.1.3의 좌표에서 보간에 실제로 기여한 정점의 휘도는 850.892~867.233으로 채도 억제 경계 856을 사이에 뒀습니다. v0.1.2의 좌표에서는 실제 기여 정점이 856.598~872.964에 있었습니다. 연속 색 계산의 어느 단계에서 보간하는지만 바꿔 비교했을 때, v0.1.3 좌표의 빨강은 채도 억제 단계에서 +10.424, v0.1.2 좌표에서는 감마 단계에서 −10.852만큼 변했습니다. 이 값은 해당 좌표와 계산 순서에서 관측한 변화량입니다. <a href="lut-boundary-v4.json">HARUBENI 정점·감마·채도 억제 추적</a></p>
+<p>v0.1.3의 최악점 좌표에서 빨강 오차는 v0.1.2에서 +8.615, v0.1.3에서 +10.674, v4에서 +6.462였습니다. v0.1.2의 최악점 좌표에서는 각각 −8.629, −7.384, −6.130이었습니다. <a href="lut-boundary-v4.json">두 좌표의 실제 출력과 기준 출력</a></p>
+<figure>
+<img src="lut-boundary-v4-harubeni.svg" alt="HARUBENI 채도 억제 경계 856을 지나는 구간에서 빨강 채널의 출력과 직접 계산 사이의 부호 있는 오차" loading="lazy">
+<figcaption>초록이 상한에 고정된 LUT 면에서 빨강 인덱스만 이동한 257점입니다. 가운데 점은 v0.1.3에서 최대 오차가 난 입력입니다. 휘도 856 직전의 채도 이득은 앞 구간의 기울기 −7/8을 따라 435/512에 이르고, 856에서는 새 구간의 432/512가 적용됩니다. LUT는 연속 사면체 보간을 사용하므로 직접 계산의 이득 변화가 부호 있는 빨강 오차에 단차로 나타납니다. <a href="https://github.com/yunhyok/firmware-color-studio/blob/v0.1.3/src/firmware_color_studio/data/k3iii/k3iii-color-tables.json">펌웨어 채도 억제 표</a> · <a href="https://github.com/yunhyok/firmware-color-studio/blob/v0.1.3/src/firmware_color_studio/color_model.py#L145">채도 이득 수식</a> · <a href="lut-boundary-v4-harubeni.svg">그래프 원본</a></figcaption>
+</figure>
+<p>태그 두 개를 포함한 앱 Git 체크아웃과 앱의 Python 환경으로 검증을 다시 실행할 수 있습니다. <a href="../tools/check_lut_boundary_v4.py">v4 합성 RGB 검증 코드</a></p>
+<pre><code>&amp; "PATH_TO_APP/.venv/Scripts/python.exe" -B tools/check_lut_boundary_v4.py --app-repo "PATH_TO_APP" --output lut-v4-check.json</code></pre>
 </section>
 
 <section id="reproduce">
