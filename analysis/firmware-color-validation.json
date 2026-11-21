@@ -288,6 +288,160 @@
           }
         }
       }
+    },
+    {
+      "id": "ColorChecker 촬영본 IMGP9361",
+      "url": null,
+      "licence": "the repository owner's photograph; not published",
+      "date": "2026-11-21",
+      "camera_firmware": "2.12",
+      "scene": "ColorChecker Classic (Passport) on a wooden table, window daylight",
+      "iso": 100,
+      "shadow_correction": "Off",
+      "note_ko": "이 표본은 채도 −1로 찍혀서 비교에는 그 설정으로 만든 프로파일을 썼습니다. 공개한 프로파일은 출고 설정(채도 0)입니다.",
+      "result": {
+        "raw_sha256": "6e9724ceba1f81aa5d0c6d25f04768317363315b435c52fd0b132ef9af4d467a",
+        "camera_jpeg": "preview stored in the RAW file",
+        "custom_image": "landscape",
+        "color_space": "sRGB",
+        "settings": {
+          "saturation": -1,
+          "hue": 0,
+          "key": 0,
+          "contrast": 1,
+          "highlight": 0,
+          "shadow": 0
+        },
+        "toning": 0,
+        "settings_source": "maker note tag 0x0247",
+        "exposure_gain": 9184,
+        "model_exposure_scale": 0.88823,
+        "baseline_exposure": -0.6711,
+        "baseline_exposure_source": "DNG tag",
+        "profile_total_exposure_ev": -0.1711,
+        "profile_name": "K-3 III Firmware Landscape sat-1",
+        "half_size_image": [
+          3085,
+          2051
+        ],
+        "block_size": 16,
+        "alignment_affine": [
+          [
+            1.00321,
+            -5e-05,
+            -12.28204
+          ],
+          [
+            -1e-05,
+            1.006,
+            -16.52859
+          ]
+        ],
+        "fitted_colour_or_tone_parameters": 0,
+        "delta_e_2000": {
+          "model": {
+            "all_blocks": {
+              "blocks": 24576,
+              "mean": 1.228,
+              "median": 1.016,
+              "p95": 3.274,
+              "max": 11.782
+            },
+            "flat_blocks": {
+              "blocks": 8856,
+              "mean": 0.949,
+              "median": 0.88,
+              "p95": 1.996,
+              "max": 10.863
+            },
+            "flat_neutral_chroma_below_5": {
+              "blocks": 2382,
+              "mean": 0.977,
+              "median": 0.933,
+              "p95": 1.729,
+              "max": 10.863
+            },
+            "flat_chroma_5_to_30": {
+              "blocks": 4698,
+              "mean": 0.832,
+              "median": 0.773,
+              "p95": 1.617,
+              "max": 10.258
+            },
+            "flat_chroma_30_and_above": {
+              "blocks": 1776,
+              "mean": 1.221,
+              "median": 1.022,
+              "p95": 3.419,
+              "max": 3.715
+            }
+          },
+          "profile": {
+            "all_blocks": {
+              "blocks": 24576,
+              "mean": 1.243,
+              "median": 0.99,
+              "p95": 3.391,
+              "max": 11.797
+            },
+            "flat_blocks": {
+              "blocks": 8856,
+              "mean": 1.015,
+              "median": 0.896,
+              "p95": 2.049,
+              "max": 11.007
+            },
+            "flat_neutral_chroma_below_5": {
+              "blocks": 2382,
+              "mean": 0.897,
+              "median": 0.883,
+              "p95": 1.654,
+              "max": 11.007
+            },
+            "flat_chroma_5_to_30": {
+              "blocks": 4698,
+              "mean": 0.886,
+              "median": 0.828,
+              "p95": 1.768,
+              "max": 10.433
+            },
+            "flat_chroma_30_and_above": {
+              "blocks": 1776,
+              "mean": 1.515,
+              "median": 1.117,
+              "p95": 4.745,
+              "max": 5.104
+            }
+          }
+        },
+        "lightness_minus_camera_flat_neutral_blocks": {
+          "model": {
+            "mean": -0.497,
+            "median": -0.481
+          },
+          "profile": {
+            "mean": -0.32,
+            "median": -0.421
+          }
+        }
+      },
+      "colorchecker_patches": {
+        "description": "The 24 patches of the same file, rendered by Firmware Color Studio 0.3.0 with the profile for the recorded settings and the file's BaselineExposure, against the camera JPEG stored in the DNG. CIE 1976 colour difference between patch medians (81 samples per patch).",
+        "mean": 2.25,
+        "colour_patches": 2.8,
+        "grey_patches": 0.61,
+        "grey_lightness_error": 0.15,
+        "maximum": 9.59,
+        "worst_patch": "orange yellow",
+        "exposure_at_which_the_greys_agree_best_ev": 0.0,
+        "profiles_of_other_custom_images": {
+          "natural": 9.59,
+          "bright": 3.1,
+          "portrait": 9.67,
+          "vibrant": 8.12
+        },
+        "source": "https://github.com/yunhyok/firmware-color-studio/blob/37471666a123f0814b60a6b738b4484b7016d510/docs/chart-session-validation.json"
+      }
     }
   ],
   "control": {
@@ -430,9 +584,9 @@
     "multi_axis_stock_parameters": "treating the stock multi-axis matrix as highlight desaturation worsened bright saturated blocks (0.87 to 1.09); treating it as stored (1.0 = 1024) worsened neutral blocks (1.4 to 2.2). No effect is modelled."
   },
   "limits": [
-    "Two scenes, both ISO 100, taken with camera firmware 1.01 and 1.10; the analysed firmware is 2.20.",
-    "Only Natural (all settings 0) and Bright (contrast +1) were compared. The other 14 profiles, and the key, highlight-contrast and shadow-contrast settings that some of them ship with, were not compared with camera output.",
-    "Both shots had Shadow Correction on Auto; the emulated tone-control table is the identity. In flat neutral areas the model is 0.2 L* (Bright sample) and 0.5 L* (Natural sample) darker than the camera JPEG.",
+    "Three scenes, all ISO 100, taken with camera firmware 1.01, 1.10 and 2.12; the analysed firmware is 2.20.",
+    "Only Natural (all settings 0), Bright (contrast +1) and Landscape (saturation -1, contrast +1) were compared. The other 13 profiles, and the key, highlight-contrast and shadow-contrast settings that some of them ship with, were not compared with camera output.",
+    "In flat neutral areas the model is 0.2 L* (Bright sample) and 0.5 L* (Natural and Landscape samples) darker than the camera JPEG. The first two shots had Shadow Correction on Auto and the third had it off, so Shadow Correction does not explain the difference. The emulated tone-control table is the identity.",
     "The profile rendering is the DNG SDK reference pipeline, not Lightroom. Lightroom was not run.",
     "With a negative total exposure (#4678) the reference pipeline folds the exposure into the tone curve after the LookTable; saturated colours then differ more (1.00 against 0.42 for the model).",
     "Toning (Muted, Bleach Bypass, HARUBENI) is in the model but cannot be put into a profile; neither sample uses it."
