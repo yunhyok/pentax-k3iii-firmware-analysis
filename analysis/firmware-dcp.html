@@ -31,7 +31,7 @@
 <li><a href="../tools/make_k3iii_profile.py">tools/make_k3iii_profile.py</a>는 펌웨어 없이 공개된 색 표만으로 같은 프로파일을 만듭니다. 펌웨어 에뮬레이터로 만든 16개 파일과 바이트 단위로 같습니다.</li>
 <li>ForwardMatrix에는 모든 Custom Image가 공유하는 센서 <strong>공통 행렬</strong>만 넣습니다. 모드 행렬, 채널별 곡선, 카메라 색역 끝의 자르기는 ProfileLookTable이 맡습니다. 이전 설계는 채도를 올리는 모드에서 채도 높은 파란색을 검정으로 그렸습니다.</li>
 <li>16개 프로파일은 각자의 색 모델을 색역 안쪽 무작위 색에서 평균 ΔE00 <strong>0.02~0.11</strong>로 따라갑니다. LookTable 계산은 Adobe DNG SDK의 해당 루틴과 대조했고 평균 차이는 8비트 코드 0.017~0.062였습니다.</li>
-<li>카메라 JPEG와 비교하면 평탄한 블록의 평균 ΔE00이 Natural 표본에서 <strong>0.90</strong>, Bright 표본에서 <strong>0.91</strong>이었습니다. Bright 값은 RAW에 기록된 대비 +1로 다시 계산한 것입니다. 색이나 톤을 맞추려고 조정한 값은 없습니다.</li>
+<li>카메라 JPEG와 비교하면 평탄한 블록의 평균 ΔE00이 Natural 표본에서 <strong>0.90</strong>, Bright 표본에서 <strong>0.91</strong>, Landscape 표본에서 <strong>1.01</strong>이었습니다. Bright와 Landscape 값은 RAW에 기록된 설정(대비 +1, 채도 −1과 대비 +1)으로 계산한 것입니다. 색이나 톤을 맞추려고 조정한 값은 없습니다.</li>
 <li><strong>Lightroom은 실행하지 않았습니다.</strong> 모든 수치는 PC에서 DNG SDK의 기준 처리 방식으로 계산했습니다. 카메라 JPEG와 비교한 것은 두 모드, 두 장면(둘 다 ISO 100, 이전 펌웨어로 촬영)뿐입니다. 나머지 14개 프로파일은 카메라 출력과 비교하지 않았습니다.</li>
 </ul>
 </section>
@@ -339,7 +339,7 @@
 
 <section id="validation">
 <h2>검증: 모델, Adobe SDK, 카메라 JPEG와 비교</h2>
-<p class="takeaway">16개 프로파일은 각자의 색 모델을 색역 안쪽 평균 ΔE00 0.02~0.11로 따라갑니다. DNG 기준 경로로 계산한 카메라 JPEG와의 차이는 평탄 블록 평균 0.90(Natural)과 0.91(Bright)입니다.</p>
+<p class="takeaway">16개 프로파일은 각자의 색 모델을 색역 안쪽 평균 ΔE00 0.02~0.11로 따라갑니다. DNG 기준 경로로 계산한 카메라 JPEG와의 차이는 평탄 블록 평균 0.90(Natural), 0.91(Bright), 1.01(Landscape)입니다.</p>
 
 <h3>프로파일과 펌웨어 모델</h3>
 <p>공개한 16개 프로파일을 DNG 기준 경로로 적용한 결과를 각 프로파일의 바탕이 된 색 모델과 비교했습니다. 모델은 출고 설정, 조색 꺼짐 상태입니다. 총 노출은 0 EV, 출력은 sRGB입니다. 색 분류마다 무작위 장면 색 60,000개를 썼고 차이는 <a href="../glossary.html#delta-e">CIEDE2000(ΔE00)</a>으로 쟀습니다. 도구는 <a href="../tools/check_profile_accuracy.py">tools/check_profile_accuracy.py</a>이고 기록은 <a href="k3iii-profile-accuracy.json">k3iii-profile-accuracy.json</a>입니다. 이 값은 프로파일 형식이 모델을 얼마나 담는지를 보여 줍니다. 모델이 카메라와 얼마나 같은지는 아래의 카메라 JPEG 비교가 보여 줍니다.</p>
@@ -395,7 +395,7 @@
 <p>검사기는 libjxl·XMP가 필요한 SDK 소스를 빼고 컴파일합니다. 그래서 SDK 전체를 빌드한 것이 아닙니다. 프로파일 파일 읽기, 색 행렬 처리, 노출 처리는 SDK 코드로 확인하지 않았습니다. Lightroom도 실행하지 않았습니다. 대조 도구의 C++ 부분(<a href="../tools/dng_sdk_harness.cpp">tools/dng_sdk_harness.cpp</a>)에는 Adobe 코드가 들어 있지 않습니다.</p></div>
 
 <h3>카메라 JPEG와 비교</h3>
-<p>같은 RAW에서 카메라가 만든 JPEG와 비교했습니다. “모델”은 펌웨어 색 단계를 직접 계산한 결과입니다. “프로파일”은 이 도구가 만든 DCP를 DNG 기준 경로로 적용한 결과입니다. 둘 다 PC에서 계산했고 Lightroom 출력이 아닙니다. 설정은 RAW의 메이커노트 태그 0x0247에 기록된 값을 썼습니다. #4678(Natural)은 모든 설정이 0이고 Imaging Resource 표본(Bright)은 대비 +1입니다. 색이나 톤을 맞추려고 조정한 값은 0개입니다.</p>
+<p>같은 RAW에서 카메라가 만든 JPEG와 비교했습니다. “모델”은 펌웨어 색 단계를 직접 계산한 결과입니다. “프로파일”은 이 도구가 만든 DCP를 DNG 기준 경로로 적용한 결과입니다. 둘 다 PC에서 계산했고 Lightroom 출력이 아닙니다. 설정은 RAW의 메이커노트 태그 0x0247에 기록된 값을 썼습니다. #4678(Natural)은 모든 설정이 0이고 Imaging Resource 표본(Bright)은 대비 +1입니다. 세 번째 표본은 이 저장소 소유자가 펌웨어 2.12의 카메라로 ColorChecker를 찍은 DNG이고 Landscape에 채도 −1, 대비 +1입니다. 색이나 톤을 맞추려고 조정한 값은 0개입니다. 아래 그림은 앞의 두 표본을 그린 것이고 표에는 세 표본이 모두 있습니다.</p>
 
 <figure class="diagram">
 <figcaption>카메라 JPEG와의 평균 ΔE00 (평탄 블록)</figcaption>
@@ -451,8 +451,23 @@
 <tbody>
 <tr><th scope="row">raw.pixls.us #4678 (펌웨어 1.01)</th><td>Natural · AdobeRGB · 모두 0</td><td class="n">10304</td><td class="n">0.852 / 0.904</td><td class="n">0.878 / 0.941</td><td class="n">0.854 / 0.866</td><td class="n">0.418 / 1.007</td><td class="n">0.928 / 0.985</td></tr>
 <tr><th scope="row">Imaging Resource (펌웨어 1.10)</th><td>Bright · sRGB · 대비 +1</td><td class="n">8192</td><td class="n">0.907 / 0.907</td><td class="n">0.955 / 0.955</td><td class="n">0.691 / 0.689</td><td class="n">0.544 / 0.535</td><td class="n">0.954 / 0.954</td></tr>
+<tr><th scope="row">ColorChecker 촬영본 IMGP9361 (펌웨어 2.12)</th><td>Landscape · sRGB · 채도 −1, 대비 +1</td><td class="n">9184</td><td class="n">0.949 / 1.015</td><td class="n">0.977 / 0.897</td><td class="n">0.832 / 0.886</td><td class="n">1.221 / 1.515</td><td class="n">1.228 / 1.243</td></tr>
 </tbody></table></div>
-<p class="small muted">평탄 블록은 17,639개와 5,240개입니다. 평탄 블록의 p95는 #4678이 1.514 / 1.601, Imaging Resource가 1.625 / 1.625입니다(모델 / 프로파일). C는 채도입니다.</p>
+<p class="small muted">평탄 블록은 17,639개, 5,240개, 8,856개입니다. 평탄 블록의 p95는 #4678이 1.514 / 1.601, Imaging Resource가 1.625 / 1.625, ColorChecker 촬영본이 1.996 / 2.049입니다(모델 / 프로파일). C는 채도입니다.</p>
+
+<h3>ColorChecker 24패치</h3>
+<p>세 번째 표본에는 ColorChecker Classic이 찍혀 있어 패치 24개만 따로 쟀습니다. 기록된 설정(Landscape, 채도 −1, 대비 +1)의 프로파일을 파일의 BaselineExposure로 적용해 DNG 안의 카메라 JPEG과 비교한 값입니다. 패치마다 안쪽 81개 표본의 중앙값을 썼고 색차는 CIE 1976(ΔE76)입니다. 위 표의 ΔE00과 단위가 다릅니다. 계산은 이 프로파일 계산을 옮긴 <a href="https://github.com/yunhyok/firmware-color-studio">Firmware Color Studio</a> 0.3.0의 DCP 렌더러로 했습니다(<a href="https://github.com/yunhyok/firmware-color-studio/blob/main/docs/chart-session-validation.json">측정 기록</a>).</p>
+<div class="table-wrap"><table class="fit">
+<caption>ColorChecker 24패치, 프로파일 대 카메라 JPEG (ΔE76)</caption>
+<thead><tr><th>프로파일</th><th class="n">24패치 평균</th><th class="n">유채색 18</th><th class="n">회색 6</th><th class="n">최대</th></tr></thead>
+<tbody>
+<tr><th scope="row">Landscape, 채도 −1 (기록된 설정)</th><td class="n">2.25</td><td class="n">2.80</td><td class="n">0.61</td><td class="n">9.59 (orange yellow)</td></tr>
+<tr><th scope="row">Bright (출고 설정)</th><td class="n">3.10</td><td class="n">3.92</td><td class="n">0.62</td><td class="n">9.66</td></tr>
+<tr><th scope="row">Vibrant (출고 설정)</th><td class="n">8.12</td><td class="n">10.53</td><td class="n">0.90</td><td class="n">21.68</td></tr>
+<tr><th scope="row">Natural (출고 설정)</th><td class="n">9.59</td><td class="n">12.51</td><td class="n">0.83</td><td class="n">29.97</td></tr>
+<tr><th scope="row">Portrait (출고 설정)</th><td class="n">9.67</td><td class="n">12.62</td><td class="n">0.82</td><td class="n">34.91</td></tr>
+</tbody></table></div>
+<p>회색 여섯 패치의 밝기 오차는 L* 0.15이고, 노출을 0.01 EV씩 옮겨 봐도 0.00 EV에서 가장 잘 맞았습니다. 이 파일의 BaselineExposure는 −0.671이고 프로파일의 BaselineExposureOffset은 +0.5입니다. <a href="#tone-exposure">톤 곡선과 노출 기준</a>에서 정한 노출 기준이 펌웨어 2.12로 찍은 파일에서도 맞습니다.</p>
 
 <h3>설정 대조</h3>
 <p>Bright 표본은 처음에 모든 설정을 0으로 두고 비교했습니다. RAW의 설정 기록을 찾기 전이었습니다. 기록된 대비 +1로 다시 계산하자 평균 색차와 밝기 차이가 함께 줄었습니다.</p>
@@ -467,6 +482,7 @@
 
 <ul>
 <li><strong>대조 실험</strong>: Bright 표본에 Natural의 값을 적용하면 채도 높은 평탄 블록(채도 50 이상)의 평균이 0.76에서 3.81로 커졌습니다. 모드별 행렬의 차이가 측정에서 구별됩니다. 이 실험은 설정 기록을 찾기 전에 모든 설정 0으로 계산했습니다.</li>
+<li><strong>그림자 보정은 원인이 아닙니다</strong>: ColorChecker 촬영본은 그림자 보정을 끄고 찍었는데도 무채색 평탄 블록에서 모델이 L* 0.50, 프로파일이 0.32 어둡습니다. 아래 항목의 두 표본과 같은 크기입니다.</li>
 <li><strong>남은 차이</strong>: 무채색 평탄 블록에서 모델이 카메라 JPEG보다 L* 0.2~0.5 어둡습니다(8비트 한 단계 안팎). Natural 표본은 모델 −0.47, 프로파일 −0.16이고 Bright 표본은 둘 다 −0.19입니다. 두 장 모두 그림자 보정이 Auto로 촬영되었는데 에뮬레이션의 톤 조정 표는 항등입니다. 원인은 확정하지 못했습니다.</li>
 <li><strong>프로파일과 모델의 차이</strong>: #4678의 채도 30 이상 블록에서만 크게 벌어집니다(1.007 대 0.418). 총 노출이 음수일 때 생기는 일입니다(<a href="#tone-exposure">톤 곡선과 노출 기준</a>).</li>
 </ul>
@@ -487,6 +503,7 @@
 <tbody>
 <tr><td><a href="https://raw.pixls.us/getfile.php/4678/nice/Pentax%20-%20K-3%20Mark%20III%20-%2014bit%20%283:2%29.DNG">raw.pixls.us #4678</a> (CC0, DNG)</td><td>야외, 흰 종이와 검은 천 위의 색 큐브, ISO 100</td><td>RAW 안의 미리보기</td><td><code class="wrap">1e3352ccba0db428fd2a183718fc857fb283b1d43ad704305e5094c19e0a0428</code></td></tr>
 <tr><td><a href="https://www.imaging-resource.com/PRODS/pentax-k3-iii/FULLRES/K3IIIhSLI0000100NR0.PEF">Imaging Resource K3IIIhSLI0000100NR0</a> (재배포하지 않음)</td><td>스튜디오 정물, ISO 100</td><td>별도 파일 (SHA-256 <code class="wrap">5cb2b4a10a3aac53c6bb742b7e55f0077c5cf65de67009abbebccb86f6cc7abe</code>)</td><td><code class="wrap">28b0a4a0fae9b3c60d4950d8d4baeaa5a056a7fb130dfba0c2c212119ed29543</code></td></tr>
+<tr><td>ColorChecker 촬영본 IMGP9361 (저장소 소유자 촬영, 공개하지 않음, DNG)</td><td>나무 탁자 위의 ColorChecker Classic, 창가 주광, ISO 100, 그림자 보정 끔</td><td>RAW 안의 미리보기</td><td><code class="wrap">6e9724ceba1f81aa5d0c6d25f04768317363315b435c52fd0b132ef9af4d467a</code></td></tr>
 </tbody></table></div>
 <p class="small">탐색 중에 버린 가설도 적어 둡니다. 채도 억제 단계를 빼면 Imaging Resource 표본의 채도 5~15 평탄 블록이 1.09에서 1.81로 나빠졌습니다. 다축 색 보정 블록의 기본 행렬은 두 가지로 해석해 보았습니다. 하이라이트 채도 감소로 보면 밝은 고채도 블록이 0.87에서 1.09로 나빠졌습니다. 저장된 값 그대로(1024 = 1.0) 보면 무채색 블록이 1.4에서 2.2로 나빠졌습니다. 그래서 이 블록의 효과는 모델에 넣지 않았습니다. 이 확인들은 임시 스크립트로 했고 저장소 도구로는 재현되지 않습니다.</p>
 </details>
@@ -557,7 +574,7 @@ python tools/build_firmware_dcp.py .private/my-decode/decoded.bin --all --output
 <section id="limits">
 <h2>한계와 남은 과제</h2>
 <ul>
-<li><strong>표본 두 장</strong>: 두 장면 모두 ISO 100이고 카메라 펌웨어 1.01과 1.10으로 찍혔습니다. 분석한 펌웨어는 2.20입니다. 높은 ISO와 다른 조명은 없습니다. 비교한 것은 Natural(설정 모두 0)과 Bright(대비 +1)뿐입니다. 나머지 14개 프로파일은 카메라 JPEG와 비교하지 않았습니다. 일부 모드의 출고 설정에 들어 있는 키, 하이라이트 대비, 섀도 대비도 카메라 출력과 비교하지 않았습니다.</li>
+<li><strong>표본 세 장</strong>: 세 장면 모두 ISO 100이고 카메라 펌웨어 1.01, 1.10, 2.12로 찍혔습니다. 분석한 펌웨어는 2.20입니다. 높은 ISO는 없습니다. 비교한 것은 Natural(설정 모두 0), Bright(대비 +1), Landscape(채도 −1, 대비 +1)뿐입니다. 나머지 13개 프로파일은 카메라 JPEG와 비교하지 않았습니다. 일부 모드의 출고 설정에 들어 있는 키, 하이라이트 대비, 섀도 대비도 카메라 출력과 비교하지 않았습니다.</li>
 <li><strong>Lightroom 미실행</strong>: 프로파일은 DNG SDK 기준 경로(Python 모델, SDK 루틴과 대조)로만 평가했습니다. 실제 Lightroom은 처리 버전(Process Version)과 노출 처리 등 자기 방식을 씁니다. Lightroom에서 얼마나 가까운지는 Lightroom에서 재야 합니다.</li>
 <li><strong>출고 설정 표의 대응</strong>: 표의 행을 Custom Image에 대응시키는 코드는 찾지 못했습니다. 이 표는 분석 범위 밖의 메뉴 쪽 코드가 읽습니다. 대응은 행 순서와 세 가지 정황으로 정했습니다.</li>
 <li><strong>프로파일 밖의 기능</strong>: 조색, 그림자·하이라이트 보정, 선명도(Clarity), 디지털 필터, HDR, 렌즈 보정, 노이즈 감소, 샤프닝은 프로파일에 없습니다. 프로파일은 고정된 색 변환 하나입니다.</li>
@@ -565,7 +582,7 @@ python tools/build_firmware_dcp.py .private/my-decode/decoded.bin --all --output
 <li><strong>음수 총 노출</strong>: 노출 이득이 기준보다 크면 기준 경로가 LookTable을 어둡게 하기 전에 적용합니다. 채도 높은 색의 차이가 커집니다(#4678에서 1.007 대 0.418).</li>
 <li><strong>PEF의 BaselineExposure</strong>: PEF 파일에는 Lightroom이 기종별로 정한 BaselineExposure를 씁니다. 그 값이 카메라가 DNG에 적는 값과 같은지 확인하지 않았습니다.</li>
 <li><strong>모델에 없는 단계</strong>: 다축 색 보정 블록은 효과가 보이지 않았고 식도 공개되지 않아 넣지 않았습니다. 화이트밸런스 이득과 색 행렬 앞의 처리(검정 레벨, 디모자이크)는 추적하지 않았고 비교에는 RAW의 촬영 시 값을 썼습니다.</li>
-<li><strong>밝기 차이</strong>: 무채색 영역에서 모델이 카메라 JPEG보다 L* 0.2~0.5 어두운 원인을 찾지 못했습니다. 그림자 보정 Auto가 후보입니다.</li>
+<li><strong>밝기 차이</strong>: 무채색 영역에서 모델이 카메라 JPEG보다 L* 0.2~0.5 어두운 원인을 찾지 못했습니다. 그림자 보정을 끈 표본에서도 같은 차이가 나서 그림자 보정 Auto는 후보에서 뺐습니다.</li>
 <li><strong>ColorMatrix 행 배율</strong>: 공개 표본 한 대에서 얻었습니다. 기기마다 다를 수 있으므로 자기 DNG가 있으면 <code>--color-matrix-from</code>을 권합니다.</li>
 <li><strong>에뮬레이션 조건</strong>: 운영체제 기능은 대역으로 바꿨고 지정한 필드 밖의 입력은 0입니다. 샤프닝 단계와 Make 뒤의 두 단계는 실행하지 않았습니다.</li>
 </ul>

@@ -32,7 +32,7 @@
 <li>엔진은 카메라의 원본 코드와 같은 값을 냅니다. 원본 코드를 에뮬레이터에서 실행한 결과와 <strong>10,087가지 경우</strong>를 비교했고 다른 값이 하나도 없었습니다.</li>
 <li>지금 만들 수 있는 프로파일은 세 가지입니다. Custom Image 16종에 설정 여섯 개를 넣은 프로파일, RAW 파일에 기록된 설정을 읽어 그 사진에 맞춘 프로파일, 모드 행렬을 직접 만든 것으로 바꾼 프로파일입니다.</li>
 <li>프로파일 형식 때문에 담지 못하는 것이 있습니다. 조색, Cross Processing, Gold, Auto Select가 그렇습니다. 그림자 보정이나 샤프니스처럼 색 프로파일 밖에 있는 처리도 빠집니다.</li>
-<li><strong>가장 큰 공백은 Lightroom에서 확인하지 못했다는 점입니다.</strong> 카메라 JPEG과 비교한 모드도 Natural과 Bright 둘뿐입니다. 프로그램을 만드는 일보다 이 확인이 먼저입니다.</li>
+<li><strong>가장 큰 공백은 Lightroom에서 확인하지 못했다는 점입니다.</strong> 카메라 JPEG과 비교한 모드도 Natural, Bright, Landscape 셋뿐입니다. 프로그램을 만드는 일보다 이 확인이 먼저입니다.</li>
 </ul>
 </section>
 
@@ -223,7 +223,7 @@ python tools/make_k3iii_profile.py --all --color-space adobergb --output-dir ado
 <li><strong>Lightroom에서 확인하지 않았습니다.</strong> 프로파일의 결과는 Adobe DNG SDK의 기준 처리 순서로 계산했습니다. Lightroom의 실제 처리가 이와 다르면 결과도 달라집니다. 프로그램을 더 만들기 전에 이것부터 확인해야 합니다.</li>
 <li><strong>카메라 JPEG과 비교한 모드는 둘입니다.</strong> Natural과 Bright에서 평탄 영역의 평균 ΔE00이 0.9 안팎이었습니다. 나머지 14개 모드는 같은 계산 경로를 쓰지만 결과를 따로 재지 않았습니다.</li>
 <li><strong>출고 설정의 대응은 간접 근거에 기댑니다.</strong> 설정 표의 각 줄이 어느 Custom Image인지는 줄 번호의 순서, 표본 한 장, 리코의 설명으로 맞췄습니다.</li>
-<li><strong>펌웨어 2.20의 표입니다.</strong> 다른 버전의 카메라가 같은 표를 쓰는지는 확인하지 않았습니다. 비교한 표본 두 장은 1.01과 1.10으로 찍혔고 결과가 맞았습니다.</li>
+<li><strong>펌웨어 2.20의 표입니다.</strong> 다른 버전의 카메라가 같은 표를 쓰는지는 확인하지 않았습니다. 비교한 표본 세 장은 1.01, 1.10, 2.12로 찍혔고 결과가 맞았습니다.</li>
 <li><strong>센서의 개체차.</strong> 프로파일의 ColorMatrix 행 배율은 표본 한 대에서 얻었습니다. 자기 카메라의 DNG에서 복사하는 선택지를 두었습니다.</li>
 </ul>
 </section>

@@ -306,8 +306,13 @@ def validation_text(mode: str, validation: dict) -> tuple:
             stats = result["delta_e_2000"]
             return (True, f'카메라가 기록한 JPEG 한 장과 PC에서 비교했습니다({esc(sample["id"])}, 카메라 펌웨어 {esc(sample["camera_firmware"])}, ISO {sample["iso"]}). '
                           f'평탄 영역의 평균 ΔE00은 프로파일이 {stats["profile"]["flat_blocks"]["mean"]:.2f}, 펌웨어 모델이 {stats["model"]["flat_blocks"]["mean"]:.2f}입니다. '
-                          '색이나 톤을 맞추려고 조정한 값은 없습니다.')
-    return (False, "이 프로파일은 카메라 JPEG과 비교하지 않았습니다. 값은 Natural·Bright와 같은 계산 경로에서 나왔지만 이 모드의 결과가 카메라와 맞는지 따로 잰 적은 없습니다.")
+                          '색이나 톤을 맞추려고 조정한 값은 없습니다.' + (" " + esc(sample["note_ko"]) if sample.get("note_ko") else ""))
+    return (False, f"이 프로파일은 카메라 JPEG과 비교하지 않았습니다. 값은 {'·'.join(compared_modes(validation))}와 같은 계산 경로에서 나왔지만 이 모드의 결과가 카메라와 맞는지 따로 잰 적은 없습니다.")
+
+
+def compared_modes(validation: dict) -> list:
+    """Names of the Custom Images that have a camera JPEG sample, in the order of the record."""
+    return [LABELS[sample["result"]["custom_image"]] for sample in validation["samples"]]
 
 
 def settings_table(profile: dict) -> str:
@@ -596,8 +601,8 @@ def overview_page(data: dict, notes: dict, validation: dict, dcps: dict, tables:
     cards = "\n".join(
         f'<li><a href="profile-{mode}.html"><strong>{esc(profiles[mode]["label"])}</strong></a>'
         f'<span>{esc(official_text(mode, notes)[0] or "리코의 설명을 확인하지 못했습니다.")}</span></li>' for mode in ORDER)
-    natural = next(s for s in validation["samples"] if s["result"]["custom_image"] == "natural")["result"]["delta_e_2000"]
-    bright = next(s for s in validation["samples"] if s["result"]["custom_image"] == "bright")["result"]["delta_e_2000"]
+    compared = compared_modes(validation)
+    means = ", ".join(f'{s["result"]["delta_e_2000"]["profile"]["flat_blocks"]["mean"]:.2f}' for s in validation["samples"])
     total = sum(len(d) for d in dcps.values()) / 1024 / 1024
     offsets = tables["toning"]["chroma_offsets"]["srgb"]
     toning_rows = "".join(f'<tr><th scope="row">{value}</th><td>{TONING_KO[value]}</td><td class="n">{signed(offsets[value][0])}</td><td class="n">{signed(offsets[value][1])}</td></tr>'
@@ -620,7 +625,7 @@ def overview_page(data: dict, notes: dict, validation: dict, dcps: dict, tables:
 <ul>
 <li>K-3 Mark III의 Custom Image 16종에 맞춘 Lightroom 카메라 프로파일(DCP)을 <a href="https://github.com/yunhyok/pentax-k3iii-firmware-analysis/tree/main/{PROFILE_DIR}">profiles/k3iii</a>에 두었습니다. 값은 펌웨어 2.20의 색 표에서 계산했습니다.</li>
 <li>프로파일은 Custom Image마다 카메라의 출고 설정으로 만들었습니다. 출고 설정은 모드마다 다릅니다. Bright는 대비 +1, Flat은 대비 −4, Radiant는 키 +2와 대비 +3입니다.</li>
-<li>카메라가 기록한 JPEG과 PC에서 비교한 모드는 Natural과 Bright 둘입니다. 평탄 영역의 평균 ΔE00은 {natural["profile"]["flat_blocks"]["mean"]:.2f}과 {bright["profile"]["flat_blocks"]["mean"]:.2f}입니다. 나머지 14개는 비교하지 않았습니다.</li>
+<li>카메라가 기록한 JPEG과 PC에서 비교한 모드는 {", ".join(compared)}의 {len(compared)}개입니다. 평탄 영역의 평균 ΔE00은 차례로 {means}입니다. 나머지 {len(ORDER) - len(compared)}개는 비교하지 않았습니다.</li>
 <li><strong>Lightroom에서는 아직 확인하지 않았습니다.</strong> 수치는 Adobe DNG SDK의 기준 처리 순서로 계산한 것입니다.</li>
 <li>Bleach Bypass와 HARUBENI의 출고 설정에 든 조색은 프로파일에 담지 못했습니다. 두 프로파일은 카메라에서 조색을 끈 결과와 같습니다.</li>
 <li>펌웨어에서 꺼낸 색 표는 <a href="k3iii-color-tables.json">k3iii-color-tables.json</a>으로 공개합니다. 이 표만 있으면 펌웨어 없이 같은 프로파일을 만들 수 있습니다.</li>
@@ -724,7 +729,7 @@ python tools/make_k3iii_profile.py --mode natural --look-matrix my-look.json --n
 <section id="limits">
 <h2>검증 상태와 한계</h2>
 <ul>
-<li>카메라 JPEG과 비교한 것은 Natural과 Bright뿐이고 장면도 둘뿐입니다(둘 다 ISO 100, 카메라 펌웨어 1.01·1.10).</li>
+<li>카메라 JPEG과 비교한 것은 {", ".join(compared)}뿐이고 장면도 {len(compared)}개뿐입니다(모두 ISO 100, 카메라 펌웨어 {"·".join(s["camera_firmware"] for s in validation["samples"])}).</li>
 <li>Lightroom에서 적용한 결과는 재지 않았습니다. Lightroom의 실제 처리는 SDK의 기준 처리와 다를 수 있습니다.</li>
 <li>출고 설정 표의 각 줄을 Custom Image에 대응시킨 근거는 간접적입니다. <a href="#factory">출고 설정</a> 절에 적었습니다.</li>
 <li>조색, 그림자 보정, 하이라이트 보정, 명료도, 샤프니스 같은 처리는 프로파일에 없습니다.</li>

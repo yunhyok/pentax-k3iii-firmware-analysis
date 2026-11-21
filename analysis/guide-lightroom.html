@@ -28,7 +28,7 @@
 <h2 data-toc="no">핵심 요약</h2>
 <ul>
 <li><strong>K-3 Mark III는 펌웨어 값으로 프로파일(DCP)을 만들 수 있게 됐습니다.</strong> <code>tools/build_firmware_dcp.py</code>가 카메라의 색 설정 코드를 PC 에뮬레이터에서 실행해 DCP를 만듭니다. Custom Image 16종의 프로파일은 <a href="color-profiles.html">K-3 Mark III 색 프로파일 모음</a>에서 받을 수 있습니다. 프로파일은 각 모드의 출고 설정으로 만들었습니다. 펌웨어 없이 같은 프로파일을 만드는 <code>tools/make_k3iii_profile.py</code>도 있습니다.</li>
-<li>카메라가 기록한 JPEG와 PC에서 비교한 평탄 블록의 평균 ΔE<sub>00</sub>은 Natural 0.90, Bright 0.91입니다. 프로파일은 Adobe DNG SDK의 참조 처리 순서로 적용했고 맞춘 매개변수는 없습니다. 펌웨어 모델 자체는 0.85와 0.91입니다. Bright 표본은 RAW에 기록된 대비 +1로 계산했습니다.</li>
+<li>카메라가 기록한 JPEG와 PC에서 비교한 평탄 블록의 평균 ΔE<sub>00</sub>은 Natural 0.90, Bright 0.91입니다. 프로파일은 Adobe DNG SDK의 참조 처리 순서로 적용했고 맞춘 매개변수는 없습니다. 펌웨어 모델 자체는 0.85와 0.91입니다. Bright 표본은 RAW에 기록된 대비 +1로 계산했습니다. 펌웨어 2.12의 카메라로 ColorChecker를 찍은 세 번째 표본(Landscape, 채도 −1)은 프로파일 1.01, 모델 0.95이고, 차트 24패치의 평균 ΔE76은 2.25입니다.</li>
 <li>범위는 좁습니다. 이 결과를 낼 때 Lightroom은 실행하지 않았습니다. 장면은 둘이고 모두 ISO 100이며 Natural과 Bright만 비교했습니다. 표본을 찍은 카메라 펌웨어는 1.01과 1.10입니다(분석은 2.20). 실제 Lightroom 측정이 다음 단계입니다.</li>
 <li>이전 방식에서는 RAW에 적힌 행렬을 옮긴 시험 DCP 아홉 개를 실제 Lightroom Classic 15.6과 16.0에 적용해 쟀습니다. 그때는 Adobe의 Camera Matching 프로파일이 더 가까웠습니다(K-3 Mark III 행렬 후보 2.028, Camera Bright 1.421). 재는 방법이 달라 위의 숫자와 바로 견줄 수 없습니다.</li>
 <li>RAW 처리의 앞 단계(선형화와 색 보간)는 공개 Adobe DNG SDK와 값을 하나씩 대조해 재현했습니다. 이 연구가 카메라를 직접 다룬 실험은 없습니다.</li>
