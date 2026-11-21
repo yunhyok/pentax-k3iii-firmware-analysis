@@ -469,6 +469,32 @@
 </tbody></table></div>
 <p>회색 여섯 패치의 밝기 오차는 L* 0.15이고, 노출을 0.01 EV씩 옮겨 봐도 0.00 EV에서 가장 잘 맞았습니다. 이 파일의 BaselineExposure는 −0.671이고 프로파일의 BaselineExposureOffset은 +0.5입니다. <a href="#tone-exposure">톤 곡선과 노출 기준</a>에서 정한 노출 기준이 펌웨어 2.12로 찍은 파일에서도 맞습니다.</p>
 
+<h3>카메라가 Custom Image별로 현상한 JPEG 13장</h3>
+<p>카메라의 RAW 현상 기능으로 같은 DNG를 Custom Image마다 한 번씩 다시 현상했습니다(4752 × 3168 JPEG 14장, 그중 Cross Processing은 프로파일이 없어 제외). JPEG마다 메이커노트에 기록된 Custom Image와 설정으로 프로파일을 만들어 DNG의 24패치에 적용하고 그 JPEG과 비교했습니다. 값은 ΔE76이고 계산은 Firmware Color Studio 0.4.0의 렌더러로 했습니다(<a href="https://github.com/yunhyok/firmware-color-studio/blob/2ea84c3c959995bcf8a50bb791162393814234e8/docs/chart-session-validation.json">측정 기록</a>). Gold와 조색을 켠 Bleach Bypass는 DCP와 XMP를 함께 쓰는 방식입니다.</p>
+<div class="table-wrap"><table class="compact">
+<caption>카메라 현상 JPEG 대 그 설정의 프로파일, ColorChecker 24패치 (ΔE76)</caption>
+<thead><tr><th>Custom Image</th><th>출고값에서 바꾼 설정</th><th class="n">24패치 평균</th><th class="n">유채색 18</th><th class="n">회색 6</th><th class="n">최대</th></tr></thead>
+<tbody>
+<tr><th scope="row">Bright</th><td>채도 −4, 섀도 대비 −2</td><td class="n">1.74</td><td class="n">2.10</td><td class="n">0.66</td><td class="n">5.66 (orange yellow)</td></tr>
+<tr><th scope="row">Natural</th><td>채도 +4</td><td class="n">3.19</td><td class="n">3.99</td><td class="n">0.78</td><td class="n">11.99 (orange yellow)</td></tr>
+<tr><th scope="row">Portrait</th><td>채도 −1, 색상 +1, 키 +2, 대비 −1, 하이라이트 대비 −3, 섀도 대비 −1</td><td class="n">1.53</td><td class="n">1.86</td><td class="n">0.56</td><td class="n">4.80 (orange yellow)</td></tr>
+<tr><th scope="row">Landscape</th><td>채도 −1</td><td class="n">2.35</td><td class="n">2.87</td><td class="n">0.78</td><td class="n">9.51 (orange yellow)</td></tr>
+<tr><th scope="row">Vibrant</th><td>채도 −4</td><td class="n">1.83</td><td class="n">2.23</td><td class="n">0.61</td><td class="n">6.25 (orange yellow)</td></tr>
+<tr><th scope="row">SATOBI</th><td>출고값</td><td class="n">1.61</td><td class="n">2.00</td><td class="n">0.43</td><td class="n">5.70 (orange yellow)</td></tr>
+<tr><th scope="row">Radiant</th><td>출고값</td><td class="n">2.61</td><td class="n">3.18</td><td class="n">0.90</td><td class="n">10.19 (orange yellow)</td></tr>
+<tr><th scope="row">Muted</th><td>출고값</td><td class="n">1.02</td><td class="n">1.21</td><td class="n">0.42</td><td class="n">3.22 (orange yellow)</td></tr>
+<tr><th scope="row">Flat</th><td>출고값</td><td class="n">1.87</td><td class="n">2.23</td><td class="n">0.77</td><td class="n">7.48 (yellow)</td></tr>
+<tr><th scope="row">Bleach Bypass (조색 Green) · DCP + XMP</th><td>출고값</td><td class="n">2.09</td><td class="n">2.42</td><td class="n">1.11</td><td class="n">5.58 (yellow)</td></tr>
+<tr><th scope="row">Reversal Film</th><td>출고값</td><td class="n">2.22</td><td class="n">2.70</td><td class="n">0.80</td><td class="n">9.56 (orange)</td></tr>
+<tr><th scope="row">Gold · DCP + XMP</th><td>출고값</td><td class="n">2.36</td><td class="n">2.85</td><td class="n">0.91</td><td class="n">9.26 (orange yellow)</td></tr>
+<tr><th scope="row">Monochrome</th><td>출고값</td><td class="n">0.20</td><td class="n">0.23</td><td class="n">0.13</td><td class="n">0.68 (orange)</td></tr>
+</tbody></table></div>
+<ul>
+<li><strong>톤 설정</strong>: 회색 여섯 패치는 모든 모드에서 1.1 이내입니다. 키, 대비, 하이라이트 대비, 섀도 대비를 모두 바꾼 Portrait(0.56)와 섀도 대비 −2의 Bright(0.66)도 같습니다. 이 설정들을 카메라 출력과 비교한 것은 처음입니다.</li>
+<li><strong>처음 비교한 모드</strong>: Portrait, Vibrant, Radiant, Muted, Flat, Bleach Bypass, Reversal Film, Monochrome, SATOBI, Gold입니다. HARUBENI, KATEN, KYUSHU, FUYUNO는 아직 비교하지 않았습니다.</li>
+<li><strong>남은 차이</strong>: 최대 오차는 13개 중 9개에서 같은 패치(orange yellow)이고 나머지 유채색 모드에서는 yellow 또는 orange입니다. 밝고 진한 노랑·주황에서 카메라 JPEG이 모델보다 어둡고 진합니다(채도 +4의 Natural에서 카메라 <code>244 180 0</code>, 모델 <code>248 203 0</code>). 원인은 찾지 못했고 모델은 바꾸지 않았습니다. 모델에 넣지 않은 다축 색 보정 블록이 후보입니다.</li>
+</ul>
+
 <h3>설정 대조</h3>
 <p>Bright 표본은 처음에 모든 설정을 0으로 두고 비교했습니다. RAW의 설정 기록을 찾기 전이었습니다. 기록된 대비 +1로 다시 계산하자 평균 색차와 밝기 차이가 함께 줄었습니다.</p>
 <div class="table-wrap"><table class="fit">
@@ -574,7 +600,7 @@ python tools/build_firmware_dcp.py .private/my-decode/decoded.bin --all --output
 <section id="limits">
 <h2>한계와 남은 과제</h2>
 <ul>
-<li><strong>표본 세 장</strong>: 세 장면 모두 ISO 100이고 카메라 펌웨어 1.01, 1.10, 2.12로 찍혔습니다. 분석한 펌웨어는 2.20입니다. 높은 ISO는 없습니다. 비교한 것은 Natural(설정 모두 0), Bright(대비 +1), Landscape(채도 −1, 대비 +1)뿐입니다. 나머지 13개 프로파일은 카메라 JPEG와 비교하지 않았습니다. 일부 모드의 출고 설정에 들어 있는 키, 하이라이트 대비, 섀도 대비도 카메라 출력과 비교하지 않았습니다.</li>
+<li><strong>표본 세 장</strong>: 세 장면 모두 ISO 100이고 카메라 펌웨어 1.01, 1.10, 2.12로 찍혔습니다. 분석한 펌웨어는 2.20입니다. 높은 ISO는 없습니다. 블록 방식으로 비교한 것은 Natural(설정 모두 0), Bright(대비 +1), Landscape(채도 −1, 대비 +1)뿐입니다. 차트 24패치로는 카메라가 현상한 13개 모드를 비교했고, HARUBENI, KATEN, KYUSHU, FUYUNO는 어느 쪽으로도 비교하지 않았습니다. 일부 모드의 출고 설정에 들어 있는 키, 하이라이트 대비, 섀도 대비도 카메라 출력과 비교하지 않았습니다.</li>
 <li><strong>Lightroom 미실행</strong>: 프로파일은 DNG SDK 기준 경로(Python 모델, SDK 루틴과 대조)로만 평가했습니다. 실제 Lightroom은 처리 버전(Process Version)과 노출 처리 등 자기 방식을 씁니다. Lightroom에서 얼마나 가까운지는 Lightroom에서 재야 합니다.</li>
 <li><strong>출고 설정 표의 대응</strong>: 표의 행을 Custom Image에 대응시키는 코드는 찾지 못했습니다. 이 표는 분석 범위 밖의 메뉴 쪽 코드가 읽습니다. 대응은 행 순서와 세 가지 정황으로 정했습니다.</li>
 <li><strong>프로파일 밖의 기능</strong>: 조색, 그림자·하이라이트 보정, 선명도(Clarity), 디지털 필터, HDR, 렌즈 보정, 노이즈 감소, 샤프닝은 프로파일에 없습니다. 프로파일은 고정된 색 변환 하나입니다.</li>
